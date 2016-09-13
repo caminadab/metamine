@@ -1,0 +1,12 @@
+{
+	"name": "satis",
+	"authors": [
+		"ymte"
+	],
+	"description": "Runtime implementation for sas.",
+	"copyright": "Copyright © 2016, ymte",
+	"license": "proprietary",
+	"dependencies": {
+		"dfuse": "~>0.3.0"
+    }
+}
