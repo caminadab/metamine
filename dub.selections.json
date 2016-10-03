@@ -1,6 +1,7 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"dfuse": "0.3.0"
+		"dfuse": "0.3.0",
+		"dmarkdown": "0.2.2"
 	}
 }

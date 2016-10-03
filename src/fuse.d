@@ -87,6 +87,7 @@ import std.concurrency;
 class Filesystem : Operations {
 	string cachedir = "/var/cache/satis";
 	Node[string] virtual;
+	Node[string] partial;
 	bool[string] locked; // locked directories and files
 	Tid[][string] waiting;
 	
@@ -127,7 +128,9 @@ class Filesystem : Operations {
 	}
 	
 	Node find(string path) {
+    	writeln(path);
 		try {
+			// directory or file can be locked
 			if (islocked(path))
 				wait(path);
 				
@@ -147,6 +150,7 @@ class Filesystem : Operations {
 	
     override void getattr(const(char)[] path, ref stat_t s)
     {
+    	writeln(path);
     	auto file = find(path.idup);
     		
     	s.st_size = file.size();
@@ -157,11 +161,13 @@ class Filesystem : Operations {
     }
     
     override bool access(const(char)[] path, int mode) {
+    	writeln(path);
     	return true;
     }
 
     override string[] readdir(const(char)[] path)
     {
+    	writeln(path);
     	auto file = find(path.idup);
     	
     	if (!file.isDir)
@@ -173,17 +179,18 @@ class Filesystem : Operations {
     }
     
     ulong read(const(char)[] path, ubyte[] buf, ulong offset) {
+    	writeln(path);
     	auto file = find(path.idup);
     	return file.read(buf, offset);
     }
 }
 
-void mount()
-{
+void mount(string dir)
+{    
 	auto fs = new Filesystem();
 	//fs.add("films", films);
 	
     // yes foreground, yes threading
-    auto fuse = new Fuse("SATIS", true, true);
-    fuse.mount(fs, "/mnt/satis", []);
+    auto fuse = new Fuse("SATIS", true, false);
+    fuse.mount(fs, dir, []);
 }
