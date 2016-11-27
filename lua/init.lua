@@ -13,9 +13,50 @@ local ops = {
 	__le = function (a,b) return le(a,b) end;
 }
 
+function liststring(tt)
+	local res = {'['}
+	for i,v in ipairs(tt) do
+		table.insert(res, tostring(v):sub(1,10))
+		if i ~= #tt then
+			table.insert(res, ' ')
+		end
+	end
+	table.insert(res, ']')
+	return table.concat(res)
+end
+
+function dictstring(tt)
+	-- regular dict
+	local res = {'{'}
+	for k,v in pairs(tt) do
+		table.insert(res, tostring(k):sub(1,10))
+		table.insert(res, '=')
+		if type(v) == 'string' then
+			table.insert(res, string.format('%q', v:sub(-10)))
+		else
+			table.insert(res, tostring(v):sub(1,10))
+		end
+		if next(tt,k) then
+			table.insert(res, ' ')
+		end
+	end
+	table.insert(res, '}')
+	return table.concat(res)
+end
+
 function eval(a)
-	if type(a) == 'table' and getmetatable(a).__call then
-		return a()
+	if type(a) == 'table' then
+		if getmetatable(a) then
+			if getmetatable(a).__call then
+				return eval(a())
+			else
+				return tostring(a)
+			end
+		elseif a.list then
+			return liststring(tt)
+		else
+			return dictstring(tt)
+		end
 	else
 		return tostring(a)
 	end
@@ -152,6 +193,13 @@ function server(port)
 	-- clients
 	local clients = {val = {}, out = nil}
 	setmetatable(clients, {
+		__index = function (t,k,v)
+			if k == 'input' then
+				return magic("server("..port..").clients.input", function ()
+					return dictstring(clients.val)
+				end)
+			end
+		end;
 		__call = function ()
 			local tt = {'['}
 			for fd,buf in pairs(clients.val) do
@@ -173,7 +221,11 @@ function server(port)
 					return '#server('..port..').clients'
 				end;
 				__call = function ()
-					return #clients.val
+					local count = 0
+					for k in pairs(clients.val) do
+						count = count + 1
+					end
+					return count
 				end;
 			})
 			return tt
@@ -199,15 +251,15 @@ function dbg()
 	
 	for k in pairs(my) do
 		if _G[k] ~= nil and type(_G[k]) ~= 'function' then
-			io.write("\x1B[B\x1B[40G\x1B[K")
+			io.write("\x1B[40G\x1B[K")
 			io.write(k .. " =\t" .. eval(_G[k]))
+			io.write("\x1B[B")
 		end
 	end
 	
-	io.write("\x1B[B\x1B[40G\x1B[K")
-	io.write("\x1B[B\x1B[40G\x1B[K")
-	io.write("\x1B[B\x1B[40G\x1B[K")
-	io.write("\x1B[B\x1B[40G\x1B[K")
+	io.write("\x1B[40G\x1B[K\x1B[B")
+	io.write("\x1B[40G\x1B[K\x1B[B")
+	io.write("\x1B[40G\x1B[K\x1B[B")
 end
 setmetatable(_G, {
 	__newindex = function (t,k,v)
