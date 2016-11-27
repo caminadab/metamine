@@ -105,7 +105,10 @@ function magic(name, eval)
 	return tt
 end
 
-now = magic("now", function () return os.time() end)
+now = magic("now", function ()
+	local s,ns = sas.now()
+	return s + ns / 1e9
+end)
 
 my = {}
 
@@ -151,9 +154,9 @@ function server(port)
 	setmetatable(clients, {
 		__call = function ()
 			local tt = {'['}
-			for i=1,#clients.val do
-				table.insert(tt, tostring(clients.val[i]))
-				if i ~= #clients.val then
+			for fd,buf in pairs(clients.val) do
+				table.insert(tt, tostring(fd))
+				if next(clients.val,fd) then
 					table.insert(tt, ' ')
 				end
 			end
@@ -195,15 +198,16 @@ function dbg()
 	io.write("\x1B[1;40H")
 	
 	for k in pairs(my) do
-		if _G[k] ~= nil then
+		if _G[k] ~= nil and type(_G[k]) ~= 'function' then
 			io.write("\x1B[B\x1B[40G\x1B[K")
 			io.write(k .. " =\t" .. eval(_G[k]))
 		end
 	end
-			io.write("\x1B[B\x1B[40G\x1B[K")
-			io.write("\x1B[B\x1B[40G\x1B[K")
-			io.write("\x1B[B\x1B[40G\x1B[K")
-			io.write("\x1B[B\x1B[40G\x1B[K")
+	
+	io.write("\x1B[B\x1B[40G\x1B[K")
+	io.write("\x1B[B\x1B[40G\x1B[K")
+	io.write("\x1B[B\x1B[40G\x1B[K")
+	io.write("\x1B[B\x1B[40G\x1B[K")
 end
 setmetatable(_G, {
 	__newindex = function (t,k,v)

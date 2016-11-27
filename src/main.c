@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 
 #define writel(fd,text) write(fd,text,sizeof(text)-1)
 
@@ -18,6 +19,15 @@ void dbg(lua_State* L) {
 	fflush(stdout);
 	
 	writel(1,"\x1B[u"); // go back
+}
+
+int sas_now(lua_State* L) {
+	struct timespec now;
+	clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+	
+	lua_pushinteger(L, now.tv_sec);
+	lua_pushinteger(L, now.tv_nsec);
+	return 2;
 }
 
 int sas_file(lua_State* L) {
@@ -84,6 +94,7 @@ int main() {
 	luaL_Reg lib[] = {
 		{"server", sas_server},
 		{"file", sas_file},
+		{"now", sas_now},
 		{0, 0},
 	};
 	luaL_newlib(L, lib);
@@ -109,17 +120,34 @@ int main() {
 		// add lua server accept
 		lua_getglobal(L, "sas");
 		lua_getfield(L, -1, "files"); // 2
-		lua_pushnil(L);
-		while (lua_next(L, 2) != 0) {
+		lua_pushnil(L); // 3
+		while (lua_next(L, 2)) { // 4,5
+			// accept
 			int sock = lua_tointeger(L, -2); // key
 			FD_SET(sock,&r);
-			lua_pop(L, 1);
+			
+			// recv
+			luaL_getsubtable(L,-1,"clients"); // 5, server(10101).cli
+			luaL_getsubtable(L,-1,"val"); // 6
+			
+				lua_pushnil(L);
+				while (lua_next(L, -2)) {
+					int subsock = lua_tointeger(L, -2); // key
+					FD_SET(subsock, &r);
+					lua_pop(L, 1);
+				}
+			
+			lua_pop(L,2);
+			// end recv
+			
+			lua_pop(L, 1); // 3
+			
 		}
 		lua_pop(L,2);
 		
 		struct timeval t;
-		t.tv_sec = 1;
-		t.tv_usec = 0;
+		t.tv_sec = 0;
+		t.tv_usec = 16667;
 		int r2 = lua_gettop(L);
 		dbg(L);
 		int num = select(10,&r,&w,&e,&t);
@@ -167,9 +195,8 @@ int main() {
 				// add!
 				luaL_getsubtable(L,-1,"clients"); // 4, server(10101).cli
 				luaL_getsubtable(L,-1,"val");
-				int old = luaL_len(L,-1);
-				lua_pushinteger(L, old + 1);
-				lua_pushinteger(L, client);
+				lua_pushinteger(L, client); // key
+				lua_pushliteral(L, ""); // val
 				lua_settable(L, -3);
 				lua_pop(L, 1);
 				
@@ -182,6 +209,38 @@ int main() {
 				}
 				lua_pop(L, 2);
 			}
+			
+			// recv
+			luaL_getsubtable(L,-1,"clients"); // 6, server(10101).cli
+			luaL_getsubtable(L,-1,"val"); // 7			
+			
+				lua_pushnil(L);
+				while (lua_next(L, -2)) {
+					int subsock = lua_tointeger(L, -2); // key
+					if (FD_ISSET(subsock, &r)) {
+						char buf[0x1000];
+						int len = read(subsock, buf, 0x1000);
+						if (!len) {
+							// pop true, push nil
+							lua_pop(L,1);
+							lua_pushnil(L);
+							lua_settable(L, -3);
+						} else {
+							// append!
+							lua_pushlstring(L, buf, len);
+							lua_concat(L, 2);
+							lua_settable(L, -3);
+						}
+						FD_CLR(subsock, &r); // prevent reading agains
+						lua_pushnil(L); // fresh key (iterate again)
+						lua_pushnil(L); // fake value
+					}
+					lua_pop(L, 1);
+				}
+			
+			lua_pop(L,2);
+			// end recv
+			
 			lua_pop(L, 1);
 		}
 		lua_pop(L,2);
