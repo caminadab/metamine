@@ -1,0 +1,28 @@
+[Defines And Includes][Compiler]
+Name=GCC
+Path=gcc
+Type=GCC
+
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=New Compiled Binary Launcher
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Nothing
+EnvironmentGroup=
+Executable=file:///home/ymte/satis/satis
+External Terminal=konsole --workdir %workdir -e %exe
+Project Target=
+Use External Terminal=true
+Working Directory=
+isExecutable=true
+
+[Project]
+VersionControlSupport=kdevgit

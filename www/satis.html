@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>satis 8</title>
+		<meta charset="UTF-8"> 
+		<link rel="stylesheet" href="satis.css" />
+	</head>
+	<body>
+		<div id='toolbar'>
+			<div class='tool'>
+				GRAPH
+			</div>
+			<div class='tool'>
+				NUMBERS
+			</div>
+			<div class='tool'>
+				TEXT
+			</div>
+			<div class='tool'>
+				STATS
+			</div>
+		</div>
+		<div id='tree'>
+			RESOURCES
+		</div>
+		<div class='panel'>
+			EDIT
+		</div>
+		<div class='panel'>
+			VIEW
+		</div>
+		
+		<script src="lib/lua.vm.js"></script>
+
+		<script type="text/lua">
+			js.global:alert('hello from Lua script tag in HTML!') -- this is Lua!
+		</script>
+	</body>
+</html>

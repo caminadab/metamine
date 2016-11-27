@@ -1,0 +1,1 @@
+js.global:alert('hoi')
