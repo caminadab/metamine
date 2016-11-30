@@ -63,7 +63,7 @@ int sas_server(lua_State* L) {
 static void stackDump (lua_State *L) {
 	printf("\n");
 		int i=lua_gettop(L);
-		printf(" ----------------  Stack Dump ----------------" );
+		printf(" ----------------  Stack Dump ----------------\n" );
 		while(  i   ) {
             int t = lua_type(L, i);
             switch (t) {
@@ -80,7 +80,7 @@ static void stackDump (lua_State *L) {
             }
            i--;
           }
-         printf("--------------- Stack Dump Finished ---------------" );
+         printf("--------------- Stack Dump Finished ---------------\n" );
 
 	fflush(stdout);
 }
@@ -191,13 +191,23 @@ int main() {
 		while (lua_next(L, 2) != 0) {
 			int sock = lua_tointeger(L, -2); // key
 			if (FD_ISSET(sock, &r)) {
-				int client = accept(sock,0,0);
+				int client = accept(sock,0,0);				
+
 				// add!
 				luaL_getsubtable(L,-1,"clients"); // 4, server(10101).cli
 				luaL_getsubtable(L,-1,"val");
 				lua_pushinteger(L, client); // key
 				lua_pushliteral(L, ""); // val
 				lua_settable(L, -3);
+				lua_pop(L, 1);
+				
+				// DISCONNECT! //
+				// append event
+				luaL_getsubtable(L, -1, "hist"); // 
+				lua_pushinteger(L, client);
+				lua_pushliteral(L, "+");
+				lua_concat(L, 2);
+				lua_rawseti(L, -2, luaL_len(L, -2) + 1);
 				lua_pop(L, 1);
 				
 				// send
@@ -211,20 +221,30 @@ int main() {
 			}
 			
 			// recv
-			luaL_getsubtable(L,-1,"clients"); // 6, server(10101).cli
-			luaL_getsubtable(L,-1,"val"); // 7			
+			luaL_getsubtable(L,-1,"clients"); // 5, server(10101).cli
+			luaL_getsubtable(L,-1,"val"); // 6
 			
 				lua_pushnil(L);
-				while (lua_next(L, -2)) {
+				while (lua_next(L, -2)) { // 7 key, 8 val
 					int subsock = lua_tointeger(L, -2); // key
 					if (FD_ISSET(subsock, &r)) {
 						char buf[0x1000];
 						int len = read(subsock, buf, 0x1000);
 						if (!len) {
+							// DISCONNECT! //
+							// append event
+							luaL_getsubtable(L, 5, "hist"); // 8?
+							lua_pushinteger(L, subsock);
+							lua_pushliteral(L, "-");
+							lua_concat(L, 2);
+							lua_rawseti(L, 9, luaL_len(L, 9) + 1);
+							lua_pop(L, 1);
+							
 							// pop true, push nil
 							lua_pop(L,1);
 							lua_pushnil(L);
 							lua_settable(L, -3);
+							
 						} else {
 							// append!
 							lua_pushlstring(L, buf, len);

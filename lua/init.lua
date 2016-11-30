@@ -191,12 +191,16 @@ function server(port)
 	sas.files[tt.val] = tt
 	
 	-- clients
-	local clients = {val = {}, out = nil}
+	local clients = {val = {}, hist = {}, out = nil}
 	setmetatable(clients, {
 		__index = function (t,k,v)
 			if k == 'input' then
 				return magic("server("..port..").clients.input", function ()
 					return dictstring(clients.val)
+				end)
+			elseif k == 'delta' then
+				return magic("server("..port..").clients.delta", function ()
+					return liststring(clients.hist)
 				end)
 			end
 		end;
