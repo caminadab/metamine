@@ -113,6 +113,9 @@ int main() {
 	
 	while (1) {
 		fd_set r,w,e;
+		FD_ZERO(&r);
+		FD_ZERO(&w);
+		FD_ZERO(&e);
 		
 		// listen console
 		FD_SET(0,&r);
