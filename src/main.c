@@ -60,6 +60,32 @@ int sas_server(lua_State* L) {
 	return 1;
 }
 
+int sas_dosafe(lua_State* L, char* buf, int len) {
+	int res = luaL_loadbuffer(L,buf,len,"in");
+	if (res) {
+		writel(1,"\x1B[31m");
+		char* err = lua_tolstring(L, -1, &len);
+		write(1,err,len);
+		writel(1,"\x1B[37m\n");
+		lua_pop(L, 1);
+	} else {
+		// blue output
+		writel(1,"\x1B[36m");
+		res = lua_pcall(L,0,0,0);
+		writel(1,"\x1B[37m");
+		
+		if (res) {
+			writel(1,"\x1B[31m");
+			char* err = lua_tolstring(L, -1, &len);
+			write(1,err,len);
+			writel(1,"\x1B[37m\n");
+			lua_pop(L, 1);
+		}
+	}
+}
+
+#define sas_dosafel(L,text) sas_dosafe(L,text,sizeof(text)-1)
+
 static void stackDump (lua_State *L) {
 	printf("\n");
 		int i=lua_gettop(L);
@@ -162,27 +188,9 @@ int main() {
 		if (FD_ISSET(0,&r)) {
 			char buf[0x1000];
 			int len = read(0,buf,0x1000);
-			int res = luaL_loadbuffer(L,buf,len,"in");
-			if (res) {
-				writel(1,"\x1B[31m");
-				char* err = lua_tolstring(L, -1, &len);
-				write(1,err,len);
-				writel(1,"\x1B[37m\n");
-				lua_pop(L, 1);
-			} else {
-				// blue output
-				writel(1,"\x1B[36m");
-				res = lua_pcall(L,0,0,0);
-				writel(1,"\x1B[37m");
-				
-				if (res) {
-					writel(1,"\x1B[31m");
-					char* err = lua_tolstring(L, -1, &len);
-					write(1,err,len);
-					writel(1,"\x1B[37m\n");
-					lua_pop(L, 1);
-				}
-			}
+			
+			sas_dosafe(L, buf, len);
+			
 			// prompt
 			writel(1,"\x1B[33m> \x1B[37m");
 		}
@@ -192,35 +200,14 @@ int main() {
 		lua_getfield(L, -1, "files"); // 2
 		lua_pushnil(L);
 		while (lua_next(L, 2) != 0) {
-			int sock = lua_tointeger(L, -2); // key
-			if (FD_ISSET(sock, &r)) {
-				int client = accept(sock,0,0);				
+			int server = lua_tointeger(L, -2); // key
+			if (FD_ISSET(server, &r)) {
+				int client = accept(server,0,0);				
 
-				// add!
-				luaL_getsubtable(L,-1,"clients"); // 4, server(10101).cli
-				luaL_getsubtable(L,-1,"val");
-				lua_pushinteger(L, client); // key
-				lua_pushliteral(L, ""); // val
-				lua_settable(L, -3);
-				lua_pop(L, 1);
-				
-				// DISCONNECT! //
-				// append event
-				luaL_getsubtable(L, -1, "hist"); // 
+				lua_getglobal(L, "onaccept");
 				lua_pushinteger(L, client);
-				lua_pushliteral(L, "+");
-				lua_concat(L, 2);
-				lua_rawseti(L, -2, luaL_len(L, -2) + 1);
-				lua_pop(L, 1);
-				
-				// send
-				lua_getfield(L,-1,"out");
-				if (lua_isstring(L,-1)) {
-					int len;
-					char* buf = lua_tolstring(L, -1, &len);
-					write(client, buf, len);
-				}
-				lua_pop(L, 2);
+				lua_pushinteger(L, server);
+				lua_call(L, 2, 0);
 			}
 			
 			// recv
@@ -234,14 +221,12 @@ int main() {
 						char buf[0x1000];
 						int len = read(subsock, buf, 0x1000);
 						if (!len) {
+							
 							// DISCONNECT! //
-							// append event
-							luaL_getsubtable(L, 5, "hist"); // 8?
+							lua_getglobal(L, "onclose");
 							lua_pushinteger(L, subsock);
-							lua_pushliteral(L, "-");
-							lua_concat(L, 2);
-							lua_rawseti(L, 9, luaL_len(L, 9) + 1);
-							lua_pop(L, 1);
+							lua_pushinteger(L, server);
+							lua_call(L, 2, 0);
 							
 							// pop true, push nil
 							lua_pop(L,1);

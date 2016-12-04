@@ -1,17 +1,6 @@
-local ops = {
-	__add = function (a,b) return add(a,b) end;
-	__sub = function (a,b) return sub(a,b) end;
-	__mul = function (a,b) return mul(a,b) end;
-	__div = function (a,b) return div(a,b) end;
-	__mod = function (a,b) return mod(a,b) end;
-	__pow = function (a,b) return pow(a,b) end;
-	__unm = function (a) return unm(a) end;
-	__concat = function (a,b) return concat(a,b) end;
-	__len = function (a) return len(a) end;
-	__eq = function (a,b) return eq(a,b) end;
-	__lt = function (a,b) return lt(a,b) end;
-	__le = function (a,b) return le(a,b) end;
-}
+ops = require 'lua/ops'
+
+local objects = {}
 
 function liststring(tt)
 	local res = {'['}
@@ -62,71 +51,10 @@ function eval(a)
 	end
 end
 
-function op2(symbol)
-	local fn = loadstring("return function(a,b) return a"..symbol.."b end")()
-	return function (a,b)
-		local tt = {}
-		local mt = {}
-		
-	
-		-- default values
-		for k,v in pairs(ops) do
-			mt[k] = v
-		end
-		
-		mt.__call = function ()
-			return fn(eval(a), eval(b))
-		end
-		mt.__tostring = function ()
-			return "("..tostring(a).." "..symbol.." "..tostring(b)..")"
-		end
-		
-		setmetatable(tt, mt)
-		
-		return tt
-	end
-end
 
-function op1(symbol)
-	local fn = loadstring("return function(a) return "..symbol.."a end")()
-	return function (a)
-		local tt = {}
-		local mt = {}
-		
-	
-		-- default values
-		for k,v in pairs(ops) do
-			mt[k] = v
-		end
-		
-		mt.__call = function ()
-			return fn(eval(a))
-		end
-		
-		mt.__tostring = function ()
-			return symbol.." "..tostring(a)
-		end
-	
-		setmetatable(tt, mt)
-		return tt
-	end
-end
-
-add = op2('+')
-sub = op2('-')
-mul = op2('*')
-div = op2('/')
-mod = op2('%')
-pow = op2('^')
-unm = op1('-')
-concat = op2('..')
-len = op1('#')
-eq = op2('==')
-lt = op2('<')
-le = op2('<=')
 
 function magic(name, eval)
-	local tt = {magic = true}
+	local tt = {sas = true, magic = true}
 	local mt = {}
 	
 	-- default values
@@ -150,8 +78,6 @@ now = magic("now", function ()
 	local s,ns = sas.now()
 	return s + ns / 1e9
 end)
-
-my = {}
 
 sas.ports = {}
 sas.files = {}
@@ -183,7 +109,7 @@ function server(port)
 	end
 	
 	-- create and store
-	local tt = { val = sas.server(port) }
+	local tt = { sas = true, val = sas.server(port) }
 	if not tt.val then
 		return nil
 	end
@@ -191,7 +117,7 @@ function server(port)
 	sas.files[tt.val] = tt
 	
 	-- clients
-	local clients = {val = {}, hist = {}, out = nil}
+	local clients = {sas = true, val = {}, hist = {}, out = nil}
 	setmetatable(clients, {
 		__index = function (t,k,v)
 			if k == 'input' then
@@ -202,6 +128,8 @@ function server(port)
 				return magic("server("..port..").clients.delta", function ()
 					return liststring(clients.hist)
 				end)
+			elseif k == 'kids' then
+				return { "input", "delta" }
 			end
 		end;
 		__call = function ()
@@ -219,7 +147,7 @@ function server(port)
 			return 'server('..port..').clients'
 		end;
 		__len = function ()
-			local tt = {}
+			local tt = {sas=true}
 			setmetatable(tt, {
 				__tostring = function ()
 					return '#server('..port..').clients'
@@ -243,36 +171,52 @@ function server(port)
 		__index = function (t,k,v)
 			if k == 'clients' then
 				return clients
+			elseif k == 'kids' then
+				return { 'clients' }
 			end
 		end;
 	})
 	return tt
 end
 
+function onaccept(client, server)
+	local cli = sas.files[server].clients
+	cli.val[client] = ""
+	cli.hist[#cli.hist + 1] = client .. '+'
+end
+
+function onclose(client, server)
+	local cli = sas.files[server].clients
+	cli.val[client] = "<closed>"
+	cli.hist[#cli.hist + 1] = client .. '-'
+end
+
+function isobject(v)
+	return type(v) == 'table' and v.sas
+end
+
 function dbg()
 	-- top right
 	io.write("\x1B[1;40H")
 	
-	for k in pairs(my) do
-		if _G[k] ~= nil and type(_G[k]) ~= 'function' then
-			io.write("\x1B[40G\x1B[K")
-			io.write(k .. " =\t" .. eval(_G[k]))
-			io.write("\x1B[B")
-		end
+	for name in pairs(objects) do
+		io.write("\x1B[40G\x1B[K")
+		io.write(name .. " =\t" .. eval(objects[name]))
+		io.write("\x1B[B")
 	end
 	
+	io.write("\x1B[40G\x1B[K\x1B[B")
+	io.write("\x1B[40G\x1B[K\x1B[B")
 	io.write("\x1B[40G\x1B[K\x1B[B")
 	io.write("\x1B[40G\x1B[K\x1B[B")
 	io.write("\x1B[40G\x1B[K\x1B[B")
 end
 setmetatable(_G, {
 	__newindex = function (t,k,v)
-		if v == nil then
-			rawset(my,k,nil)
-		else
-			rawset(my,k,true)
-		end
 		rawset(t,k,v)
+		if isobject(v) then
+			objects[k] = v
+		end
 	end;
 })
 
