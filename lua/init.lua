@@ -1,6 +1,18 @@
+require 'lua/util'
 ops = require 'lua/ops'
 
-local objects = {}
+function print(...)
+	local args = table.pack(...)
+	for i,arg in ipairs(args) do
+		io.write(tostring(arg) .. '\t')
+	end
+	io.write('\n')
+end
+
+magics = {}
+watches = {}
+
+local watches, fresh
 
 function liststring(tt)
 	local res = {'['}
@@ -18,10 +30,10 @@ function dictstring(tt)
 	-- regular dict
 	local res = {'{'}
 	for k,v in pairs(tt) do
-		table.insert(res, tostring(k):sub(1,10))
+		table.insert(res, tostring(k):sub(1,4))
 		table.insert(res, '=')
 		if type(v) == 'string' then
-			table.insert(res, string.format('%q', v:sub(-10)))
+			table.insert(res, string.format('%q', v:sub(-4)))
 		else
 			table.insert(res, tostring(v):sub(1,10))
 		end
@@ -33,191 +45,206 @@ function dictstring(tt)
 	return table.concat(res)
 end
 
-function eval(a)
-	if type(a) == 'table' then
-		if getmetatable(a) then
-			if getmetatable(a).__call then
-				return eval(a())
-			else
-				return tostring(a)
-			end
-		elseif a.list then
-			return liststring(tt)
-		else
-			return dictstring(tt)
-		end
-	else
-		return tostring(a)
-	end
+read2magic, write2magic, accept2magic = {}, {}, {}
+
+function accept(id, magic)
+	read2magic[id] = magic
+	accept2magic[id] = true
+	return "accept("..id..")"
 end
 
-
-
-function magic(name, eval)
-	local tt = {sas = true, magic = true}
-	local mt = {}
-	
-	-- default values
-	for k,v in pairs(ops) do
-		mt[k] = v
-	end
-	
-	-- unique
-	function mt:__tostring()
-		return name
-	end
-	
-	mt.__call = eval
-	
-	setmetatable(tt,mt)
-	
-	return tt
+function read(id, magic)
+	read2magic[id] = magic
+	return "read("..id..")"
 end
 
-now = magic("now", function ()
-	local s,ns = sas.now()
-	return s + ns / 1e9
-end)
+function write(id, magic)
+	write2magic[id] = magic
+end
 
-sas.ports = {}
-sas.files = {}
-
-function file(name)
-	local tt = {}
-	setmetatable(tt, {
-		__tostring = function ()
-			return 'file(' .. name .. ')'
-		end;
-		__index = function (t,k,v)
-			if k == 'lines' then
-				local f = io.open(name, 'r')
-				local lines = {}
-				for line in f:lines() do
-					table.insert(lines, line)
-				end
-				return lines
-			end
-		end;
-	})
-	return tt
+function encode(text)
+	return string.format('%q', text:sub(-5)):gsub('\\\n', '\\n')
 end
 
 function server(port)
-	-- cache
-	if sas.ports[port] then
-		return sas.ports[port]
+	local id = sas.server(port)
+	if not id then
+		error("bind failed")
 	end
 	
-	-- create and store
-	local tt = { sas = true, val = sas.server(port) }
-	if not tt.val then
-		return nil
+	local s = magic("server("..port..")")
+	
+	s.val = {
+		id = id,
+		port = port,
+		cli = {}, -- magics
+	}
+	s.text = '#'..id
+	s.triggers[s.name] = accept(id, s)
+	
+	-- clients!
+	local cs = magic(s.name..".cli")
+	s.cli = cs
+	
+	cs.val = s.val.cli
+	cs.text = '{}'
+	s.events[s.name..".cli"] = cs
+	
+	function cs:update()
+		cs.text = dictstring(cs.val)
 	end
-	sas.ports[port] = tt
-	sas.files[tt.val] = tt
 	
-	-- clients
-	local clients = {sas = true, val = {}, hist = {}, out = nil}
-	setmetatable(clients, {
-		__index = function (t,k,v)
-			if k == 'input' then
-				return magic("server("..port..").clients.input", function ()
-					return dictstring(clients.val)
-				end)
-			elseif k == 'delta' then
-				return magic("server("..port..").clients.delta", function ()
-					return liststring(clients.hist)
-				end)
-			elseif k == 'kids' then
-				return { "input", "delta" }
+	-- individual !
+	function s:update(cid, addr)
+		
+		local c = magic(cs.name..'(#'..cid..')')
+		c.val = {
+			id = cid,
+			addr = addr,
+			data = '',
+		}
+		c.triggers[c.name] = read(cid, c)
+		
+		local data = magic(c.name .. '.data')
+		data.val = ''
+		data.text = '<empty>'
+		function data:update()
+			self.val = c.val.data
+			self.text = encode(self.val)
+		end
+		c.data = data
+		c.events.data = data
+		
+		function c:update(data) -- primary
+			if not data then
+				self.text = "<eof>"
+			else
+				self.val.data = self.val.data .. data
+				self.text = encode(self.val.data)
 			end
-		end;
-		__call = function ()
-			local tt = {'['}
-			for fd,buf in pairs(clients.val) do
-				table.insert(tt, tostring(fd))
-				if next(clients.val,fd) then
-					table.insert(tt, ' ')
-				end
+		end
+		self.val.cli[cid] = c
+	end
+	return s
+end
+
+function lines(data)
+	local m = magic("lines")
+	
+	m.triggers["source"] = data
+	data.events["lines"] = m
+	m.val = {}
+	m.last = 1
+	m.text = "0 lines"
+	
+	function m:update()
+		while true do
+			local eol = data.val:find("\n", m.last)
+			if not eol then
+				break
 			end
-			table.insert(tt, ']')
-			return table.concat(tt)
-		end;
-		__tostring = function ()
-			return 'server('..port..').clients'
-		end;
-		__len = function ()
-			local tt = {sas=true}
-			setmetatable(tt, {
-				__tostring = function ()
-					return '#server('..port..').clients'
-				end;
-				__call = function ()
-					local count = 0
-					for k in pairs(clients.val) do
-						count = count + 1
-					end
-					return count
-				end;
-			})
-			return tt
-		end;
+			m.val[#m.val + 1] = data.val:sub(m.last, eol)
+			m.last = eol + 1
+		end
+		m.text = #m.val.." lines"
+	end
+	trigger(m)
+	return m
+end
+
+function split(data, sep)
+	local m = magic("split")
+	
+	m.triggers["split"] = data
+	data.events["parts"] = m
+	m.val = {}
+	m.last = 1
+	m.text = "0 parts"
+	
+	function m:update()
+		while true do
+			local eol = data.val:find(sep, m.last)
+			if not eol then
+				break
+			end
+			m.val[#m.val + 1] = data.val:sub(m.last, eol)
+			m.last = eol + 1
+		end
+		m.text = #m.val.." parts"
+	end
+	trigger(m)
+	return m
+end
+
+function magic(name)
+	local m = {
+		-- lists of others
+		triggers = {
+			-- no initial triggers
+		},
+		events = { 
+			watchdog = watchdog
+		},
+		update = function () return end,
+		val = nil,
+		name = name,
+	}
+	
+	magics[name] = m
+	
+	setmetatable(m, {
+		__tostring = function () return name end
 	})
 	
-	setmetatable(tt, {
-		__tostring = function ()
-			return 'server(' .. port .. ')'
-		end;
-		__index = function (t,k,v)
-			if k == 'clients' then
-				return clients
-			elseif k == 'kids' then
-				return { 'clients' }
-			end
-		end;
-	})
-	return tt
+	dbg()
+	
+	return m
 end
 
-function onaccept(client, server)
-	local cli = sas.files[server].clients
-	cli.val[client] = ""
-	cli.hist[#cli.hist + 1] = client .. '+'
+function trigger(magic, ...)
+	if magic.update then
+		magic:update(...)
+	end
+	
+	for name,val in pairs(magic.events) do
+		trigger(val)
+	end
 end
 
-function onclose(client, server)
-	local cli = sas.files[server].clients
-	cli.val[client] = "<closed>"
-	cli.hist[#cli.hist + 1] = client .. '-'
-end
-
-function isobject(v)
-	return type(v) == 'table' and v.sas
+function refresh()
+	trigger(fresh)
 end
 
 function dbg()
+	-- store
+	io.write("\x1B[s")
+	
 	-- top right
 	io.write("\x1B[1;40H")
 	
-	for name in pairs(objects) do
-		io.write("\x1B[40G\x1B[K")
-		io.write(name .. " =\t" .. eval(objects[name]))
-		io.write("\x1B[B")
+	for name,magic in pairs(magics) do
+		if name ~= "watchdog" then
+			io.write("\x1B[40G\x1B[K")
+			if magic.val and magic.text then
+				io.write(name .. " =\t" .. tostring(magic.text))
+			else
+				io.write(name .. " =\t" .. tostring(magic.val))
+			end
+			io.write("\x1B[B")
+		end
 	end
 	
 	io.write("\x1B[40G\x1B[K\x1B[B")
 	io.write("\x1B[40G\x1B[K\x1B[B")
 	io.write("\x1B[40G\x1B[K\x1B[B")
-	io.write("\x1B[40G\x1B[K\x1B[B")
-	io.write("\x1B[40G\x1B[K\x1B[B")
+	-- restore
+	io.write("\x1B[u")
+	io.write("\x1B[A\n")
 end
-setmetatable(_G, {
-	__newindex = function (t,k,v)
-		rawset(t,k,v)
-		if isobject(v) then
-			objects[k] = v
-		end
-	end;
-})
 
-dofile "lua/web.lua"
+watchdog = magic("watchdog")
+watchdog.update = dbg
+--watchdog.events.watchdog = nil
+
+dofile "lua/satis.lua"
+dbg()

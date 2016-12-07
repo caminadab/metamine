@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
+#include <sys/inotify.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -11,23 +12,19 @@
 
 #define writel(fd,text) write(fd,text,sizeof(text)-1)
 
-void dbg(lua_State* L) {
-	// print important values
-	writel(1,"\x1B[s"); // store
-	luaL_dostring(L, "dbg()");
-	lua_settop(L,0);
-	fflush(stdout);
-	
-	writel(1,"\x1B[u"); // go back
-}
-
 int sas_now(lua_State* L) {
-	struct timespec now;
+	struct timespec now;            
 	clock_gettime(CLOCK_MONOTONIC_RAW, &now);
 	
 	lua_pushinteger(L, now.tv_sec);
 	lua_pushinteger(L, now.tv_nsec);
 	return 2;
+}
+
+int sas_watch(lua_State* L) {
+	char* name = lua_tostring(L, 1);
+	int id = inotify_init();
+	return 1;
 }
 
 int sas_file(lua_State* L) {
@@ -111,12 +108,71 @@ static void stackDump (lua_State *L) {
 	fflush(stdout);
 }
 
+int io_write(lua_State* L) {
+	int len;
+	const char* str = luaL_checklstring(L, 1, &len);
+	len = write(1, str, len);
+	lua_pushinteger(L, len);
+	return 1;
+}
+
+int net_read(lua_State* L, int id, int index) {
+	lua_getglobal(L, "accept2magic");
+	lua_pushinteger(L, id);
+	lua_rawgeti(L, -2, id);
+	
+	// accept
+	if (lua_toboolean(L, -1)) {
+		struct sockaddr_in in;
+		int len = sizeof(in);
+		int cid = accept(id, &in, &len);
+		
+		if (cid >= 0) {
+			lua_getglobal(L, "trigger");
+			lua_pushnil(L); lua_copy(L, index, -1); // magic val
+			lua_pushinteger(L, cid);
+			lua_pushlstring(L, &in, len);
+			lua_call(L, index, 0);
+		}	
+	}
+
+	// recv
+	else {
+		char buf[0x1000];
+		int len = read(id, buf, 0x1000);
+	
+		// data
+		if (len > 0) {
+			lua_getglobal(L, "trigger");
+			lua_pushnil(L); lua_copy(L, index, -1); // magic val
+			lua_pushlstring(L, buf, len);
+			lua_call(L, 2, 0);
+		}
+		// disconnect
+		else {
+			lua_getglobal(L, "trigger");
+			lua_pushnil(L); lua_copy(L, index, -1); // magic val
+			lua_pushnil(L);
+			lua_call(L, 2, 0);
+		}
+	}
+	lua_pop(L, 3);
+}
 int main() {
 	writel(1, "\x1B[;f\x1B[J");
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	
-	// own library
+	// io lib
+	luaL_Reg io[] = {
+		{"write", io_write},
+		{0,0},
+	};
+	luaL_newlib(L, io);
+	lua_setglobal(L, "io");
+	lua_pushnil(L);
+	
+	// own librarytrigger
 	luaL_Reg lib[] = {
 		{"server", sas_server},
 		{"file", sas_file},
@@ -125,6 +181,9 @@ int main() {
 	};
 	luaL_newlib(L, lib);
 	lua_setglobal(L, "sas");
+	
+	// protect
+	lua_setglobal(L, "os");
 	
 	int r = luaL_dofile(L, "lua/init.lua");
 	if (r) {
@@ -147,42 +206,24 @@ int main() {
 		FD_SET(0,&r);
 		
 		// add lua server accept
-		lua_getglobal(L, "sas");
-		lua_getfield(L, -1, "files"); // 2
-		lua_pushnil(L); // 3
-		while (lua_next(L, 2)) { // 4,5
+		lua_getglobal(L, "read2magic");
+		lua_pushnil(L);
+		while (lua_next(L, 1)) { // 4,5
 			// accept
-			int sock = lua_tointeger(L, -2); // key
-			FD_SET(sock,&r);
-			
-			// recv
-			luaL_getsubtable(L,-1,"clients"); // 5, server(10101).cli
-			luaL_getsubtable(L,-1,"val"); // 6
-			
-				lua_pushnil(L);
-				while (lua_next(L, -2)) {
-					int subsock = lua_tointeger(L, -2); // key
-					FD_SET(subsock, &r);
-					lua_pop(L, 1);
-				}
-			
-			lua_pop(L,2);
-			// end recv
-			
-			lua_pop(L, 1); // 3
-			
+			int id = lua_tointeger(L, -2);
+			FD_SET(id,&r);
+			lua_pop(L, 1);
 		}
-		lua_pop(L,2);
+		lua_pop(L,1);
 		
 		struct timeval t;
-		t.tv_sec = 0;
-		t.tv_usec = 16667;
+		t.tv_sec = 9999999;
+		t.tv_usec = 0;
 		int r2 = lua_gettop(L);
-		dbg(L);
 		int num = select(10,&r,&w,&e,&t);
 		
-		if (num == 0)
-			continue;
+		if (num < 0)
+			break;
 		
 		// console input
 		if (FD_ISSET(0,&r)) {
@@ -191,67 +232,25 @@ int main() {
 			
 			sas_dosafe(L, buf, len);
 			
+			sas_dosafel(L, "dbg()");
+			
 			// prompt
 			writel(1,"\x1B[33m> \x1B[37m");
 		}
 		
-		// read lua server accept
-		lua_getglobal(L, "sas");
-		lua_getfield(L, -1, "files"); // 2
+		// add lua server accept
+		lua_getglobal(L, "read2magic"); // 1
 		lua_pushnil(L);
-		while (lua_next(L, 2) != 0) {
-			int server = lua_tointeger(L, -2); // key
-			if (FD_ISSET(server, &r)) {
-				int client = accept(server,0,0);				
-
-				lua_getglobal(L, "onaccept");
-				lua_pushinteger(L, client);
-				lua_pushinteger(L, server);
-				lua_call(L, 2, 0);
-			}
+		while (lua_next(L, 1)) {
+			// read
+			int id = lua_tointeger(L, -2);
 			
-			// recv
-			luaL_getsubtable(L,-1,"clients"); // 5, server(10101).cli
-			luaL_getsubtable(L,-1,"val"); // 6
-			
-				lua_pushnil(L);
-				while (lua_next(L, -2)) { // 7 key, 8 val
-					int subsock = lua_tointeger(L, -2); // key
-					if (FD_ISSET(subsock, &r)) {
-						char buf[0x1000];
-						int len = read(subsock, buf, 0x1000);
-						if (!len) {
-							
-							// DISCONNECT! //
-							lua_getglobal(L, "onclose");
-							lua_pushinteger(L, subsock);
-							lua_pushinteger(L, server);
-							lua_call(L, 2, 0);
-							
-							// pop true, push nil
-							lua_pop(L,1);
-							lua_pushnil(L);
-							lua_settable(L, -3);
-							
-						} else {
-							// append!
-							lua_pushlstring(L, buf, len);
-							lua_concat(L, 2);
-							lua_settable(L, -3);
-						}
-						FD_CLR(subsock, &r); // prevent reading agains
-						lua_pushnil(L); // fresh key (iterate again)
-						lua_pushnil(L); // fake value
-					}
-					lua_pop(L, 1);
-				}
-			
-			lua_pop(L,2);
-			// end recv
-			
+			// MAGIC is now at 3
+			if (FD_ISSET(id,&r))
+				net_read(L, id, 3);
 			lua_pop(L, 1);
 		}
-		lua_pop(L,2);
+		lua_pop(L,1);
 	}
 	
 	return 0;
