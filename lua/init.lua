@@ -54,12 +54,20 @@ function accept(id, magic)
 end
 
 function read(id, magic)
+	print('READ')
+	print(debug.traceback())
 	read2magic[id] = magic
 	return "read("..id..")"
 end
 
 function write(id, magic)
 	write2magic[id] = magic
+end
+
+function close(id, magic)
+	read2magic[id] = nil
+	write2magic[id] = nil
+	accept2magic[id] = nil
 end
 
 function encode(text)
@@ -95,14 +103,14 @@ function server(port)
 	end
 	
 	-- individual !
-	function s:update(cid, addr)
-		
+	function s:accept(cid, addr)
 		local c = magic(cs.name..'(#'..cid..')')
 		c.val = {
 			id = cid,
 			addr = addr,
 			data = '',
 		}
+		print('cid', cid, c)
 		c.triggers[c.name] = read(cid, c)
 		
 		local data = magic(c.name .. '.data')
@@ -115,14 +123,16 @@ function server(port)
 		c.data = data
 		c.events.data = data
 		
-		function c:update(data) -- primary
-			if not data then
-				self.text = "<eof>"
-			else
-				self.val.data = self.val.data .. data
-				self.text = encode(self.val.data)
-			end
+		function c:read(data) -- primary
+			self.val.data = self.val.data .. data
+			self.text = encode(self.val.data)
 		end
+		
+		function c:close()
+			close(cid, c)
+			self.text = '<closing>'
+		end
+		
 		self.val.cli[cid] = c
 	end
 	return s
@@ -201,9 +211,9 @@ function magic(name)
 	return m
 end
 
-function trigger(magic, ...)
+function trigger(magic)
 	if magic.update then
-		magic:update(...)
+		magic:update()
 	end
 	
 	for name,val in pairs(magic.events) do

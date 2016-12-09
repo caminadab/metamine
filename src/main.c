@@ -128,11 +128,11 @@ int net_read(lua_State* L, int id, int index) {
 		int cid = accept(id, &in, &len);
 		
 		if (cid >= 0) {
-			lua_getglobal(L, "trigger");
+			lua_getfield(L, index, "accept");
 			lua_pushnil(L); lua_copy(L, index, -1); // magic val
 			lua_pushinteger(L, cid);
 			lua_pushlstring(L, &in, len);
-			lua_call(L, index, 0);
+			lua_call(L, 3, 0);
 		}	
 	}
 
@@ -143,21 +143,28 @@ int net_read(lua_State* L, int id, int index) {
 	
 		// data
 		if (len > 0) {
-			lua_getglobal(L, "trigger");
+			lua_getfield(L, index, "read");
 			lua_pushnil(L); lua_copy(L, index, -1); // magic val
 			lua_pushlstring(L, buf, len);
 			lua_call(L, 2, 0);
 		}
-		// disconnect
+		
+		// close
 		else {
-			lua_getglobal(L, "trigger");
+			lua_getfield(L, index, "close");
 			lua_pushnil(L); lua_copy(L, index, -1); // magic val
-			lua_pushnil(L);
-			lua_call(L, 2, 0);
+			lua_call(L, 1, 0);
 		}
 	}
+	
+	// trigger
+	lua_getglobal(L, "trigger");
+	lua_pushnil(L); lua_copy(L, index, -1); // magic val
+	lua_call(L, 1, 0);
+	
 	lua_pop(L, 3);
 }
+
 int main() {
 	writel(1, "\x1B[;f\x1B[J");
 	lua_State* L = luaL_newstate();
@@ -241,16 +248,26 @@ int main() {
 		// add lua server accept
 		lua_getglobal(L, "read2magic"); // 1
 		lua_pushnil(L);
+			int a1 = lua_gettop(L);
 		while (lua_next(L, 1)) {
 			// read
 			int id = lua_tointeger(L, -2);
+			int magic = lua_absindex(L, -1);
 			
 			// MAGIC is now at 3
-			if (FD_ISSET(id,&r))
-				net_read(L, id, 3);
+			int a2 = lua_gettop(L);
+			if (FD_ISSET(id,&r)) {
+				int a3 = lua_gettop(L);
+				net_read(L, id, magic);
+				int a4 = lua_gettop(L);
+			int a5 = lua_gettop(L);
+			}
+			
 			lua_pop(L, 1);
+			int a6 = lua_gettop(L);
 		}
 		lua_pop(L,1);
+			int a7 = lua_gettop(L);
 	}
 	
 	return 0;
