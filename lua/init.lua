@@ -1,4 +1,5 @@
 require 'lua/util'
+require 'lua/net'
 ops = require 'lua/ops'
 
 function print(...)
@@ -54,14 +55,12 @@ function accept(id, magic)
 end
 
 function read(id, magic)
-	print('READ')
-	print(debug.traceback())
 	read2magic[id] = magic
 	return "read("..id..")"
 end
 
 function write(id, magic)
-	write2magic[id] = magic
+	write2data[id] = magic
 end
 
 function close(id, magic)
@@ -72,70 +71,6 @@ end
 
 function encode(text)
 	return string.format('%q', text:sub(-5)):gsub('\\\n', '\\n')
-end
-
-function server(port)
-	local id = sas.server(port)
-	if not id then
-		error("bind failed")
-	end
-	
-	local s = magic("server("..port..")")
-	
-	s.val = {
-		id = id,
-		port = port,
-		cli = {}, -- magics
-	}
-	s.text = '#'..id
-	s.triggers[s.name] = accept(id, s)
-	
-	-- clients!
-	local cs = magic(s.name..".cli")
-	s.cli = cs
-	
-	cs.val = s.val.cli
-	cs.text = '{}'
-	s.events[s.name..".cli"] = cs
-	
-	function cs:update()
-		cs.text = dictstring(cs.val)
-	end
-	
-	-- individual !
-	function s:accept(cid, addr)
-		local c = magic(cs.name..'(#'..cid..')')
-		c.val = {
-			id = cid,
-			addr = addr,
-			data = '',
-		}
-		print('cid', cid, c)
-		c.triggers[c.name] = read(cid, c)
-		
-		local data = magic(c.name .. '.data')
-		data.val = ''
-		data.text = '<empty>'
-		function data:update()
-			self.val = c.val.data
-			self.text = encode(self.val)
-		end
-		c.data = data
-		c.events.data = data
-		
-		function c:read(data) -- primary
-			self.val.data = self.val.data .. data
-			self.text = encode(self.val.data)
-		end
-		
-		function c:close()
-			close(cid, c)
-			self.text = '<closing>'
-		end
-		
-		self.val.cli[cid] = c
-	end
-	return s
 end
 
 function lines(data)
@@ -193,12 +128,15 @@ function magic(name)
 			-- no initial triggers
 		},
 		events = { 
-			watchdog = watchdog
+			-- check
 		},
 		update = function () return end,
 		val = nil,
 		name = name,
 	}
+	if watchdog then
+		triggers(m, watchdog)
+	end
 	
 	magics[name] = m
 	
@@ -216,9 +154,14 @@ function trigger(magic)
 		magic:update()
 	end
 	
-	for name,val in pairs(magic.events) do
-		trigger(val)
+	for kid,b in pairs(magic.events) do
+		trigger(kid)
 	end
+end
+
+function triggers(a, b)
+	a.events[b] = 2
+	b.triggers[a] = 3
 end
 
 function refresh()
