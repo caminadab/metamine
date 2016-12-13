@@ -116,10 +116,36 @@ int io_write(lua_State* L) {
 	return 1;
 }
 
+int net_write(lua_State* L, int id, int index) {
+	lua_getglobal(L, "write2data");
+	lua_rawgeti(L, -1, id);
+	
+	int len;
+	char* buf = lua_tolstring(L, -1, &len);
+	int written = write(id, buf, len);
+	
+	// written
+	if (written > 0) {
+		lua_getfield(L, index, "write");
+		lua_pushnil(L); lua_copy(L, index, -1); // magic val
+		lua_pushinteger(L, written);
+		lua_call(L, 2, 0);
+	}
+	
+	// close !
+	else {
+		lua_getfield(L, index, "close");
+		lua_pushnil(L); lua_copy(L, index, -1); // magic val
+		lua_call(L, 1, 0);
+	}
+		  
+	lua_pop(L, 2);
+	return 0;
+}
+
 int net_read(lua_State* L, int id, int index) {
 	lua_getglobal(L, "accept2magic");
-	lua_pushinteger(L, id);
-	lua_rawgeti(L, -2, id);
+	lua_rawgeti(L, -1, id);
 	
 	// accept
 	if (lua_toboolean(L, -1)) {
@@ -162,7 +188,7 @@ int net_read(lua_State* L, int id, int index) {
 	lua_pushnil(L); lua_copy(L, index, -1); // magic val
 	lua_call(L, 1, 0);
 	
-	lua_pop(L, 3);
+	lua_pop(L, 2);
 }
 
 int main() {
@@ -212,13 +238,22 @@ int main() {
 		// listen console
 		FD_SET(0,&r);
 		
-		// add lua server accept
+		// wait read
 		lua_getglobal(L, "read2magic");
 		lua_pushnil(L);
 		while (lua_next(L, 1)) { // 4,5
-			// accept
 			int id = lua_tointeger(L, -2);
 			FD_SET(id,&r);
+			lua_pop(L, 1);
+		}
+		lua_pop(L,1);
+		
+		// wait write
+		lua_getglobal(L, "write2magic");
+		lua_pushnil(L);
+		while (lua_next(L, 1)) { // 4,5
+			int id = lua_tointeger(L, -2);
+			FD_SET(id,&w);
 			lua_pop(L, 1);
 		}
 		lua_pop(L,1);
@@ -245,29 +280,37 @@ int main() {
 			writel(1,"\x1B[33m> \x1B[37m");
 		}
 		
-		// add lua server accept
+		// read
 		lua_getglobal(L, "read2magic"); // 1
 		lua_pushnil(L);
-			int a1 = lua_gettop(L);
 		while (lua_next(L, 1)) {
-			// read
 			int id = lua_tointeger(L, -2);
 			int magic = lua_absindex(L, -1);
 			
 			// MAGIC is now at 3
-			int a2 = lua_gettop(L);
 			if (FD_ISSET(id,&r)) {
-				int a3 = lua_gettop(L);
 				net_read(L, id, magic);
-				int a4 = lua_gettop(L);
-			int a5 = lua_gettop(L);
 			}
 			
 			lua_pop(L, 1);
-			int a6 = lua_gettop(L);
 		}
 		lua_pop(L,1);
-			int a7 = lua_gettop(L);
+		
+		// write
+		lua_getglobal(L, "write2magic"); // 1
+		lua_pushnil(L);
+		while (lua_next(L, 1)) {
+			int id = lua_tointeger(L, -2);
+			int magic = lua_absindex(L, -1);
+			
+			// MAGIC is now at 3
+			if (FD_ISSET(id,&w)) {
+				net_write(L, id, magic);
+			}
+			
+			lua_pop(L, 1);
+		}
+		lua_pop(L,1);
 	}
 	
 	return 0;

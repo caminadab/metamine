@@ -1,28 +1,59 @@
 function client(cid, addr)
-	local c = magic('#'..cid)
+	local c = magic('%'..cid)
 	c.val = {
 		id = cid,
 		addr = addr,
-		input = '',
 	}
+	c.text = '%'..cid
 	
 	-- input
 	local input = magic(c.name .. '.input')
+	c.input = input
 	input.val = ''
 	input.text = '<empty>'
 	function input:update()
-		self.val = c.val.input
 		self.text = encode(self.val)
 	end
-	c.input = input
-	triggers(c, input)
 	
 	-- events
-	--triggers(, name)
-	read(cid,c)
-	function c:read(data)
-		self.val.input = self.val.input .. data
-		self.text = encode(self.val.input)
+	read(cid, input)
+	function input:read(data)
+		self.val = self.val .. data
+		self.text = encode(self.val)
+	end
+	
+	triggers(input, c)
+	
+	-- output
+	c.output2 = magic(c.name .. '.output')
+	c.output2.last = 1
+	function c.output2:update()
+		if self.val and self.val.val then
+			local data = self.val.val
+			if #data >= self.last then
+				local todo = data:sub(self.last)
+				write(c.val.id, c.output2, todo)
+			end
+		end
+	end
+	
+	function c.output2:write(len)
+		self.last = self.last + len
+		
+		-- are we done sending?
+		if self.last > #self.val then
+			write2data[c.val.id] = nil
+			write2magic[c.val.id] = nil
+		end
+	end
+	
+	getmetatable(c).__newindex = function (t,key,any)
+		if key == 'output' then
+			c.output2.val = enchant(any)
+			triggers(c.output2.val, c.output2)
+		else
+			rawset(t,key,any)
+		end
 	end
 	
 	function c:close()
@@ -45,8 +76,7 @@ function server(port)
 		port = port,
 		cli = {}, -- magics
 	}
-	server.text = '#'..id
-	--triggers(, server)
+	server.text = '%'..id
 	accept(id,server)
 	
 	-- clients!
@@ -67,11 +97,17 @@ function server(port)
 	cs.first.val = nil
 	function cs.first:update()
 		if not self.val and next(cs.val) then
-			self.val = cs.val[next(cs.val)]
-			self.text = self.val.text
+			local ref = cs.val[next(cs.val)]
+			cs.first.text = ref.text
+			cs.first.input = ref.input
+			ref.output = cs.first.output
+			getmetatable(cs.first).__newindex = getmetatable(ref).__newindex
+			
+			triggers(ref, cs.first)
+		else
+			self.val = cs.first.val
 		end
 	end
-	
 	triggers(cs, cs.first)
 	
 	-- individual !

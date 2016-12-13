@@ -2,6 +2,20 @@ require 'lua/util'
 require 'lua/net'
 ops = require 'lua/ops'
 
+function enchant(any)	
+	if type(any) == 'table' and any.satis then
+		return any
+	else
+		local magic = magic(type(any))
+		if any == nil then
+			magic.val = ''
+		else
+			magic.val = tostring(any)
+		end
+		return magic
+	end
+end
+
 function print(...)
 	local args = table.pack(...)
 	for i,arg in ipairs(args) do
@@ -47,6 +61,7 @@ function dictstring(tt)
 end
 
 read2magic, write2magic, accept2magic = {}, {}, {}
+write2data = {}
 
 function accept(id, magic)
 	read2magic[id] = magic
@@ -59,8 +74,9 @@ function read(id, magic)
 	return "read("..id..")"
 end
 
-function write(id, magic)
-	write2data[id] = magic
+function write(id, magic, data)
+	write2magic[id] = magic
+	write2data[id] = data
 end
 
 function close(id, magic)
@@ -76,8 +92,6 @@ end
 function lines(data)
 	local m = magic("lines")
 	
-	m.triggers["source"] = data
-	data.events["lines"] = m
 	m.val = {}
 	m.last = 1
 	m.text = "0 lines"
@@ -93,7 +107,7 @@ function lines(data)
 		end
 		m.text = #m.val.." lines"
 	end
-	trigger(m)
+	triggers(data, m)
 	return m
 end
 
@@ -133,6 +147,7 @@ function magic(name)
 		update = function () return end,
 		val = nil,
 		name = name,
+		satis = true,
 	}
 	if watchdog then
 		triggers(m, watchdog)
@@ -160,8 +175,10 @@ function trigger(magic)
 end
 
 function triggers(a, b)
-	a.events[b] = 2
-	b.triggers[a] = 3
+	--print(debug.traceback())
+	a.events[b] = true
+	b.triggers[a] = true
+	trigger(a)
 end
 
 function refresh()
