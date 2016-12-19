@@ -1,4 +1,4 @@
-function client(cid, addr)
+function client(clients, cid, addr)
 	local c = magic('%'..cid)
 	c.text = '%'..cid
 	c.group = 'client'
@@ -7,19 +7,19 @@ function client(cid, addr)
 		addr = addr,
 	}
 	
+	-- events
+	read(cid, c)
+	function c:read(data)
+		--self.val = self.val .. data
+		--self.text = encode(self.val)
+	end
+	
 	-- input
 	--[[local input = magic(c.name .. '.input')
 	c.input = input
 	input.val = ''
 	input.text = '<empty>'
 	function input:update()
-		self.text = encode(self.val)
-	end
-	
-	-- events
-	read(cid, input)
-	function input:read(data)
-		self.val = self.val .. data
 		self.text = encode(self.val)
 	end
 	
@@ -60,8 +60,9 @@ function client(cid, addr)
 	end]]
 	
 	function c:close()
-		close(cid, c)
+		close(cid, self)
 		self.text = '<closing>'
+		clients:close(self)
 	end
 	return c
 end
@@ -85,7 +86,6 @@ function server(port)
 		id = id,
 		port = port,
 	}
-	accept(id,server)
 	
 	-- clients!
 	local clients = magic()
@@ -94,7 +94,7 @@ function server(port)
 	clients.val = {}
 	clients.name = 'clients'
 	clients.text = '()'
-	triggers(server, clients)
+	accept(id,clients)
 	
 	function clients:update()
 		local tt = { '(' }
@@ -109,12 +109,15 @@ function server(port)
 		self.text = table.concat(tt)
 	end
 	
-	-- individual !
-	function server:accept(cid, addr)
-		local client = client(cid, addr)
+	function clients:close(client)
+		self.val[client] = nil
+	end
+	
+	function clients:accept(cid, addr)
+		local client = client(self, cid, addr)
 		
-		self.clients.val[client] = client
-		triggers(client, server)
+		self.val[client] = true
+		triggers(client, self)
 	end
 	servers[port] = server
 	return server
