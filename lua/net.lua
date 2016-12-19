@@ -6,12 +6,12 @@ function client(clients, cid, addr)
 		id = cid,
 		addr = addr,
 	}
+	c.input = ''
 	
 	-- events
 	read(cid, c)
 	function c:read(data)
-		--self.val = self.val .. data
-		--self.text = encode(self.val)
+		self.input = self.input .. data
 	end
 	
 	-- input
@@ -108,6 +108,31 @@ function server(port)
 		
 		self.text = table.concat(tt)
 	end
+	
+	-- client input
+	local input = magic()
+	input.group = '{client -> text}'
+	input.name = 'input'
+	input.text = '{}'
+	triggers(clients, input)
+	
+	function input:update()
+		self.val = {}
+		local tt = {'{'}
+		for client in pairs(clients.val) do
+			self.val[client] = client.input
+			table.insert(tt, client.name)
+			table.insert(tt, ' -> ')
+			table.insert(tt, (encode(client.input)))
+			
+			if next(clients.val, client) then
+				table.insert(tt, '  ')
+			end
+		end
+		table.insert(tt, '}')
+		self.text = table.concat(tt)
+	end
+	clients.input = input
 	
 	function clients:close(client)
 		self.val[client] = nil
