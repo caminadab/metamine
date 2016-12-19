@@ -46,7 +46,8 @@ int sas_server(lua_State* L) {
 	in.sin_addr.s_addr = 0;
 	in.sin_port = htons(port);
 	in.sin_family = AF_INET;
-	int res = bind(server, &in, sizeof(in)) || listen(server, 99);
+	int res = bind(server, (struct sockaddr*)&in, sizeof(in))
+	|| listen(server, 99);
 	if (res) {
 		close(server);
 		lua_pushnil(L);
@@ -55,6 +56,31 @@ int sas_server(lua_State* L) {
 	}
 	lua_pushinteger(L, server);
 	return 1;
+}
+
+void sas_dofile(lua_State* L, char* path) {
+	int len = 0;
+	int res = luaL_loadfile(L, path);
+	if (res) {
+		writel(1,"\x1B[31m");
+		char* err = lua_tolstring(L, -1, &len);
+		write(1,err,len);
+		writel(1,"\x1B[37m\n");
+		lua_pop(L, 1);
+	} else {
+		// blue output
+		writel(1,"\x1B[36m");
+		res = lua_pcall(L,0,0,0);
+		writel(1,"\x1B[37m");
+		
+		if (res) {
+			writel(1,"\x1B[31m");
+			char* err = lua_tolstring(L, -1, &len);
+			write(1,err,len);
+			writel(1,"\x1B[37m\n");
+			lua_pop(L, 1);
+		}
+	}
 }
 
 int sas_dosafe(lua_State* L, char* buf, int len) {
@@ -79,6 +105,7 @@ int sas_dosafe(lua_State* L, char* buf, int len) {
 			lua_pop(L, 1);
 		}
 	}
+	return 0;
 }
 
 #define sas_dosafel(L,text) sas_dosafe(L,text,sizeof(text)-1)
@@ -221,13 +248,19 @@ int main() {
 	int r = luaL_dofile(L, "lua/init.lua");
 	if (r) {
 		int len;
-		char* c = lua_tolstring(L,-1,&len);
-		c[len] = 0;
+		const char* c = lua_tolstring(L,-1,&len);
 		write(1,c,len);
 	}
 	
 	// prompt
 	writel(1,"\x1B[33m> \x1B[37m");
+	
+	sas_dofile(L, "satis.lua");
+	sas_dosafel(L, "dbg()");
+	
+	// watch satis.lua
+	int wd = inotify_init();
+	int sd = inotify_add_watch(wd, "satis.lua", IN_MODIFY);
 	
 	while (1) {
 		fd_set r,w,e;
@@ -237,6 +270,7 @@ int main() {
 		
 		// listen console
 		FD_SET(0,&r);
+		FD_SET(wd,&r);
 		
 		// wait read
 		lua_getglobal(L, "read2magic");
@@ -274,10 +308,17 @@ int main() {
 			
 			sas_dosafe(L, buf, len);
 			
-			sas_dosafel(L, "dbg()");
-			
 			// prompt
-			writel(1,"\x1B[33m> \x1B[37m");
+			writel(1,"\x1B[G\x1B[33m> \x1B[37m");
+			
+			//sas_dosafel(L, "dbg()");
+		}
+		
+		if (FD_ISSET(wd,&r)) {
+			struct inotify_event ev;
+			read(wd, &ev, sizeof(ev));
+			sas_dofile(L, "satis.lua");
+			sas_dosafel(L, "dbg()");
 		}
 		
 		// read

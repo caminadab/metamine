@@ -1,13 +1,14 @@
 function client(cid, addr)
 	local c = magic('%'..cid)
+	c.text = '%'..cid
+	c.group = 'client'
 	c.val = {
 		id = cid,
 		addr = addr,
 	}
-	c.text = '%'..cid
 	
 	-- input
-	local input = magic(c.name .. '.input')
+	--[[local input = magic(c.name .. '.input')
 	c.input = input
 	input.val = ''
 	input.text = '<empty>'
@@ -25,8 +26,10 @@ function client(cid, addr)
 	triggers(input, c)
 	
 	-- output
-	c.output2 = magic(c.name .. '.output')
+	c.output2 = magic('output')
 	c.output2.last = 1
+	c.output2.text = '<empty>'
+	c.output2.val = ''
 	function c.output2:update()
 		if self.val and self.val.val then
 			local data = self.val.val
@@ -54,7 +57,7 @@ function client(cid, addr)
 		else
 			rawset(t,key,any)
 		end
-	end
+	end]]
 	
 	function c:close()
 		close(cid, c)
@@ -63,59 +66,56 @@ function client(cid, addr)
 	return c
 end
 
+local servers = {}
+
 function server(port)
+	if servers[port] then
+		return servers[port]
+	end
+	
 	local id = sas.server(port)
 	if not id then
 		error("bind failed")
 	end
 	
-	local server = magic("server("..port..")")
-	
+	local server = magic()
+	server.text = '%'..id..' p'..port
+	server.group = 'server'
 	server.val = {
 		id = id,
 		port = port,
-		cli = {}, -- magics
 	}
-	server.text = '%'..id
 	accept(id,server)
 	
 	-- clients!
-	local cs = magic(server.name..".cli")
-	server.cli = cs
+	local clients = magic()
+	server.clients = clients
+	clients.group = '(client)'
+	clients.val = {}
+	clients.name = 'clients'
+	clients.text = '()'
+	triggers(server, clients)
 	
-	cs.val = server.val.cli
-	cs.text = '{}'
-	triggers(server, cs)
-	
-	function cs:update()
-		cs.text = dictstring(cs.val)
-	end
-	
-	-- first
-	cs.first = magic('cli.first')
-	cs.first.text = '<none>'
-	cs.first.val = nil
-	function cs.first:update()
-		if not self.val and next(cs.val) then
-			local ref = cs.val[next(cs.val)]
-			cs.first.text = ref.text
-			cs.first.input = ref.input
-			ref.output = cs.first.output
-			getmetatable(cs.first).__newindex = getmetatable(ref).__newindex
-			
-			triggers(ref, cs.first)
-		else
-			self.val = cs.first.val
+	function clients:update()
+		local tt = { '(' }
+		for client in pairs(self.val) do
+			table.insert(tt, client.text)
+			if next(self.val, client) then
+				table.insert(tt, ' ')
+			end
 		end
+		table.insert(tt, ')')
+		
+		self.text = table.concat(tt)
 	end
-	triggers(cs, cs.first)
 	
 	-- individual !
 	function server:accept(cid, addr)
-		local client = client(cid, addr)	
+		local client = client(cid, addr)
 		
-		self.val.cli[cid] = client
+		self.clients.val[client] = client
 		triggers(client, server)
 	end
+	servers[port] = server
 	return server
 end

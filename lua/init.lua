@@ -2,22 +2,31 @@ require 'lua/util'
 require 'lua/net'
 ops = require 'lua/ops'
 
-function enchant(any)	
+function enchant(any, name)
 	if type(any) == 'table' and any.satis then
 		return any
-	else
-		local magic = magic(type(any))
-		if any == nil then
-			magic.val = ''
-		else
-			magic.val = tostring(any)
-		end
-		return magic
 	end
+	
+	local m = magic(name or 'mymagic')
+	m.val = any
+	m.text = tostring(m.val)
+	m.group = type(any)
+	
+	if type(any) == 'string' then
+		m.group = 'text'
+	end
+	
+	if type(any) == 'number' and any % 1 == 0 then
+		m.group = 'int'
+	end
+	return m
 end
 
 function print(...)
 	local args = table.pack(...)
+	if #args == 0 then
+		args[1] = 'nil'
+	end
 	for i,arg in ipairs(args) do
 		io.write(tostring(arg) .. '\t')
 	end
@@ -146,6 +155,7 @@ function magic(name)
 		},
 		update = function () return end,
 		val = nil,
+		group = 'unknown',
 		name = name,
 		satis = true,
 	}
@@ -153,13 +163,9 @@ function magic(name)
 		triggers(m, watchdog)
 	end
 	
-	magics[name] = m
-	
 	setmetatable(m, {
-		__tostring = function () return name end
+		__tostring = function () return m.text end
 	})
-	
-	dbg()
 	
 	return m
 end
@@ -175,7 +181,6 @@ function trigger(magic)
 end
 
 function triggers(a, b)
-	--print(debug.traceback())
 	a.events[b] = true
 	b.triggers[a] = true
 	trigger(a)
@@ -191,15 +196,12 @@ function dbg()
 	
 	-- top right
 	io.write("\x1B[1;40H")
-	
+	io.write("\x1B[B")
 	for name,magic in pairs(magics) do
-		if name ~= "watchdog" then
+		if magic.name ~= "watchdog" then
 			io.write("\x1B[40G\x1B[K")
-			if magic.val and magic.text then
-				io.write(name .. " =\t" .. tostring(magic.text))
-			else
-				io.write(name .. " =\t" .. tostring(magic.val))
-			end
+			io.write(magic.group..'\t'..(magic.name or '<unknown>'))
+			io.write(" =\t"..magic.text)
 			io.write("\x1B[B")
 		end
 	end
@@ -209,12 +211,29 @@ function dbg()
 	io.write("\x1B[40G\x1B[K\x1B[B")
 	-- restore
 	io.write("\x1B[u")
-	io.write("\x1B[A\n")
+	io.write("\x1B[A")
+	-- prompt
+	io.write("\n\x1B[33m> \x1B[37m");
 end
+
+local gmt = {}
+local g = {}
+
+function gmt:__newindex(k,v)
+	if type(v) == 'table' and v.satis then
+		v.name = k
+		magics[k] = v
+		dbg()
+	end
+	g[k] = v
+end
+
+function gmt:__index(k)
+	return g[k]
+end
+
+setmetatable(_G, gmt)
+
 
 watchdog = magic("watchdog")
 watchdog.update = dbg
---watchdog.events.watchdog = nil
-
-dofile "lua/satis.lua"
-dbg()
