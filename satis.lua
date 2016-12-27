@@ -1,3 +1,2 @@
 srv = server(10101)
-a = enchant(10)
-b = enchant('hoi')
+cli = client('127.0.0.1:10101')

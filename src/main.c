@@ -12,6 +12,9 @@
 
 #define writel(fd,text) write(fd,text,sizeof(text)-1)
 
+int sas_server(lua_State* L);
+int sas_client(lua_State* L);
+
 int sas_now(lua_State* L) {
 	struct timespec now;            
 	clock_gettime(CLOCK_MONOTONIC_RAW, &now);
@@ -36,25 +39,6 @@ int sas_file(lua_State* L) {
 		return 2;
 	}
 	lua_pushinteger(L, fd);
-	return 1;
-}
-
-int sas_server(lua_State* L) {
-	int port = luaL_checkinteger(L, -1);
-	int server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	struct sockaddr_in in;
-	in.sin_addr.s_addr = 0;
-	in.sin_port = htons(port);
-	in.sin_family = AF_INET;
-	int res = bind(server, (struct sockaddr*)&in, sizeof(in))
-	|| listen(server, 99);
-	if (res) {
-		close(server);
-		lua_pushnil(L);
-		lua_pushliteral(L, "address already in use");
-		return 2;
-	}
-	lua_pushinteger(L, server);
 	return 1;
 }
 
@@ -235,6 +219,7 @@ int main() {
 	// own librarytrigger
 	luaL_Reg lib[] = {
 		{"server", sas_server},
+		{"client", sas_client},
 		{"file", sas_file},
 		{"now", sas_now},
 		{0, 0},
