@@ -1,4 +1,4 @@
-function client(clients, cid, addr)
+function server_client(clients, cid, addr)
 	local c = magic('%'..cid)
 	c.text = '%'..cid
 	c.group = 'client'
@@ -80,7 +80,7 @@ function server(port)
 	end
 	
 	local server = magic()
-	server.text = '%'..id..' p'..port
+	server.text = 'p'..port
 	server.group = 'server'
 	server.val = {
 		id = id,
@@ -139,11 +139,50 @@ function server(port)
 	end
 	
 	function clients:accept(cid, addr)
-		local client = client(self, cid, addr)
+		local client = server_client(self, cid, addr)
 		
 		self.val[client] = true
 		triggers(client, self)
 	end
 	servers[port] = server
 	return server
+end
+
+function client(address)
+	local ip,port = address:match('(.*):(.*)')
+	local cli = magic()
+	cli.group = 'client?'
+	cli.val = sas.client(ip, port)
+	cli.text = address
+	
+	local output = ''
+	local offset = 1
+	
+	function cli:update()
+		-- send output
+		if #output >= offset then
+			local data = output:sub(offset)
+			write(self.val, self, data)
+		end
+	end
+	
+	function cli:write(num)
+		offset = offset + num
+		
+		-- are we done sending?
+		if offset > #output then
+			write2data[cli.val] = nil
+			write2magic[cli.val] = nil
+		end
+	end
+	
+	-- metamagic
+	getmetatable(cli).__newindex = function(t,k,v)
+		if k == 'output' then
+			output = v
+			trigger(cli)
+		end
+	end
+	
+	return cli
 end

@@ -291,6 +291,10 @@ int main() {
 			char buf[0x1000];
 			int len = read(0,buf,0x1000);
 			
+			// console closed
+			if (!len)
+				break;
+			
 			sas_dosafe(L, buf, len);
 			
 			// prompt
