@@ -1,23 +1,49 @@
 require 'lua/util'
 require 'lua/net'
+require 'lua/text'
 ops = require 'lua/ops'
+
+function grouptotext(group)
+	if #group == 0 then
+		return 'none'
+	end
+	local res = group[#group]
+	if res == nil then
+		print(debug.traceback())
+	end
+	for i = 1, #group-1 do
+		-- list
+		if group[i] == 'list' then
+			res = '[' .. res .. ']'
+			
+		-- set
+		elseif group[i] == 'set' then
+			res = '(' .. res .. ')'
+			
+		-- dict
+		else
+			res = '{'..group[i]..'->'..res..'}'
+		end
+	end
+	return res
+end
 
 function enchant(any, name)
 	if type(any) == 'table' and any.satis then
 		return any
 	end
 	
-	local m = magic(name or 'mymagic')
+	local m = magic()
 	m.val = any
 	m.text = tostring(m.val)
-	m.group = type(any)
+	m.group = {type(any)}
 	
 	if type(any) == 'string' then
-		m.group = 'text'
+		m.group = {'text'}
 	end
 	
 	if type(any) == 'number' and any % 1 == 0 then
-		m.group = 'int'
+		m.group = {'int'}
 	end
 	return m
 end
@@ -98,52 +124,6 @@ function encode(text)
 	return string.format('%q', text:sub(-5)):gsub('\\\n', '\\n')
 end
 
-function lines(data)
-	local m = magic("lines")
-	
-	m.val = {}
-	m.last = 1
-	m.text = "0 lines"
-	
-	function m:update()
-		while true do
-			local eol = data.val:find("\n", m.last)
-			if not eol then
-				break
-			end
-			m.val[#m.val + 1] = data.val:sub(m.last, eol)
-			m.last = eol + 1
-		end
-		m.text = #m.val.." lines"
-	end
-	triggers(data, m)
-	return m
-end
-
-function split(data, sep)
-	local m = magic("split")
-	
-	m.triggers["split"] = data
-	data.events["parts"] = m
-	m.val = {}
-	m.last = 1
-	m.text = "0 parts"
-	
-	function m:update()
-		while true do
-			local eol = data.val:find(sep, m.last)
-			if not eol then
-				break
-			end
-			m.val[#m.val + 1] = data.val:sub(m.last, eol)
-			m.last = eol + 1
-		end
-		m.text = #m.val.." parts"
-	end
-	trigger(m)
-	return m
-end
-
 function magic(name)
 	local m = {
 		-- lists of others
@@ -200,7 +180,8 @@ function dbg()
 	for name,magic in pairs(magics) do
 		if magic.name ~= "watchdog" then
 			io.write("\x1B[40G\x1B[K")
-			io.write(magic.group..'\t'..(magic.name or '<unknown>'))
+			io.write(grouptotext(magic.group))
+			io.write('\t'..(magic.name or '<unknown>'))
 			io.write(" =\t"..magic.text)
 			io.write("\x1B[B")
 		end

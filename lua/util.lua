@@ -3,3 +3,7 @@ function see(tt)
 		print(k,v)
 	end
 end
+
+function first(tt)
+	return tt[next(tt)]
+end

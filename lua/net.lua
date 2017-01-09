@@ -1,7 +1,7 @@
 function server_client(clients, cid, addr)
 	local c = magic('%'..cid)
 	c.text = '%'..cid
-	c.group = 'client'
+	c.group = {'client'}
 	c.val = {
 		id = cid,
 		addr = addr,
@@ -81,7 +81,7 @@ function server(port)
 	
 	local server = magic()
 	server.text = 'p'..port
-	server.group = 'server'
+	server.group = {'server'}
 	server.val = {
 		id = id,
 		port = port,
@@ -90,7 +90,7 @@ function server(port)
 	-- clients!
 	local clients = magic()
 	server.clients = clients
-	clients.group = '(client)'
+	clients.group = {'set', 'client'}
 	clients.val = {}
 	clients.name = 'clients'
 	clients.text = '()'
@@ -111,7 +111,7 @@ function server(port)
 	
 	-- client input
 	local input = magic()
-	input.group = '{client -> text}'
+	input.group = {'client', 'text'}
 	input.name = 'input'
 	input.text = '{}'
 	triggers(clients, input)
@@ -151,7 +151,7 @@ end
 function client(address)
 	local ip,port = address:match('(.*):(.*)')
 	local cli = magic()
-	cli.group = 'client?'
+	cli.group = {'client'}
 	cli.val = sas.client(ip, port)
 	cli.text = address
 	
