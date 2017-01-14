@@ -30,15 +30,46 @@ int sas_watch(lua_State* L) {
 	return 1;
 }
 
-int sas_file(lua_State* L) {
+int sas_readfile(lua_State* L) {
 	char* name = lua_tostring(L, 1);
 	int fd = open(name, O_RDWR);
+	
 	if (fd <= 0) {
 		lua_pushnil(L);
-		lua_pushstring(L, "could not open");
+		lua_pushliteral(L, "read failed");
 		return 2;
 	}
-	lua_pushinteger(L, fd);
+	
+	char buf[0x10000];
+	int len = read(fd, buf, 0x10000);
+	
+	lua_pushlstring(L, buf, len);
+	
+	return 1;
+}
+
+int sas_deletefile(lua_State* L) {
+	char* name = luaL_checkstring(L, 1);
+	int res = unlink(name);
+	lua_pushboolean(L, !res);
+	return 1;
+}
+
+int sas_writefile(lua_State* L) {
+	char* name = luaL_checkstring(L, 1);
+	int len = 0;
+	char* buf = luaL_checklstring(L, 2, &len);
+	int fd = creat(name, 0644);
+	
+	if (fd <= 0) {
+		lua_pushnil(L);
+		lua_pushstring(L, "write failed");
+		return 2;
+	}
+	
+	len = write(fd, buf, len);
+	lua_pushinteger(L, len);
+	close(fd);
 	return 1;
 }
 
@@ -220,7 +251,9 @@ int main() {
 	luaL_Reg lib[] = {
 		{"server", sas_server},
 		{"client", sas_client},
-		{"file", sas_file},
+		{"writefile", sas_writefile},
+		{"readfile", sas_readfile},
+		{"deletefile", sas_deletefile},
 		{"now", sas_now},
 		{0, 0},
 	};

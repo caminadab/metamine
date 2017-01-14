@@ -1,6 +1,7 @@
 require 'lua/util'
 require 'lua/net'
 require 'lua/text'
+require 'lua/fs'
 ops = require 'lua/ops'
 
 function grouptotext(group)
@@ -124,6 +125,45 @@ function encode(text)
 	return string.format('%q', text:sub(-5)):gsub('\\\n', '\\n')
 end
 
+function copy(group)
+	local copy = {}
+	for i=1,#group do
+		copy[i] = group[i]
+	end
+	return copy
+end
+
+--[[
+[list text] -> [text]
+[socket list text] -> [socket text]
+]]
+function indexed(parent, key)
+	local child = magic()
+	child.name = parent.name .. '[' .. key.. ']'
+	child.val = {}
+	
+	-- modify group
+	child.group = copy(parent.group)
+	table.remove(child.group, #child.group - 1)
+	
+	function child:update()
+		for index,val in all(parent.val) do
+			-- filtered group
+			if index[#index - 1] == key then
+				table.remove(index, #index - 1)
+				table.insert(index, 1, 'val')
+				deepset(child, index, val)
+				table.remove(index, 1)
+				table.insert(index, #index - 1, key)
+			end
+		end
+		
+		self.val = parent.val[index]
+	end
+	
+	return child
+end
+
 function magic(name)
 	local m = {
 		-- lists of others
@@ -144,7 +184,10 @@ function magic(name)
 	end
 	
 	setmetatable(m, {
-		__tostring = function () return m.text end
+		__tostring = function () return m.text end,
+		__index = function (t, v)
+			return indexed(m, v)
+		end,
 	})
 	
 	return m
