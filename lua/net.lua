@@ -1,5 +1,5 @@
 function server_client(clients, cid, addr)
-	local c = magic('%'..cid)
+	local c = magic()
 	c.text = '%'..cid
 	c.group = {'client'}
 	c.val = {

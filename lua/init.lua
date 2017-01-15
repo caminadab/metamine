@@ -12,7 +12,7 @@ function grouptotext(group)
 	if res == nil then
 		print(debug.traceback())
 	end
-	for i = 1, #group-1 do
+	for i = #group-1, 1, -1 do
 		-- list
 		if group[i] == 'list' then
 			res = '[' .. res .. ']'
@@ -29,7 +29,7 @@ function grouptotext(group)
 	return res
 end
 
-function enchant(any, name)
+function enchant(any)
 	if type(any) == 'table' and any.satis then
 		return any
 	end
@@ -41,6 +41,10 @@ function enchant(any, name)
 	
 	if type(any) == 'string' then
 		m.group = {'text'}
+	end
+	
+	if type(any) == 'nil' then
+		m.group = {'nil'}
 	end
 	
 	if type(any) == 'number' and any % 1 == 0 then
@@ -133,6 +137,20 @@ function copy(group)
 	return copy
 end
 
+function equals(a, b)
+	if #a ~= #b then
+		return false
+	end
+	
+	for i=1,#a do
+		if a[i] ~= b[i] then
+			return false
+		end
+	end
+	
+	return true
+end
+
 --[[
 [list text] -> [text]
 [socket list text] -> [socket text]
@@ -142,29 +160,32 @@ function indexed(parent, key)
 	child.name = parent.name .. '[' .. key.. ']'
 	child.val = {}
 	
-	-- modify group
+	-- {id->[text]} wordt {id->text}
+	if #parent.group < 2 then
+		error('not a group')
+	end
 	child.group = copy(parent.group)
-	table.remove(child.group, #child.group - 1)
+	table.remove(child.group, #child.group-1)
 	
 	function child:update()
-		for index,val in all(parent.val) do
+		child.val = nil
+		for index,val in all(parent) do
 			-- filtered group
-			if index[#index - 1] == key then
-				table.remove(index, #index - 1)
-				table.insert(index, 1, 'val')
-				deepset(child, index, val)
-				table.remove(index, 1)
-				table.insert(index, #index - 1, key)
+			if index[#index] == key then
+				local alt = copy(index)
+				table.remove(alt, #alt)
+				table.insert(alt, 1, 'val')
+				deepset(child, alt, val)
 			end
 		end
-		
-		self.val = parent.val[index]
 	end
+	
+	triggers(parent, child)
 	
 	return child
 end
 
-function magic(name)
+function magic()
 	local m = {
 		-- lists of others
 		triggers = {
@@ -174,9 +195,10 @@ function magic(name)
 			-- check
 		},
 		update = function () return end,
+		text = 'unknown',
 		val = nil,
-		group = 'unknown',
-		name = name,
+		group = {'unknown'},
+		name = '<unknown>',
 		satis = true,
 	}
 	if watchdog then
@@ -186,7 +208,9 @@ function magic(name)
 	setmetatable(m, {
 		__tostring = function () return m.text end,
 		__index = function (t, v)
-			return indexed(m, v)
+			if type(v) ~= 'string' then
+				return indexed(m, v)
+			end
 		end,
 	})
 	
@@ -225,7 +249,7 @@ function dbg()
 			io.write("\x1B[40G\x1B[K")
 			io.write(grouptotext(magic.group))
 			io.write('\t'..(magic.name or '<unknown>'))
-			io.write(" =\t"..magic.text)
+			io.write(" =\t"..tostring(magic.val))--magic.text)
 			io.write("\x1B[B")
 		end
 	end

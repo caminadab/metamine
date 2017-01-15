@@ -1,5 +1,33 @@
 local files = {} -- path -> file
 
+function infile(path)
+	path = enchant(path)
+	
+	local file = magic()
+	
+	-- group
+	if path.group[#path.group] ~= 'text' then
+		error('can only open text paths')
+	end
+	
+	file.group = copy(path.group)
+	file.group[#file.group] = 'text'
+	
+	function file:update()
+		for index,val in all(path) do
+			local data = sas.readfile(val) or ''
+			table.insert(index, 1, 'val')
+			
+			deepset(file, index, data)
+			table.remove(index, 1)
+		end
+	end
+	
+	triggers(path, file)
+	
+	return file
+end
+
 function file(name)
 	if files[name] then
 		return files[name]
@@ -9,7 +37,6 @@ function file(name)
 	file.group = {'text'}
 	file.name = 'file://'..name
 	file.val = sas.readfile(name)
-	file.text = 'file://'..name
 	local data = file.val -- what to write
 
 	-- metamagic

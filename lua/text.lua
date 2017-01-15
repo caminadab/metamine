@@ -63,12 +63,26 @@ function ensure(index, val)
 	return cur,index[#index-1]
 end
 
+function deepget(t,keys)
+	local c = t
+	
+	for i=1,#keys do
+		local key = keys[i]
+		if c[key] == nil then
+			return nil
+		end
+		c = c[key]
+	end
+	
+	return c
+end
+
 function deepset(t,keys,v)
 	local c = t
 	
 	-- create tables
 	for i=1,#keys-1 do
-		key = keys[i]
+		local key = keys[i]
 		c[key] = c[key] or {}
 		c = c[key]
 	end
@@ -80,28 +94,20 @@ function split(text, delim)
 	delim = enchant(delim)
 	
 	local parts = magic()
-	parts.text = '[...]'
-	parts.val = {}
 	
 	-- group
 	if text.group[#text.group] ~= 'text' then
 		error('can only split text')
 	end
 	
-	parts.group = {}
-	for i=1,#text.group-1 do
-		parts.group[i] = text.group[i]
-	end
-	
-	parts.group[#parts.group+1] = 'list'
-	parts.group[#parts.group+1] = 'text'
+	parts.group = copy(text.group)
+	table.insert(parts.group, #parts.group, 'list')
 	
 	function parts:update()
 		for index,val in all(text) do
 			local split = split1(val, delim.val)
 			table.insert(index, 1, 'val')
 			
-			print('INDEX', liststring(index))
 			deepset(parts, index, split)
 			table.remove(index, 1)
 		end
@@ -112,19 +118,146 @@ function split(text, delim)
 	return parts
 end
 
-function length(text)
-	local len = magic()
-	len.group = {'int'}
-	len.text = '0#'
-	len.val = 0
+-- magic concat
+function concat1(a, b)	
+	local agg = magic()
 	
-	function len:update()
-		len.val = #text.val
-		len.text = #text.val..'#'
+	-- group
+	if not equals(a.group, b.group) or a.group[#a.group] ~= 'text' then
+		error('mismatching types')
 	end
-	triggers(text, len)
 	
-	return len
+	agg.group = copy(text.group)
+	
+	function agg:update()
+		for index,val in all(a) do
+			local valA = deepget
+			local agg1 = val .. post.val
+			table.insert(index, 1, 'val')
+			
+			deepset(agg, index, agg1)
+			table.remove(index, 1)
+		end
+	end
+	
+	triggers(text, agg)
+	triggers(post, agg)
+	
+	return agg
+end
+
+function append(text, post)
+	text = enchant(text)
+	post = enchant(post)
+	
+	local agg = magic()
+	
+	-- group
+	if text.group[#text.group] ~= 'text' then
+		error('can only prepend text')
+	end
+	
+	agg.group = copy(text.group)
+	
+	function agg:update()
+		for index,val in all(text) do
+			local agg1 = val .. post.val
+			table.insert(index, 1, 'val')
+			
+			deepset(agg, index, agg1)
+			table.remove(index, 1)
+		end
+	end
+	
+	triggers(text, agg)
+	triggers(post, agg)
+	
+	return agg
+end
+
+function prepend(text, pre)
+	text = enchant(text)
+	pre = enchant(pre)
+	
+	local agg = magic()
+	
+	-- group
+	if text.group[#text.group] ~= 'text' then
+		error('can only prepend text')
+	end
+	
+	agg.group = copy(text.group)
+	
+	function agg:update()
+		for index,val in all(text) do
+			local agg1 = pre.val .. val
+			table.insert(index, 1, 'val')
+			
+			deepset(agg, index, agg1)
+			table.remove(index, 1)
+		end
+	end
+	
+	triggers(text, agg)
+	triggers(pre, agg)
+	
+	return agg
+end
+
+function totext(num)
+	num = enchant(num)
+	
+	local agg = magic()
+	
+	-- group
+	if num.group[#num.group] ~= 'number' then
+		error('can only convert numbers to text')
+	end
+	
+	agg.group = copy(num.group)
+	agg.group[#agg.group] = 'text'
+	
+	function agg:update()
+		for index,val in all(num) do
+			local agg1 = tostring(val)
+			table.insert(index, 1, 'val')
+			
+			deepset(agg, index, agg1)
+			table.remove(index, 1)
+		end
+	end
+	
+	triggers(num, agg)
+	
+	return agg
+end
+
+function length(text)
+	text = enchant(text)
+	
+	local agg = magic()
+	
+	-- group
+	if text.group[#text.group] ~= 'text' then
+		error('can only get length of text')
+	end
+	
+	agg.group = copy(text.group)
+	agg.group[#agg.group] = 'number'
+	
+	function agg:update()
+		for index,val in all(text) do
+			local agg1 = #val
+			table.insert(index, 1, 'val')
+			
+			deepset(agg, index, agg1)
+			table.remove(index, 1)
+		end
+	end
+	
+	triggers(text, agg)
+	
+	return agg
 end
 
 function lines(data)
