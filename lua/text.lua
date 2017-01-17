@@ -118,6 +118,33 @@ function split(text, delim)
 	return parts
 end
 
+function concat(parts)
+	
+	local text = magic()
+	
+	text.group = copy(parts.group)
+	table.remove(parts.group, #parts.group-1)
+	
+	function text:update()
+		for index,val in all(text) do
+			table.insert(index, 1, 'val')
+			
+			local stump = copy(index)
+			table.remove(stump, #stump)
+			local l = deepget(text, stump)
+			local t = table.concat(l)
+			
+			deepset(text, stump, t)
+			
+			table.remove(index, 1)
+		end
+	end
+	
+	triggers(parts, text)
+	
+	return text
+end
+
 -- magic concat
 function concat1(a, b)	
 	local agg = magic()
@@ -146,7 +173,7 @@ function concat1(a, b)
 	return agg
 end
 
-function append(text, post)
+function append1(text, post)
 	text = enchant(text)
 	post = enchant(post)
 	
@@ -175,7 +202,7 @@ function append(text, post)
 	return agg
 end
 
-function prepend(text, pre)
+function prepend1(text, pre)
 	text = enchant(text)
 	pre = enchant(pre)
 	
@@ -232,6 +259,42 @@ function totext(num)
 	return agg
 end
 
+
+function append(f, ...)
+	local tt = {...}
+	local f = f
+	local agg = magic()
+	
+	agg.group = copy(f.group)
+	
+	function agg:update()
+		for index,val in all(f) do
+			local agg1 = { tostring(val) }
+			
+			table.insert(index, 1, 'val')
+			for i=1,#tt do
+				local v = deepget(tt[i], index)
+				table.insert(agg1, v)
+			end
+			agg1 = table.concat(agg1)
+			
+			
+			deepset(agg, index, agg1)
+			table.remove(index, 1)
+		end
+	end
+	
+	-- trigger
+	triggers(f, agg)
+	for i=1,#tt do
+		triggers(tt[i], agg)
+	end
+	
+	return agg
+end
+
+
+
 function length(text)
 	text = enchant(text)
 	
@@ -258,29 +321,4 @@ function length(text)
 	triggers(text, agg)
 	
 	return agg
-end
-
-function lines(data)
-	assert(data.group[1] == 'text')
-	
-	local m = magic()
-	
-	m.val = {}
-	m.text = "0 lines"
-	m.group = {"list", "text"}
-	
-	function m:update()
-		local last = 1
-		while true do
-			local eol = data.val:find("\n", last)
-			if not eol then
-				break
-			end
-			m.val[#m.val + 1] = data.val:sub(last, eol)
-			last = eol + 1
-		end
-		m.text = #m.val.." lines"
-	end
-	triggers(data, m)
-	return m
 end

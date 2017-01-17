@@ -1,7 +1,3 @@
-a = enchant('Makefile satis.lua')
-b = split(a, ' ')
-c = infile(b)
-
 srv = server(10101)
 input = srv.clients.input
 output = srv.clients.output
@@ -20,16 +16,15 @@ path = mpv[2]
 version = mpv[3]
 
 -- page
-wwwpath = prepend(path, 'www')
+wwwpath = prepend1(path, 'www')
 content = infile(wwwpath)
 
 -- responses
 header1 = 'HTTP/1.1 200 OK\r\nContent-Length: '
 len = totext(length(content))
-header2 = prepend(len, header1)
-header = append(header2, '\r\n\r\n')
+header2 = prepend1(len, header1)
+header = append1(header2, '\r\n\r\n')
 
-response = concat1(header, content)
+response = append(header, content)
 
---responses = respheader .. respbody
---cli.output = responses
+--cli.output = response
