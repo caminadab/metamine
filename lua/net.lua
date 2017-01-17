@@ -24,27 +24,26 @@ function server_client(clients, cid, addr)
 	end
 	
 	triggers(input, c)
-	
-	-- output
-	c.output2 = magic('output')
-	c.output2.last = 1
-	c.output2.text = '<empty>'
-	c.output2.val = ''
-	function c.output2:update()
-		if self.val and self.val.val then
-			local data = self.val.val
-			if #data >= self.last then
+	]]
+
+	local output
+	local last = 1
+
+	function c:update()
+		if output and output.val then
+			local data = output.val
+			if #data >= last then
 				local todo = data:sub(self.last)
-				write(c.val.id, c.output2, todo)
+				write(c.val.id, c, todo)
 			end
 		end
 	end
 	
-	function c.output2:write(len)
-		self.last = self.last + len
+	function c:write(len)
+		last = last + len
 		
 		-- are we done sending?
-		if self.last > #self.val then
+		if last > #output.val then
 			write2data[c.val.id] = nil
 			write2magic[c.val.id] = nil
 		end
@@ -52,12 +51,12 @@ function server_client(clients, cid, addr)
 	
 	getmetatable(c).__newindex = function (t,key,any)
 		if key == 'output' then
-			c.output2.val = enchant(any)
-			triggers(c.output2.val, c.output2)
+			output = any
+			triggers(output, c)
 		else
 			rawset(t,key,any)
 		end
-	end]]
+	end
 	
 	function c:close()
 		close(cid, self)

@@ -27,4 +27,4 @@ header = append1(header2, '\r\n\r\n')
 
 response = append(header, content)
 
---cli.output = response
+cli.output = response
