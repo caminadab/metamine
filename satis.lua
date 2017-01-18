@@ -1,4 +1,10 @@
 srv = server(10101)
+srv.clients.output = srv.clients.input
+cli = client('127.0.0.1:10101')
+cli.output = 'hoi'
+i = cli.input
+
+--[[srv = server(10101)
 input = srv.clients.input
 output = srv.clients.output
 
@@ -28,3 +34,4 @@ header = append1(header2, '\r\n\r\n')
 response = append(header, content)
 
 cli.output = response
+]]
