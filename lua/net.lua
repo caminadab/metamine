@@ -88,6 +88,7 @@ function server(port)
 	
 	-- clients!
 	local clients = magic()
+	local output
 	server.clients = clients
 	clients.group = {'set', 'client'}
 	clients.val = {}
@@ -106,6 +107,13 @@ function server(port)
 		table.insert(tt, ')')
 		
 		self.text = table.concat(tt)
+
+		-- output
+		for client in pairs(self.val) do
+			if output then
+				client.output = output[client]
+			end
+		end
 	end
 	
 	-- client input
@@ -135,6 +143,15 @@ function server(port)
 	
 	function clients:close(client)
 		self.val[client] = nil
+	end
+
+	-- client output
+	getmetatable(clients).__newindex = function(t,k,v)
+		if k == 'output' then
+			output = v	
+		else
+			rawset(t,k,v)
+		end
 	end
 	
 	function clients:accept(cid, addr)
