@@ -13,18 +13,6 @@ function server_client(clients, cid, addr)
 	function c:read(data)
 		self.input = self.input .. data
 	end
-	
-	-- input
-	--[[local input = magic(c.name .. '.input')
-	c.input = input
-	input.val = ''
-	input.text = '<empty>'
-	function input:update()
-		self.text = encode(self.val)
-	end
-	
-	triggers(input, c)
-	]]
 
 	local output
 	local last = 1
@@ -32,7 +20,7 @@ function server_client(clients, cid, addr)
 	function c:update()
 		if output and output.val then
 			local data = output.val
-			if #data >= last then
+			if #data >= last then 
 				local todo = data:sub(self.last)
 				write(c.val.id, c, todo)
 			end
@@ -43,18 +31,20 @@ function server_client(clients, cid, addr)
 		last = last + len
 		
 		-- are we done sending?
+		write2data[c.val.id] = nil
 		if last > #output.val then
-			write2data[c.val.id] = nil
 			write2magic[c.val.id] = nil
 		end
 	end
 	
-	getmetatable(c).__newindex = function (t,key,any)
+	-- output of a server-side client!
+	getmetatable(c).__newindex = function (t,k,v)
 		if key == 'output' then
-			output = any
+			t.output2 = v --/
+			output = v
 			triggers(output, c)
 		else
-			rawset(t,key,any)
+			rawset(t,k,v)
 		end
 	end
 	
@@ -110,8 +100,8 @@ function server(port)
 
 		-- output
 		for client in pairs(self.val) do
-			if output then
-				client.output = output[client]
+			if output and output.val then
+				client.output = output.val[client]
 			end
 		end
 	end
@@ -148,7 +138,8 @@ function server(port)
 	-- client output
 	getmetatable(clients).__newindex = function(t,k,v)
 		if k == 'output' then
-			output = v	
+			output = v
+			t.output2 = v --/
 		else
 			rawset(t,k,v)
 		end
@@ -158,7 +149,7 @@ function server(port)
 		local client = server_client(self, cid, addr)
 		
 		self.val[client] = true
-		triggers(client, self)
+		triggers(client,  self)
 	end
 	servers[port] = server
 	return server

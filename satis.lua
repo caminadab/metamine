@@ -1,5 +1,7 @@
 srv = server(10101)
-srv.clients.output = srv.clients.input
+clis = srv.clients
+clis.output = clis.input
+
 cli = client('127.0.0.1:10101')
 cli.output = enchant('hoi')
 i = cli.input

@@ -4,6 +4,10 @@ require 'lua/text'
 require 'lua/fs'
 ops = require 'lua/ops'
 
+function onerror(message)
+	return message .. debug.traceback()
+end
+
 function grouptotext(group)
 	if #group == 0 then
 		return 'none'
@@ -156,6 +160,7 @@ end
 [socket list text] -> [socket text]
 ]]
 function indexed(parent, key)
+	print(debug.traceback())
 	local child = magic()
 	child.name = parent.name .. '[' .. key.. ']'
 	child.val = {}

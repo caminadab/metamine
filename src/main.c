@@ -73,7 +73,9 @@ int sas_writefile(lua_State* L) {
 	return 1;
 }
 
-void sas_dofile(lua_State* L, char* path) {
+int sas_dofile(lua_State* L, char* path) {
+	lua_getglobal(L, "onerror");
+	int onerror = lua_gettop(L);
 	int len = 0;
 	int res = luaL_loadfile(L, path);
 	if (res) {
@@ -85,7 +87,7 @@ void sas_dofile(lua_State* L, char* path) {
 	} else {
 		// blue output
 		writel(1,"\x1B[36m");
-		res = lua_pcall(L,0,0,0);
+		res = lua_pcall(L,0,0,onerror);
 		writel(1,"\x1B[37m");
 		
 		if (res) {
@@ -96,9 +98,17 @@ void sas_dofile(lua_State* L, char* path) {
 			lua_pop(L, 1);
 		}
 	}
+	
+	// pop error func
+	lua_pop(L, 1);
+	
+	return res;
 }
 
 int sas_dosafe(lua_State* L, char* buf, int len) {
+	lua_getglobal(L, "onerror");
+	int onerror = lua_gettop(L);
+	
 	int res = luaL_loadbuffer(L,buf,len,"in");
 	if (res) {
 		writel(1,"\x1B[31m");
@@ -109,7 +119,7 @@ int sas_dosafe(lua_State* L, char* buf, int len) {
 	} else {
 		// blue output
 		writel(1,"\x1B[36m");
-		res = lua_pcall(L,0,0,0);
+		res = lua_pcall(L,0,0,onerror);
 		writel(1,"\x1B[37m");
 		
 		if (res) {
@@ -120,7 +130,11 @@ int sas_dosafe(lua_State* L, char* buf, int len) {
 			lua_pop(L, 1);
 		}
 	}
-	return 0;
+	
+	// pop error func
+	lua_pop(L, 1);
+	
+	return res;
 }
 
 #define sas_dosafel(L,text) sas_dosafe(L,text,sizeof(text)-1)
@@ -263,7 +277,7 @@ int main() {
 	// protect
 	lua_setglobal(L, "os");
 	
-	int r = luaL_dofile(L, "lua/init.lua");
+	int r = sas_dofile(L, "lua/init.lua");
 	if (r) {
 		int len;
 		const char* c = lua_tolstring(L,-1,&len);
