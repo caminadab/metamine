@@ -1,54 +1,68 @@
 function server_client(clients, cid, addr)
 	local c = magic()
-	c.text = '%'..cid
 	c.group = {'client'}
-	c.val = {
-		id = cid,
-		addr = addr,
-	}
 	c.input = ''
+	c.id = cid
 	
-	-- events
-	read(cid, c)
-	function c:read(data)
-		self.input = self.input .. data
+	-- input
+	local input = magic()
+	input.group = 'text'
+	input.val = ''
+	c.input = input
+	
+	read(cid, input)
+	function input:read(data)
+		self.val = self.val .. data
+		print('server reads '..data)
+		trigger(self)
 	end
-
-	local output
+	
+	-- output
+	local output = magic()
+	output.group = 'text'
+	--output.ref = magic()
+	--output.ref.val = ''
+	output.val = ''
 	local last = 1
-
-	function c:update()
-		if output and output.val then
-			local data = output.val
-			if #data >= last then 
-				local todo = data:sub(self.last)
-				write(c.val.id, c, todo)
-			end
+	
+	function output:update()
+		local data = self.val
+		
+		if #data >= last then 
+			local todo = data:sub(last)
+			write(cid, output, todo)
 		end
 	end
 	
-	function c:write(len)
+	function output:write(len)
 		last = last + len
 		
 		-- are we done sending?
-		write2data[c.val.id] = nil
 		if last > #output.val then
-			write2magic[c.val.id] = nil
+			write2magic[cid] = nil
+			write2data[cid] = nil
 		end
 	end
 	
-	-- output of a server-side client!
 	getmetatable(c).__newindex = function (t,k,v)
-		if key == 'output' then
-			t.output2 = v --/
-			output = v
-			triggers(output, c)
+		if k == 'output' then
+			output.val = v
+			trigger(output)
+			--output.ref = v
+			--triggers(v, output)
 		else
 			rawset(t,k,v)
 		end
 	end
+	getmetatable(c).__index = function (t,k)
+		if k == 'output' then
+			return output
+		else
+			return rawget(t,k)
+		end
+	end
 	
-	function c:close()
+	function output:close()
 		close(cid, self)
 		self.text = '<closing>'
 		clients:close(self)
@@ -69,7 +83,6 @@ function server(port)
 	end
 	
 	local server = magic()
-	server.text = 'p'..port
 	server.group = {'server'}
 	server.val = {
 		id = id,
@@ -78,68 +91,45 @@ function server(port)
 	
 	-- clients!
 	local clients = magic()
-	local output
+	local input = magic()
+	local output = magic()
 	server.clients = clients
 	clients.group = {'set', 'client'}
 	clients.val = {}
 	clients.name = 'clients'
-	clients.text = '()'
+	clients.input = input
 	accept(id,clients)
 	
-	function clients:update()
-		local tt = { '(' }
-		for client in pairs(self.val) do
-			table.insert(tt, client.text)
-			if next(self.val, client) then
-				table.insert(tt, ' ')
-			end
-		end
-		table.insert(tt, ')')
-		
-		self.text = table.concat(tt)
-
-		-- output
-		for client in pairs(self.val) do
-			if output and output.val then
-				client.output = output.val[client]
-			end
-		end
-	end
-	
 	-- client input
-	local input = magic()
 	input.group = {'client', 'text'}
 	input.name = 'input'
-	input.text = '{}'
-	triggers(clients, input)
 	
 	function input:update()
 		self.val = {}
-		local tt = {'{'}
 		for client in pairs(clients.val) do
-			self.val[client] = client.input
-			table.insert(tt, client.name)
-			table.insert(tt, ' -> ')
-			table.insert(tt, (encode(client.input)))
-			
-			if next(clients.val, client) then
-				table.insert(tt, '  ')
-			end
+			self.val[client] = client.input.val -- store pure
 		end
-		table.insert(tt, '}')
-		self.text = table.concat(tt)
 	end
-	clients.input = input
 	
-	function clients:close(client)
+	function output:close(client)
 		self.val[client] = nil
 	end
-
+	
 	-- client output
+	function output:update()
+		for client in pairs(clients.val) do
+			--print(output.ref.val)
+			--see(output.ref.val)
+			
+			client.output = output.ref.val[client]
+		end
+	end
+	
 	getmetatable(clients).__newindex = function(t,k,v)
 		if k == 'output' then
-			output = v
-			t.output2 = v --/
+			t.output2 = output
+			output.ref = v
+			triggers(output.ref, output)
 		else
 			rawset(t,k,v)
 		end
@@ -149,7 +139,9 @@ function server(port)
 		local client = server_client(self, cid, addr)
 		
 		self.val[client] = true
-		triggers(client,  self)
+		
+		triggers(client.input,  input)
+		triggers(output, client.output)
 	end
 	servers[port] = server
 	return server
@@ -159,35 +151,68 @@ function client(address)
 	local ip,port = address:match('(.*):(.*)')
 	local cli = magic()
 	cli.group = {'client'}
-	cli.val = sas.client(ip, port)
+	local id = sas.client(ip, port)
 	cli.text = address
 	
-	local output = ''
-	local offset = 1
+	-- input
+	local input = magic()
+	input.group = {'text'}
+	input.val = ''
+	cli.input = input
 	
-	function cli:update()
-		-- send output
-		if #output >= offset then
-			local data = output:sub(offset)
-			write(self.val, self, data)
-		end
+	read(id, input)
+	
+	function input:read(data)
+		print('client reads ' .. data)
+		self.val = self.val .. data
+		trigger(self)
 	end
 	
-	function cli:write(num)
+	-- output
+	local output = magic()
+	local offset = 1
+	output.group = {'text'}
+	output.ref = magic()
+	output.ref.val = ''
+	
+	function output:write(num)
 		offset = offset + num
 		
 		-- are we done sending?
 		if offset > #output then
-			write2data[cli.val] = nil
-			write2magic[cli.val] = nil
+			write2data[id] = nil
+			write2magic[id] = nil
+		end
+	end
+	
+	
+	function output:update()
+		self.val = self.ref.val
+		local data = self.val
+		
+		-- send output
+		if #data >= offset then
+			local sub = data:sub(offset)
+			print('client writes '..sub)
+			write(id, self, sub)
 		end
 	end
 	
 	-- metamagic
 	getmetatable(cli).__newindex = function(t,k,v)
 		if k == 'output' then
-			output = v
-			trigger(cli)
+			output.ref = v
+			triggers(output.ref, output)
+		else
+			rawset(t,k,v)
+		end
+	end
+	
+	getmetatable(cli).__index = function(t,k)
+		if k == 'output' then
+			return output
+		else
+			return rawget(t,k)
 		end
 	end
 	

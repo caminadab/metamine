@@ -5,7 +5,7 @@ require 'lua/fs'
 ops = require 'lua/ops'
 
 function onerror(message)
-	return message .. debug.traceback()
+	return message .. '\n' .. debug.traceback()
 end
 
 function grouptotext(group)
@@ -40,7 +40,6 @@ function enchant(any)
 	
 	local m = magic()
 	m.val = any
-	m.text = tostring(m.val)
 	m.group = {type(any)}
 	
 	if type(any) == 'string' then
@@ -160,7 +159,6 @@ end
 [socket list text] -> [socket text]
 ]]
 function indexed(parent, key)
-	print(debug.traceback())
 	local child = magic()
 	child.name = parent.name .. '[' .. key.. ']'
 	child.val = {}
@@ -211,7 +209,7 @@ function magic()
 	end
 	
 	setmetatable(m, {
-		__tostring = function () return m.text end,
+		__tostring = function () return grouptotext(m.group) end,
 		__index = function (t, v)
 			if type(v) ~= 'string' then
 				return indexed(m, v)
@@ -243,6 +241,8 @@ function refresh()
 end
 
 function dbg()
+	do return end
+	
 	-- store
 	io.write("\x1B[s")
 	
