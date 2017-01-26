@@ -2,22 +2,16 @@ math.randomseed(sas.now())
 port = math.random(10101, 20202)
 srv = server(port)
 clis = srv.clients
-clis.output = clis.input
 
-cli = client('127.0.0.1:'..port)
-cli.output = enchant('hoi')
 
---[[
-srv = server(10101)
-input = srv.clients.input
-output = srv.clients.output
+print('PORT '..port)
 
 -- example
-cli = client('127.0.0.1:10101')
-cli.output = 'GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n'
+--cli = client('127.0.0.1:'..port)
+--cli.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
 
 -- parse headers
-header = split(input, '\r\n\r\n')
+header = split(clis.input, '\r\n\r\n')
 lines2 = split(header, '\r\n')
 intro = lines2[1]
 mpv = split(intro, ' ')
@@ -36,7 +30,6 @@ header2 = prepend1(len, header1)
 header = append1(header2, '\r\n\r\n')
 
 response = append(header, content)
+stream = concat(response)
 
-cli.output = response
-
-]]
+clis.output = stream

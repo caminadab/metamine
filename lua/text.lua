@@ -113,6 +113,7 @@ function split(text, delim)
 		end
 	end
 	
+	triggers(delim, parts)
 	triggers(text, parts)
 	
 	return parts
@@ -123,15 +124,15 @@ function concat(parts)
 	local text = magic()
 	
 	text.group = copy(parts.group)
-	table.remove(parts.group, #parts.group-1)
+	table.remove(text.group, #text.group-1)
 	
 	function text:update()
-		for index,val in all(text) do
+		for index,val in all(parts) do
 			table.insert(index, 1, 'val')
 			
 			local stump = copy(index)
 			table.remove(stump, #stump)
-			local l = deepget(text, stump)
+			local l = deepget(parts, stump)
 			local t = table.concat(l)
 			
 			deepset(text, stump, t)
@@ -146,7 +147,7 @@ function concat(parts)
 end
 
 -- magic concat
-function concat1(a, b)	
+function concat1(a, b)
 	local agg = magic()
 	
 	-- group

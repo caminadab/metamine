@@ -13,7 +13,7 @@ function server_client(clients, cid, addr)
 	read(cid, input)
 	function input:read(data)
 		self.val = self.val .. data
-		print('server reads '..data)
+		--print('server reads '..data)
 		trigger(self)
 	end
 	
@@ -24,17 +24,21 @@ function server_client(clients, cid, addr)
 	--output.ref.val = ''
 	output.val = ''
 	local last = 1
+	local pending = false
 	
 	function output:update()
 		local data = self.val
 		
-		if #data >= last then 
+		if #data >= last and not pending then
+			pending = true
 			local todo = data:sub(last)
 			write(cid, output, todo)
+			print('server writes ' .. todo)
 		end
 	end
 	
 	function output:write(len)
+		pending = false
 		last = last + len
 		
 		-- are we done sending?
@@ -67,6 +71,7 @@ function server_client(clients, cid, addr)
 		self.text = '<closing>'
 		clients:close(self)
 	end
+	input.close = output.close
 	return c
 end
 
@@ -114,14 +119,20 @@ function server(port)
 	function output:close(client)
 		self.val[client] = nil
 	end
+	input.close = output.close
 	
 	-- client output
+	output.ref = magic()
+	output.ref.val = {}
+	
 	function output:update()
 		for client in pairs(clients.val) do
 			--print(output.ref.val)
 			--see(output.ref.val)
 			
-			client.output = output.ref.val[client]
+			if output.ref.val and output.ref.val[client] then
+				client.output = output.ref.val[client]
+			end
 		end
 	end
 	
@@ -143,6 +154,11 @@ function server(port)
 		triggers(client.input,  input)
 		triggers(output, client.output)
 	end
+	
+	function clients:close(client)
+		self.val[client] = nil
+	end
+	
 	servers[port] = server
 	return server
 end
@@ -163,7 +179,7 @@ function client(address)
 	read(id, input)
 	
 	function input:read(data)
-		print('client reads ' .. data)
+		--print('client reads ' .. data)
 		self.val = self.val .. data
 		trigger(self)
 	end
@@ -193,7 +209,7 @@ function client(address)
 		-- send output
 		if #data >= offset then
 			local sub = data:sub(offset)
-			print('client writes '..sub)
+			-- print('client writes '..sub)
 			write(id, self, sub)
 		end
 	end
