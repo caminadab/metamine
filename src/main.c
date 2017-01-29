@@ -248,7 +248,6 @@ int net_read(lua_State* L, int id, int index) {
 }
 
 int main() {
-	writel(1, "\x1B[;f\x1B[J");
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	
@@ -288,7 +287,6 @@ int main() {
 	writel(1,"\x1B[33m> \x1B[37m");
 	
 	sas_dofile(L, "satis.lua");
-	sas_dosafel(L, "dbg()");
 	
 	// watch satis.lua
 	int wd = inotify_init();
@@ -346,8 +344,6 @@ int main() {
 			
 			// prompt
 			writel(1,"\x1B[G\x1B[33m> \x1B[37m");
-			
-			//sas_dosafel(L, "dbg()");
 		}
 		
 		if (FD_ISSET(wd,&r)) {

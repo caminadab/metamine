@@ -33,7 +33,6 @@ function server_client(clients, cid, addr)
 			pending = true
 			local todo = data:sub(last)
 			write(cid, output, todo)
-			print('server writes ' .. todo)
 		end
 	end
 	

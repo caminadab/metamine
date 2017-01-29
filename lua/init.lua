@@ -198,15 +198,11 @@ function magic()
 			-- check
 		},
 		update = function () return end,
-		text = 'unknown',
 		val = nil,
 		group = {'unknown'},
 		name = '<unknown>',
 		satis = true,
 	}
-	if watchdog then
-		triggers(m, watchdog)
-	end
 	
 	setmetatable(m, {
 		__tostring = function () return grouptotext(m.group) end,
@@ -235,58 +231,3 @@ function triggers(a, b)
 	b.triggers[a] = true
 	trigger(a)
 end
-
-function refresh()
-	trigger(fresh)
-end
-
-function dbg()
-	do return end
-	
-	-- store
-	io.write("\x1B[s")
-	
-	-- top right
-	io.write("\x1B[1;40H")
-	io.write("\x1B[B")
-	for name,magic in pairs(magics) do
-		if magic.name ~= "watchdog" then
-			io.write("\x1B[40G\x1B[K")
-			io.write(grouptotext(magic.group))
-			io.write('\t'..(magic.name or '<unknown>'))
-			io.write(" =\t"..tostring(magic.val))--magic.text)
-			io.write("\x1B[B")
-		end
-	end
-	
-	io.write("\x1B[40G\x1B[K\x1B[B")
-	io.write("\x1B[40G\x1B[K\x1B[B")
-	io.write("\x1B[40G\x1B[K\x1B[B")
-	-- restore
-	io.write("\x1B[u")
-	io.write("\x1B[A")
-	-- prompt
-	io.write("\n\x1B[33m> \x1B[37m");
-end
-
-local gmt = {}
-local g = {}
-
-function gmt:__newindex(k,v)
-	if type(v) == 'table' and v.satis then
-		v.name = k
-		magics[k] = v
-		dbg()
-	end
-	g[k] = v
-end
-
-function gmt:__index(k)
-	return g[k]
-end
-
-setmetatable(_G, gmt)
-
-
-watchdog = magic("watchdog")
-watchdog.update = dbg
