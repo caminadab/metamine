@@ -8,70 +8,17 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <time.h>
 
 #define writel(fd,text) write(fd,text,sizeof(text)-1)
 
 int sas_server(lua_State* L);
 int sas_client(lua_State* L);
 
-int sas_now(lua_State* L) {
-	struct timespec now;            
-	clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-	
-	lua_pushinteger(L, now.tv_sec);
-	lua_pushinteger(L, now.tv_nsec);
-	return 2;
-}
-
-int sas_watch(lua_State* L) {
-	char* name = lua_tostring(L, 1);
-	int id = inotify_init();
-	return 1;
-}
-
-int sas_readfile(lua_State* L) {
-	char* name = lua_tostring(L, 1);
-	int fd = open(name, O_RDWR);
-	
-	if (fd <= 0) {
-		lua_pushnil(L);
-		lua_pushliteral(L, "read failed");
-		return 2;
-	}
-	
-	char buf[0x10000];
-	int len = read(fd, buf, 0x10000);
-	
-	lua_pushlstring(L, buf, len);
-	
-	return 1;
-}
-
-int sas_deletefile(lua_State* L) {
-	char* name = luaL_checkstring(L, 1);
-	int res = unlink(name);
-	lua_pushboolean(L, !res);
-	return 1;
-}
-
-int sas_writefile(lua_State* L) {
-	char* name = luaL_checkstring(L, 1);
-	int len = 0;
-	char* buf = luaL_checklstring(L, 2, &len);
-	int fd = creat(name, 0644);
-	
-	if (fd <= 0) {
-		lua_pushnil(L);
-		lua_pushstring(L, "write failed");
-		return 2;
-	}
-	
-	len = write(fd, buf, len);
-	lua_pushinteger(L, len);
-	close(fd);
-	return 1;
-}
+int sas_now(lua_State* L);
+int sas_watch(lua_State* L);
+int sas_readfile(lua_State* L);
+int sas_deletefile(lua_State* L);
+int sas_writefile(lua_State* L);
 
 int sas_dofile(lua_State* L, char* path) {
 	lua_getglobal(L, "onerror");
@@ -80,7 +27,7 @@ int sas_dofile(lua_State* L, char* path) {
 	int res = luaL_loadfile(L, path);
 	if (res) {
 		writel(1,"\x1B[31m");
-		char* err = lua_tolstring(L, -1, &len);
+		const char* err = lua_tolstring(L, -1, &len);
 		write(1,err,len);
 		writel(1,"\x1B[37m\n");
 		lua_pop(L, 1);
@@ -92,7 +39,7 @@ int sas_dofile(lua_State* L, char* path) {
 		
 		if (res) {
 			writel(1,"\x1B[31m");
-			char* err = lua_tolstring(L, -1, &len);
+			const char* err = lua_tolstring(L, -1, &len);
 			write(1,err,len);
 			writel(1,"\x1B[37m\n");
 			lua_pop(L, 1);
