@@ -1,35 +1,38 @@
 math.randomseed(sas.now())
-port = math.random(10101, 20202)
-srv = server(port)
-clis = srv.clients
+PORT = math.random(10101, 20202)
+print('PORT '..PORT)
 
 
-print('PORT '..port)
-
--- example 1
-cli1 = client('127.0.0.1:'..port)
-cli1.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
+-- start webserver
+srv = server(PORT)
 
 -- parse headers
-header = split(clis.input, '\r\n\r\n')
-lines2 = split(header, '\r\n')
-intro = lines2[1]
-mpv = split(intro, ' ')
-method = mpv[1]
-path = mpv[2]
-version = mpv[3]
+http = {}
+http.clis = srv.clients
+http.header = split(http.clis.input, '\r\n\r\n')
+http.lines = split(http.header, '\r\n')
+http.intro = http.lines[1]
+http.mpv = split(http.intro, ' ')
+http.method = http.mpv[1]
+http.path = http.mpv[2]
+http.version = http.mpv[3]
 
 -- page
-wwwpath = prepend1(path, 'www')
-content = infile(wwwpath)
+http.wwwpath = prepend1(http.path, 'www')
+http.content = infile(http.wwwpath)
 
 -- responses
-header1 = 'HTTP/1.1 200 OK\r\nContent-Length: '
-len = totext(length(content))
-header2 = prepend1(len, header1)
-header = append1(header2, '\r\n\r\n')
+http.rheaderA = 'HTTP/1.1 200 OK\r\nContent-Length: '
+http.rlen = totext(length(http.content))
+http.rheaderB = prepend1(http.rlen, http.rheaderA)
+http.rheader = append1(http.rheaderB, '\r\n\r\n')
 
-response = append(header, content)
-stream = concat(response)
+http.response = append(http.rheader, http.content)
+http.stream = concat(http.response)
 
-clis.output = stream
+http.clis.output = http.stream
+
+-- self test
+cli = client('127.0.0.1:'..PORT)
+cli.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
+

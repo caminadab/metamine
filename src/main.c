@@ -178,7 +178,7 @@ int net_write(lua_State* L, int id, int index) {
 	
 	int len;
 	char* buf = lua_tolstring(L, -1, &len);
-	int written = write(id, buf, len);
+	const int written = write(id, buf, len);
 	
 	// written
 	if (written > 0) {

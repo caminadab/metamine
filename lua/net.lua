@@ -1,4 +1,5 @@
 function server_client(clients, cid, addr)
+	print('server accepted', cid)
 	local c = magic()
 	c.group = {'client'}
 	c.input = ''
@@ -6,22 +7,24 @@ function server_client(clients, cid, addr)
 	
 	-- input
 	local input = magic()
-	input.group = 'text'
+	input.group = {'text'}
 	input.val = ''
 	c.input = input
 	
 	read(cid, input)
 	function input:read(data)
 		self.val = self.val .. data
-		--print('server reads '..data)
+		print('server reads '..data)
 		trigger(self)
+	end
+
+	function input:close()
+		print('server input closed')
 	end
 	
 	-- output
 	local output = magic()
 	output.group = 'text'
-	--output.ref = magic()
-	--output.ref.val = ''
 	output.val = ''
 	local last = 1
 	local pending = false
@@ -66,8 +69,8 @@ function server_client(clients, cid, addr)
 	end
 	
 	function output:close()
+		print('server output closed')
 		close(cid, self)
-		self.text = '<closing>'
 		clients:close(self)
 	end
 	input.close = output.close
@@ -168,6 +171,7 @@ function client(address)
 	cli.group = {'client'}
 	local id = sas.client(ip, port)
 	cli.text = address
+	cli.val = {id=id}
 	
 	-- input
 	local input = magic()
@@ -200,7 +204,6 @@ function client(address)
 		end
 	end
 	
-	
 	function output:update()
 		self.val = self.ref.val
 		local data = self.val
@@ -208,7 +211,7 @@ function client(address)
 		-- send output
 		if #data >= offset then
 			local sub = data:sub(offset)
-			-- print('client writes '..sub)
+			print('client writes '..sub)
 			write(id, self, sub)
 		end
 	end
