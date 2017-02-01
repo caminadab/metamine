@@ -10,9 +10,11 @@
 #include <fcntl.h>
 
 #define writel(fd,text) write(fd,text,sizeof(text)-1)
+#define sas_dosafel(L,text) sas_dosafe(L,text,sizeof(text)-1)
+
 #define RED "\x1B[32m"
 #define CYAN "\x1B[36m"
-#define WHITE "\x1B[37M"
+#define WHITE "\x1B[37m"
 #define PROMPT "\x1B[33m> \x1B[37m"
 
 int sas_server(lua_State* L);
@@ -88,7 +90,6 @@ int sas_dosafe(lua_State* L, char* buf, int len) {
 	return res;
 }
 
-#define sas_dosafel(L,text) sas_dosafe(L,text,sizeof(text)-1)
 
 static void stackDump (lua_State *L) {
 	printf("\n");

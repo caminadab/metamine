@@ -1,2 +1,3 @@
-.dub
+*.swp
+*.swo
 satis
