@@ -3,11 +3,12 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 // tcp ipv4( ip, port )
 int sas_client(lua_State* L) {
 	int iplen;
-	char* ipstr = luaL_checklstring(L, -2, &iplen);
+	const char* ipstr = luaL_checklstring(L, -2, &iplen);
 	int port = luaL_checkunsigned(L, -1);
 	
 	// create our socket
@@ -20,7 +21,7 @@ int sas_client(lua_State* L) {
 	in.sin_port = htons(port);
 	in.sin_family = AF_INET;
 	
-	connect(client, &in, sizeof(in));
+	connect(client, (struct sockaddr*) &in, sizeof(in));
 	
 	lua_pushinteger(L, client);
 	return 1;

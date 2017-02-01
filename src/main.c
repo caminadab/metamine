@@ -10,6 +10,10 @@
 #include <fcntl.h>
 
 #define writel(fd,text) write(fd,text,sizeof(text)-1)
+#define RED "\x1B[32m"
+#define CYAN "\x1B[36m"
+#define WHITE "\x1B[37M"
+#define PROMPT "\x1B[33m> \x1B[37m"
 
 int sas_server(lua_State* L);
 int sas_client(lua_State* L);
@@ -26,22 +30,22 @@ int sas_dofile(lua_State* L, char* path) {
 	int len = 0;
 	int res = luaL_loadfile(L, path);
 	if (res) {
-		writel(1,"\x1B[31m");
+		writel(1,RED);
 		const char* err = lua_tolstring(L, -1, &len);
 		write(1,err,len);
-		writel(1,"\x1B[37m\n");
+		writel(1,WHITE);
 		lua_pop(L, 1);
 	} else {
 		// blue output
-		writel(1,"\x1B[36m");
+		writel(1,CYAN);
 		res = lua_pcall(L,0,0,onerror);
-		writel(1,"\x1B[37m");
+		writel(1,WHITE);
 		
 		if (res) {
-			writel(1,"\x1B[31m");
+			writel(1,RED);
 			const char* err = lua_tolstring(L, -1, &len);
 			write(1,err,len);
-			writel(1,"\x1B[37m\n");
+			writel(1,WHITE);
 			lua_pop(L, 1);
 		}
 	}
@@ -58,22 +62,22 @@ int sas_dosafe(lua_State* L, char* buf, int len) {
 	
 	int res = luaL_loadbuffer(L,buf,len,"in");
 	if (res) {
-		writel(1,"\x1B[31m");
-		char* err = lua_tolstring(L, -1, &len);
+		writel(1,RED);
+		const char* err = lua_tolstring(L, -1, &len);
 		write(1,err,len);
-		writel(1,"\x1B[37m\n");
+		writel(1,WHITE);
 		lua_pop(L, 1);
 	} else {
 		// blue output
-		writel(1,"\x1B[36m");
+		writel(1,CYAN);
 		res = lua_pcall(L,0,0,onerror);
-		writel(1,"\x1B[37m");
+		writel(1,WHITE);
 		
 		if (res) {
-			writel(1,"\x1B[31m");
-			char* err = lua_tolstring(L, -1, &len);
+			writel(1,RED);
+			const char* err = lua_tolstring(L, -1, &len);
 			write(1,err,len);
-			writel(1,"\x1B[37m\n");
+			writel(1,WHITE);
 			lua_pop(L, 1);
 		}
 	}
@@ -124,7 +128,7 @@ int net_write(lua_State* L, int id, int index) {
 	lua_rawgeti(L, -1, id);
 	
 	int len;
-	char* buf = lua_tolstring(L, -1, &len);
+	const char* buf = lua_tolstring(L, -1, &len);
 	const int written = write(id, buf, len);
 	
 	// written
@@ -154,13 +158,13 @@ int net_read(lua_State* L, int id, int index) {
 	if (lua_toboolean(L, -1)) {
 		struct sockaddr_in in;
 		int len = sizeof(in);
-		int cid = accept(id, &in, &len);
+		const int cid = accept(id, (struct sockaddr*) &in, &len);
 		
 		if (cid >= 0) {
 			lua_getfield(L, index, "accept");
 			lua_pushnil(L); lua_copy(L, index, -1); // magic val
 			lua_pushinteger(L, cid);
-			lua_pushlstring(L, &in, len);
+			lua_pushlstring(L, (char*) &in, len);
 			lua_call(L, 3, 0);
 		}	
 	}
@@ -231,7 +235,7 @@ int main() {
 	}
 	
 	// prompt
-	writel(1,"\x1B[33m> \x1B[37m");
+	writel(1,PROMPT);
 	
 	sas_dofile(L, "satis.lua");
 	
@@ -290,14 +294,14 @@ int main() {
 			sas_dosafe(L, buf, len);
 			
 			// prompt
-			writel(1,"\x1B[G\x1B[33m> \x1B[37m");
+			writel(1,PROMPT);
 		}
 		
+		// redo file on change
 		if (FD_ISSET(wd,&r)) {
 			struct inotify_event ev;
 			read(wd, &ev, sizeof(ev));
 			sas_dofile(L, "satis.lua");
-			sas_dosafel(L, "dbg()");
 		}
 		
 		// read

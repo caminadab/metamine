@@ -53,7 +53,7 @@ int sas_deletefile(lua_State* L) {
 int sas_writefile(lua_State* L) {
 	char* name = luaL_checkstring(L, 1);
 	int len = 0;
-	char* buf = luaL_checklstring(L, 2, &len);
+	const char* buf = luaL_checklstring(L, 2, &len);
 	int fd = creat(name, 0644);
 	
 	if (fd <= 0) {

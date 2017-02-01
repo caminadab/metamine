@@ -1,4 +1,7 @@
+require 'lua/group'
+
 function split1(text, delim)
+
 	local parts = {}
 	-- loop
 	local offset = 1
