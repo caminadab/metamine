@@ -1,6 +1,6 @@
 #include <lua5.2/lua.h>
 #include <lua5.2/lauxlib.h>
-#include <sys/select.h>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -8,6 +8,8 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 
 #define writel(fd,text) write(fd,text,sizeof(text)-1)
 #define sas_dosafel(L,text) sas_dosafe(L,text,sizeof(text)-1)
@@ -124,49 +126,51 @@ int io_write(lua_State* L) {
 	return 1;
 }
 
-int net_write(lua_State* L, int id, int index) {
+int net_write(lua_State* L, int id) {
 	lua_getglobal(L, "write2data");
 	lua_rawgeti(L, -1, id);
 	
 	int len;
 	const char* buf = lua_tolstring(L, -1, &len);
 	const int written = write(id, buf, len);
+	lua_pop(L, 2);
 	
 	// written
 	if (written > 0) {
-		lua_getfield(L, index, "write");
-		lua_pushnil(L); lua_copy(L, index, -1); // magic val
+		lua_getglobal(L, "onwrite");
+		lua_pushinteger(L, id);
 		lua_pushinteger(L, written);
 		lua_call(L, 2, 0);
 	}
 	
 	// close !
 	else {
-		lua_getfield(L, index, "close");
-		lua_pushnil(L); lua_copy(L, index, -1); // magic val
+		printf("main.c:146 CLOSE\n");
+		close(id);
+		lua_getglobal(L, "onclose");
+		lua_pushinteger(L, id);
 		lua_call(L, 1, 0);
 	}
-		  
-	lua_pop(L, 2);
 	return 0;
 }
 
-int net_read(lua_State* L, int id, int index) {
-	lua_getglobal(L, "accept2magic");
+int net_read(lua_State* L, int id) {
+	lua_getglobal(L, "isserver");
 	lua_rawgeti(L, -1, id);
+	int doesaccept = lua_toboolean(L, -1);
+	lua_pop(L, 2);
 	
 	// accept
-	if (lua_toboolean(L, -1)) {
+	if (doesaccept) {
 		struct sockaddr_in in;
 		int len = sizeof(in);
 		const int cid = accept(id, (struct sockaddr*) &in, &len);
 		
 		if (cid >= 0) {
-			lua_getfield(L, index, "accept");
-			lua_pushnil(L); lua_copy(L, index, -1); // magic val
+			lua_getglobal(L, "onaccept");
+			lua_pushinteger(L, id);
 			lua_pushinteger(L, cid);
-			lua_pushlstring(L, (char*) &in, len);
-			lua_call(L, 3, 0);
+			lua_call(L, 2, 0);
 		}	
 	}
 
@@ -177,27 +181,69 @@ int net_read(lua_State* L, int id, int index) {
 	
 		// data
 		if (len > 0) {
-			lua_getfield(L, index, "read");
-			lua_pushnil(L); lua_copy(L, index, -1); // magic val
+			lua_getglobal(L, "onread");
+			lua_pushinteger(L, id);
 			lua_pushlstring(L, buf, len);
 			lua_call(L, 2, 0);
 		}
 		
 		// close
 		else {
-			lua_getfield(L, index, "close");
-			lua_pushnil(L); lua_copy(L, index, -1); // magic val
+			printf("main.c:189 CLOSE\n");
+			close(id);
+			lua_getglobal(L, "onclose");
+			lua_pushinteger(L, id);
 			lua_call(L, 1, 0);
 		}
 	}
-	
-	// trigger
-	lua_getglobal(L, "trigger");
-	lua_pushnil(L); lua_copy(L, index, -1); // magic val
-	lua_call(L, 1, 0);
-	
-	lua_pop(L, 2);
 }
+
+// epoll id
+int eid;
+
+int sas_write(lua_State* L) {
+	int id = luaL_checkinteger(L, -1);
+	struct epoll_event ev;
+	ev.data.fd = id;
+	ev.events = EPOLLET | EPOLLOUT;
+	int res = epoll_ctl(eid, EPOLL_CTL_ADD, id, &ev);
+	lua_pushinteger(L, res);
+	return 1;
+}
+
+int sas_read(lua_State* L) {
+	int id = luaL_checkinteger(L, -1);
+	struct epoll_event ev;
+	ev.data.fd = id;
+	ev.events = EPOLLET | EPOLLIN;
+	int res = epoll_ctl(eid, EPOLL_CTL_ADD, id, &ev);
+	lua_pushinteger(L, res);
+	return 1;
+}
+
+int sas_close(lua_State* L) {
+	int id = luaL_checkinteger(L, -1);
+	int res = close(id);
+	lua_pushinteger(L, res);
+	return 1;
+}
+
+int satis_prompt(lua_State* L) {
+	char buf[0x1000];
+	int len = read(0,buf,0x1000);
+
+	// console closed
+	if (!len)
+		return -1;
+
+	sas_dosafe(L, buf, len);
+
+	// prompt
+	writel(1,PROMPT);
+
+	return 0;
+}
+
 
 int main() {
 	lua_State* L = luaL_newstate();
@@ -220,6 +266,11 @@ int main() {
 		{"readfile", sas_readfile},
 		{"deletefile", sas_deletefile},
 		{"now", sas_now},
+
+		// net
+		{"read", sas_read},
+		{"write", sas_write},
+		{"close", sas_close},
 		{0, 0},
 	};
 	luaL_newlib(L, lib);
@@ -235,107 +286,31 @@ int main() {
 		write(1,c,len);
 	}
 	
-	// prompt
-	writel(1,PROMPT);
+	// watches
+	eid = epoll_create1(0);
 	
 	sas_dofile(L, "satis.lua");
 	
-	// watch satis.lua
-	int wd = inotify_init();
-	int sd = inotify_add_watch(wd, "satis.lua", IN_MODIFY);
-	
+	// prompt
+	writel(1,PROMPT);
+
+	struct epoll_event evs[0x20];
+
 	while (1) {
-		fd_set r,w,e;
-		FD_ZERO(&r);
-		FD_ZERO(&w);
-		FD_ZERO(&e);
-		
-		// listen console
-		FD_SET(0,&r);
-		FD_SET(wd,&r);
-		
-		// wait read
-		lua_getglobal(L, "read2magic");
-		lua_pushnil(L);
-		while (lua_next(L, 1)) { // 4,5
-			int id = lua_tointeger(L, -2);
-			FD_SET(id,&r);
-			lua_pop(L, 1);
+		sas_dosafel(L, "print(srv.clients)");
+
+		int num = epoll_wait(eid, evs, 0x20, -1);
+		if (num <= 0) {
+			printf("EPOLL ERROR %d: %s\n", num, strerror(errno));
+			return 0;
 		}
-		lua_pop(L,1);
-		
-		// wait write
-		lua_getglobal(L, "write2magic");
-		lua_pushnil(L);
-		while (lua_next(L, 1)) { // 4,5
-			int id = lua_tointeger(L, -2);
-			FD_SET(id,&w);
-			lua_pop(L, 1);
-		}
-		lua_pop(L,1);
-		
-		struct timeval t;
-		t.tv_sec = 9999999;
-		t.tv_usec = 0;
-		int r2 = lua_gettop(L);
-		int num = select(10,&r,&w,&e,&t);
-		
-		if (num < 0)
-			break;
-		
-		// console input
-		if (FD_ISSET(0,&r)) {
-			char buf[0x1000];
-			int len = read(0,buf,0x1000);
-			
-			// console closed
-			if (!len)
-				break;
-			
-			sas_dosafe(L, buf, len);
-			
-			// prompt
-			writel(1,PROMPT);
-		}
-		
-		// redo file on change
-		if (FD_ISSET(wd,&r)) {
-			struct inotify_event ev;
-			read(wd, &ev, sizeof(ev));
-			sas_dofile(L, "satis.lua");
-		}
-		
-		// read
-		lua_getglobal(L, "read2magic"); // 1
-		lua_pushnil(L);
-		while (lua_next(L, 1)) {
-			int id = lua_tointeger(L, -2);
-			int magic = lua_absindex(L, -1);
-			
-			// MAGIC is now at 3
-			if (FD_ISSET(id,&r)) {
-				net_read(L, id, magic);
-			}
-			
-			lua_pop(L, 1);
-		}
-		lua_pop(L,1);
-		
-		// write
-		lua_getglobal(L, "write2magic"); // 1
-		lua_pushnil(L);
-		while (lua_next(L, 1)) {
-			int id = lua_tointeger(L, -2);
-			int magic = lua_absindex(L, -1);
-			
-			// MAGIC is now at 3
-			if (FD_ISSET(id,&w)) {
-				net_write(L, id, magic);
-			}
-			
-			lua_pop(L, 1);
-		}
-		lua_pop(L,1);
+
+		for (int i = 0; i < num; i++) {
+			if (evs[i].events | EPOLLIN)
+				puts("in");
+			if (evs[i].events | EPOLLOUT)
+				puts("out");
+		}		
 	}
 	
 	return 0;

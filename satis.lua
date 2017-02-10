@@ -33,6 +33,6 @@ http.stream = concat(http.response)
 http.clis.output = http.stream
 
 -- self test
-cli = client('127.0.0.1:'..PORT)
-cli.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
+--cli = client('127.0.0.1:'..PORT)
+--cli.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
 

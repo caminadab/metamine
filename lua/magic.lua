@@ -41,3 +41,9 @@ function triggers(a, b)
 	b.triggers[a] = true
 	trigger(a)
 end
+
+function untriggers(a, b)
+	a.events[b] = nil
+	b.triggers[a] = nil
+	trigger(a)
+end

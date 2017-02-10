@@ -1,8 +1,7 @@
-function server_client(clients, cid, addr)
-	print('server accepted', cid)
+function server_client(clients, cid)
+	print('server accepted '.. cid)
 	local c = magic()
 	c.group = {'client'}
-	c.input = ''
 	c.id = cid
 	
 	-- input
@@ -12,19 +11,15 @@ function server_client(clients, cid, addr)
 	c.input = input
 	
 	read(cid, input)
+
 	function input:read(data)
 		self.val = self.val .. data
 		print('server reads '..data)
-		trigger(self)
 	end
 
-	function input:close()
-		print('server input closed')
-	end
-	
 	-- output
 	local output = magic()
-	output.group = 'text'
+	output.group = {'text'}
 	output.val = ''
 	local last = 1
 	local pending = false
@@ -42,12 +37,6 @@ function server_client(clients, cid, addr)
 	function output:write(len)
 		pending = false
 		last = last + len
-		
-		-- are we done sending?
-		if last > #output.val then
-			write2magic[cid] = nil
-			write2data[cid] = nil
-		end
 	end
 	
 	getmetatable(c).__newindex = function (t,k,v)
@@ -68,12 +57,6 @@ function server_client(clients, cid, addr)
 		end
 	end
 	
-	function output:close()
-		print('server output closed')
-		close(cid, self)
-		clients:close(self)
-	end
-	input.close = output.close
 	return c
 end
 
@@ -105,6 +88,7 @@ function server(port)
 	clients.val = {}
 	clients.name = 'clients'
 	clients.input = input
+	clients.ids = {}
 	accept(id,clients)
 	
 	-- client input
@@ -117,11 +101,6 @@ function server(port)
 			self.val[client] = client.input.val -- store pure
 		end
 	end
-	
-	function output:close(client)
-		self.val[client] = nil
-	end
-	input.close = output.close
 	
 	-- client output
 	output.ref = magic()
@@ -140,7 +119,7 @@ function server(port)
 	
 	getmetatable(clients).__newindex = function(t,k,v)
 		if k == 'output' then
-			t.output2 = output
+			t.output2 = output --/
 			output.ref = v
 			triggers(output.ref, output)
 		else
@@ -148,17 +127,22 @@ function server(port)
 		end
 	end
 	
-	function clients:accept(cid, addr)
-		local client = server_client(self, cid, addr)
+	function clients:accept(cid)
+		local client = server_client(self, cid)
 		
-		self.val[client] = true
+		self.val[client] = client
+		self.ids[cid] = client
 		
-		triggers(client.input,  input)
+		triggers(client.input, input)
 		triggers(output, client.output)
 	end
-	
-	function clients:close(client)
+
+	function clients:close(cid)
+		local client = self.ids[cid]
+		untriggers(client.input, input)
+		untriggers(output, client.output)
 		self.val[client] = nil
+		self.ids[cid] = nil
 	end
 	
 	servers[port] = server
@@ -184,7 +168,6 @@ function client(address)
 	function input:read(data)
 		--print('client reads ' .. data)
 		self.val = self.val .. data
-		trigger(self)
 	end
 	
 	-- output
