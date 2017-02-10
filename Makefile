@@ -1,2 +1,2 @@
 satis: src/*.c
-	gcc -g src/*.c -llua5.2 -o satis
+	gcc -g -std=c11 src/*.c -llua5.2 -o satis

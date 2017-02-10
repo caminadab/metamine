@@ -12,7 +12,7 @@
 
 int sas_now(lua_State* L) {
 	struct timespec now;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+	//clock_gettime(CLOCK_MONOTONIC_RAW, &now);
 	
 	lua_pushinteger(L, now.tv_sec);
 	lua_pushinteger(L, now.tv_nsec);
