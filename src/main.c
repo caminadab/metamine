@@ -40,10 +40,7 @@ int sas_dofile(lua_State* L, char* path) {
 		writel(1,WHITE);
 		lua_pop(L, 1);
 	} else {
-		// blue output
-		writel(1,CYAN);
 		res = lua_pcall(L,0,0,onerror);
-		writel(1,WHITE);
 		
 		if (res) {
 			writel(1,RED);
@@ -73,9 +70,7 @@ int sas_dosafe(lua_State* L, char* buf, int len) {
 		lua_pop(L, 1);
 	} else {
 		// blue output
-		writel(1,CYAN);
 		res = lua_pcall(L,0,0,onerror);
-		writel(1,WHITE);
 		
 		if (res) {
 			writel(1,RED);
@@ -118,6 +113,9 @@ static void stackDump (lua_State *L) {
 	fflush(stdout);
 }
 
+// epoll id
+int eid;
+
 int io_write(lua_State* L) {
 	int len;
 	const char* str = luaL_checklstring(L, 1, &len);
@@ -126,6 +124,8 @@ int io_write(lua_State* L) {
 	return 1;
 }
 
+// report that a write has happened to the lua onwrite method
+// also keep reading if keepreading
 int net_write(lua_State* L, int id) {
 	lua_getglobal(L, "write2data");
 	lua_rawgeti(L, -1, id);
@@ -141,11 +141,18 @@ int net_write(lua_State* L, int id) {
 		lua_pushinteger(L, id);
 		lua_pushinteger(L, written);
 		lua_call(L, 2, 0);
+		
+		// only read now
+		struct epoll_event ev;
+		ev.data.fd = id;
+		ev.events = EPOLLET | EPOLLIN;
+		
+		int res = epoll_ctl(eid, EPOLL_CTL_MOD, id, &ev);
 	}
 	
 	// close !
 	else {
-		printf("main.c:146 CLOSE\n");
+		printf("main.c:157 CLOSE\n");
 		close(id);
 		lua_getglobal(L, "onclose");
 		lua_pushinteger(L, id);
@@ -188,27 +195,42 @@ int net_read(lua_State* L, int id) {
 		}
 		
 		// close
-		else {
-			printf("main.c:189 CLOSE\n");
+		else if (len == 0) {
+			printf("main.c:201 CLOSE\n");
 			close(id);
 			lua_getglobal(L, "onclose");
 			lua_pushinteger(L, id);
 			lua_call(L, 1, 0);
 		}
+		
+		// error
+		else {
+			puts(strerror(errno));
+		}
 	}
 }
-
-// epoll id
-int eid;
 
 int sas_write(lua_State* L) {
 	int id = luaL_checkinteger(L, -1);
 	struct epoll_event ev;
 	ev.data.fd = id;
 	ev.events = EPOLLET | EPOLLOUT;
+
+	// lazy
 	int res = epoll_ctl(eid, EPOLL_CTL_ADD, id, &ev);
-	lua_pushinteger(L, res);
-	return 1;
+	if (res == -1) { // && errno == EEXISTS
+		ev.events |= EPOLLIN;
+		res = epoll_ctl(eid, EPOLL_CTL_MOD, id, &ev);
+	}
+
+	if (res == -1) {
+		lua_pushstring(L, strerror(errno));
+		return lua_error(L);
+	}
+	else {
+		lua_pushinteger(L, id);
+		return 1;
+	}
 }
 
 int sas_read(lua_State* L) {
@@ -216,9 +238,22 @@ int sas_read(lua_State* L) {
 	struct epoll_event ev;
 	ev.data.fd = id;
 	ev.events = EPOLLET | EPOLLIN;
+	
+		// lazy
 	int res = epoll_ctl(eid, EPOLL_CTL_ADD, id, &ev);
-	lua_pushinteger(L, res);
-	return 1;
+	if (res == -1) { // && errno == EEXISTS
+		ev.events |= EPOLLOUT;
+		res = epoll_ctl(eid, EPOLL_CTL_MOD, id, &ev);
+	}
+	
+	if (res == -1) {
+		lua_pushstring(L, strerror(errno));
+		return lua_error(L);
+	}
+	else {
+		lua_pushinteger(L, id);
+		return 1;
+	}
 }
 
 int sas_close(lua_State* L) {
@@ -297,20 +332,21 @@ int main() {
 	struct epoll_event evs[0x20];
 
 	while (1) {
-		sas_dosafel(L, "print(srv.clients)");
+		//sas_dosafel(L, "print(srv.clients)");
+		puts("---------------------");
 
 		int num = epoll_wait(eid, evs, 0x20, -1);
 		if (num <= 0) {
 			printf("EPOLL ERROR %d: %s\n", num, strerror(errno));
-			return 0;
+			break;
 		}
 
 		for (int i = 0; i < num; i++) {
-			if (evs[i].events | EPOLLIN)
-				puts("in");
-			if (evs[i].events | EPOLLOUT)
-				puts("out");
-		}		
+			if (evs[i].events & EPOLLOUT)
+				net_write(L, evs[i].data.fd);
+			if (evs[i].events & EPOLLIN)
+				net_read(L, evs[i].data.fd);
+		}
 	}
 	
 	return 0;

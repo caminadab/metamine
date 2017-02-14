@@ -14,7 +14,7 @@ function server_client(clients, cid)
 
 	function input:read(data)
 		self.val = self.val .. data
-		print('server reads '..data)
+		print('server reads '..#data)
 	end
 
 	-- output
@@ -31,6 +31,7 @@ function server_client(clients, cid)
 			pending = true
 			local todo = data:sub(last)
 			write(cid, output, todo)
+			print('server writes '..#todo)
 		end
 	end
 	
@@ -166,25 +167,21 @@ function client(address)
 	read(id, input)
 	
 	function input:read(data)
-		--print('client reads ' .. data)
+		print('client reads ' .. data)
 		self.val = self.val .. data
 	end
 	
 	-- output
 	local output = magic()
 	local offset = 1
+	local pending = false
 	output.group = {'text'}
 	output.ref = magic()
 	output.ref.val = ''
 	
 	function output:write(num)
 		offset = offset + num
-		
-		-- are we done sending?
-		if offset > #output then
-			write2data[id] = nil
-			write2magic[id] = nil
-		end
+		pending = false
 	end
 	
 	function output:update()
@@ -192,10 +189,11 @@ function client(address)
 		local data = self.val
 		
 		-- send output
-		if #data >= offset then
+		if #data >= offset and not pending then
 			local sub = data:sub(offset)
-			print('client writes '..sub)
+			print('client writes '..#sub)
 			write(id, self, sub)
+			pending = true
 		end
 	end
 	

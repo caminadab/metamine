@@ -1,10 +1,5 @@
-math.randomseed(sas.now())
-PORT = math.random(10101, 20202)
-print('PORT '..PORT)
-
-
 -- start webserver
-srv = server(PORT)
+srv = server(10101)
 
 -- parse headers
 http = {}
@@ -33,6 +28,5 @@ http.stream = concat(http.response)
 http.clis.output = http.stream
 
 -- self test
---cli = client('127.0.0.1:'..PORT)
---cli.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
-
+cli = client('127.0.0.1:10101')
+cli.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
