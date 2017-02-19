@@ -1,28 +1,31 @@
--- start webserver
+-- given a stream of http headers, parse each
+function http_decode(input)
+	local header = split(input, '\r\n\r\n')
+	local lines = split(header, '\r\n')
+	local first = lines[1]
+	local info = split(first, ' ')
+	local http = {}
+	http.method = info[1]
+	http.path = info[2]
+	http.version = info[3]
+	return http
+end
+
+-- given pages, encode the http stream
+function http_encode(content)
+	-- responses
+	local header = append(
+		'HTTP/1.1 200 OK\r\n',
+		'Content-Length: ',
+		totext(length(content)),
+		'\r\n\r\n')
+	local response = append(header, content)
+	local stream = concat(response)
+	return stream
+end
+
 srv = server(10101)
-
--- parse headers
-header = split(srv.clients.input, '\r\n\r\n')
-lines = split(header, '\r\n')
-intro = lines[1]
-mpv = split(intro, ' ')
-method,path,version = mpv[1],mpv[2],mpv[3]
-
--- page
-wwwpath = append('www', path)
-content = infile(wwwpath)
-
--- responses
-rheader = append(
-	'HTTP/1.1 200 OK\r\n',
-	'Content-Length: ',
-	totext(length(content)),
-	'\r\n\r\n')
-response = append(rheader, content)
-stream = concat(response)
-
-srv.clients.output = stream
-
--- self test
-cli = client('127.0.0.1:10101')
-cli.output = enchant('GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n')
+http_in = http_decode(srv.clients.input)
+content = infile(append('www', http_in.path))
+http_out = http_encode(content)
+srv.clients.output = http_out
