@@ -264,23 +264,39 @@ function totext(num)
 end
 
 
-function append(f, ...)
+function append(...)
 	local tt = {...}
-	local f = f
+
+	-- find most important
+	local f
+	for i=1,#tt do
+		if type(tt[i]) ~= 'string' and (not f or #tt[i].group > #f.group) then
+			f = tt[i]
+		end
+	end
+		
 	local agg = magic()
 	
 	agg.group = copy(f.group)
 	
 	function agg:update()
-		for index,val in all(f) do
-			local agg1 = { tostring(val) }
+		for index in all(f) do
+			local agg1 = {}
 			
 			table.insert(index, 1, 'val')
 			for i=1,#tt do
-				local v = deepget(tt[i], index)
-				table.insert(agg1, v)
+				--if f ~= tt[i] then
+					local v
+					if type(tt[i]) == 'string' then
+						v = tt[i]
+					else
+						v = deepget(tt[i], index)
+					end
+					table.insert(agg1, v)
+				--end
 			end
 			agg1 = table.concat(agg1)
+			print("APPEND "..agg1)
 			
 			
 			deepset(agg, index, agg1)
@@ -291,7 +307,9 @@ function append(f, ...)
 	-- trigger
 	triggers(f, agg)
 	for i=1,#tt do
-		triggers(tt[i], agg)
+		if type(tt[i]) ~= 'string' then
+			triggers(tt[i], agg)
+		end
 	end
 	
 	return agg
