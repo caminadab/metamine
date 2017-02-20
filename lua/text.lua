@@ -149,92 +149,6 @@ function concat(parts)
 	return text
 end
 
--- magic concat
-function concat1(a, b)
-	local agg = magic()
-	
-	-- group
-	if not equals(a.group, b.group) or a.group[#a.group] ~= 'text' then
-		error('mismatching types')
-	end
-	
-	agg.group = copy(text.group)
-	
-	function agg:update()
-		for index,val in all(a) do
-			local valA = deepget
-			local agg1 = val .. post.val
-			table.insert(index, 1, 'val')
-			
-			deepset(agg, index, agg1)
-			table.remove(index, 1)
-		end
-	end
-	
-	triggers(text, agg)
-	triggers(post, agg)
-	
-	return agg
-end
-
-function append1(text, post)
-	text = enchant(text)
-	post = enchant(post)
-	
-	local agg = magic()
-	
-	-- group
-	if text.group[#text.group] ~= 'text' then
-		error('can only prepend text')
-	end
-	
-	agg.group = copy(text.group)
-	
-	function agg:update()
-		for index,val in all(text) do
-			local agg1 = val .. post.val
-			table.insert(index, 1, 'val')
-			
-			deepset(agg, index, agg1)
-			table.remove(index, 1)
-		end
-	end
-	
-	triggers(text, agg)
-	triggers(post, agg)
-	
-	return agg
-end
-
-function prepend1(text, pre)
-	text = enchant(text)
-	pre = enchant(pre)
-	
-	local agg = magic()
-	
-	-- group
-	if text.group[#text.group] ~= 'text' then
-		error('can only prepend text')
-	end
-	
-	agg.group = copy(text.group)
-	
-	function agg:update()
-		for index,val in all(text) do
-			local agg1 = pre.val .. val
-			table.insert(index, 1, 'val')
-			
-			deepset(agg, index, agg1)
-			table.remove(index, 1)
-		end
-	end
-	
-	triggers(text, agg)
-	triggers(pre, agg)
-	
-	return agg
-end
-
 function totext(num)
 	num = enchant(num)
 	
@@ -289,6 +203,8 @@ function append(...)
 					local v
 					if type(tt[i]) == 'string' then
 						v = tt[i]
+					elseif #tt[i].group == 1 then
+						v = tt[i].val
 					else
 						v = deepget(tt[i], index)
 					end
@@ -296,8 +212,6 @@ function append(...)
 				--end
 			end
 			agg1 = table.concat(agg1)
-			print("APPEND "..agg1)
-			
 			
 			deepset(agg, index, agg1)
 			table.remove(index, 1)

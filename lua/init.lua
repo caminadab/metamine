@@ -6,6 +6,7 @@ require 'lua/magic2text'
 require 'lua/magic'
 require 'lua/group'
 require 'lua/poll'
+require 'lua/collection'
 
 function onerror(message)
 	return message .. '\n' .. debug.traceback()
