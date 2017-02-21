@@ -7,7 +7,7 @@
 
 // tcp ipv4( ip, port )
 int sas_client(lua_State* L) {
-	int iplen;
+	size_t iplen;
 	const char* ipstr = luaL_checklstring(L, -2, &iplen);
 	int port = luaL_checkunsigned(L, -1);
 	
@@ -36,6 +36,8 @@ int sas_server(lua_State* L) {
 	in.sin_addr.s_addr = 0;
 	in.sin_port = htons(port);
 	in.sin_family = AF_INET;
+	setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int));
+
 	int res = bind(server, (struct sockaddr*)&in, sizeof(in))
 	|| listen(server, 99);
 	if (res) {
