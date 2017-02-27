@@ -5,7 +5,6 @@ function copy(group)
 	end
 	return copy
 end
-print('copy defined')
 
 function equals(a, b)
 	if #a ~= #b then
@@ -27,7 +26,6 @@ end
 ]]
 function indexed(parent, key)
 	local child = magic()
-	child.name = parent.name .. '[' .. key.. ']'
 	child.val = {}
 	
 	-- {id->[text]} wordt {id->text}

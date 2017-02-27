@@ -23,11 +23,3 @@ function http_encode(content)
 	local stream = concat(response)
 	return stream
 end
-
-srv = server(10101)
-http_in = http_decode(srv.clients.input)
--- {client->[text]}
-content = infile(append('www', http_in.path))
-counter = totext(sum(count(content)))
-http_out = http_encode(append(content,'geserveert: ',counter))
-srv.clients.output = http_out

@@ -22,7 +22,7 @@ function split1(text, delim)
 end
 
 
-	-- recursively travel through a grouped value tree (______)
+	-- recursively travel through a grouped value tree 
 function all(magic)
 		
 	function coall(val, group, level, index)
@@ -177,7 +177,6 @@ function totext(num)
 	return agg
 end
 
-
 function append(...)
 	local tt = {...}
 
@@ -258,3 +257,4 @@ function length(text)
 	
 	return agg
 end
+

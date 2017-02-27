@@ -316,7 +316,7 @@ int main() {
 	
 	int r = sas_dofile(L, "lua/init.lua");
 	if (r) {
-		int len;
+		size_t len;
 		const char* c = lua_tolstring(L,-1,&len);
 		write(1,c,len);
 	}
@@ -324,7 +324,7 @@ int main() {
 	// watches
 	eid = epoll_create1(0);
 	
-	sas_dofile(L, "satis.lua");
+	sas_dofile(L, "sas/main.lua");
 	
 	// prompt
 	writel(1,PROMPT);

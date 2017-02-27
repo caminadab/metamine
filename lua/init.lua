@@ -7,6 +7,7 @@ require 'lua/magic'
 require 'lua/group'
 require 'lua/poll'
 require 'lua/collection'
+require 'lua/func'
 
 function onerror(message)
 	return message .. '\n' .. debug.traceback()
@@ -42,4 +43,3 @@ function print(...)
 	end
 	io.write('\n')
 end
-
