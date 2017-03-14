@@ -263,23 +263,6 @@ int sas_close(lua_State* L) {
 	return 1;
 }
 
-int satis_prompt(lua_State* L) {
-	char buf[0x1000];
-	int len = read(0,buf,0x1000);
-
-	// console closed
-	if (!len)
-		return -1;
-
-	sas_dosafe(L, buf, len);
-
-	// prompt
-	writel(1,PROMPT);
-
-	return 0;
-}
-
-
 int main() {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
@@ -323,18 +306,19 @@ int main() {
 	
 	// watches
 	eid = epoll_create1(0);
-	
-	sas_dofile(L, "sas/main.lua");
-	
-	// prompt
-	writel(1,PROMPT);
 
-	struct epoll_event evs[0x20];
+	// console 
+	struct epoll_event ev;
+	ev.data.fd = 0;
+	ev.events = EPOLLET | EPOLLIN; 
+
+	int res = epoll_ctl(eid, EPOLL_CTL_ADD, 0, &ev);
+	
+	// main file!!!
+	sas_dofile(L, "sas/main.lua");
 
 	while (1) {
-		//sas_dosafel(L, "print(srv.clients)");
-		puts("---------------------");
-
+		struct epoll_event evs[0x20];
 		int num = epoll_wait(eid, evs, 0x20, -1);
 		if (num <= 0) {
 			printf("EPOLL ERROR %d: %s\n", num, strerror(errno));
@@ -342,9 +326,15 @@ int main() {
 		}
 
 		for (int i = 0; i < num; i++) {
-			if (evs[i].events & EPOLLOUT)
+			// do console
+			if (evs[i].data.fd == 0) {
+				char buf[0x1000];
+				int len = read(0, buf, 0x1000); 
+				sas_dosafe(L, buf, len);
+			}
+			else if (evs[i].events & EPOLLOUT)
 				net_write(L, evs[i].data.fd);
-			if (evs[i].events & EPOLLIN)
+			else if (evs[i].events & EPOLLIN)
 				net_read(L, evs[i].data.fd);
 		}
 	}
