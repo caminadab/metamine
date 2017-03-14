@@ -11,6 +11,7 @@ function table_print (tt, indent, done)
       table.insert(sb, string.rep (" ", indent)) -- indent it
       if type (value) == "table" and not done [value] then
         done [value] = true
+		table.insert(sb, tostring(key).." = ")
         table.insert(sb, "{\n");
         table.insert(sb, table_print (value, indent + 2, done))
         table.insert(sb, string.rep (" ", indent)) -- indent it

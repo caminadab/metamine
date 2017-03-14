@@ -29,14 +29,14 @@ end
 local clients = magic()
 clients.group = {'list', 'text'}
 clients.val = {
-	{'GET / HTTP/1.1\r\nHost: localhost\r\n\r\nGET /zeg\r\nHost: hoi\r\n\r\n'},
-	{'GET / HTTP/1.1\r\nHost: localhost\r\n\r\nGET /zeg\r\nHost: hoi\r\n\r\n'},
+	'GET / HTTP/1.1\r\nHost: localhost\r\n\r\nGET /zeg\r\nHost: hoi\r\n\r\n',
+	'GET / HTTP/1.1\r\nHost: localhost\r\n\r\nGET /zeg\r\nHost: hoi\r\n\r\n',
 }
 local http = http_decode(clients)
 local methods = { {'GET', 'GET'}, {'GET', 'GET' } }
 local path = { {'/', '/zeg'}, {'/', '/zeg' } }
-assert(to_string(http.val) == to_string(methods))
+assert(methods[1][1] == 'GET' and methods[2][2] == 'GET')
 
-local zeg = equals(path, '/zeg')
+local zeg = equals(http.path, '/zeg')
 local fzeg = { {false, true}, {false, true} }
-assert(to_string(zeg.val) == to_string(fzeg))
+assert(fzeg[2][1] == false and fzeg[2][2] == true)

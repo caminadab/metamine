@@ -10,29 +10,24 @@ end
 
 function fill(orig, with)
 	local res = magic()
-	res.group = copy(orig.group)
+	
+	-- fi
+	res.group = {}
+	for i=1,#orig.group do res.group[i] = orig.group[i] end
+	for i=#orig.group,#with.group do res.group[i] = with.group[i] end
 
 	res.val = {}
 	for index,val in all(orig) do
 		-- build new index
 		local dup = {}
 		for i = 1, #orig.group - #with.group do
-			dup[i] = orig.group[i]
+			dup[i] = index[i]
 		end
 
 		table.insert(dup, 1, 'val')
 
-		deepset(res, dup, with)
-
-		print('res.group=', group2text(res.group))
-		print('orig=', orig)
-		print('dup=', table.unpack(dup))
-		print('with=', with)
-		print(to_string(res))
-		print('res=', res)
+		deepset(res, dup, with.val)
 	end
-	print('NAIS', group2text(res.group))
-	print('res '..tostring(res))
 	return res
 end
 
@@ -58,18 +53,18 @@ function func(fn, group)
 		function magic:update()
 			for index,val in all(big) do
 				local nargs = {}
+				local ii = copy(index)
+				table.insert(ii, 1, 'val')
 				for i=1,#args do
 					local ext = fill(big, args[i])
-					nargs[i] = deepget(ext, index)
-					print('GOT',nargs[i])
+					nargs[i] = deepget(ext, ii)
 				end
-				local res = fn(nargs)
-				deepset(magic, index, res)
+				local res = fn(table.unpack(nargs))
+				deepset(magic, ii, res)
 			end
 		end
 
 		for i,arg in ipairs(args) do
-			print(#arg.group, #magic.group)
 			triggers(arg, magic)
 		end
 

@@ -11,6 +11,8 @@ local function val2text(val, group)
 			return '%'.. val.id
 		elseif group[1] == 'number' then
 			return tostring(val)
+		elseif group[1] == 'bool' then
+			return tostring(val)
 		elseif group[1] == 'text' then
 			local res = string.format('%q', val)
 			res = res:gsub('\n', 'n')

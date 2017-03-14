@@ -32,6 +32,3 @@ assert(len.val == 3)
 -- totext
 local t = totext(two)
 assert(t.val == '2')
-
-
-print('all good')

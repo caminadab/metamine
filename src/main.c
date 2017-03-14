@@ -345,9 +345,13 @@ int main(int argc, char** argv) {
 
 	// self-test
 	if (argc == 2 && (!strcmp(argv[1], "-t") || !strcmp(argv[1], "--test"))) {
-		sas_dofile(L, "test/text.lua");
-		sas_dofile(L, "test/func.lua");
-		sas_dofile(L, "test/http.lua");
+		int res = 0;
+		res += sas_dofile(L, "test/text.lua");
+		res += sas_dofile(L, "test/func.lua");
+		res += sas_dofile(L, "test/http.lua");
+		if (res)
+			return -1;
+		puts("alles werkt");
 		return 0;
 	}
 	
