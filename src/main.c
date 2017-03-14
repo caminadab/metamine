@@ -285,27 +285,7 @@ int sas_close(lua_State* L) {
 	return 1;
 }
 
-int main() {
-	lua_State* L = luaL_newstate();
-	luaL_openlibs(L);
-	
-	// io lib
-	luaL_Reg io[] = {
-		{"write", io_write},
-		{0,0},
-	};
-	luaL_newlib(L, io);
-	lua_setglobal(L, "io");
-	lua_pushnil(L);
-	
-	// own librarytrigger
-	luaL_Reg lib[] = {
-		{"server", sas_server},
-		{"client", sas_client},
-		{"writefile", sas_writefile},
-		{"readfile", sas_readfile},
-		{"deletefile", sas_deletefile},
-		{"now", sas_now},
+int main(int argc, char** argv) {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	
