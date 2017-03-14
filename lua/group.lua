@@ -20,6 +20,15 @@ function equals(a, b)
 	return true
 end
 
+function name(m)
+	for k,v in pairs(_G) do
+		if m == v then
+			return k
+		end
+	end
+	return 'unknown'
+end
+
 --[[
 [list text] -> [text]
 [socket list text] -> [socket text]
@@ -30,7 +39,7 @@ function indexed(parent, key)
 	
 	-- {id->[text]} wordt {id->text}
 	if #parent.group < 2 then
-		error('not a group')
+		error(tostring(key)..' is not a group')
 	end
 	child.group = copy(parent.group)
 	table.remove(child.group, #child.group-1)

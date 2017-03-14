@@ -1,7 +1,6 @@
-
 function equals1(a,...)
 	local args = {...}
-	for i,arg in ipair(args) do
+	for i,arg in ipairs(args) do
 		if arg ~= a then
 			return false
 		end
@@ -10,17 +9,31 @@ function equals1(a,...)
 end
 
 function fill(orig, with)
-	local clone = magic()
+	local res = magic()
+	res.group = copy(orig.group)
+
+	res.val = {}
 	for index,val in all(orig) do
 		-- build new index
 		local dup = {}
-		for i = 1, 1 + #orig.group - #with.group do
+		for i = 1, #orig.group - #with.group do
 			dup[i] = orig.group[i]
 		end
 
-		deepset(clone, dup, with)
+		table.insert(dup, 1, 'val')
+
+		deepset(res, dup, with)
+
+		print('res.group=', group2text(res.group))
+		print('orig=', orig)
+		print('dup=', table.unpack(dup))
+		print('with=', with)
+		print(to_string(res))
+		print('res=', res)
 	end
-	return clone
+	print('NAIS', group2text(res.group))
+	print('res '..tostring(res))
+	return res
 end
 
 function func(fn, group)
@@ -43,7 +56,6 @@ function func(fn, group)
 
 		-- magical update
 		function magic:update()
-			--print(debug.traceback())
 			for index,val in all(big) do
 				local nargs = {}
 				for i=1,#args do
@@ -65,7 +77,4 @@ function func(fn, group)
 	end
 end
 
-
-		
-
-equals = func(equals1)
+equals = func(equals1, 'bool')

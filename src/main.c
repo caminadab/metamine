@@ -57,6 +57,28 @@ int sas_dofile(lua_State* L, char* path) {
 	return res;
 }
 
+int sas_call(lua_State* L, int nargs, int nres) {
+	lua_getglobal(L, "onerror");
+	int onerror = lua_gettop(L) - nargs - 1;
+	lua_insert(L, onerror);
+
+	int len;
+	int res = lua_pcall(L, nargs, nres, onerror);
+	
+	if (res) {
+		writel(1,RED);
+		const char* err = lua_tolstring(L, -1, &len);
+		write(1,err,len);
+		writel(1,WHITE);
+		lua_pop(L, 1);
+	} 
+	
+	// pop error func
+	lua_pop(L, 1);
+	
+	return res;
+}
+
 int sas_dosafe(lua_State* L, char* buf, int len) {
 	lua_getglobal(L, "onerror");
 	int onerror = lua_gettop(L);
@@ -90,25 +112,25 @@ int sas_dosafe(lua_State* L, char* buf, int len) {
 
 static void stackDump (lua_State *L) {
 	printf("\n");
-		int i=lua_gettop(L);
-		printf(" ----------------  Stack Dump ----------------\n" );
-		while(  i   ) {
-            int t = lua_type(L, i);
-            switch (t) {
-              case LUA_TSTRING:
-                printf("%d:`%s'\n", i, lua_tostring(L, i));
-              break;
-              case LUA_TBOOLEAN:
-                printf("%d: %s\n",i,lua_toboolean(L, i) ? "true" : "false");
-              break;
-              case LUA_TNUMBER:
-                printf("%d: %g\n",  i, lua_tonumber(L, i));
-             break;
-             default: printf("%d: %s\n", i, lua_typename(L, t)); break;
-            }
-           i--;
-          }
-         printf("--------------- Stack Dump Finished ---------------\n" );
+	int i=lua_gettop(L);
+	printf(" ----------------  Stack Dump ----------------\n" );
+	while(  i   ) {
+		int t = lua_type(L, i);
+		switch (t) {
+			case LUA_TSTRING:
+				printf("%d:`%s'\n", i, lua_tostring(L, i));
+				break;
+			case LUA_TBOOLEAN:
+				printf("%d: %s\n",i,lua_toboolean(L, i) ? "true" : "false");
+				break;
+			case LUA_TNUMBER:
+				printf("%d: %g\n",  i, lua_tonumber(L, i));
+				break;
+			default: printf("%d: %s\n", i, lua_typename(L, t)); break;
+		}
+		i--;
+	}
+	printf("--------------- Stack Dump Finished ---------------\n" );
 
 	fflush(stdout);
 }
@@ -140,7 +162,7 @@ int net_write(lua_State* L, int id) {
 		lua_getglobal(L, "onwrite");
 		lua_pushinteger(L, id);
 		lua_pushinteger(L, written);
-		lua_call(L, 2, 0);
+		sas_call(L, 2, 0);
 		
 		// only read now
 		struct epoll_event ev;
@@ -152,11 +174,11 @@ int net_write(lua_State* L, int id) {
 	
 	// close !
 	else {
-		printf("main.c:157 CLOSE\n");
+		puts("close write");
 		close(id);
 		lua_getglobal(L, "onclose");
 		lua_pushinteger(L, id);
-		lua_call(L, 1, 0);
+		sas_call(L, 0, 0);
 	}
 	return 0;
 }
@@ -177,7 +199,7 @@ int net_read(lua_State* L, int id) {
 			lua_getglobal(L, "onaccept");
 			lua_pushinteger(L, id);
 			lua_pushinteger(L, cid);
-			lua_call(L, 2, 0);
+			sas_call(L, 2, 0);
 		}	
 	}
 
@@ -191,16 +213,16 @@ int net_read(lua_State* L, int id) {
 			lua_getglobal(L, "onread");
 			lua_pushinteger(L, id);
 			lua_pushlstring(L, buf, len);
-			lua_call(L, 2, 0);
+			sas_call(L, 2, 0);
 		}
 		
 		// close
 		else if (len == 0) {
-			printf("main.c:201 CLOSE\n");
+			puts("close read");
 			close(id);
 			lua_getglobal(L, "onclose");
 			lua_pushinteger(L, id);
-			lua_call(L, 1, 0);
+			sas_call(L, 1, 0);
 		}
 		
 		// error
@@ -332,9 +354,6 @@ int main() {
 	struct epoll_event evs[0x20];
 
 	while (1) {
-		//sas_dosafel(L, "print(srv.clients)");
-		puts("---------------------");
-
 		int num = epoll_wait(eid, evs, 0x20, -1);
 		if (num <= 0) {
 			printf("EPOLL ERROR %d: %s\n", num, strerror(errno));
