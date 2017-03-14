@@ -302,7 +302,7 @@ int satis_prompt(lua_State* L) {
 }
 
 
-int main() {
+int main(int argc, char** argv) {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	
@@ -341,6 +341,14 @@ int main() {
 		size_t len;
 		const char* c = lua_tolstring(L,-1,&len);
 		write(1,c,len);
+	}
+
+	// self-test
+	if (argc == 2 && (!strcmp(argv[1], "-t") || !strcmp(argv[1], "--test"))) {
+		sas_dofile(L, "test/text.lua");
+		sas_dofile(L, "test/func.lua");
+		sas_dofile(L, "test/http.lua");
+		return 0;
 	}
 	
 	// watches
