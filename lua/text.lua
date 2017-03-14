@@ -66,32 +66,6 @@ function ensure(index, val)
 	return cur,index[#index-1]
 end
 
-function deepget(t,keys)
-	local c = t
-	
-	for i=1,#keys do
-		local key = keys[i]
-		if c[key] == nil then
-			return nil
-		end
-		c = c[key]
-	end
-	
-	return c
-end
-
-function deepset(t,keys,v)
-	local c = t
-	
-	-- create tables
-	for i=1,#keys-1 do
-		local key = keys[i]
-		c[key] = c[key] or {}
-		c = c[key]
-	end
-	c[keys[#keys]] = v
-end
-
 function split(text, delim)
 	text = enchant(text)
 	delim = enchant(delim)
@@ -227,8 +201,6 @@ function append(...)
 	
 	return agg
 end
-
-
 
 function length(text)
 	text = enchant(text)

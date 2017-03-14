@@ -1,5 +1,3 @@
-
-
 read2magic = {}
 write2magic = {}
 isserver = {}
@@ -7,7 +5,6 @@ write2data = {}
 cid2accept = {}
 
 function onaccept(id, cid)
-	print("onaccept")
 	local server = read2magic[id]
 	cid2accept[cid] = server
 	server:accept(cid)
@@ -15,14 +12,12 @@ function onaccept(id, cid)
 end
 
 function onread(id, data)
-	print('onread')
 	local client = read2magic[id]
 	client:read(data)
 	trigger(client)
 end
 
 function onwrite(id, written)
-	print('onwrite')
 	local client = write2magic[id]
 	client:write(written)
 	write2magic[id] = nil
@@ -32,19 +27,19 @@ end
 
 function read(id, magic)
 	read2magic[id] = magic
-	print("READ", sas.read(id))
+	sas.read(id)
 end
 
 function write(id, magic, data)
 	write2magic[id] = magic
 	write2data[id] = data
-	print("WRITE", sas.write(id))
+	sas.write(id)
 end
 
 function accept(id, magic)
 	read2magic[id] = magic
 	isserver[id] = true
-	print("ACCEPT", sas.read(id))
+	sas.read(id)
 end
 
 function onclose(id)

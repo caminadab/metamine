@@ -1,5 +1,9 @@
 
 local function val2text(val, group)
+	if not val then
+		return '<none>'
+	end
+
 	if #group == 1 then
 		if group[1] == 'server' then
 			return '*'
@@ -7,21 +11,23 @@ local function val2text(val, group)
 			return '%'.. val.id
 		elseif group[1] == 'number' then
 			return tostring(val)
+		elseif group[1] == 'bool' then
+			return tostring(val)
 		elseif group[1] == 'text' then
 			local res = string.format('%q', val)
 			res = res:gsub('\n', 'n')
 			return res
 		else
-			return '<UNKNOWN>'
+			return '<unknown>'
 		end
 	end
-	
 
 	-- sequence
 	if group[1] == 'list' then
 		local res = {'['}
 		local subtype = copy(group)
 		table.remove(subtype, 1)
+
 		for i,item in pairs(val) do
 			table.insert(res, val2text(item, subtype))
 			if next(val, i) then
@@ -69,7 +75,7 @@ local function val2text(val, group)
 	return '<not implemented>'
 end
 
-local function group2text(group)
+function group2text(group)
 	if #group == 0 then
 		return 'none'
 	end
@@ -100,4 +106,3 @@ function magic2text(magic)
 	
 	return group ..' '.. val2text(magic.val, magic.group)
 end	
-
