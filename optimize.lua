@@ -55,15 +55,17 @@ function optimize(s)
 
 	-- specific rules!
 	for rule in args(rules) do
-		local map = match(s, rule[2])
-		if map then
-			s = substitute(rule[3], map)
-			--print('USING RULE')
-			--print(unparse_small(rule))
-			--print('WE GOT')
-			--print(unparse_small(s))
-			if type(s)=='table' then
-				s = eval(s)
+		if rule[1]=='=>' then
+			local map = match(s, rule[2])
+			if map then
+				s = substitute(rule[3], map)
+				--print('USING RULE')
+				--print(unparse_small(rule))
+				--print('WE GOT')
+				--print(unparse_small(s))
+				if type(s)=='table' then
+					s = eval(s)
+				end
 			end
 		end
 	end

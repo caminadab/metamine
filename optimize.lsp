@@ -83,6 +83,9 @@
 	(=> (* (| A B) D)	(| (* D A) (* D B)) )
 	(=> (/ D (| A B))	(| (/ D A) (/ D B)) )
 	(=> (/ (| A B) D)	(| (/ D A) (/ D B)) )
+	(=> (.. D (| A B))	(| (.. D A) (.. D B)) )
+	(=> (.. (| A B) D)	(| (.. D A) (.. D B)) )
+	(=> (sum (| A B)) (| (sum A) (sum B)) )
 	(=> (< D (| A B))	(| (< D A) (< D B)) )
 	(=> (<= D (| A B))	(| (<= D A) (<= D B)) )
 	(=> (| X X)			X)
@@ -104,6 +107,35 @@
 		  (if (< C D) (= A C) false)
 		)
 	)
+
+	(<=> (and (* A B) (: A number) (: B number)) (* B A) )
+	(<=> (+ (* C A) (* C B))	(* C (+ A B)) )
+	(<=> (/ A B)				(* A (/ 1 B)) )
+	(<=>
+		(and
+			(commutative F)
+			(F A (F B C))
+		)
+		(F B (F A C))
+	)
+	(<=> (and (commutative F) (F A B))	(F B A) )
+	(=> (commutative
+		  	(| and or xor min max + | =))
+			true )
+
+	(=> (+ (+ X Y) X) (+ (* X 2) Y) )
+	(=> (/ (+ A B) C) (+ (/ A C) (/ B C)) )
+	(=> (/ (* A B) B)	A)
+	(=> (- (+ A B) A)	B)
+	(=> (* (+ A B) C)	(+ (* A C) (* B C)) )
+	
+	(=> (sum (.. A B))
+		(*
+		  (/ (+ B A) 2)
+		  (+ 1 (- B A))
+		)
+	)
+	(=> (sum X) X)
 
 	(=> (= 0 (+
 			   (* A (^ X 2))

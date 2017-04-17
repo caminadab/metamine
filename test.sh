@@ -1,6 +1,7 @@
 while true
 do 
+	lua test.lua > .out
 	clear
-	lua test.lua
+	cat .out
 	sleep 1
 done

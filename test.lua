@@ -69,11 +69,15 @@ function eval(s)
 end
 
 local src = [[
-(and
-	(= 0 (+ (* 8 (^ x 2)) (* 10 x) 2))
-	(< x (| 8 6))
+(sum
+	(+
+		1
+		(.. 1 (| 2 3))
+	)
 )
 ]]
+
+--[[ 8*x^2 + 10*x + 2 = 0]]
 
 -- test run! :)
 print 'ORIGINEEL'
