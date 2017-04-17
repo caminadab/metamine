@@ -1,13 +1,3 @@
-function equals1(a,...)
-	local args = {...}
-	for i,arg in ipairs(args) do
-		if arg ~= a then
-			return false
-		end
-	end
-	return true
-end
-
 function fill(orig, with)
 	local res = magic()
 	
@@ -47,7 +37,9 @@ function func(fn, group)
 		end
 		
 		magic.group = copy(big.group)
-		magic.group[#magic.group] = group
+		if group then
+			magic.group[#magic.group] = group
+		end
 
 		-- magical update
 		function magic:update()
@@ -72,4 +64,16 @@ function func(fn, group)
 	end
 end
 
+function equals1(a,...)
+	local args = {...}
+	for i,arg in ipairs(args) do
+		if arg ~= a then
+			return false
+		end
+	end
+	return true
+end
+
+
 equals = func(equals1, 'bool')
+where = func(function (obj, bool) if bool then return obj else return nil end end)

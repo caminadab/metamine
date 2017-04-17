@@ -17,3 +17,7 @@ assert(b2.val == false)
 
 local b3 = equals(abc, 'a')
 assert(b3.val[1] and not b3.val[2] and not b3.val[3])
+
+-- where
+local w = where(abc, equals(abc, 'a'))
+assert(w.val[1] == 'a' and w.val[2] == nil and w.val[3] == nil)
