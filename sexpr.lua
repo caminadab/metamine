@@ -1,4 +1,18 @@
-function head(t) return t[1] end
+function head(t)
+	if type(t)~='table' then
+		return nil
+	end
+	return t[1]
+end
+
+function atom(t)
+	return type(t)=='string'
+end
+
+function exp(t)
+	return type(t)=='table'
+end
+
 function args(s)
 	local i = 1
 	return function ()
