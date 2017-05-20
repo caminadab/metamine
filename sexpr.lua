@@ -106,11 +106,18 @@ function parse(sexpr)
 	return stack[1]
 end
 
+local function unparse_atom(atom)
+	atom = string.format('%q', atom)
+	atom = string.gsub(atom, '\n', '\\n')
+	atom = atom:sub(2, -2)
+	return atom
+end
+
 local function unparse_work(sexpr, tabs, res)
 	tabs = tabs or 0
 	res = res or {}
 	if type(sexpr) == 'string' then
-		table.insert(res, sexpr)
+		table.insert(res, unparse_atom(sexpr))
 	elseif type(sexpr) == 'table' then
 		-- alleen lijnen als we complex zijn!
 		local complex = false

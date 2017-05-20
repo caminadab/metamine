@@ -1,5 +1,6 @@
 require 'sexpr'
 require 'builtin'
+require 'eval'
 
 local src = [[
 (
@@ -9,8 +10,8 @@ local src = [[
 			payload
 		)
 	)
-	(:= (. a payload) hoi)
-	(:= a message)
+	(:= (. a payload) 'hoi')
+	(: a message)
 	(:= h (hex a))
 )
 ]]
@@ -18,6 +19,7 @@ local src = [[
 --[[
 message := hton #payload  ||  payload
 a.payload := 'hoi'
+a := message
 h := hex a
 ]]
 

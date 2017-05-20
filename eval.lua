@@ -31,6 +31,7 @@ function simplesolve(sexp)
 			local scope = src[2]
 			for i,eq in ipairs(sexp) do
 				if eq[2]==scope then
+					eq[1] = ':='
 					eq[3] = substitute(eq[3], dst, src[3])
 				end
 			end
@@ -39,12 +40,34 @@ function simplesolve(sexp)
 	
 	-- evaluate
 	for _,eq in ipairs(sexp) do
-		eq[3] = eval(eq[3])
+		if eq[1]~='=' then
+			eq[3] = eval(eq[3])
+		end
 	end
 	
 	return sexp
 end
 	
+function tolua(atom)
+	if atom:sub(1,1)=="'" then
+		return atom:sub(2,-2)
+	elseif tonumber(atom) then
+		return tonumber(atom)
+	else
+		return true
+	end
+end
+
+function tolisp(o)
+	if type(o)=='string' then
+		return "'"..o.."'"
+	elseif type(o)=='number' then
+		return tostring(o)
+	else
+		return o
+	end
+end
+
 function eval(sexp)
 	-- zijn het ass?
 	if exp(sexp) and head(sexp[1])==':=' then
@@ -69,11 +92,21 @@ function eval(sexp)
 			args = args[1]
 		end
 		
+		-- maak parameters
+		local newargs = {}
+		for i,arg in ipairs(args) do
+			if atom(arg) then
+				newargs[i] = tolua(arg)
+			else
+				newargs[i] = true
+			end
+		end
+		
 		-- nu laat ons gaan
 		local builtin = builtin[head(sexp)]
-		local ok,res = pcall(builtin, table.unpack(args))
+		local ok,res = pcall(builtin, table.unpack(newargs))
 		if ok then
-			return tostring(res)
+			return tolisp(res)
 		else
 			return sexp
 		end
