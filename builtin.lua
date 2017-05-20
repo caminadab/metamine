@@ -1,4 +1,6 @@
-return {
+require 'util'
+
+builtin = {
 	-- constants
 	['false'] = false;
 	['true'] = true;
@@ -6,13 +8,34 @@ return {
 	['tau'] = 2 * math.pi;
 
 	-- arith
-	['+'] = function (a, b) return a + b end;
-	['-'] = function (a, b)
-		if not b then return -a
-		else return a - b end
+	['+'] = function (...)
+		local res = 0
+		for i,n in ipairs({...}) do
+			res = res + n
+		end
+		return res
 	end;
-	['*'] = function (a, b) return a * b end;
-	['/'] = function (a, b) return a / b end;
+	['-'] = function (a,...)
+		local res = a
+		for i,n in ipairs({...}) do
+			res = res - n
+		end
+		return res
+	end;
+	['*'] = function (...)
+		local res = 1
+		for i,n in ipairs({...}) do
+			res = res * n
+		end
+		return res
+	end;
+	['/'] = function (a,...)
+		local res = a
+		for i,n in ipairs({...}) do
+			res = res / n
+		end
+		return res
+	end;
 	['^'] = function (a, b) return a ^ b end;
 	['%'] = function (a, b) return a % b end;
 
@@ -30,15 +53,23 @@ return {
 	min = math.min;
 
 	-- logic
-	['if'] = function (cond, thn, els) if cond then return thn else return els end end;
+	['if'] = function (cond, thn, els)
+		if cond=='true' then
+			return thn
+		elseif cond=='false' then
+			return els
+		else
+			error('no')
+		end
+	end;
 	['and'] = function (a, b) return a and b end;
 	['or'] = function (a, b) return a or b end;
 	['xor'] = function (a, b) return a ~= b end;
 	['not'] = function (a) return not a end;
 	['<'] = function (a, b) return a < b end;
 	['<='] = function (a, b) return math.abs(a,b) < 0.1 or a < b end;
-	['>'] = function (a, b) return a > b end;
-	['>='] = function (a, b) return math.abs(a,b) < 0.1 or a > b end;
+	['>'] = function (a, b) return tonumber(a) > tonumber(b) end;
+	['>='] = function (a, b) return math.abs(a,b) < 0.1 or tonumber(a) > tonumber(b) end;
 	['='] = function (a, b) return math.abs(a-b) < 0.1 end;
 
 	-- meta
@@ -59,4 +90,11 @@ return {
 	['+-'] = function (a)
 		return {'|',a,-a}
 	end;
+	
+	-- text
+	['||'] = function (...) return table.concat({...}) end;
+	['#'] = function (text) return #text end;
+	['hex'] = hex_encode;
+	['ntoh'] = ntoh;
+	['hton'] = function (text) return hton(text, 4) end;
 }

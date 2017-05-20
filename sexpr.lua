@@ -1,4 +1,18 @@
-function head(t) return t[1] end
+function head(t)
+	if type(t)~='table' then
+		return nil
+	end
+	return t[1]
+end
+
+function atom(t)
+	return type(t)=='string'
+end
+
+function exp(t)
+	return type(t)=='table'
+end
+
 function args(s)
 	local i = 1
 	return function ()
@@ -100,10 +114,17 @@ function parse(sexpr)
 	return stack[1]
 end
 
+local function unparse_atom(atom)
+	atom = string.format('%q', atom)
+	atom = string.gsub(atom, '\n', '\\n')
+	atom = atom:sub(2,-2)
+	return atom
+end
+
 local function unparse_len(sexpr)
 	local len
-	if type(sexpr)=='string' then
-		len = #sexpr
+	if atom(sexpr) then
+		len = #unparse_atom(sexpr)
 	else
 		len = 2 + #sexpr-1 -- (A B C)
 		for i,sub in ipairs(sexpr) do
@@ -116,10 +137,10 @@ end
 local function unparse_work(sexpr, maxlen, tabs, res)
 	tabs = tabs or 0
 	res = res or {}
-	if type(sexpr) == 'string' then
+	if atom(sexpr) then
 		len = #sexpr
-		table.insert(res, sexpr)
-	elseif type(sexpr) == 'table' then
+		table.insert(res, unparse_atom(sexpr))
+	else
 		local split = unparse_len(sexpr) > maxlen
 		table.insert(res, '(')
 		for i,sub in ipairs(sexpr) do
@@ -137,9 +158,6 @@ local function unparse_work(sexpr, maxlen, tabs, res)
 			table.insert(res, string.rep('  ', tabs))
 		end
 		table.insert(res, ')')
-	else
-		error('sexpr is of type '..type(sexpr))
-		table.insert(res, tostring(sexpr))
 	end
 	return res
 end
