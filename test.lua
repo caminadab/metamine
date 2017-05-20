@@ -68,16 +68,39 @@ function eval(s)
 	return res
 end
 
-local src = [[
-(sum
-	(+
-		1
-		(.. 1 (| 2 3))
-	)
-)
-]]
+local src = file('sas/pwp.sas')
+print('HIER')
+print(src)
 
---[[ 8*x^2 + 10*x + 2 = 0]]
+function to_sas_work(s,res)
+	if type(s)=='string' then
+		table.insert(res, s)
+	else
+		if s[1]=='and' then
+			for i=2,#s do
+				to_sas_work(s[i],res)
+				table.insert(res, '\n')
+			end
+		elseif #s==2 then
+			table.insert(res, s[1])
+			to_sas_work(s[2], res)
+		elseif #s>=3 then
+			for i=2,#s do
+				to_sas_work(s[i], res)
+				table.insert(res, ' ')
+				if i~=#s then
+					table.insert(res, s[1])
+					table.insert(res, ' ')
+				end
+			end
+		end
+	end
+	return res
+end
+
+function to_sas(s)
+	return table.concat(to_sas_work(s,{}))
+end
 
 -- test run! :)
 print 'ORIGINEEL'
@@ -87,4 +110,3 @@ print(unparse(sexpr))
 print ''
 print 'GEEVALUEERD'
 print(unparse(eval(sexpr)))
-

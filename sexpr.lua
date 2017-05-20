@@ -22,13 +22,21 @@ function parse(sexpr)
 	local ch = 1
 	
 	function get()
-		local ch = sexpr:sub(i,i)
-		if ch=='' then
-			ch = nil
-		end
-		return ch
+		local char
+		repeat
+			char = sexpr:sub(i,i)
+			if char == '' then
+				char = nil
+			end
+			if char == ';' then
+				i = sexpr:find('\n', i)
+				line = line + 1
+				ch = 1
+			end
+		until char ~= ';'
+		return char
 	end
-	
+
 	function consume()
 		if sexpr[i] == '\n' then
 			line = line + 1
@@ -92,69 +100,52 @@ function parse(sexpr)
 	return stack[1]
 end
 
-local function unparse_work(sexpr, tabs, res)
+local function unparse_len(sexpr)
+	local len
+	if type(sexpr)=='string' then
+		len = #sexpr
+	else
+		len = 2 + #sexpr-1 -- (A B C)
+		for i,sub in ipairs(sexpr) do
+			len = len + unparse_len(sub)
+		end
+	end
+	return len
+end
+
+local function unparse_work(sexpr, maxlen, tabs, res)
 	tabs = tabs or 0
 	res = res or {}
 	if type(sexpr) == 'string' then
+		len = #sexpr
 		table.insert(res, sexpr)
 	elseif type(sexpr) == 'table' then
-		-- alleen lijnen als we complex zijn!
-		local complex = false
-		for i,sub in ipairs(sexpr) do
-			if type(sub)=='table' then
-				complex = true
-			end
-		end
-
+		local split = unparse_len(sexpr) > maxlen
 		table.insert(res, '(')
-
-			-- BEGIN --
-			if #sexpr==3 then
-			local s = {}
-			for i,v in ipairs(sexpr) do
-				s[i] = v
-			end
-			 sexpr = s
-			sexpr[2],sexpr[1] = sexpr[1],sexpr[2]
-			end
-			-- EINDE --
-
-		if complex then
-
-			-- BEGIN
-			if #sexpr==3 then
-			table.insert(res, '\n')
-			table.insert(res, string.rep('  ',tabs+1))
-			end
-			-- EINDE
-
-			for i,sub in ipairs(sexpr) do
-				if i > 1 then
-					table.insert(res, string.rep('  ',tabs+1))
-				end
-				unparse_work(sub, tabs+1, res)
+		for i,sub in ipairs(sexpr) do
+			if split then
 				table.insert(res, '\n')
+				table.insert(res, string.rep('  ', tabs+1))
 			end
-			table.insert(res, string.rep('  ',tabs))
-		else
-			for i,sub in ipairs(sexpr) do
-				unparse_work(sub, tabs+1, res)
-				if next(sexpr, i) then
-					table.insert(res, ' ')
-				end
+			unparse_work(sub, maxlen, tabs+1, res)
+			if next(sexpr, i) then
+				table.insert(res, ' ')
 			end
 		end
-		
+		if split then
+			table.insert(res, '\n')
+			table.insert(res, string.rep('  ', tabs))
+		end
 		table.insert(res, ')')
 	else
-		--error('sexpr is of type '..type(sexpr))
+		error('sexpr is of type '..type(sexpr))
 		table.insert(res, tostring(sexpr))
 	end
 	return res
 end
 
 function unparse(sexpr)
-	return table.concat(unparse_work(sexpr))
+	return table.concat(unparse_work(sexpr, 40))
 end
 
 function unparse_small(sexpr, res)
