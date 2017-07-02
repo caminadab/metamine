@@ -16,7 +16,7 @@ end
 
 -- (a:=3 b:=a+a) oplosser
 -- nu met subtypes ;4
-function simplesolve(sexp)
+function evalLabel(sexp)
 	-- substitute
 	for _,eq in ipairs(sexp) do
 		local src,dst = eq[2],eq[3]
@@ -27,14 +27,7 @@ function simplesolve(sexp)
 				eq[3] = substitute(eq[3], dst, src)
 			end
 		else
-			-- strekking variabele
-			local scope = src[2]
-			for i,eq in ipairs(sexp) do
-				if eq[2]==scope then
-					eq[1] = ':='
-					eq[3] = substitute(eq[3], dst, src[3])
-				end
-			end
+			eq[3] = 'error'
 		end
 	end
 	
@@ -68,7 +61,17 @@ function tolisp(o)
 	end
 end
 
+function evalTest(sexp)
+	
+end
+
 function eval(sexp)
+	sexp = evalTest(sexp)
+	sexp = evalLabel(sexp)
+	sexp = evalPure(sexp)
+end
+
+function evalLabel(sexp)
 	-- zijn het ass?
 	if exp(sexp) and head(sexp[1])==':=' then
 		return simplesolve(sexp)

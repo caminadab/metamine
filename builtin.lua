@@ -4,7 +4,6 @@ builtin = {
 	-- constants
 	['false'] = false;
 	['true'] = true;
-	['pi'] = math.pi;
 	['tau'] = 2 * math.pi;
 
 	-- arith
@@ -76,7 +75,12 @@ builtin = {
 	['..'] = function (a,b)
 		if a == b then return a
 		elseif a > b then return 'undefined'
-		else return {'..',a,b}
+		else
+			local res = {','}
+			for i=a,b-1 do
+				table.insert(res, tostring(i))
+			end
+			return res
 		end
 	end;
 	['to'] = function (a,b)
