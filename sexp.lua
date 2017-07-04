@@ -121,13 +121,13 @@ local function unparse_atom(atom)
 	return atom
 end
 
-local function unparse_len(sexpr)
+local function unparse_len(sexp)
 	local len
-	if atom(sexpr) then
-		len = #unparse_atom(sexpr)
+	if atom(sexp) then
+		len = #unparse_atom(sexp)
 	else
-		len = 2 + #sexpr-1 -- (A B C)
-		for i,sub in ipairs(sexpr) do
+		len = 2 + #sexp-1 -- (A B C)
+		for i,sub in ipairs(sexp) do
 			len = len + unparse_len(sub)
 		end
 	end

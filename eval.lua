@@ -1,3 +1,5 @@
+require 'pure'
+
 function substitute(sexp, dst, src)
 	if atom(sexp) then
 		if sexp==src then
@@ -15,8 +17,11 @@ function substitute(sexp, dst, src)
 end
 
 -- (a:=3 b:=a+a) oplosser
--- nu met subtypes ;4
 function evalLabel(sexp)
+	if atom(sexp) then
+		return
+	end
+
 	-- substitute
 	for _,eq in ipairs(sexp) do
 		local src,dst = eq[2],eq[3]
@@ -34,86 +39,120 @@ function evalLabel(sexp)
 	-- evaluate
 	for _,eq in ipairs(sexp) do
 		if eq[1]~='=' then
-			eq[3] = eval(eq[3])
+			eq[3] = evalPure(eq[3])
 		end
 	end
 	
 	return sexp
 end
 	
-function tolua(atom)
-	if atom:sub(1,1)=="'" then
-		return atom:sub(2,-2)
-	elseif tonumber(atom) then
-		return tonumber(atom)
-	else
-		return true
-	end
-end
-
-function tolisp(o)
-	if type(o)=='string' then
-		return "'"..o.."'"
-	elseif type(o)=='number' then
-		return tostring(o)
-	else
-		return o
-	end
-end
-
 function evalTest(sexp)
-	
+	local res = sexp
+	if exp(sexp) and sexp[1]=='=?' then
+		if #sexp == 3 then
+			local a = sexp[2]
+			local b = sexp[3]
+			local a = unparse(a)
+			local b = unparse(b)
+			if a==b then
+				return 'true'
+			else
+				return sexp
+			end
+		else
+			return 'syntax-error'
+		end
+	end
+	return res
+end
+
+local numFunctions = {
+	['+'] = function (a,b) return a + b end;
+	['-'] = function (a,b) return a - b end;
+	['*'] = function (a,b) return a * b end;
+	['/'] = function (a,b) return b~=0 and a / b or 'oo' end;
+	['^'] = function (a,b) return a ^ b end;
+}
+
+
+-- (+ 1 2) of (+ (1 2))
+function evalNum(sexp)
+	local args = {}
+	if exp(sexp) then
+		local op = sexp[1]
+
+		-- irrelevante formule
+		if not numFunctions[op] then
+			return sexp
+		end
+
+		-- (+ 1 2)
+		if atom(sexp[2]) then
+			for i=2,#sexp do
+				local num = tonumber(sexp[i])
+				if not num then
+					return sexp
+				end
+				args[i-1] = num
+			end
+		else
+			if #sexp ~= 2 then
+				return 'syntax-error'
+			end
+			for i=1,#sexp[2] do
+				local num = tonumber(sexp[2][i])
+				if not num then
+					return sexp
+				end
+				args[i] = num
+			end
+		end
+
+		-- hoe definieer je + 1? als 1 toch?
+		if #args==0 then return 'syntax-error' end
+		if #args==1 then
+			return tostring(args[1])
+		end
+
+		-- a-b-c
+
+		local fn = numFunctions[op]
+		if fn then
+			local res = fn(args[1], args[2])
+			for i=3,#args do
+				res = fn(res, args[i])
+			end
+			return tostring(res)
+		end
+	else
+		return sexp
+	end
+end
+
+function evalRec(sexp)
+	if exp(sexp) then
+		-- recurseer
+		for i,v in pairs(sexp) do
+			sexp[i] = evalRec(v)
+		end
+
+		-- subsystemen
+		sexp = evalNum(sexp)
+		sexp = evalTest(sexp)
+	end
+	return sexp
 end
 
 function eval(sexp)
-	sexp = evalTest(sexp)
-	sexp = evalLabel(sexp)
-	sexp = evalPure(sexp)
-end
+	local prev = unparse_small(sexp)
+	while true do
+		sexp = evalRec(sexp)
 
-function evalLabel(sexp)
-	-- zijn het ass?
-	if exp(sexp) and head(sexp[1])==':=' then
-		return simplesolve(sexp)
+		local now = unparse_small(sexp)
+		if now == prev then
+			break
+		end
+		prev = now
 	end
-	
-	-- getal
-	if tonumber(sexp) then return sexp end
-	
-	-- eerst subs oplossen!
-	if exp(sexp) then
-		for i,arg in ipairs(sexp) do
-			sexp[i] = eval(sexp[i])
-		end
-	end
-	
-	-- standaard
-	if builtin[head(sexp)] then
-		-- subs
-		local args = tail(sexp)
-		if #args==1 and exp(args[1]) then
-			args = args[1]
-		end
-		
-		-- maak parameters
-		local newargs = {}
-		for i,arg in ipairs(args) do
-			if atom(arg) then
-				newargs[i] = tolua(arg)
-			else
-				newargs[i] = true
-			end
-		end
-		
-		-- nu laat ons gaan
-		local builtin = builtin[head(sexp)]
-		local ok,res = pcall(builtin, table.unpack(newargs))
-		if ok then
-			return tolisp(res)
-		else
-			return sexp
-		end
-	end
-	
 	return sexp
 end

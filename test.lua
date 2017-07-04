@@ -1,5 +1,6 @@
-require 'sexpr'
+require 'sexp'
 require 'eval'
 require 'util'
 
-eval(file('test.lisp'))
+local res = eval(parse(file('test.lisp')))
+print(unparse(res))

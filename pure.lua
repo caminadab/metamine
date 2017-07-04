@@ -1,6 +1,6 @@
 require 'util'
 
-builtin = {
+local builtin = {
 	-- constants
 	['false'] = false;
 	['true'] = true;
@@ -89,7 +89,15 @@ builtin = {
 		else return {'to',a,b} end
 	end;
 	['|'] = function (...)
-		return {'|',...}
+		local uniq = {}
+		for i,v in ipairs({...}) do
+			uniq[v] = true
+		end
+		local res = {'|'}
+		for v in pairs(uniq) do
+			table.insert(res, v)
+		end
+		return res
 	end;
 	['+-'] = function (a)
 		return {'|',a,-a}
@@ -102,3 +110,43 @@ builtin = {
 	['ntoh'] = ntoh;
 	['hton'] = function (text) return hton(text, 4) end;
 }
+
+if not table.unpack then
+	table.unpack = function(table)
+		return table[1], table[2], table[3], table[4]
+	end
+end
+
+function evalPure(sexp)
+	if exp(sexp) then
+		-- subs
+		local args = tail(sexp)
+		if #args==1 and exp(args[1]) then
+			args = args[1]
+		end
+		
+		-- maak parameters
+		local newargs = {}
+		for i,arg in ipairs(args) do
+			if atom(arg) then
+				newargs[i] = tolua(arg)
+			else
+				newargs[i] = true
+			end
+		end
+		
+		-- nu laat ons gaan
+		local builtin = builtin[head(sexp)]
+		local ok,res = pcall(builtin, table.unpack(newargs))
+		if ok then
+			if type(res)=='table' then
+				print(unparse(tolisp(res)))
+				end
+			return tolisp(res)
+		else
+			return sexp
+		end
+	else
+		return sexp
+	end
+end
