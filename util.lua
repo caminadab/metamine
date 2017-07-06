@@ -1,6 +1,7 @@
 function file(name, data)
 	if not data then
 		local f = io.open(name, 'r')
+		if not f then error('file-not-found ' .. name) end
 		data = f:read("*a")
 		f:close()
 		return data

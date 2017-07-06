@@ -13,6 +13,35 @@ function exp(t)
 	return type(t)=='table'
 end
 
+local function new()
+	local res = {}
+	setmetatable(res, {
+		__eq = function(self, other)
+			print('CAL')
+			if #self ~= #other then return false end
+			for i,v in pairs(self) do
+				if not (self[v] == other[v]) then
+					return false
+				end
+			end
+			return true
+		end;
+	})
+	return res
+end
+
+function copy(sexp)
+	if atom(sexp) then
+		return sexp
+	else
+		local res = new()
+		for i,v in pairs(sexp) do
+			res[i] = copy(v)
+		end
+		return res
+	end
+end
+
 function args(s)
 	local i = 1
 	return function ()
@@ -72,7 +101,7 @@ function parse(sexpr)
 		
 		-- bracket?
 		if get() == '(' then
-			table.insert(stack, {})
+			table.insert(stack, new())
 			consume()
 		
 		-- close?
@@ -88,7 +117,7 @@ function parse(sexpr)
 		-- error?
 		elseif not get() then
 			break
-		
+	
 		-- list?
 		else
 			local id = {}
@@ -163,6 +192,7 @@ local function unparse_work(sexpr, maxlen, tabs, res)
 end
 
 function unparse(sexpr)
+	if not sexpr then return 'none' end
 	return table.concat(unparse_work(sexpr, 40))
 end
 
@@ -174,6 +204,9 @@ function unparse_small(sexpr, res)
 		table.insert(res,sexpr)
 	else
 		table.insert(res, '(')
+		if type(sexpr)~='table' then
+			return {"ERROR"}
+		end
 		for i,sub in ipairs(sexpr) do
 			unparse_small(sub, res)
 			if next(sexpr, i) then
