@@ -4,4 +4,4 @@ require 'eval'
 
 dbg = require 'debugger'
 
-print(unparse(eval(parse(file(...)))))
+print("\n",unparse(eval(parse(file(...)))))

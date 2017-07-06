@@ -57,7 +57,7 @@ function match(sexp, src, res)
 			-- negeren maar
 		elseif variable(src[i]) then
 				-- val mismatch
-				if res[src[i]] and unparse_small(sexp[i]) ~= unparse_small(src[i]) then
+				if res[src[i]] and unparse_small(sexp[i]) ~= unparse_small(res[src[i]]) then
 					return false
 				end
 
@@ -87,6 +87,9 @@ function match(sexp, src, res)
 end
 
 assert(match(parse("(+ 0 a)"), parse("(+ 0 A)")).A == 'a')
+assert(match(parse("(+ a a)"), parse("(+ A A)")).A == 'a')
+assert(match(parse("(+ 1 1 b)"), parse("(+ A A ...)")).A == '1')
+assert(match(parse("(| 1 1 2 0)"), parse("(| A A ...)")).A == '1')
 assert(match(parse("(+ a)"), parse("(+ 0)")) == false)
 assert(match(parse("(+ a)"), parse("(+ A B)")) == false)
 assert(match(parse("(+ a)"), parse("(+ A B)")) == false)
@@ -285,11 +288,10 @@ function quantum(sexp, cache)
 			if alt then
 				local lisp = unparse_small(alt)
 				if not cache[lisp] then
-					cache[lisp] = alt
 					coroutine.yield(alt)
-
 					-- gewoon lekker doorgaan - de cache beschermt ons
 					quantum(alt, cache)
+					cache[lisp] = alt
 				end
 			end
 		end
