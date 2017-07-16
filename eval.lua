@@ -319,7 +319,7 @@ end
 function evalQuantum(sexp)
 	local all = coroutine.wrap(quantum, sexp)
 	for alt in all do
-		io.write(unparse(alt), '\t')
+		-- io.write(unparse(alt), '\t')
 		local a = evalRec(alt)
 		if unparse_small(a) ~= unparse_small(alt) then
 			return a
@@ -329,7 +329,6 @@ function evalQuantum(sexp)
 end
 
 function eval(sexp)
-	print('eval', unparse(sexp))
 	local prev = unparse_small(sexp)
 	while true do
 		sexp = evalQuantum(sexp)

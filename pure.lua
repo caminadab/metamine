@@ -140,7 +140,6 @@ function evalPure(sexp)
 		local ok,res = pcall(builtin, table.unpack(newargs))
 		if ok then
 			if type(res)=='table' then
-				print(unparse(tolisp(res)))
 				end
 			return tolisp(res)
 		else

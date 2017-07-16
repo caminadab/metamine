@@ -16,4 +16,7 @@
 	(= (+ A B ...) (+ B A ...))
 	(= (| A ...) (| ... A))
 	(= (| A B ...) (| B A ...))								; dubbelen filteren
+
+	(= (and A B ...) (and B A ...))
+	(= (and A ...) (... A))
 )
