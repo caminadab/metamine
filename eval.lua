@@ -1,26 +1,40 @@
 require 'pure'
 
 function substitute(sexp, dst, src)
+	-- atom
 	if atom(sexp) then
 		if sexp==src then
 			return dst
 		else
 			return sexp
 		end
+	
+	-- asdf
 	else
-		for i=1,#sexp do
+		local res = {}
+		for i,s in ipairs(sexp) do
 			if src=='...' and sexp[i]=='...' then
-				for j=1,#dst do
-					table.insert(sexp, i+j, dst[j])
+				for j,d in ipairs(dst) do
+					table.insert(res, d)
 				end
-				table.remove(sexp, i)
 			else
-				sexp[i] = substitute(sexp[i], dst, src)
+				local s = substitute(sexp[i], dst, src)
+				table.insert(res, s)
 			end
 		end
-		return sexp
+		return res
 	end
 end
+
+local s,p,u = substitute,parse,unparse
+assert( s(p'a', p'1', p'a') == p'1' )
+assert( u(s(p'(+ a a)', p'1', p'a'))
+	== '(+ 1 1)' )
+assert( u(s(p'(+ (+ a a) a)', p'1', p'a'))
+	== '(+ (+ 1 1) 1)')
+assert( u(s(p'(+ a ...)', p'(1 2)', p'...'))
+	== '(+ a 1 2)')
+		
 
 function variable(t)
 	return atom(t) and t:upper()==t and t:lower()~=t:upper()
@@ -29,74 +43,81 @@ end
 -- (a b), (A b) -> {A=a}
 function match(sexp, src, res)
 	res = res or {}
-	if not src then print(debug.traceback()); error('no source provided') end
 
-	if src[#src] == '...' then
-		if #sexp < #src - 1 then
+	if atom(src) and variable(src) then
+		-- mismatch
+		if res[src] and hash(res[src])~=hash(sexp) then
 			return false
 		end
+		res[src] = sexp
+
+	-- ... -> ALLES
+	elseif atom(src) and string.sub(src, -3) == '...' then
+		res[src] = sexp
+
+	-- tau -> tau
+	elseif atom(src) and src == sexp then
+		return res
+
+	elseif atom(src) and src ~= sexp then
+		return false
+
+	-- (A B) -> (a b)
+	-- (A ...) -> (a b c)
 	else
-		if #sexp ~= #src then
-			return false
+		-- obtain info
+		local n
+		local var
+		if atom(src[#src]) and string.sub(src[#src], -3) == '...' then
+			var = src[#src]
 		end
-	end
-
-	-- last
-	local len = #sexp
-	if src[#src] == '...' then
-		local tail = {}
-		for i=#src,#sexp do
-			table.insert(tail, sexp[i])
-		end
-		res['...'] = tail
-		len = #src - 1
-	end
-
-	for i=1,len do
-		if src[i]=='...' then
-			-- negeren maar
-		elseif variable(src[i]) then
-				-- val mismatch
-				if res[src[i]] and unparse_small(sexp[i]) ~= unparse_small(res[src[i]]) then
-					return false
-				end
-
-				-- het klopt
-				res[src[i]] = sexp[i]
-
-		-- expressie/atoom misfit
-		elseif atom(src[i]) ~= atom(sexp[i]) then
-				-- gaat niet
-				return false
-
-		-- goed
-		elseif atom(src[i]) then
-			if src[i] ~= sexp[i] then
+		if var then
+			n = #src - 1
+			if #sexp < n then
 				return false
 			end
-
-		-- genest
 		else
+			n = #src
+			if #sexp ~= n then
+				return false
+			end
+		end
+
+		-- recurseer
+		for i=1,n do
 			res = match(sexp[i], src[i], res)
 			if not res then
 				return false
 			end
 		end
+
+		-- ellips
+		if var then 
+			local ellips = {}
+			for i=n+1,#sexp do
+				table.insert(ellips, sexp[i])
+			end
+			res[var] = ellips
+		end
 	end
 	return res
 end
 
-assert(match(parse("(+ 0 a)"), parse("(+ 0 A)")).A == 'a')
-assert(match(parse("(+ a a)"), parse("(+ A A)")).A == 'a')
-assert(match(parse("(+ 1 1 b)"), parse("(+ A A ...)")).A == '1')
-assert(match(parse("(| 1 1 2 0)"), parse("(| A A ...)")).A == '1')
-assert(match(parse("(+ a)"), parse("(+ 0)")) == false)
-assert(match(parse("(+ a)"), parse("(+ A B)")) == false)
-assert(match(parse("(+ a)"), parse("(+ A B)")) == false)
-assert(unparse(match(parse("(+ a)"), parse("(+ ...)"))['...']) == '(a)')
-assert(unparse(match(parse("(+ a b)"), parse("(+ A ...)"))['...']) == '(b)')
-assert(unparse(match(parse("(+ a b)"), parse("(+ A ...)"))['...']) == '(b)')
-assert(unparse(match(parse("(+)"), parse("(+ ... )"))['...']) == '()')
+local p = parse
+assert(match(p'(+ 0 a)', p'(+ 0 A)').A == 'a')
+assert(match(p'(+ a a)', p'(+ A A)').A == 'a')
+assert(match(p'(+ 1 1 b)', p'(+ A A ...)').A == '1')
+assert(match(p'(| 1 1 2 0)', p'(| A A ...)').A == '1')
+assert(match(p'(+ a)', p'(+ 0)', true) == false)
+assert(match(p'(+ a)', p'(+ A B)') == false)
+assert(match(p'(+ a)', p'(+ A B)') == false)
+assert(unparse(match(p'(+ a)', p'(+ ...)')['...']) == '(a)')
+assert(unparse(match(p'(+ a b)', p'(+ A ...)')['...']) == '(b)')
+assert(unparse(match(p'(+ a b)', p'(+ A ...)')['...']) == '(b)')
+assert(unparse(match(p'(+)', p'(+ ... )')['...']) == '()')
+assert(unparse(match(p'(+ (1 2 3))', p'(+ ...)')['...']) == '((1 2 3))')
+assert(unparse(match(p'(+ a b)', p'(+ ...)')['...']) == '(a b)')
+assert(not match(p'(+ 1 2 3)', p'(+ A A ...)'))
 
 
 -- (a:=3 b:=a+a) oplosser
@@ -129,27 +150,7 @@ function evalLabel(sexp)
 	return sexp
 end
 	
-function evalTest(sexp)
-	local res = sexp
-	if exp(sexp) and sexp[1]=='=?' then
-		if #sexp == 3 then
-			local a = sexp[2]
-			local b = sexp[3]
-			local a = unparse_small(a)
-			local b = unparse_small(b)
-			if a==b then
-				return 'true'
-			else
-				return sexp
-			end
-		else
-			return 'test-syntax-error'
-		end
-	end
-	return res
-end
-
-local numFunctions = {
+local arith = {
 	['+'] = function (a,b) return a + b end;
 	['-'] = function (a,b) if not b then return -a else return a - b end end;
 	['*'] = function (a,b) return a * b end;
@@ -164,62 +165,35 @@ function evalSubst(sexp)
 		if rule[1]=='=>' then
 			local res = apply(sexp, rule)
 			if res then
+				--rint('subst', rule)
 				return res
 			end
 		end
 	end
-	return sexp
 end
 
-
--- (+ 1 2) of (+ (1 2))
 function evalNum(sexp)
-	local args = {}
 	if exp(sexp) then
-		local op = sexp[1]
+		local a,b = tonumber(sexp[2]),tonumber(sexp[3])
+		local op = arith[sexp[1]]
+		if op and a and b then
+			local c = op(a,b)
 
-		-- irrelevante formule
-		if not numFunctions[op] then
-			return sexp
-		end
+			if tonumber(tostring(c)) then
 
-		-- (+ 1 2)
-		if atom(sexp[2]) then
-			for i=2,#sexp do
-				local num = tonumber(sexp[i])
-				if not num then
-					return sexp
+				-- (+ a b)
+				if #sexp == 3 then
+					return tostring(c)
 				end
-				args[i-1] = num
-			end
-		else
-			if #sexp ~= 2 then
-				return sexp
-			end
-			for i=1,#sexp[2] do
-				local num = tonumber(sexp[2][i])
-				if not num then
-					return sexp
+
+				-- (+ a b ...)
+				local res = {sexp[1], tostring(c)}
+				for i=4,#sexp do
+					table.insert(res, sexp[i])
 				end
-				args[i] = num
+				return res
 			end
 		end
-
-		-- hoe definieer je + 1? als 1 toch?
-		if #args==0 then return 'syntax-error' end
-
-		-- a-b-c
-
-		local fn = numFunctions[op]
-		if fn then
-			local res = fn(args[1], args[2])
-			for i=3,#args do
-				res = fn(res, args[i])
-			end
-			return tostring(res)
-		end
-	else
-		return sexp
 	end
 end
 
@@ -227,15 +201,19 @@ function evalRec(sexp)
 	if exp(sexp) then
 		-- recurseer
 		for i,v in ipairs(sexp) do
-			sexp[i] = evalRec(v)
+			local s = evalRec(v)
+			if s then
+				sexp[i] = s
+				--return sexp -- ?
+			end
 		end
 
 		-- subsystemen
-		sexp = evalNum(sexp)
-		sexp = evalTest(sexp)
-		sexp = evalSubst(sexp)
+		local res
+		res = evalNum(res or sexp) or res
+		res = evalSubst(res or sexp) or res
+		return res
 	end
-	return sexp
 end
 
 function apply(sexp, rule)
@@ -243,11 +221,11 @@ function apply(sexp, rule)
 	local dst = copy(rule[3])
 	local fixes = match(sexp,src)
 	if fixes then
-		-- print('src = ',unparse(src))
-		-- print('dst = ',unparse(dst))
+		-- rint('src = ',unparse(src))
+		-- rint('dst = ',unparse(dst))
 		local alt = dst
 		for name,val in pairs(fixes) do
-			-- print(name .. " = " .. unparse(val))
+			-- rint(name .. " = " .. unparse(val))
 			alt = substitute(alt, val, name)
 		end
 		return alt
@@ -255,10 +233,14 @@ function apply(sexp, rule)
 end
 
 -- onveilig! verandert sexp
+-- GOED
 function quantumKids(sexp, cache, i)
 	i = i or 1
+	if not sexp[i] then
+		return
+	end
 
-	local all = coroutine.wrap(quantum, sexp[i])
+	local all = coroutine.wrap(quantum, sexp[i], cache)
 	for alt in all do
 		sexp[i] = alt
 		if i < #sexp then
@@ -269,11 +251,11 @@ function quantumKids(sexp, cache, i)
 	end
 end
 
-function quantum(sexp, cache)
+function quantum2(sexp, cache)
 	cache = cache or {}
 
 	-- bescherm onszelf
-	local self = unparse_small(sexp)
+	local self = hash(sexp)
 	if not cache[self] then
 		coroutine.yield(sexp)
 		cache[self] = sexp
@@ -282,16 +264,16 @@ function quantum(sexp, cache)
 	end
 
 	-- we verzinnen onze eigen regels
-	for i,rule in pairs(rules) do
+	for i,rule in ipairs(rules) do
 		if rule[1]=='=' then
 			local alt = apply(sexp, rule)
 			if alt then
-				local lisp = unparse_small(alt)
-				if not cache[lisp] then
+				local h = hash(alt)
+				if not cache[h] then
 					coroutine.yield(alt)
 					-- gewoon lekker doorgaan - de cache beschermt ons
 					quantum(alt, cache)
-					cache[lisp] = alt
+					cache[h] = alt
 				end
 			end
 		end
@@ -315,29 +297,60 @@ function coroutine.wrap(func, ...)
 	end
 end
 
-
-function evalQuantum(sexp)
-	local all = coroutine.wrap(quantum, sexp)
-	for alt in all do
-		-- io.write(unparse(alt), '\t')
-		local a = evalRec(alt)
-		if unparse_small(a) ~= unparse_small(alt) then
-			return a
+function perms(sexp)
+	local res = {}
+	for i,rule in pairs(rules) do
+		local a = apply(sexp, rule)
+		if a then
+			table.insert(res, a)
 		end
 	end
-	return sexp
+	return res
 end
 
-function eval(sexp)
-	local prev = unparse_small(sexp)
-	while true do
-		sexp = evalQuantum(sexp)
 
-		local now = unparse_small(sexp)
-		if now == prev then
+function alts(sexp)
+	-- atom has one possibility
+	if atom(sexp) then
+		return {sexp}
+	end
+
+	-- maak kruizen
+	local cross = {}
+	for i=1,#sexp do
+		cross[i] = alts(sexp[i])
+	end
+
+	-- kruisproduct
+	for 
+end
+	
+
+function eval(sexp)
+	return sexp
+end
+	
+function eval2(sexp)
+	while true do
+		local better
+
+		-- generate alternatives
+		local all = coroutine.wrap(quantum, sexp)
+		for alt in all do
+			print('alt',alt)
+			better = evalRec(alt)
+			if better then
+				break
+			end
+		end
+
+		if not better then
 			break
 		end
-		prev = now
+
+		sexp = better
+		print('!',better)
 	end
+
 	return sexp
 end

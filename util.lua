@@ -12,6 +12,19 @@ function file(name, data)
 	end
 end
 
+local printOld = print
+function print(...)
+	local res = {}
+	for i,v in ipairs({...}) do
+		if type(v)=='table' then
+			res[i] = unparse(v)
+		else
+			res[i] = v
+		end
+	end
+	printOld(table.unpack(res))
+end
+
 -- hex
 function hex_encode(txt)
 	local res = {}

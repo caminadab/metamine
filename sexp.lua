@@ -13,11 +13,25 @@ function exp(t)
 	return type(t)=='table'
 end
 
+function hash(t)
+	if not t then
+		return 'NIL'
+	end
+	if atom(t) then
+		return t
+	else
+		local h = {}
+		for i,v in ipairs(t) do
+			h[i] = hash(v)
+		end
+		return table.concat(h)
+	end
+end
+
 local function new()
 	local res = {}
 	setmetatable(res, {
 		__eq = function(self, other)
-			print('CAL')
 			if #self ~= #other then return false end
 			for i,v in pairs(self) do
 				if not (self[v] == other[v]) then
@@ -63,7 +77,7 @@ function parse(sexpr)
 	local i = 1
 	local line = 1
 	local ch = 1
-	
+
 	function get()
 		local char
 		repeat
@@ -93,7 +107,7 @@ function parse(sexpr)
 	
 	local blank = {[' ']=true, ['\r']=true, ['\n']=true, ['\t']=true}
 	
-	while i < #sexpr do
+	while i <= #sexpr do
 		-- skip space
 		while blank[get()] do
 			consume()
@@ -129,7 +143,7 @@ function parse(sexpr)
 			if #stack == 0 then
 				table.insert(stack, id)
 			elseif type(stack[#stack]) ~= 'table' then
-				error(line..':'..ch..'\ttoo much tokens')
+				error(line..':'..ch..'\tteveel delen')
 			else
 				table.insert(stack[#stack], id)
 			end
@@ -137,7 +151,10 @@ function parse(sexpr)
 	end
 	
 	if #stack > 1 then
-		error('missing closing parentheses')
+		error('te weinig sluitende haakjes')
+	elseif #stack < 1 then
+		error('niets meer over')
+		return 
 	end
 	
 	return stack[1]
@@ -217,3 +234,9 @@ function unparse_small(sexpr, res)
 	end
 	return res
 end
+
+local u,p = unparse,parse
+assert(u(p'a') == 'a')
+assert(u(p'ab') == 'ab')
+assert(u(p'(+ 1 2)') == '(+ 1 2)')
+assert(u(p'(+ a (* b c))') == '(+ a (* b c))')
