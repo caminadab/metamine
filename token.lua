@@ -124,7 +124,7 @@ end
 
 -- opeatoren
 local operator = {}
-local optext = '\\+-*/.,^|&=?!><():#%x'
+local optext = '\\+-*/.,^|&=?!><():#%x_'
 for i=1,#optext do
 	operator[string.sub(optext,i,i)] = true
 end
@@ -160,7 +160,7 @@ local function skipWhite(ss)
 	end
 end
 
-local function tokenize(src)
+function tokenize(src)
 	local tokens = {}
 	local ss = stream(src)
 	local get,consume,peek = ss.get,ss.consume,ss.peek
@@ -202,20 +202,32 @@ local function tokenize(src)
 end
 
 
-function fromInfix(src)
-	local tokens = tokenize(src)
-end
-
-function at(src)
+local function test(src)
 	local exp = table.concat(tokenize(src), ' ')
 	assert(src==exp, exp)
 end
 
-at[[a + 3]]
-at[[+- a]]
-at[['hoi']]
-at[['a''b']]
-at[['a' || 'b']]
-at[[1 = -2 ;hoi]]
-at[[]]
-	
+test[[a + 3]]
+test[[+- a]]
+test[['hoi']]
+test[['a''b']]
+test[['a' || 'b']]
+test[[1 = -2 ;hoi]]
+test[[]]
+
+function formatTokens(tokens)
+	local res = {}
+	for i,token in ipairs(tokens) do
+		if i%2==0 then
+			table.insert(res, '\x1B[34m')
+		else
+			table.insert(res, '\x1B[36m')
+		end
+		table.insert(res, token)
+		table.insert(res, ' ')
+	end
+	table.insert(res, '\x1B[37m')
+	return table.concat(res)
+end
+
+--print(formatTokens(tokenize('(c..a) + 3 * b ;hoi')))
