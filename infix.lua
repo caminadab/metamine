@@ -23,6 +23,56 @@ end
 
 function parseInfix(src)
 	local tokens = tokenize(src)
+	local i = 1
+	local function pop()
+		local token = tokens[i]
+		if not token then
+			error('eof')
+		end
+		i = i + 1
+		return token
+	end
+	local function peek(n)
+		n = n or 1
+		return tokens[i + n-1]
+	end
+
+	-- 1 symbool blijft 1 symbool
+	if not peek(2) then
+		return tokens[1]
+	end
+
+	local as = {{}}
+	local hi = 0
+
+	while peek(2) do
+		local a = pop()
+		local op = pop()
+
+		local pre = precedence[op]
+		local old = precedence[as[#as] or '=']
+
+		if not pre then
+			error('ongeldige operator '..string.format('%q',p))
+		end
+
+		-- a + b * c
+		if pre > old then
+			insert(as, {op, a})
+
+		-- a * b + c
+		else
+			while pre <= old do
+				as[#as - 1] = {op, as[#as], a}
+				as[#as] = nil
+				old = precedence[as[#as][1]]
+			end
+		end
+	end
+end
+
+function parseInfix2(src)
+	local tokens = tokenize(src)
 	print(formatTokens(tokens))
 
 	local i = 1
@@ -54,8 +104,6 @@ function parseInfix(src)
 			error('ongeldige operator '..string.format('%q',p))
 		end
 
-		as[pre] = as[pre] or {}
-
 		if pre < hi then
 			-- afmaken
 			insert(as[hi], a)
@@ -83,7 +131,7 @@ function parseInfix(src)
 
 	-- collapse
 	local prev
-	for i = precmax,1,-1 do
+	for i = #as,1,-1 do
 		if as[i] then
 			if prev then
 				insert(as[i], prev)
@@ -97,9 +145,6 @@ end
 
 -- zelf test
 require 'sexp'
---local sexp = parseInfix 'a + b * 3'
-local sexp = parseInfix 'a + b * 3^i'
-print(unparse(sexp))
 
 local function test(infix,prefix)
 	local sexp = parseInfix(infix)
@@ -107,13 +152,14 @@ local function test(infix,prefix)
 	assert(res == prefix, 'expected '..prefix..', actual '..res)
 end
 
+
 -- zelfde level
-test('a + b', '(+ a b)')
-test('a + b + c', '(+ a b c)')
-test('a + b - c', '(- (+ a b) c)')
-test('a + b + c - d - e - f', '(- (+ a b c) d e f)')
+--test('a + b', '(+ a b)')
+--test('a + b + c', '(+ a b c)')
+--test('a + b - c', '(- (+ a b) c)')
+--test('a + b + c - d - e - f', '(- (+ a b c) d e f)')
 
 -- moeilijker
-test('a + b*3^i', '(+ a (* b (^ 3 i)))')
-test('a + b^i', '(+ a (^ b i))')
-test('a^2 + b^2 + c^2', '(+ (^ a 2) (^ b 2) (^ c 2))')
+--test('a + b*3^i', '(+ a (* b (^ 3 i)))')
+--test('a + b^i', '(+ a (^ b i))')
+test('a^2 + b^2 + c^2 + d^2', '(+ (^ a 2) (^ b 2) (^ c 2) (^ d 2))')
