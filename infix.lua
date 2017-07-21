@@ -10,6 +10,7 @@ local precsource = {
 	{'*', '/'},
 	{'+', '-'},
 	{'='},
+	{'(',')'},
 }
 
 local precedence = {}
@@ -43,37 +44,77 @@ function parseInfix(src)
 
 	local as = {}
 	local hi = 0
+	local br
 
 	while peek(2) do
-		local a = pop()
-		local op = pop()
-
-		local pre = precedence[op]
-
-		if not pre then
-			error('ongeldige operator '..string.format('%q',op))
-		end
-
-		-- a + b * c
-		if pre > hi then
-			insert(as, {op, a})
-
-		-- a * b + c
+		local a
+		if not br then
+			a = pop()
 		else
-			insert(as[#as], a)
-			while #as > 1 and pre <= precedence[as[#as-1][1]] do
+			a = br
+			br = nil
+		end
+		if a == '(' then
+			insert(as, {'['})
+		elseif a == ')' then
+			if as[#as][1] == '[' then
+				error('lege haakjes')
+			end
+
+			-- vind openingshaakjes
+			local open
+			for i=#as,1,-1 do
+				if as[i][1] == '[' then
+					open = i
+					break
+				end
+			end
+			if not open then
+				error('teveel sluitende haakjes')
+			end
+
+			-- collapse
+			for i=#as,open+1,-1 do
 				insert(as[#as-1], as[#as])
 				as[#as] = nil
-				hi = precedence[as[#as][1]]
 			end
-			-- a + b - c
-			local opb = as[#as][1]
-			if op ~= opb then
-				as[#as] = {op, as[#as]}
+
+			-- stop in stack
+			as[#as-1] = copy(as[#as])
+			br = copy(as[#as])
+			as[#as] = nil
+		else
+			if peek() == ')' then
+				insert(as[#as], a)
+			else
+				local op = pop()
+				local pre = precedence[op]
+
+				if not pre then
+					error('ongeldige operator '..string.format('%q',op))
+				end
+
+				-- a + b * c
+				if pre > hi then
+					insert(as, {op, a})
+
+				-- a * b + c
+				else
+					insert(as[#as], a)
+					while #as > 1 and pre <= precedence[as[#as-1][1]] do
+						insert(as[#as-1], as[#as])
+						as[#as] = nil
+						hi = precedence[as[#as][1]]
+					end
+					-- a + b - c
+					local opb = as[#as][1]
+					if op ~= opb then
+						as[#as] = {op, as[#as]}
+					end
+				end
+				hi = pre
 			end
 		end
-
-		hi = pre
 	end
 
 	-- laatste B
@@ -85,8 +126,24 @@ function parseInfix(src)
 		insert(as[i], as[i+1])
 	end
 
-	return as[1]
+	-- fix brackets
+
+	return fix(as[1])
 end
+
+function fix(s)
+	if exp(s) then
+		if s[1] == '[' then
+			s = s[2]
+		end
+		for i,sub in ipairs(s) do
+			s[i] = fix(sub)
+		end
+	end
+	return s
+end
+
+		-- fix brackets
 
 -- zelf test
 require 'sexp'
@@ -111,3 +168,7 @@ test('a * b ^ c + d', '(+ (* a (^ b c)) d)')
 test('a*b+c^d/e^f', '(+ (* a b) (/ (^ c d) (^ e f)))')
 test('a+b^c/d', '(+ a (/ (^ b c) d))')
 test('a*b+c^d/e^f - 8', '(- (+ (* a b) (/ (^ c d) (^ e f))) 8)')
+test('a+b*c', '(+ a (* b c))')
+test('(a+b)*c', '(* (+ a b) c)')
+test('a=b+c', '(= a (+ b c))')
+test('((a + b))', '(+ a b)')

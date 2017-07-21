@@ -122,9 +122,16 @@ local function getNumber(ss)
 	return table.concat(text)
 end
 
+-- haakjes
+local bracket = {
+	['('] = true, [')'] = true,
+	['['] = true, [']'] = true,
+	['{'] = true, ['}'] = true,
+}
+
 -- opeatoren
 local operator = {}
-local optext = '\\+-*/.,^|&=?!><():#%x_'
+local optext = '\\+-*/.,^|&=?!><:#%x_'
 for i=1,#optext do
 	operator[string.sub(optext,i,i)] = true
 end
@@ -180,6 +187,12 @@ function tokenize(src)
 		elseif digit[get()]
 				or (get()=='-' and digit[peek()]) then
 			token = getNumber(ss)
+
+		-- haakjes
+		elseif bracket[get()] then
+			local ch = get()
+			consume()
+			token = ch
 
 		-- operatoren
 		elseif operator[get()] then
