@@ -1,30 +1,49 @@
 #!/usr/bin/lua
 require 'sexp'
+require 'infix'
 require 'eval'
 require 'util'
 
-local red = '\x1B[31m'
-local green = '\x1B[32m'
-local yellow = '\x1B[33m'
-local blue = '\x1B[34m'
-local purple = '\x1B[35m'
-local cyan = '\x1B[36m'
-local white = '\x1B[37m'
+local args = {...}
+local files = {}
+local flags = {}
 
-print(green..'satis versie 0.1.0'..white)
+for i,arg in ipairs(args) do
+	if string.sub(arg,1,1) == '-' then
+		flags[arg] = true
+	else
+		table.insert(files, arg)
+	end
+end
+
+local color = {
+	red = '\x1B[31m',
+	green = '\x1B[32m',
+	yellow = '\x1B[33m',
+	blue = '\x1B[34m',
+	purple = '\x1B[35m',
+	cyan = '\x1B[36m',
+	white = '\x1B[37m',
+}
+if not flags['-c'] then
+	for k,v in pairs(color) do
+		color[k] = ''
+	end
+end
+
+print(color.green..'satis versie 0.1.0'..color.white)
 
 function shell(txt)
-	local ok, sexp = pcall(parse, txt)
+	local ok, sexp = pcall(parseInfix, txt)
 	if not ok then
-		print(red..sexp)
+		print(color.red..sexp)
 	else
-		print(cyan..unparse(eval(sexp)))
+		print(color.cyan..unparse(eval(sexp)))
 	end
 end
 
 -- eval file
-if ... then
-	local files = ...
+if #files > 0 then
 	local txt = file((files))
 	shell(txt)
 	return
@@ -32,7 +51,7 @@ end
 
 -- interactive mode
 while true do
-	io.write(yellow..'<= '..white)
+	io.write(color.yellow..'$ '..color.white)
 	local line = io.read()
 	if not line then
 		break

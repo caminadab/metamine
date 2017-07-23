@@ -13,7 +13,7 @@ function file(name, data)
 end
 
 local printOld = print
-function print(...)
+function print2(...)
 	local res = {}
 	for i,v in ipairs({...}) do
 		if type(v)=='table' then

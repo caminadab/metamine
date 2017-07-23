@@ -1,4 +1,5 @@
 require 'pure'
+require 'sexp'
 
 function substitute(sexp, dst, src)
 	-- atom
@@ -26,7 +27,7 @@ function substitute(sexp, dst, src)
 	end
 end
 
-local s,p,u = substitute,parse,unparse
+local s,p,u = substitute,parseSexp,unparse
 assert( s(p'a', p'1', p'a') == p'1' )
 assert( u(s(p'(+ a a)', p'1', p'a'))
 	== '(+ 1 1)' )
@@ -103,7 +104,7 @@ function match(sexp, src, res)
 	return res
 end
 
-local p = parse
+local p = parseSexp
 assert(match(p'(+ 0 a)', p'(+ 0 A)').A == 'a')
 assert(match(p'(+ a a)', p'(+ A A)').A == 'a')
 assert(match(p'(+ 1 1 b)', p'(+ A A ...)').A == '1')
@@ -156,9 +157,16 @@ local arith = {
 	['*'] = function (a,b) return a * b end;
 	['/'] = function (a,b) return b~=0 and a / b or 'oo' end;
 	['^'] = function (a,b) return a ^ b end;
+	['^'] = function (a,b) return a ^ b end;
+	['_'] = function (a,b) return math.log(a) / math.log(b) end;
+
+	['>'] = function (a,b) return a > b end;
+	['<'] = function (a,b) return a < b end;
+	['>='] = function (a,b) return a >= b end;
+	['<='] = function (a,b) return a <= b end;
 }
 
-local rules = parse(file('rules.lisp'))
+local rules = parseSexp(file('rules.lisp'))
 
 function evalSubst(sexp)
 	for i,rule in ipairs(rules) do
@@ -251,7 +259,7 @@ function quantumKids(sexp, cache, i)
 	end
 end
 
-function quantum2(sexp, cache)
+function quantum(sexp, cache)
 	cache = cache or {}
 
 	-- bescherm onszelf
@@ -308,36 +316,13 @@ function perms(sexp)
 	return res
 end
 
-
-function alts(sexp)
-	-- atom has one possibility
-	if atom(sexp) then
-		return {sexp}
-	end
-
-	-- maak kruizen
-	local cross = {}
-	for i=1,#sexp do
-		cross[i] = alts(sexp[i])
-	end
-
-	-- kruisproduct
-	for 
-end
-	
-
 function eval(sexp)
-	return sexp
-end
-	
-function eval2(sexp)
 	while true do
 		local better
 
 		-- generate alternatives
 		local all = coroutine.wrap(quantum, sexp)
 		for alt in all do
-			print('alt',alt)
 			better = evalRec(alt)
 			if better then
 				break

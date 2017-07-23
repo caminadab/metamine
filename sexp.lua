@@ -72,7 +72,7 @@ function tail(tt)
 	return res
 end
 
-function parse(sexpr)
+function parseSexp(sexpr)
 	local stack = {}
 	local i = 1
 	local line = 1
@@ -235,7 +235,7 @@ function unparse_small(sexpr, res)
 	return res
 end
 
-local u,p = unparse,parse
+local u,p = unparse,parseSexp
 assert(u(p'a') == 'a')
 assert(u(p'ab') == 'ab')
 assert(u(p'(+ 1 2)') == '(+ 1 2)')

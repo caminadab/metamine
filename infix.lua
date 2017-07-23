@@ -6,11 +6,19 @@ function name(token)
 end
 
 local precsource = {
+	{'.'},
 	{'^', '_'},
 	{'*', '/'},
 	{'+', '-'},
+	{'%'},
+	{'||'},
+	{'|', '&'},
+	{'..', 'to'},
+	{',', 'x'},
 	{'='},
-	{'(',')'},
+	{'=?'},
+	{'<=>', '=>'},
+	{'and', 'or', 'xor', 'nand', 'nor', 'xnor', 'xnand'},
 }
 
 local precedence = {}
@@ -23,6 +31,13 @@ end
 
 function parseInfix(src)
 	local tokens = tokenize(src)
+
+	-- remove comments
+	for i,token in ipairs(tokens) do
+		if token:sub(1,1)==';' then
+			table.remove(tokens,i)
+		end
+	end
 
 	-- token manage
 	local i = 1
@@ -57,7 +72,7 @@ function parseInfix(src)
 			elseif exp(stack[#stack]) then
 				insert(stack[#stack], a)
 			else
-				error('onvouwbaar: '..stack[#stack]..' en '..a)
+				error('onvouwbaar: '..(stack[#stack] or 'NIL')..' en '..a)
 			end
 		end
 	end
@@ -87,22 +102,28 @@ function parseInfix(src)
 			end
 			afold(#stack-begin)
 
-		elseif name(t) then
-			apush(t)
-
-		else
+		elseif precedence[t] then
 			-- operator
 			local pre = precedence[t]
+			if not pre then
+				error('onbekende operator '..t)
+			end
 			while pre <= apre(#stack-1) do
 				afold(1)
+			end
+
+			if not stack[#stack] then
+				error('niet genoeg operatoren op de stapel')
 			end
 
 			if t ~= stack[#stack][1] then
 				stack[#stack] = {t, stack[#stack]}
 			end
-			
+
+		else
+			apush(t)
+
 		end
-		print(t, unparse(stack))
 	end
 
 	afold(#stack-1)
