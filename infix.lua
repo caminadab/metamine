@@ -74,7 +74,8 @@ function parseInfix(src)
 			elseif exp(stack[#stack]) then
 				insert(stack[#stack], a)
 			else
-				error('onvouwbaar: '..unparse(stack[#stack])..' en '..unparse(a))
+				stack[#stack] = {stack[#stack], a}
+				--error('onvouwbaar: '..unparse(stack[#stack])..' en '..unparse(a))
 			end
 		end
 	end

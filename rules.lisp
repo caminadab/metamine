@@ -83,6 +83,8 @@
 	(=> (=? A A) true)
 
 	; trigonometrie
+	(=> (sin tau) 0)
+	(=> (cos tau) 1)
 	(= pi (/ tau 2))
 	(=>
 		(sin (+ A tau))
