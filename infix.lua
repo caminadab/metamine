@@ -93,11 +93,13 @@ function parseInfix(src)
 		else
 			-- operator
 			local pre = precedence[t]
-			while pre < apre(#stack-1) do
+			while pre <= apre(#stack-1) do
 				afold(1)
 			end
-			
-			stack[#stack] = {t, stack[#stack]}
+
+			if t ~= stack[#stack][1] then
+				stack[#stack] = {t, stack[#stack]}
+			end
 			
 		end
 		print(t, unparse(stack))
@@ -135,7 +137,6 @@ test('a=b+c', '(= a (+ b c))')
 test('((a + b))', '(+ a b)')
 test('(((a + b)))', '(+ a b)')
 
-
 test('a + b * c', '(+ a (* b c))')
 test('a * b + c', '(+ (* a b) c)')
 test('(a + b) * c', '(* (+ a b) c)')
@@ -144,3 +145,5 @@ test('a+b*c', '(+ a (* b c))')
 test('(a+b)*c', '(* (+ a b) c)')
 test('(a + b) * c', '(* (+ a b) c)')
 test('(a + b) * (c / (d - e))', '(* (+ a b) (/ c (- d e)))')
+test('((((a))))', 'a')
+test('a', 'a')
