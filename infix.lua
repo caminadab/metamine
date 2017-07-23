@@ -23,6 +23,8 @@ end
 
 function parseInfix(src)
 	local tokens = tokenize(src)
+
+	-- token manage
 	local i = 1
 	local function pop()
 		local token = tokens[i]
@@ -36,114 +38,75 @@ function parseInfix(src)
 		n = n or 1
 		return tokens[i + n-1]
 	end
-
-	-- 1 symbool blijft 1 symbool
-	if not peek(2) then
-		return tokens[1]
+	
+	-- stack manage
+	local stack = {}
+	local function apush(a)
+		insert(stack, a)
 	end
-
-	local as = {}
-	local hi = 0
-	local br
-
-	while peek(2) do
-		local a
-		if not br then
-			a = pop()
-		else
-			a = br
-			br = nil
-		end
-		if a == '(' then
-			insert(as, {'['})
-		elseif a == ')' then
-			if as[#as][1] == '[' then
-				error('lege haakjes')
+	local function apop()
+		local a = stack[#stack]
+		stack[#stack] = nil
+		return a
+	end
+	local function afold(n)
+		for i=1,n do
+			local a = apop()
+			if stack[#stack] == '[' then
+				stack[#stack] = a
+			elseif exp(stack[#stack]) then
+				insert(stack[#stack], a)
+			else
+				error('onvouwbaar: '..stack[#stack]..' en '..a)
 			end
+		end
+	end
+	local function apre(i)
+		if not stack[i] or atom(stack[i]) then
+			return 0
+		end
+		return precedence[stack[i][1]]
+	end
+	-- verwerk tokens
+	while peek() do
+		local t = pop()
 
-			-- vind openingshaakjes
-			local open
-			for i=#as,1,-1 do
-				if as[i][1] == '[' then
-					open = i
+		if t == '(' then
+			apush('[')
+
+		elseif t == ')' then
+			local begin
+			for i=#stack,1,-1 do
+				if stack[i] == '[' then
+					begin = i
 					break
 				end
 			end
-			if not open then
+			if not begin then
 				error('teveel sluitende haakjes')
 			end
+			afold(#stack-begin)
 
-			-- collapse
-			for i=#as,open+1,-1 do
-				insert(as[#as-1], as[#as])
-				as[#as] = nil
-			end
+		elseif name(t) then
+			apush(t)
 
-			-- stop in stack
-			as[#as-1] = copy(as[#as])
-			br = copy(as[#as])
-			as[#as] = nil
 		else
-			if peek() == ')' then
-				insert(as[#as], a)
-			else
-				local op = pop()
-				local pre = precedence[op]
-
-				if not pre then
-					error('ongeldige operator '..string.format('%q',op))
-				end
-
-				-- a + b * c
-				if pre > hi then
-					insert(as, {op, a})
-
-				-- a * b + c
-				else
-					insert(as[#as], a)
-					while #as > 1 and pre <= precedence[as[#as-1][1]] do
-						insert(as[#as-1], as[#as])
-						as[#as] = nil
-						hi = precedence[as[#as][1]]
-					end
-					-- a + b - c
-					local opb = as[#as][1]
-					if op ~= opb then
-						as[#as] = {op, as[#as]}
-					end
-				end
-				hi = pre
+			-- operator
+			local pre = precedence[t]
+			while pre < apre(#stack-1) do
+				afold(1)
 			end
+			
+			stack[#stack] = {t, stack[#stack]}
+			
 		end
+		print(t, unparse(stack))
 	end
 
-	-- laatste B
-	local b = pop()
-	insert(as[#as], b)
+	afold(#stack-1)
 
-	-- collapse
-	for i = #as-1,1,-1 do
-		insert(as[i], as[i+1])
-	end
-
-	-- fix brackets
-
-	return fix(as[1])
+	return stack[1]
 end
-
-function fix(s)
-	if exp(s) then
-		if s[1] == '[' then
-			s = s[2]
-		end
-		for i,sub in ipairs(s) do
-			s[i] = fix(sub)
-		end
-	end
-	return s
-end
-
-		-- fix brackets
 
 -- zelf test
 require 'sexp'
@@ -168,9 +131,16 @@ test('a * b ^ c + d', '(+ (* a (^ b c)) d)')
 test('a*b+c^d/e^f', '(+ (* a b) (/ (^ c d) (^ e f)))')
 test('a+b^c/d', '(+ a (/ (^ b c) d))')
 test('a*b+c^d/e^f - 8', '(- (+ (* a b) (/ (^ c d) (^ e f))) 8)')
-test('a+b*c', '(+ a (* b c))')
-test('(a+b)*c', '(* (+ a b) c)')
 test('a=b+c', '(= a (+ b c))')
 test('((a + b))', '(+ a b)')
 test('(((a + b)))', '(+ a b)')
+
+
+test('a + b * c', '(+ a (* b c))')
+test('a * b + c', '(+ (* a b) c)')
+test('(a + b) * c', '(* (+ a b) c)')
+
+test('a+b*c', '(+ a (* b c))')
+test('(a+b)*c', '(* (+ a b) c)')
+test('(a + b) * c', '(* (+ a b) c)')
 test('(a + b) * (c / (d - e))', '(* (+ a b) (/ c (- d e)))')
