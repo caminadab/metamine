@@ -131,7 +131,7 @@ local bracket = {
 
 -- opeatoren
 local operator = {}
-local optext = '\\+-*/.,^|&=?!><:#%x_'
+local optext = '\\+-*/.,^|&=?!><:#%X_'
 for i=1,#optext do
 	operator[string.sub(optext,i,i)] = true
 end

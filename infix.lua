@@ -11,10 +11,12 @@ local precsource = {
 	{'*', '/'},
 	{'+', '-'},
 	{'%'},
+
 	{'||'},
 	{'|', '&'},
 	{'..', 'to'},
-	{',', 'x'},
+	{'>>', '<<', ':'},
+	{',', 'X'},
 	{'='},
 	{'=?'},
 	{'<=>', '=>'},
@@ -72,7 +74,7 @@ function parseInfix(src)
 			elseif exp(stack[#stack]) then
 				insert(stack[#stack], a)
 			else
-				error('onvouwbaar: '..(stack[#stack] or 'NIL')..' en '..a)
+				error('onvouwbaar: '..unparse(stack[#stack])..' en '..unparse(a))
 			end
 		end
 	end
