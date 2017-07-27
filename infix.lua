@@ -1,4 +1,6 @@
 require 'token'
+require 'sexp'
+
 local insert = table.insert
 
 function name(token)
@@ -134,13 +136,55 @@ function parseInfix(src)
 	return stack[1]
 end
 
+local insert = table.insert
+
+local function unparseInfix_work(sexp, tt)
+	if atom(sexp) then
+		insert(tt, sexp)
+	else
+		local op = sexp[1]
+		for i=2,#sexp do
+			local v = sexp[i]
+			local br = exp(v) and precedence[v[1]] <= precedence[op]
+
+			if br then insert(tt, '(') end
+
+			unparseInfix_work(sexp[i], tt)
+
+			if br then insert(tt, ')') end
+
+			if i ~= #sexp then
+				if op ~= ',' then
+					insert(tt, ' ')
+				end
+				insert(tt, op)
+				insert(tt, ' ')
+			end
+		end
+	end
+	return tt
+end
+
+function unparseInfix(sexp)
+	local tt = unparseInfix_work(sexp, {})
+	return table.concat(tt)
+end
+
 -- zelf test
 require 'sexp'
 
 local function test(infix,prefix)
+	-- fase A
 	local sexp = parseInfix(infix)
 	local res = unparse(sexp)
-	assert(res == prefix, 'expected '..prefix..', actual '..res)
+
+	assert(res == prefix, 'parseInfix: expected '..prefix..', actual '..res)
+
+	-- fase B
+	local infix2 = unparseInfix(sexp)
+	local sexp2 = parseInfix(infix2)
+	local res2 = unparse(sexp2)
+	assert(res == res2, 'unparseInfix: expected '..infix..', actual '..infix2)
 end
 
 -- zelfde level

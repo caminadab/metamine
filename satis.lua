@@ -37,8 +37,9 @@ function shell(txt)
 	local ok, sexp = pcall(parseInfix, txt)
 	if not ok then
 		print(color.red..sexp)
-	else
-		print(color.cyan..unparse(eval(sexp)))
+	elseif sexp then
+		local v = eval(sexp)
+		print(color.cyan..unparseInfix(v))
 	end
 end
 
