@@ -1,6 +1,6 @@
 #!/usr/bin/lua
 require 'sexp'
-require 'infix'
+require 'sas'
 require 'eval'
 require 'util'
 
@@ -34,7 +34,7 @@ end
 print(color.green..'satis versie 0.1.0'..color.white)
 
 function shell(txt)
-	local ok, sexp = pcall(parseInfix, txt)
+	local ok, sexp = pcall(parse, txt)
 	if not ok then
 		print(color.red..sexp)
 	elseif sexp then

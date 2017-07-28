@@ -23,6 +23,7 @@ local precsource = {
 	{'=?'},
 	{'<=>', '=>'},
 	{'and', 'or', 'xor', 'nand', 'nor', 'xnor', 'xnand'},
+	{'\n'},
 }
 
 local precedence = {}
@@ -76,8 +77,8 @@ function parseInfix(src)
 			elseif exp(stack[#stack]) then
 				insert(stack[#stack], a)
 			else
-				stack[#stack] = {stack[#stack], a}
-				--error('onvouwbaar: '..unparse(stack[#stack])..' en '..unparse(a))
+				--stack[#stack] = {stack[#stack], a}
+				error('onvouwbaar: '..unparse(stack[#stack])..' en '..unparse(a))
 			end
 		end
 	end
@@ -121,9 +122,9 @@ function parseInfix(src)
 				error('niet genoeg operatoren op de stapel')
 			end
 
-			if t ~= stack[#stack][1] then
+			--if t ~= stack[#stack][1] then
 				stack[#stack] = {t, stack[#stack]}
-			end
+			--end
 
 		else
 			apush(t)
@@ -145,7 +146,7 @@ local function unparseInfix_work(sexp, tt)
 		local op = sexp[1]
 		for i=2,#sexp do
 			local v = sexp[i]
-			local br = exp(v) and precedence[v[1]] <= precedence[op]
+			local br = exp(v) and precedence[v[1]] < precedence[op]
 
 			if br then insert(tt, '(') end
 
@@ -176,27 +177,27 @@ require 'sexp'
 local function test(infix,prefix)
 	-- fase A
 	local sexp = parseInfix(infix)
-	local res = unparse(sexp)
+	local res = unparse_small(sexp)
 
 	assert(res == prefix, 'parseInfix: expected '..prefix..', actual '..res)
 
 	-- fase B
 	local infix2 = unparseInfix(sexp)
 	local sexp2 = parseInfix(infix2)
-	local res2 = unparse(sexp2)
-	assert(res == res2, 'unparseInfix: expected '..infix..', actual '..infix2)
+	local res2 = unparse_small(sexp2)
+	assert(res == res2, 'unparseInfix: expected '..infix..', actual '..infix2..', '..res2)
 end
 
 -- zelfde level
 test('a + b', '(+ a b)')
-test('a + b + c', '(+ a b c)')
+test('a + b + c', '(+ (+ a b) c)')
 test('a + b - c', '(- (+ a b) c)')
-test('a + b + c - d - e - f', '(- (+ a b c) d e f)')
+test('a + b + c - d - e - f', '(- (- (- (+ (+ a b) c) d) e) f)')
 
 -- moeilijker
 test('a + b*3^i', '(+ a (* b (^ 3 i)))')
 test('a + b^i', '(+ a (^ b i))')
-test('a^2 + b^2 + c^2 + d^2', '(+ (^ a 2) (^ b 2) (^ c 2) (^ d 2))')
+test('a^2 + b^2 + c^2 + d^2', '(+ (+ (+ (^ a 2) (^ b 2)) (^ c 2)) (^ d 2))')
 test('a * b ^ c + d', '(+ (* a (^ b c)) d)')
 test('a*b+c^d/e^f', '(+ (* a b) (/ (^ c d) (^ e f)))')
 test('a+b^c/d', '(+ a (/ (^ b c) d))')
@@ -212,6 +213,6 @@ test('(a + b) * c', '(* (+ a b) c)')
 test('a+b*c', '(+ a (* b c))')
 test('(a+b)*c', '(* (+ a b) c)')
 test('(a + b) * c', '(* (+ a b) c)')
-test('(a + b) * (c / (d - e))', '(* (+ a b) (/ c (- d e)))')
+test('(a + b) * c / (d - e)', '(/ (* (+ a b) c) (- d e))')
 test('((((a))))', 'a')
 test('a', 'a')

@@ -44,7 +44,6 @@ local digit = {
 	['8'] = 8, ['9'] = 9,
 }
 
-
 local base = {
 		b = 2, q = 4, o = 8, h = 16,
 		d = 10
@@ -157,7 +156,7 @@ local function getVariable(ss)
 end
 
 local white = {
-	[' '] = true, ['\t'] = true, ['\n'] = true, ['\r'] = true
+	[' '] = true, ['\t'] = true, ['\r'] = true
 }
 
 local function skipWhite(ss)
@@ -178,6 +177,11 @@ function tokenize(src)
 		-- comment
 		if get()==';' then
 			token = getComment(ss)
+
+		-- newline
+		elseif get()=='\n' then
+			token = '\n'
+			consume()
 
 		-- tekst
 		elseif get()=='\'' then
