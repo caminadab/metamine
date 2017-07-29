@@ -119,12 +119,10 @@ function parseInfix(src)
 			end
 
 			if not stack[#stack] then
-				error('niet genoeg operatoren op de stapel')
+				error('niet genoeg operatoren op de stapel '..t)
 			end
 
-			--if t ~= stack[#stack][1] then
-				stack[#stack] = {t, stack[#stack]}
-			--end
+			stack[#stack] = {t, stack[#stack]}
 
 		else
 			apush(t)
@@ -177,14 +175,14 @@ require 'sexp'
 local function test(infix,prefix)
 	-- fase A
 	local sexp = parseInfix(infix)
-	local res = unparse_small(sexp)
+	local res = unparseSexpCompact(sexp)
 
 	assert(res == prefix, 'parseInfix: expected '..prefix..', actual '..res)
 
 	-- fase B
 	local infix2 = unparseInfix(sexp)
 	local sexp2 = parseInfix(infix2)
-	local res2 = unparse_small(sexp2)
+	local res2 = unparseSexpCompact(sexp2)
 	assert(res == res2, 'unparseInfix: expected '..infix..', actual '..infix2..', '..res2)
 end
 

@@ -1,5 +1,7 @@
 require 'pure'
 require 'sexp'
+require 'sas'
+local insert = table.insert
 
 function substitute(sexp, dst, src)
 	-- atom
@@ -27,7 +29,7 @@ function substitute(sexp, dst, src)
 	end
 end
 
-local s,p,u = substitute,parseSexp,unparse
+local s,p,u = substitute,parseSexp,unparseSexpCompact
 assert( s(p'a', p'1', p'a') == p'1' )
 assert( u(s(p'(+ a a)', p'1', p'a'))
 	== '(+ 1 1)' )
@@ -112,14 +114,29 @@ assert(match(p'(| 1 1 2 0)', p'(| A A ...)').A == '1')
 assert(match(p'(+ a)', p'(+ 0)', true) == false)
 assert(match(p'(+ a)', p'(+ A B)') == false)
 assert(match(p'(+ a)', p'(+ A B)') == false)
-assert(unparse(match(p'(+ a)', p'(+ ...)')['...']) == '(a)')
-assert(unparse(match(p'(+ a b)', p'(+ A ...)')['...']) == '(b)')
-assert(unparse(match(p'(+ a b)', p'(+ A ...)')['...']) == '(b)')
-assert(unparse(match(p'(+)', p'(+ ... )')['...']) == '()')
-assert(unparse(match(p'(+ (1 2 3))', p'(+ ...)')['...']) == '((1 2 3))')
-assert(unparse(match(p'(+ a b)', p'(+ ...)')['...']) == '(a b)')
+assert(unparseSexpCompact(match(p'(+ a)', p'(+ ...)')['...']) == '(a)')
+assert(unparseSexpCompact(match(p'(+ a b)', p'(+ A ...)')['...']) == '(b)')
+assert(unparseSexpCompact(match(p'(+ a b)', p'(+ A ...)')['...']) == '(b)')
+assert(unparseSexpCompact(match(p'(+)', p'(+ ... )')['...']) == '()')
+assert(unparseSexpCompact(match(p'(+ (1 2 3))', p'(+ ...)')['...']) == '((1 2 3))')
+assert(unparseSexpCompact(match(p'(+ a b)', p'(+ ...)')['...']) == '(a b)')
 assert(not match(p'(+ 1 2 3)', p'(+ A A ...)'))
 
+function apply(sexp, rule)
+	local src = copy(rule[2])
+	local dst = copy(rule[3])
+	local fixes = match(sexp,src)
+	if fixes then
+		-- rint('src = ',unparse(src))
+		-- rint('dst = ',unparse(dst))
+		local alt = dst
+		for name,val in pairs(fixes) do
+			-- rint(name .. " = " .. unparse(val))
+			alt = substitute(alt, val, name)
+		end
+		return alt
+	end
+end
 
 -- (a:=3 b:=a+a) oplosser
 function evalLabel(sexp)
@@ -157,7 +174,6 @@ local arith = {
 	['*'] = function (a,b) return a * b end;
 	['/'] = function (a,b) return b~=0 and a / b or 'oo' end;
 	['^'] = function (a,b) return a ^ b end;
-	['^'] = function (a,b) return a ^ b end;
 	['_'] = function (a,b) return math.log(a) / math.log(b) end;
 
 	['>'] = function (a,b) return a > b end;
@@ -166,7 +182,7 @@ local arith = {
 	['<='] = function (a,b) return a <= b end;
 }
 
-local rules = parseSexp(file('rules.lisp'))
+local rules = parse(file('rules.sas'))
 
 function evalSubst(sexp)
 	for i,rule in ipairs(rules) do
@@ -221,22 +237,6 @@ function evalRec(sexp)
 		res = evalNum(res or sexp) or res
 		res = evalSubst(res or sexp) or res
 		return res
-	end
-end
-
-function apply(sexp, rule)
-	local src = copy(rule[2])
-	local dst = copy(rule[3])
-	local fixes = match(sexp,src)
-	if fixes then
-		-- rint('src = ',unparse(src))
-		-- rint('dst = ',unparse(dst))
-		local alt = dst
-		for name,val in pairs(fixes) do
-			-- rint(name .. " = " .. unparse(val))
-			alt = substitute(alt, val, name)
-		end
-		return alt
 	end
 end
 
@@ -316,7 +316,7 @@ function perms(sexp)
 	return res
 end
 
-function eval(sexp)
+function eval2(sexp)
 	while true do
 		local better
 
@@ -339,3 +339,58 @@ function eval(sexp)
 
 	return sexp
 end
+
+local function alts(sexp)
+	local alts = {sexp}
+
+	-- alternatieven
+	for i,rule in ipairs(rules) do
+		local alt = apply(sexp, rule)
+		if alt then
+			print(unparse(rule))
+			insert(alts,alt)
+		end
+	end
+	
+	-- alternatieven voor kinderen van alternatieven
+
+	return alts
+end
+
+function evalCalc(sexp)
+	local op = sexp[1]
+	local a = tonumber(sexp[2])
+	local b = tonumber(sexp[3])
+	if arith[op] and a and b then
+		local c = arith[op](a,b)
+		return tostring(c)
+	end
+	return nil
+end
+
+function eval(sexp)
+	-- recursive pass
+	for i,v in ipairs(sexp) do
+		if exp(v) then
+			sexp[i] = eval(v)
+		end
+	end
+
+	sexp = evalCalc(sexp) or sexp
+	local alts = alts(sexp) 
+	return alts[#alts]
+end
+
+
+require 'sas'
+
+function test(q,a)
+	local l = unparse(eval(parse(q)))
+	assert(l==a,'verwachtte '..a..', was '..l)
+end
+
+for i,alt in pairs(alts(parse('1 + 2 + 3'))) do
+	print(unparseSexp(alt))
+end
+
+test('1 + 2', '3')

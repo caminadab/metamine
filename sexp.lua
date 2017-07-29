@@ -208,14 +208,14 @@ local function unparse_work(sexpr, maxlen, tabs, res)
 	return res
 end
 
-function unparse(sexpr)
+function unparseSexp(sexpr)
 	if not sexpr then return 'none' end
 	return table.concat(unparse_work(sexpr, 40))
 end
 
-function unparse_small(sexpr, res)
+function unparseSexpCompact(sexpr, res)
 	if not res then
-		return table.concat(unparse_small(sexpr,{}))
+		return table.concat(unparseSexpCompact(sexpr,{}))
 	end
 	if type(sexpr)=='string' then
 		table.insert(res,sexpr)
@@ -225,7 +225,7 @@ function unparse_small(sexpr, res)
 			return {"ERROR"}
 		end
 		for i,sub in ipairs(sexpr) do
-			unparse_small(sub, res)
+			unparseSexpCompact(sub, res)
 			if next(sexpr, i) then
 				table.insert(res, ' ')
 			end
@@ -235,7 +235,7 @@ function unparse_small(sexpr, res)
 	return res
 end
 
-local u,p = unparse,parseSexp
+local u,p = unparseSexp,parseSexp
 assert(u(p'a') == 'a')
 assert(u(p'ab') == 'ab')
 assert(u(p'(+ 1 2)') == '(+ 1 2)')

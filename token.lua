@@ -181,7 +181,9 @@ function tokenize(src)
 		-- newline
 		elseif get()=='\n' then
 			token = '\n'
-			consume()
+			while get()=='\n' do
+				consume()
+			end
 
 		-- tekst
 		elseif get()=='\'' then

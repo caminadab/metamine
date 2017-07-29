@@ -21,8 +21,13 @@ function parse(src)
 	return sas
 end
 
+function unparse(sexp)
+	-- TODO work
+	return unparseInfix(sexp)
+end
+
 local function test(sas, sexp)
-	assert(unparse_small(parse(sas)) == sexp)
+	assert(unparseSexpCompact(parse(sas)) == sexp)
 end
 
 test('a = 1\nb = 2\nc = 3', '(and (and (= a 1) (= b 2)) (= c 3))')
