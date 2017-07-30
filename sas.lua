@@ -27,7 +27,8 @@ function unparse(sexp)
 end
 
 local function test(sas, sexp)
-	assert(unparseSexpCompact(parse(sas)) == sexp)
+	local exp = unparseSexpCompact(parse(sas))
+	assert(exp == sexp, exp)
 end
 
-test('a = 1\nb = 2\nc = 3', '(and (and (= a 1) (= b 2)) (= c 3))')
+test('a = 1\nb = 2\n\nc = 3', '(and (and (= a 1) (= b 2)) (= c 3))')

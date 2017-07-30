@@ -33,7 +33,7 @@ local function new()
 	setmetatable(res, {
 		__eq = function(self, other)
 			if #self ~= #other then return false end
-			for i,v in pairs(self) do
+			for i,v in ipairs(self) do
 				if not (self[v] == other[v]) then
 					return false
 				end
@@ -49,7 +49,7 @@ function copy(sexp)
 		return sexp
 	else
 		local res = new()
-		for i,v in pairs(sexp) do
+		for i,v in ipairs(sexp) do
 			res[i] = copy(v)
 		end
 		return res

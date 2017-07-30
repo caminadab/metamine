@@ -1,5 +1,6 @@
 require 'token'
 require 'sexp'
+require 'func'
 
 local insert = table.insert
 
@@ -9,20 +10,21 @@ end
 
 local precsource = {
 	{'.'},
+	{',', 'X'},
 	{'^', '_'},
 	{'*', '/'},
 	{'+', '-'},
 	{'%'},
+	{'>', '<', '=<', '>='},
 
 	{'||'},
 	{'|', '&'},
 	{'..', 'to'},
 	{'>>', '<<', ':'},
-	{',', 'X'},
 	{'='},
 	{'=?'},
-	{'<=>', '=>'},
 	{'and', 'or', 'xor', 'nand', 'nor', 'xnor', 'xnand'},
+	{'<=>', '=>', '<='},
 	{'\n'},
 }
 
@@ -34,9 +36,7 @@ for i,ops in ipairs(precsource) do
 	end
 end
 
-function parseInfix(src)
-	local tokens = tokenize(src)
-
+function infix(tokens)
 	-- remove comments
 	for i,token in ipairs(tokens) do
 		if token:sub(1,1)==';' then
@@ -44,13 +44,38 @@ function parseInfix(src)
 		end
 	end
 
+	-- line hack
+	-- dubbel
+	for i=#tokens,2,-1 do
+		if tokens[i]=='\n' and tokens[i-1]=='\n' then
+			table.remove(tokens, i)
+		end
+	end
+
+	-- begin
+	while tokens[1]=='\n' do
+		table.remove(tokens, 1)
+	end
+	
+	-- einde
+	while tokens[#tokens]=='\n' do
+		table.remove(tokens, #tokens)
+	end
+
 	-- token manage
+	local line = 1
 	local i = 1
 	local function pop()
 		local token = tokens[i]
 		if not token then
 			error('eof')
 		end
+
+		-- keep track
+		if token == '\n' then
+			line = line + i
+		end
+
 		i = i + 1
 		return token
 	end
@@ -78,7 +103,7 @@ function parseInfix(src)
 				insert(stack[#stack], a)
 			else
 				--stack[#stack] = {stack[#stack], a}
-				error('onvouwbaar: '..unparse(stack[#stack])..' en '..unparse(a))
+				error('regel '..line..': onvouwbaar: '..unparseSexp(stack[#stack])..' en '..unparseSexp(a))
 			end
 		end
 	end
@@ -104,7 +129,7 @@ function parseInfix(src)
 				end
 			end
 			if not begin then
-				error('teveel sluitende haakjes')
+				error('regel '..line..': '..'teveel sluitende haakjes')
 			end
 			afold(#stack-begin)
 
@@ -112,14 +137,14 @@ function parseInfix(src)
 			-- operator
 			local pre = precedence[t]
 			if not pre then
-				error('onbekende operator '..t)
+				error('regel '..line..': '..'onbekende operator '..t)
 			end
 			while pre <= apre(#stack-1) do
 				afold(1)
 			end
 
 			if not stack[#stack] then
-				error('niet genoeg operatoren op de stapel '..t)
+				error('regel '..line..': '..'niet genoeg operatoren op de stapel '..t)
 			end
 
 			stack[#stack] = {t, stack[#stack]}
@@ -132,8 +157,14 @@ function parseInfix(src)
 
 	afold(#stack-1)
 
+	if not stack[1] then
+		error('niets gevonden')
+	end
 	return stack[1]
 end
+
+parseInfix = curry(infix, tokenize)
+
 
 local insert = table.insert
 
@@ -157,7 +188,9 @@ local function unparseInfix_work(sexp, tt)
 					insert(tt, ' ')
 				end
 				insert(tt, op)
-				insert(tt, ' ')
+				if op ~= ',' then
+					insert(tt, ' ')
+				end
 			end
 		end
 	end
@@ -165,6 +198,10 @@ local function unparseInfix_work(sexp, tt)
 end
 
 function unparseInfix(sexp)
+	if not sexp then
+		error('ongeldige s-exp')
+	end
+
 	local tt = unparseInfix_work(sexp, {})
 	return table.concat(tt)
 end
@@ -214,3 +251,9 @@ test('(a + b) * c', '(* (+ a b) c)')
 test('(a + b) * c / (d - e)', '(/ (* (+ a b) c) (- d e))')
 test('((((a))))', 'a')
 test('a', 'a')
+
+-- regels
+test('a = 1\nb = 2', '(\n (= a 1) (= b 2))')
+test('\na = 1\n\n\nb = 2\n\n', '(\n (= a 1) (= b 2))')
+test('\na = 1\n\n\nb = 2\n\nc=3\n',
+	'(\n (\n (= a 1) (= b 2)) (= c 3))')

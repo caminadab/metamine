@@ -1,64 +1,61 @@
-
-; algebra
-; op[a,b] and op: reflexive => op[a,b] = op[b,a]
 ; reflexive: a=b <=> b=a
 ; distributive: a(b+c) = ab+ac
 ; associative property: a+(b+c) = (a+b)+c
 
+; logica
 true and A => A
 false and A => false
 true or A => true
 false or A => A
 
-a*b => b*a
-a+b => b+a
-1*a => a
-0*a => 0
-0+a => a
-a/1 => a
-a/0 => oo
-;abs[-a] >= a
-a+a => 2*a
-a*a => a^2
-;a-b = -a+b
-;-(a+b) = -a-b
+; basis rekenen
+A*B = B*A
+A+B = B+A
+1 * A => A
+0 * A => 0
+0 + A => A
+M*A + A = (M+1)*A
+A / 1 => A
+A / 0 => oo
+A + A => 2 * A
+A * A => A ^ 2
+A = B <=> B = A
+;A-B = -A+B
+;-(A+B) = -A-B
 
 ; machten
 ;sqr[a] = a^2
 ;sqrt[a] = a^(1/2)
 ;cbrt[a] = a^(1/3)
 i^2 = 1
-a^b = c <=> a = b^(1/c)
-1/a^b = a^(1/b)
-m^e * m = m^(e+1)
-m^e * m^f = m^(e+f)
+A^B = C <=> A = B^(1/C)
+1/A^B = A^(1/B)
+M^E * M = M^(E+1)
+M^E * M^F = M^(E+F)
 
 ; opties
 ;+- a => a | -a
-a|b + c => (a+c) | (b+c)
-;associative[opt]
-a|a => a
+A|B + C => (A+C) | (B+C)
+A|A => A
 
 ; reeksen
 ;add a..b => (b^2 - a^2) / 2
-a..a = 0
-a*b = c <=> a = c/b
-a+b = c <=> a = c-b
+A..A = 0
+A*B = C <=> A = C/B
+A+B = C <=> A = C-B
 
-;associative[=?]
-a=a => true
-a=?a => true
+; lijsten
+A,B = C,D => A = C and B = D
+A,B + C => (A+C), (B+C)
+
+A = A => true
+
+; vergelijkingen
+A = B * C <=> C = A / B
+A = B ^ C <=> C = A _ B
 
 ; trigonometrie
 ;sin[tau] => 0
 ;cos[tau] => 1
 pi = tau / 2
 ;sin[a+tau] = sin[a]
-; typen
-;	(=>
-;		(and
-;			(: V FROM)
-;			(= (>> FROM TO) CONV)
-;			(>> V CONV)
-;		)
-;	)

@@ -34,6 +34,9 @@ end
 print(color.green..'satis versie 0.1.0'..color.white)
 
 function shell(txt)
+	if txt:match('^%s*$') then
+		return
+	end
 	local ok, sexp = pcall(parse, txt)
 	if not ok then
 		print(color.red..sexp)
