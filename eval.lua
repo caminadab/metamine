@@ -55,10 +55,6 @@ function match(sexp, src, res)
 		end
 		res[src] = sexp
 
-	-- ... -> ALLES
-	elseif atom(src) and string.sub(src, -3) == '...' then
-		res[src] = sexp
-
 	-- tau -> tau
 	elseif atom(src) and src == sexp then
 		return res
@@ -67,7 +63,6 @@ function match(sexp, src, res)
 		return false
 
 	-- (A B) -> (a b)
-	-- (A ...) -> (a b c)
 	else
 		-- obtain info
 		local n
@@ -113,6 +108,7 @@ assert(match(p'a+a', p'A+A').A == 'a')
 assert(not match(p'a+b', p'A+A'))
 assert(match(p'1,2,3 + a', p'A,B + C'))
 assert(match(p'a*2 = 4 <=> a = 4/2', p'A*B = C <=> A = C/B'))
+assert(match('pi', 'pi'))
 
 function apply(sexp, rule)
 	local src = copy(rule[2])
@@ -126,9 +122,15 @@ function apply(sexp, rule)
 			-- rint(name .. " = " .. unparse(val))
 			alt = substitute(alt, val, name)
 		end
+		print('apply',unparse(alt))
 		return alt
 	end
 end
+
+
+local a = (unparse(apply(p'pi', p'pi => tau / 2')))-- == u(p'tau / 2'))
+local b = (unparse(p'tau/2'))
+assert(a == b, a, b)
 
 -- (a:=3 b:=a+a) oplosser
 function evalLabel(sexp)
@@ -171,7 +173,9 @@ local arith = {
 	['>'] = function (a,b) return a > b end;
 	['<'] = function (a,b) return a < b end;
 	['>='] = function (a,b) return a >= b end;
-	['<='] = function (a,b) return a <= b end;
+	['=<'] = function (a,b) return a <= b end;
+	['='] = function (a,b) return a == b end;
+	['%'] = function (a,b) return a % b end;
 }
 
 local rulesource = parse(file('rules.sas'))
@@ -188,10 +192,8 @@ while rule do
 		insert(rules, {rule[1],rule[3],rule[2]})
 	elseif rule[1] == '=>' then
 		insert(rules, {'=>',rule[2],rule[3]})
-		insert(rules, {'<=',rule[3],rule[2]})
 	elseif rule[1] == '<=' then
 		insert(rules, {'=>',rule[3],rule[2]})
-		insert(rules, {'<=',rule[2],rule[3]})
 	end
 	print(unparse(rule))
 	cur = cur[2]
@@ -210,149 +212,8 @@ function evalSubst(sexp)
 	end
 end
 
-function evalNum(sexp)
-	if exp(sexp) then
-		local a,b = tonumber(sexp[2]),tonumber(sexp[3])
-		local op = arith[sexp[1]]
-		if op and a and b then
-			local c = op(a,b)
+assert(evalSubst(p'pi'))
 
-			if tonumber(tostring(c)) then
-
-				-- (+ a b)
-				if #sexp == 3 then
-					return tostring(c)
-				end
-
-				-- (+ a b ...)
-				local res = {sexp[1], tostring(c)}
-				for i=4,#sexp do
-					table.insert(res, sexp[i])
-				end
-				return res
-			end
-		end
-	end
-end
-
-function evalRec(sexp)
-	if exp(sexp) then
-		-- recurseer
-		for i,v in ipairs(sexp) do
-			local s = evalRec(v)
-			if s then
-				sexp[i] = s
-				--return sexp -- ?
-			end
-		end
-
-		-- subsystemen
-		local res
-		res = evalNum(res or sexp) or res
-		res = evalSubst(res or sexp) or res
-		return res
-	end
-end
-
--- onveilig! verandert sexp
--- GOED
-function quantumKids(sexp, cache, i)
-	i = i or 1
-	if not sexp[i] then
-		return
-	end
-
-	local all = coroutine.wrap(quantum, sexp[i], cache)
-	for alt in all do
-		sexp[i] = alt
-		if i < #sexp then
-			quantumKids(sexp, cache, i+1)
-		else
-			quantum(copy(sexp), cache)
-		end
-	end
-end
-
-function quantum(sexp, cache)
-	cache = cache or {}
-
-	-- bescherm onszelf
-	local self = hash(sexp)
-	if not cache[self] then
-		coroutine.yield(sexp)
-		cache[self] = sexp
-	else
-		return
-	end
-
-	-- we verzinnen onze eigen regels
-	for i,rule in ipairs(rules) do
-		if rule[1]=='=' then
-			local alt = apply(sexp, rule)
-			if alt then
-				local h = hash(alt)
-				if not cache[h] then
-					coroutine.yield(alt)
-					-- gewoon lekker doorgaan - de cache beschermt ons
-					quantum(alt, cache)
-					cache[h] = alt
-				end
-			end
-		end
-	end
-
-	-- schandalig onszelf tentoonstellen zit hierbij
-	-- onzere kinderen mogen nu
-	quantumKids(sexp, cache)
-end
-
-function coroutine.wrap(func, ...)
-	local coro = coroutine.create(func)
-	local tt = {...}
-	return function()
-		local ok,msg = coroutine.resume(coro, table.unpack(tt))
-		if ok then
-			return msg
-		else
-			error(msg)
-		end
-	end
-end
-
-function perms(sexp)
-	local res = {}
-	for i,rule in pairs(rules) do
-		local a = apply(sexp, rule)
-		if a then
-			table.insert(res, a)
-		end
-	end
-	return res
-end
-
-function eval2(sexp)
-	while true do
-		local better
-
-		-- generate alternatives
-		local all = coroutine.wrap(quantum, sexp)
-		for alt in all do
-			better = evalRec(alt)
-			if better then
-				break
-			end
-		end
-
-		if not better then
-			break
-		end
-
-		sexp = better
-		print('!',better)
-	end
-
-	return sexp
-end
 
 local function findAlternatives(sexp)
 	local alts = {sexp}
@@ -371,6 +232,7 @@ local function findAlternatives(sexp)
 					if not done[key] then
 						insert(alts,alt)
 						insert(todo,alt)
+						print('todo',unparse(alt))
 						done[key] = true
 					end
 				end
@@ -395,7 +257,7 @@ function evalCalc(sexp)
 end
 
 function eval(sexp)
-	local alts = findAlternatives(sexp)
+	local alts
 	local best = sexp
 	local better = best
 	local ok = false
@@ -407,6 +269,7 @@ function eval(sexp)
 		print(#alts, unparse(best))
 
 		for i,sexp in ipairs(alts) do
+			--int('alt',unparse(sexp))
 			-- recursive pass
 			if exp(sexp) then
 				local ok
@@ -423,6 +286,7 @@ function eval(sexp)
 
 			better = evalSubst(sexp)
 			better = evalCalc(better or sexp) or better
+
 			if better then
 				ok = true
 				break
@@ -474,12 +338,8 @@ function test(q,a)
 	assert(equals(l,a), 'verwachtte '..unparse(a)..', was '..unparse(l))
 end
 
-test('a*2 = 4', 'a = 2')
-do return end
-
 -- abc acb bac bca cab cba
 --assert(#alts(parse('a + b + c')) == 6)
-assert(#alts(parse('a + b')) == 2)
 test('1 + 2', '3')
 test('a + a', '2 * a')
 test('a * a', 'a ^ 2')
@@ -488,3 +348,4 @@ test('a,b = 1,2', 'a = 1 and b = 2')
 test('a,b,c = 1,2,3', 'a = 1 and b = 2 and c = 3')
 test('a + 1,2,3', '(a+1),(a+2),(a+3)')
 test('a*2 = 4', 'a = 2')
+--assert(#findAlternatives(parse('a + b')) == 2)

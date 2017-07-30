@@ -110,14 +110,30 @@ local function getNumber(ss)
 		table.insert(text, get())
 		consume()
 	end
-	-- base postfix
-	if base[get()] then
-		if high > base[get()] then
-			error('nummer niet uitdrukbaar in base '..base[get()])
+
+	-- decimaal deel
+	if get() == '.' then
+		table.insert(text, get())
+		consume()
+		while get() and hex[get()] do
+			high = math.max(high, hex[get()])
+			table.insert(text, get())
+			consume()
 		end
+	end
+
+	-- base postfix
+	local postfix = get()
+	if base[postfix] then
 		table.insert(text, get())
 		consume()
 	end
+	local base = base[postfix] or 10
+
+	if high >= base then
+		error('nummer niet uitdrukbaar in base '..base)
+	end
+
 	return table.concat(text)
 end
 
