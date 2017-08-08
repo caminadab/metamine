@@ -7,6 +7,9 @@ true and A => A
 false and A => false
 true or A => true
 false or A => A
+A or B = B or A
+A and B = B and A
+A nor B = B nor A
 
 ; basis rekenen
 A*B = B*A
@@ -78,3 +81,8 @@ cos[tau] => 1
 pi => tau / 2
 i^2 = -1
 sin[a+tau] = sin[a]
+
+; tekst
+(A || B) || C <=> A || (B || C)
+A || B = C <=> A = C[0 .. (#C - #B)]
+A || B = C <=> B = C[#A .. #C]

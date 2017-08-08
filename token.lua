@@ -73,6 +73,10 @@ local function getText(ss)
 			else
 				error('onherkenbare esc')
 			end
+		elseif get() == '\'' then
+			table.insert(token, get())
+			consume()
+			break
 		else
 			ch = get()
 			consume()
@@ -234,16 +238,21 @@ function tokenize(src)
 end
 
 
-local function test(src)
-	local exp = table.concat(tokenize(src), ' ')
+require 'sexp'
+local function test(src,num)
+	local tokens = tokenize(src)
+	local exp = table.concat(tokens, ' ')
 	assert(src==exp, exp)
+	if num then
+		assert(#tokens == num)
+	end
 end
 
 test[[a + 3]]
 test[[+- a]]
 test[['hoi']]
-test[['a''b']]
-test[['a' || 'b']]
+test[['a' 'b']]
+test([['a' || 'b']], 3)
 test[[1 = -2 ;hoi]]
 test[[max-alts = 4]]
 test[[]]

@@ -201,7 +201,6 @@ function infix(tokens)
 		if not stack[i] or atom(stack[i]) then
 			return 0
 		end
-		print('binop',stack[i][1])
 		return binop[stack[i][1]]
 	end
 	-- gelegenheid voor unop?

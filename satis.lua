@@ -31,7 +31,7 @@ if not flags['-c'] then
 	end
 end
 
-print(color.green..'satis versie 0.1.0'..color.white)
+print(color.green..'satis versie 0.1.0, '..os.date()..color.white)
 
 function shell(txt)
 	if txt:match('^%s*$') then
@@ -48,7 +48,7 @@ end
 
 -- eval file
 if #files > 0 then
-	local txt = file((files))
+	local txt = file((files[1]))
 	shell(txt)
 	return
 end

@@ -4,6 +4,15 @@ require 'sas'
 local insert = table.insert
 local remove = table.remove
 
+-- logging
+local verbose = true
+function log(...)
+	local trace = debug.traceback()
+	local _, count = string.gsub(trace, "eval", "")
+	print(string.rep(' ',count/2)..(...))
+end
+
+
 function substitute(sexp, dst, src)
 	-- atom
 	if atom(sexp) then
@@ -122,11 +131,9 @@ function apply(sexp, rule)
 			-- rint(name .. " = " .. unparse(val))
 			alt = substitute(alt, val, name)
 		end
-		print('apply',unparse(alt))
 		return alt
 	end
 end
-
 
 local a = (unparse(apply(p'pi', p'pi => tau / 2')))-- == u(p'tau / 2'))
 local b = (unparse(p'tau/2'))
@@ -195,7 +202,6 @@ while rule do
 	elseif rule[1] == '<=' then
 		insert(rules, {'=>',rule[3],rule[2]})
 	end
-	print(unparse(rule))
 	cur = cur[2]
 	rule = cur[3]
 end
@@ -205,15 +211,12 @@ function evalSubst(sexp)
 		if rule[1]=='=>' then
 			local res = apply(sexp, rule)
 			if res then
-				print('subst', unparse(rule))
+				log('subst: '..unparse(sexp)..' => '..unparse(res))
 				return res
 			end
 		end
 	end
 end
-
-assert(evalSubst(p'pi'))
-
 
 local function findAlternatives(sexp)
 	local alts = {sexp}
@@ -232,7 +235,6 @@ local function findAlternatives(sexp)
 					if not done[key] then
 						insert(alts,alt)
 						insert(todo,alt)
-						print('todo',unparse(alt))
 						done[key] = true
 					end
 				end
@@ -246,7 +248,6 @@ local function findAlternatives(sexp)
 end
 
 function evalCalc(sexp)
-print('calc', unparseSexp(sexp))
 	local op = sexp[1]
 	local a = tonumber(sexp[2])
 	local b = tonumber(sexp[3])
@@ -256,7 +257,7 @@ print('calc', unparseSexp(sexp))
 		c = arith[op](a,b)
 	
 	-- unair
-	elseif a then
+	elseif a and not sexp[3] then
 		if op == '-' then
 			c = -a
 		elseif op == '+' then
@@ -281,20 +282,87 @@ print('calc', unparseSexp(sexp))
 	end
 	
 	if c then
+		log('calc: '..unparse(sexp)..' => '..c)
 		return tostring(c)
 	end
+end
+
+function isnumber(sexp)
+	return tonumber(sexp)
+end
+function istext(sexp)
+	return atom(sexp) and sexp:sub(1,1)=="'" and sexp:sub(-1)=="'"
+end
+function gettext(sexp)
+	return sexp:sub(2,-2)
+end
+function totext(sexp)
+	return "'"..sexp.."'"
 end
 
 function evalPure(sexp)
 	local fn = sexp[1]
 	local a = sexp[2]
 	local b = sexp[3]
+	local c
+
+	-- bron s-exp
 	if fn == 's-exp' then
-		return unparseSexp(a)
+		c = unparseSexp(a)
+
+	-- concatenatie
+	elseif fn == '||' then
+		if istext(a) and istext(b) then
+			c = totext(gettext(a)..gettext(b))
+		end
+
+	-- voorkauwen substring
+	elseif istext(fn) and tonumber(a) then
+		c = totext(fn:sub(a+2,a+2))
+	elseif istext(fn) and exp(a) and a[1] == '..' then
+		local b = tonumber(a[2])
+		local e = tonumber(a[3])
+		if b and e then
+			c = totext(fn:sub(2+b,1+e))
+		end
+
+	-- reeks
+	--[[
+	elseif fn == '..' then
+		local a = tonumber(a)
+		local b = tonumber(b)
+		if a and b then
+			c = tostring(a)
+			for i=a+1,b-1 do
+				c = {',',c,tostring(i)}
+			end
+			print('is')
+			print(unparse(c))
+		end
+	]]
+
+	-- text lengte
+	elseif fn == '#' and istext(a) then
+		c = tostring(#a-2)
+
+	-- conversions! vet
+	elseif fn == '>>' then
+		if isnumber(a) and b == 'text' then
+			c = "'"..a.."'"
+		end
 	end
+
+	if c then
+		log('pure: '..unparse(sexp)..' => '..unparse(c))
+	end
+
+	return c
 end
 
 function eval(sexp)
+	if not atom(sexp) then
+		log('EVAL '..unparse(sexp))
+	end
 	local alts
 	local best = sexp
 	local better = best
@@ -304,17 +372,17 @@ function eval(sexp)
 		best = better
 		better = false
 		alts = findAlternatives(best)
-		print(#alts, unparse(best))
 
 		for i,sexp in ipairs(alts) do
-			--int('alt',unparse(sexp))
+			if i > 1 then
+				log('alt: '..unparse(sexp))
+			end
+
 			-- recursive pass
 			if exp(sexp) then
 				local ok
 				for i,v in ipairs(sexp) do
-					--if exp(v) then
-						sexp[i], ok = eval(v)
-					--end
+					sexp[i], ok = eval(v)
 				end
 				if ok then
 					better = sexp
@@ -327,7 +395,6 @@ function eval(sexp)
 			better = evalCalc(better or sexp) or better
 
 			if better then
-				print('better', unparseSexp(better))
 				ok = true
 				break
 			end
@@ -378,6 +445,11 @@ function test(q,a)
 	assert(equals(l,a), 'verwachtte '..unparse(a)..', was '..unparse(l))
 end
 
+local s = [[ 'ab' || x || 'd' = 'abcd' ]]
+print("OPLOSSEN: "..s)
+print("RESULTAAT: "..unparse(eval(parse(s))))
+do return end
+
 -- abc acb bac bca cab cba
 --assert(#alts(parse('a + b + c')) == 6)
 test('1 + 2', '3')
@@ -388,4 +460,5 @@ test('a,b = 1,2', 'a = 1 and b = 2')
 test('a,b,c = 1,2,3', 'a = 1 and b = 2 and c = 3')
 test('a + 1,2,3', '(a+1),(a+2),(a+3)')
 test('a*2 = 4', 'a = 2')
+test("'a' || 'b'", "'ab'")
 --assert(#findAlternatives(parse('a + b')) == 2)
