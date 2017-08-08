@@ -5,10 +5,18 @@ require 'func'
 local insert = table.insert
 
 function name(token)
-	return token:match('%w.*')
+	return token and atom(token) and string.match(token, '%w.*')
 end
 
-local precsource = {
+local openBrackets = {
+	['('] = true, ['['] = true, ['{'] = true,
+}
+
+local closeBrackets = {
+	[')'] = true, [']'] = true, ['}'] = true,
+}
+
+local binops = {
 	{'.'},
 	{',', 'X'},
 	{'^', '_'},
@@ -28,11 +36,90 @@ local precsource = {
 	{'\n'},
 }
 
-local precedence = {}
-for i,ops in ipairs(precsource) do
-	local v = #precsource - i + 1
+local binopNames = {
+	['.'] = 'index',
+	[','] = 'comma',
+	['X'] = 'cart-product',
+	['^'] = 'pow',
+	['_'] = 'log',
+	['|'] = 'in-or',
+	['&'] = 'in-and',
+	['*'] = 'mul',
+	['/'] = 'div',
+	['+'] = 'add',
+	['-'] = 'sub',
+	['%'] = 'mod',
+	['>'] = 'gt',
+	['<'] = 'lt',
+	['=<' ] = 'lte',
+	['>=' ] = 'gte',
+	['||' ] = 'concat',
+	['..' ] = 'int-range',
+	['to' ] = 'num-range',
+	['>>' ] = 'conv',
+	['<<' ] = 'conv-from',
+	[':'  ] = 'in',
+	['='  ] = 'eq',
+	['=?' ] = 'assert-eq',
+	['and'] = 'and',
+	['or' ] = 'or',
+	['xor'] = 'xor',
+	['nand'] = 'nand',
+	['nor'] = 'nor',
+	['xnor'] = 'xnor',
+	['xnand'] = 'xnand',
+	['<=>'] = 'deduce',
+	['=>' ] = 'deduce-to',
+	['<=' ] = 'deduce-from',
+	['\n' ] = 'newline',
+}
+
+local unopNames = {
+	['+'] = 'pos',
+	['-'] = 'neg',
+	['+-'] = 'pos',
+	['_'] = 'log',
+	['^'] = 'exp',
+	['#'] = 'count',
+	[':'] = 'member',
+	['not'] = 'not',
+}
+local unopSymbols = {}
+for symbol,name in pairs(unopNames) do
+	unopSymbols[name] = symbol
+end
+
+local unops = {
+	'+', '-', '+-', '_', '^', '#', ':', 'not',
+}
+
+local binop = {}
+for i,ops in ipairs(binops) do
+	local v = #binops - i + 1
 	for j,op in ipairs(ops) do
-		precedence[op] = v
+		binop[op] = v
+	end
+end
+
+local unop = {}
+for op,name in pairs(unopNames) do
+	unop[op] = true
+	unop[name] = true
+end
+
+local function fix(a)
+	if atom(a) then
+		if unopSymbols[a] then
+			return unopSymbols[a]
+		else
+			return a
+		end
+	else
+		local b = {}
+		for i,v in ipairs(a) do
+			b[i] = fix(v)
+		end
+		return b
 	end
 end
 
@@ -51,12 +138,10 @@ function infix(tokens)
 			table.remove(tokens, i)
 		end
 	end
-
 	-- begin
 	while tokens[1]=='\n' do
 		table.remove(tokens, 1)
 	end
-	
 	-- einde
 	while tokens[#tokens]=='\n' do
 		table.remove(tokens, #tokens)
@@ -73,7 +158,7 @@ function infix(tokens)
 
 		-- keep track
 		if token == '\n' then
-			line = line + i
+			line = line + 1
 		end
 
 		i = i + 1
@@ -101,26 +186,40 @@ function infix(tokens)
 				stack[#stack] = a
 			elseif exp(stack[#stack]) then
 				insert(stack[#stack], a)
+			-- "# A"
+			elseif unop[stack[#stack]] then
+				stack[#stack] = {stack[#stack], a}
 			else
-				--stack[#stack] = {stack[#stack], a}
-				error('regel '..line..': onvouwbaar: '..unparseSexp(stack[#stack])..' en '..unparseSexp(a))
+				stack[#stack] = {stack[#stack], a}
+				--error('regel '..line..': onvouwbaar: '..unparseSexp(stack[#stack])..' en '..unparseSexp(a))
 			end
 		end
 	end
 	local function apre(i)
+		-- sin[
+		if name(stack[i]) then return 999 end
 		if not stack[i] or atom(stack[i]) then
 			return 0
 		end
-		return precedence[stack[i][1]]
+		print('binop',stack[i][1])
+		return binop[stack[i][1]]
+	end
+	-- gelegenheid voor unop?
+	local function aunop()
+		if #stack == 0 then return true end -- leeg, kan! denk "-a"
+		if unop[stack[#stack]] then return true end -- "# ..."
+		if exp(stack[#stack]) and not unopSymbols[stack[#stack][1]] and # stack[#stack] < 3 then return true end -- "a + ...", "# ..."
+		if stack[#stack] == '[' then return true end -- "( # ... )"
+		return false
 	end
 	-- verwerk tokens
 	while peek() do
 		local t = pop()
 
-		if t == '(' then
+		if openBrackets[t] then
 			apush('[')
 
-		elseif t == ')' then
+		elseif closeBrackets[t] then
 			local begin
 			for i=#stack,1,-1 do
 				if stack[i] == '[' then
@@ -133,26 +232,42 @@ function infix(tokens)
 			end
 			afold(#stack-begin)
 
-		elseif precedence[t] then
+		-- +-
+		elseif unop[t] and aunop() then
+			stack[#stack+1] = unopNames[t]
+
+		elseif binop[t] then
 			-- operator
-			local pre = precedence[t]
+			local pre = binop[t]
 			if not pre then
 				error('regel '..line..': '..'onbekende operator '..t)
+			end
+			if not apre(#stack-1) then
+				error('regel '..line)--..': '..'onbekende operator '..stack[#stack-1])
 			end
 			while pre <= apre(#stack-1) do
 				afold(1)
 			end
 
 			if not stack[#stack] then
-				error('regel '..line..': '..'niet genoeg operatoren op de stapel '..t)
+				-- lege expressie
+				error('regel '..line..': '..'lege expressie, gesloten door '..t)
 			end
 
 			stack[#stack] = {t, stack[#stack]}
+
+		-- # a
+		elseif unop[stack[#stack]] then
+			stack[#stack] = {stack[#stack], t}
+
+		elseif name(stack[#stack]) then
+			stack[#stack] = {stack[#stack], t}
 
 		else
 			apush(t)
 
 		end
+		--print(unparseSexp(stack))
 	end
 
 	afold(#stack-1)
@@ -160,11 +275,10 @@ function infix(tokens)
 	if not stack[1] then
 		error('niets gevonden')
 	end
-	return stack[1]
+	return fix(stack[1])
 end
 
 parseInfix = curry(infix, tokenize)
-
 
 local insert = table.insert
 
@@ -173,25 +287,42 @@ local function unparseInfix_work(sexp, tt)
 		insert(tt, sexp)
 	else
 		local op = sexp[1]
-		for i=2,#sexp do
-			local v = sexp[i]
-			local br = exp(v) and precedence[v[1]] < precedence[op]
 
-			if br then insert(tt, '(') end
+		-- unop
+		if #sexp == 2 then
+			insert(tt, op)
+			if atom(sexp[2]) then
+				insert(tt, ' ')
+				insert(tt, sexp[2])
+			else
+				insert(tt, ' (')
+				unparseInfix_work(sexp[2], tt)
+				insert(tt, ')')
+			end
 
-			unparseInfix_work(sexp[i], tt)
+		-- binop
+		else
+			for i=2,#sexp do
+				local v = sexp[i]
+				local br = exp(v) and binop[v[1]] and binop[v[1]] < binop[op]
 
-			if br then insert(tt, ')') end
+				if br then insert(tt, '(') end
 
-			if i ~= #sexp then
-				if op ~= ',' then
-					insert(tt, ' ')
-				end
-				insert(tt, op)
-				if op ~= ',' then
-					insert(tt, ' ')
+				unparseInfix_work(sexp[i], tt)
+
+				if br then insert(tt, ')') end
+
+				if i ~= #sexp then
+					if op ~= ',' then
+						insert(tt, ' ')
+					end
+					insert(tt, op)
+					if op ~= ',' then
+						insert(tt, ' ')
+					end
 				end
 			end
+
 		end
 	end
 	return tt
@@ -220,8 +351,29 @@ local function test(infix,prefix)
 	local infix2 = unparseInfix(sexp)
 	local sexp2 = parseInfix(infix2)
 	local res2 = unparseSexpCompact(sexp2)
-	assert(res == res2, 'unparseInfix: expected '..infix..', actual '..infix2..', '..res2)
+	assert(res == res2, 'unparseInfix: verwacht "'..infix..'", eigenlijk "'..infix2..'", s-exp: '..res2)
 end
+
+test('sin(a) * b', '(* (sin a) b)')
+
+-- functies!
+test('sin a', '(sin a)')
+test('sin[tau]', '(sin tau)')
+test('sin[3*4]', '(sin (* 3 4))')
+test('sin(a) * b', '(* (sin a) b)')
+test('sin(a,b)', '(sin (, a b))')
+test('sin a * 3', '(* (sin a) 3)')
+
+-- unaire opn
+test('-a', '(- a)')
+test('a * -b', '(* a (- b))')
+test('a + - -b', '(+ a (- (- b)))')
+test('a * (-b)', '(* a (- b))')
+test('((-b))', '(- b)')
+test('-a - b', '(- (- a) b)')
+test('a - -b', '(- a (- b))')
+test('-a - b', '(- (- a) b)')
+test('- #a', '(- (# a))')
 
 -- zelfde level
 test('a + b', '(+ a b)')

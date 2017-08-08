@@ -1,6 +1,5 @@
 -- token types
 local comment = 'comment'
--- token: {line=1,ch=1,type=X,text=}
 
 local function stream(src)
 	local off = 1
@@ -144,7 +143,7 @@ local bracket = {
 	['{'] = true, ['}'] = true,
 }
 
--- opeatoren
+-- operatoren
 local operator = {}
 local optext = '\\+-*/.,^|&=?!><:#%X_'
 for i=1,#optext do
@@ -164,7 +163,7 @@ end
 local function getVariable(ss)
 	local get,consume = ss.get,ss.consume
 	local text = {}
-	while get() and get():match('[%w%d]') do
+	while get() and get():match('[%w%d-]') do
 		table.insert(text, get())
 		consume()
 	end
@@ -246,6 +245,7 @@ test[['hoi']]
 test[['a''b']]
 test[['a' || 'b']]
 test[[1 = -2 ;hoi]]
+test[[max-alts = 4]]
 test[[]]
 
 function formatTokens(tokens)

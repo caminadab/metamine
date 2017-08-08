@@ -25,23 +25,24 @@ A * A => A ^ 2
 A = B <=> B = A
 A < B <=> B > A
 A =< B <=> B >= A
-;A-B = -A+B
+;A - B = -A+B
 ;-(A+B) = -A-B
 
 ; machten
-;sqr[a] = a^2
-;sqrt[a] = a^(1/2)
-;cbrt[a] = a^(1/3)
+sqr[a] = a^2
+sqrt[a] = a^(1/2)
+cbrt[a] = a^(1/3)
 M^E * M = M^(E+1)
 M^E / M = M^(E- 1)
 M^E * M^F = M^(E+F)
 M^1 => M
 M^0 => 1
-;1^X => 1
+^A = B <=> A = _B
+;1^A => 1
 
 
 ; opties
-;+- a => a | -a
++- a => a | -a
 A|B + C => (A+C) | (B+C)
 (A|B) * C => (A*C) | (B*C)
 A|A => A
@@ -49,13 +50,15 @@ A|B = B|A
 (A|B)|C = A|(B|C)
 (A,B)|C => (A|C),(B|C)
 (A|B)^C => (A^C|B^C)
+A | B = C => A = C or B = C
 
 
 ; reeksen
 ;add a..b => (b^2 - a^2) / 2
 A..A = 0
 A*B = C <=> A = C/B
-A+B = C <=> A = C-B
+;A+B = C <=> A = C-B
+A = -B <=> -A = B
 
 ; lijsten
 A,B = C,D => A = C and B = D
@@ -70,8 +73,8 @@ A = B ^ C <=> C = A _ B
 B = A ^ (1/C) => A = B ^ C
 
 ; trigonometrie
-;sin[tau] => 0
-;cos[tau] => 1
+sin[tau] => 0
+cos[tau] => 1
 pi => tau / 2
 i^2 = -1
-;sin[a+tau] = sin[a]
+sin[a+tau] = sin[a]

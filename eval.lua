@@ -246,14 +246,52 @@ local function findAlternatives(sexp)
 end
 
 function evalCalc(sexp)
+print('calc', unparseSexp(sexp))
 	local op = sexp[1]
 	local a = tonumber(sexp[2])
 	local b = tonumber(sexp[3])
+	local c
+
 	if arith[op] and a and b then
-		local c = arith[op](a,b)
+		c = arith[op](a,b)
+	
+	-- unair
+	elseif a then
+		if op == '-' then
+			c = -a
+		elseif op == '+' then
+			c = a
+		elseif op == '_' then
+			c = math.log(a)
+		elseif op == '^' then
+			c = math.exp(a)
+		elseif math[op] then
+			c = math[op](a,b)
+		end
+
+	-- getallen met basis
+	elseif atom(sexp) and string.match(sexp, '%d+b') then
+		c = tonumber(sexp:sub(1,-2), 2)
+	elseif atom(sexp) and string.match(sexp, '%d+q') then
+		c = tonumber(sexp:sub(1,-2), 4)
+	elseif atom(sexp) and string.match(sexp, '%d.+h') then
+		c = tonumber(sexp:sub(1,-2), 16)
+	elseif atom(sexp) and string.match(sexp, '%d+d') then
+		c = tonumber(sexp:sub(1,-2), 10)
+	end
+	
+	if c then
 		return tostring(c)
 	end
-	return nil
+end
+
+function evalPure(sexp)
+	local fn = sexp[1]
+	local a = sexp[2]
+	local b = sexp[3]
+	if fn == 's-exp' then
+		return unparseSexp(a)
+	end
 end
 
 function eval(sexp)
@@ -274,9 +312,9 @@ function eval(sexp)
 			if exp(sexp) then
 				local ok
 				for i,v in ipairs(sexp) do
-					if exp(v) then
+					--if exp(v) then
 						sexp[i], ok = eval(v)
-					end
+					--end
 				end
 				if ok then
 					better = sexp
@@ -284,10 +322,12 @@ function eval(sexp)
 				end
 			end
 
-			better = evalSubst(sexp)
+			better = evalSubst(better or sexp) or better
+			better = evalPure(better or sexp) or better
 			better = evalCalc(better or sexp) or better
 
 			if better then
+				print('better', unparseSexp(better))
 				ok = true
 				break
 			end
