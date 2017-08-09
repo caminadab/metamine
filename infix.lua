@@ -5,7 +5,7 @@ require 'func'
 local insert = table.insert
 
 function name(token)
-	return token and atom(token) and string.match(token, '%w.*')
+	return token and atom(token) and string.match(token,'%a[%w%-]*$')
 end
 
 local openBrackets = {

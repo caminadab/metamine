@@ -1,6 +1,7 @@
 require 'pure'
 require 'sexp'
 require 'sas'
+require 'ansi'
 local insert = table.insert
 local remove = table.remove
 
@@ -12,179 +13,13 @@ function log(...)
 	print(string.rep(' ',count/2)..(...))
 end
 
-
-function substitute(sexp, dst, src)
-	-- atom
-	if atom(sexp) then
-		if sexp==src then
-			return dst
-		else
-			return sexp
-		end
-	
-	-- asdf
-	else
-		local res = {}
-		for i,s in ipairs(sexp) do
-			if src=='...' and sexp[i]=='...' then
-				for j,d in ipairs(dst) do
-					table.insert(res, d)
-				end
-			else
-				local s = substitute(sexp[i], dst, src)
-				table.insert(res, s)
-			end
-		end
-		return res
-	end
+function depth()
+	local trace = debug.traceback()
+	local _, count = string.gsub(trace, "eval", "")
+	return count/2
 end
 
-local s,p,u = substitute,parseSexp,unparseSexpCompact
-assert( s(p'a', p'1', p'a') == p'1' )
-assert( u(s(p'(+ a a)', p'1', p'a'))
-	== '(+ 1 1)' )
-assert( u(s(p'(+ (+ a a) a)', p'1', p'a'))
-	== '(+ (+ 1 1) 1)')
-assert( u(s(p'(+ a ...)', p'(1 2)', p'...'))
-	== '(+ a 1 2)')
-		
-
-function variable(t)
-	return atom(t) and t:upper()==t and t:lower()~=t:upper()
-end
-
--- (a b), (A b) -> {A=a}
-function match(sexp, src, res)
-	res = res or {}
-
-	if atom(src) and variable(src) then
-		-- mismatch
-		if res[src] and hash(res[src])~=hash(sexp) then
-			return false
-		end
-		res[src] = sexp
-
-	-- tau -> tau
-	elseif atom(src) and src == sexp then
-		return res
-
-	elseif atom(src) and src ~= sexp then
-		return false
-
-	-- (A B) -> (a b)
-	else
-		-- obtain info
-		local n
-		local var
-		if atom(src[#src]) and string.sub(src[#src], -3) == '...' then
-			var = src[#src]
-		end
-		if var then
-			n = #src - 1
-			if #sexp < n then
-				return false
-			end
-		else
-			n = #src
-			if #sexp ~= n then
-				return false
-			end
-		end
-
-		-- recurseer
-		for i=1,n do
-			res = match(sexp[i], src[i], res)
-			if not res then
-				return false
-			end
-		end
-
-		-- ellips
-		if var then 
-			local ellips = {}
-			for i=n+1,#sexp do
-				table.insert(ellips, sexp[i])
-			end
-			res[var] = ellips
-		end
-	end
-	return res
-end
-
-local p = parseInfix
-assert(match(p'0+a', p'0+A').A == 'a')
-assert(match(p'a+a', p'A+A').A == 'a')
-assert(not match(p'a+b', p'A+A'))
-assert(match(p'1,2,3 + a', p'A,B + C'))
-assert(match(p'a*2 = 4 <=> a = 4/2', p'A*B = C <=> A = C/B'))
-assert(match('pi', 'pi'))
-
-function apply(sexp, rule)
-	local src = copy(rule[2])
-	local dst = copy(rule[3])
-	local fixes = match(sexp,src)
-	if fixes then
-		-- rint('src = ',unparse(src))
-		-- rint('dst = ',unparse(dst))
-		local alt = dst
-		for name,val in pairs(fixes) do
-			-- rint(name .. " = " .. unparse(val))
-			alt = substitute(alt, val, name)
-		end
-		return alt
-	end
-end
-
-local a = (unparse(apply(p'pi', p'pi => tau / 2')))-- == u(p'tau / 2'))
-local b = (unparse(p'tau/2'))
-assert(a == b, a, b)
-
--- (a:=3 b:=a+a) oplosser
-function evalLabel(sexp)
-	if atom(sexp) then
-		return
-	end
-
-	-- substitute
-	for _,eq in ipairs(sexp) do
-		local src,dst = eq[2],eq[3]
-
-		-- enkele variabele
-		if atom(src) then
-			for i,eq in ipairs(sexp) do
-				eq[3] = substitute(eq[3], dst, src)
-			end
-		else
-			eq[3] = 'error'
-		end
-	end
-	
-	-- evaluate
-	for _,eq in ipairs(sexp) do
-		if eq[1]~='=' then
-			eq[3] = evalPure(eq[3])
-		end
-	end
-	
-	return sexp
-end
-	
-local arith = {
-	['+'] = function (a,b) return a + b end;
-	['-'] = function (a,b) if not b then return -a else return a - b end end;
-	['*'] = function (a,b) return a * b end;
-	['/'] = function (a,b) return b~=0 and a / b or 'oo' end;
-	['^'] = function (a,b) return a ^ b end;
-	['_'] = function (a,b) return math.log(a) / math.log(b) end;
-
-	['>'] = function (a,b) return a > b end;
-	['<'] = function (a,b) return a < b end;
-	['>='] = function (a,b) return a >= b end;
-	['=<'] = function (a,b) return a <= b end;
-	['='] = function (a,b) return a == b end;
-	['%'] = function (a,b) return a % b end;
-}
-
+-- read rules
 local rulesource = parse(file('rules.sas'))
 
 -- (and (and A B) C)
@@ -206,6 +41,228 @@ while rule do
 	rule = cur[3]
 end
 
+function substitute(exp, dst, src)
+	if atom(exp) then
+		if exp == src then
+			return dst, true
+		else
+			return exp, false
+		end
+	elseif unparseSexpCompact(exp) == unparseSexpCompact(src) then
+		return dst, true
+	else
+		local r = {}
+		local sok,ok
+		for i,v in pairs(exp) do
+			r[i],sok = substitute(v, dst, src)
+			if sok then ok = true end
+		end
+		return r, ok
+	end
+end
+
+
+function variable(t)
+	return atom(t) and t:upper()==t and t:lower()~=t:upper()
+end
+
+-- (a b), (A b) -> {A=a}
+function match(sexp, src, res)
+	if not sexp then error("TIEF OP") end
+	res = res or {}
+
+	if atom(src) and variable(src) then
+		-- mismatch
+		if res[src] and hash(res[src])~=hash(sexp) then
+			return false
+		end
+		res[src] = sexp
+
+	-- tau -> tau
+	elseif atom(src) and src == sexp then
+		return res
+
+	-- "hoi" MATCHT NIET (A B)
+	elseif atom(sexp) and not atom(src) then
+		return false
+
+	elseif atom(src) and src ~= sexp then
+		return false
+
+	-- (A B) -> (a b)
+	else
+		-- niet evenveel
+		if #sexp ~= #src then
+			return false 
+		end
+
+		-- recurseer
+		for i=1,#sexp do
+			res = match(sexp[i], src[i], res)
+			if not res then
+				return false
+			end
+		end
+	end
+	return res
+end
+
+local p = parseInfix
+assert(match(p'0+a', p'0+A').A == 'a') assert(match(p'a+a', p'A+A').A == 'a')
+assert(not match(p'a+b', p'A+A'))
+assert(match(p'1,2,3 + a', p'A,B + C'))
+assert(match(p'a*2 = 4 <=> a = 4/2', p'A*B = C <=> A = C/B'))
+assert(match('pi', 'pi'))
+assert(match(p'a = #b + c', p'A = B + C'))
+assert(match(p'#a', p'#a'))
+
+local s = substitute(parse'#a = b', '3', parse'#a')
+assert(hash(s) == hash(parse'3 = b'), unparse(s))
+assert(hash(substitute(p"b = 'hoi'[0 .. # b]", p'3', p'#b')) == hash(p"b = 'hoi'[0 .. 3]"))
+
+function apply(sexp, rule)
+	if not sexp then error("OPKANKEREN") end
+	local src = copy(rule[2])
+	local dst = copy(rule[3])
+	local fixes = match(sexp,src)
+	if fixes then
+		local alt = dst
+		for name,val in pairs(fixes) do
+			alt = substitute(alt, val, name)
+		end
+		return alt
+	end
+end
+
+local a = (unparse(apply(p'pi', p'pi => tau / 2')))-- == u(p'tau / 2'))
+local b = (unparse(p'tau/2'))
+assert(a == b, a, b)
+
+-- (+ (+ (+ a b) c) d)
+function all(sexp, op)
+	local r = {}
+	local h = sexp
+	while exp(h) and h[1] == op do
+		local a = h[3]
+		h = h[2]
+		insert(r,a)
+	end
+	insert(r, h)
+
+	return r
+end
+
+function isnamed(a)
+	if exp(a) and #a == 2 then
+		return isnamed(a[2])
+	else
+		return name(a)
+	end
+end
+
+function ispure(a)
+	return not istext(a) or isnumber(a)
+end
+
+function contains(sexp, a)
+	if atom(sexp) then
+		return sexp == a
+	else
+		for i,v in ipairs(sexp) do
+			if contains(v, a) then
+				return true
+			end
+		end
+		return false
+	end
+end
+
+-- a = b
+function evalNames(sexp)
+	-- verkrijg vergelijkingen
+	local names = {}
+	local eqs = all(sexp, 'and')
+	if not eqs or #eqs < 2 then return end
+	local ok
+
+	-- bouw naam tabel
+	for i,eq in ipairs(eqs) do
+		if eq[1] == '=' then
+			for p=1,2 do
+				local a,b
+				if p == 1 then
+					a,b = eq[2],eq[3]
+				else
+					a,b = eq[3],eq[2]
+				end
+
+				if isnamed(a) and not contains(b, a) then
+					-- vervang
+					for j,eq in ipairs(eqs) do
+						if i ~= j then
+							eqs[j],sok = substitute(eq, b, a)
+							if sok then ok = true end
+							if ok then
+								log('name: '..unparse(a)..' => '..unparse(b))
+							end
+						end
+					end
+					-- overbodig weghalen
+					if name(a) and ok and not contains(eq, a) then
+						remove(eqs,i)
+					end
+				end
+			end
+		end
+	end
+
+	-- bouw nieuwe vergelijkingen
+	if ok then
+		local h
+		for i,val in ipairs(eqs) do
+			local eq = {'=',val[2],val[3]}
+
+			-- kleine sanitatie
+			if not name(val[2]) and name(val[3]) then
+				eq[2],eq[3] = eq[3],eq[2]
+			end
+
+			if not h then
+				h = eq
+			else
+				h = {'and', h, eq}
+			end
+		end
+		log('names: '..unparse(h))
+		return h
+	end
+end
+-- alle "=" en "and" regels zijn overbodig!
+for i=#rules,1,-1 do
+	if unparse(rules[i]) == 'A and B = B and A' then
+		remove(rules, i)
+	elseif unparse(rules[i]) == 'A = B <=> B = A' then
+		remove(rules, i)
+	end
+end
+	
+local arith = {
+	['+'] = function (a,b) return a + b end;
+	['-'] = function (a,b) if not b then return -a else return a - b end end;
+	['*'] = function (a,b) return a * b end;
+	['/'] = function (a,b) return b~=0 and a / b or 'oo' end;
+	['^'] = function (a,b) return a ^ b end;
+	['_'] = function (a,b) return math.log(a) / math.log(b) end;
+
+	['>'] = function (a,b) return a > b end;
+	['<'] = function (a,b) return a < b end;
+	['>='] = function (a,b) return a >= b end;
+	['=<'] = function (a,b) return a <= b end;
+	['='] = function (a,b) return a == b end;
+	['%'] = function (a,b) return a % b end;
+}
+
+
 function evalSubst(sexp)
 	for i,rule in ipairs(rules) do
 		if rule[1]=='=>' then
@@ -219,33 +276,72 @@ function evalSubst(sexp)
 end
 
 local function findAlternatives(sexp)
-	local alts = {sexp}
-	local done = {}
-	local todo = {sexp}
+	if atom(sexp) then
+		return {sexp}
+	end
 
-	while #todo > 0 do
-		local sexp = remove(todo)
+	if not sexp then error("KANKER") end
+	local basic = {sexp, [unparse(sexp)] = true}
 
-		-- alternatieven
+	for it=1,2 do
+		-- tweede golf
 		for i,rule in ipairs(rules) do
-			if rule[1] == '<=>' or rule[1] == '=' then
-				local alt = apply(sexp, rule)
-				if alt then
-					local key = unparseSexpCompact(alt)
-					if not done[key] then
-						insert(alts,alt)
-						insert(todo,alt)
-						done[key] = true
-					end
+			for i,b in ipairs(basic) do
+				local alt = apply(b, rule)
+				if alt and not basic[unparse(alt)] then
+					insert(basic, alt)
+					basic[unparse(alt)] = true
 				end
 			end
 		end
 	end
-		
-	-- alternatieven voor kinderen van alternatieven
+
+	if not exp(sexp) then
+		return basic
+	end
+
+	-- creeer alle mogelijkheden
+	local cart = {}
+	local alts = {}
+	for i=1,#basic do
+		local sexp = basic[i]
+		for j=1,#sexp do
+			if sexp[j] == nil then error('waarom zelfs '..#sexp..', '..j..', '..unparseSexp(sexp)) end
+			cart[j] = {sexp[j]}
+			if exp(sexp[j]) then
+				for k,rule in ipairs(rules) do
+					if rule[1] == '<=>' or rule[1] == '=' then
+						local alt = apply(sexp[j], rule)
+						if alt and not cart[j][unparse(alt)] then
+							insert(cart[j], alt)
+							cart[j][unparse(alt)] = true
+						end
+					end
+				end
+			end
+		end
+		local total = 1
+		for j=1,#sexp do
+			if exp(cart[j]) then
+				total = total * #cart[j]
+			end
+		end
+		for j=1,total do
+			local crafted = {}
+			for k=1,#sexp do
+				local l = j % #cart[k]
+				j = math.floor(j / #cart[k])
+				crafted[k] = cart[k][l+1]
+			end
+			insert(alts, crafted)
+		end
+	end
 
 	return alts
 end
+
+print('asdfasdfasdf',unparseSexp(findAlternatives(parse('a + b + c'))))
+assert(#findAlternatives(parse('a + b + c')) == 6)
 
 function evalCalc(sexp)
 	local op = sexp[1]
@@ -359,49 +455,71 @@ function evalPure(sexp)
 	return c
 end
 
-function eval(sexp)
-	if not atom(sexp) then
-		log('EVAL '..unparse(sexp))
+function eval(sexp, cache)
+	if atom(sexp) then
+		return sexp, false
 	end
+	cache = cache or {}
+	if cache[unparseSexpCompact(sexp)] then
+		return sexp, false
+	end
+	
+	local hist = {}
 	local alts
 	local best = sexp
 	local better = best
 	local ok = false
 
-	while better do
+	local it = 0
+
+	while better and it < 80 do
+		insert(hist, best)
+		it = it + 1
 		best = better
 		better = false
 		alts = findAlternatives(best)
 
 		for i,sexp in ipairs(alts) do
-			if i > 1 then
-				log('alt: '..unparse(sexp))
-			end
+			local cause = ''
+			local d = depth()
 
 			-- recursive pass
 			if exp(sexp) then
-				local ok
+				local rec = false
+				local sexp = sexp
 				for i,v in ipairs(sexp) do
-					sexp[i], ok = eval(v)
+					if exp(v) then
+						local sok
+						sexp[i], sok = eval(v, cache)
+						if sok then
+							rec = true
+						end
+					end
 				end
-				if ok then
+				if rec then
+					cause = cause .. ' recursion'
 					better = sexp
-					break
 				end
 			end
 
-			better = evalSubst(better or sexp) or better
-			better = evalPure(better or sexp) or better
-			better = evalCalc(better or sexp) or better
+			better = evalNames(better or sexp) or better		; if better then cause = cause .. ' names' end
+			better = evalSubst(better or sexp) or better; if better then cause = cause .. ' subst' end
+			better = evalPure(better or sexp) or better; if better then cause = cause .. ' pure' end
+			better = evalCalc(better or sexp) or better; if better then cause = cause .. ' calc' end
 
 			if better then
+				best = better
 				ok = true
 				break
+			else
+				cache[unparseSexpCompact(sexp)] = true
 			end
 		end
 	end
 
-	return best, ok
+	--io.write(clearline)
+
+	return best, ok, hist
 end
 
 local function unique(sexp)
@@ -445,13 +563,18 @@ function test(q,a)
 	assert(equals(l,a), 'verwachtte '..unparse(a)..', was '..unparse(l))
 end
 
-local s = [[ 'ab' || x || 'd' = 'abcd' ]]
-print("OPLOSSEN: "..s)
-print("RESULTAAT: "..unparse(eval(parse(s))))
+local s = [[ a = 'hoi' and a = b || c and c = 'oi' ]]
+--local s = [[ 'hoi' = b || 'oi' ]]
+local s = [[ #b + 2 = 3 ]]
+local r,ok,hist = eval(parse(s))
+print("RESULTAAT: "..unparse(r))
+print("LOG: ")
+for i,h in ipairs(hist) do
+	print(unparse(h))
+end
 do return end
 
 -- abc acb bac bca cab cba
---assert(#alts(parse('a + b + c')) == 6)
 test('1 + 2', '3')
 test('a + a', '2 * a')
 test('a * a', 'a ^ 2')

@@ -213,10 +213,7 @@ function unparseSexp(sexpr)
 	return table.concat(unparse_work(sexpr, 40))
 end
 
-function unparseSexpCompact(sexpr, res)
-	if not res then
-		return table.concat(unparseSexpCompact(sexpr,{}))
-	end
+function unparseSexpCompact_work(sexpr, res)
 	if type(sexpr)=='string' then
 		table.insert(res,sexpr)
 	else
@@ -225,14 +222,19 @@ function unparseSexpCompact(sexpr, res)
 			return {"ERROR"}
 		end
 		for i,sub in ipairs(sexpr) do
-			unparseSexpCompact(sub, res)
+			unparseSexpCompact_work(sub, res)
 			if next(sexpr, i) then
 				table.insert(res, ' ')
 			end
 		end
 		table.insert(res, ')')
 	end
-	return res
+end
+
+function unparseSexpCompact(sexpr, res)
+	local res = {}
+	unparseSexpCompact_work(sexpr, res)
+	return table.concat(res)
 end
 
 local u,p = unparseSexp,parseSexp
