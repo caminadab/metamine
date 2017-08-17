@@ -214,6 +214,7 @@ function unparseSexp(sexpr)
 end
 
 function unparseSexpCompact(sexpr, res)
+	if not sexpr then error('s-expr is niets') end
 	if not res then
 		return table.concat(unparseSexpCompact(sexpr,{}))
 	end
@@ -222,7 +223,7 @@ function unparseSexpCompact(sexpr, res)
 	else
 		table.insert(res, '(')
 		if type(sexpr)~='table' then
-			return {"ERROR"}
+			error('rare s-exp: '..sexpr)
 		end
 		for i,sub in ipairs(sexpr) do
 			unparseSexpCompact(sub, res)

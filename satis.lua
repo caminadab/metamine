@@ -4,6 +4,8 @@ require 'sas'
 require 'eval'
 require 'util'
 
+dbg = require 'debugger'
+
 local args = {...}
 local files = {}
 local flags = {}
@@ -35,6 +37,10 @@ print(color.green..'satis versie 0.1.0, '..os.date()..color.white)
 
 function shell(txt)
 	if txt:match('^%s*$') then
+		return
+	end
+	if txt == 'ls' then
+		os.execute('ls --color')
 		return
 	end
 	local ok, sexp = pcall(parse, txt)

@@ -56,24 +56,16 @@ A|B = B|A
 A | B = C => A = C or B = C
 
 
-; reeksen
-;add a..b => (b^2 - a^2) / 2
-A..A = 0
-A*B = C <=> A = C/B
-;A+B = C <=> A = C-B
-A = -B <=> -A = B
-
-; lijsten
-A,B = C,D => A = C and B = D
 A,B + C => (A+C), (B+C)
-
-A = A => true
 
 ; vergelijkingen
 A = B + C <=> C = A - B
 A = B * C <=> C = A / B
 A = B ^ C <=> C = A _ B
 B = A ^ (1/C) => A = B ^ C
+A = -B <=> -A = B
+A = A => true
+
 
 ; trigonometrie
 sin[tau] => 0
@@ -86,3 +78,4 @@ sin[a+tau] = sin[a]
 (A || B) || C <=> A || (B || C)
 A || B = C <=> A = C[0 .. (#C - #B)]
 A || B = C <=> B = C[#A .. #C]
+A = B[C .. D] <=> #A = D - C

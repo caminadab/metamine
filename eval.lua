@@ -74,21 +74,9 @@ function match(sexp, src, res)
 	-- (A B) -> (a b)
 	else
 		-- obtain info
-		local n
-		local var
-		if atom(src[#src]) and string.sub(src[#src], -3) == '...' then
-			var = src[#src]
-		end
-		if var then
-			n = #src - 1
-			if #sexp < n then
-				return false
-			end
-		else
-			n = #src
-			if #sexp ~= n then
-				return false
-			end
+		local n = #src
+		if #sexp ~= n then
+			return false
 		end
 
 		-- recurseer
@@ -99,14 +87,6 @@ function match(sexp, src, res)
 			end
 		end
 
-		-- ellips
-		if var then 
-			local ellips = {}
-			for i=n+1,#sexp do
-				table.insert(ellips, sexp[i])
-			end
-			res[var] = ellips
-		end
 	end
 	return res
 end
@@ -118,19 +98,30 @@ assert(not match(p'a+b', p'A+A'))
 assert(match(p'1,2,3 + a', p'A,B + C'))
 assert(match(p'a*2 = 4 <=> a = 4/2', p'A*B = C <=> A = C/B'))
 assert(match('pi', 'pi'))
+assert(match(p'a + 1 = 2', p'A = B'))
+assert(match(p'2 = a + 1', p'A = B + C'))
+assert(not match(p'a + 1 = 2', p'A - C = B'))
+assert(not match(p'a + b', p'B = A - C'))
 
 function apply(sexp, rule)
 	local src = copy(rule[2])
 	local dst = copy(rule[3])
 	local fixes = match(sexp,src)
+	assert(sexp and src and dst, 'apply invoer fout')
 	if fixes then
-		-- rint('src = ',unparse(src))
-		-- rint('dst = ',unparse(dst))
+	print('match', unparse(sexp), unparse(src))
+		--print('src = ',unparse(src))
+		--print('dst = ',unparse(dst))
+		--print('sexp = ',unparse(sexp))
 		local alt = dst
 		for name,val in pairs(fixes) do
-			-- rint(name .. " = " .. unparse(val))
+			--print(name .. " = " .. unparse(val))
 			alt = substitute(alt, val, name)
 		end
+		-- error tsjek
+			if string.lower(unparseSexpCompact(alt)) ~= unparseSexpCompact(alt) then
+				error('ongebonden variabelen in '..unparse(alt))
+			end
 		return alt
 	end
 end
@@ -185,7 +176,7 @@ local arith = {
 	['%'] = function (a,b) return a % b end;
 }
 
-local rulesource = parse(file('rules.sas'))
+local rulesource = parse(file('axiom.sas'))
 
 -- (and (and A B) C)
 -- (and A B)
@@ -211,7 +202,6 @@ function evalSubst(sexp)
 		if rule[1]=='=>' then
 			local res = apply(sexp, rule)
 			if res then
-				log('subst: '..unparse(sexp)..' => '..unparse(res))
 				return res
 			end
 		end
@@ -219,33 +209,70 @@ function evalSubst(sexp)
 end
 
 local function findAlternatives(sexp)
-	local alts = {sexp}
+	if not sexp then error('fout') end
+	if atom(sexp) then
+		return {sexp}
+	end
+	local alts = {}
 	local done = {}
-	local todo = {sexp}
+	local top = {sexp}
 
-	while #todo > 0 do
-		local sexp = remove(todo)
+	-- schep regels
+	for i,rule in ipairs(rules) do
+		print('apply[',unparse(sexp),unparse(rule))
+		local alt = apply(sexp, rule)
+		local hash
+		if alt then hash = unparseSexpCompact(alt) end
+		if alt and not done[hash] then
+		print('apply]',unparse(sexp),unparse(rule),unparse(alt))
+			print('alt',unparse(alt))
+			print('sexp',unparse(sexp))
+			print('rule',unparse(rule))
+			print()
+			insert(top, alt)
+			done[hash] = true
+		end
+	end
 
-		-- alternatieven
-		for i,rule in ipairs(rules) do
-			if rule[1] == '<=>' or rule[1] == '=' then
-				local alt = apply(sexp, rule)
-				if alt then
-					local key = unparseSexpCompact(alt)
-					if not done[key] then
-						insert(alts,alt)
-						insert(todo,alt)
-						done[key] = true
-					end
+	for i,alt in ipairs(top) do
+		if atom(alt) then
+			insert(alts, craft)
+		else
+			-- carthesisch
+			local cart = {}
+			local num = 1
+			for i=1,#alt do
+				cart[i] = findAlternatives(alt[i])
+				num = num * #cart[i]
+			end
+
+			print('cart',unparseSexp(cart))
+
+			for i=1,num do
+				-- bouw index
+				local prod = i-1
+				local craft = {}
+				for j=1,#alt do
+					local max = #cart[j]
+					local index = prod % max + 1
+					prod = math.floor(prod / max)
+					craft[j] = cart[j][index]
+				end
+
+				-- toevoegen
+				if true then --not done[unparseSexpCompact(craft)] then
+					insert(alts, craft)
+					done[unparseSexpCompact(craft)] = true
 				end
 			end
 		end
 	end
-		
-	-- alternatieven voor kinderen van alternatieven
-
+	
+	print(unparseSexp(alts))
 	return alts
 end
+
+assert(#findAlternatives(p'a + b') == 2)
 
 function evalCalc(sexp)
 	local op = sexp[1]
@@ -282,7 +309,6 @@ function evalCalc(sexp)
 	end
 	
 	if c then
-		log('calc: '..unparse(sexp)..' => '..c)
 		return tostring(c)
 	end
 end
@@ -352,17 +378,11 @@ function evalPure(sexp)
 		end
 	end
 
-	if c then
-		log('pure: '..unparse(sexp)..' => '..unparse(c))
-	end
-
 	return c
 end
 
 function eval(sexp)
-	if not atom(sexp) then
-		log('EVAL '..unparse(sexp))
-	end
+	local hist = {}
 	local alts
 	local best = sexp
 	local better = best
@@ -372,12 +392,9 @@ function eval(sexp)
 		best = better
 		better = false
 		alts = findAlternatives(best)
+		insert(hist, best)
 
 		for i,sexp in ipairs(alts) do
-			if i > 1 then
-				log('alt: '..unparse(sexp))
-			end
-
 			-- recursive pass
 			if exp(sexp) then
 				local ok
@@ -401,7 +418,7 @@ function eval(sexp)
 		end
 	end
 
-	return best, ok
+	return best, ok, hist
 end
 
 local function unique(sexp)
@@ -440,14 +457,27 @@ assert(equals(p'(a+1),(b+2)', p'(1+a),(2+b)'))
 require 'sas'
 
 function test(q,a)
-	local l = eval(parse(q))
+	local l,ok,hist = eval(parse(q))
 	local a = parse(a)
-	assert(equals(l,a), 'verwachtte '..unparse(a)..', was '..unparse(l))
+	if not equals(l,a) then
+		print('verwachtte '..unparse(a)..', was '..unparse(l))
+		print('spoor:')
+		for i,h in ipairs(hist) do
+			print('  '..unparse(h))
+		end
+	end
+	assert(equals(l,a)) 
 end
 
-local s = [[ 'ab' || x || 'd' = 'abcd' ]]
-print("OPLOSSEN: "..s)
-print("RESULTAAT: "..unparse(eval(parse(s))))
+
+local s = p[[ a + 1 = 2 ]]
+local a = findAlternatives(s)
+for i,a in ipairs(a) do
+	print('alties:',unparse(a))
+end
+print("OPLOSSEN: "..unparse(s))
+print("RESULTAAT: "..unparse(eval(s)))
+
 do return end
 
 -- abc acb bac bca cab cba
@@ -456,9 +486,8 @@ test('1 + 2', '3')
 test('a + a', '2 * a')
 test('a * a', 'a ^ 2')
 test('a = a', 'true')
-test('a,b = 1,2', 'a = 1 and b = 2')
-test('a,b,c = 1,2,3', 'a = 1 and b = 2 and c = 3')
-test('a + 1,2,3', '(a+1),(a+2),(a+3)')
+test('a + [1,2,3]', '(a+1),(a+2),(a+3)')
 test('a*2 = 4', 'a = 2')
 test("'a' || 'b'", "'ab'")
+test('a + 1 = 2', 'a = 1')
 --assert(#findAlternatives(parse('a + b')) == 2)

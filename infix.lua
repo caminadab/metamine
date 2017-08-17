@@ -329,7 +329,7 @@ end
 
 function unparseInfix(sexp)
 	if not sexp then
-		error('ongeldige s-exp')
+		error('s-exp is niets')
 	end
 
 	local tt = unparseInfix_work(sexp, {})
