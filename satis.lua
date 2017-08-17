@@ -47,8 +47,13 @@ function shell(txt)
 	if not ok then
 		print(color.red..sexp)
 	elseif sexp then
-		local v = eval(sexp)
+		local v,_,hist = eval(sexp)
 		print(color.cyan..unparseInfix(v))
+		print(color.purple)
+		for i,h in ipairs(hist) do
+			print(unparse(h))
+		end
+		print(color.white)
 	end
 end
 

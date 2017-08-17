@@ -103,13 +103,13 @@ assert(match(p'2 = a + 1', p'A = B + C'))
 assert(not match(p'a + 1 = 2', p'A - C = B'))
 assert(not match(p'a + b', p'B = A - C'))
 
+-- past een (=>) toe op s-exp en geeft het resultaat
 function apply(sexp, rule)
 	local src = copy(rule[2])
 	local dst = copy(rule[3])
 	local fixes = match(sexp,src)
 	assert(sexp and src and dst, 'apply invoer fout')
 	if fixes then
-	print('match', unparse(sexp), unparse(src))
 		--print('src = ',unparse(src))
 		--print('dst = ',unparse(dst))
 		--print('sexp = ',unparse(sexp))
@@ -130,36 +130,6 @@ local a = (unparse(apply(p'pi', p'pi => tau / 2')))-- == u(p'tau / 2'))
 local b = (unparse(p'tau/2'))
 assert(a == b, a, b)
 
--- (a:=3 b:=a+a) oplosser
-function evalLabel(sexp)
-	if atom(sexp) then
-		return
-	end
-
-	-- substitute
-	for _,eq in ipairs(sexp) do
-		local src,dst = eq[2],eq[3]
-
-		-- enkele variabele
-		if atom(src) then
-			for i,eq in ipairs(sexp) do
-				eq[3] = substitute(eq[3], dst, src)
-			end
-		else
-			eq[3] = 'error'
-		end
-	end
-	
-	-- evaluate
-	for _,eq in ipairs(sexp) do
-		if eq[1]~='=' then
-			eq[3] = evalPure(eq[3])
-		end
-	end
-	
-	return sexp
-end
-	
 local arith = {
 	['+'] = function (a,b) return a + b end;
 	['-'] = function (a,b) if not b then return -a else return a - b end end;
@@ -182,9 +152,8 @@ local rulesource = parse(file('axiom.sas'))
 -- (and A B)
 local rules = {}
 local cur = rulesource
-local rule = cur[3]
 
-while rule do
+local function addrule(rule)
 	if rule[1] == '=' or rule[1] == '<=>' then
 		insert(rules, {rule[1],rule[2],rule[3]})
 		insert(rules, {rule[1],rule[3],rule[2]})
@@ -193,9 +162,16 @@ while rule do
 	elseif rule[1] == '<=' then
 		insert(rules, {'=>',rule[3],rule[2]})
 	end
-	cur = cur[2]
-	rule = cur[3]
 end
+
+local rule
+while cur[1]=='and' do
+	rule = cur[3]
+	cur = cur[2]
+	addrule(rule)
+end
+addrule(cur)
+
 
 function evalSubst(sexp)
 	for i,rule in ipairs(rules) do
@@ -208,45 +184,41 @@ function evalSubst(sexp)
 	end
 end
 
-local function findAlternatives(sexp)
+local function findAlternatives(sexp, done, limit, alts)
 	if not sexp then error('fout') end
 	if atom(sexp) then
 		return {sexp}
 	end
-	local alts = {}
-	local done = {}
+	alts = alts or {}
+	done = done or {}
+	limit = limit or 5
+	limit = limit - 1
+	if limit < 0 or #alts > 10 then
+		return {sexp} -- es tut mir leid
+	end
 	local top = {sexp}
 
 	-- schep regels
 	for i,rule in ipairs(rules) do
-		print('apply[',unparse(sexp),unparse(rule))
 		local alt = apply(sexp, rule)
 		local hash
 		if alt then hash = unparseSexpCompact(alt) end
 		if alt and not done[hash] then
-		print('apply]',unparse(sexp),unparse(rule),unparse(alt))
-			print('alt',unparse(alt))
-			print('sexp',unparse(sexp))
-			print('rule',unparse(rule))
-			print()
 			insert(top, alt)
-			done[hash] = true
 		end
 	end
 
 	for i,alt in ipairs(top) do
 		if atom(alt) then
-			insert(alts, craft)
+			insert(alts, alt)
 		else
 			-- carthesisch
 			local cart = {}
 			local num = 1
 			for i=1,#alt do
-				cart[i] = findAlternatives(alt[i])
+				cart[i] = findAlternatives(alt[i], done, limit)
 				num = num * #cart[i]
 			end
-
-			print('cart',unparseSexp(cart))
 
 			for i=1,num do
 				-- bouw index
@@ -260,18 +232,23 @@ local function findAlternatives(sexp)
 				end
 
 				-- toevoegen
-				if true then --not done[unparseSexpCompact(craft)] then
+				if not done[unparseSexpCompact(craft)] then
 					insert(alts, craft)
 					done[unparseSexpCompact(craft)] = true
 				end
 			end
 		end
 	end
+
+	local num = #alts
+	for i=1,num do
+		findAlternatives(alts[i], done, limit, alts)
+	end
 	
-	print(unparseSexp(alts))
 	return alts
 end
 
+print('nuuu', unparseSexp(findAlternatives(p'a + b')))
 assert(#findAlternatives(p'a + b') == 2)
 
 function evalCalc(sexp)
@@ -336,6 +313,10 @@ function evalPure(sexp)
 	if fn == 's-exp' then
 		c = unparseSexp(a)
 
+	-- alternatieven
+	elseif fn == 'alts' then
+		c = findAlternatives(unparseSexp(alts))
+
 	-- concatenatie
 	elseif fn == '||' then
 		if istext(a) and istext(b) then
@@ -381,12 +362,13 @@ function evalPure(sexp)
 	return c
 end
 
-function eval(sexp)
+function eval(sexp,done)
 	local hist = {}
 	local alts
 	local best = sexp
 	local better = best
 	local ok = false
+	done = done or {}
 
 	while better do
 		best = better
@@ -395,25 +377,30 @@ function eval(sexp)
 		insert(hist, best)
 
 		for i,sexp in ipairs(alts) do
-			-- recursive pass
-			if exp(sexp) then
-				local ok
-				for i,v in ipairs(sexp) do
-					sexp[i], ok = eval(v)
+			local hash = unparseSexpCompact(sexp)
+			if not done[hash] then
+				done[hash] = true
+
+				-- recursive pass
+				if exp(sexp) then
+					local ok
+					for i,v in ipairs(sexp) do
+						sexp[i], ok = eval(v,done)
+					end
+					if ok then
+						better = sexp
+						break
+					end
 				end
-				if ok then
-					better = sexp
+
+				better = evalSubst(better or sexp) or better
+				better = evalPure(better or sexp) or better
+				better = evalCalc(better or sexp) or better
+
+				if better then
+					ok = true
 					break
 				end
-			end
-
-			better = evalSubst(better or sexp) or better
-			better = evalPure(better or sexp) or better
-			better = evalCalc(better or sexp) or better
-
-			if better then
-				ok = true
-				break
 			end
 		end
 	end
@@ -470,11 +457,8 @@ function test(q,a)
 end
 
 
-local s = p[[ a + 1 = 2 ]]
+local s = p[[ -a + 1 = 2 ]]
 local a = findAlternatives(s)
-for i,a in ipairs(a) do
-	print('alties:',unparse(a))
-end
 print("OPLOSSEN: "..unparse(s))
 print("RESULTAAT: "..unparse(eval(s)))
 
