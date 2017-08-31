@@ -10,7 +10,7 @@ A = -B <=> -A = B
 
 C = A * B <=> A = C / B
 A / B / C = A / (B * C)
-A / B = A * B^ -1
+A / B = A * B^-1
 A * B = B * A
 A * B * C = A * C * B
 A * 0 => 0
@@ -22,9 +22,9 @@ A / 1 => A
 pi => acos[-1]
 
 ; machten
-A^ -1 = 1/A
+A^-1 = 1/A
 A = B/C <=> A*C/B = 1
-A^B = C <=> A = C^(B^ -1)
+A^B = C <=> A = C^(B^-1)
 A^B = C <=> B = C _ A
 sqrt[A] => A ^ 0.5
 A^(B + C) = A^B * A^C

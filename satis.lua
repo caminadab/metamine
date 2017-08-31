@@ -18,15 +18,6 @@ for i,arg in ipairs(args) do
 	end
 end
 
-local color = {
-	red = '\x1B[31m',
-	green = '\x1B[32m',
-	yellow = '\x1B[33m',
-	blue = '\x1B[34m',
-	purple = '\x1B[35m',
-	cyan = '\x1B[36m',
-	white = '\x1B[37m',
-}
 if not flags['-c'] then
 	for k,v in pairs(color) do
 		color[k] = ''
@@ -47,13 +38,17 @@ function shell(txt)
 	if not ok then
 		print(color.red..sexp)
 	elseif sexp then
-		local v,_,hist = eval(sexp)
-		print(color.cyan..unparseInfix(v))
-		print(color.purple)
-		for i,h in ipairs(hist) do
-			print(unparse(h))
+		local ok,v = pcall(eval,sexp)
+		if ok then
+			print(color.cyan..unparseInfix(v))
+		else
+			print(color.red..v..color.white)
 		end
-		print(color.white)
+		--print(color.purple)
+		--[[for i,h in ipairs(hist) do
+			print(unparse(h))
+		end]]
+		--print(color.white)
 	end
 end
 

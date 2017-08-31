@@ -17,6 +17,7 @@ end
 
 function parse(src)
 	local infix = parseInfix(src)
+	if infix[1] == '\n' then infix[1] = '=>' end
 	local sas = fix(infix)
 	return sas
 end
@@ -31,4 +32,4 @@ local function test(sas, sexp)
 	assert(exp == sexp, exp)
 end
 
-test('a = 1\nb = 2\n\nc = 3', '(and (and (= a 1) (= b 2)) (= c 3))')
+test('a = 1\nb = 2\n\nc = 3', '(=> (and (= a 1) (= b 2)) (= c 3))')

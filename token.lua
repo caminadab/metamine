@@ -1,5 +1,6 @@
 -- token types
 local comment = 'comment'
+local insert = table.insert
 
 local function stream(src)
 	local off = 1
@@ -148,6 +149,13 @@ local bracket = {
 }
 
 -- operatoren
+-- dubbel: || <= >= :: .. 
+local double = {
+	['||'] = true, ['<='] = true,
+	['>='] = true, ['::'] = true,
+	['=>'] = true,
+	['..'] = true, ['+-'] = true
+}
 local operator = {}
 local optext = '\\+-*/.,^|&=?!><:#%X_'
 for i=1,#optext do
@@ -157,10 +165,17 @@ end
 local function getOperator(ss)
 	local get,consume = ss.get,ss.consume
 	local text = {}
-	while get() and operator[get()] do
-		table.insert(text, get())
+
+	local first = get()
+	insert(text, first)
+	consume()
+
+	-- double?
+	if double[first..get()] then
+		insert(text, get())
 		consume()
 	end
+
 	return table.concat(text)
 end
 
@@ -256,6 +271,7 @@ test([['a' || 'b']], 3)
 test[[1 = -2 ;hoi]]
 test[[max-alts = 4]]
 test[[]]
+test[[3 +- -3]]
 
 function formatTokens(tokens)
 	local res = {}
