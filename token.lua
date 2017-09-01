@@ -4,7 +4,9 @@ local insert = table.insert
 
 local function stream(src)
 	local off = 1
-	local get = function ()
+	local get = function (n)
+		local n = n or 0
+		local off = off + n
 		if off > #src then
 			return nil
 		end
@@ -116,7 +118,7 @@ local function getNumber(ss)
 	end
 
 	-- decimaal deel
-	if get() == '.' then
+	if get() == '.' and hex[get(1)] then
 		table.insert(text, get())
 		consume()
 		while get() and hex[get()] do
@@ -183,6 +185,7 @@ local function getVariable(ss)
 	local get,consume = ss.get,ss.consume
 	local text = {}
 	while get() and get():match('[%w%d-]') do
+		if get() == '-' and not get(1):match('[%w%d]') then break end
 		table.insert(text, get())
 		consume()
 	end
@@ -265,6 +268,7 @@ end
 
 test[[a + 3]]
 test[[+- a]]
+test[[0 .. 1]]
 test[['hoi']]
 test[['a' 'b']]
 test([['a' || 'b']], 3)
@@ -272,6 +276,9 @@ test[[1 = -2 ;hoi]]
 test[[max-alts = 4]]
 test[[]]
 test[[3 +- -3]]
+assert(table.concat(tokenize[[ i2[0..(#i2-#i1)] ]], ' ') == 
+"i2 [ 0 .. ( # i2 - # i1 ) ]")
+assert(table.concat(tokenize[[ 0..1 ]], ' ') == '0 .. 1')
 
 function formatTokens(tokens)
 	local res = {}

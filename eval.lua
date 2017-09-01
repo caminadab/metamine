@@ -21,11 +21,33 @@ local op = {
 	['sin'] = math.sin;
 	['cos'] = math.cos;
 	['tan'] = math.tan;
+	['asin'] = math.asin;
+	['acos'] = math.acos;
+	['atan'] = math.atan;
 	['sqrt'] = function(a) if a < 0 then error('imaginaire getallen? nee nog niet') else return math.sqrt(a) end end;
 	['cbrt'] = function (a) return math.pow(a, 1/3) end;
 
 	['+-'] = function (a,b) error('opties nog niet ondersteund') end;
 	['|'] = function (a,b) error('opties nog niet ondersteund') end;
+
+	['#'] = function(a) return #a end;
+	['..'] = function(a,b)
+		local res = {}
+		for i=a,b-1 do
+			insert(res, i)
+		end
+		return res
+	end;
+
+	['||'] = function(a,b) return a .. b end;
+
+	['.'] = function(a,b)
+		local res = {}
+		for i,v in ipairs(b) do
+			insert(res, a:sub(v+1,v+1))
+		end
+		return table.concat(res)
+	end;
 }
 
 function isnumber(sexp)
@@ -41,6 +63,25 @@ function totext(sexp)
 	return "'"..sexp.."'"
 end
 
+function tosas(v)
+	if type(v) == 'string' then
+		return totext(v)
+	elseif type(v) == 'number' then
+		return tostring(v)
+	elseif type(v) == 'table' then
+		local res = {}
+		insert(res, '[')
+		for i,n in pairs(v) do
+			insert(res, tosas(n))
+			if next(v,i) then
+				insert(res, ',')
+			end
+		end
+		insert(res, ']')
+		return table.concat(res, '')
+	end
+end
+
 function interpret(prog)
 	-- bevat echte waarden
 	local res = {}
@@ -48,9 +89,15 @@ function interpret(prog)
 		if atom(v) then
 			res[i] = v
 		else
-			local fn = op[v[1]]
-			if not fn then error('onbekende functie '..v[1]) end
 			local args = {}
+			local fn
+			if istext(v[1]) then
+				fn = op['slice']
+				insert(args, gettext(v[1]))
+			else
+				fn = op[v[1]]
+			end
+			if not fn then error('onbekende functie '..v[1]) end
 			for i=2,#v do
 				local src = v[i]
 				local arg
@@ -68,14 +115,14 @@ function interpret(prog)
 						error('ongeldige variabele '..src)
 					end
 				end
-				args[i-1] = arg
+				insert(args,arg)
 			end
 			local ret = fn(table.unpack(args))
 			res[i] = ret
 		end
 	end
 
-	return res[#res]
+	return res[#res], res
 end
 
 -- maakt lijst van expressies
@@ -85,8 +132,8 @@ function compile(sexp)
 
 	local function work(sexp)
 		-- ten eerste onze argumenten
-		local self = {sexp[1]}
-		for i=2,#sexp do
+		local self = {}--sexp[1]}
+		for i=1,#sexp do
 			local arg = sexp[i]
 			if exp(arg) then
 				work(arg)
@@ -100,6 +147,9 @@ function compile(sexp)
 	end
 
 	if atom(sexp) then
+		if isname(sexp) then
+			error('ongebonden variabele '..sexp)
+		end
 		insert(res, sexp)
 	else
 		work(sexp)
@@ -157,7 +207,7 @@ end
 
 function isconstant(sexp)
 	if atom(sexp) then
-		return string.match(sexp:sub(1,1), '[%d\']')
+		return string.match(sexp:sub(1,1), '[%-%d\']')
 	else
 		local c = true
 		for i=2,#sexp do
@@ -176,6 +226,7 @@ o1 + i1 = i2	=>	o1 = i2 - i1
 i1 + o1 = i2	=>	o1 = i2 - i1
 o1 - i1 = i2	=>	o1 = i2 + i1
 i1 - o1 = i2	=>	o1 = i1 - i2
+i1 = -o1			=>	o1 = -i1
 
 o1 * i1 = i2	=>	o1 = i2 / i1
 i1 * o1 = i2	=>	o1 = i2 / i1
@@ -185,6 +236,13 @@ i1 / o1 = i2	=>	o1 = i1 / i2
 
 o1 ^ i1 = i2	=>	o1 = i2 ^ (1/i1)
 i1 ^ o1 = i2	=>	o1 = i2 _ i1
+
+sin o1 = i1		=>	o1 = asin i1
+cos o1 = i1		=>	o1 = acos i1
+
+; #o1 + #i1 = #i2
+o1 || i1 = i2	=>	o1 = i2.[0..(#i2-#i1)]
+i1 || o1 = i2	=>	o1 = i2.[#i1..#i2]
 
 true
 ]]
@@ -255,6 +313,8 @@ function halfSolveEquation(eq)
 			for k,v in pairs(bindings) do
 				eq = replace(eq, v, k)
 			end
+			local after = unparseInfix(eq)
+			print('=> '..after)
 		end
 	end
 	return eq, ok
@@ -334,13 +394,17 @@ function solve(sexp)
 end
 
 
-function unparseProg(prog)
+function unparseProg(prog, vals)
 	local res = {}
 	for i,v in ipairs(prog) do
 		insert(res, 'v')
 		insert(res, tostring(i-1))
 		insert(res, ' := ')
 		insert(res, unparseInfix(v))
+		if vals then
+			insert(res, '\t\t; ')
+			insert(res, tosas(vals[i]))
+		end
 		insert(res, '\n')
 	end
 	return table.concat(res)
@@ -355,8 +419,7 @@ function eval(sexp)
 end
 
 local src= [[
-a ^ 2 + 3 - b = 9
-b + 1 = 2
+sin(a) = 0.5
 a
 ]]
 print('Source:')
@@ -367,9 +430,9 @@ print('Solved:')
 print(unparse(solve(parse(src))))
 print()
 
+local res,vals = interpret(prog)
 print('Compiled:')
-print(unparseProg(prog))
-print(interpret(prog))
+print(unparseProg(prog,vals))
 
 --[[
 

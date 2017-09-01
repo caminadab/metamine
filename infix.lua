@@ -190,9 +190,10 @@ function infix(tokens)
 			-- "# A"
 			elseif unop[stack[#stack]] then
 				stack[#stack] = {stack[#stack], a}
-			else
+			elseif name(stack[#stack]) then
 				stack[#stack] = {stack[#stack], a}
-				--error('regel '..line..': onvouwbaar: '..unparseSexp(stack[#stack])..' en '..unparseSexp(a))
+			else
+				error('regel '..line..': onvouwbaar: '..unparseSexp(stack[#stack])..' en '..unparseSexp(a))
 			end
 		end
 	end
@@ -312,12 +313,16 @@ local function unparseInfix_work(sexp, tt)
 
 				if br then insert(tt, ')') end
 
+				local nospace = {
+					['.'] = true; [','] = true;
+				}
+
 				if i ~= #sexp then
-					if op ~= ',' then
+					if not nospace[op] then
 						insert(tt, ' ')
 					end
 					insert(tt, op)
-					if op ~= ',' then
+					if not nospace[op] then
 						insert(tt, ' ')
 					end
 				end
@@ -354,15 +359,20 @@ local function test(infix,prefix)
 	assert(res == res2, 'unparseInfix: verwacht "'..infix..'", eigenlijk "'..infix2..'", s-exp: '..res2)
 end
 
-test('sin(a) * b', '(* (sin a) b)')
 
 -- functies!
+--test('a||b c', '((|| a b) c)')
+--test('sin a', '(sin a)')
+--test('sin(a)', '(sin a)')
+--test('sin(a+b)', '(sin (+ a b))')
+--test('sin a + b', '(+ (sin a) b)')
 test('sin a', '(sin a)')
 test('sin[tau]', '(sin tau)')
 test('sin[3*4]', '(sin (* 3 4))')
 test('sin(a) * b', '(* (sin a) b)')
 test('sin(a,b)', '(sin (, a b))')
 test('sin a * 3', '(* (sin a) 3)')
+test('sin(a) * b', '(* (sin a) b)')
 
 -- unaire opn
 test('-a', '(- a)')
