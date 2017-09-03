@@ -23,8 +23,22 @@ function parse(src)
 end
 
 function unparse(sexp)
-	-- TODO work
-	return unparseInfix(sexp)
+	local stats
+	if sexp[1] == '=>' then
+		stats = multi(sexp[2], 'and')
+		table.insert(stats, sexp[3])
+	elseif sexp[1] == 'and' then
+		stats = multi(sexp, 'and')
+	else
+		return unparseInfix(sexp)
+	end
+
+	local res = {}
+	for i=2,#stats do
+		table.insert(res, unparseInfix(stats[i]))
+		table.insert(res, '\n')
+	end
+	return table.concat(res)
 end
 
 local function test(sas, sexp)

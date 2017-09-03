@@ -5,6 +5,7 @@ local remove = table.remove
 local unpack = table.unpack
 local concat = table.concat
 local find = string.find
+local floor = math.floor
 
 local op = {
 	['+'] = function (a,b) return a + b end;
@@ -18,7 +19,7 @@ local op = {
 	['<'] = function (a,b) return a < b end;
 	['>='] = function (a,b) return a >= b end;
 	['=<'] = function (a,b) return a <= b end;
-	['='] = function (a,b) return a == b end;
+	['='] = function (a,b) return tosas(a) == tosas(b) end;
 	['%'] = function (a,b) return a % b end;
 
 	['sin'] = math.sin;
@@ -29,11 +30,6 @@ local op = {
 	['atan'] = math.atan;
 	['sqrt'] = function(a) if a < 0 then error('imaginaire getallen? nee nog niet') else return math.sqrt(a) end end;
 	['cbrt'] = function (a) return math.pow(a, 1/3) end;
-
-	['and'] = function (a,b) return a and b end;
-	['or'] = function (a,b) return a and b end;
-	['xor'] = function (a,b) return a ~= b end;
-	['nor'] = function (a,b) return not a and not b end;
 
 	['+-'] = function (a,b) error('opties nog niet ondersteund') end;
 	['|'] = function (a,b) error('opties nog niet ondersteund') end;
@@ -95,13 +91,9 @@ local op = {
 		end
 	end;
 
-	['=>'] = function(a,b)
-		if a then
-			return b
-		else
-			return false
-		end
-	end;
+	-- cond
+	['=>'] = function (a,b) if a then return b else return nil end end;
+	['&']  = function (a,b) return a or b end;
 }
 
 function isnumber(sexp)
@@ -117,8 +109,11 @@ function totext(sexp)
 	return "'"..sexp.."'"
 end
 
+-- make sas (= string) object
 function tosas(v)
-	if type(v) == 'string' then
+	if type(v) == 'boolean' then
+		return tostring(v)
+	elseif type(v) == 'string' then
 		return totext(v)
 	elseif type(v) == 'number' then
 		return tostring(v)
@@ -133,14 +128,36 @@ function tosas(v)
 		end
 		insert(res, ']')
 		return table.concat(res, '')
-	elseif type(v) == 'boolean' then
-		return tostring(v)
 	else
 		return 'none'
 	end
 end
 
-function interpret(prog)
+-- make lua object
+function tolua(v)
+	if type(v) ~= 'string' then
+		return v
+	end
+	if v == 'false' then
+		return false
+	elseif v == 'true' then
+		return true
+	elseif tonumber(v) then
+		return tonumber(v)
+	elseif istext(v) then
+		return gettext(v)
+	elseif v:sub(1,1) == '[' then
+		local res = tail(multi(parse(v), ','))
+		for i,v in ipairs(res) do
+			res[i] = tolua(v)
+		end
+		return res
+	else
+		return nil
+	end
+end
+
+function interpret2(prog)
 	-- bevat echte waarden
 	local res = {}
 	for i,v in ipairs(prog) do
@@ -158,6 +175,10 @@ function interpret(prog)
 					arg = tonumber(src)
 				elseif istext(src) then
 					arg = gettext(src)
+				elseif src == 'true' then
+					arg = true
+				elseif src == 'false' then
+					arg = false
 				else
 					local index = tonumber(src:sub(2))
 					if not index then
@@ -177,9 +198,8 @@ function interpret(prog)
 				ret = {}
 				for i,v in ipairs(args[1]) do
 					sargs[1] = v
-					log('fn',sargs)
 
-					ret[i] = fn(table.unpack(sargs))
+					ret[i] = tosas(fn(table.unpack(sargs)))
 				end
 			else
 				pcall(function()
@@ -226,46 +246,24 @@ function compile(sexp)
 	return res
 end
 
--- 1 + 2 + 3 + 4 -> (+ 1 2 3 4)
-function multi(sexp, op)
-	local res = {op}
-	local cur = sexp
-	while cur[1] == op do
-		insert(res, 2, cur[3])
-		cur = cur[2]
-	end
-	-- laatste
-	insert(res, 2, cur)
-	return res
-end
-
 assert(unparseSexp(multi(parse('1 + 2 + 3 + 4'), '+')) == unparseSexp(parseSexp('(+ 1 2 3 4)')))
 assert(unparseSexp(multi(parse('1'), '+')) == unparseSexp(parseSexp('(+ 1)')))
 
--- (+ 1 2 3 4) -> 1 + 2 + 3 + 4
-function unmulti(sexp)
-	local op = sexp[1]
-	if #sexp == 2 then
-		return sexp[2]
-	else
-		local cur = {op, sexp[2], sexp[3]}
-		for i=4,#sexp do
-			cur = {op, cur, sexp[i]}
-		end
-		return cur
-	end
-end
-
 function replace(sexp, dst, src)
 	if unparseSexp(sexp) == unparseSexp(src) then
-		return dst
+		return dst, true
 	elseif atom(sexp) then
 		return sexp
 	else
+		local ok = false
 		for i,v in ipairs(sexp) do
-			sexp[i] = replace(v, dst, src)
+			local ok1
+			sexp[i],ok1 = replace(v, dst, src)
+			if ok1 then
+				ok = true
+			end
 		end
-		return sexp
+		return sexp, ok
 	end
 end
 
@@ -274,11 +272,14 @@ function isname(sexp)
 end
 
 function isconstant(sexp)
-	if istext(sexp) then
+	if sexp == 'true' or sexp == 'false' then
 		return true
 	elseif atom(sexp) then
-		return string.match(sexp:sub(1,1), '[%-%d\']')
+		return not not string.match(sexp:sub(1,1), '[%-%d\']')
 	else
+		if sexp[1] == '|' then
+			return false
+		end
 		local c = true
 		for i=2,#sexp do
 			if not isconstant(sexp[i]) then
@@ -312,27 +313,18 @@ cos o1 = i1		=>	o1 = acos i1
 
 ; tekst
 ; #o1 + #i1 = #i2
-;i1 || o1 || i2 = o2	=> o1 = o2.[#i1..#i2 - #i1]
-o1 || i1 = i2	=>	o1 = i2.[0..(#i2-#i1)] and i1 = i2.[#i2-#i1 .. i2]
-i1 || o1 = i2	=>	o1 = i2.[#i1..#i2] and i1 = i2.[0..#i1]
+o1 || i1 = i2	=>	o1 = i2.[0..(#i2-#i1)] ;and i1 = i2.[#i2-#i1..#i2]
+i1 || o1 = i2	=>	i1 = i2.[0..#i1] and o1 = i2.[#i1..#i2] ;and i1 = i2.[0..#i1]
 o1 || i1 || o2 = i2	=>	o1 = i2.[0..find(i2,i1)] and o2 = i2.[find(i2,i1) + #i1 .. #i2]
 o1 || o2 = i1	=>	#o1 + #o2 = #i1
-i1 != i2 || o1 || i3	=> i2 != i1.[0..#i1] or i3 != i1.[#i1 - #i3 .. #i3]
 
 ; lijsten
 ;o1.i1 = i2		=>	o1 = i2
 
-; opties
-;o1 = o2 | o3	=> o1 = o2 or o1 = o3
-;o1 = i1 or o2 = i2	=> 
-;o1 = o2 | o3	=> [((o1 = o2) => (o1 != o3)) and ((o1 = o3) => (o1 != o2)) and ((o1 != o3) => (o1 = o2)) and ((o1 != o2) => (o1 = o3))]
-o1 = o2 | o3	=> o1 = o2 xor o1 = o3 
-;o1 = o2 | o3 	=> o1 = o2 and o1 = o3
-;o1 xor (o1 and i1)	=>
-;o1 = o2 | o3 => (o1 = o2 => o2) & (o1 = o3 => o3)
-
-; context
-;i1 and o1		=> (i1 => o1)
+; cond
+;o1 = i1 | false	=> o1 = i1
+;o1 = false | i1	=> o1 = i1
+o1 = o2 | o3	=>	o1 = o2 or o1 = o3
 
 true
 ]]
@@ -380,18 +372,6 @@ function matchIO(what, to, bindings)
 	end
 end
 
-function clone(sexp)
-	if atom(sexp) then
-		return sexp
-	else
-		local res = {}
-		for i,v in ipairs(sexp) do
-			res[i] = clone(v)
-		end
-		return res
-	end
-end
-
 function halfSolveEquation(eq)
 	local ok = false
 	for i=2,#solutions do
@@ -406,6 +386,7 @@ function halfSolveEquation(eq)
 			local after = unparseInfix(eq)
 			print('<= '..unparseInfix(solution[2]))
 			print('=> '..after)
+			print()
 		end
 	end
 	return eq, ok
@@ -455,66 +436,40 @@ function log(...)
 end
 
 function solve(sexp)
-	if isconstant(sexp) then
-		return sexp
-
 	-- oplossingsgericht procesbeheer
-	elseif sexp[1] == '=>' then
-		local ok
-		local res = solve(sexp[3])
+	if sexp[1] == '=>' then
+		local res = sexp[3]
 		local bindings = solve(sexp[2])
 		stats = multi(bindings, 'and')
-		local assertions = {'and'}
 		for i,stat in ipairs(stats) do
 			if stat[1] == '=' then
 				local n,v = stat[2],stat[3]
 				if isname(v) then
 					n,v = v,n
 				end
-				if isname(n) then
-					local ok1
-					res,ok1 = replace(res, v, n)
-					ok = ok or ok1
-				end
-			end
-			if isconstant(stat) then
-				insert(assertions, stat)
+				res = replace(res, v, n)
 			end
 		end
-		if #assertions > 1 then
-			local res,ok1 = solve(res)
-			ok = ok or ok1
-			return {'=>',unmulti(assertions)}, ok
-		else
-			return res,ok
-		end
+		return res
 
-	-- enkele
-	elseif sexp[1] == '=' then
-		return solveEquation(sexp)
-
-	elseif sexp[1] == '!=' then
-		return sexp
-
-	-- orrry
-	elseif sexp[1] == 'xor' then
-		local opts = multi(sexp, 'xor')
-		local ok
-		for i=2,#opts do
-			local opt = opts[i]
-			local eqs,ok1 = solve(opt)
-			if ok1 then
-				ok = true
-				opts[i] = eqs
+	-- oeps!
+	elseif sexp[1] == 'or' then
+		-- "pretend"
+		local options = {'or'}
+		local stats = multi(sexp, 'or')
+		for i=2,#stats do
+			local option = stats[i]
+			local res = solve(option)
+			if res then
+				insert(options, res)
 			end
+			return unmulti(options)
 		end
-		return unmulti(opts), ok
 
-	-- stelsel van vergelijkingen
-	elseif sexp[1] == 'and' then
+	-- standaard vergelijkingen
+	elseif sexp[1] == 'and' or sexp[1] == '=' then
 		local stats = multi(sexp, 'and')
 		local ok = true
-		local anyok
 
 		while ok do
 			ok = false
@@ -533,11 +488,10 @@ function solve(sexp)
 
 			-- herleid nieuwe feiten
 			for i,stat in ipairs(stats) do
-				local eqs,ok1 = solve(stats[i])
+				local eqs,ok1 = solveEquation(stats[i])
 				local eqs = multi(eqs, 'and')
 				if ok1 then
 					ok = true
-					anyok = true
 					remove(stats, i)
 					for i,eq in ipairs(eqs) do
 						if i>1 then
@@ -550,10 +504,10 @@ function solve(sexp)
 
 		end
 
-		return unmulti(stats), anyok
+		return unmulti(stats)
 	end
 
-	return sexp, false
+	return sexp
 end
 
 
@@ -566,44 +520,301 @@ function unparseProg(prog, vals)
 		insert(res, unparseInfix(v))
 		if vals then
 			insert(res, '\t\t; ')
-			insert(res, tosas(vals[i]))
+			if not vals[i] then insert(res, 'NONE')
+			else
+				
+				--insert(res, unparse(vals[i]))
+			end
 		end
 		insert(res, '\n')
 	end
 	return table.concat(res)
 end
 
-function eval(sexp)
-	local plain = solve(sexp)
-	print(color.purple..'partieel: '..unparse(plain)..color.white)
-	local prog = compile(plain)
-	local res = interpret(prog)
-	return tosas(res)
+function fastEval(sexp)
+	local prog = compile(sexp)
+	return interpret(prog, fnArith)
+end
+
+function neq(a,b)
+	return isconstant(a) and isconstant(b) and tostring(fastEval(a)) ~= tostring(fastEval(b))
+end
+
+function eq(a,b)
+	return isconstant(a) and isconstant(b) and tostring(fastEval(a)) == tostring(fastEval(b))
+end
+
+function solveSystem(sexp)
+	local eqs = multi(sexp, 'and')
+	local ok = true
+	while ok do
+		ok = false
+
+		-- substitute
+		for i=2,#eqs do
+			local src = eqs[i]
+			if src == 'false' then
+				return 'false'
+			elseif src == 'true' or eq(src[2], src[3]) then
+				remove(eqs,i)
+			else
+				for j=2,#eqs do
+					if i~=j then
+						local dst = eqs[j]
+						if src[1] == '=' and isconstant(src[3]) then
+							local ok1
+							dst,ok1 = replace(dst, src[3], src[2])
+							if isconstant(dst[2]) then
+								dst[2],dst[3] = dst[3],dst[2]
+							end
+
+							if ok1 then
+								ok = true
+								log('continue because ',src,dst)
+							end
+							eqs[j] = dst
+						end
+						-- single false
+						if neq(src[2],src[3]) then
+							print('false',unparseSexp(src))
+							return 'false'
+						end
+					end
+				end
+			end
+		end
+
+		-- solve
+		for i=2,#eqs do
+			eqs[i] = solveEquation(eqs[i])
+		end
+	end
+	return unmulti(eqs)
+end
+
+local fnSolve = {
+	['='] = function (sexp)
+		if isconstant(sexp[2]) and isconstant(sexp[3]) then
+			return tostring(unparseSexpCompact(sexp[2]) == unparseSexpCompact(sexp[3]))
+		end
+		return solveEquation(clone(sexp))
+	end;
+	['=>'] = function (sexp)
+		local op,cond,act = unpack(sexp)
+		local cnf = multi(cond, 'or')
+		local options = {j}
+		for i=2,#cnf do
+			local act = clone(act)
+			local case = cnf[i]
+			local stats = multi(case, 'and')
+			for i=2,#stats do
+				local stat = stats[i]
+				if stat == 'false' then
+					return 'false'
+				end
+				local op,src,dst = unpack(stat)
+				if op == '=' then
+					act = replace(act, dst, src)
+				end
+			end
+			options[unparseSexpCompact(act)] = act
+			-- insert(options, act)
+		end
+
+		local options1 = {'|'}
+		for k,v in pairs(options) do
+			insert(options1, v)
+		end
+
+		return unmulti(options1)
+	end;
+	['or'] = function (sexp)
+		if sexp[2] == 'true' then return sexp[3] end
+		if sexp[3] == 'true' then return sexp[2] end
+		if sexp[2] == 'false' and sexp[3] == 'false' then
+			return 'false'
+		else
+			return sexp
+		end
+	end;
+	['and'] = function (sexp)
+		local stats = multi(sexp, 'and')
+		local all = {'and'}
+		local total = 1
+		local cond = {'or'}
+		for i=2,#stats do
+			local stat = stats[i]
+			if stat == 'false' then
+				return 'false'
+			end
+			all[i] = multi(stat, 'or')
+			total = total * (#all[i]-1)
+		end
+		for i=1,total do
+			local stat = {'and'}
+			local index = i-1
+			for j=2,#all do
+				local index1 = index % #all[j]
+				index = floor(index / #all[j])
+				insert(stat, all[j][index1+1+1])
+			end
+			local system = unmulti(stat)
+			local solved = solveSystem(system)
+			if solved ~= 'false' then
+				insert(cond, solved)
+			end
+		end
+		if #cond == 1 then
+			return 'false'
+		end
+		return unmulti(cond)
+	end;
+}
+
+fnArith = {
+	['+'] = function (sexp) return sexp[2] + sexp[3] end;
+	['-'] = function (sexp) return sexp[2] - sexp[3] end;
+	['/'] = function (sexp) return sexp[2] / sexp[3] end;
+	['*'] = function (sexp) return sexp[2] * sexp[3] end;
+	['^'] = function (sexp) return sexp[2] ^ sexp[3] end;
+	['='] = function (sexp) return sexp[2] == sexp[3] end;
+	['and'] = function (sexp) return tostring(tolua(sexp[2]) and tolua(sexp[3])) end;
+	['or'] = function (sexp) return tostring(tolua(sexp[2]) or tolua(sexp[3])) end;
+	['#'] = function (sexp) return #sexp[2]-2 end;
+	['..'] = function(sexp)
+		local a,b = sexp[2],sexp[3]
+		local res = {}
+		for i=a,b-1 do
+			insert(res, i)
+		end
+		return res
+	end;
+	[','] = function(sexp)
+		local a,b = sexp[2],sexp[3]
+		if type(a) == 'table' then
+			local a = clone(a)
+			insert(a,b)
+			return a
+		else
+			return {a,b}
+		end
+	end;
+
+	['||'] = function(sexp) 
+		local a,b = sexp[2],sexp[3]
+		return a .. b
+	end;
+
+
+	['.'] = function(sexp)
+		local a,b = sexp[2],sexp[3]
+		if type(a) == 'table' and type(b) == 'number' then
+			return a[b+1]
+		end
+		local res = {}
+		for i,v in ipairs(b) do
+			if type(a) == 'string' then
+				insert(res, a:sub(v+2,v+2))
+			elseif type(a) == 'number' then
+				return 'index-dot'
+			else
+				insert(res, a[v+1])
+			end
+		end
+		if type(a) == 'string' then
+			return totext(concat(res))
+		else
+			return res
+		end
+	end;
+
+	['concat'] = concat;
+	['find'] = function(a)
+		local str,sub = unpack(a)
+		local pos = find(str, sub, 0, true)
+		if not pos then
+			return false
+		end
+		return pos - 1
+	end;
+}
+
+function getvar(v)
+	return v and string.match(v, 'v(%d+)')
+end
+
+function interpret(prog, fn)
+	local res = {}
+	for i,cmd in ipairs(prog) do
+		if atom(cmd) then
+			res[i] = cmd
+		else
+			local op,a,b = unpack(cmd)
+			if getvar(a) then a = res[tonumber(getvar(a)) + 1] end
+			if getvar(b) then b = res[tonumber(getvar(b)) + 1] end
+
+			if not fn[op] then
+				res[i] = {op,a,b}
+			else
+				res[i] = fn[op]{op,a,b}
+				if type(res[i]) == 'number' then
+					res[i] = tostring(res[i])
+				end
+			end
+			--log('v'..i-1 ..' = ',res[i])
+		end
+	end
+	return res[#res], res
 end
 
 local src = [[
-v = t | i
-bv = bt | bi
-bt = #t || ':' || t
+v = s | i
+bv = bs | bi
+bs = #s || ':' || s
 bi = 'i' || i || 'e'
-
-bv = '3:hoi'
-v
+bs
 ]]
 
+--[[
+INPUT: bv
+bv = bs | bi
+
+bs = #s || ':' || s
+#s = bs.[0..find(bs,':')]
+s = bs.[find(bs,':') .. #bs]
+
+bi = 'i' || i || 'e'
+i = bi.[1..#bi-1]
+bi.1 = 'i'
+bi.#bi = 'e'
+
+bv : bs			<= bv.1 = 'i'
+
+bv.1 = 'i'	=> i = bi.[1..#bi-1]
+bv.1 != 'i'	=> s = bs.[find(bs,':') .. #bs]
+
+]]
+
+-- SOURCE
 print('Source:')
 print(src)
-
-local solved = solve(parse(src))
-print('Solved:')
-print(unparse(solved))
-print(unparse(solve(parse(src)[2])))
 print()
 
-local prog = compile(solved)
-local res,vals = interpret(prog)
+-- RUN IT
+local prog = compile(parse(src))
+local res,vals = interpret(prog,fnSolve)
+print('Solved:')
+print(unparseProg(prog,vals))
+print('= '..unparse(res))
+print()
+
+-- RESULT
+local prog = compile(res)
+local res,vals = interpret(prog,fnArith)
 print('Compiled:')
 print(unparseProg(prog,vals))
+print('= '..unparse(res))
+print()
 
 --[[
 
@@ -623,3 +834,4 @@ int+int: int
 => 3+2: int
 
 ]]
+

@@ -155,7 +155,7 @@ local bracket = {
 local double = {
 	['||'] = true, ['<='] = true,
 	['>='] = true, ['::'] = true,
-	['=>'] = true,
+	['=>'] = true, ['!='] = true,
 	['>>'] = true, ['<<'] = true,
 	['..'] = true, ['+-'] = true
 }
