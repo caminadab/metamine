@@ -156,6 +156,7 @@ local double = {
 	['||'] = true, ['<='] = true,
 	['>='] = true, ['::'] = true,
 	['=>'] = true,
+	['>>'] = true, ['<<'] = true,
 	['..'] = true, ['+-'] = true
 }
 local operator = {}
@@ -276,6 +277,7 @@ test[[1 = -2 ;hoi]]
 test[[max-alts = 4]]
 test[[]]
 test[[3 +- -3]]
+test[[3 >> int]]
 assert(table.concat(tokenize[[ i2[0..(#i2-#i1)] ]], ' ') == 
 "i2 [ 0 .. ( # i2 - # i1 ) ]")
 assert(table.concat(tokenize[[ 0..1 ]], ' ') == '0 .. 1')

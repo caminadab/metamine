@@ -6,7 +6,7 @@ function head(t)
 end
 
 function atom(t)
-	return type(t)=='string'
+	return type(t)=='string' or type(t)=='number'
 end
 
 function exp(t)

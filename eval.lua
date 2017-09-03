@@ -1,7 +1,10 @@
 require 'sas'
 require 'util'
 local insert = table.insert
+local remove = table.remove
 local unpack = table.unpack
+local concat = table.concat
+local find = string.find
 
 local op = {
 	['+'] = function (a,b) return a + b end;
@@ -38,15 +41,53 @@ local op = {
 		end
 		return res
 	end;
+	[','] = function(a,b)
+		if type(a) == 'table' then
+			local a = clone(a)
+			insert(a,b)
+			return a
+		else
+			return {a,b}
+		end
+	end;
 
 	['||'] = function(a,b) return a .. b end;
 
 	['.'] = function(a,b)
+		if type(a) == 'table' and type(b) == 'number' then
+			return a[b+1]
+		end
 		local res = {}
 		for i,v in ipairs(b) do
-			insert(res, a:sub(v+1,v+1))
+			if type(a) == 'string' then
+				insert(res, a:sub(v+1,v+1))
+			elseif type(a) == 'number' then
+				return 'index-dot'
+			else
+				insert(res, a[v+1])
+			end
 		end
-		return table.concat(res)
+		if type(a) == 'string' then
+			return concat(res)
+		else
+			return res
+		end
+	end;
+
+	['concat'] = concat;
+	['find'] = function(a)
+		local str,sub = unpack(a)
+		local pos = find(str, sub, 0, true)
+		if not pos then
+			return false
+		end
+		return pos - 1
+	end;
+
+	['>>'] = function(a,b)
+		if b == 'text' then
+			return totext(a)
+		end
 	end;
 }
 
@@ -79,6 +120,8 @@ function tosas(v)
 		end
 		insert(res, ']')
 		return table.concat(res, '')
+	else
+		return 'none'
 	end
 end
 
@@ -91,12 +134,7 @@ function interpret(prog)
 		else
 			local args = {}
 			local fn
-			if istext(v[1]) then
-				fn = op['slice']
-				insert(args, gettext(v[1]))
-			else
-				fn = op[v[1]]
-			end
+			fn = op[v[1]]
 			if not fn then error('onbekende functie '..v[1]) end
 			for i=2,#v do
 				local src = v[i]
@@ -112,12 +150,27 @@ function interpret(prog)
 					end
 					arg = res[index + 1]
 					if not arg then
-						error('ongeldige variabele '..src)
+						--break
+						--error('ongeldige variabele '..src)
 					end
 				end
 				insert(args,arg)
 			end
-			local ret = fn(table.unpack(args))
+			local ret 
+			if false and v[1] ~= ',' and v[1] ~= '#'  and type(args[1]) == 'table' then
+				local sargs = clone(args)
+				ret = {}
+				for i,v in ipairs(args[1]) do
+					sargs[1] = v
+					log('fn',sargs)
+
+					ret[i] = fn(table.unpack(sargs))
+				end
+			else
+				pcall(function()
+					ret = fn(table.unpack(args))
+				end)
+			end
 			res[i] = ret
 		end
 	end
@@ -148,7 +201,7 @@ function compile(sexp)
 
 	if atom(sexp) then
 		if isname(sexp) then
-			error('ongebonden variabele '..sexp)
+			--error('ongebonden variabele '..sexp)
 		end
 		insert(res, sexp)
 	else
@@ -189,7 +242,7 @@ function unmulti(sexp)
 end
 
 function replace(sexp, dst, src)
-	if sexp == src then
+	if unparseSexp(sexp) == unparseSexp(src) then
 		return dst
 	elseif atom(sexp) then
 		return sexp
@@ -240,9 +293,15 @@ i1 ^ o1 = i2	=>	o1 = i2 _ i1
 sin o1 = i1		=>	o1 = asin i1
 cos o1 = i1		=>	o1 = acos i1
 
+; tekst
 ; #o1 + #i1 = #i2
 o1 || i1 = i2	=>	o1 = i2.[0..(#i2-#i1)]
 i1 || o1 = i2	=>	o1 = i2.[#i1..#i2]
+o1 || i1 || o2 = i2	=>	o1 = i2.[0..find(i2,i1)] and o2 = i2.[find(i2,i1) + #i1 .. #i2]
+o1 || o2 = i1	=>	#o1 + #o2 = #i1
+
+; lijsten
+;o1.i1 = i2		=>	o1 = i2
 
 true
 ]]
@@ -314,6 +373,7 @@ function halfSolveEquation(eq)
 				eq = replace(eq, v, k)
 			end
 			local after = unparseInfix(eq)
+			print('<= '..unparseInfix(solution[2]))
 			print('=> '..after)
 		end
 	end
@@ -346,6 +406,23 @@ function solveEquation(eq)
 	return eq,anyok
 end
 
+function imulti(a)
+	local i = 2 - 1
+	return function()
+		i = i + 1
+		return a[i], i-1
+	end
+end
+
+function log(...)
+	local l = {...}
+	for i,v in ipairs(l) do
+		io.write(unparse(v))
+		io.write('\t')
+	end
+	io.write('\n')
+end
+
 function solve(sexp)
 	-- oplossingsgericht procesbeheer
 	if sexp[1] == '=>' then
@@ -367,26 +444,40 @@ function solve(sexp)
 	elseif sexp[1] == 'and' or sexp[1] == '=' then
 		local stats = multi(sexp, 'and')
 		local ok = true
+
 		while ok do
 			ok = false
-			for i=2,#stats do
-				if stats[i][1] == '=' then
-					local ok1
-					stats[i],ok1 = solveEquation(stats[i])
-					if ok1 then
-						ok = true
-					end
-					local op,a,b = unpack(stats[i])
-					if atom(a) and isname(a) then
-						for j=1,#stats do
-							if i~=j then
-								stats[j] = replace(stats[j], b, a)
-							end
+			-- A = 3 VERVANGING!!!!
+			for i,eqSrc in ipairs(stats) do
+				for j,eqDst in ipairs(stats) do
+					if i>1 and j>1 and i~=j then
+						
+						-- we kunnen vervangen nu?
+						if eqSrc[1] == '=' and not isconstant(eqSrc[2]) then
+							stats[j] = replace(stats[j], eqSrc[3], eqSrc[2])
 						end
 					end
 				end
 			end
+
+			-- herleid nieuwe feiten
+			for i,stat in ipairs(stats) do
+				local eqs,ok1 = solveEquation(stats[i])
+				local eqs = multi(eqs, 'and')
+				if ok1 then
+					ok = true
+					remove(stats, i)
+					for i,eq in ipairs(eqs) do
+						if i>1 then
+							insert(stats, eq)
+							log('eq',eq)
+						end
+					end
+				end
+			end
+
 		end
+
 		return unmulti(stats)
 	end
 
@@ -415,13 +506,13 @@ function eval(sexp)
 	print(color.purple..'partieel: '..unparse(plain)..color.white)
 	local prog = compile(plain)
 	local res = interpret(prog)
-	return tostring(res)
+	return tosas(res)
 end
 
-local src= [[
-sin(a) = 0.5
-a
+local src = [[
+3
 ]]
+
 print('Source:')
 print(src)
 
