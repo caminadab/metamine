@@ -40,7 +40,7 @@ function shell(txt)
 	elseif sexp then
 		local ok,v = pcall(eval,sexp)
 		if ok then
-			print(color.cyan..unparseInfix(v))
+			print(color.cyan..unparse(v))
 		else
 			print(color.red..v..color.white)
 		end

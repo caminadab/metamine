@@ -25,10 +25,13 @@ local binops = {
 	{'+', '-', '+-'},
 	{'%'},
 	{'>', '<', '=<', '>='},
-
 	{'||'},
 	{'..', 'to'},
 	{'>>', '<<', ':'},
+	{'@'},
+
+	-- zelfgemaakte ops??
+
 	{'=', '!='},
 	{'=?'},
 	{'and', 'or', 'xor', 'nand', 'nor', 'xnor', 'xnand'},
@@ -134,18 +137,20 @@ function infix(tokens)
 
 	-- line hack
 	-- dubbel
-	for i=#tokens,2,-1 do
-		if tokens[i]=='\n' and tokens[i-1]=='\n' then
-			table.remove(tokens, i)
+	do
+		for i=#tokens,2,-1 do
+			if tokens[i]=='\n' and tokens[i-1]=='\n' then
+				table.remove(tokens, i)
+			end
 		end
-	end
-	-- begin
-	while tokens[1]=='\n' do
-		table.remove(tokens, 1)
-	end
-	-- einde
-	while tokens[#tokens]=='\n' do
-		table.remove(tokens, #tokens)
+		-- begin
+		while tokens[1]=='\n' do
+			table.remove(tokens, 1)
+		end
+		-- einde
+		while tokens[#tokens]=='\n' do
+			table.remove(tokens, #tokens)
+		end
 	end
 
 	-- token manage
@@ -362,10 +367,7 @@ end
 
 -- functies!
 --test('a||b c', '((|| a b) c)')
---test('sin a', '(sin a)')
---test('sin(a)', '(sin a)')
---test('sin(a+b)', '(sin (+ a b))')
---test('sin a + b', '(+ (sin a) b)')
+test('sin a', '(sin a)')
 test('sin a', '(sin a)')
 test('sin[tau]', '(sin tau)')
 test('sin[3*4]', '(sin (* 3 4))')
@@ -373,6 +375,7 @@ test('sin(a) * b', '(* (sin a) b)')
 test('sin(a,b)', '(sin (, a b))')
 test('sin a * 3', '(* (sin a) 3)')
 test('sin(a) * b', '(* (sin a) b)')
+--test('sin a - b', '(- (sin a) b)')
 
 -- unaire opn
 test('-a', '(- a)')
@@ -384,6 +387,7 @@ test('-a - b', '(- (- a) b)')
 test('a - -b', '(- a (- b))')
 test('-a - b', '(- (- a) b)')
 test('- #a', '(- (# a))')
+--test('#a.0', '(# (. a 0))')
 
 -- zelfde level
 test('a + b', '(+ a b)')

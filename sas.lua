@@ -23,6 +23,9 @@ function parse(src)
 end
 
 function unparse(sexp)
+	if sexp == nil or atom(sexp) then
+		return tostring(sexp)
+	end
 	local stats
 	if sexp[1] == '=>' then
 		stats = multi(sexp[2], 'and')
