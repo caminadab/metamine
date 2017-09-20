@@ -1,5 +1,5 @@
 function curry(f,g)
-	return function(a)
-		return f(g(a))
+	return function(...)
+		return f(g(...))
 	end
 end

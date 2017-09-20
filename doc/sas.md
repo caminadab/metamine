@@ -58,9 +58,16 @@ Functioneel:
 Typesysteem:
 	a: b		; a is subset van b
 	a: s&t	; a: s and a: t
-	a: s|t	; a: s xor a: t
 	a >> t	; a geconverteerd naar type t
 	s << a	; a geconverteerd naar type s
+
+Opties:
+	t | s		; t danwel s
+	a = t|s	; a = t xor a = s
+	+- a		; a | -a
+	a +- b	; (a + b) | (a - b)
+	a = b?	; a = b xor a: undefined
+
 
 Logica:
 	true		; waar
@@ -121,13 +128,14 @@ Van broncode naar programma gaat als volgt:
 3. optimisatie
 4. compilatie
 
-*Parseren*: lexen, shunting-yard algoritme
+**Parseren**: lexen, shunting-yard algoritme
 
 Oplossen
 --------
-1. Isoleren van variabelen en **assert**s
+1. Isoleren van variabelen en *assert*s
 2. Omschrijven naar CNF
 3. Oplossingspad vinden
+4. Blokken vinden voor trage uitvoering & edge-triggered
 
 Optimisatie
 -----------
@@ -142,6 +150,53 @@ Optimisatie
 ### Loops
 - Strength Reduction
 - Parallelisatie
+
+
+Error Afhandeling
+=================
+Alle errors en de waarde *undefined* erven over van *false*.
+Een bestand inlezen geeft een waarde van het type *data | file-not-found* wat afleidt van *data?*.
+*file-not-found* leidt af van *undefined* en dus ook van *false*.
+Op deze manier kan men zeggen
+
+	assemble x = ...
+	asm = file 'source.asm'
+	asm
+		=> assemble asm
+		/> 'geen invoer gevonden'
+
+Als de broncode niet wordt gevonden wordt er een bericht teruggegeven en anders wordt de code geassembleerd.
+
+Error-afhandeling is op deze manier beschikbaar zonder speciale constructies in de taal. Errors worden stilletje doorgegeven tot ze niet meer relevant zijn (afgesloten verbinding in een gestopte *thread*) of ongeldige resultaten gaan opleveren (systeem probeert *file-not-found* op het scherm te tekenen). Een voordeel is dat tijdens compile-time ongeldige resultaten al kunnen worden opgespoord met behulp van het type systeem.
+
+Types
+=====
+In SAS is een type een eigenschap van een waarde. Een waarde kan meerdere types hebben. De constante `3` bijvoorbeeld, is tegelijk *int*, *number*, en *constant*. Het type van een waarde kan tijdens de run-time veranderen: een verbinding kan van *connected* naar *unconnected* gaan. Als er staat
+
+	server-connection : connected
+		=> status-icon = icon-green
+		/> status-icon = icon-red
+
+wordt er tijdens de runtime geswitcht van een groen naar rood icoon en terug afhankelijk van de verbindingsstatus. Tegelijk kan worden aangenomen dat in het `=>` blok de server-connection altijd `connected` is: handig voor error-eliminatie aangezien `not-connected-error` hier per definitie niet kan voorkomen.
+
+
+Logica & Opties
+===============
+
+Automatische if-statement generatie wordt veroorzaakt door logica en **opties**.
+Wanneer je bijv. een opslagsysteem wilt maken die integers en booleans kan opslaan, met integers in de vorm van `!123` en booleans in de vorm van `@false`, bieden opties een uitkomst. Neem het programma
+
+	encoded = encoded-int | encoded-bool
+	decoded = int | bool
+	encoded-int = '!' || int
+	encoded-bool = '@' || bool
+	decoded
+
+Wanneer je vervolgens `encoded = '!3'` zegt probeert het programma uit of encoded een encoded-int kan zijn; als dit slaagt is decoded de int achter het uitroepteken, en anders de booleaanse waarde achter het apenstaartje.
+Wanneer je echter iets onmogelijks zegt zoals `encoded = '#pi'` kan de eerste regel niet waar worden gemaakt, waardoor de laatste regel ook onwaar is; immers alle regels in het programma moeten waar zijn voordat de laatste regel een waarde aanneemt.
+
+Dit "uitproberen" wordt een keer gedaan door de oplosser en compiler; hierna wordt het getransformeerd naar programmacode net als de rest van de broncode. Vgl Prolog waar dit niet het geval is; hier wordt het trage *backtracking* gebruikt. 
+
 
 Bibliotheek
 ===========

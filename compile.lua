@@ -36,8 +36,10 @@ function tosas(v)
 	end
 end
 
+local constants = set {'true', 'false', 'pi', 'int', 'text'}
 
 function isname(sexp)
+	if constants[sexp] then return false end
 	return atom(sexp) and string.match(sexp:sub(1,1), '%a')
 end
 
@@ -72,6 +74,9 @@ function compile(sexp)
 				work(arg)
 				self[i] = 'v'..#res-1
 			else
+				if i > 1 and isname(arg) then
+					error('ongebonden variabele '..arg)
+				end
 				self[i] = sexp[i]
 			end
 		end
@@ -81,7 +86,7 @@ function compile(sexp)
 
 	if atom(sexp) then
 		if isname(sexp) then
-			--error('ongebonden variabele '..sexp)
+			error('ongebonden variabele '..sexp)
 		end
 		insert(res, sexp)
 	else

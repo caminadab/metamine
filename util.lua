@@ -65,6 +65,14 @@ function hton(num, len)
 	return string.char(table.unpack(n))
 end
 
+function set(list)
+	local s = {}
+	for i,v in ipairs(list) do
+		s[v] = true
+	end
+	return s
+end
+
 color = {
 	red = '\x1B[31m',
 	green = '\x1B[32m',

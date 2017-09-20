@@ -14,13 +14,21 @@ while true do
 	if line:sub(-4) == '.sas' then
 		local sas = file('test/'..line)
 		local sexp = parse(sas)
-		local res,vals = eval(sexp)
-		if not res then
-			local prog = compile(sexp)
-			print('Niet goed!')
-			print('File: '..line)
-			print('Programma:')
-			print(unparseProg(prog,vals))
+		local ok,res,vals = pcall(eval,sexp)
+		if not ok then
+			print()
+			print(color.yellow..'File: '..line..color.white)
+			local ok,prog = pcall(compile,sexp)
+			if not ok then
+				io.write(color.red)
+				print(prog)
+				io.write(color.white)
+			else
+				io.write(color.white)
+				print('Niet goed!')
+				print('Programma:')
+				print(unparseProg(prog,vals))
+			end
 		end
 	end
 end
