@@ -1,4 +1,4 @@
-require 'token'
+require 'lex'
 require 'sexp'
 require 'func'
 
@@ -27,12 +27,13 @@ local binops = {
 	{'>', '<', '=<', '>='},
 	{'||'},
 	{'..', 'to'},
+	{'->'},
 	{'>>', '<<', ':'},
 	{'@'},
 
 	-- zelfgemaakte ops??
 
-	{'=', '!='},
+	{'=', '!=', ':='},
 	{'=?'},
 	{'and', 'or', 'xor', 'nand', 'nor', 'xnor', 'xnand'},
 	{'<=>', '=>', '<='},
@@ -64,7 +65,8 @@ local binopNames = {
 	['<<' ] = 'conv-from',
 	[':'  ] = 'in',
 	['='  ] = 'eq',
-	['=?' ] = 'assert-eq',
+	[':='  ] = 'assign',
+	['==' ] = 'assert-eq',
 	['and'] = 'and',
 	['or' ] = 'or',
 	['xor'] = 'xor',
@@ -284,7 +286,7 @@ function infix(tokens)
 	return fix(stack[1])
 end
 
-parseInfix = curry(infix, tokenize)
+parseInfix = compose(infix, lex)
 
 local insert = table.insert
 

@@ -174,6 +174,8 @@ function interpret(prog)
 					arg = false
 				elseif src == 'none' then
 					arg = nil
+				elseif src == 'tau' then
+					arg = math.pi * 2
 				elseif istext(src) then
 					arg = gettext(src)
 				elseif src == 'int' or src == 'text' then

@@ -1,3 +1,4 @@
+require 'util'
 -- token types
 local comment = 'comment'
 local insert = table.insert
@@ -48,7 +49,7 @@ local digit = {
 
 local base = {
 		b = 2, q = 4, o = 8, h = 16,
-		d = 10
+		x = 16, d = 10
 }
 
 -- nul = \00
@@ -157,8 +158,12 @@ local double = {
 	['>='] = true, ['::'] = true,
 	['=>'] = true, ['!='] = true,
 	['>>'] = true, ['<<'] = true,
-	['..'] = true, ['+-'] = true
+	['..'] = true, ['+-'] = true,
+	['->'] = true, [':='] = true,
+	['=='] = true, ['/>'] = true,
 }
+local triple = set { '<=>' }
+	
 local operator = {}
 local optext = '\\+-*/.,^|&=?!><:#%X_@'
 for i=1,#optext do
@@ -172,6 +177,14 @@ local function getOperator(ss)
 	local first = get()
 	insert(text, first)
 	consume()
+
+	-- triple?
+	if get(1) and triple[first..get(0)..get(1)] then
+		insert(text, get(0))
+		insert(text, get(1))
+		consume()
+		consume()
+	end
 
 	-- double?
 	if double[first..get()] then
@@ -204,7 +217,7 @@ local function skipWhite(ss)
 	end
 end
 
-function tokenize(src)
+function lex(src)
 	local tokens = {}
 	local ss = stream(src)
 	local get,consume,peek = ss.get,ss.consume,ss.peek
@@ -259,7 +272,7 @@ end
 
 require 'sexp'
 local function test(src,num)
-	local tokens = tokenize(src)
+	local tokens = lex(src)
 	local exp = table.concat(tokens, ' ')
 	assert(src==exp, exp)
 	if num then
@@ -278,9 +291,10 @@ test[[max-alts = 4]]
 test[[]]
 test[[3 +- -3]]
 test[[3 >> int]]
-assert(table.concat(tokenize[[ i2[0..(#i2-#i1)] ]], ' ') == 
+test[[a + b <=> b + a]]
+assert(table.concat(lex[[ i2[0..(#i2-#i1)] ]], ' ') == 
 "i2 [ 0 .. ( # i2 - # i1 ) ]")
-assert(table.concat(tokenize[[ 0..1 ]], ' ') == '0 .. 1')
+assert(table.concat(lex[[ 0..1 ]], ' ') == '0 .. 1')
 
 function formatTokens(tokens)
 	local res = {}
@@ -297,4 +311,4 @@ function formatTokens(tokens)
 	return table.concat(res)
 end
 
---print(formatTokens(tokenize('(c..a) + 3 * b ;hoi')))
+--print(formatTokens(lex('18823x -> #l.i & (c..a) + 3 * b ;hoi')))

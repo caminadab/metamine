@@ -1,3 +1,4 @@
+require 'util'
 local insert = table.insert
 
 function isnumber(sexp)
@@ -36,13 +37,6 @@ function tosas(v)
 	end
 end
 
-local constants = set {'true', 'false', 'pi', 'int', 'text'}
-
-function isname(sexp)
-	if constants[sexp] then return false end
-	return atom(sexp) and string.match(sexp:sub(1,1), '%a')
-end
-
 function unparseProg(prog, vals)
 	local res = {}
 	for i,v in ipairs(prog) do
@@ -75,6 +69,7 @@ function compile(sexp)
 				self[i] = 'v'..#res-1
 			else
 				if i > 1 and isname(arg) then
+				print(type(arg), #arg)
 					error('ongebonden variabele '..arg)
 				end
 				self[i] = sexp[i]

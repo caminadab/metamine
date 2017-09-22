@@ -1,3 +1,6 @@
-function eval(sexp)
+require 'func'
+require 'solve'
+require 'compile'
+require 'interpret'
 
-end
+eval = compose(interpret, compile, solve)

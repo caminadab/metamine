@@ -15,10 +15,20 @@ while true do
 		local sas = file('test/'..line)
 		local sexp = parse(sas)
 		local ok,res,vals = pcall(eval,sexp)
-		if not ok then
+		if not ok or not res then
 			print()
 			print(color.yellow..'File: '..line..color.white)
-			local ok,prog = pcall(compile,sexp)
+
+			local ok,solved = pcall(solve,sexp)
+			if not ok then
+				io.write(color.red)
+				print('Onoplosbaar!')
+				print(solved)
+				io.write(color.white)
+			end
+				
+
+			local ok,prog = pcall(compile,solved)
 			if not ok then
 				io.write(color.red)
 				print(prog)
