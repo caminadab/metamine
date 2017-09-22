@@ -4,6 +4,8 @@ local insert = table.insert
 local unparseMexp = compose(unparse, unmulti)
 local unparsem = compose(unparse, unmulti)
 local parsem = compose(multi, parse)
+local us = unparseSexp
+local u = unparse
 
 function eq(a, b)
 	if atom(a) ~= atom(b) then return false end
@@ -73,7 +75,6 @@ function solveq(mexp)
 	return mexp
 end
 
-local solutions = parse(string.upper(file('solve.sas')))
 
 -- <=> and <=>  =>  <=>
 function prog(sexp)
@@ -104,7 +105,7 @@ function tomulti(sexp)
 		end
 	end
 	-- laatste
-	insert(mexp, 1, multi(sexp))
+	insert(mexp, 1, sexp)
 	return mexp
 end
 
@@ -117,7 +118,10 @@ function multi(sexp)
 	end
 end
 
+local solutions = parse(file('solve.sas'))
+
 function isvar(r)
+	if r == nil then print(debug.traceback()) end
 	if exp(r) then return false end
 	return string.upper(r) == r and string.lower(r) ~= r
 end
@@ -171,7 +175,7 @@ function dsubst(sexp, m)
 end
 
 function good(g)
-	if exp(g) and g[1] == '=' and isconstant(g[3]) then
+	if exp(g) and g[1] == '=' and isvar(g[2]) and isconstant(g[3]) then
 		return true
 	end
 end
@@ -198,31 +202,51 @@ function vsolve(sexp)
 			local val = vals[i]
 			sexp = subst(sexp, val, var)
 		end
+		sexp = sexp[3]
 	end
 	return sexp
 end
 		
-
 function msolve(sexp)
+	--if exp(sexp) then print('msolve', us(sexp)) end
 	sexp = vsolve(sexp)
 	while ssolve(sexp) do
-		sexp = vsolve(sexp)
 		sexp = ssolve(sexp)
+		sexp = vsolve(sexp)
 	end
+	sexp = vsolve(sexp)
 	return sexp
 end
 
 -- recursive starting below
 function brec(fn)
-	return function(sexp)
+	local rec
+	rec = function(sexp)
 		if exp(sexp) then
 			local res = {}
 			for i,v in ipairs(sexp) do
-				sexp[i] = fn(v)
+				sexp[i] = rec(v)
 			end
 		end
 		return fn(sexp)
 	end
+	return rec
 end
 
 solve = brec(msolve)
+
+local src = [[
+v = i | t
+bv = bi | bt
+bv = 'i3e'
+bi = 'i' || i || 'e'
+v
+]]
+
+local src = [[
+a = 3
+b = 2
+]]
+
+
+print(unparse(solve(parse(src))))

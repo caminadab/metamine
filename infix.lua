@@ -251,7 +251,7 @@ function infix(tokens)
 				error('regel '..line..': '..'onbekende operator '..t)
 			end
 			if not apre(#stack-1) then
-				error('regel '..line)--..': '..'onbekende operator '..stack[#stack-1])
+				error('regel '..line..': '..'onbekende operator '..unparseSexp(stack[#stack-1]))
 			end
 			while pre <= apre(#stack-1) do
 				afold(1)
