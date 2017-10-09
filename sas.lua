@@ -1,52 +1,105 @@
 require 'infix'
 
-local function fix(sexp)
-	if atom(sexp) then
-		if sexp=='\n' then
-			return 'and'
-		else
-			return sexp
+-- code = lijn^int
+-- lijn = tabs || inhoud || '\n'
+-- tabs = repeat '\t', i
+function lijnen(code)
+	local lijnen, info = {},{}
+	local index = 0
+	for lijn in code:gmatch('([^\n]*\n?)') do
+		if #lijn == 0 then break end
+		table.insert(lijnen, lijn)
+		local comment
+		if lijn:match('.*;.*') then
+			lijn,comment = lijn:match('(.*)(;[\n]*)\n?')
 		end
-	else
-		for i,v in ipairs(sexp) do
-			sexp[i] = fix(v)
+		local tabs,inhoud = lijn:match('(\t*)([^\n]*)\n?')
+		local ilijn = {tabs=tabs,inhoud=inhoud, comment=comment, i=index}
+		table.insert(info, ilijn)
+		index = index + 1
+	end
+	return lijnen,info
+end
+
+function unmulti(exp, op)
+	if atom(exp) or #exp < 2 then return exp end
+	local res = {op,exp[1],exp[2]}
+	for i=3,#exp do
+		res = {op,res,exp[i]}
+	end
+	return res
+end
+
+-- (+ (+ 1 2) 3) -> (1 2 3)
+function multi(sexp)
+	local op = sexp[1]
+	local m = {}
+	while exp(sexp) and sexp[1] == op do
+		table.insert(m, 1, sexp[3])
+		sexp = sexp[2]
+	end
+	table.insert(m, 1, sexp)
+	return m
+end
+
+function parse(code)
+	local asb = {}
+	local lijnen,info = lijnen(code)
+	print("# LIJNEN", #lijnen)
+
+	local boom = {}
+	local stapel = {{}}
+
+	function vouw(tot)
+		for i=#stapel-1,tot,-1 do
+			local sub = unmulti(stapel[i+1], 'and')
+			sub[1] = '=>'
+			stapel[i][#stapel[i]] = {'=',stapel[i][#stapel[i]], sub}
+			--table.insert(stapel[i], sub)
+			stapel[i+1] = nil
 		end
-		return sexp
 	end
+
+	for i,v in ipairs(lijnen) do
+		local exp = infix(lex(v))
+		if exp then
+			local t = #info[i].tabs + 1
+			vouw(t)
+			stapel[t] = stapel[t] or {}
+			table.insert(stapel[t], exp)
+		end
+	end
+
+	vouw(1)
+	local m = unmulti(stapel[1], 'and')
+	m[1] = '=>'
+	--print(unparseSexp(m))
+	return m
 end
 
-function parse(src)
-	local infix = parseInfix(src)
-	if infix[1] == '\n' then infix[1] = '=>' end
-	local sas = fix(infix)
-	return sas
-end
-
-function unparse(sexp)
-	if sexp == nil or atom(sexp) then
-		return tostring(sexp)
-	end
-	local stats
-	if sexp[1] == '=>' then
-		stats = multi(sexp[2], 'and')
-		table.insert(stats, sexp[3])
-	elseif sexp[1] == 'and' then
-		stats = multi(sexp, 'and')
+function unparse(exp,tabs)
+	local tabs = tabs or 0
+	if not atom(exp) and exp[1] == '=>' and exp[2][1] == 'and' then
+		print('ja')
+		local res = {}
+		local m = multi(exp[2])
+		for i,v in ipairs(m) do
+			print('V', unparseSexp(v))
+			table.insert(res, string.rep('\t',tabs))
+			table.insert(res, unparse(v, tabs+1))
+			--table.insert(res, unparseInfix(v))
+			table.insert(res, '\n')
+		end
+		print('R', unparseInfix(exp[3]))
+		table.insert(res, unparseInfix(exp[3]))
+		return table.concat(res)
 	else
-		return unparseInfix(sexp)
+		return unparseInfix(exp)
 	end
-
-	local res = {}
-	for i=2,#stats do
-		table.insert(res, unparseInfix(stats[i]))
-		table.insert(res, '\n')
-	end
-	return table.concat(res)
 end
 
-local function test(sas, sexp)
-	local exp = unparseSexpCompact(parse(sas))
-	assert(exp == sexp, exp)
-end
 
-test('a = 1\nb = 2\n\nc = 3', '(=> (and (= a 1) (= b 2)) (= c 3))')
+
+local ex = file('sas/decimal.sas')
+local p = parse(ex)
+print(unparse(p))

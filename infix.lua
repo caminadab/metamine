@@ -281,7 +281,8 @@ function infix(tokens)
 	afold(#stack-1)
 
 	if not stack[1] then
-		error('niets gevonden')
+		--error('niets gevonden')
+		return false
 	end
 	return fix(stack[1])
 end
