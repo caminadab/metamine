@@ -45,7 +45,9 @@ end
 function parse(code)
 	local asb = {}
 	local lijnen,info = lijnen(code)
-	print("# LIJNEN", #lijnen)
+	if #lijnen == 1 then
+		return parseInfix(code)
+	end
 
 	local boom = {}
 	local stapel = {{}}
@@ -84,13 +86,11 @@ function unparse(exp,tabs)
 		local res = {}
 		local m = multi(exp[2])
 		for i,v in ipairs(m) do
-			print('V', unparseSexp(v))
 			table.insert(res, string.rep('\t',tabs))
 			table.insert(res, unparse(v, tabs+1))
 			--table.insert(res, unparseInfix(v))
 			table.insert(res, '\n')
 		end
-		print('R', unparseInfix(exp[3]))
 		table.insert(res, unparseInfix(exp[3]))
 		return table.concat(res)
 	else
@@ -102,4 +102,3 @@ end
 
 local ex = file('sas/decimal.sas')
 local p = parse(ex)
-print(unparse(p))

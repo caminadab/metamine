@@ -5,6 +5,61 @@ local concat = table.concat
 local find = string.find
 local floor = math.floor
 
+-- recursive starting below
+function recursive(fn)
+	local rec
+	rec = function(sexp, ...)
+		if exp(sexp) then
+			local res = {}
+			for i,v in ipairs(sexp) do
+				sexp[i] = rec(v, ...)
+			end
+		end
+		return fn(sexp, ...)
+	end
+	return rec
+end
+
+function spairs(t)
+	local keys = {}
+	for k,v in pairs(t) do
+		table.insert(keys,k)
+	end
+	table.sort(keys)
+
+	local i = 1
+	return function()
+		local key = keys[i]
+		local val = t[key]
+		i = i + 1
+		return key,val
+	end
+end
+
+function sprint(...)
+	local t = {...}
+	for i,v in ipairs(t) do
+		if type(v) == 'table' then
+			if v[1] then
+				io.write(unparse(v))
+			else
+				io.write('{')
+				for k,v in spairs(v) do
+					io.write(tostring(k))
+					io.write('=')
+					io.write(tostring(v))
+					io.write(' ')
+				end
+				io.write('}')
+			end
+		else
+			io.write(tostring(v))
+		end
+		io.write('\t')
+	end
+	io.write('\n')
+end
+
 function clone(sexp)
 	if atom(sexp) then
 		return sexp
@@ -22,6 +77,15 @@ function isnumber(sexp)
 end
 function istext(sexp)
 	return atom(sexp) and sexp:sub(1,1)=="'" and sexp:sub(-1)=="'"
+end
+
+local keywords = set{'and','or','xor'}
+function iskeyword(sexp)
+	return keywords[sexp]
+end
+
+function isvar(mexp)
+	return atom(mexp) and not isconstant(mexp) and not iskeyword(mexp)
 end
 
 local constants = set {'in', 'true', 'false', 'tau', 'int', 'text'}

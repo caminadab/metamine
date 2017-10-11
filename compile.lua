@@ -69,7 +69,6 @@ function compile(sexp)
 				self[i] = 'v'..#res-1
 			else
 				if i > 1 and isname(arg) then
-				print(type(arg), #arg)
 					error('ongebonden variabele '..arg)
 				end
 				self[i] = sexp[i]
