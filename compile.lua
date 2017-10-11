@@ -48,7 +48,9 @@ function unparseProg(prog, vals)
 			insert(res, '\t\t; ')
 			insert(res, tosas(vals[i]))
 		end
-		insert(res, '\n')
+		if i ~= #prog then
+			insert(res, '\n')
+		end
 	end
 	return table.concat(res)
 end

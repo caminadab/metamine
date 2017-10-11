@@ -244,11 +244,28 @@ bi = 'i' || i || 'e'
 v
 ]]
 
-local src = [[
+local src2 = [[
 a = 3
 b = 2
+1 + 1 = 2
 a + b
 ]]
 
 
-print(unparse(solve(parse(src))))
+local a,b,c,d,e
+a = parse(src)
+b = solve(a)
+c = pcall(compile, b)
+d,e = pcall(interpret, c)
+print('Bron')
+print(src)
+print()
+print('Opgelost')
+print(unparse(b))
+print()
+print('Programma')
+print(unparseProg(c, e))
+print()
+print('Resultaat')
+print(unparse(d))
+print()

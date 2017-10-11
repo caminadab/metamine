@@ -82,9 +82,8 @@ end
 function unparse(exp,tabs)
 	local tabs = tabs or 0
 	if not atom(exp) and exp[1] == '=>' and exp[2][1] == 'and' then
-		print('ja')
 		local res = {}
-		local m = multi(exp[2])
+		local m = tomulti(exp[2])
 		for i,v in ipairs(m) do
 			table.insert(res, string.rep('\t',tabs))
 			table.insert(res, unparse(v, tabs+1))
