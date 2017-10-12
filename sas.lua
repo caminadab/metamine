@@ -45,7 +45,10 @@ end
 function parse(code)
 	local asb = {}
 	local lijnen,info = lijnen(code)
-	print("# LIJNEN", #lijnen)
+
+	if #lijnen <= 1 then
+		return parseInfix(code)
+	end
 
 	local boom = {}
 	local stapel = {{}}
@@ -73,24 +76,28 @@ function parse(code)
 	vouw(1)
 	local m = unmulti(stapel[1], 'and')
 	m[1] = '=>'
-	--print(unparseSexp(m))
 	return m
 end
 
 function unparse(exp,tabs)
 	local tabs = tabs or 0
-	if not atom(exp) and exp[1] == '=>' and exp[2][1] == 'and' then
-		print('ja')
+	function el(exp) return not atom(exp) and exp[1] == '=>' and exp[2][1] == 'and' end
+	if not atom(exp) and exp[1] == '=' and el(exp[3]) then
+		local res = {}
+		table.insert(res, unparseInfix(exp[2]))
+		table.insert(res, ' \n')
+		table.insert(res, unparse(exp[3], tabs+1))
+		return table.concat(res)
+	elseif el(exp) then 
 		local res = {}
 		local m = multi(exp[2])
 		for i,v in ipairs(m) do
-			print('V', unparseSexp(v))
-			table.insert(res, string.rep('\t',tabs))
+			table.insert(res, string.rep('  ',tabs))
 			table.insert(res, unparse(v, tabs+1))
 			--table.insert(res, unparseInfix(v))
 			table.insert(res, '\n')
 		end
-		print('R', unparseInfix(exp[3]))
+		table.insert(res, string.rep('  ',tabs))
 		table.insert(res, unparseInfix(exp[3]))
 		return table.concat(res)
 	else
@@ -100,6 +107,6 @@ end
 
 
 
-local ex = file('sas/decimal.sas')
-local p = parse(ex)
-print(unparse(p))
+--local ex = file('sas/decimal.sas')
+--local p = parse(ex)
+--print(unparse(p))
