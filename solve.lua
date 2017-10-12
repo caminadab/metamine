@@ -187,7 +187,7 @@ end
 function ssolve(sexp)
 	for sol in prog(solutions) do
 		local m = match(sexp, sol[2])
-		if m then
+		if m or sol[2][1] == '=>' then
 			local g = dsubst(sol[3], m)
 			if good(g) then
 				return g
@@ -236,36 +236,3 @@ end
 
 solve = recursive(msolve)
 
-local src = [[
-v = i | t
-bv = bi | bt
-bv = 'i3e'
-bi = 'i' || i || 'e'
-v
-]]
-
-local src2 = [[
-a = 3
-b = 2
-1 + 1 = 2
-a + b
-]]
-
-
-local a,b,c,d,e
-a = parse(src)
-b = solve(a)
-c = pcall(compile, b)
-d,e = pcall(interpret, c)
-print('Bron')
-print(src)
-print()
-print('Opgelost')
-print(unparse(b))
-print()
-print('Programma')
-print(unparseProg(c, e))
-print()
-print('Resultaat')
-print(unparse(d))
-print()

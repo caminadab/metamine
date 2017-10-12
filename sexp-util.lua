@@ -5,6 +5,23 @@ local concat = table.concat
 local find = string.find
 local floor = math.floor
 
+function all(fn, ...)
+	local t = {...}
+	local function rec(sexp)
+		if atom(sexp) then
+			return fn(sexp, table.unpack(t))
+		else
+			for i,v in pairs(sexp) do
+				if not rec(v, table.unpack(t)) then
+					return false
+				end
+			end
+		end
+		return true
+	end
+	return rec
+end
+
 -- recursive starting below
 function recursive(fn)
 	local rec
@@ -85,7 +102,8 @@ function iskeyword(sexp)
 end
 
 function isvar(mexp)
-	return atom(mexp) and not isconstant(mexp) and not iskeyword(mexp)
+	if exp(mexp) then return false end
+	return string.match(mexp,'%a[%w%.]*') and not iskeyword(mexp)
 end
 
 local constants = set {'in', 'true', 'false', 'tau', 'int', 'text'}
@@ -96,7 +114,6 @@ end
 
 function isconstant(sexp)
 	if atom(sexp) then
-	do return not isname(sexp) end
 		if istext(sexp) or isnumber(sexp) or constants[sexp] then
 			return true
 		end
@@ -109,6 +126,8 @@ function isconstant(sexp)
 		return true
 	end
 end
+
+--isconstant = all(isconstant)
 
 local assoc = set{'+', '*', '=', 'and', 'or', 'xor'}
 
