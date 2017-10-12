@@ -5,6 +5,57 @@ require 'compile'
 require 'eval'
 require 'sas'
 
+local src2 = [[
+v = i | t
+bv = bi | bt
+bv = 'i3e'
+bi = 'i' || i || 'e'
+v
+]]
+
+local src = [[
+y = 'a'
+x = y || 'b'
+x
+]]
+
+function known(sexp)
+	if atom(sexp) then
+		if isconstant(sexp) then
+			return {':',sexp,'constant'}
+		elseif isvar(sexp) then
+			return sexp
+		else
+			return sexp
+		end
+	end
+	return sexp
+end
+
+known = recursive(known)
+
+print(unparse(known(parse(src))))
+print()
+
+-- slim gedeelte
+local a,b,c,d,e
+a = parse(src)
+b = solve(a)
+_,c = pcall(compile, b)
+_,d,e = pcall(interpret, c)
+print('Bron')
+print(src)
+print()
+print('Opgelost')
+print(unparse(b))
+print()
+print('Programma')
+print(unparseProg(c, e))
+print()
+print('Resultaat')
+print(unparse(d))
+print()
+
 local files = io.popen('ls test')
 
 while true do
