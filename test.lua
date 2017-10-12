@@ -18,6 +18,7 @@ while true do
 		if not ok or not res then
 			print()
 			print(color.yellow..'File: '..line..color.white)
+			print(sas)
 
 			local ok,solved = pcall(solve,sexp)
 			if not ok then
@@ -26,10 +27,11 @@ while true do
 				print(solved)
 				io.write(color.white)
 			end
-				
 
 			local ok,prog = pcall(compile,solved)
 			if not ok then
+				print('Opgelost:')
+				print(unparse(solved))
 				io.write(color.red)
 				print(prog)
 				io.write(color.white)

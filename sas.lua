@@ -90,7 +90,7 @@ function unparse(exp,tabs)
 		return table.concat(res)
 	elseif el(exp) then 
 		local res = {}
-		local m = multi(exp[2])
+		local m = tomulti(exp[2])
 		for i,v in ipairs(m) do
 			table.insert(res, string.rep('  ',tabs))
 			table.insert(res, unparse(v, tabs+1))
@@ -104,9 +104,3 @@ function unparse(exp,tabs)
 		return unparseInfix(exp)
 	end
 end
-
-
-
---local ex = file('sas/decimal.sas')
---local p = parse(ex)
---print(unparse(p))

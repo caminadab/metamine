@@ -48,7 +48,9 @@ function unparseProg(prog, vals)
 			insert(res, '\t\t; ')
 			insert(res, tosas(vals[i]))
 		end
-		insert(res, '\n')
+		if i ~= #prog then
+			insert(res, '\n')
+		end
 	end
 	return table.concat(res)
 end
@@ -69,7 +71,6 @@ function compile(sexp)
 				self[i] = 'v'..#res-1
 			else
 				if i > 1 and isname(arg) then
-				print(type(arg), #arg)
 					error('ongebonden variabele '..arg)
 				end
 				self[i] = sexp[i]

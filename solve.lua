@@ -37,8 +37,8 @@ function subst(what, dst, src)
 	end
 	return what
 end
-assert(unparsem(subst(parsem'a + b', '2', 'b')) == 'a + 2',
-	'subst(...) = '..unparsem(subst(parsem'a + b', '2', 'b')))
+--assert(unparsem(subst(parsem'a + b', '2', 'b')) == 'a + 2',
+--	'subst(...) = '..unparsem(subst(parsem'a + b', '2', 'b')))
 
 
 function merge(d1, d2)
@@ -48,10 +48,6 @@ function merge(d1, d2)
 	for i,v in ipairs(d1) do insert(d3,v) end
 	for i,v in ipairs(d2) do insert(d3,v) end
 	return d3
-end
-
-function isvar(mexp)
-	return atom(mexp) and not isconstant(mexp)
 end
 
 -- enkele vergelijkingen oplossen
@@ -92,12 +88,13 @@ function prog(sexp)
 	end
 end
 
-function tomulti(sexp)
-	if atom(sexp) then return sexp end
-	local mexp = {}
+local assoc = set{','}
+function tomulti(sexp, op)
+	if atom(sexp) then return {sexp, op=op} end
+	local mexp = {op=op}
 	while sexp[1] == mexp.op do
 		if sexp[3] then
-			insert(mexp, 1, multi(sexp[3]))
+			insert(mexp, 1, sexp[3])--multi(sexp[3]))
 		end
 		sexp = sexp[2]
 		if not assoc[mexp.op] then
@@ -119,13 +116,17 @@ function multi(sexp)
 end
 
 local solutions = parse(file('solve.sas'))
-
-function isvar(r)
-	if r == nil then print(debug.traceback()) end
-	if exp(r) then return false end
-	return string.upper(r) == r and string.lower(r) ~= r
+-- NAAMRUIMTE
+function scope(s,n)
+	if isvar(s) then
+		return n..'.'..s
+	else
+		return s
+	end
 end
+solutions = recursive(scope)(solutions, 'axiom')
 
+-- match SOLUTIE met S-EXP, bind in R
 function match(sexp, sol, r)
 	local r = r or {}
 
@@ -157,6 +158,8 @@ function match(sexp, sol, r)
 	return false
 end
 
+assert(match(parse('a=1 and b=2'), parse('x=y and z=w')))
+
 function subst(sexp, v, k)
 	if eq(k, sexp) then return v end
 	if atom(sexp) then return sexp end
@@ -168,19 +171,19 @@ function subst(sexp, v, k)
 end
 
 function dsubst(sexp, m)
-	for k,v in pairs(m) do
+	for k,v in spairs(m) do
 		sexp = subst(sexp, v, k)
 	end
 	return sexp
 end
 
 function good(g)
-	if exp(g) and g[1] == '=' and isvar(g[2]) and isconstant(g[3]) then
+	if exp(g) and g[1] == '=' and isconstant(g[3]) then
 		return true
 	end
 end
 
--- a + 2 = 3
+-- substitutie solve
 function ssolve(sexp)
 	for sol in prog(solutions) do
 		local m = match(sexp, sol[2])
@@ -193,22 +196,35 @@ function ssolve(sexp)
 	end
 end
 
+-- var solve
 function vsolve(sexp)
+	-- => neemt aan! A,B = C,D
 	if exp(sexp) and sexp[1] == '=>' then
-		local vars = {sexp[2][2]} --tomulti(sexp[2][2])
-		local vals = {sexp[2][3]} --tomulti(sexp[2][3])
+		local o = clone(sexp)
+		local pre = sexp[2]
+		local post = sexp[3]
+		local vars = tomulti(pre[2], ',')
+		local vals = tomulti(pre[3], ',')
+		local asserts = {op='and'}
 		for i in ipairs(vars) do
 			local var = vars[i]
 			local val = vals[i]
-			sexp = subst(sexp, val, var)
+			if isvar(var) then
+				sexp = subst(sexp, val, var)
+			else
+				--insert(asserts, pre)--{'=', var, val})
+			end
 		end
-		sexp = sexp[3]
+		if #asserts > 0 then
+			sprint('asserts',unmulti(asserts))
+			sexp = {'=>', unmulti(asserts), sexp}
+		end
 	end
 	return sexp
 end
-		
+
+-- meester oplosser
 function msolve(sexp)
-	--if exp(sexp) then print('msolve', us(sexp)) end
 	sexp = vsolve(sexp)
 	while ssolve(sexp) do
 		sexp = ssolve(sexp)
@@ -218,22 +234,7 @@ function msolve(sexp)
 	return sexp
 end
 
--- recursive starting below
-function brec(fn)
-	local rec
-	rec = function(sexp)
-		if exp(sexp) then
-			local res = {}
-			for i,v in ipairs(sexp) do
-				sexp[i] = rec(v)
-			end
-		end
-		return fn(sexp)
-	end
-	return rec
-end
-
-solve = brec(msolve)
+solve = recursive(msolve)
 
 local src = [[
 v = i | t
@@ -243,10 +244,28 @@ bi = 'i' || i || 'e'
 v
 ]]
 
-local src = [[
+local src2 = [[
 a = 3
+b = 2
+1 + 1 = 2
 a + b
 ]]
 
 
-print(unparse(solve(parse(src))))
+local a,b,c,d,e
+a = parse(src)
+b = solve(a)
+c = pcall(compile, b)
+d,e = pcall(interpret, c)
+print('Bron')
+print(src)
+print()
+print('Opgelost')
+print(unparse(b))
+print()
+print('Programma')
+print(unparseProg(c, e))
+print()
+print('Resultaat')
+print(unparse(d))
+print()
