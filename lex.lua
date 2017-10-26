@@ -1,4 +1,3 @@
-require 'util'
 -- token types
 local comment = 'comment'
 local insert = table.insert
@@ -162,7 +161,7 @@ local double = {
 	['->'] = true, [':='] = true,
 	['=='] = true, ['/>'] = true,
 }
-local triple = set { '<=>' }
+local triple = { ['<=>'] = true }
 	
 local operator = {}
 local optext = '\\+-*/.,^|&=?!><:#%X_@'
@@ -270,7 +269,6 @@ function lex(src)
 end
 
 
-require 'sexp'
 local function test(src,num)
 	local tokens = lex(src)
 	local exp = table.concat(tokens, ' ')
@@ -296,13 +294,14 @@ assert(table.concat(lex[[ i2[0..(#i2-#i1)] ]], ' ') ==
 "i2 [ 0 .. ( # i2 - # i1 ) ]")
 assert(table.concat(lex[[ 0..1 ]], ' ') == '0 .. 1')
 
-function formatTokens(tokens)
+function debug.lex(sas)
+	local tokens = lex(sas)
 	local res = {}
 	for i,token in ipairs(tokens) do
 		if i%2==0 then
-			table.insert(res, '\x1B[34m')
-		else
 			table.insert(res, '\x1B[36m')
+		else
+			table.insert(res, '\x1B[35m')
 		end
 		table.insert(res, token)
 		table.insert(res, ' ')
@@ -310,5 +309,3 @@ function formatTokens(tokens)
 	table.insert(res, '\x1B[37m')
 	return table.concat(res)
 end
-
---print(formatTokens(lex('18823x -> #l.i & (c..a) + 3 * b ;hoi')))

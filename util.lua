@@ -12,17 +12,14 @@ function file(name, data)
 	end
 end
 
-local printOld = print
-function print2(...)
-	local res = {}
-	for i,v in ipairs({...}) do
-		if type(v)=='table' then
-			res[i] = unparse(v)
-		else
-			res[i] = v
-		end
+function ls(dir)
+	local dir = dir or '.'
+	local ls = io.popen('ls')
+	local d = {}
+	for file in ls:lines() do
+		table.insert(d, file)
 	end
-	printOld(table.unpack(res))
+	return d
 end
 
 -- hex
