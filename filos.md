@@ -108,4 +108,9 @@ _ 10 = log 10
 Symbolisch
 ==========
 
+Compilatie
+==========
+
+f: atom^[0..10] -> atom
+
 subst: rpn -> rpn

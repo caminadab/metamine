@@ -21,7 +21,7 @@ or	2	or	∨
 xor	2	xor
 nor	2	nor
 
-plusmin	1	plusmin	±
+plusmin	1	+-	±
 index	2	.
 concat	2	||	
 len	1	#
@@ -35,7 +35,6 @@ in	2	in
 nin	2	nin ∉
 
 diff	2	\	∖
-
 
 conv	2	>>	≫
 from	2	<<	≪
@@ -61,7 +60,7 @@ boolean	0	boolean	𝔹
 number	0	number	ℝ
 nat	0	nat	ℕ
 ratio	0	ratio	ℚ
-int	0	int	ℕ
+int	0	int	ℤ
 complex	0	complex	ℂ
 quat	0	quat	ℍ
 
@@ -73,45 +72,3 @@ true	0	true	⊤
 false	0	false	⟂
 none	0	none	∅
 i	0	i	ⅈ
-
-;;
-a = {1 2}
-b = {2 3}
-
-d = a - b
-e = a \ b
-f = a & b
-g = a + b
-
-c = {1 2 3}
-d = none
-e = {1}
-
-{1,2} = {2 1 2}
-
-;;
-f: number -> number
-f = {
-  0..3 -> 1/3
-  else -> 0
-}
-
-{1 -> 2, 3 -> 4}
-[1
-
-a =
-	'hoi'
-	'ja'
-
-total-rescues =
-	+ high-rescues
-	+ medium-rescues
-	+ low-rescues
-
-d: digit
-d < 1
-=>
-d = 0
-
-f(0..3) = 1/3
-f(not 0..1) = 0

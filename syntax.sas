@@ -50,7 +50,7 @@ atan = {
 	(x<0,y)	-> sgn x * (pi - atan(abs(y/x)))
 }
 
-cannon.angle = atan cannon.pos | 0
+cannon.angle = atan cannon.target.pos | 0
 
 complex isomorph number^2
 complex >> number^2 =
@@ -61,17 +61,26 @@ number^2 >> complex =
 	ab = number^2
 	ab.1 + ab.2 * math.i
 
+total-rescues =
+	+ high-rescues
+	+ medium-rescues
+	+ low-rescues
+
+
 a = unm
 b = sub
 d = a b c d e
 ; - b * - e
 ; a + c - e
 
+; a = { 'hoi' }
+; b = add 'hee'
+; c = remove 'hoi'
+; d = a + b + c
+; e = { 'hee' }
 a = text find sub							; sub0 text0 find2
 b = reverse text find sub			; text0 reverse1 sub0 find2
 c = inverse unm compose sin		; unm0 inverse1 sin0 compose2
 reverse text = text.(#..0)
 
 unm: number -> number
-
-

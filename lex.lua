@@ -294,6 +294,7 @@ assert(table.concat(lex[[ i2[0..(#i2-#i1)] ]], ' ') ==
 "i2 [ 0 .. ( # i2 - # i1 ) ]")
 assert(table.concat(lex[[ 0..1 ]], ' ') == '0 .. 1')
 
+require 'util'
 function debug.lex(sas)
 	local tokens = lex(sas)
 	local res = {}

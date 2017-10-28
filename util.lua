@@ -22,6 +22,18 @@ function ls(dir)
 	return d
 end
 
+function tsv(t)
+	local m = {}
+	for line in t:gmatch('([^\n]*)\n?') do
+		local r = {}
+		for op in line:gmatch('([^\t]*)\t?') do
+			table.insert(r, op)
+		end
+		table.insert(m, r)
+	end
+	return m
+end
+
 -- hex
 function hex_encode(txt)
 	local res = {}
