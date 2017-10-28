@@ -69,7 +69,7 @@ total-rescues =
 
 a = unm
 b = sub
-d = a b c d e
+d = a b c d e; ERROR: ambigue gebruikersoperatoren
 ; - b * - e
 ; a + c - e
 
