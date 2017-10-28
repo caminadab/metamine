@@ -1,0 +1,72 @@
+sas: exp
+eol: '\n'
+comment: ';' (^newline)*
+newline: comment? newline
+number: decimal | hexadecimal | binary | quaternary
+int: (plus | minus)? digit+
+decimal: int (dot digit+)? ('e' int)?
+indent: tab*INDENT-DEPTH
+escaped: backslash (backslash | quote | 'n' | 't' | 'e' | Alphanum*2)
+text: quote (escaped | (^quote))* quote
+empty: space | tab | newline
+reserved: 'if' | 'else' | 'elseif'
+all-symbols: letter+ (dash (letter | digit)+)*  
+symbol: all-symbols - reserved
+
+whitespace: empty*
+pureexp: 
+	| list | set | if | function
+	| symbol | number | text | data
+	| '(' exp ')' | logicblock
+exp: pureexp | userfunction
+logicblock: INDENT (indent exp newline)* DEDENT
+
+linesep: eol indent
+sep: linesep | (',' linesep?)
+item: exp
+collection: INDENT sep? (item sep)* item? DEDENT 
+setcollection: INDENT sep? (item sep)* elseitem? DEDENT 
+elseitem: 'else' '->' exp
+
+list: '[' collection ']'
+set: '{' setcollection '}'
+arguments: '(' collection ')'
+
+if: ruleif | blockif | inlineif
+ruleif:
+	'if' newline block
+	'then' newline block
+	('elseif' newline block)*
+	('else' newline block)?
+
+blockif:
+	'if' exp 'then'? newline block
+	('elseif' newline block)*
+	('else' newline block)?
+
+inlineif:
+	'if' exp 'then' exp 'else' exp 'end'?
+
+; functies
+function: infix | prefix | blockfix
+unop: '#' | '_' | '^' | '!' | '-' | '+' | '+-'
+binop:
+	| '.'
+	| '^' | '_'
+	| '*' | '/' | '%'
+	| '+' | '-' | '+-'
+	| '..'
+	| '>' | '<' | '>=' | '<=' | '=' | '!='
+	| 'in' | 'as' | ':' | 'is'
+	| '|' | '\' | '&' | 'xor' | 'nor' | 'and' | 'or'
+	| '>>' | '<<' | '@' | '->' 
+	| '=>' | '<=>'
+prefix: unop (exp | arguments)
+infix: (exp binop exp) | blockfix
+blockfix:
+	INDENT
+	newline
+	(indent BINOP exp newline)+
+	DEDENT
+parameters = pureexp | arguments
+userfunction: (symbol parameters) | (pureexp symbol parameters)
