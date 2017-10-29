@@ -43,12 +43,19 @@ local function fn(t) return {f='fn',v=t} end -- call function to check
 local INDENT = {f='indent'}
 local DEDENT = {f='dedent'}
 
+function totext(v)
+	if v:sub(1,1)=="'" then
+		return true
+	end
+end
+
 local f
 local rules = {
 	sas = r'exp',
-	exp = r'pureexp', -- 'userfunction'},
-	atom = alt{ r'list', r'set', r'number', r'symbol' },
-	pureexp = alt{ r'function', r'atom', }, -- r'if', r'number', r'symbol'},
+	exp = alt{ r'pureexp', r'userfunction', r'atom' },
+	pureexp = alt{ r'if', r'brackets', r'function', },
+	atom = alt{ r'list', r'set', r'number', r'symbol', r'text' },
+	brackets = cat{ l'(', r'exp', l')' },
 	-- 'function', 'symbol', 'number', 'text', 'data', 'brackets', 'logicblock'},
 	number = fn(function (tokens)
 		if tonumber(tokens[1]) then
@@ -56,20 +63,26 @@ local rules = {
 			return v,tokens
 		end
 	end),
+	text = fn(function (tokens)
+		if tokens[1] and totext(tokens[1]) then
+			local v = pop(tokens)
+			return v,tokens
+		end
+	end),
 	indent = fn(function (tokens)
-			if tokens[1]:match('(\t+)') == tokens[1] and #tokens[1] == tokens.indent then
+			if tokens[1] and tokens[1]:match('(\t+)') == tokens[1] and #tokens[1] == tokens.indent then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 	freeindent = fn(function (tokens)
-			if tokens[1]:match('(\t+)') == tokens[1] then
+			if tokens[1] and tokens[1]:match('(\t+)') == tokens[1] then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 	symbol = fn(function (tokens)
-			if tokens[1]:match('%a.*') == tokens[1] then
+			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
 				local v = pop(tokens)
 				return v,tokens
 			end
@@ -91,10 +104,24 @@ local rules = {
 		DEDENT,
 	},
 
-	['function'] = cat{ r'atom', l'=', r'exp' },
+	-- functie
+	binop = alt{
+		l'*', l'/', l'+', l'-',
+		l'=', l'!=', l'>', l'<', l'>=', l'<=', l'~=',  
+		l'..', l'->', l'is', },
+	['function'] = cat{ r'atom', r'binop', r'exp' },
+	userfunction = alt{
+		cat{ r'atom', r'atom', r'exp' },
+		cat{ r'atom', r'exp' },
+		cat{ r'atom' },
+	},
 
 	-- if
-	['if'] = cat{ l'if', r'exp', },
+	['if'] = cat{
+		l'if', r'exp', r'block',
+		q( cat{ l'\n', l'else', r'block' } ),
+	},
+	block = cat{ INDENT, mul(cat{ l'\n', r'indent', r'exp' }), DEDENT },
 }
 for k,v in pairs(rules) do
 	rules[v] = k
@@ -171,7 +198,7 @@ function recdesc(rule, tokens)
 		local res = {}
 		local v,tokens1 = recdesc(rule.v, tokens)
 		while v do
-			if v then tokens = tokens1 end
+			tokens = tokens1
 			if v ~= true then
 				table.insert(res, v)
 			end
@@ -244,7 +271,18 @@ end
 
 require 'sexp'
 local src = [[
-a = {1,2,3}
+if a > 3
+	b = 0
+	c = true
+else
+	b = 100
+	c = false
+]]
+--[[
+elseif b is int and b in 0..3
+	a = 'half'
+else
+	a = 'nee'
 ]]
 
 print(unparseSexp(lex(src)))
