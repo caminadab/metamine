@@ -106,19 +106,28 @@ local rules = {
 
 	-- functie
 	binop = alt{
+		l'.',
 		l'*', l'/', l'+', l'-',
 		l'=', l'!=', l'>', l'<', l'>=', l'<=', l'~=',  
-		l'..', l'->', l'is', },
-	['function'] = cat{ r'atom', r'binop', r'exp' },
+		l'..', l'->', l'is',
+		l'@',
+	},
+	unop = alt {
+		l'-', l'+-', l'+', l'^', l'_', l'#',
+	},
+	['function'] = alt{ r'func1', r'func2' },
+	func1 = cat{ r'unop', r'exp' },
+	func2 = cat{ r'atom', r'binop', r'exp' },
 	userfunction = alt{
-		cat{ r'atom', r'atom', r'exp' },
-		cat{ r'atom', r'exp' },
+		cat{ r'atom', r'atom', r'pureexp' },
+		cat{ r'atom', r'pureexp' },
 		cat{ r'atom' },
 	},
 
 	-- if
 	['if'] = cat{
 		l'if', r'exp', r'block',
+		mul( cat{ l'\n', l'elseif', r'exp',  r'block' } ),
 		q( cat{ l'\n', l'else', r'block' } ),
 	},
 	block = cat{ INDENT, mul(cat{ l'\n', r'indent', r'exp' }), DEDENT },
@@ -166,8 +175,8 @@ end
 local n = 0
 function recdesc(rule, tokens)
 	n = n + 1
-	if n % 1000 == 999 then
-		print(n + 1, ebnf(rule))
+	if n % 1e6 == 0 and n ~= 0 then
+		print(n, ebnf(rule))
 	end
 
 	local tokens = copy(tokens)
@@ -219,8 +228,9 @@ function recdesc(rule, tokens)
 	-- alternatives
 	if rule.f == 'alt' then
 		for i,alt in ipairs(rule.v) do
-			if recdesc(alt, tokens) then
-				return recdesc(alt, tokens)
+			local v,t = recdesc(alt, tokens)
+			if v then
+				return v,t
 			end
 		end
 		return false
@@ -271,12 +281,7 @@ end
 
 require 'sexp'
 local src = [[
-if a > 3
-	b = 0
-	c = true
-else
-	b = 100
-	c = false
+a = -#b.c
 ]]
 --[[
 elseif b is int and b in 0..3
