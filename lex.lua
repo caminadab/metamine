@@ -206,7 +206,7 @@ local function getVariable(ss)
 end
 
 local white = {
-	[' '] = true, ['\t'] = true, ['\r'] = true
+	[' '] = true, ['\r'] = true
 }
 
 local function skipWhite(ss)
@@ -223,6 +223,7 @@ function lex(src)
 
 	while skipWhite(ss) or get() do
 		local token
+		local tabs
 		
 		-- comment
 		if get()==';' then
@@ -232,6 +233,16 @@ function lex(src)
 		elseif get()=='\n' then
 			token = '\n'
 			consume()
+
+		-- tabs
+		elseif get()=='\t' then
+			local n = 0
+			while get() == '\t' do
+				n = n + 1
+				consume()
+			end
+			tabs = true
+			token = string.rep('\t', n)
 
 		-- tekst
 		elseif get()=='\'' then
@@ -262,7 +273,16 @@ function lex(src)
 
 		end
 
-		table.insert(tokens,token)
+		local rubbish = tabs and tokens[#tokens] ~= '\n'
+		if token == '\n' and #tokens == 0 then
+			rubbish = true
+		end
+		if token == '\n' and tokens[#tokens] == '\n' then
+			rubbish = true
+		end
+		if not rubbish then 
+			table.insert(tokens,token)
+		end
 	end
 
 	return tokens

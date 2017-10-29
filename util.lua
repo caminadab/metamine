@@ -22,6 +22,18 @@ function ls(dir)
 	return d
 end
 
+function copy(t)
+	if type(t) == 'table' then
+		local c = {}
+		for i,v in pairs(t) do
+			c[i] = copy(v)
+		end
+		return c
+	else
+		return t
+	end
+end
+
 function tsv(t)
 	local m = {}
 	for line in t:gmatch('([^\n]*)\n?') do
