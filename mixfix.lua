@@ -47,7 +47,8 @@ local f
 local rules = {
 	sas = r'exp',
 	exp = r'pureexp', -- 'userfunction'},
-	pureexp = alt{ r'list', r'number', r'set',},-- r'if', r'number', r'symbol'},
+	atom = alt{ r'list', r'set', r'number', r'symbol' },
+	pureexp = alt{ r'function', r'atom', }, -- r'if', r'number', r'symbol'},
 	-- 'function', 'symbol', 'number', 'text', 'data', 'brackets', 'logicblock'},
 	number = fn(function (tokens)
 		if tonumber(tokens[1]) then
@@ -74,7 +75,7 @@ local rules = {
 			end
 		end),
 
-	list = cat{ l'[', r'collection', l']'},
+	list = cat{ l'[', r'collection', q(r'indent'), l']'},
 	set = cat{ l'{', r'collection', q(r'indent'), l'}'},
 	item = r'exp',
 
@@ -89,6 +90,8 @@ local rules = {
 		mul(l'\n'),
 		DEDENT,
 	},
+
+	['function'] = cat{ r'atom', l'=', r'exp' },
 
 	-- if
 	['if'] = cat{ l'if', r'exp', },
@@ -137,7 +140,7 @@ local n = 0
 function recdesc(rule, tokens)
 	n = n + 1
 	if n % 1000 == 999 then
-		print(n + 1)
+		print(n + 1, ebnf(rule))
 	end
 
 	local tokens = copy(tokens)
@@ -241,13 +244,9 @@ end
 
 require 'sexp'
 local src = [[
-{
-	{
-		[2,3]
-		[1,2]
-	}
-}
+a = {1,2,3}
 ]]
+
 print(unparseSexp(lex(src)))
 local tokens = lex(src)
 print('RESULTAAT:')
