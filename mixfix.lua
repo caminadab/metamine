@@ -47,7 +47,7 @@ local f
 local rules = {
 	sas = r'exp',
 	exp = r'pureexp', -- 'userfunction'},
-	pureexp = alt{ r'list', r'number' }, --r'set', r'if', r'number', r'symbol'},
+	pureexp = alt{ r'list', r'number', r'set',},-- r'if', r'number', r'symbol'},
 	-- 'function', 'symbol', 'number', 'text', 'data', 'brackets', 'logicblock'},
 	number = fn(function (tokens)
 		if tonumber(tokens[1]) then
@@ -56,7 +56,6 @@ local rules = {
 		end
 	end),
 	indent = fn(function (tokens)
-			print('indent = '..tokens.indent)
 			if tokens[1]:match('(\t+)') == tokens[1] and #tokens[1] == tokens.indent then
 				local v = pop(tokens)
 				return v,tokens
@@ -76,6 +75,7 @@ local rules = {
 		end),
 
 	list = cat{ l'[', r'collection', l']'},
+	set = cat{ l'{', r'collection', l'}'},
 	item = r'exp',
 
 	linesep = cat{ l'\n', r'indent' },
@@ -168,11 +168,11 @@ function recdesc(rule, tokens)
 		local res = {}
 		local v,tokens1 = recdesc(rule.v, tokens)
 		while v do
+			if v then tokens = tokens1 end
 			if v ~= true then
 				table.insert(res, v)
 			end
 			v,tokens1 = recdesc(rule.v, tokens)
-			if v then tokens = tokens1 end
 		end
 		return res, tokens
 	end
@@ -238,10 +238,10 @@ end
 
 require 'sexp'
 local src = [[
-[
-	1,2
-	3,4
-]
+{
+	[1,2]
+	[3,4]
+}
 ]]
 print(unparseSexp(lex(src)))
 local tokens = lex(src)
