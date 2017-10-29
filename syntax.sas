@@ -6,9 +6,9 @@ a = -#b.c
 _a = b
 a = b_c
 y = +- x * 2
-sgn -3 = 1
+sgn a = -b
 
-; collecties & numeriek
+; hmm
 a = [
 	0, -1, .3e-2, 982d
 	0h, 0A2384.FFh, 10.01101b

@@ -44,16 +44,41 @@ function totext(v)
 	end
 end
 
+-- todo exponent
+function isnumber(v)
+	if not v then return false end
+	-- hex
+	if v:match('[%dABCDEF]+[xh]') then
+		return true
+	elseif v:match('[01]*e?[01]*b') or v:match('[01]*%.[01]*e?[01]*b')  then
+		return true
+
+	-- decimal
+	elseif v:match('%-?%d*%.?%d*e?%-?%d*d?') then
+		return true
+
+	-- quaternair
+	elseif v:match('[0123]*%.?[0123]*') then
+		return true
+
+	end
+
+	return false
+end
+
+
 local f
 local rules = {
-	sas = r'exp',
+	sas = r'block1',
 	exp = alt{ r'pureexp', r'userfunction', r'atom' },
 	pureexp = alt{ r'if', r'brackets', r'function', },
 	atom = alt{ r'list', r'set', r'number', r'symbol', r'text' },
 	brackets = cat{ l'(', r'exp', l')' },
+	block1 = mul( cat{ mul(l'\n'), r'exp', l'\n' } ),
+
 	-- 'function', 'symbol', 'number', 'text', 'data', 'brackets', 'logicblock'},
 	number = fn(function (tokens)
-		if tonumber(tokens[1]) then
+		if isnumber(tokens[1]) then
 			local v = pop(tokens)
 			return v,tokens
 		end
@@ -102,7 +127,8 @@ local rules = {
 	-- functie
 	binop = alt{
 		l'.',
-		l'*', l'/', l'+', l'-',
+		l'*', l'/', l'%',
+		l'+', l'-',
 		l'=', l'!=', l'>', l'<', l'>=', l'<=', l'~=',  
 		l'..', l'->', l'is', l':',
 		l'@',
@@ -281,12 +307,24 @@ function recdesc(rule, tokens)
 end
 
 function mixfix(tokens)
+	-- remove comments
+	for i=1,#tokens do
+		local token = tokens[i]
+		if token and token:sub(1,1) == ';' then
+			table.remove(tokens,i)
+		end
+	end
 	return recdesc(rules.sas, tokens)
 end
 
 require 'sexp'
 local src = [[
-a = sin @ cos
+a = [
+	0, -1, 982d
+	0h, 0A2384.FFh, 10.01101b
+	028x, DEADBEEFx, 0123456789ABCDEFx
+	132202q, 3.33q
+]
 ]]
 --[[
 total-rescues =
@@ -294,15 +332,11 @@ total-rescues =
 	+ medium-rescues
 	+ low-rescues
 ]]
---[[
-elseif b is int and b in 0..3
-	a = 'half'
-else
-	a = 'nee'
-]]
+local src2 = file('syntax.sas')
 
-print(unparseSexp(lex(src)))
 local tokens = lex(src)
+print("BRON:")
+print((src:gsub('\t', '  ')))
 print('RESULTAAT:')
 print(unparseSexp(mixfix(tokens)))
 -- {f = '+', [1] = 'a', [2] = 'b'}
