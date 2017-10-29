@@ -56,6 +56,7 @@ local rules = {
 		end
 	end),
 	indent = fn(function (tokens)
+			print('indent = '..tokens.indent)
 			if tokens[1]:match('(\t+)') == tokens[1] and #tokens[1] == tokens.indent then
 				local v = pop(tokens)
 				return v,tokens
@@ -77,7 +78,7 @@ local rules = {
 	list = cat{ l'[', r'collection', l']'},
 	item = r'exp',
 
-	linesep = cat{ l'\n'},-- r'indent' },
+	linesep = cat{ l'\n', r'indent' },
 	sep = alt{ r'linesep', l',' },
 	collection = cat {
 		INDENT,
@@ -165,13 +166,11 @@ function recdesc(rule, tokens)
 	-- een of meer (*)
 	if rule.f == 'mul' then
 		local res = {}
-		local v
-		v,tokens = recdesc(rule.v, tokens)
+		local v,tokens1 = recdesc(rule.v, tokens)
 		while v do
 			if v ~= true then
 				table.insert(res, v)
 			end
-			local tokens1
 			v,tokens1 = recdesc(rule.v, tokens)
 			if v then tokens = tokens1 end
 		end
@@ -201,9 +200,9 @@ function recdesc(rule, tokens)
 	if rule.f == 'cat' then
 		local res = {}
 		for i,v in ipairs(rule.v) do
-			local a
-			a,tokens = recdesc(v, tokens)
+			local a,tokens1 = recdesc(v, tokens)
 			if a then
+				tokens = tokens1
 				if a ~= true then -- negeer pure uitkomsten
 					table.insert(res, a)
 				end
@@ -216,11 +215,11 @@ function recdesc(rule, tokens)
 
 	-- indentatie
 	if rule.f == 'indent' then
-		tokens.indent = (tokens.indent or -1) + 1
+		tokens.indent = (tokens.indent or 0) + 1
 		return true,tokens
 	end
 	if rule.f == 'dedent' then
-		tokens.indent = (tokens.indent or -1) - 1
+		tokens.indent = (tokens.indent or 0) - 1
 		return true,tokens
 	end
 
@@ -240,8 +239,8 @@ end
 require 'sexp'
 local src = [[
 [
-1,2
-2
+	1,2
+	3,4
 ]
 ]]
 print(unparseSexp(lex(src)))
