@@ -75,7 +75,7 @@ local rules = {
 		end),
 
 	list = cat{ l'[', r'collection', l']'},
-	set = cat{ l'{', r'collection', l'}'},
+	set = cat{ l'{', r'collection', q(r'indent'), l'}'},
 	item = r'exp',
 
 	linesep = cat{ l'\n', r'indent' },
@@ -219,7 +219,10 @@ function recdesc(rule, tokens)
 		return true,tokens
 	end
 	if rule.f == 'dedent' then
-		tokens.indent = (tokens.indent or 0) - 1
+		if not tokens.indent then
+			print('dedent ongeldig')
+		end
+		tokens.indent = tokens.indent - 1
 		return true,tokens
 	end
 
@@ -239,8 +242,10 @@ end
 require 'sexp'
 local src = [[
 {
-	[1,2]
-	[3,4]
+	{
+		[2,3]
+		[1,2]
+	}
 }
 ]]
 print(unparseSexp(lex(src)))
