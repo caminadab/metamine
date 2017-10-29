@@ -26,11 +26,6 @@ local function pop(queue) return table.remove(queue,1) end
 --	| list | set | if | function
 --	| symbol | number | text | data
 --	| '(' exp ')' | logicblock
-function pureexp(tokens)
-	if tonumber(peek()) then
-		return pop()
-	end
-end
 
 local function alt(t) return {f='alt',v=t} end
 local function cat(t) return {f='cat',v=t} end
@@ -109,8 +104,9 @@ local rules = {
 		l'.',
 		l'*', l'/', l'+', l'-',
 		l'=', l'!=', l'>', l'<', l'>=', l'<=', l'~=',  
-		l'..', l'->', l'is',
+		l'..', l'->', l'is', l':',
 		l'@',
+		l',',
 	},
 	unop = alt {
 		l'-', l'+-', l'+', l'^', l'_', l'#',
@@ -119,16 +115,25 @@ local rules = {
 	func1 = cat{ r'unop', r'exp' },
 	func2 = cat{ r'atom', r'binop', r'exp' },
 	userfunction = alt{
-		cat{ r'atom', r'atom', r'pureexp' },
-		cat{ r'atom', r'pureexp' },
-		cat{ r'atom' },
+		cat{ r'atom', r'symbol', r'atom' },
+		cat{ r'atom', r'symbol', r'pureexp' },
+		cat{ r'symbol', r'pureexp' },
+		cat{ r'symbol', r'symbol' },
+		--cat{ r'atom' },
 	},
 
 	-- if
-	['if'] = cat{
+	['if'] = alt{ r'inlineif', r'blockif', r'ruleif' },
+	blockif = cat{
 		l'if', r'exp', r'block',
 		mul( cat{ l'\n', l'elseif', r'exp',  r'block' } ),
 		q( cat{ l'\n', l'else', r'block' } ),
+	},
+	inlineif = cat{ l'if', r'exp', l'then', r'exp', },
+	ruleif = cat{
+		l'if', r'block', l'\n',
+		l'then', r'block', l'\n',
+		l'else', r'block', l'\n',
 	},
 	block = cat{ INDENT, mul(cat{ l'\n', r'indent', r'exp' }), DEDENT },
 }
@@ -281,7 +286,13 @@ end
 
 require 'sexp'
 local src = [[
-a = -#b.c
+a = sin @ cos
+]]
+--[[
+total-rescues =
+	+ high-rescues
+	+ medium-rescues
+	+ low-rescues
 ]]
 --[[
 elseif b is int and b in 0..3
