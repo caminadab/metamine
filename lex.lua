@@ -30,8 +30,10 @@ local function stream(src)
 end
 
 local esc = {
-	r = 10, -- cr
-	n = 13, -- nl
+	e = '\x1B',
+	r = '\r', -- cr
+	n = '\n', -- nl
+	t = '\t',
 	['\\'] = '\\',
 }
 local hex = {
@@ -273,16 +275,7 @@ function lex(src)
 
 		end
 
-		local rubbish = tabs and tokens[#tokens] ~= '\n'
-		if token == '\n' and #tokens == 0 then
-			rubbish = true
-		end
-		if token == '\n' and tokens[#tokens] == '\n' then
-			rubbish = true
-		end
-		if not rubbish then 
-			table.insert(tokens,token)
-		end
+		table.insert(tokens,token)
 	end
 
 	return tokens

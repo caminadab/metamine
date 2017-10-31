@@ -34,6 +34,41 @@ function copy(t)
 	end
 end
 
+function spairs(t)
+	local keys = {}
+	for key in pairs(t) do
+		table.insert(keys, key)
+	end
+	table.sort(keys, function (a,b) return tostring(a) < tostring(b) end)
+	local index = 1
+
+	return function()
+		local key = keys[index]
+		index = index + 1
+		local val = t[key]
+		return key,val
+	end
+end
+
+-- Print contents of `tbl`, with indentation.
+-- `indent` sets the initial level of indentation.
+function tprint (tbl, indent)
+	local indent = indent or 0
+	local ks = {}
+
+  for k, v in spairs(tbl) do
+    local formatting = string.rep("  ", indent) .. k .. ": "
+    if type(v) == "table" then
+      print(formatting)
+      tprint(v, indent+1)
+    elseif type(v) == 'boolean' then
+      print(formatting .. tostring(v))		
+    else
+      print(formatting .. v)
+    end
+  end
+end
+
 function tsv(t)
 	local m = {}
 	for line in t:gmatch('([^\n]*)\n?') do

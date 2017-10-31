@@ -67,8 +67,7 @@ function isnumber(v)
 end
 
 
-local f
-local rules = {
+local sasrules = {
 	sas = r'block1',
 	exp = alt{ r'pureexp', r'userfunction', r'atom' },
 	pureexp = alt{ r'if', r'brackets', r'function', },
@@ -163,11 +162,8 @@ local rules = {
 	},
 	block = cat{ INDENT, mul(cat{ l'\n', r'indent', r'exp' }), DEDENT },
 }
-for k,v in pairs(rules) do
-	rules[v] = k
-end
 
-local rules = {
+local defrules = {
 	STRING = fn(function (tokens)
 		if tokens[1] and totext(tokens[1]) then
 			local v = pop(tokens)
@@ -180,27 +176,41 @@ local rules = {
 				return v,tokens
 			end
 		end),
+}
 
+local ebnfrules = {
 	ebnf = plus( r'rule' ),
 	rule = cat{ r'IDENTIFIER', l':', r'exp', q(l'\n') },
 	atom = alt{ r'STRING', r'IDENTIFIER', r'brackets' },
 	brackets = cat{ l'(', r'exp', l')' },
 	postfix = alt{ l'+', l'*', l'?' },
-	exp = cat{ r'atom', q(r'postfix'), mul(cat{ q(l'|'), r'exp'}) }
+	exp = cat{ r'atom', q(r'postfix'), mul(cat{ q(l'|'), r'exp'}) },
 }
+ebnfrules[1] = ebnfrules.ebnf
 
-function ebnf(rule)
+function ebnf(rules)
+	local r = {}
+	for k,v in spairs(rules) do
+		table.insert(r, k)
+		table.insert(r, ':\t')
+		table.insert(r, ebnf_exp(v))
+		table.insert(r, '\n')
+	end
+	return table.concat(r)
+end
+
+function ebnf_exp(rule)
 	if rule.f == 'fn' then return '<FN>' end
 	if rule.f == 'indent' then return 'INDENT' end
 	if rule.f == 'dedent' then return 'DEDENT' end
 	if rule.f == 'ref' then return rule.v end
 	if rule.f == 'lit' then return '"'..rule.v..'"' end
-	if rule.f == 'opt' then return ebnf(rule.v) .. '?' end
+	if rule.f == 'opt' then return ebnf_exp(rule.v) .. '?' end
 	if rule.f == 'alt' then
 		local r = {}
 		for i,v in ipairs(rule.v) do
 			table.insert(r, '(')
-			table.insert(r, ebnf(v))
+			table.insert(r, ebnf_exp(v))
 			table.insert(r, ')')
 			if i ~= #rule.v then
 				table.insert(r, ' | ')
@@ -211,26 +221,30 @@ function ebnf(rule)
 	if rule.f == 'cat' then
 		local r = {}
 		for i,v in ipairs(rule.v) do
-			table.insert(r, ebnf(v))
+			table.insert(r, ebnf_exp(v))
 			if i ~= #rule.v then
 				table.insert(r, ' ')
 			end
 		end
 		return table.concat(r)
 	end
-	if rule.f == 'mul' then return ebnf(rule.v)..'*' end
-	if rule.f == 'plus' then return ebnf(rule.v)..'+' end
+	if rule.f == 'mul' then return ebnf_exp(rule.v)..'*' end
+	if rule.f == 'plus' then return ebnf_exp(rule.v)..'+' end
 	print(unparseSexp(rule))
 	error('uhh...' .. rule.f)
 end
 
 -- recursive descent
+-- 'a + 3' parse sas
 local n = 0
-function recdesc(rule, tokens)
-	if not rule or not rule.f then error('ongeldige regel') end
+function recdesc(rules, rule, tokens)
+	if verbose then io.write(rule.f or '?', ' ') end
+	if not rule or not rule.f then
+		error('ongeldige regel')
+	end
 	n = n + 1
 	if n % 1e6 == 0 and n ~= 0 then
-		print(n, ebnf(rule))
+		print('TRAAG', ebnf_exp(rule))
 	end
 
 	local tokens = copy(tokens)
@@ -248,31 +262,31 @@ function recdesc(rule, tokens)
 
 	-- optioneel (?)
 	if rule.f == 'opt' then
-		local v,tokens1 = recdesc(rule.v, tokens)
+		local v,tokens1 = recdesc(rules, rule.v, tokens)
 		if v then
-			return v,tokens1
+			return {v},tokens1
 		else
-			return true,tokens
+			return {},tokens
 		end
 	end
 
 	-- nul of meer (*)
 	if rule.f == 'mul' then
 		local res = {}
-		local v,tokens1 = recdesc(rule.v, tokens)
+		local v,tokens1 = recdesc(rules, rule.v, tokens)
 		while v do
 			tokens = tokens1
 			if v ~= true then
 				table.insert(res, v)
 			end
-			v,tokens1 = recdesc(rule.v, tokens)
+			v,tokens1 = recdesc(rules, rule.v, tokens)
 		end
 		return res, tokens
 	end
 
 	-- een of meer (+)
 	if rule.f == 'plus' then
-		local v,tokens1 = recdesc(rule.v, tokens)
+		local v,tokens1 = recdesc(rules, rule.v, tokens)
 		if v then
 			local res = {}
 			while v do
@@ -280,25 +294,28 @@ function recdesc(rule, tokens)
 				if v ~= true then
 					table.insert(res, v)
 				end
-				v,tokens1 = recdesc(rule.v, tokens)
+				v,tokens1 = recdesc(rules, rule.v, tokens)
 			end
 			return res, tokens
+		else
+			return false
 		end
 	end
 
 	-- reference
 	if rule.f == 'ref' then
-		if not rules[rule.v] then
+		local ref = rules[rule.v] or defrules[rule.v]
+		if not ref then
 			error('ongebonden regel '..rule.v)
 		end
 
-		return recdesc(rules[rule.v], tokens)
+		return recdesc(rules, ref, tokens)
 	end
 
 	-- alternatives
 	if rule.f == 'alt' then
 		for i,alt in ipairs(rule.v) do
-			local v,t = recdesc(alt, tokens)
+			local v,t = recdesc(rules, alt, tokens)
 			if v then
 				return v,t
 			end
@@ -310,7 +327,7 @@ function recdesc(rule, tokens)
 	if rule.f == 'cat' then
 		local res = {}
 		for i,v in ipairs(rule.v) do
-			local a,tokens1 = recdesc(v, tokens)
+			local a,tokens1 = recdesc(rules, v, tokens)
 			if a then
 				tokens = tokens1
 				if a ~= true then -- negeer pure uitkomsten
@@ -341,51 +358,155 @@ function recdesc(rule, tokens)
 		return rule.v(tokens)
 	end
 
+	print('ONGELDIGE REGEL')
+	print(rule.f)
+	print(unparseSexp(rule))
 	for k,v in pairs(rule[1]) do print('kv',k,v) end
 	print('rule', unparseSexp(rule.f))
 	error('onbekende operatie '..(rule.f or tostring(rule)))
 end
 
-function mixfix(tokens)
-	-- remove comments
-	for i=1,#tokens do
-		local token = tokens[i]
-		if token and token:sub(1,1) == ';' then
-			table.remove(tokens,i)
-		end
-	end
-	return recdesc(rules.ebnf, tokens)
+function mixfix(ebnf, tokens)
+	return recdesc(ebnf, ebnf[1], tokens)
 end
 
 require 'sexp'
-local src = [[
-a = [
-	0, -1, 982d
-	0h, 0A2384.FFh, 10.01101b
-	028x, DEADBEEFx, 0123456789ABCDEFx
-	132202q, 3.33q
-]
-]]
-local src = [[
-identifier: IDENTIFIER
-string: STRING
-ebnf: rule*
-rule: name ':' exp
-atom: brackets | string | identifier
-postfix: '?' | '*' | '+'
-exp: atom postfix?
-]]
+
+local rules = {
+	STRING = fn(function (tokens)
+		if tokens[1] and totext(tokens[1]) then
+			local v = pop(tokens)
+			return v,tokens
+		end
+	end),
+	IDENTIFIER = fn(function (tokens)
+			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
+				local v = pop(tokens)
+				return v,tokens
+			end
+		end),
+	COMMENT = fn(function (tokens)
+			if tokens[1] and tokens[1]:sub(1,1) == ';' then
+				local v = pop(tokens)
+				return v,tokens
+			end
+		end),
+
+	ebnf = mul( r'rule' ),
+	rule = cat{ r'IDENTIFIER', l':', r'exp', },
+	atom = alt{ r'STRING', r'IDENTIFIER', r'brackets' },
+	brackets = cat{ l'(', r'exp', l')' },
+	postfix = alt{ l'+', l'*', l'?' },
+	exp = cat{ r'atom', q(r'postfix'), mul(cat{ q(l'|'), r'exp'}) }
+}
+for k,v in pairs(rules) do rules[v] = k end
+
+local src = file('ebnf.ebnf')
 --[[
 total-rescues =
 	+ high-rescues
 	+ medium-rescues
 	+ low-rescues
 ]]
-local src2 = file('syntax.sas')
+
+local function toatom(chunk)
+	if atom(chunk) then
+		return chunk
+	else
+		return toexp(chunk[2])
+	end
+end
+
+-- twee mogelijkheden: haakjes of niet!
+function toexp(chunks)
+	local r = toatom(chunks[1])
+
+	-- postfix
+	if #chunks[2] > 0 then
+		r = {chunks[2][1], r}
+	end
+
+	-- binops
+	if #chunks[3] > 0 then
+		local op = chunks[3][1][1][1]
+		if not op then op = '||' end
+		local sub = toexp(chunks[3][1][2])
+		if sub[1] == op then
+			-- copy
+			table.insert(sub, 2, r)
+			r = sub
+		else
+			r = {op, r, sub}
+		end
+	end
+
+	return r
+end
+
+function totree(chunks)
+	local rules = {}
+	for i,chunk in ipairs(chunks) do
+		--print('S-EXP: '..unparseSexp(chunk[3]))
+		local name = chunk[1]
+		local exp = toexp(chunk[3])
+		table.insert(rules, {name, exp})
+	end
+	return rules
+end
+
+function torule(sexp)
+	if atom(sexp) then
+		if sexp:sub(1,1) == "'" then
+			return l(sexp:sub(2,-2))
+		else
+			return r(sexp)
+		end
+	else
+		local t = {}
+		for i=2,#sexp do
+			t[i-1] = torule(sexp[i])
+		end
+		if sexp[1] == '||' then
+			return cat(t)
+		elseif sexp[1] == '|' then
+			return alt(t)
+		elseif sexp[1] == '?' then
+			return q(t[1])
+		elseif sexp[1] == '*' then
+			return mul(t[1])
+		elseif sexp[1] == '+' then
+			return plus(t[1])
+		end
+	end
+end
+
+function torules(sexp)
+	local rules = {}
+	for i,rule in ipairs(sexp) do
+		rules[rule[1]] = torule(rule[2])
+		if i == 1 then
+			rules[i] = r(rule[1])
+		end
+	end
+	return rules
+end
 
 local tokens = lex(src)
-print("BRON:")
-print((src:gsub('\t', '  ')))
-print('RESULTAAT:')
-print(unparseSexp(mixfix(tokens)))
+local chunk = mixfix(ebnfrules, tokens)
+if not chunk then error('MIXFIX FAILED') end
+local tree = totree(chunk)
+local rules = torules(tree)
+--print("RULES:")
+--print(unparseSexp(tree))
+
+print("RULES GEPARSET MET RULES:")
+--print('a', rules.rule.v[4].v[1].v)
+print('EBNF', ebnf(rules))
+local chunk = mixfix(rules, tokens)
+--print('CHUNK', unparseSexp(chunk))
+local tree = totree(chunk)
+print('TREE',unparseSexp(tree))
+
+--print('RESULTAAT:')
+--print(unparseSexp(mixfix(tokens)))
 -- {f = '+', [1] = 'a', [2] = 'b'}
