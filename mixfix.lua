@@ -89,6 +89,12 @@ local rules = {
 			return v,tokens
 		end
 	end),
+	symbol = fn(function (tokens)
+			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
+				local v = pop(tokens)
+				return v,tokens
+			end
+		end),
 	indent = fn(function (tokens)
 			if tokens[1] and tokens[1]:match('(\t+)') == tokens[1] and #tokens[1] == tokens.indent then
 				local v = pop(tokens)
@@ -97,12 +103,6 @@ local rules = {
 		end),
 	freeindent = fn(function (tokens)
 			if tokens[1] and tokens[1]:match('(\t+)') == tokens[1] then
-				local v = pop(tokens)
-				return v,tokens
-			end
-		end),
-	symbol = fn(function (tokens)
-			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
 				local v = pop(tokens)
 				return v,tokens
 			end
@@ -167,6 +167,28 @@ for k,v in pairs(rules) do
 	rules[v] = k
 end
 
+local rules = {
+	STRING = fn(function (tokens)
+		if tokens[1] and totext(tokens[1]) then
+			local v = pop(tokens)
+			return v,tokens
+		end
+	end),
+	IDENTIFIER = fn(function (tokens)
+			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
+				local v = pop(tokens)
+				return v,tokens
+			end
+		end),
+
+	ebnf = plus( r'rule' ),
+	rule = cat{ r'IDENTIFIER', l':', r'exp', q(l'\n') },
+	atom = alt{ r'STRING', r'IDENTIFIER', r'brackets' },
+	brackets = cat{ l'(', r'exp', l')' },
+	postfix = alt{ l'+', l'*', l'?' },
+	exp = cat{ r'atom', q(r'postfix'), mul(cat{ q(l'|'), r'exp'}) }
+}
+
 function ebnf(rule)
 	if rule.f == 'fn' then return '<FN>' end
 	if rule.f == 'indent' then return 'INDENT' end
@@ -205,6 +227,7 @@ end
 -- recursive descent
 local n = 0
 function recdesc(rule, tokens)
+	if not rule or not rule.f then error('ongeldige regel') end
 	n = n + 1
 	if n % 1e6 == 0 and n ~= 0 then
 		print(n, ebnf(rule))
@@ -232,8 +255,8 @@ function recdesc(rule, tokens)
 			return true,tokens
 		end
 	end
-	
-	-- een of meer (*)
+
+	-- nul of meer (*)
 	if rule.f == 'mul' then
 		local res = {}
 		local v,tokens1 = recdesc(rule.v, tokens)
@@ -245,6 +268,22 @@ function recdesc(rule, tokens)
 			v,tokens1 = recdesc(rule.v, tokens)
 		end
 		return res, tokens
+	end
+
+	-- een of meer (+)
+	if rule.f == 'plus' then
+		local v,tokens1 = recdesc(rule.v, tokens)
+		if v then
+			local res = {}
+			while v do
+				tokens = tokens1
+				if v ~= true then
+					table.insert(res, v)
+				end
+				v,tokens1 = recdesc(rule.v, tokens)
+			end
+			return res, tokens
+		end
 	end
 
 	-- reference
@@ -302,8 +341,9 @@ function recdesc(rule, tokens)
 		return rule.v(tokens)
 	end
 
-	print('rule', unparseSexp(rule))
-	error('onbekende operatie '..rule.f)
+	for k,v in pairs(rule[1]) do print('kv',k,v) end
+	print('rule', unparseSexp(rule.f))
+	error('onbekende operatie '..(rule.f or tostring(rule)))
 end
 
 function mixfix(tokens)
@@ -314,7 +354,7 @@ function mixfix(tokens)
 			table.remove(tokens,i)
 		end
 	end
-	return recdesc(rules.sas, tokens)
+	return recdesc(rules.ebnf, tokens)
 end
 
 require 'sexp'
@@ -325,6 +365,15 @@ a = [
 	028x, DEADBEEFx, 0123456789ABCDEFx
 	132202q, 3.33q
 ]
+]]
+local src = [[
+identifier: IDENTIFIER
+string: STRING
+ebnf: rule*
+rule: name ':' exp
+atom: brackets | string | identifier
+postfix: '?' | '*' | '+'
+exp: atom postfix?
 ]]
 --[[
 total-rescues =
