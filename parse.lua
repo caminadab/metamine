@@ -1,4 +1,5 @@
 require 'lex'
+require 'lisp'
 
 --[[
 exp: pureexp | userfunction
@@ -188,7 +189,7 @@ local ebnfrules = {
 }
 ebnfrules[1] = ebnfrules.ebnf
 
-function ebnf(rules)
+function unebnf(rules)
 	local r = {}
 	for k,v in spairs(rules) do
 		table.insert(r, k)
@@ -366,7 +367,7 @@ function recdesc(rules, rule, tokens)
 	error('onbekende operatie '..(rule.f or tostring(rule)))
 end
 
-function mixfix(ebnf, tokens)
+function parse(ebnf, tokens)
 	return recdesc(ebnf, ebnf[1], tokens)
 end
 
@@ -399,9 +400,9 @@ local rules = {
 	postfix = alt{ l'+', l'*', l'?' },
 	exp = cat{ r'atom', q(r'postfix'), mul(cat{ q(l'|'), r'exp'}) }
 }
+rules = lisp(file('ebnf/ebnf.lisp'))
 for k,v in pairs(rules) do rules[v] = k end
 
-local src = file('ebnf.ebnf')
 --[[
 total-rescues =
 	+ high-rescues
@@ -443,9 +444,9 @@ function toexp(chunks)
 	return r
 end
 
-function totree(chunks)
+function totree(chunk)
 	local rules = {}
-	for i,chunk in ipairs(chunks) do
+	for i,chunk in ipairs(chunk) do
 		--print('S-EXP: '..unparseSexp(chunk[3]))
 		local name = chunk[1]
 		local exp = toexp(chunk[3])
@@ -491,22 +492,25 @@ function torules(sexp)
 	return rules
 end
 
-local tokens = lex(src)
-local chunk = mixfix(ebnfrules, tokens)
-if not chunk then error('MIXFIX FAILED') end
-local tree = totree(chunk)
-local rules = torules(tree)
---print("RULES:")
---print(unparseSexp(tree))
+local lebnf = lisp(file('ebnf/ebnf.lisp'))
+local rebnf = torules(lebnf)
 
-print("RULES GEPARSET MET RULES:")
---print('a', rules.rule.v[4].v[1].v)
-print('EBNF', ebnf(rules))
-local chunk = mixfix(rules, tokens)
---print('CHUNK', unparseSexp(chunk))
-local tree = totree(chunk)
-print('TREE',unparseSexp(tree))
+-- hele functie
+function ebnf(e)
+	local tokens = lex(e)
+	local chunk = parse(rebnf, tokens)
+	local tree = totree(chunk)
+	local rules = torules(tree)
+	return rules
+end
 
---print('RESULTAAT:')
---print(unparseSexp(mixfix(tokens)))
--- {f = '+', [1] = 'a', [2] = 'b'}
+-- zelf test
+do
+	local chunk1 = parse(rebnf, lex(file('ebnf/ebnf.ebnf')))
+	local lebnf1 = totree(chunk1)
+	local rebnf1 = torules(lebnf1)
+
+	if lispNeq(lebnf, lebnf1) then
+		error('EBNF is niet consistent met LISP TUSSENREPRESENTATIE')
+	end
+end

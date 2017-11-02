@@ -35,6 +35,7 @@ local esc = {
 	n = '\n', -- nl
 	t = '\t',
 	['\\'] = '\\',
+	['\''] = '\'',
 }
 local hex = {
 	['0'] = 0, ['1'] = 1, ['2'] = 2, ['3'] = 3,
@@ -76,7 +77,7 @@ local function getText(ss)
 				ch = esc[get()]
 				consume()
 			else
-				error('onherkenbare esc')
+				error('onherkenbare esc '..string.format('%q',get()))
 			end
 		elseif get() == '\'' then
 			table.insert(token, get())

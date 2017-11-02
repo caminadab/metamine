@@ -34,6 +34,17 @@ function copy(t)
 	end
 end
 
+-- escapeer alles voor printen tussen enkele quotes
+function escape(t)
+	t = t:gsub('\n', '\\n')
+	t = t:gsub('\r', '\\r')
+	t = t:gsub('\t', '\\t')
+	t = t:gsub('\\', '\\\\')
+	t = t:gsub('\x1B', '\\e')
+	t = t:gsub('\'', '\\\'')
+	return t
+end
+
 function spairs(t)
 	local keys = {}
 	for key in pairs(t) do
