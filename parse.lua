@@ -177,6 +177,12 @@ local defrules = {
 				return v,tokens
 			end
 		end),
+	COMMENT = fn(function (tokens)
+			if tokens[1] and tokens[1]:sub(1,1) == ';' then
+				local v = pop(tokens)
+				return v,tokens
+			end
+		end),
 }
 
 local ebnfrules = {

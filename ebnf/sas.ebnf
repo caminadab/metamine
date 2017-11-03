@@ -42,7 +42,7 @@ binop:
 	| '..'
 	| '>' | '<' | '>=' | '<=' | '=' | '!='
 	| 'in' | 'as' | ':' | 'is'
-	| '|' | '\' | '&' | 'xor' | 'nor' | 'and' | 'or'
+	| '|' | '\\' | '&' | 'xor' | 'nor' | 'and' | 'or'
 	| '>>' | '<<' | '@' | '->' 
 	| '=>' | '<=>'
 prefix: unop (exp | arguments)
@@ -52,5 +52,6 @@ blockfix:
 	newline
 	(indent BINOP exp newline)+
 	DEDENT
-parameters = pureexp | arguments
+
+parameters: pureexp | arguments
 userfunction: (symbol parameters) | (pureexp symbol parameters)

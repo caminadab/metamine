@@ -57,7 +57,11 @@ end
 unlisp = unparseSexp
 
 function lispNeq(self,other)
+	if atom(self) ~= atom(other) then return false end
 	if atom(self) and atom(other) then return self ~= other end
+	if type(self) ~= 'table' or type(other) ~= 'table' then
+		error('ongeldig type '..type(self)..', '..type(other))
+	end
 	if #self ~= #other then return true end
 	for i,v in ipairs(self) do
 		if lispNeq(self[i], other[i]) then

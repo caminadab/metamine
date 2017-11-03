@@ -8,5 +8,8 @@ end
 
 require 'lisp'
 print(unebnf(fsas))
-local chunk = parse(fsas, file('syntax.sas'))
+
+local src = file('syntax.sas')
+local src = '1 + 2'
+local chunk = parse(fsas, src)
 print(unlisp(chunk))

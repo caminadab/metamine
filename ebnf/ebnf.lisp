@@ -2,7 +2,7 @@
 	(ebnf (* rule))
 	(identifier IDENTIFIER)
 	(string STRING)
-	(rule (|| identifier ':' exp (* '\n')))
+	(rule (|| identifier ':' exp (* (| COMMENT '\n'))))
 	(atom (| identifier string brackets))
 	(brackets (|| '(' exp ')'))
 	(postfix (| '+' '*' '?'))
