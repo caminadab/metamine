@@ -420,18 +420,18 @@ end
 
 -- twee mogelijkheden: haakjes of niet!
 function toexp(chunks)
-	local r = toatom(chunks[1])
+	local r = toatom(chunks[3])
 
 	-- postfix
-	if #chunks[2] > 0 then
-		r = {chunks[2][1], r}
+	if #chunks[4] > 0 then
+		r = {chunks[4][1], r}
 	end
 
 	-- binops
-	if #chunks[3] > 0 then
-		local op = chunks[3][1][1][1]
+	if #chunks[5] > 0 then
+		local op = chunks[5][1][2][1]
 		if not op then op = '||' end
-		local sub = toexp(chunks[3][1][2])
+		local sub = toexp(chunks[5][1])
 		if sub[1] == op then
 			-- copy
 			table.insert(sub, 2, r)
@@ -444,10 +444,12 @@ function toexp(chunks)
 	return r
 end
 
+-- PARSE RESULTAAT -> S-EXP
 function totree(chunk)
 	local rules = {}
 	for i,chunk in ipairs(chunk) do
-		--print('S-EXP: '..unparseSexp(chunk[3]))
+		--print('S-EXP: '..unlisp(chunk[3]))
+		
 		local name = chunk[1]
 		local exp = toexp(chunk[3])
 		table.insert(rules, {name, exp})
