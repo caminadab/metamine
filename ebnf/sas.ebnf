@@ -1,9 +1,38 @@
+sas: exp
 exp: pureexp | userfunction
-pureexp: 
+pureexp:
+	| function | atom
+
+number: NUMBER
+identifier: IDENTIFIER
+text: STRING
+
+function:
+	| (unop exp)
+	| (atom (binop exp)?)
+atom: identifier | number | text | brackets
+brackets: '(' exp ')'
+binop:
+	| '.'
+	| '^' | '_'
+	| '*' | '/' | '%'
+	| '+' | '-' | '+-'
+	| '..'
+	| '>' | '<' | '>=' | '<=' | '=' | '!='
+	| 'in' | 'as' | ':' | 'is'
+	| '|' | '\\' | '&' | 'xor' | 'nor' | 'and' | 'or'
+	| '>>' | '<<' | '@' | '->' 
+	| '=>' | '<=>'
+unop: '#' | '_' | '^' | '!' | '-' | '+' | '+-'
+
+userfunction: 'XYZ'
+a: :
 	| list | set | if | function
-	| symbol | number | text | data
+	| identifier | number | text | data
 	| '(' exp ')' | logicblock
 
+identifier: IDENTIFIER
+text: STRING
 logicblock: INDENT (indent exp newline)* DEDENT
 linesep: eol indent
 sep: linesep | (',' linesep?)
@@ -54,4 +83,4 @@ blockfix:
 	DEDENT
 
 parameters: pureexp | arguments
-userfunction: (symbol parameters) | (pureexp symbol parameters)
+userfunction: (identifier parameters) | (pureexp identifier parameters)

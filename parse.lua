@@ -21,8 +21,17 @@ set: '{' setcollection '}'
 arguments: '(' collection ')'
 ]]
 
-local function peek(queue,n) local n = n or 0; return queue[1+n] end
-local function pop(queue) return table.remove(queue,1) end
+local function peek(queue,n)
+	local n = n or 0
+	return queue.v[queue.i + n]
+end
+local function pop(queue)
+	queue.i = queue.i + 1
+	return queue.v[queue.i - 1]
+end
+local function copy(q)
+	return {v=q.v, i=q.i}
+end
 
 --	| list | set | if | function
 --	| symbol | number | text | data
@@ -78,31 +87,31 @@ local sasrules = {
 
 	-- 'function', 'symbol', 'number', 'text', 'data', 'brackets', 'logicblock'},
 	number = fn(function (tokens)
-		if isnumber(tokens[1]) then
+		if isnumber(peek(tokens)) then
 			local v = pop(tokens)
 			return v,tokens
 		end
 	end),
 	text = fn(function (tokens)
-		if tokens[1] and totext(tokens[1]) then
+		if peek(tokens) and totext(peek(tokens)) then
 			local v = pop(tokens)
 			return v,tokens
 		end
 	end),
 	symbol = fn(function (tokens)
-			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
+			if peek(tokens) and peek(tokens):match('%a.*') == peek(tokens) then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 	indent = fn(function (tokens)
-			if tokens[1] and tokens[1]:match('(\t+)') == tokens[1] and #tokens[1] == tokens.indent then
+			if peek(tokens) and peek(tokens):match('(\t+)') == peek(tokens) and #peek(tokens) == tokens.indent then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 	freeindent = fn(function (tokens)
-			if tokens[1] and tokens[1]:match('(\t+)') == tokens[1] then
+			if peek(tokens) and peek(tokens):match('(\t+)') == peek(tokens) then
 				local v = pop(tokens)
 				return v,tokens
 			end
@@ -165,78 +174,81 @@ local sasrules = {
 }
 
 local defrules = {
+	NUMBER = fn(function (tokens)
+		if isnumber(peek(tokens)) then
+			local v = pop(tokens)
+			return v,tokens
+		end
+	end),
 	STRING = fn(function (tokens)
-		if tokens[1] and totext(tokens[1]) then
+		if peek(tokens) and totext(peek(tokens)) then
 			local v = pop(tokens)
 			return v,tokens
 		end
 	end),
 	IDENTIFIER = fn(function (tokens)
-			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
+			if peek(tokens) and peek(tokens):match('%a.*') == peek(tokens) then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 	COMMENT = fn(function (tokens)
-			if tokens[1] and tokens[1]:sub(1,1) == ';' then
+			if peek(tokens) and peek(tokens):sub(1,1) == ';' then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 }
 
-local ebnfrules = {
-	ebnf = plus( r'rule' ),
-	rule = cat{ r'IDENTIFIER', l':', r'exp', q(l'\n') },
-	atom = alt{ r'STRING', r'IDENTIFIER', r'brackets' },
-	brackets = cat{ l'(', r'exp', l')' },
-	postfix = alt{ l'+', l'*', l'?' },
-	exp = cat{ r'atom', q(r'postfix'), mul(cat{ q(l'|'), r'exp'}) },
-}
-ebnfrules[1] = ebnfrules.ebnf
-
+local ebnf_exp
 function unebnf(rules)
 	local r = {}
+	local indent = 0
+	for k,v in pairs(rules) do
+		if type(k) == 'string' and #k > indent then
+			indent = #k
+		end
+	end
 	for k,v in spairs(rules) do
-		table.insert(r, k)
-		table.insert(r, ':\t')
-		table.insert(r, ebnf_exp(v))
-		table.insert(r, '\n')
+		if k ~= 1 then
+			table.insert(r, k)
+			table.insert(r, ':')
+			table.insert(r, string.rep(' ', indent - #k + 1))
+			table.insert(r, ebnf_exp(v))
+			table.insert(r, '\n')
+		end
 	end
 	return table.concat(r)
 end
 
+local unop = {opt = '?', plus = '+', mul = '*'}
 function ebnf_exp(rule)
 	if rule.f == 'fn' then return '<FN>' end
 	if rule.f == 'indent' then return 'INDENT' end
 	if rule.f == 'dedent' then return 'DEDENT' end
 	if rule.f == 'ref' then return rule.v end
 	if rule.f == 'lit' then return '"'..rule.v..'"' end
-	if rule.f == 'opt' then return ebnf_exp(rule.v) .. '?' end
-	if rule.f == 'alt' then
-		local r = {}
-		for i,v in ipairs(rule.v) do
-			table.insert(r, '(')
-			table.insert(r, ebnf_exp(v))
-			table.insert(r, ')')
-			if i ~= #rule.v then
-				table.insert(r, ' | ')
-			end
-		end
-		return table.concat(r)
-	end
-	if rule.f == 'cat' then
+	if rule.f == 'cat' or rule.f == 'alt' then
 		local r = {}
 		for i,v in ipairs(rule.v) do
 			table.insert(r, ebnf_exp(v))
 			if i ~= #rule.v then
-				table.insert(r, ' ')
+				if rule.f == 'cat' then
+					table.insert(r, ' ')
+				else
+					table.insert(r, ' | ')
+				end
 			end
 		end
 		return table.concat(r)
 	end
-	if rule.f == 'mul' then return ebnf_exp(rule.v)..'*' end
-	if rule.f == 'plus' then return ebnf_exp(rule.v)..'+' end
+	if rule.f == 'opt' or rule.f == 'mul' or rule.f == 'plus' then
+		if atom(rule.v) then
+			return rule.v .. unop[rule.f]
+		else
+			return '('..ebnf_exp(rule.v)..')'..unop[rule.f]
+		end
+	end
 	print(unparseSexp(rule))
 	error('uhh...' .. rule.f)
 end
@@ -374,6 +386,7 @@ function recdesc(rules, rule, tokens)
 end
 
 function parse(ebnf, tokens)
+	local tokens = {v=tokens, i=1}
 	return recdesc(ebnf, ebnf[1], tokens)
 end
 
@@ -381,19 +394,19 @@ require 'sexp'
 
 local rules = {
 	STRING = fn(function (tokens)
-		if tokens[1] and totext(tokens[1]) then
+		if peek(tokens) and totext(peek(tokens)) then
 			local v = pop(tokens)
 			return v,tokens
 		end
 	end),
 	IDENTIFIER = fn(function (tokens)
-			if tokens[1] and tokens[1]:match('%a.*') == tokens[1] then
+			if peek(tokens) and peek(tokens):match('%a.*') == peek(tokens) then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 	COMMENT = fn(function (tokens)
-			if tokens[1] and tokens[1]:sub(1,1) == ';' then
+			if peek(tokens) and peek(tokens):sub(1,1) == ';' then
 				local v = pop(tokens)
 				return v,tokens
 			end
@@ -415,7 +428,7 @@ total-rescues =
 	+ medium-rescues
 	+ low-rescues
 ]]
-
+local toexp
 local function toatom(chunk)
 	if atom(chunk) then
 		return chunk
@@ -451,7 +464,7 @@ function toexp(chunks)
 end
 
 -- PARSE RESULTAAT -> S-EXP
-function totree(chunk)
+local function totree(chunk)
 	local rules = {}
 	for i,chunk in ipairs(chunk) do
 		--print('S-EXP: '..unlisp(chunk[3]))
@@ -463,7 +476,7 @@ function totree(chunk)
 	return rules
 end
 
-function torule(sexp)
+local function torule(sexp)
 	if atom(sexp) then
 		if sexp:sub(1,1) == "'" then
 			return l(sexp:sub(2,-2))
@@ -489,7 +502,7 @@ function torule(sexp)
 	end
 end
 
-function torules(sexp)
+local function torules(sexp)
 	local rules = {}
 	for i,rule in ipairs(sexp) do
 		rules[rule[1]] = torule(rule[2])
