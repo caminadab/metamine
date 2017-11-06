@@ -30,7 +30,7 @@ local function pop(queue)
 	return queue.v[queue.i - 1]
 end
 local function copy(q)
-	return {v=q.v, i=q.i}
+	return {v=q.v, i=q.i, indent=q.indent}
 end
 
 --	| list | set | if | function
@@ -64,11 +64,11 @@ function isnumber(v)
 		return true
 
 	-- decimal
-	elseif v:match('%-?%d*%.?%d*e?%-?%d*d?') then
+	elseif v:match('%-?%d+%.?%d*e?%-?%d*d?') then
 		return true
 
 	-- quaternair
-	elseif v:match('[0123]*%.?[0123]*') then
+	elseif v:match('[0123]+%.?[0123]*') then
 		return true
 
 	end
@@ -174,8 +174,16 @@ local sasrules = {
 }
 
 local defrules = {
+	INDENT = fn(function (tokens)
+		tokens.indent = (tokens.indent or 0) + 1
+		return true,tokens
+	end),
+	DEDENT = fn(function (tokens)
+		tokens.indent = (tokens.indent or 0) - 1
+		return true,tokens
+	end),
 	NUMBER = fn(function (tokens)
-		if isnumber(peek(tokens)) then
+		if peek(tokens) and isnumber(peek(tokens)) then
 			local v = pop(tokens)
 			return v,tokens
 		end
@@ -187,13 +195,42 @@ local defrules = {
 		end
 	end),
 	IDENTIFIER = fn(function (tokens)
-			if peek(tokens) and peek(tokens):match('%a.*') == peek(tokens) then
+			if peek(tokens) and peek(tokens):match('%a[%w%-]*') == peek(tokens) then
 				local v = pop(tokens)
 				return v,tokens
 			end
 		end),
 	COMMENT = fn(function (tokens)
 			if peek(tokens) and peek(tokens):sub(1,1) == ';' then
+				local v = pop(tokens)
+				return v,tokens
+			end
+		end),
+	indent = fn(function (tokens)
+			-- niets
+			if not peek(tokens) then
+				if tokens.indent > 0 then
+					return false
+				else
+					return true,tokens
+				end
+			end
+			if (tokens.indent or 0) == 0 then
+				return true,tokens
+			end
+
+			local tabs = peek(tokens):match('^(\t+)$')
+			if not tabs then return false end
+
+			if #tabs == tokens.indent then
+				local v = pop(tokens)
+				return v,tokens
+			else
+				return false
+			end
+		end),
+	freeindent = fn(function (tokens)
+			if peek(tokens) and peek(tokens):match('(\t+)') == peek(tokens) then
 				local v = pop(tokens)
 				return v,tokens
 			end
@@ -227,7 +264,7 @@ function ebnf_exp(rule)
 	if rule.f == 'indent' then return 'INDENT' end
 	if rule.f == 'dedent' then return 'DEDENT' end
 	if rule.f == 'ref' then return rule.v end
-	if rule.f == 'lit' then return '"'..rule.v..'"' end
+	if rule.f == 'lit' then return '"'..escape(rule.v)..'"' end
 	if rule.f == 'cat' or rule.f == 'alt' then
 		local r = {}
 		for i,v in ipairs(rule.v) do
@@ -255,15 +292,10 @@ end
 
 -- recursive descent
 -- 'a + 3' parse sas
-local n = 0
 function recdesc(rules, rule, tokens)
 	if verbose then io.write(rule.f or '?', ' ') end
 	if not rule or not rule.f then
 		error('ongeldige regel')
-	end
-	n = n + 1
-	if n % 1e6 == 0 and n ~= 0 then
-		print('TRAAG', ebnf_exp(rule))
 	end
 
 	local tokens = copy(tokens)
@@ -283,9 +315,9 @@ function recdesc(rules, rule, tokens)
 	if rule.f == 'opt' then
 		local v,tokens1 = recdesc(rules, rule.v, tokens)
 		if v then
-			return {v},tokens1
+			return v,tokens1
 		else
-			return {},tokens
+			return '',tokens
 		end
 	end
 
@@ -442,15 +474,17 @@ function toexp(chunks)
 	local r = toatom(chunks[3])
 
 	-- postfix
-	if #chunks[4] > 0 then
-		r = {chunks[4][1], r}
+	if chunks[4] ~= '' then
+		r = {chunks[4], r}
 	end
 
 	-- binops
-	if #chunks[5] > 0 then
-		local op = chunks[5][1][2][1]
-		if not op then op = '||' end
-		local sub = toexp(chunks[5][1])
+	if chunks[5] ~= '' then
+		--print('chunk',unlisp(chunks))
+		--local op = chunks[5][2][1]
+		local op = chunks[5][2]
+		if op == '' then op = '||' end
+		local sub = toexp(chunks[5])
 		if sub[1] == op then
 			-- copy
 			table.insert(sub, 2, r)
@@ -532,6 +566,11 @@ do
 	local rebnf1 = torules(lebnf1)
 
 	if lispNeq(lebnf, lebnf1) then
+		print('EBNF:')
+		print(unebnf(rebnf1))
+		print()
+		print('LISP:')
+		print(unebnf(rebnf))
 		error('EBNF is niet consistent met LISP TUSSENREPRESENTATIE')
 	end
 end
