@@ -96,9 +96,27 @@ local function getComment(ss)
 	local get,consume = ss.get,ss.consume
 	local text = {';'}
 	consume()
-	while get() and get()~='\n' do
-		table.insert(text, get())
+	
+	-- lang commentaar
+	if get() == ';' then
 		consume()
+		while get() and not (get(0) == ';' and get(1) == ';') do
+			table.insert(text, get())
+			consume()
+		end
+		-- sluit
+		if get() == ';' then table.insert(text, ';'); consume() end
+		if get() == ';' then table.insert(text, ';'); consume() end
+		consume()
+		consume()
+		if text[#text] ~= ';' or text[#text-1] ~= ';' then
+			error('ongesloten lang commentaar')
+		end
+	else
+		while get() and get()~='\n' do
+			table.insert(text, get())
+			consume()
+		end
 	end
 	return table.concat(text)
 end

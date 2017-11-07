@@ -1,12 +1,4 @@
-if a0
-	b0
-elseif a1
-	b1
-elseif a2
-	b2
-else
-	b2
-
+;;
 ; infix
 alpha-num-a = alpha + numeric
 a = b + c ^ d * e / f
@@ -47,11 +39,10 @@ g = [
 	['3']
 ]
 
-
 ; dictionary
 h = {
-	0 -> 'a'
-	9 -> 'b'
+	0..9		-> 'a'
+	10..100	-> 'b'
 }
 
 ; hmm
@@ -73,15 +64,8 @@ elseif b is int and b in 0..3
 else
 	a = 'nee'
 
-; inline if
-a = if not b then 3 else 2
-
-; block if
-a =
-	if not b
-		3
-	else
-		2
+; inline if (niet ondersteund)
+;a = if not b then 3 else 2
 
 ; rule if
 if
@@ -90,7 +74,7 @@ if
 	advantage >= high
 then
 	army-production = high
-	enable-attack
+	attack-enabled
 
 ; functies
 f: number -> number
@@ -117,11 +101,13 @@ tau/4 : angle
 
 atan: number -> angle
 atan: complex != 0 -> angle
+
 atan = {
-	(x>0,y)	-> sgn y * atan(abs(y/x))
-	(x=0,y!=0) -> sgn y * (tau/4)
-	(x<0,y)	-> sgn x * (pi - atan(abs(y/x)))
+	[x>0,y]	-> sgn y * atan abs(y/x)
+	[x=0,y!=0] -> sgn y * (tau/4)
+	[x<0,y]	-> sgn x * (pi - atan abs(y/x))
 }
+;;
 
 cannon.angle = atan cannon.target.pos | 0
 

@@ -29,19 +29,20 @@ set: '{' collection '}'
 collection: INDENT exp? (sep exp)* DEDENT '\n'?
 sep: ('\n' '\t') | ','
 
+; INLINEIF tijdelijk uitgeschakeld
 newline: '\n'
-;if: ruleif | blockif | inlineif
-if: blockif
+if: ruleif | blockif
 ruleif:
-	'if' newline block
-	'then' newline block
-	('elseif' newline block)*
-	('else' newline block)?
+	'if' newline INDENT block DEDENT newline
+	'then' INDENT newline block DEDENT
+	(newline 'else' newline INDENT block DEDENT)?
+; moet hier end bij?
+;	('elseif' newline INDENT block DEDENT newline)*
 
 blockif:
-	'if' exp newline INDENT block DEDENT newline
-	('elseif' exp newline INDENT block DEDENT newline)*
-	('else' newline INDENT block DEDENT)?
+	'if' exp newline INDENT block DEDENT
+	(newline 'elseif' exp newline INDENT block DEDENT newline)*
+	(newline 'else' newline INDENT block DEDENT)?
 
 inlineif:
 	'if' exp 'then' exp 'else' exp 'end'?

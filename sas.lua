@@ -23,10 +23,17 @@ function removecomments(tokens)
 	-- ruimte weghalen
 	for i=#tokens,1,-1 do
 		local a,b,c = tokens[i]or'',tokens[i+1]or'',tokens[i+2]or''
+		local d = tokens[i-1]or''
 		local good1 = a == '\n' and isindent(b) and not iswhite(c)
 		local good2 = a == '\n' and not iswhite(b)
-		local good3 = isindent(a) and not iswhite(b)
+		local good3 = d == '\n' and isindent(a) and not iswhite(b)
 		local good = good1 or good2 or good3
+		if false and i < 10 then
+			if tokens[i] == '\t' then
+				print('tab')
+				print(good1, good2, good3)
+			end
+		end
 		if iswhite(a) and not good then
 			if tokens[i] == '\t' and i < 10 then
 				print('remove TABS', i)
