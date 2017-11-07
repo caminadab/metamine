@@ -57,6 +57,14 @@ end
 -- todo exponent
 function isnumber(v)
 	if not v then return false end
+
+	-- manual override
+	if v:match('[-%.%dABCDEF].*') == v then
+		return true
+	else
+		return false
+	end
+
 	-- hex
 	if v:match('[%dABCDEF]+[xh]') then
 		return true
@@ -64,7 +72,8 @@ function isnumber(v)
 		return true
 
 	-- decimal
-	elseif v:match('%-?%d+%.?%d*e?%-?%d*d?') then
+	--elseif v:match('%-?%d*%.?%d*e?%-?%d*d?') and v:match('%d') then
+	elseif v:match('$[-%dABCDEF].*') then
 		return true
 
 	-- quaternair
@@ -173,7 +182,17 @@ local sasrules = {
 	block = cat{ INDENT, mul(cat{ l'\n', r'indent', r'exp' }), DEDENT },
 }
 
+local rulename = '?'
 local defrules = {
+	DEBUG = fn(function (tokens)
+		print('[DEBUG] Regel: '..color.purple..rulename..
+			color.white..', tokens: '..color.cyan..
+			tostring(escape(peek(tokens,0)))..' '..color.green..
+			tostring(escape(peek(tokens,1)))..' '..color.yellow..
+			tostring(escape(peek(tokens,2)))..color.white
+			)
+		return true,tokens
+	end),
 	INDENT = fn(function (tokens)
 		tokens.indent = (tokens.indent or 0) + 1
 		return true,tokens
@@ -236,6 +255,9 @@ local defrules = {
 			end
 		end),
 }
+for k,v in pairs(defrules) do
+	defrules[v] = k
+end
 
 local ebnf_exp
 function unebnf(rules)
@@ -293,11 +315,7 @@ end
 -- recursive descent
 -- 'a + 3' parse sas
 function recdesc(rules, rule, tokens)
-	if verbose then io.write(rule.f or '?', ' ') end
-	if not rule or not rule.f then
-		error('ongeldige regel')
-	end
-
+	rulename = rules[rule] or rulename 
 	local tokens = copy(tokens)
 
 	-- direct comparison
@@ -543,6 +561,10 @@ local function torules(sexp)
 		if i == 1 then
 			rules[i] = r(rule[1])
 		end
+	end
+	-- debug
+	for k,v in pairs(rules) do
+		rules[v] = k
 	end
 	return rules
 end

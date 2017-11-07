@@ -1,4 +1,67 @@
 sas: block
+block: '\n'? indent exp ('\n' indent exp)*
+exp: if | function
+
+function: infix | prefix | ufun | atom
+suffix: binop (ufun | atom)
+prefix: unop atom
+infix: atom binop exp
+ufix: atom atom ;ufun (binop atom)*
+atom:
+	| brackets | prefix | identifier | number | text
+	| list | set
+
+ufun: ufix | uatom
+ufix: uatom binop exp
+uatom: infun | prefun | atom
+infun: atom atom atom
+prefun: atom atom
+suffun: atom atom
+
+brackets: '(' exp ')'
+text: STRING
+number: NUMBER
+identifier: IDENTIFIER
+
+list: '[' collection ']'
+set: '{' collection '}'
+
+collection: INDENT exp? (sep exp)* DEDENT '\n'?
+sep: ('\n' '\t') | ','
+
+newline: '\n'
+;if: ruleif | blockif | inlineif
+if: blockif
+ruleif:
+	'if' newline block
+	'then' newline block
+	('elseif' newline block)*
+	('else' newline block)?
+
+blockif:
+	'if' exp newline INDENT block DEDENT newline
+	('elseif' exp newline INDENT block DEDENT newline)*
+	('else' newline INDENT block DEDENT)?
+
+inlineif:
+	'if' exp 'then' exp 'else' exp 'end'?
+
+
+unop: '#' | '_' | '^' | '!' | '-' | '+' | '+-'
+binop:
+	| '.'
+	| '^' | '_'
+	| '*' | '/' | '%'
+	| '+' | '-' | '+-'
+	| '..'
+	| '>' | '<' | '>=' | '<=' | '=' | '!='
+	| 'in' | 'as' | ':' | 'is'
+	| '|' | '\\' | '&' | 'xor' | 'nor' | 'and' | 'or'
+	| '>>' | '<<' | '@' | '->' 
+	| '=>' | '<=>'
+
+###
+sas: exp
 exp: function | atom
 
 number: NUMBER
@@ -6,8 +69,7 @@ identifier: IDENTIFIER
 text: STRING
 function: binfunc | unfunc
 
-binfunc: binopfunc | binuserfunc
-binuserfunc: atom atom atom
+binfunc: binopfunc | binuserfunc binuserfunc: atom atom atom
 binopfunc: unfunc (binop unfunc)+ ; binaire functie
 
 unopfunc: (unop unfunc)
@@ -19,7 +81,7 @@ unfunc: unuserfunc | unopfunc | atom
 block: ('\n'? indent exp) ('\n' indent exp)*
 atom:
 	| identifier | number | text | brackets
-	| list
+	| list | set
 brackets: '(' exp ')'
 binop:
 	| '.'
@@ -35,9 +97,9 @@ binop:
 unop: '#' | '_' | '^' | '!' | '-' | '+' | '+-'
 
 list: '[' collection ']'
+set: '{' collection '}'
 
-collection: INDENT item* DEDENT '\n'?
-item: atom? sep atom
+collection: INDENT exp? (sep exp)* DEDENT '\n'?
 sep: ('\n' '\t') | ','
 
 ;collection: INDENT sep? (item sep)* item? DEDENT 

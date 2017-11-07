@@ -1,3 +1,12 @@
+if a0
+	b0
+elseif a1
+	b1
+elseif a2
+	b2
+else
+	b2
+
 ; infix
 alpha-num-a = alpha + numeric
 a = b + c ^ d * e / f
@@ -6,39 +15,51 @@ a = -#b.c
 _a = b
 a = b_c
 y = +- x * 2
-sgn a = -b
+a b
+a = b c
+a b c = d
+a b (c d) = (e f) g (h i)
 
 a = [1,2,3]
-b = [
+[
 	'hoi'
 	'hee'
 	'ha'
 ]
 
-c = [
+[
 	1,2,3
 	4,5,6
 	7,8,9
 ]
 
-d = [
+[[1]]
+[[1,2],[3,4]]
+
+[
+	[1,2]
+	[3,4]
+]
+
+g = [
 	'1'
 	'2.1', '2.2'
 	['3']
 ]
 
+
 ; dictionary
-e = {
+h = {
 	0 -> 'a'
 	9 -> 'b'
 }
 
 ; hmm
 a = [
-	0, -1, .3e-2, 982d
-	0h, 0A2384.FFh, 10.01101b
-	028x, DEADBEEFx, 0123456789ABCDEFx
-	132202q, 3.33q
+;	0, -1, .3e-2, 982d
+;	0h, 0A2384.FFh, 10.01101b
+;	028x, DEADBEEFx, 0123456789ABCDEFx
+;	132202q, 3.33q
 ]
 
 a as text = '3'
