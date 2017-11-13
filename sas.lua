@@ -28,17 +28,7 @@ function removecomments(tokens)
 		local good2 = a == '\n' and not iswhite(b)
 		local good3 = d == '\n' and isindent(a) and not iswhite(b)
 		local good = good1 or good2 or good3
-		if false and i < 10 then
-			if tokens[i] == '\t' then
-				print('tab')
-				print(good1, good2, good3)
-			end
-		end
 		if iswhite(a) and not good then
-			if tokens[i] == '\t' and i < 10 then
-				print('remove TABS', i)
-				print(good1, good2)
-			end
 			table.remove(tokens, i)
 		end
 	end

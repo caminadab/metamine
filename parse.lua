@@ -44,6 +44,7 @@ local function r(t)	return {f='ref',v=t} end -- reference
 local function q(t) return {f='opt',v=t} end -- optional / maybe
 local function mul(t) return {f='mul',v=t} end -- zero or more
 local function plus(t) return {f='plus',v=t} end -- one or more
+local function sub(t) return {f='sub', v=t} end -- a without b
 local function fn(t) return {f='fn',v=t} end -- call function to check
 local INDENT = {f='indent'}
 local DEDENT = {f='dedent'}
@@ -59,7 +60,7 @@ function isnumber(v)
 	if not v then return false end
 
 	-- manual override
-	if v:match('[-%.%dABCDEF].*') == v then
+	if v:match('%-?[%dABCDEF][%.%dABCDEF]*') == v then
 		return true
 	else
 		return false
@@ -182,8 +183,17 @@ local sasrules = {
 	block = cat{ INDENT, mul(cat{ l'\n', r'indent', r'exp' }), DEDENT },
 }
 
+local keywords = set{
+	'if', --[['else',]] 'elseif',
+	'as', 'in', 'is',
+}
 local rulename = '?'
-local defrules = {
+local defrules
+defrules = {
+	['SAS-ID'] = fn(function(tokens)
+		local a,b = defrules.IDENTIFIER.v(tokens)
+		if a and not keywords[a] then return a,b end
+	end),
 	DEBUG = fn(function (tokens)
 		print('[DEBUG] Regel: '..color.purple..rulename..
 			color.white..', tokens: '..color.cyan..
@@ -544,6 +554,9 @@ local function torule(sexp)
 			return cat(t)
 		elseif sexp[1] == '|' then
 			return alt(t)
+		elseif sexp[1] == '-' then
+		print('ja')
+			return sub(t)
 		elseif sexp[1] == '?' then
 			return q(t[1])
 		elseif sexp[1] == '*' then

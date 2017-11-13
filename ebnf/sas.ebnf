@@ -1,15 +1,83 @@
-sas: block
-block: '\n'? indent exp ('\n' indent exp)*
-exp: if | function
+sas: '\n'? exp ('\n' exp)*
+block: INDENT ('\n' indent exp)+ DEDENT
+exp: if | function | block
+function: infix | uatom
 
-function: infix | prefix | ufun | atom
+blockfix: INDENT ('\n' indent blockop exp)+ DEDENT
+infix: (uatom binop)+ (uatom | block)
+uatom: (atom atom atom) | (atom atom) | atom
+atom:
+	| brackets | prefix | identifier | number | text
+	| list | set
+	| blockfix
+
+list: '[' collection ']'
+set: '{' collection '}'
+params: '(' collection ')'
+
+collection: INDENT exp? (sep exp)* DEDENT '\n'?
+sep: ('\n' indent) | ','
+
+brackets: '(' (block|exp) '\n'? ')'
+prefix: unop atom
+identifier: SAS-ID
+number: NUMBER
+text: STRING
+
+unop: '#' | '_' | '^' | '!' | '-' | '+-'
+blockop: '+' | '*' | '|' | '&' | '@'
+binop:
+	| '.'
+	| '^' | '_'
+	| '*' | '/' | '%'
+	| '+' | '-' | '+-'
+	| '..'
+	| '>' | '<' | '>=' | '<=' | '=' | '!='
+	| 'in' | 'as' | ':' | 'is'
+	| '|' | '\\' | '&' | 'xor' | 'nor' | 'and' | 'or'
+	| '>>' | '<<' | '@' | '->' 
+	| '=>' | '<=>'
+
+; IF
+; inline if bestaat ff niet
+
+newline: '\n'
+if: ruleif | blockif
+ruleif:
+	'if' block newline
+	'then' block
+	(newline 'else' INDENT block DEDENT)?
+; moet hier end bij?
+
+blockif:
+	'if' exp block
+	(newline 'elseif' exp block)*
+	(newline 'else' block)?
+
+inlineif:
+	'if' exp 'then' exp 'else' exp 'end'?
+
+###
+sas: '\n'? exp ('\n' exp)*
+block: INDENT ('\n' indent exp)+ DEDENT
+exp: if | function | block
+;sas: block
+;block: '\n'? indent exp ('\n' indent exp)*
+;exp: if | function; | (INDENT block DEDENT)
+
+blockop: '+' | '*' | '|' | '&' | '@'
+
+function: blockfix | infix | prefix | ufun | atom
 suffix: binop (ufun | atom)
 prefix: unop atom
+blockfix: INDENT ('\n' indent blockop exp)+ DEDENT
 infix: atom binop exp
 ufix: atom atom ;ufun (binop atom)*
 atom:
 	| brackets | prefix | identifier | number | text
 	| list | set
+;	| ablock | blockfix
+ablock: INDENT ('\n' indent exp)+ DEDENT
 
 ufun: ufix | uatom
 ufix: uatom binop exp
@@ -21,10 +89,14 @@ suffun: atom atom
 brackets: '(' exp ')'
 text: STRING
 number: NUMBER
-identifier: IDENTIFIER
+keyword:
+	| 'if' | 'else' | 'elseif'
+	| 'as' | 'is' | 'in' | 'and' | 'or' | 'xor'
+identifier: SAS-ID
 
 list: '[' collection ']'
 set: '{' collection '}'
+params: '(' collection ')'
 
 collection: INDENT exp? (sep exp)* DEDENT '\n'?
 sep: ('\n' '\t') | ','
@@ -48,7 +120,7 @@ inlineif:
 	'if' exp 'then' exp 'else' exp 'end'?
 
 
-unop: '#' | '_' | '^' | '!' | '-' | '+' | '+-'
+unop: '#' | '_' | '^' | '!' | '-' | '+-'
 binop:
 	| '.'
 	| '^' | '_'
@@ -81,7 +153,7 @@ unfunc: unuserfunc | unopfunc | atom
 
 block: ('\n'? indent exp) ('\n' indent exp)*
 atom:
-	| identifier | number | text | brackets
+	| identifier | DEBUG | number | text | brackets
 	| list | set
 brackets: '(' exp ')'
 binop:
