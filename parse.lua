@@ -187,7 +187,6 @@ local keywords = set{
 	'if', --[['else',]] 'elseif',
 	'as', 'in', 'is',
 }
-local rulename = '?'
 local defrules
 defrules = {
 	['SAS-ID'] = fn(function(tokens)
@@ -195,7 +194,7 @@ defrules = {
 		if a and not keywords[a] then return a,b end
 	end),
 	DEBUG = fn(function (tokens)
-		print('[DEBUG] Regel: '..color.purple..rulename..
+		print('[DEBUG] Regel: '..color.purple..'?'..
 			color.white..', tokens: '..color.cyan..
 			tostring(escape(peek(tokens,0)))..' '..color.green..
 			tostring(escape(peek(tokens,1)))..' '..color.yellow..
@@ -325,7 +324,6 @@ end
 -- recursive descent
 -- 'a + 3' parse sas
 function recdesc(rules, rule, tokens)
-	rulename = rules[rule] or rulename 
 	local tokens = copy(tokens)
 
 	-- direct comparison
@@ -388,7 +386,8 @@ function recdesc(rules, rule, tokens)
 			error('ongebonden regel '..rule.v)
 		end
 
-		return recdesc(rules, ref, tokens)
+		local v,t = recdesc(rules, ref, tokens)
+		return v,t
 	end
 
 	-- alternatives
@@ -404,7 +403,7 @@ function recdesc(rules, rule, tokens)
 
 	-- concatenate
 	if rule.f == 'cat' then
-		local res = {}
+		local res = {name = rule.name}
 		for i,v in ipairs(rule.v) do
 			local a,tokens1 = recdesc(rules, v, tokens)
 			if a then
@@ -570,9 +569,12 @@ end
 local function torules(sexp)
 	local rules = {}
 	for i,rule in ipairs(sexp) do
-		rules[rule[1]] = torule(rule[2])
+		local name = rule[1]
+		local val = torule(rule[2])
+		val.name = name
+		rules[name] = val
 		if i == 1 then
-			rules[i] = r(rule[1])
+			rules[i] = val
 		end
 	end
 	-- debug

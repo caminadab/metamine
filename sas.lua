@@ -36,10 +36,71 @@ function removecomments(tokens)
 	return tokens
 end
 
-local src = file('syntax.sas')
---local src = '1 + -a * 3'
+function tosas(chunk)
+	if atom(chunk) then
+		return chunk
+	
+	elseif chunk.name == 'sas' then
+		local s = {}
+		s[1] = '=>'
+		s[2] = tosas(chunk[2])
+		for i,v in ipairs(chunk[3]) do
+			s[2+i] = tosas(v[2])
+		end
+		return s
+		
+	-- [(1 +) (2 +)] 3
+	elseif chunk.name == 'infix' then
+		local a = { chunk[1][1][2] }
+		a[2] = tosas(chunk[1][1][1])
+		a[3] = tosas(chunk[2])
+		return a
+
+	elseif chunk.name == 'upre' then
+
+	elseif chunk.name == 'ubin' then
+		--
+
+	elseif chunk.name == 'brackets' then
+		return tosas(chunk[2])
+
+	-- { true -> 3, false -> 2 }(a > b)
+	elseif chunk.name == 'blockif' then
+		local a = {'if', tosas(chunk[2]), tosas(chunk[3]) }
+		-- elseif
+		for i,v in ipairs(chunk[4]) do
+		end
+		return a
+
+	elseif chunk.name == 'block' then
+		local a = {'=>'}
+		for i,v in ipairs(chunk[1]) do
+			a[1+i] = tosas(v[3])
+		end
+		return a
+
+	else
+		error('onherkend: '..chunk.name)
+	end
+
+end
+
+--local src = file('syntax.sas')
+local src = [[
+if a > 1
+	b = 2
+	c = 3
+	d = 4
+	e = 5
+	f = 6
+	g = 7
+else
+	x = 4
+]]
 local tokens = lex(src)
 local tokens = removecomments(tokens)
---for i=1,10 do print(escape(tokens[i])) end
 local chunk = parse(fsas, tokens)
-print(unlisp(chunk))
+
+local sas = tosas(chunk)
+
+print(unlisp(sas))
