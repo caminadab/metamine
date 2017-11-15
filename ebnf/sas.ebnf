@@ -23,7 +23,7 @@ list: '[' collection ']'
 set: '{' collection '}'
 params: '(' collection ')'
 
-collection: INDENT exp? (sep exp)* DEDENT '\n'?
+collection: INDENT exp? (sep exp)* DEDENT '\n'? indent?
 sep: ('\n' indent) | ','
 
 brackets: '(' (block|exp) '\n'? ')'
@@ -59,8 +59,8 @@ ruleif:
 
 blockif:
 	'if' exp block
-	(newline 'elseif' exp block)*
-	(newline 'else' block)?
+	(newline indent 'elseif' exp block)*
+	(newline indent 'else' block)?
 
 inlineif:
 	'if' exp 'then' exp 'else' exp 'end'?

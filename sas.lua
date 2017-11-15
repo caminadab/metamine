@@ -75,6 +75,64 @@ local prio = {
 	['->'] = 1,
 }
 
+local tosas, toinfix
+
+function toinfix(chunk)
+	local fs = {}
+	local vs = {}
+	local s = {}
+	-- functions
+	for i,v in ipairs(chunk[1]) do
+		push(vs, tosas(v[1]))
+		push(fs, tosas(v[2]))
+	end
+	push(vs, tosas(chunk[2]))
+
+	-- OP PREC
+	-- 1 + 2 * 3
+	local r = -99
+	for i,f in ipairs(fs) do
+		local v = vs[i]
+		local p = prio[f]
+		if p > r then
+			push(s, {f,v})
+			r = p
+		elseif p == r and f == s[#s][1] then
+			push(s[#s], v)
+		else
+			push(s[#s], v)
+			r = prio[f]
+
+			local l
+			if #s > 1 then
+				l = prio[s[#s-1][1]]
+			else
+				l = -99
+			end
+
+			while #s > 1 and p < l do
+				--print('vouw', unlisp(s[#s-1]), unlisp(s[#s]))
+				push(s[#s-1], s[#s])
+				s[#s] = nil
+				l = prio[s[#s][1]]
+			end
+			if true or p <= l then
+				s[#s] = {f, s[#s]}
+			else
+				print(f)
+			end
+		end
+	end
+
+	-- fold
+	push(s[#s], vs[#vs])
+	while #s > 1 do
+		push(s[#s-1], s[#s])
+		s[#s] = nil
+	end
+	return s[1]
+end
+
 function tosas(chunk)
 	if atom(chunk) then
 		return chunk
@@ -90,59 +148,7 @@ function tosas(chunk)
 		
 	-- [(1 +) (2 +)] 3
 	elseif chunk.name == 'infix' then
-		local fs = {}
-		local vs = {}
-		local s = {}
-		-- functions
-		for i,v in ipairs(chunk[1]) do
-			push(vs, tosas(v[1]))
-			push(fs, tosas(v[2]))
-		end
-		push(vs, tosas(chunk[2]))
-
-		-- OP PREC
-		-- 1 + 2 * 3
-		local r = -99
-		for i,f in ipairs(fs) do
-			local v = vs[i]
-			print(unlisp(s))
-			local p = prio[f]
-			if not p then print('p', f) end
-			if p > r then
-				push(s, {f,v})
-				r = p
-			elseif p == r and f == s[#s][1] then
-				push(s[#s], v)
-			else
-				push(s[#s], v)
-				r = prio[f]
-
-				local l = prio[s[#s][1]]
-				while #s > 1 and p < l do
-					-- fold
-					push(s[#s-1], s[#s])
-					s[#s] = nil
-					l = prio[s[#s][1]]
-				end
-				if p <= l then
-					s[#s] = {f, s[#s]}
-				end
-			end
-		end
-
-		-- fold
-		push(s[#s], vs[#vs])
-		while #s > 1 do
-			push(s[#s-1], s[#s])
-			s[#s] = nil
-		end
-		return s[1]
-
-		--[[local a = { chunk[1][1][2] }
-		a[2] = tosas(chunk[1][1][1])
-		a[3] = tosas(chunk[1][2][1])
-		a[4] = tosas(chunk[2])
-		return a]]
+		return toinfix(chunk)
 
 	elseif chunk.name == 'upre' then
 		return { tosas(chunk[1]), tosas(chunk[2]) }
@@ -163,6 +169,10 @@ function tosas(chunk)
 		-- elseif
 		for i,v in ipairs(chunk[4]) do
 		end
+		-- else
+		if chunk[5] ~= '' then
+			a[4] = tosas(chunk[5][3])
+		end
 		return a
 
 	elseif chunk.name == 'ruleif' then
@@ -181,7 +191,17 @@ function tosas(chunk)
 		return a
 	
 	elseif chunk.name == 'blockfix' then
-		return {'?'}
+		local a = {}
+		for i,v in ipairs(chunk[1]) do
+			local op = v[3]
+			if not a[1] then
+				a[1] = op
+			elseif a[1] and a[1] ~= op then
+				error('BLOK-OPERATOR DISCREPANTIE')
+			end
+			a[1+i] = tosas(v[4])
+		end
+		return a
 
 	elseif chunk.name == 'prefix' then
 		local a = tosas(chunk[2])
@@ -224,14 +244,25 @@ end
 
 local src = file('syntax.sas')
 local src = [[
-1 + 2 + 3 * - 1
+if obj is text
+	if b + 2 < 3^f*g+a%mo
+		croix = {
+			1, 2
+			3, 4
+		}
+		jus = sin 8 * b
+else
+	item = [1,2,3] find 2
 ]]
 local tokens = lex(src)
 local tokens = removecomments(tokens)
 local chunk = parse(fsas, tokens)
-if not chunk then error('chunk fout') end
-print(unlisp(chunk))
+if not chunk then
+	print(unlisp(chunk))
+	error('chunk fout')
+end
 
 local sas = tosas(chunk)
 
+print((src:gsub('\t', '  ')))
 print(unlisp(sas))

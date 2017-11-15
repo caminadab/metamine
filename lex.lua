@@ -107,7 +107,7 @@ local function getComment(ss)
 		-- sluit
 		if get() == '-' then table.insert(text, '-'); consume() end
 		if get() == ';' then table.insert(text, ';'); consume() end
-		if text[#text] ~= '-' or text[#text-1] ~= ';' then
+		if text[#text-1] ~= '-' or text[#text] ~= ';' then
 			error('ongesloten lang commentaar')
 		end
 	else
