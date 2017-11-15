@@ -155,8 +155,8 @@ function tosas(chunk)
 
 	elseif chunk.name == 'ubin' then
 		return {
-			tosas(chunk[1]),
 			tosas(chunk[2]),
+			tosas(chunk[1]),
 			tosas(chunk[3]),
 		}
 
@@ -242,27 +242,14 @@ function tosas(chunk)
 
 end
 
-local src = file('syntax.sas')
-local src = [[
-if obj is text
-	if b + 2 < 3^f*g+a%mo
-		croix = {
-			1, 2
-			3, 4
-		}
-		jus = sin 8 * b
-else
-	item = [1,2,3] find 2
-]]
-local tokens = lex(src)
-local tokens = removecomments(tokens)
-local chunk = parse(fsas, tokens)
-if not chunk then
-	print(unlisp(chunk))
-	error('chunk fout')
+function sas(src)
+	local tokens = lex(src)
+	local tokens = removecomments(tokens)
+	local chunk = parse(fsas, tokens)
+	if not chunk then
+		print(unlisp(chunk))
+		error('chunk fout')
+	end
+	local sas = tosas(chunk)
+	return sas
 end
-
-local sas = tosas(chunk)
-
-print((src:gsub('\t', '  ')))
-print(unlisp(sas))
