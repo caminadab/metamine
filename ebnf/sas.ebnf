@@ -1,13 +1,18 @@
 sas: '\n'? exp ('\n' exp)*
 block: INDENT ('\n' indent exp)+ DEDENT
 exp: if | function | block
-function: infix | uatom
+function: infix | side
 
 blockfix: INDENT ('\n' indent blockop exp)+ DEDENT
-infix: (uatom binop)+ (uatom | block)
-uatom: ubin | upre | atom
-ubin: atom atom atom
-upre: atom atom
+infix: (side binop)+ (block | side | blockfix)
+uatom: ubin | upre | atom1
+ubin: atom1 atom1 atom1
+upre: atom1 (atom1 | blockfix)
+
+side: uatom | prefix
+prefix: unop+ atom1
+
+atom1: brackets | identifier | number | text | list | set
 
 atom:
 	| brackets | prefix | identifier | number | text
@@ -22,7 +27,7 @@ collection: INDENT exp? (sep exp)* DEDENT '\n'?
 sep: ('\n' indent) | ','
 
 brackets: '(' (block|exp) '\n'? ')'
-prefix: unop atom
+prefix1: unop atom
 identifier: SAS-ID
 number: NUMBER
 text: STRING

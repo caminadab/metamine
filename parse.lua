@@ -196,9 +196,9 @@ defrules = {
 	DEBUG = fn(function (tokens)
 		print('[DEBUG] Regel: '..color.purple..'?'..
 			color.white..', tokens: '..color.cyan..
-			tostring(escape(peek(tokens,0)))..' '..color.green..
-			tostring(escape(peek(tokens,1)))..' '..color.yellow..
-			tostring(escape(peek(tokens,2)))..color.white
+			tostring(escape(peek(tokens,0) or 'EOF'))..' '..color.green..
+			tostring(escape(peek(tokens,1) or 'EOF'))..' '..color.yellow..
+			tostring(escape(peek(tokens,2) or 'EOF'))..color.white
 			)
 		return true,tokens
 	end),

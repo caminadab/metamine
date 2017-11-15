@@ -34,6 +34,17 @@ function copy(t)
 	end
 end
 
+function push(t,v) t[#t+1] = v end
+function pop(t)
+	local v = t[#t]
+	t[#t] = nil; 
+	return v
+end
+function peek(t,n)
+	local n = n or 0
+	return t[#t-n]
+end
+
 -- escapeer alles voor printen tussen enkele quotes
 function escape(t)
 	t = t:gsub('\n', '\\n')

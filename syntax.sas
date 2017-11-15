@@ -1,3 +1,7 @@
+a =
+	+ hi
+	+ med
+
 ; infix
 alpha-num-a = alpha + numeric
 a = b + c ^ d * e / f
@@ -7,9 +11,9 @@ _a = b
 a = b_c
 y = +- x * 2
 a b
-a = b c
+a + b c
 a b c = d
-a b (c d) = (e f) g (h i)
+a b (c d) - (e f) g (h i)
 
 a = [1,2,3]
 [

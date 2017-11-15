@@ -36,6 +36,45 @@ function removecomments(tokens)
 	return tokens
 end
 
+local prio = {
+	['.'] = 9,
+	['..'] = 8,
+	['|'] = 8, -- a | 1 .. 2 komt zelden voor
+
+	[':'] = 7,
+	['as'] = 7,
+	['is'] = 7,
+	['to'] = 7,
+
+	['^'] = 6,
+	['_'] = 6,
+	['*'] = 5,
+	['/'] = 5,
+	['%'] = 5,
+	['+'] = 4,
+	['-'] = 4,
+	['+-'] = 4,
+
+	['='] = 3,
+	['!='] = 3,
+	['~='] = 3,
+	['>'] = 3,
+	['<'] = 3,
+	['>='] = 3,
+	['<='] = 3,
+
+
+	['@'] = 3,
+
+	['and'] = 2,
+	['or'] = 2,
+	['xor'] = 2,
+	['nor'] = 2,
+
+	['=>'] = 1,
+	['->'] = 1,
+}
+
 function tosas(chunk)
 	if atom(chunk) then
 		return chunk
@@ -51,15 +90,69 @@ function tosas(chunk)
 		
 	-- [(1 +) (2 +)] 3
 	elseif chunk.name == 'infix' then
-		local a = { chunk[1][1][2] }
+		local fs = {}
+		local vs = {}
+		local s = {}
+		-- functions
+		for i,v in ipairs(chunk[1]) do
+			push(vs, tosas(v[1]))
+			push(fs, tosas(v[2]))
+		end
+		push(vs, tosas(chunk[2]))
+
+		-- OP PREC
+		-- 1 + 2 * 3
+		local r = -99
+		for i,f in ipairs(fs) do
+			local v = vs[i]
+			print(unlisp(s))
+			local p = prio[f]
+			if not p then print('p', f) end
+			if p > r then
+				push(s, {f,v})
+				r = p
+			elseif p == r and f == s[#s][1] then
+				push(s[#s], v)
+			else
+				push(s[#s], v)
+				r = prio[f]
+
+				local l = prio[s[#s][1]]
+				while #s > 1 and p < l do
+					-- fold
+					push(s[#s-1], s[#s])
+					s[#s] = nil
+					l = prio[s[#s][1]]
+				end
+				if p <= l then
+					s[#s] = {f, s[#s]}
+				end
+			end
+		end
+
+		-- fold
+		push(s[#s], vs[#vs])
+		while #s > 1 do
+			push(s[#s-1], s[#s])
+			s[#s] = nil
+		end
+		return s[1]
+
+		--[[local a = { chunk[1][1][2] }
 		a[2] = tosas(chunk[1][1][1])
-		a[3] = tosas(chunk[2])
-		return a
+		a[3] = tosas(chunk[1][2][1])
+		a[4] = tosas(chunk[2])
+		return a]]
 
 	elseif chunk.name == 'upre' then
+		return { tosas(chunk[1]), tosas(chunk[2]) }
 
 	elseif chunk.name == 'ubin' then
-		--
+		return {
+			tosas(chunk[1]),
+			tosas(chunk[2]),
+			tosas(chunk[3]),
+		}
 
 	elseif chunk.name == 'brackets' then
 		return tosas(chunk[2])
@@ -72,34 +165,72 @@ function tosas(chunk)
 		end
 		return a
 
+	elseif chunk.name == 'ruleif' then
+		local a = {'if'}
+		local block = tosas(chunk[2])
+		block[1] = '&' -- het wordt een CONDISIE
+		a[2] = block
+		a[3] = tosas(chunk[5])
+		return a
+
 	elseif chunk.name == 'block' then
 		local a = {'=>'}
 		for i,v in ipairs(chunk[1]) do
 			a[1+i] = tosas(v[3])
 		end
 		return a
+	
+	elseif chunk.name == 'blockfix' then
+		return {'?'}
+
+	elseif chunk.name == 'prefix' then
+		local a = tosas(chunk[2])
+		for i,v in ipairs(chunk[1]) do
+			a = {v, a}
+		end
+		return a
+
+	elseif chunk.name == 'list' then
+		local r = tosas(chunk[2])
+		local a = {'[]'}
+		for i,v in ipairs(r) do
+			a[1+i] = v
+		end
+		return a
+
+	elseif chunk.name == 'set' then
+		local r = tosas(chunk[2])
+		local a = {'{}'}
+		for i,v in ipairs(r) do
+			a[1+i] = v
+		end
+		return a
+
+	elseif chunk.name == 'collection' then
+		local a = {}
+		if chunk[1] ~= '' then
+			a[1] = tosas(chunk[1])
+		end
+		for i,v in ipairs(chunk[2]) do
+			a[1+#a] = tosas(v[2])
+		end
+		return a
 
 	else
-		error('onherkend: '..chunk.name)
+		error('onherkend: '..(chunk.name or '?'))
 	end
 
 end
 
---local src = file('syntax.sas')
+local src = file('syntax.sas')
 local src = [[
-if a > 1
-	b = 2
-	c = 3
-	d = 4
-	e = 5
-	f = 6
-	g = 7
-else
-	x = 4
+1 + 2 + 3 * - 1
 ]]
 local tokens = lex(src)
 local tokens = removecomments(tokens)
 local chunk = parse(fsas, tokens)
+if not chunk then error('chunk fout') end
+print(unlisp(chunk))
 
 local sas = tosas(chunk)
 
