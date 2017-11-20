@@ -49,6 +49,9 @@ op = {
 	['atan'] = math.atan;
 	['sqrt'] = function(a) if a < 0 then error('imaginaire getallen? nee nog niet') else return math.sqrt(a) end end;
 	['cbrt'] = function (a) return math.pow(a, 1/3) end;
+	['floor'] = function(a) return math.floor(a) end;
+	['round'] = function(a) return math.floor(a+0.5) end;
+	['ceil'] = function(a) return math.ceil(a) end;
 
 	['and'] = function (a,b) return a and b end;
 	['or'] = function (a,b) return a and b end;
@@ -66,14 +69,11 @@ op = {
 		end
 		return res
 	end;
-	[','] = function(a,b)
-		if type(a) == 'table' then
-			local a = clone(a)
-			insert(a,b)
-			return a
-		else
-			return {a,b}
-		end
+	['[]'] = function(...)
+		return {...}
+	end;
+	['{}'] = function(...)
+		return uniq{...}
 	end;
 
 	['||'] = function(a,b) return a .. b end;
@@ -182,7 +182,7 @@ function interpret(prog)
 				insert(args,arg)
 			end
 			local ret 
-			if false and v[1] ~= ',' and v[1] ~= '#'  and type(args[1]) == 'table' then
+			if v[1] ~= '[]' and v[1] ~= '#'  and type(args[1]) == 'table' then
 				local sargs = clone(args)
 				ret = {}
 				for i,v in ipairs(args[1]) do

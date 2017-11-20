@@ -32,15 +32,13 @@ function shell(txt)
 		os.execute('ls --color')
 		return
 	end
-	print('txt="'..txt..'"')
 	local ok, sexp = pcall(sas, txt)
-	print('sexp="'..unlisp(sexp)..'"')
 	if not ok then
 		print(color.red..sexp)
 	elseif sexp then
 		local ok,v = pcall(eval,sexp)
 		if ok then
-			print(color.cyan..v)
+			print(color.cyan..tostring(v))
 		else
 			print(color.red..v..color.white)
 		end
