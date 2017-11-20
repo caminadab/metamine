@@ -21,6 +21,9 @@ end
 function atom(sexp)
 	return type(sexp) == 'string'
 end
+function exp(sexp)
+	return type(sexp) ~= 'string'
+end
 
 local function unparse_work(sexpr, maxlen, tabs, res)
   tabs = tabs or 0

@@ -97,8 +97,8 @@ function toinfix(chunk)
 		if p > r then
 			push(s, {f,v})
 			r = p
-		elseif p == r and f == s[#s][1] then
-			push(s[#s], v)
+		--elseif p == r and f == s[#s][1] then
+			--push(s[#s], v)
 		else
 			push(s[#s], v)
 			r = prio[f]
@@ -133,6 +133,24 @@ function toinfix(chunk)
 	return s[1]
 end
 
+local function block2sas(s)
+	if #s == 2 then
+		return s[2]
+	elseif #s == 3 then
+		return s
+	else
+		local c = {'&'}
+		for i=2,#s-1 do
+			c[i] = s[i]
+		end
+		return {
+			'=>',
+			c,
+			s[#s]
+		}
+	end
+end
+
 function tosas(chunk)
 	if atom(chunk) then
 		return chunk
@@ -144,7 +162,7 @@ function tosas(chunk)
 		for i,v in ipairs(chunk[3]) do
 			s[2+i] = tosas(v[2])
 		end
-		return s
+		return block2sas(s)
 		
 	-- [(1 +) (2 +)] 3
 	elseif chunk.name == 'infix' then
@@ -188,7 +206,7 @@ function tosas(chunk)
 		for i,v in ipairs(chunk[1]) do
 			a[1+i] = tosas(v[3])
 		end
-		return a
+		return block2sas(a)
 	
 	elseif chunk.name == 'blockfix' then
 		local a = {}
@@ -199,7 +217,8 @@ function tosas(chunk)
 			elseif a[1] and a[1] ~= op then
 				error('BLOK-OPERATOR DISCREPANTIE')
 			end
-			a[1+i] = tosas(v[4])
+			--a[1+i] = tosas(v[4]) UNMULTI
+			a = {op, a, tosas(v[4])}
 		end
 		return a
 
