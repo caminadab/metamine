@@ -1,5 +1,6 @@
 require 'parse'
 
+local insert = table.insert
 local fsas = ebnf(file('ebnf/sas.ebnf'))
 
 
@@ -32,28 +33,28 @@ function removecomments(tokens)
 			table.remove(tokens, i)
 		end
 	end
-	--print(unlisp(tokens))
 	return tokens
 end
 
 local prio = {
-	['.'] = 9,
-	['..'] = 8,
-	['|'] = 8, -- a | 1 .. 2 komt zelden voor
+	['.'] = 10,
+	['..'] = 9,
+	['|'] = 9, -- a | 1 .. 2 komt zelden voor
 
-	[':'] = 7,
-	['as'] = 7,
-	['is'] = 7,
-	['to'] = 7,
+	[':'] = 8,
+	['as'] = 8,
+	['is'] = 8,
+	['to'] = 8,
 
-	['^'] = 6,
-	['_'] = 6,
-	['*'] = 5,
-	['/'] = 5,
-	['%'] = 5,
-	['+'] = 4,
-	['-'] = 4,
-	['+-'] = 4,
+	['^'] = 7,
+	['_'] = 7,
+	['*'] = 6,
+	['/'] = 6,
+	['%'] = 6,
+	['+'] = 5,
+	['-'] = 5,
+	['+-'] = 5,
+	['||'] = 4,
 
 	['='] = 3,
 	['!='] = 3,
@@ -271,4 +272,32 @@ function sas(src)
 	end
 	local sas = tosas(chunk)
 	return sas
+end
+
+local function unsas_work(t, s)
+	if type(s) == 'table' then
+		insert(t, '[')
+		if #s == -3 then
+			unsas_work(t, s[2])
+			insert(t, ' ')
+			unsas_work(t, s[1])
+			insert(t, ' ')
+			unsas_work(t, s[3])
+		else
+			for i,v in ipairs(s) do
+				unsas_work(t, v)
+				if i ~= #s then
+					insert(t, ', ')
+				end
+			end
+		end
+		insert(t, ']')
+	else
+		insert(t, tostring(s))
+	end
+	return t
+end
+
+function unsas(s)
+	return table.concat(unsas_work({},s))
 end

@@ -95,6 +95,20 @@ end
 function istext(sexp)
 	return atom(sexp) and sexp:sub(1,1)=="'" and sexp:sub(-1)=="'"
 end
+local esc = {
+	e = '\x1B',
+	r = '\r', -- cr
+	n = '\n', -- nl
+	t = '\t',
+	['\\'] = '\\',
+	['\''] = '\'',
+}
+function gettext(s)
+	local r = s:sub(2,-2)
+	r = r:gsub('\\[%dABCDEF][%dABCDEF]', '<hex>')
+	r = r:gsub('\\[nrte0\\\']', function (t) return esc[t:sub(2,2)] end)
+	return r
+end
 
 local keywords = set{'and','or','xor','is','as','in'}
 function iskeyword(sexp)

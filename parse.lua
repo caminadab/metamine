@@ -446,7 +446,11 @@ end
 
 function parse(ebnf, tokens)
 	local tokens = {v=tokens, i=1}
-	return recdesc(ebnf, ebnf[1], tokens)
+	local chunk,tokens = recdesc(ebnf, ebnf[1], tokens)
+	if tokens.i ~= #tokens.v+1 then
+		error('niet alles kon worden ingelezen')
+	end
+	return chunk
 end
 
 require 'sexp'

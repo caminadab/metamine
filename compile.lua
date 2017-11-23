@@ -35,7 +35,8 @@ function compile(sexp)
 				work(arg)
 				self[i] = 'v'..#res-1
 			else
-				if i > 1 and isname(arg) then
+				if i > 1 and isname(arg) and not math[arg] and
+						arg ~= 'oo' and arg ~= 'none' then
 					error('ongebonden variabele '..arg)
 				end
 				self[i] = sexp[i]
@@ -46,7 +47,8 @@ function compile(sexp)
 	end
 
 	if atom(sexp) then
-		if isname(sexp) then
+		if isname(sexp) and not math[sexp] and sexp ~= 'oo' and sexp ~=
+				'none' then
 			error('ongebonden variabele '..sexp)
 		end
 		insert(res, sexp)

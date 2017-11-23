@@ -1,3 +1,4 @@
+require 'lisp-util'
 local insert = table.insert
 local concat = table.concat
 
@@ -40,6 +41,14 @@ op = {
 		end
 	end;
 	['%'] = function (a,b) return a % b end;
+	['@'] = function (a,b)
+		if type(a) ~= 'function' and type(b) ~= 'function' then
+			error 'kan alleen functies composeren'
+		end
+		return function (...)
+			return b(a(...))
+		end
+	end;
 
 	['sin'] = math.sin;
 	['cos'] = math.cos;
@@ -76,7 +85,7 @@ op = {
 		return uniq{...}
 	end;
 
-	['||'] = function(a,b) return a .. b end;
+	['||'] = function(a,b) return tostring(a) .. tostring(b) end;
 
 	['.'] = function(a,b)
 		if type(a) == 'table' and type(b) == 'number' then
@@ -149,7 +158,8 @@ function interpret(prog)
 		else
 			local args = {}
 			local fn
-			fn = op[v[1]]
+			local idx = tonumber(v[1]:sub(2))
+			fn = op[v[1]] or (idx and res[idx+1])
 			if not fn then error('onbekende functie '..v[1]) end
 			for i=2,#v do
 				local src = v[i]
@@ -168,6 +178,12 @@ function interpret(prog)
 					arg = gettext(src)
 				elseif src == 'int' or src == 'text' then
 					arg = src
+				elseif math[src] then
+					arg = math[src]
+				elseif src == 'oo' then
+					arg = math.huge
+				elseif src == 'none' then
+					arg = nil
 				else
 					local index = tonumber(src:sub(2))
 					if not index then
@@ -182,19 +198,14 @@ function interpret(prog)
 				insert(args,arg)
 			end
 			local ret 
-			if v[1] ~= '[]' and v[1] ~= '#'  and type(args[1]) == 'table' then
-				local sargs = clone(args)
-				ret = {}
-				for i,v in ipairs(args[1]) do
-					sargs[1] = v
-					log('fn',sargs)
-
-					ret[i] = fn(table.unpack(sargs))
-				end
+			ret = fn(table.unpack(args))
+			if ret ~= ret then
+				res[i] = 'none'
+			elseif ret == math.huge then
+				res[i] = 'oo'
 			else
-				ret = fn(table.unpack(args))
+				res[i] = ret
 			end
-			res[i] = ret
 		end
 	end
 
