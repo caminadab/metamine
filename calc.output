@@ -1,0 +1,311 @@
+Grammatica
+
+    0 $accept: input $end
+
+    1 input: %empty
+    2      | input line
+
+    3 line: '\n'
+    4     | exp '\n'
+
+    5 exp: NUM
+    6    | exp '+' exp
+    7    | exp '-' exp
+    8    | exp '*' exp
+    9    | exp '/' exp
+   10    | '-' exp
+   11    | exp '^' exp
+   12    | '(' exp ')'
+
+
+Eindsymbolen, met de regels waarin ze voorkomen
+
+$end (0) 0
+'\n' (10) 3 4
+'(' (40) 12
+')' (41) 12
+'*' (42) 8
+'+' (43) 6
+'-' (45) 7 10
+'/' (47) 9
+'^' (94) 11
+error (256)
+NUM (258) 5
+NEG (259)
+
+
+Niet-eindsymbolen, met de regels waarin ze voorkomen
+
+$accept (13)
+    links: 0
+input (14)
+    links: 1 2, rechts: 0 2
+line (15)
+    links: 3 4, rechts: 2
+exp (16)
+    links: 5 6 7 8 9 10 11 12, rechts: 4 6 7 8 9 10 11 12
+
+
+Toestand 0
+
+    0 $accept: . input $end
+
+    $standaard  reduceren via regel 1 (input)
+
+    input  ga naar toestand 1
+
+
+Toestand 1
+
+    0 $accept: input . $end
+    2 input: input . line
+
+    $end  shift, en ga naar toestand 2
+    NUM   shift, en ga naar toestand 3
+    '-'   shift, en ga naar toestand 4
+    '\n'  shift, en ga naar toestand 5
+    '('   shift, en ga naar toestand 6
+
+    line  ga naar toestand 7
+    exp   ga naar toestand 8
+
+
+Toestand 2
+
+    0 $accept: input $end .
+
+    $standaard  accepteer
+
+
+Toestand 3
+
+    5 exp: NUM .
+
+    $standaard  reduceren via regel 5 (exp)
+
+
+Toestand 4
+
+   10 exp: '-' . exp
+
+    NUM  shift, en ga naar toestand 3
+    '-'  shift, en ga naar toestand 4
+    '('  shift, en ga naar toestand 6
+
+    exp  ga naar toestand 9
+
+
+Toestand 5
+
+    3 line: '\n' .
+
+    $standaard  reduceren via regel 3 (line)
+
+
+Toestand 6
+
+   12 exp: '(' . exp ')'
+
+    NUM  shift, en ga naar toestand 3
+    '-'  shift, en ga naar toestand 4
+    '('  shift, en ga naar toestand 6
+
+    exp  ga naar toestand 10
+
+
+Toestand 7
+
+    2 input: input line .
+
+    $standaard  reduceren via regel 2 (input)
+
+
+Toestand 8
+
+    4 line: exp . '\n'
+    6 exp: exp . '+' exp
+    7    | exp . '-' exp
+    8    | exp . '*' exp
+    9    | exp . '/' exp
+   11    | exp . '^' exp
+
+    '-'   shift, en ga naar toestand 11
+    '+'   shift, en ga naar toestand 12
+    '*'   shift, en ga naar toestand 13
+    '/'   shift, en ga naar toestand 14
+    '^'   shift, en ga naar toestand 15
+    '\n'  shift, en ga naar toestand 16
+
+
+Toestand 9
+
+    6 exp: exp . '+' exp
+    7    | exp . '-' exp
+    8    | exp . '*' exp
+    9    | exp . '/' exp
+   10    | '-' exp .
+   11    | exp . '^' exp
+
+    '^'  shift, en ga naar toestand 15
+
+    $standaard  reduceren via regel 10 (exp)
+
+
+Toestand 10
+
+    6 exp: exp . '+' exp
+    7    | exp . '-' exp
+    8    | exp . '*' exp
+    9    | exp . '/' exp
+   11    | exp . '^' exp
+   12    | '(' exp . ')'
+
+    '-'  shift, en ga naar toestand 11
+    '+'  shift, en ga naar toestand 12
+    '*'  shift, en ga naar toestand 13
+    '/'  shift, en ga naar toestand 14
+    '^'  shift, en ga naar toestand 15
+    ')'  shift, en ga naar toestand 17
+
+
+Toestand 11
+
+    7 exp: exp '-' . exp
+
+    NUM  shift, en ga naar toestand 3
+    '-'  shift, en ga naar toestand 4
+    '('  shift, en ga naar toestand 6
+
+    exp  ga naar toestand 18
+
+
+Toestand 12
+
+    6 exp: exp '+' . exp
+
+    NUM  shift, en ga naar toestand 3
+    '-'  shift, en ga naar toestand 4
+    '('  shift, en ga naar toestand 6
+
+    exp  ga naar toestand 19
+
+
+Toestand 13
+
+    8 exp: exp '*' . exp
+
+    NUM  shift, en ga naar toestand 3
+    '-'  shift, en ga naar toestand 4
+    '('  shift, en ga naar toestand 6
+
+    exp  ga naar toestand 20
+
+
+Toestand 14
+
+    9 exp: exp '/' . exp
+
+    NUM  shift, en ga naar toestand 3
+    '-'  shift, en ga naar toestand 4
+    '('  shift, en ga naar toestand 6
+
+    exp  ga naar toestand 21
+
+
+Toestand 15
+
+   11 exp: exp '^' . exp
+
+    NUM  shift, en ga naar toestand 3
+    '-'  shift, en ga naar toestand 4
+    '('  shift, en ga naar toestand 6
+
+    exp  ga naar toestand 22
+
+
+Toestand 16
+
+    4 line: exp '\n' .
+
+    $standaard  reduceren via regel 4 (line)
+
+
+Toestand 17
+
+   12 exp: '(' exp ')' .
+
+    $standaard  reduceren via regel 12 (exp)
+
+
+Toestand 18
+
+    6 exp: exp . '+' exp
+    7    | exp . '-' exp
+    7    | exp '-' exp .
+    8    | exp . '*' exp
+    9    | exp . '/' exp
+   11    | exp . '^' exp
+
+    '*'  shift, en ga naar toestand 13
+    '/'  shift, en ga naar toestand 14
+    '^'  shift, en ga naar toestand 15
+
+    $standaard  reduceren via regel 7 (exp)
+
+
+Toestand 19
+
+    6 exp: exp . '+' exp
+    6    | exp '+' exp .
+    7    | exp . '-' exp
+    8    | exp . '*' exp
+    9    | exp . '/' exp
+   11    | exp . '^' exp
+
+    '*'  shift, en ga naar toestand 13
+    '/'  shift, en ga naar toestand 14
+    '^'  shift, en ga naar toestand 15
+
+    $standaard  reduceren via regel 6 (exp)
+
+
+Toestand 20
+
+    6 exp: exp . '+' exp
+    7    | exp . '-' exp
+    8    | exp . '*' exp
+    8    | exp '*' exp .
+    9    | exp . '/' exp
+   11    | exp . '^' exp
+
+    '^'  shift, en ga naar toestand 15
+
+    $standaard  reduceren via regel 8 (exp)
+
+
+Toestand 21
+
+    6 exp: exp . '+' exp
+    7    | exp . '-' exp
+    8    | exp . '*' exp
+    9    | exp . '/' exp
+    9    | exp '/' exp .
+   11    | exp . '^' exp
+
+    '^'  shift, en ga naar toestand 15
+
+    $standaard  reduceren via regel 9 (exp)
+
+
+Toestand 22
+
+    6 exp: exp . '+' exp
+    7    | exp . '-' exp
+    8    | exp . '*' exp
+    9    | exp . '/' exp
+   11    | exp . '^' exp
+   11    | exp '^' exp .
+
+    '^'  shift, en ga naar toestand 15
+
+    $standaard  reduceren via regel 11 (exp)

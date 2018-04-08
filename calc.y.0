@@ -1,0 +1,19 @@
+/* Infix notation calculator.  */
+
+%{
+  #include <math.h>
+  #include <stdio.h>
+  int yylex (void);
+  void yyerror (char const *);
+%}
+
+/* Bison declarations.  */
+%define api.value.type {double}
+%token NUM
+%left '-' '+'
+%left '*' '/'
+%precedence NEG   /* negation--unary minus */
+%right '^'        /* exponentiation */
+
+%%
+
