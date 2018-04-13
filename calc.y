@@ -10,6 +10,7 @@
 /* Bison declarations.  */
 %define api.value.type {double}
 %token NUM
+%token NAME
 %left '-' '+'
 %left '*' '/'
 %precedence NEG   /* negation--unary minus */

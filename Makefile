@@ -1,8 +1,5 @@
-satis: calc.tab.c
-	gcc -lm -o satis *.c
+parse: main.c sas.tab.c
+	gcc -g -lm -o parse main.c sas.tab.c
 
-calc.tab.c: calc.y
-	bison calc.y
-
-calc.y: calc.y.0 calc.bnf
-	cat calc.y.0 calc.bnf > calc.y
+sas.tab.c: sas.y
+	bison sas.y
