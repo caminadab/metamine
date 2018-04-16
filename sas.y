@@ -12,17 +12,21 @@
 	token stack[0x1000];
 	int sp = 0;
 
-	void push(char* token) {
-		strcpy(&stack[sp++], token);
-	}
+	struct node {
+		char data[0x10];
+		struct node* kid;
+		struct node* next;
+	};
 
-	int skip(int sp) {
-		if (isalnum(*stack[sp-1]))
-			return sp-1;
-		else {
-			sp = skip(sp-1);
-			//sp = skip(sp);
-			return sp-1;
+	void write_node(struct node* node) {
+		if (node->kid)
+			printf("(");
+		printf("%s", node->data);
+		if (node->kid)
+			printf(")");
+		if (node->next) {
+			printf(" ");
+			write_node(node->next);
 		}
 	}
 
@@ -74,7 +78,7 @@ input:
 
 line:
   '\n'
-|	eq 	{ yield(sp); putchar('\n'); }
+|	eq 	{ putchar('\t'); yield(sp); putchar('\n'); }
 ;
 
 eq: exp '=' exp				{ push("="); }
@@ -87,5 +91,5 @@ exp:
 | exp '+' exp        { push("+"); }
 | exp '-' exp        { push("-"); }
 | '-' exp  %prec NEG { push("_"); }
-| '(' exp ')'        { push("_"); }
+| '(' exp ')'
 ;
