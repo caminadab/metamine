@@ -13,26 +13,37 @@ void yyerror (char const * s) {
 int yylex (void) {
 	int c;
 
-	/* Skip white space.  */
-	while ((c = getchar ()) == ' ' || c == '\t')
-		continue;
+	// wit overslaan
+	while (1) {
+		while ((c = getchar ()) == ' ' || c == '\t')
+			continue;
+		while (c == ';') {
+			while ((c = getchar()) != '\n')
+				continue;
+			c = getchar();
+		}
+		if (c != ' ' && c != '\t' && c != ';')
+			break;
+	}
 
-	/* Process numbers.  */
+	// tokens
 	if (isalnum(c)) {
 		int i;
 		for (i = 0; i < 0x10 && isalnum(c); i++) {
 			token[i] = c;
 			c = getchar();
-			yylval = token;
 		}
+		ungetc(c, stdin);
 		token[i] = 0;
+		yylval = token;
 		return NUM;
 	}
 
-	/* Return end-of-input.  */
+	// klaar
 	if (c == EOF)
 		return 0;
-	/* Return a single char.  */
+
+	// token
 	token[0] = c;
 	token[1] = 0;
 	yylval = token;
@@ -40,11 +51,9 @@ int yylex (void) {
 }
 
 int main(void) {
-	printf("(");
+	puts("(");
 	int a = yyparse();
 	if (a) return a;
-	printf(")");
-
-	//puts(stack[3]);
+	puts(")");
 }
 

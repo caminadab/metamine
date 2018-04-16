@@ -3,6 +3,7 @@ require 'lisp'
 
 local fn = {
 	['+'] = function(a,b) return a + b end;
+	['-'] = function(a,b) if b then return a - b else return a end end;
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;

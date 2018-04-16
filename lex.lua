@@ -165,8 +165,8 @@ end
 -- haakjes
 local bracket = {
 	['('] = true, [')'] = true,
-	['['] = true, [']'] = true,
-	['{'] = true, ['}'] = true,
+	--['['] = true, [']'] = true,
+	--['{'] = true, ['}'] = true,
 }
 
 -- operatoren
@@ -179,11 +179,12 @@ local double = {
 	['..'] = true, ['+-'] = true,
 	['->'] = true, [':='] = true,
 	['=='] = true, ['/>'] = true,
+	['[]'] = true, ['{}'] = true,
 }
 local triple = { ['<=>'] = true }
 	
 local operator = {}
-local optext = '\\+-*/.,^|&=?!><:#%X_@'
+local optext = '\\+-*/.,^|&=?!><:#%X_@[]{}'
 for i=1,#optext do
 	operator[string.sub(optext,i,i)] = true
 end
