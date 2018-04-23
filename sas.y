@@ -2,6 +2,7 @@
 
 %{
   #include <math.h>
+	#include <stdbool.h>
   #include <stdio.h>
 	#include <string.h>
 
@@ -11,8 +12,11 @@
 	// nodes
 	typedef struct node node;
 	struct node {
+		// kids?
+		int exp;
 		char data[0x100];
-		node* kid;
+		node* first;
+		node* last;
 		node* next;
 	};
 	node nodes[0x1000];
@@ -23,9 +27,9 @@
 	}
 
 	void write_node(node* n) {
-		if (n->kid) {
+		if (n->exp) {
 			printf("(");
-			for (node* kid = n->kid; kid; kid = kid->next) {
+			for (node* kid = n->first; kid; kid = kid->next) {
 				write_node(kid);
 				if (kid->next)
 					putchar(' ');
@@ -43,18 +47,46 @@
 		return n;
 	}
 
-	node* lisp3(node* a, node* b, node* c) {
+	node* append(node* exp, node* atom) {
+		exp->last->next = atom;
+		exp->last = atom;
+	}
+
+	node* exp1(node* a) {
 		node* n = node_new();
-		n->kid = a;
+		n->exp = true;
+		n->first = a;
+		n->last = a;
+		return n;
+	}
+
+	node* _exp2(node* a, node* b) {
+		node* n = node_new();
+		n->exp = true;
+		n->first = a;
+		n->last = b;
+		a->next = b;
+		return n;
+	}
+
+	node* exp3(node* a, node* b, node* c) {
+		node* n = node_new();
+		n->exp = true;
+		n->first = a;
+		n->last = c;
 		a->next = b;
 		b->next = c;
 		return n;
 	}
 
-	node* lisp2(node* a, node* b) {
+	node* exp4(node* a, node* b, node* c, node* d) {
 		node* n = node_new();
-		n->kid = a;
+		n->exp = true;
+		n->first = a;
+		n->last = d;
 		a->next = b;
+		b->next = c;
+		c->next = d;
 		return n;
 	}
 
@@ -81,15 +113,27 @@ line:
 |	eq 	{ putchar('\t'); write_node($$); putchar('\n'); }
 ;
 
-eq: exp '=' exp				{ $$ = lisp3(a("="), $1, $3); }
+eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
 
 exp:
-  NUM                { $$ = $1; }
-| exp '^' exp        { $$ = lisp3(a("^"), $1, $3); }
-| exp '*' exp        { $$ = lisp3(a("*"), $1, $3); }
-| exp '/' exp        { $$ = lisp3(a("/"), $1, $3); }
-| exp '+' exp        { $$ = lisp3(a("+"), $1, $3); }
-| exp '-' exp        { $$ = lisp3(a("-"), $1, $3); }
-| '-' exp  %prec NEG { $$ = lisp2(a("-"), $2); }
-| '(' exp ')'				 { $$ = $2; }
+  NUM
+| exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
+| exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
+| exp '/' exp       	{ $$ = exp3(a("/"), $1, $3); }
+| exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
+| exp '-' exp       	{ $$ = exp3(a("-"), $1, $3); }
+| '-' exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
+| '(' exp ')'					{ $$ = $2; }
+
+| '[' list ']'				{ $$ = $2; }
+;
+
+list:
+	%empty							{ $$ = exp1(a("[]")); }
+|	items
+;
+
+items:
+	exp									{ $$ = _exp2(a("[]"), $1); }
+| items ',' exp				{ $$ = append($1, $3); }
 ;
