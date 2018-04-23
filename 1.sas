@@ -1,2 +1,3 @@
-hoi = [72,79,73]
-stdout = hoi
+a = (3 + b) * 2
+stdout = a * 2
+8 = b
