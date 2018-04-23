@@ -7,6 +7,7 @@ local fn = {
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
+	['[]'] = function(...) return table.pack(...) end;
 }
 
 function eval(env,exp)
@@ -28,4 +29,6 @@ for i,stat in ipairs(proc) do
 	env[name] = eval(env,val)
 end
 
-print(env.stdout or 'unknown')
+local v = env.stdout or 'unknown'
+if type(v) == 'table' then v = string.char(table.unpack(v)) end
+print(v or 'unknown')
