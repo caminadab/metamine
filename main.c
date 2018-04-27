@@ -1,15 +1,21 @@
 #include <stdio.h>
 
-char token[0x10];
-extern char* yylval;
-extern char stack[0x10][0x1000];
-extern int sp;
+typedef struct {
+	char data[0x100];
+	struct node* kid;
+	struct node* next;
+} node;
+
+node* a(char* t);
+extern node* yylval;
+
 #define NUM 258
 
 void yyerror (char const * s) {
 	fprintf(stderr, "%s\n", s);
 }
 
+char token[0x100];
 int yylex (void) {
 	int c;
 
@@ -35,7 +41,7 @@ int yylex (void) {
 		}
 		ungetc(c, stdin);
 		token[i] = 0;
-		yylval = token;
+		yylval = a(token);
 		return NUM;
 	}
 
@@ -46,7 +52,7 @@ int yylex (void) {
 	// token
 	token[0] = c;
 	token[1] = 0;
-	yylval = token;
+	yylval = a(token);
 	return c;
 }
 

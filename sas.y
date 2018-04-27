@@ -2,66 +2,98 @@
 
 %{
   #include <math.h>
+	#include <stdbool.h>
   #include <stdio.h>
 	#include <string.h>
-	typedef char token[0x10];
+
   int yylex (void);
   void yyerror (char const *);
 
-	enum { LIT };
-	token stack[0x1000];
-	int sp = 0;
-
+	// nodes
+	typedef struct node node;
 	struct node {
-		char data[0x10];
-		struct node* kid;
-		struct node* next;
+		// kids?
+		int exp;
+		char data[0x100];
+		node* first;
+		node* last;
+		node* next;
 	};
+	node nodes[0x1000];
+	int numnodes = 0;
 
-	void write_node(struct node* node) {
-		if (node->kid)
+	node* node_new() {
+		return &nodes[numnodes++];
+	}
+
+	void write_node(node* n) {
+		if (n->exp) {
 			printf("(");
-		printf("%s", node->data);
-		if (node->kid)
+			for (node* kid = n->first; kid; kid = kid->next) {
+				write_node(kid);
+				if (kid->next)
+					putchar(' ');
+			}
 			printf(")");
-		if (node->next) {
-			printf(" ");
-			write_node(node->next);
 		}
-	}
-
-	void yield(int sp) {
-		if (isalnum(*stack[sp-1]))
-			printf("%s", stack[sp-1]);
 		else {
-			int numops = 2;
-			if (!strcmp(stack[sp-1], "_"))
-				numops = 1;
-
-			putchar('(');
-			if (*stack[sp-1] == '_')
-				printf("- ");
-			else
-				printf("%s ", stack[sp-1]);
-
-			if (numops == 2) {
-				int right = sp-1;
-				int left = skip(sp-1);
-				yield(left);
-				putchar(' ');
-				yield(right);
-			}
-			else if (numops == 1) {
-				yield(sp-1);
-			}
-
-			putchar(')');
+			printf("%s", n->data);
 		}
 	}
+
+	node* a(char* t) {
+		node* n = node_new();
+		strcpy(&n->data, t);
+		return n;
+	}
+
+	node* append(node* exp, node* atom) {
+		exp->last->next = atom;
+		exp->last = atom;
+	}
+
+	node* exp1(node* a) {
+		node* n = node_new();
+		n->exp = true;
+		n->first = a;
+		n->last = a;
+		return n;
+	}
+
+	node* _exp2(node* a, node* b) {
+		node* n = node_new();
+		n->exp = true;
+		n->first = a;
+		n->last = b;
+		a->next = b;
+		return n;
+	}
+
+	node* exp3(node* a, node* b, node* c) {
+		node* n = node_new();
+		n->exp = true;
+		n->first = a;
+		n->last = c;
+		a->next = b;
+		b->next = c;
+		return n;
+	}
+
+	node* exp4(node* a, node* b, node* c, node* d) {
+		node* n = node_new();
+		n->exp = true;
+		n->first = a;
+		n->last = d;
+		a->next = b;
+		b->next = c;
+		c->next = d;
+		return n;
+	}
+
 %}
 
 /* Bison declarations.  */
-%define api.value.type {char*}
+%define api.value.type {node*}
 %token NUM
 %token NAME
 %left '-' '+'
@@ -78,18 +110,30 @@ input:
 
 line:
   '\n'
-|	eq 	{ putchar('\t'); yield(sp); putchar('\n'); }
+|	eq 	{ putchar('\t'); write_node($$); putchar('\n'); }
 ;
 
-eq: exp '=' exp				{ push("="); }
+eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
 
 exp:
-  NUM                { push($1); }
-| exp '^' exp        { push("^"); }
-| exp '*' exp        { push("*"); }
-| exp '/' exp        { push("/"); }
-| exp '+' exp        { push("+"); }
-| exp '-' exp        { push("-"); }
-| '-' exp  %prec NEG { push("_"); }
-| '(' exp ')'
+  NUM
+| exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
+| exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
+| exp '/' exp       	{ $$ = exp3(a("/"), $1, $3); }
+| exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
+| exp '-' exp       	{ $$ = exp3(a("-"), $1, $3); }
+| '-' exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
+| '(' exp ')'					{ $$ = $2; }
+
+| '[' list ']'				{ $$ = $2; }
+;
+
+list:
+	%empty							{ $$ = exp1(a("[]")); }
+|	items
+;
+
+items:
+	exp									{ $$ = _exp2(a("[]"), $1); }
+| items ',' exp				{ $$ = append($1, $3); }
 ;
