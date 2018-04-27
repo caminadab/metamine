@@ -184,7 +184,7 @@ local double = {
 local triple = { ['<=>'] = true }
 	
 local operator = {}
-local optext = '\\+-*/.,^|&=?!><:#%X_@[]{}'
+local optext = '\\+-*/.,^|&=?!><:#%X_@[]{}~'
 for i=1,#optext do
 	operator[string.sub(optext,i,i)] = true
 end

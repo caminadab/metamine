@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cat solve/0.sas | ./parse | ./solve

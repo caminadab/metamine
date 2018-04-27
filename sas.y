@@ -96,6 +96,7 @@
 %define api.value.type {node*}
 %token NUM
 %token NAME
+%left '~'
 %left '-' '+'
 %left '*' '/'
 %precedence NEG   /* negation--unary minus */
@@ -117,6 +118,7 @@ eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
 
 exp:
   NUM
+| exp '~' exp       	{ $$ = exp3(a("~"), $1, $3); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
 | exp '/' exp       	{ $$ = exp3(a("/"), $1, $3); }

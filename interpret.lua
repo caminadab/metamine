@@ -8,6 +8,13 @@ local fn = {
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
 	['[]'] = function(...) return table.pack(...) end;
+
+	['~'] = function(a,b)
+		local t = {}
+		for i,v in ipairs(a) do t[#t+1] = v end
+		for i,v in ipairs(b) do t[#t+1] = v end
+		return t
+	end;
 }
 
 function eval(env,exp)
