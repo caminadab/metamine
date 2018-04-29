@@ -1,20 +1,9 @@
 #!/usr/bin/lua
 require 'lisp'
 require 'func'
+require 'rewrite'
 
 local sas = lisp(io.read('*a'))
-
-function label(exp)
-	if atom(exp) then
-		if exp == 'stdout' then return 'out' end
-		if exp == 'stdin' then return 'in' end
-		if tonumber(exp) then return 'constant' end
-		if string.upper(exp) == exp then return 'constant' end
-		return 'name'
-	else
-		return map(exp, label)
-	end
-end
 
 local colors = {
 	constant = color.green,
@@ -22,6 +11,43 @@ local colors = {
 	out = color.red,
 	name = color.purple,
 }
+
+function isvar(name)
+	if tonumber(name) then
+		return false
+	elseif string.upper(name) == name then
+		return false
+	end
+	return true
+end
+
+function var(exp,t)
+	t = t or {}
+	if atom(exp) then
+		if isvar(exp) then
+			t[#t+1] = exp
+		end
+	else
+		for i,s in ipairs(exp) do
+			var(s,t)
+		end
+	end
+	return t
+end
+
+function varset(exp,t)
+	local t = t or {}
+	if atom(exp) then
+		if isvar(exp) then
+			t[exp] = true
+		end
+	else
+		for i,s in ipairs(exp) do
+			varset(s,t)
+		end
+	end
+	return t
+end
 
 function contains(exp, name)
 	if atom(exp) then
@@ -66,7 +92,18 @@ function putdeps(sas,un,dep,todo)
 	end
 end
 
+function eqsolve(eq,t)
+	local t = t or {}
+	log('OPLOSSEN',unlisp(eq))
+	for var in spairs(varset(eq)) do
+		local exp = rewrite(eq,var)
+		log(var..' := '..unlisp(exp))
+		t[#t+1] = {':=', var, exp}
+	end
+end
+
 -- resolve equations
+--[[
 dep = {}
 todo = {['stdout'] = true}
 while next(todo) do
@@ -77,51 +114,82 @@ while next(todo) do
 	end
 	todo = todo1
 end
+]]
+dep = {}
+ass = {}
+for i,eq in spairs(sas) do
+	eqsolve(eq,ass)
+end
+for i,as in ipairs(ass) do
+	print(unlisp(as))
+end
 
--- val,deps -> [ val i := dep i ]
-function solve(dep,val)
-	local flow = {{':=', val, dep[val]}}
-	local todo = {dep[val]}
-	local un = {}
+for i,as in ipairs(ass) do
+	local n,v = as[2],as[3]
+	dep[n] = dep[n] or {}
+	table.insert(dep[n], v)
+end
+
+-- ass -> flow
+function solve(ass,val)
+	local old = {}
+	local todo = {val}
+	local flow = {}
+
 	while #todo > 0 do
-		local val = todo[#todo]
+		local name = todo[#todo]
 		todo[#todo] = nil
+		log('onderzoeken',name)
 
-		if atom(val) then
-			if dep[val] then
-				flow[#flow+1] = {':=', val, dep[val]}
-				todo[#todo+1] = dep[val]
-			else
-				un[#un+1] = val
+		local exps = dep[name]
+		log(#exps .. ' mogelijkheden')
+
+		-- vind geldig systeem
+		local good
+		for i,exp in ipairs(exps) do
+			local ok = true
+			for v in pairs(varset(exp)) do
+				if old[v] or v == name then
+					ok = false
+					log('fout:',unlisp(v))
+					break
+				end
 			end
-		else
-			for i,v in ipairs(val) do
-				todo[#todo+1] = v
+			if ok then
+				good = exp
+				break
+			end
+		end
+
+		if good then
+			flow[#flow+1] = {':=', name, good}
+			log('goed:',unlisp(flow[#flow]))
+			for to in pairs(varset(good)) do
+				if not old[to] then
+					todo[#todo+1] = to
+					old[to] = true
+				end
 			end
 		end
 	end
-	return reverse(flow),un
-end
 
-function isvar(name)
-	if tonumber(name) then
-		return false
-	end
-	return true
-end
+	local flow = reverse(flow)
 
-function var(exp,t)
-	t = t or {}
-	if atom(exp) then
-		if isvar(exp) then
-			t[#t+1] = exp
-		end
-	else
-		for i,s in ipairs(exp) do
-			var(s,t)
+	-- dubbelen
+	local set = {}
+	local r = {}
+	for i=1,#flow do
+		if flow[i] then
+			local stat = flow[i]
+			local n,v = stat[2],stat[3]
+			if not set[n] then
+				r[#r+1]  = flow[i]
+			end
+			set[n] = true
 		end
 	end
-	return t
+		
+	return flow, {}
 end
 
 const = {
@@ -131,21 +199,29 @@ const = {
 	['-'] = true,
 	['/'] = true,
 	['^'] = true,
+	
 	['.'] = true,
 
 	['[]'] = true,
 	['cat'] = true,
 	['split'] = true,
 }
+
+sec = {
+	['tijd'] = true,
+	['toetsLinks'] = true,
+	['toetsRechts'] = true,
+	['toetsOmhoog'] = true,
+	['toetsOmlaag'] = true,
+}
 	
 function plan(proc)
 	-- start
 	for i,v in ipairs(proc) do
+		v.tijd = '?'
 		local val = v[2]
-		if val == 'tijd' then
+		if sec[val] then
 			v.tijd = 'sec'
-		else
-			v.tijd = '?'
 		end
 	end
 
@@ -164,7 +240,7 @@ function plan(proc)
 			if not const[n] and tijd[n] ~= 'const' then
 				t = 'analoog'
 			end
-			if n == 'tijd' then
+			if sec[n] then
 				t = 'sec'
 			end
 			if tijd[n] == 'sec' then
@@ -178,11 +254,13 @@ function plan(proc)
 	-- sorteer
 	local const,sec = {'const'},{'sec'}
 	local blocks = {}
-	for i,stat in ipairs(proc) do
-		if stat.tijd == 'const' then
-			const[#const+1] = stat
-		elseif stat.tijd == 'sec' then
-			sec[#sec+1] = stat
+	for i,block in ipairs(proc) do
+		if block.tijd == 'const' then
+			const[#const+1] = block
+		elseif block.tijd == 'sec' then
+			sec[#sec+1] = block
+		else
+			log('niet tijdsgebonden: '..unlisp(block))
 		end
 	end
 	if #const > 1 then table.insert(blocks,const) end
@@ -211,7 +289,6 @@ p = plan(f)
 printflow(p)
 print(unlisp(p))
 
--- onbekenden
 for i,un in ipairs(un) do
 	if string.upper(un) ~= un then
 		log('ONBEKENDE VARIABEL '..un)

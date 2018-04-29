@@ -14,6 +14,10 @@ local vertaal = {
 	['sin'] = 'math.sin',
 	['cos'] = 'math.cos',
 	['.'] = 'index',
+	['toetsLinks'] = '(love.keyboard.isDown("left") and 1 or 0)',
+	['toetsRechts'] = '(love.keyboard.isDown("right") and 1 or 0)',
+	['toetsOmhoog'] = '(love.keyboard.isDown("up") and 1 or 0)',
+	['toetsOmlaag'] = '(love.keyboard.isDown("down") and 1 or 0)',
 }
 
 function tolo(exp,t)
@@ -91,7 +95,7 @@ function love.draw()
 	for i,v in ipairs(stdout) do
 		love.graphics.circle('fill', v[1], v[2], 20)
 	end
-	]]
+]]
 
 	for i,var in ipairs(vars) do
 		t[#t+1] = '\tlove.graphics.print('
