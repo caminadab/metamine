@@ -76,11 +76,10 @@ end
 
 function eqsolve(eq,t)
 	local t = t or {}
-	log('OPLOSSEN',unlisp(eq))
 	for var in spairs(varset(eq)) do
 		local exp = rewrite(eq,var)
 		if exp then
-			log(var..' := '..unlisp(exp))
+			--log(var..' := '..unlisp(exp))
 			t[#t+1] = {':=', var, exp}
 		end
 	end
@@ -135,7 +134,6 @@ function hascycles(graph)
 			local w
 			repeat
 				w = s[#s]
-				--log('STACK',unlisp(s))
 				s[#s] = nil
 				w.onstack = false
 				st[#st+1] = w.name
@@ -174,7 +172,7 @@ function solve(ass,val)
 		todo[#todo] = nil
 
 		local exps = dep[name] or {}
-		log(#exps .. ' mogelijkheden')
+		--log(#exps .. 'mogelijkheden')
 
 		-- vind geldig systeem
 		local ok
@@ -192,7 +190,6 @@ function solve(ass,val)
 				ok = exp
 				break
 			else
-				log('CYCLES HOOR')
 				-- remove edges
 				for i,edge in ipairs(edges) do
 					local from,to = edge[1],edge[2]
@@ -204,17 +201,28 @@ function solve(ass,val)
 
 		if ok then
 			flow[#flow+1] = {':=', name, ok}
-			log('goed:',unlisp(flow[#flow]))
-			for to in pairs(varset(ok)) do
+			for to in spairs(varset(ok)) do
 				if not done[to] then
 					todo[#todo+1] = to
 					done[to] = true
+				else
+					-- ververs
+					for i=1,#flow do
+						if flow[i][2] == to then
+							print('VERPLAATS')
+							local stat = flow[i]
+							print(i, #flow, unlisp(stat))
+							--table.insert(flow, #flow-2, stat)
+							local dep = table.remove(flow, i)
+							table.insert(flow, dep)
+							break
+						end
+					end
 				end
 			end
 		else
 			log('GEEN OPLOSSING GEVONDEN VOOR '..name)
 		end
-		--loggraph(graph)
 	end
 
 	local flow = reverse(flow)
@@ -279,24 +287,18 @@ function plan(proc)
 
 		-- logica
 		local t = 'const'
-		for i,n in ipairs(x) do
-			-- constant?
-			if not const[n] and tijd[n] ~= 'const' then
-				t = 'analoog'
-			end
-			if sec[n] then
-				t = 'sec'
-			end
-			if tijd[n] == 'sec' then
+		for name in pairs(varset(x)) do
+			if sec[name] or tijd[name] == 'sec' then
 				t = 'sec'
 			end
 		end
-		stat.tijd = t
+
 		tijd[n] = t
+		stat.tijd = t
 	end
 
 	-- sorteer
-	local const,sec = {'const'},{'sec'}
+	local const,sec,analog = {'const'},{'sec'},{'analog'}
 	local blocks = {}
 	for i,block in ipairs(proc) do
 		if block.tijd == 'const' then
@@ -305,10 +307,12 @@ function plan(proc)
 			sec[#sec+1] = block
 		else
 			log('niet tijdsgebonden: '..unlisp(block))
+			analog[#analog+1] = block
 		end
 	end
 	if #const > 1 then table.insert(blocks,const) end
 	if #sec > 1 then table.insert(blocks,sec) end
+	if #analog > 1 then table.insert(blocks,analog) end
 
 	return blocks
 end
@@ -332,9 +336,6 @@ dep = {}
 ass = {}
 for i,eq in spairs(sas) do
 	eqsolve(eq,ass)
-end
-for i,as in ipairs(ass) do
-	log(unlisp(as))
 end
 
 for i,as in ipairs(ass) do
