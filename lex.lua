@@ -289,7 +289,8 @@ function lex(src)
 
 		-- error
 		else
-			error('onherkenbaar karakter '..get())
+			local c = get()
+			error('onherkenbaar karakter '..c..' ('..string.byte(c)..')')
 
 		end
 

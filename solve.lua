@@ -79,7 +79,7 @@ while next(todo) do
 end
 
 -- val,deps -> [ val i := dep i ]
-function flow(dep,val)
+function solve(dep,val)
 	local flow = {{':=', val, dep[val]}}
 	local todo = {dep[val]}
 	local un = {}
@@ -103,19 +103,117 @@ function flow(dep,val)
 	return reverse(flow),un
 end
 
+function isvar(name)
+	if tonumber(name) then
+		return false
+	end
+	return true
+end
+
+function var(exp,t)
+	t = t or {}
+	if atom(exp) then
+		if isvar(exp) then
+			t[#t+1] = exp
+		end
+	else
+		for i,s in ipairs(exp) do
+			var(s,t)
+		end
+	end
+	return t
+end
+
+const = {
+	['*'] = true,
+	['+'] = true,
+	['*'] = true,
+	['-'] = true,
+	['/'] = true,
+	['^'] = true,
+	['.'] = true,
+
+	['[]'] = true,
+	['cat'] = true,
+	['split'] = true,
+}
+	
+function plan(proc)
+	-- start
+	for i,v in ipairs(proc) do
+		local val = v[2]
+		if val == 'tijd' then
+			v.tijd = 'sec'
+		else
+			v.tijd = '?'
+		end
+	end
+
+	-- doorloop
+	local sources = {}
+	local tijd = {}
+	for i,stat in ipairs(proc) do
+		n = stat[2]
+		v = stat[3]
+		x = var(v)
+
+		-- logica
+		local t = 'const'
+		for i,n in ipairs(x) do
+			-- constant?
+			if not const[n] and tijd[n] ~= 'const' then
+				t = 'analoog'
+			end
+			if n == 'tijd' then
+				t = 'sec'
+			end
+			if tijd[n] == 'sec' then
+				t = 'sec'
+			end
+		end
+		stat.tijd = t
+		tijd[n] = t
+	end
+
+	-- sorteer
+	local const,sec = {'const'},{'sec'}
+	local blocks = {}
+	for i,stat in ipairs(proc) do
+		if stat.tijd == 'const' then
+			const[#const+1] = stat
+		elseif stat.tijd == 'sec' then
+			sec[#sec+1] = stat
+		end
+	end
+	if #const > 1 then table.insert(blocks,const) end
+	if #sec > 1 then table.insert(blocks,sec) end
+
+	return blocks
+end
+
 function printflow(proc)
-	for i,vd in ipairs(proc) do
-		local val,dep = vd[2],vd[3]
-		print(val..' := '..unlisp(dep))
+	for i,block in ipairs(proc) do
+		local tijd = block[1]
+		log(color.green..tijd..color.white)
+		for i,vd in ipairs(block) do
+			if i > 1 then
+				local val,dep = vd[2],vd[3]
+				log(val..' := '..unlisp(dep)..'\t')
+			end
+		end
+		log('\n')
 	end
 end
 
-f,un = flow(dep, 'stdout')
-print(unlisp(f))
+
+f,un = solve(dep, 'stdout')
+p = plan(f)
+printflow(p)
+print(unlisp(p))
 
 -- onbekenden
 for i,un in ipairs(un) do
 	if string.upper(un) ~= un then
-		print('ONBEKENDE VARIABEL '..un)
+		log('ONBEKENDE VARIABEL '..un)
 	end
 end

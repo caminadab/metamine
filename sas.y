@@ -96,11 +96,15 @@
 %define api.value.type {node*}
 %token NUM
 %token NAME
+%token TO
+%precedence NU
+%left '>'
 %left '~'
 %left '-' '+'
 %left '*' '/'
-%precedence NEG   /* negation--unary minus */
-%right '^'        /* exponentiation */
+%precedence NEG
+%right '^'
+%left '.'
 
 %%
 
@@ -116,8 +120,15 @@ line:
 
 eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
 
+single:
+	NUM
+|	'(' exp ')'					{ $$ = $2; }
+| '[' list ']'				{ $$ = $2; }
+;
+
 exp:
   NUM
+| single
 | exp '~' exp       	{ $$ = exp3(a("~"), $1, $3); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -125,9 +136,11 @@ exp:
 | exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
 | exp '-' exp       	{ $$ = exp3(a("-"), $1, $3); }
 | '-' exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
-| '(' exp ')'					{ $$ = $2; }
 
-| '[' list ']'				{ $$ = $2; }
+| exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
+| exp single exp			{ $$ = exp3($2, $1, $3); }
+| single single					{ $$ = _exp2($1, $2); }
+| exp '>' exp					{ $$ = _exp2($1, $3); }
 ;
 
 list:

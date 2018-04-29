@@ -1,3 +1,17 @@
+local socket = require 'socket'
+
+function log(...)
+	local t = {...}
+	local r = {}
+	for i,v in ipairs(t) do
+		r[#r+1] = tostring(v)
+		r[#r+1] = '\t'
+	end
+	r[#r] = '\n'
+	local s = table.concat(r)
+	io.stderr:write(s)
+end
+
 function file(name, data)
 	if not data then
 		local f = io.open(name, 'r')
@@ -10,6 +24,10 @@ function file(name, data)
 		f:write(data)
 		f:close()
 	end
+end
+
+function slaap(s)
+	socket.select(nil, nil, s)
 end
 
 function ls(dir)

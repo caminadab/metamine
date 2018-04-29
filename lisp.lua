@@ -6,6 +6,7 @@ local function unparse_atom(atom)
 end
 
 local function unparse_len(sexp)
+	if type(sexp) == 'number' then sexp = tostring(sexp) end
   local len
   if atom(sexp) then
     len = #unparse_atom(sexp)
@@ -26,6 +27,9 @@ function exp(sexp)
 end
 
 local function unparse_work(sexpr, maxlen, tabs, res)
+	if type(sexpr) == 'number' then
+		sexpr = tostring(sexpr)
+	end
   tabs = tabs or 0
   res = res or {}
   if atom(sexpr) then
