@@ -2,6 +2,9 @@ links = [5+toetsRechts-toetsLinks,toetsOmhoog]
 rechts = [15,0]
 bal = [10,10]
 
+linksX = links.0
+linksY = links.1
+
 linksX / 20 = linksSchermX / 1280
 linksY / 20 = linksSchermY / 1024
 

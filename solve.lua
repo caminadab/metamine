@@ -97,8 +97,10 @@ function eqsolve(eq,t)
 	log('OPLOSSEN',unlisp(eq))
 	for var in spairs(varset(eq)) do
 		local exp = rewrite(eq,var)
-		log(var..' := '..unlisp(exp))
-		t[#t+1] = {':=', var, exp}
+		if exp then
+			log(var..' := '..unlisp(exp))
+			t[#t+1] = {':=', var, exp}
+		end
 	end
 end
 
@@ -121,7 +123,7 @@ for i,eq in spairs(sas) do
 	eqsolve(eq,ass)
 end
 for i,as in ipairs(ass) do
-	print(unlisp(as))
+	log(unlisp(as))
 end
 
 for i,as in ipairs(ass) do
@@ -132,16 +134,19 @@ end
 
 -- ass -> flow
 function solve(ass,val)
+	log('FLOW GENEREREN')
 	local old = {}
 	local todo = {val}
 	local flow = {}
+	local done = {}
 
 	while #todo > 0 do
 		local name = todo[#todo]
 		todo[#todo] = nil
 		log('onderzoeken',name)
+		old[name] = true
 
-		local exps = dep[name]
+		local exps = dep[name] or {}
 		log(#exps .. ' mogelijkheden')
 
 		-- vind geldig systeem
@@ -164,12 +169,15 @@ function solve(ass,val)
 		if good then
 			flow[#flow+1] = {':=', name, good}
 			log('goed:',unlisp(flow[#flow]))
+			done[name] = true
 			for to in pairs(varset(good)) do
-				if not old[to] then
+				if not old[to] and not done[to] then
 					todo[#todo+1] = to
 					old[to] = true
 				end
 			end
+		else
+			log('GEEN OPLOSSING GEVONDEN VOOR '..name)
 		end
 	end
 

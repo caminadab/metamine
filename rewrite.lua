@@ -60,7 +60,7 @@ function rewrite(eq,name)
 				if out == 1 then eq0 = {'=', b, {'/', a, x}} end -- b = a / x
 				if out == 2 then eq0 = {'=', x, {'/', a, b}} end -- x = a / b
 			else
-				log('onherkende op',f)
+				log('onherkend symbool op',f)
 				return false -- kan operator niet oplossen
 			end
 		end
