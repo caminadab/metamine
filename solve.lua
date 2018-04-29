@@ -74,24 +74,6 @@ function resolve(eqs,name,skip)
 	return r
 end
 
-function putdeps(sas,un,dep,todo)
-	if not dep[un] then
-		if atom(un) then
-			sym = resolve(sas,un,dep)
-			if sym then
-				dep[un] = sym
-				todo[sym] = true
-			else
-				--print('unresolvable '..un)
-			end
-		else
-			for i,sub in ipairs(un) do
-				putdeps(sas,sub,dep,todo)
-			end
-		end
-	end
-end
-
 function eqsolve(eq,t)
 	local t = t or {}
 	log('OPLOSSEN',unlisp(eq))
@@ -104,37 +86,84 @@ function eqsolve(eq,t)
 	end
 end
 
--- resolve equations
---[[
-dep = {}
-todo = {['stdout'] = true}
-while next(todo) do
-	todo1 = {}
-	--io.write('TODO: '); for k in pairs(todo) do io.write(unlisp(k), ' ') end; io.write('\n')
-	for un in spairs(todo) do
-		putdeps(sas,un,dep,todo1)
+-- officieuze graaf!
+-- graaf = { node }
+-- node = (from: {node}, to: {node}, name, exp)
+function ass2graph(ass)
+	-- init
+	local p = {}
+	for n in pairs(ass) do
+		p[n] = p[n] or {to={},from={},name=n}
 	end
-	todo = todo1
-end
-]]
-dep = {}
-ass = {}
-for i,eq in spairs(sas) do
-	eqsolve(eq,ass)
-end
-for i,as in ipairs(ass) do
-	log(unlisp(as))
+	return p
 end
 
-for i,as in ipairs(ass) do
-	local n,v = as[2],as[3]
-	dep[n] = dep[n] or {}
-	table.insert(dep[n], v)
+function loggraph(graph)
+	for n,v in spairs(graph) do
+		io.write(n, ' -> ')
+		for w in spairs(v.to) do
+			io.write(w, ' ')
+		end
+		io.write('\n')
+	end
 end
+
+function hascycles(graph)
+	local index = 1
+	local s = {}
+	local strong = {}
+	local cycle = false
+
+	function strongconnect(v)
+		v.index = index
+		v.lowlink = index
+		index = index + 1
+		s[#s+1] = v
+		v.onstack = true
+
+		for n,w in pairs(v.to) do
+			if not w.index then
+				strongconnect(w)
+				v.lowlink = math.min(v.lowlink, w.lowlink)
+			elseif w.onstack then
+				v.lowlink = math.min(v.lowlink, w.index)
+			end
+		end
+
+		if v.lowlink == v.index then
+			local st = {}
+			local w
+			repeat
+				w = s[#s]
+				--log('STACK',unlisp(s))
+				s[#s] = nil
+				w.onstack = false
+				st[#st+1] = w.name
+			until w == v
+			if #st > 1 then
+				cycle = true
+			end
+		end
+	end
+
+	for n,v in pairs(graph) do
+		v.index,v.lowlink,v.onstack = nil,nil,false
+	end
+
+	for n,v in pairs(graph) do
+		if not v.index then
+			strongconnect(v)
+		end
+	end
+	
+	return cycle
+end
+
 
 -- ass -> flow
 function solve(ass,val)
 	log('FLOW GENEREREN')
+	local graph = ass2graph(ass)
 	local old = {}
 	local todo = {val}
 	local flow = {}
@@ -143,42 +172,49 @@ function solve(ass,val)
 	while #todo > 0 do
 		local name = todo[#todo]
 		todo[#todo] = nil
-		log('onderzoeken',name)
-		old[name] = true
 
 		local exps = dep[name] or {}
 		log(#exps .. ' mogelijkheden')
 
 		-- vind geldig systeem
-		local good
+		local ok
+		local edges = {}
 		for i,exp in ipairs(exps) do
-			local ok = true
 			for v in pairs(varset(exp)) do
-				if old[v] or v == name then
-					ok = false
-					log('fout:',unlisp(v))
-					break
+				if graph[v] and not graph[v].to[name] then
+					edges[#edges+1] = {v,name}
+					graph[name].from[v] = graph[v]
+					graph[v].to[name] = graph[name]
 				end
 			end
-			if ok then
-				good = exp
+			local y = hascycles(graph)
+			if not y then
+				ok = exp
 				break
+			else
+				log('CYCLES HOOR')
+				-- remove edges
+				for i,edge in ipairs(edges) do
+					local from,to = edge[1],edge[2]
+					graph[from].to[to] = nil
+					graph[to].from[from] = nil
+				end
 			end
 		end
 
-		if good then
-			flow[#flow+1] = {':=', name, good}
+		if ok then
+			flow[#flow+1] = {':=', name, ok}
 			log('goed:',unlisp(flow[#flow]))
-			done[name] = true
-			for to in pairs(varset(good)) do
-				if not old[to] and not done[to] then
+			for to in pairs(varset(ok)) do
+				if not done[to] then
 					todo[#todo+1] = to
-					old[to] = true
+					done[to] = true
 				end
 			end
 		else
 			log('GEEN OPLOSSING GEVONDEN VOOR '..name)
 		end
+		--loggraph(graph)
 	end
 
 	local flow = reverse(flow)
@@ -289,6 +325,22 @@ function printflow(proc)
 		end
 		log('\n')
 	end
+end
+
+-- resolve equations
+dep = {}
+ass = {}
+for i,eq in spairs(sas) do
+	eqsolve(eq,ass)
+end
+for i,as in ipairs(ass) do
+	log(unlisp(as))
+end
+
+for i,as in ipairs(ass) do
+	local n,v = as[2],as[3]
+	dep[n] = dep[n] or {}
+	table.insert(dep[n], v)
 end
 
 
