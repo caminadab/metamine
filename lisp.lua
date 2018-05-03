@@ -20,10 +20,10 @@ local function unparse_len(sexp)
 end
 
 function atom(sexp)
-	return type(sexp) == 'string'
+	return type(sexp) ~= 'table'
 end
 function exp(sexp)
-	return type(sexp) ~= 'string'
+	return type(sexp) == 'table'
 end
 
 local function unparse_work(sexpr, maxlen, tabs, res)

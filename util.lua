@@ -3,6 +3,7 @@ local socket = require 'socket'
 function log(...)
 	local t = {...}
 	local r = {}
+	if #t == 0 then io.stderr:write('\n'); return end
 	for i,v in ipairs(t) do
 		r[#r+1] = tostring(v)
 		r[#r+1] = '\t'

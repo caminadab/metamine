@@ -59,6 +59,11 @@ function rewrite(eq,name)
 				if out == 0 then eq0 = {'=', a, {'*', x, b}} end -- a = x * b
 				if out == 1 then eq0 = {'=', b, {'/', a, x}} end -- b = a / x
 				if out == 2 then eq0 = {'=', x, {'/', a, b}} end -- x = a / b
+			elseif f == '^' then
+				-- x = a ^ b
+				if out == 0 then eq0 = {'=', a, {'^', x, {'/', 1, b}}} end -- a = x ^ (1 / a)
+				if out == 1 then eq0 = {'=', b, {'_', a, x}} end -- b = a _ x
+				if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			else
 				log('onherkend symbool op',f)
 				return false -- kan operator niet oplossen
@@ -84,6 +89,7 @@ tests = {
 	{'(= c (+ a b))', 'a', '(- c b)'},
 	{'(= 6 (* a 3))', 'a', '(/ 6 3)'},
 	{'(= b (* (/ a 2) c))', 'a', '(* (/ b c) 2)'},
+	{'(= c (+ (* a 2) (* b 2)) c)', 'a', '(/ (- c (* b 2)) 2)'}, -- c = a * 2 + b * 2. a?
 }
 
 for i,test in ipairs(tests) do

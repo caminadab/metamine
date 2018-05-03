@@ -3,8 +3,6 @@ require 'lisp'
 require 'func'
 require 'rewrite'
 
-local sas = lisp(io.read('*a'))
-
 local colors = {
 	constant = color.green,
 	['in'] = color.cyan,
@@ -160,7 +158,6 @@ end
 
 -- ass -> flow
 function solve(ass,val)
-	log('FLOW GENEREREN')
 	local graph = ass2graph(ass)
 	local old = {}
 	local todo = {val}
@@ -171,7 +168,7 @@ function solve(ass,val)
 		local name = todo[#todo]
 		todo[#todo] = nil
 
-		local exps = dep[name] or {}
+		local exps = ass[name] or {}
 		--log(#exps .. 'mogelijkheden')
 
 		-- vind geldig systeem
@@ -209,10 +206,7 @@ function solve(ass,val)
 					-- ververs
 					for i=1,#flow do
 						if flow[i][2] == to then
-							print('VERPLAATS')
 							local stat = flow[i]
-							print(i, #flow, unlisp(stat))
-							--table.insert(flow, #flow-2, stat)
 							local dep = table.remove(flow, i)
 							table.insert(flow, dep)
 							break
@@ -240,6 +234,12 @@ function solve(ass,val)
 			set[n] = true
 		end
 	end
+
+	log('# Solve: Ass -> Flow')
+	for i,v in ipairs(flow) do
+		log(v[2], ' := '..unlisp(v[3]))
+	end
+	log()
 		
 	return flow, {}
 end
@@ -314,10 +314,13 @@ function plan(proc)
 	if #sec > 1 then table.insert(blocks,sec) end
 	if #analog > 1 then table.insert(blocks,analog) end
 
+	log('# Plan: Ass -> Proc')
+	logproc(blocks)
+	log('')
 	return blocks
 end
 
-function printflow(proc)
+function logproc(proc)
 	for i,block in ipairs(proc) do
 		local tijd = block[1]
 		log(color.green..tijd..color.white)
@@ -332,22 +335,108 @@ function printflow(proc)
 end
 
 -- resolve equations
-dep = {}
-ass = {}
-for i,eq in spairs(sas) do
-	eqsolve(eq,ass)
+function ass(eqs)
+	local dep = {}
+	local ass = {}
+	for i,eq in spairs(eqs) do
+		eqsolve(eq,ass)
+	end
+
+	for i,as in ipairs(ass) do
+		local n,v = as[2],as[3]
+		dep[n] = dep[n] or {}
+		table.insert(dep[n], v)
+	end
+	return dep
 end
 
-for i,as in ipairs(ass) do
-	local n,v = as[2],as[3]
-	dep[n] = dep[n] or {}
-	table.insert(dep[n], v)
+-- type -> text
+function ttoa(v)
 end
 
+local arit = {
+	['^'] = true, ['_'] = true,
+	['*'] = true, ['/'] = true,
+	['+'] = true, ['-'] = true,
+}
 
-f,un = solve(dep, 'stdout')
+function approx(env,v)
+	if atom(v) then
+		if tonumber(v) then return tonumber(v)
+		elseif env[v] then return env[v]
+		else return 'int' end
+	else
+		local fn = v[1]
+		if fn == '[]' then
+			local r = {}
+			for i=2,#v do
+				r[i-1] = approx(env,v[i])
+			end
+			return r
+		end
+		if arit[fn] then
+			-- a = b
+			local a = approx(env,v[2])
+			local b = approx(env,v[3])
+			if type(a) == 'table' and type(b) == 'table' then
+				if #a ~= #b then
+					return 'error', 'table size mismatch'
+				end
+				local v = {}
+				for i=1,#a do
+					v[i] = approx(env,{fn, approx(a[i]), approx(b[i])})
+				end
+				return v
+			end
+			if type(a) == 'table' then
+				local v = {}
+				for i,v in ipairs(a) do
+					v[i] = approx(env,{fn,a[i],b})
+				end
+				return v
+			end
+			if type(b) == 'table' then
+				local v = {}
+				for i,v in ipairs(b) do
+					v[i] = approx(env,{fn,a,b[i]})
+				end
+				return v
+			end
+			
+			-- actueel !! L.O.L.
+			if a == 'int' or b == 'int' then
+				return 'int'
+			end
+			if tonumber(a) and tonumber(b) then
+				return func[fn](tonumber(a),tonumber(b))
+			end
+			do
+				log('FOUT!', unlisp(a), unlisp(b))
+			end
+		end
+	end
+end
+
+function analyze(f)
+	log('# Analyze')
+	local env = {}
+	for i,stat in pairs(f) do
+		local name,exp = stat[2],stat[3]
+		local type = approx(env,exp)
+		if not type then
+			error('KON TYPE NIET DEDUCEREN VAN '..unlisp(exp))
+		end
+		env[name] = type
+		log(name..' := '..unlisp(type))
+	end
+	log()
+end
+
+eqs = lisp(io.read('*a'))
+as = ass(eqs)
+f,un = solve(as, 'stdout')
+types = analyze(f)
 p = plan(f)
-printflow(p)
 print(unlisp(p))
 
 for i,un in ipairs(un) do
