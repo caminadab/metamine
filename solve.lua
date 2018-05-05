@@ -4,7 +4,7 @@ require 'func'
 require 'rewrite'
 
 local colors = {
-	constant = color.green,
+	init = color.green,
 	['in'] = color.cyan,
 	out = color.red,
 	name = color.purple,
@@ -77,7 +77,6 @@ function eqsolve(eq,t)
 	for var in spairs(varset(eq)) do
 		local exp = rewrite(eq,var)
 		if exp then
-			--log(var..' := '..unlisp(exp))
 			t[#t+1] = {':=', var, exp}
 		end
 	end
@@ -244,7 +243,7 @@ function solve(ass,val)
 	return flow, {}
 end
 
-const = {
+init = {
 	['*'] = true,
 	['+'] = true,
 	['*'] = true,
@@ -267,7 +266,7 @@ sec = {
 	['toetsOmlaag'] = true,
 }
 	
-function plan(proc)
+function Plan(proc)
 	-- start
 	for i,v in ipairs(proc) do
 		v.tijd = '?'
@@ -286,7 +285,7 @@ function plan(proc)
 		x = var(v)
 
 		-- logica
-		local t = 'const'
+		local t = 'init'
 		for name in pairs(varset(x)) do
 			if sec[name] or tijd[name] == 'sec' then
 				t = 'sec'
@@ -298,11 +297,11 @@ function plan(proc)
 	end
 
 	-- sorteer
-	local const,sec,analog = {'const'},{'sec'},{'analog'}
+	local init,sec,analog = {'init'},{'sec'},{'analog'}
 	local blocks = {}
 	for i,block in ipairs(proc) do
-		if block.tijd == 'const' then
-			const[#const+1] = block
+		if block.tijd == 'init' then
+			init[#init+1] = block
 		elseif block.tijd == 'sec' then
 			sec[#sec+1] = block
 		else
@@ -310,13 +309,54 @@ function plan(proc)
 			analog[#analog+1] = block
 		end
 	end
-	if #const > 1 then table.insert(blocks,const) end
+	if #init > 1 then table.insert(blocks,init) end
 	if #sec > 1 then table.insert(blocks,sec) end
 	if #analog > 1 then table.insert(blocks,analog) end
 
 	log('# Plan: Ass -> Proc')
 	logproc(blocks)
 	log('')
+	return blocks
+end
+
+-- negeer tijd
+function plan(proc)
+	local dim,loop = dim(proc)
+
+	log('# Dimensionaliteit')
+	for n,v in spairs(loop) do
+		log('dim '..n,':= '..unlisp(v)..' **'..dim[n])
+	end
+	log()
+
+	-- dim -> block
+	local blocks = {}
+	local prev
+	local block = {}
+	for i,v in ipairs(proc) do
+		local name,exp = v[2],v[3]
+		local dim,loop = dim[name],loop[name] or {}
+		if unlisp(prev) ~= unlisp(loop) then
+			if #block > 0 then blocks[#blocks+1] = block end
+			prev = loop
+			if #loop > 0 and exp[1] ~= '||' and exp[1] ~= '[]' then
+				block = {{'loop', table.unpack(loop)}}
+			else
+				block = {'init'}
+			end
+		end
+		block[#block+1] = v
+	end
+	if #block > 0 then blocks[#blocks+1] = block end
+
+	log('# Plan')
+	for i,block in ipairs(blocks) do
+		for i,stat in ipairs(block) do
+			log(unlisp(stat))
+		end
+		log()
+	end
+	log()
 	return blocks
 end
 
@@ -426,33 +466,72 @@ local fndim = {
 }
 
 -- dimensionaliteit
-function dim(env,exp)
+function dimrec(env,exp)
 	if atom(exp) then
-		return env[exp] or 0
+		return env[exp] or 0, 0
 	else
 		local d = fndim[exp[1]]
 		if not d then log('ONGELDIGE FUNCTIE '..d) end
 		local m = 0
 		for i=2,#exp do
-			m = math.max(m,dim(env,exp[i]))
+			m = math.max(m,dimrec(env,exp[i]))
 		end
-		return m + d
+		return d + m, d
 	end
 end
 
-function analyze(f)
-	log('# Analyze')
+function Dim(f)
+	log('# Dimensionaliteit')
 	local env = {}
+	local deltas = {}
 	for i,stat in pairs(f) do
 		local name,exp = stat[2],stat[3]
-		local d = dim(env,exp)
-		if not d then
+		local dim,delta = dimrec(env,exp)
+		if not dim then
 			error('KON DIMENSIONALITEIT NIET DEDUCEREN VAN '..unlisp(exp))
 		end
-		env[name] = d
-		log(name..' := [['..unlisp(d)..']]')
+		env[name] = dim
+		deltas[name] = delta
+		log('dim '..name,':= '..dim..' (+'..delta..')')
 	end
 	log()
+	return env, delta
+end
+
+function dim(asm)
+	local dim,loop = {},{}
+	for i,as in ipairs(asm) do
+		local name,exp = as[2],as[3]
+		local dim0 = 0
+		local loop0 = {}
+		if atom(exp) then
+			dim0,loop0 = dim[exp],loop[exp]
+		end
+		-- vorige
+		for i=1,#exp do
+			local arg = exp[i]
+			--log('arg', arg, dim[arg])
+			if dim[arg] and dim[arg] > 0 then
+				dim0 = dim[arg]
+
+				--loop0[#loop0+1] = arg
+				loop0[1] = arg
+				for i,v in ipairs(loop[arg]) do
+					--loop0[#loop0+1] = v
+				end
+
+			end
+		end
+		-- zelf
+		if exp[1] == '[]' then
+			--dim[#dim+1] = name
+			dim0 = dim0 + 1
+		elseif exp[1] == 'som' then
+			dim0 = dim0 - 1
+		end
+		dim[name],loop[name] = dim0,loop0
+	end
+	return dim,loop
 end
 
 -- gegeven een (benoemde) expressie
@@ -503,7 +582,6 @@ eqs = lisp(io.read('*a'))
 as = ass(eqs)
 flow,un = solve(as, 'stdout')
 asm = unravel(flow)
-types = analyze(asm)
 plan = plan(asm)
 print(unlisp(plan))
 

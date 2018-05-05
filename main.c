@@ -10,6 +10,7 @@ node* a(char* t);
 extern node* yylval;
 
 #define NUM 258
+//#define CAT 300
 
 void yyerror (char const * s) {
 	fprintf(stderr, "%s\n", s);
@@ -50,6 +51,16 @@ int yylex (void) {
 		return 0;
 
 	// token
+	/*if (c == '|') {
+		int c = getchar();
+		if (c == '|') {
+			yylval = a("||");
+			return CAT;
+		} else {
+			ungetc(c,stdin);
+		}
+	}*/
+
 	token[0] = c;
 	token[1] = 0;
 	yylval = a(token);

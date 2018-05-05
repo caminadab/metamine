@@ -11,7 +11,7 @@ local fn = {
 	['^'] = function(a,b) return a ^ b end;
 	['[]'] = function(...) return table.pack(...) end;
 
-	['~'] = function(a,b)
+	['||'] = function(a,b)
 		local t = {}
 		for i,v in ipairs(a) do t[#t+1] = v end
 		for i,v in ipairs(b) do t[#t+1] = v end
@@ -80,14 +80,35 @@ end
 function eval(proc)
 	local env = {}
 	for i,block in ipairs(proc) do
-		if block[1] == 'const' then
-			evalblock(env,block)
+		local header = block[1]
+		if header == 'init' then
+			local env0 = evalblock(env,block)
+			for k,v in pairs(env0) do env[k] = v end
+		elseif not atom(header) and header[1] == 'loop' then
+			local name = header[2]
+			local list = env[name]
+			local env1 = {}
+			if not list then error('kan niet loopen over '..header[2]) end
+			for i,el in ipairs(list) do
+				env[name] = el
+				local env0 = evalblock(env,block)
+				for k,v in pairs(env0) do
+					env1[k] = env1[k] or {}
+					env1[k][#env1[k]+1] = v
+				end
+			end
+			for k,v in pairs(env1) do
+				env[k] = v
+				log('env',k,unlisp(v))
+			end
 		elseif block[1] == 'sec' then
 			for i=1,10 do
 				slaap(1)
 				log('#'..i)
 				evalblock(env,block)
 			end
+		else
+			error('hoe kan ik '..unlisp(block)..' evalueren?')
 		end
 	end
 	return env.stdout
@@ -103,12 +124,14 @@ function array(block,off)
 end
 
 function evalblock(env,block)
+	local env = copy(env)
+	local env0 = {}
 	for stat in array(block,2) do
 		local name,val = stat[2],stat[3]
-		env[name] = eval0(env,val)
-		log(name,':=',unlisp(val),' : '..unlisp(env[name]))
+		env0[name] = eval0(env,val)
+		env[name] = env0[name]
 	end
-	return env
+	return env0
 end
 
 function equals(a,b)
