@@ -1,5 +1,3 @@
-local socket = require 'socket'
-
 function log(...)
 	local t = {...}
 	local r = {}
@@ -25,10 +23,6 @@ function file(name, data)
 		f:write(data)
 		f:close()
 	end
-end
-
-function slaap(s)
-	socket.select(nil, nil, s)
 end
 
 function ls(dir)
