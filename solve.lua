@@ -320,7 +320,7 @@ function Plan(proc)
 end
 
 -- negeer tijd
-function plan(proc)
+function plan2(proc)
 	local dim,loop = dim(proc)
 
 	log('# Dimensionaliteit')
@@ -357,6 +357,38 @@ function plan(proc)
 		log()
 	end
 	log()
+	return blocks
+end
+
+function plan(proc)
+	local blocks = {}
+	local prev
+	local dims,dodims = dim(proc)
+
+	for i,v in ipairs(proc) do
+		local name,exp = v[2],v[3]
+		-- nieuw blok
+		if dodims[name] ~= prev then
+			blocks[#blocks+1] = {{'dim',dodims[name]}}
+			prev = dodims[name]
+		end
+
+		-- wij
+		local block = blocks[#blocks]
+		block[#block+1] = v
+	end
+
+	log('# Plan')
+	for i,block in ipairs(blocks) do
+		log('dim '..block[1][2])
+		for i=2,#block do
+			local stat = block[i]
+			log(stat[2],':= '..unlisp(stat[3]))
+		end
+		log()
+	end
+	log()
+
 	return blocks
 end
 
@@ -498,7 +530,7 @@ function Dim(f)
 	return env, delta
 end
 
-function dim(asm)
+function dim0(asm)
 	local dim,loop = {},{}
 	for i,as in ipairs(asm) do
 		local name,exp = as[2],as[3]
@@ -532,6 +564,39 @@ function dim(asm)
 		dim[name],loop[name] = dim0,loop0
 	end
 	return dim,loop
+end
+
+function dim(asm)
+	local dims = {}
+	local dodims = {}
+	for i,as in ipairs(asm) do
+		local name,exp = as[2],as[3]
+		local fn = exp[1]
+		local dim,dodim = 0,0
+
+		-- echte dim
+		for i,v in ipairs(exp) do
+			if dims[v] and dims[v] > 0 then
+				dodim = 1
+				dim = 1
+			end
+		end
+
+		-- neppers
+		if fn == '||' then
+			dodim = 0
+			dim = 1
+		end
+		if fn == '[]' then
+			dodim = 0
+			dim = 1
+		end
+
+		--log('DIM',unlisp(exp),dim,dodim)
+
+		dims[name],dodims[name] = dim,dodim
+	end
+	return dims,dodims
 end
 
 -- gegeven een (benoemde) expressie

@@ -32,6 +32,14 @@ local fn = {
 		return r
 	end;
 
+	['herhaal'] = function(a,n) -- 10
+		local r = {}
+		for i=1,n do
+			r[i] = a
+		end
+		return r
+	end;
+
 	['split'] = function(a,b)
 		local r = {}
 		local t = {}
@@ -81,26 +89,46 @@ function eval(proc)
 	local env = {}
 	for i,block in ipairs(proc) do
 		local header = block[1]
-		if header == 'init' then
+		local dim = tonumber(header[2])
+
+		if dim == 0 then
 			local env0 = evalblock(env,block)
 			for k,v in pairs(env0) do env[k] = v end
-		elseif not atom(header) and header[1] == 'loop' then
-			local name = header[2]
-			local list = env[name]
-			local env1 = {}
-			if not list then error('kan niet loopen over '..header[2]) end
-			for i,el in ipairs(list) do
-				env[name] = el
-				local env0 = evalblock(env,block)
-				for k,v in pairs(env0) do
-					env1[k] = env1[k] or {}
-					env1[k][#env1[k]+1] = v
-				end
+
+		elseif dim == 1 then
+
+			-- laat ons gaan
+			for i=2,#block do
+				local stat = block[i]
+				local name,exp = stat[2],stat[3]
+				local res = {}
+				local index = 1
+				local done = false
+
+				repeat
+					local sub = {}
+					local any = false
+					for i,v in ipairs(exp) do
+						v = env[v] or v
+						if atom(v) then
+							sub[i] = v
+						else
+							if not v[index] then
+								done = true
+							end
+							any = true
+							sub[i] = v[index]
+						end
+					end
+					if not any then error('niet doorloopbaar') end
+					res[index] = eval0(env,sub)
+					index = index + 1
+				until done
+
+				env[name] = res
 			end
-			for k,v in pairs(env1) do
-				env[k] = v
-				log('env',k,unlisp(v))
-			end
+
+		-- tijd
 		elseif block[1] == 'sec' then
 			for i=1,10 do
 				slaap(1)
