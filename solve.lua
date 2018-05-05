@@ -487,7 +487,7 @@ function unravel(flow)
 	local asm = {}
 	for i,v in ipairs(flow) do
 		local name,exp = v[2],v[3]
-		g = unravelrec(exp,name,asm,g)
+		unravelrec(exp,name,asm)
 	end
 
 	log('# Unravel')
