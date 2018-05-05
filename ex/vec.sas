@@ -1,2 +1,5 @@
-stdout = a
-a = 2 * [30, 30, 30]
+hoi = [104,111,105]
+laag = hoi - 0
+hoog = hoi - 32
+
+stdout = hoog || laag

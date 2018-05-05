@@ -96,8 +96,9 @@
 %define api.value.type {node*}
 %token NUM
 %token NAME
-%token TO
+/*%token CAT 300	"||"*/
 %precedence NU
+/*%left CAT*/
 %left '>'
 %left '~'
 %left '-' '+'
@@ -136,6 +137,9 @@ exp:
 | exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
 | exp '-' exp       	{ $$ = exp3(a("-"), $1, $3); }
 | '-' exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
+
+/*| exp CAT exp       	{ $$ = exp3(a("||"), $1, $3); }*/
+| exp '|' '|' exp       	{ $$ = exp3(a("||"), $1, $4); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 | exp single exp			{ $$ = exp3($2, $1, $3); }
