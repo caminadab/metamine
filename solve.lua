@@ -417,27 +417,95 @@ function approx(env,v)
 	end
 end
 
+local fndim = {
+	['^'] = 0, ['_'] = 0,
+	['*'] = 0, ['/'] = 0,
+	['+'] = 0, ['-'] = 0,
+
+	['[]'] = 1, ['som'] = -1,
+}
+
+-- dimensionaliteit
+function dim(env,exp)
+	if atom(exp) then
+		return env[exp] or 0
+	else
+		local d = fndim[exp[1]]
+		if not d then log('ONGELDIGE FUNCTIE '..d) end
+		local m = 0
+		for i=2,#exp do
+			m = math.max(m,dim(env,exp[i]))
+		end
+		return m + d
+	end
+end
+
 function analyze(f)
 	log('# Analyze')
 	local env = {}
 	for i,stat in pairs(f) do
 		local name,exp = stat[2],stat[3]
-		local type = approx(env,exp)
-		if not type then
-			error('KON TYPE NIET DEDUCEREN VAN '..unlisp(exp))
+		local d = dim(env,exp)
+		if not d then
+			error('KON DIMENSIONALITEIT NIET DEDUCEREN VAN '..unlisp(exp))
 		end
-		env[name] = type
-		log(name..' := '..unlisp(type))
+		env[name] = d
+		log(name..' := [['..unlisp(d)..']]')
 	end
 	log()
 end
 
+-- gegeven een (benoemde) expressie
+-- voeg simpele ops aan asm toe
+-- zoals (+ 1 tijd0)
+function unravelrec(exp,name,asm,g)
+	local aname = name
+	if g then aname = name .. g end
+	local g = g or -1
+	g = g + 1
+	if atom(exp) then
+		asm[#asm+1] = {':=', aname, exp}
+	else
+		-- subs
+		local args = {}
+		for i,sub in ipairs(exp) do
+			if atom(sub) then
+				args[i] = sub
+			else
+				args[i] = name..g
+				g = unravelrec(sub,name,asm,g)
+			end
+		end
+		-- zelf
+		asm[#asm+1] = {':=', aname, args}
+	end
+	return g
+end
+
+-- [(:= name exp)] -> [(:= name0 fn)]
+function unravel(flow)
+	local asm = {}
+	for i,v in ipairs(flow) do
+		local name,exp = v[2],v[3]
+		g = unravelrec(exp,name,asm,g)
+	end
+
+	log('# Unravel')
+	for i,v in ipairs(asm) do
+		log(v[2],':= '..unlisp(v[3]))
+	end
+	log()
+
+	return asm
+end
+
 eqs = lisp(io.read('*a'))
 as = ass(eqs)
-f,un = solve(as, 'stdout')
-types = analyze(f)
-p = plan(f)
-print(unlisp(p))
+flow,un = solve(as, 'stdout')
+asm = unravel(flow)
+types = analyze(asm)
+plan = plan(asm)
+print(unlisp(plan))
 
 for i,un in ipairs(un) do
 	if string.upper(un) ~= un then
