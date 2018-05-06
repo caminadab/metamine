@@ -5,12 +5,13 @@ require 'util'
 local stdin
 local fn = {
 	['+'] = function(a,b) return a + b end;
-	['-'] = function(a,b) if b then return a - b else return a end end;
+	['-'] = function(a,b) if b then return a - b else return -a end end;
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
 	['[]'] = function(...) return table.pack(...) end;
 	['#'] = function(a) return #a end;
+	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
 	['..'] = function(a,b)
 		local r = {}
 		for i=a,b-1 do
@@ -40,12 +41,27 @@ local fn = {
 		return r
 	end;
 
+	['som'] = function(a)
+		local r = 0
+		for i,v in ipairs(a) do
+			r = r + v
+		end
+		return r
+	end;
+
 	['herhaal'] = function(a,n) -- 10
 		local r = {}
 		for i=1,n do
 			r[i] = a
 		end
 		return r
+	end;
+
+	['tekst'] = function(a)
+		return table.pack(string.byte(tostring(a),1,#tostring(a)))
+	end;
+	['getal'] = function(a)
+		return tonumber(string.char(table.unpack(a)))
 	end;
 
 	['split'] = function(a,b)

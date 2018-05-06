@@ -249,6 +249,7 @@ init = {
 	['-'] = true,
 	['/'] = true,
 	['^'] = true,
+	['='] = true,
 	
 	['.'] = true,
 
@@ -605,6 +606,14 @@ function dim(asm)
 			if fn == '..' then
 				dodim = 0
 				dim = 1
+			end
+			if fn == 'tekst' then
+				dodim = 0
+				dim = 1
+			end
+			if fn == 'som' then
+				dodim = 0
+				dim = 0
 			end
 			if fn == '#' then
 				dodim = 0
