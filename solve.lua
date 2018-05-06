@@ -164,8 +164,7 @@ function solve(ass,val)
 	local done = {}
 
 	while #todo > 0 do
-		local name = todo[#todo]
-		todo[#todo] = nil
+		local name = table.remove(todo, 1)
 
 		local exps = ass[name] or {}
 		--log(#exps .. 'mogelijkheden')
@@ -413,7 +412,7 @@ function ass(eqs)
 	for i,eq in spairs(eqs) do
 		eqsolve(eq,ass)
 	end
-
+	
 	for i,as in ipairs(ass) do
 		local n,v = as[2],as[3]
 		dep[n] = dep[n] or {}
@@ -567,32 +566,58 @@ function dim0(asm)
 end
 
 function dim(asm)
-	local dims = {}
+	local dims = {stdin = 1}
 	local dodims = {}
 	for i,as in ipairs(asm) do
 		local name,exp = as[2],as[3]
-		local fn = exp[1]
+
 		local dim,dodim = 0,0
 
-		-- echte dim
-		for i,v in ipairs(exp) do
-			if dims[v] and dims[v] > 0 then
-				dodim = 1
+		if atom(exp) then
+			dim = dims[exp] or 0
+			dodim = 0
+
+		else
+			local fn = exp[1]
+
+			-- echte dim
+			for i,v in ipairs(exp) do
+				if dims[v] and dims[v] > 0 then
+					dodim = 1
+					dim = 1
+				end
+			end
+
+			-- neppers
+			if dims[fn] == 1 then
+				if dims[exp[2]] == 1 then
+					dodim = 0
+					dim = 1
+				else
+					dodim = 0
+					dim = 0
+				end
+			end
+			if fn == '||' then
+				dodim = 0
+				dim = 1
+			end
+			if fn == '..' then
+				dodim = 0
+				dim = 1
+			end
+			if fn == '#' then
+				dodim = 0
+				dim = 0
+			end
+			if fn == '[]' then
+				if dodim == 1 then
+					error('geneste lijsten zijn nog niet ondersteund: '..name)
+				end
+				dodim = 0
 				dim = 1
 			end
 		end
-
-		-- neppers
-		if fn == '||' then
-			dodim = 0
-			dim = 1
-		end
-		if fn == '[]' then
-			dodim = 0
-			dim = 1
-		end
-
-		--log('DIM',unlisp(exp),dim,dodim)
 
 		dims[name],dodims[name] = dim,dodim
 	end
@@ -634,6 +659,7 @@ function unravel(flow)
 		unravelrec(exp,name,asm)
 	end
 
+	local log = function()end
 	log('# Unravel')
 	for i,v in ipairs(asm) do
 		log(v[2],':= '..unlisp(v[3]))
@@ -647,6 +673,9 @@ eqs = lisp(io.read('*a'))
 as = ass(eqs)
 flow,un = solve(as, 'stdout')
 asm = unravel(flow)
+if dim(asm).stdout ~= 1 then
+	error('stdout moet een lijst zijn: '..unlisp(dim(flow).stdout))
+end
 plan = plan(asm)
 print(unlisp(plan))
 

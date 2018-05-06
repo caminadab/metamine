@@ -10,6 +10,14 @@ local fn = {
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
 	['[]'] = function(...) return table.pack(...) end;
+	['#'] = function(a) return #a end;
+	['..'] = function(a,b)
+		local r = {}
+		for i=a,b-1 do
+			r[#r+1] = i
+		end
+		return r
+	end;
 
 	['||'] = function(a,b)
 		local t = {}
@@ -59,6 +67,9 @@ setmetatable(fn, {
 	__index = function(t,v)
 		if v == 'stdin' then
 			stdin = stdin or io.read('*a')
+			if type(stdin) == 'string' then
+				stdin = table.pack(string.byte(stdin))
+			end
 			return stdin
 		elseif v == 'tijd' then
 			return os.time()
@@ -76,8 +87,19 @@ function eval0(env,exp)
 		for i=1,#exp do
 			r[i] = eval0(env,exp[i])
 		end
+		if type(r[1]) == 'table' then
+			local x = {}
+			if type(r[2]) == 'number' then
+				x = r[1][r[2]+1]
+			else
+				for i,v in ipairs(r[2]) do
+					x[#x+1] = r[1][v+1]
+				end
+			end
+			return x
+		end
 		if type(r[1]) ~= 'function' then
-			error('geen functie: '..tostring(r[1]))
+			error('geen functie: '..tostring(r[1])..' '..unlisp(exp))
 		end
 		local t = {}
 		for i=2,#r do t[i-1] = r[i] end
@@ -86,14 +108,20 @@ function eval0(env,exp)
 end
 
 function eval(proc)
-	local env = {}
+	log('# Eval')
+	log()
+	local stdin = io.read('*a')
+	local env = {stdin = table.pack(string.byte(stdin,1,-1))}
 	for i,block in ipairs(proc) do
 		local header = block[1]
 		local dim = tonumber(header[2])
 
 		if dim == 0 then
 			local env0 = evalblock(env,block)
-			for k,v in pairs(env0) do env[k] = v end
+			for k,v in spairs(env0) do
+				env[k] = v
+			end
+			log()
 
 		elseif dim == 1 then
 
@@ -107,7 +135,6 @@ function eval(proc)
 
 				repeat
 					local sub = {}
-					local any = false
 					for i,v in ipairs(exp) do
 						v = env[v] or v
 						if atom(v) then
@@ -115,18 +142,22 @@ function eval(proc)
 						else
 							if not v[index] then
 								done = true
+							else
+								sub[i] = v[index]
 							end
-							any = true
-							sub[i] = v[index]
 						end
 					end
-					if not any then error('niet doorloopbaar') end
-					res[index] = eval0(env,sub)
-					index = index + 1
+
+					if not done then
+						res[index] = eval0(env,sub)
+						index = index + 1
+					end
 				until done
 
+				log('',name,':= '..unlisp(res))
 				env[name] = res
 			end
+			log()
 
 		-- tijd
 		elseif block[1] == 'sec' then
@@ -158,6 +189,7 @@ function evalblock(env,block)
 		local name,val = stat[2],stat[3]
 		env0[name] = eval0(env,val)
 		env[name] = env0[name]
+		log('',name,':= '..unlisp(env[name]))
 	end
 	return env0
 end

@@ -35,7 +35,7 @@ function rewrite(eq,name)
 			if contains(b,name) then out = 1; n = n + 1 end
 			if contains(x,name) then out = 2; n = n + 1 end
 			if n ~= 1 then
-				log('FOUT',unlisp(eq))
+				log('FOUT',unlisp(eq),name)
 				return false -- onoplosbaar
 			end
 
@@ -64,8 +64,14 @@ function rewrite(eq,name)
 				if out == 0 then eq0 = {'=', a, {'^', x, {'/', 1, b}}} end -- a = x ^ (1 / a)
 				if out == 1 then eq0 = {'=', b, {'_', a, x}} end -- b = a _ x
 				if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
+			elseif f == '||' then
+				-- x = a || b
+				-- a = x (0..(#x-#b))
+				if out == 0 then eq0 = {'=', a, {x, {'..', 0, {'-', {'#', x}, {'#',b}}}}} end
+				if out == 1 then eq0 = {'=', b, {x, {'..', {'#', a}, {'#', x}}}} end -- b = x (#a..#x)
+				if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
 			else
-				log('onherkend symbool op',f)
+				log('weet niet hoe te herschrijven '..f)
 				return false -- kan operator niet oplossen
 			end
 		end
@@ -74,6 +80,7 @@ function rewrite(eq,name)
 		if eq0 then
 			--log(unlisp(eq) .. ' -> '..unlisp(eq0))
 			eq = eq0
+			flip = false
 		end
 	end
 end
