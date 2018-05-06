@@ -27,6 +27,23 @@ function rewrite(eq,name)
 		if name == l then return r end
 		if name == r then return l end
 
+		if exp(l) and #l == 2 then
+			local f,a,x = l[1],l[2],r
+			local out
+			local n = 0
+			if contains(a,name) then out = 0; n = n + 1 end
+			if contains(x,name) then out = 1; n = n + 1 end
+			if n ~= 1 then
+				log('FOUT',unlisp(eq),name)
+				return false -- onoplosbaar
+			end
+
+			if f == '-' then
+				-- x = - a
+				if out == 0 then eq0 = {'=', a, {'-', x}} end -- a = - x
+				if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
+			end
+		end
 		if exp(l) and #l == 3 then
 			local f,a,b,x = l[1],l[2],l[3],r
 			local out
