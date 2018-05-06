@@ -74,4 +74,3 @@ int main(void) {
 	if (a) return a;
 	puts(")");
 }
-

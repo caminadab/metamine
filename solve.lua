@@ -234,8 +234,9 @@ function solve(ass,val)
 	end
 
 	log('# Solve: Ass -> Flow')
+	log()
 	for i,v in ipairs(flow) do
-		log(v[2], ' := '..unlisp(v[3]))
+		log('',v[2],' := '..unlisp(v[3]))
 	end
 	log()
 		
@@ -569,6 +570,8 @@ end
 function dim(asm)
 	local dims = {stdin = 1}
 	local dodims = {}
+
+	log('# Dim')
 	for i,as in ipairs(asm) do
 		local name,exp = as[2],as[3]
 
@@ -628,8 +631,10 @@ function dim(asm)
 			end
 		end
 
+		log('',name,' ** '..dim,'loop '..dodim)
 		dims[name],dodims[name] = dim,dodim
 	end
+	log()
 	return dims,dodims
 end
 

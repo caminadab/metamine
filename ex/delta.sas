@@ -17,5 +17,6 @@ links-snelheid = [xsp, ysp]
 
 links = links-start + links-snelheid * dt
 
+; uitvoer
 enter = [10]
 stdout = tekst(links 0) || enter || tekst(links 1) || enter
