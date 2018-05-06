@@ -5,11 +5,20 @@ require 'util'
 local stdin
 local fn = {
 	['+'] = function(a,b) return a + b end;
-	['-'] = function(a,b) if b then return a - b else return a end end;
+	['-'] = function(a,b) if b then return a - b else return -a end end;
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
 	['[]'] = function(...) return table.pack(...) end;
+	['#'] = function(a) return #a end;
+	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
+	['..'] = function(a,b)
+		local r = {}
+		for i=a,b-1 do
+			r[#r+1] = i
+		end
+		return r
+	end;
 
 	['||'] = function(a,b)
 		local t = {}
@@ -32,6 +41,29 @@ local fn = {
 		return r
 	end;
 
+	['som'] = function(a)
+		local r = 0
+		for i,v in ipairs(a) do
+			r = r + v
+		end
+		return r
+	end;
+
+	['herhaal'] = function(a,n) -- 10
+		local r = {}
+		for i=1,n do
+			r[i] = a
+		end
+		return r
+	end;
+
+	['tekst'] = function(a)
+		return table.pack(string.byte(tostring(a),1,#tostring(a)))
+	end;
+	['getal'] = function(a)
+		return tonumber(string.char(table.unpack(a)))
+	end;
+
 	['split'] = function(a,b)
 		local r = {}
 		local t = {}
@@ -51,6 +83,9 @@ setmetatable(fn, {
 	__index = function(t,v)
 		if v == 'stdin' then
 			stdin = stdin or io.read('*a')
+			if type(stdin) == 'string' then
+				stdin = table.pack(string.byte(stdin))
+			end
 			return stdin
 		elseif v == 'tijd' then
 			return os.time()
@@ -68,8 +103,19 @@ function eval0(env,exp)
 		for i=1,#exp do
 			r[i] = eval0(env,exp[i])
 		end
+		if type(r[1]) == 'table' then
+			local x = {}
+			if type(r[2]) == 'number' then
+				x = r[1][r[2]+1]
+			else
+				for i,v in ipairs(r[2]) do
+					x[#x+1] = r[1][v+1]
+				end
+			end
+			return x
+		end
 		if type(r[1]) ~= 'function' then
-			error('geen functie: '..tostring(r[1]))
+			error('geen functie: '..tostring(r[1])..' '..unlisp(exp))
 		end
 		local t = {}
 		for i=2,#r do t[i-1] = r[i] end
@@ -78,29 +124,58 @@ function eval0(env,exp)
 end
 
 function eval(proc)
-	local env = {}
+	log('# Eval')
+	log()
+	local stdin = io.read('*a')
+	local env = {stdin = table.pack(string.byte(stdin,1,-1))}
 	for i,block in ipairs(proc) do
 		local header = block[1]
-		if header == 'init' then
+		local dim = tonumber(header[2])
+
+		if dim == 0 then
 			local env0 = evalblock(env,block)
-			for k,v in pairs(env0) do env[k] = v end
-		elseif not atom(header) and header[1] == 'loop' then
-			local name = header[2]
-			local list = env[name]
-			local env1 = {}
-			if not list then error('kan niet loopen over '..header[2]) end
-			for i,el in ipairs(list) do
-				env[name] = el
-				local env0 = evalblock(env,block)
-				for k,v in pairs(env0) do
-					env1[k] = env1[k] or {}
-					env1[k][#env1[k]+1] = v
-				end
-			end
-			for k,v in pairs(env1) do
+			for k,v in spairs(env0) do
 				env[k] = v
-				log('env',k,unlisp(v))
 			end
+			log()
+
+		elseif dim == 1 then
+
+			-- laat ons gaan
+			for i=2,#block do
+				local stat = block[i]
+				local name,exp = stat[2],stat[3]
+				local res = {}
+				local index = 1
+				local done = false
+
+				repeat
+					local sub = {}
+					for i,v in ipairs(exp) do
+						v = env[v] or v
+						if atom(v) then
+							sub[i] = v
+						else
+							if not v[index] then
+								done = true
+							else
+								sub[i] = v[index]
+							end
+						end
+					end
+
+					if not done then
+						res[index] = eval0(env,sub)
+						index = index + 1
+					end
+				until done
+
+				log('',name,':= '..unlisp(res))
+				env[name] = res
+			end
+			log()
+
+		-- tijd
 		elseif block[1] == 'sec' then
 			for i=1,10 do
 				slaap(1)
@@ -130,6 +205,7 @@ function evalblock(env,block)
 		local name,val = stat[2],stat[3]
 		env0[name] = eval0(env,val)
 		env[name] = env0[name]
+		log('',name,':= '..unlisp(env[name]))
 	end
 	return env0
 end

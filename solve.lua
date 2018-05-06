@@ -164,8 +164,7 @@ function solve(ass,val)
 	local done = {}
 
 	while #todo > 0 do
-		local name = todo[#todo]
-		todo[#todo] = nil
+		local name = table.remove(todo, 1)
 
 		local exps = ass[name] or {}
 		--log(#exps .. 'mogelijkheden')
@@ -235,8 +234,9 @@ function solve(ass,val)
 	end
 
 	log('# Solve: Ass -> Flow')
+	log()
 	for i,v in ipairs(flow) do
-		log(v[2], ' := '..unlisp(v[3]))
+		log('',v[2],' := '..unlisp(v[3]))
 	end
 	log()
 		
@@ -250,6 +250,7 @@ init = {
 	['-'] = true,
 	['/'] = true,
 	['^'] = true,
+	['='] = true,
 	
 	['.'] = true,
 
@@ -320,7 +321,7 @@ function Plan(proc)
 end
 
 -- negeer tijd
-function plan(proc)
+function plan2(proc)
 	local dim,loop = dim(proc)
 
 	log('# Dimensionaliteit')
@@ -360,6 +361,38 @@ function plan(proc)
 	return blocks
 end
 
+function plan(proc)
+	local blocks = {}
+	local prev
+	local dims,dodims = dim(proc)
+
+	for i,v in ipairs(proc) do
+		local name,exp = v[2],v[3]
+		-- nieuw blok
+		if dodims[name] ~= prev then
+			blocks[#blocks+1] = {{'dim',dodims[name]}}
+			prev = dodims[name]
+		end
+
+		-- wij
+		local block = blocks[#blocks]
+		block[#block+1] = v
+	end
+
+	log('# Plan')
+	for i,block in ipairs(blocks) do
+		log('dim '..block[1][2])
+		for i=2,#block do
+			local stat = block[i]
+			log(stat[2],':= '..unlisp(stat[3]))
+		end
+		log()
+	end
+	log()
+
+	return blocks
+end
+
 function logproc(proc)
 	for i,block in ipairs(proc) do
 		local tijd = block[1]
@@ -381,7 +414,7 @@ function ass(eqs)
 	for i,eq in spairs(eqs) do
 		eqsolve(eq,ass)
 	end
-
+	
 	for i,as in ipairs(ass) do
 		local n,v = as[2],as[3]
 		dep[n] = dep[n] or {}
@@ -498,7 +531,7 @@ function Dim(f)
 	return env, delta
 end
 
-function dim(asm)
+function dim0(asm)
 	local dim,loop = {},{}
 	for i,as in ipairs(asm) do
 		local name,exp = as[2],as[3]
@@ -532,6 +565,77 @@ function dim(asm)
 		dim[name],loop[name] = dim0,loop0
 	end
 	return dim,loop
+end
+
+function dim(asm)
+	local dims = {stdin = 1}
+	local dodims = {}
+
+	log('# Dim')
+	for i,as in ipairs(asm) do
+		local name,exp = as[2],as[3]
+
+		local dim,dodim = 0,0
+
+		if atom(exp) then
+			dim = dims[exp] or 0
+			dodim = 0
+
+		else
+			local fn = exp[1]
+
+			-- echte dim
+			for i,v in ipairs(exp) do
+				if dims[v] and dims[v] > 0 then
+					dodim = 1
+					dim = 1
+				end
+			end
+
+			-- neppers
+			if dims[fn] == 1 then
+				if dims[exp[2]] == 1 then
+					dodim = 0
+					dim = 1
+				else
+					dodim = 0
+					dim = 0
+				end
+			end
+			if fn == '||' then
+				dodim = 0
+				dim = 1
+			end
+			if fn == '..' then
+				dodim = 0
+				dim = 1
+			end
+			if fn == 'tekst' then
+				dodim = 0
+				dim = 1
+			end
+			if fn == 'som' then
+				dodim = 0
+				dim = 0
+			end
+			if fn == '#' then
+				dodim = 0
+				dim = 0
+			end
+			if fn == '[]' then
+				if dodim == 1 then
+					error('geneste lijsten zijn nog niet ondersteund: '..name)
+				end
+				dodim = 0
+				dim = 1
+			end
+		end
+
+		log('',name,' ** '..dim,'loop '..dodim)
+		dims[name],dodims[name] = dim,dodim
+	end
+	log()
+	return dims,dodims
 end
 
 -- gegeven een (benoemde) expressie
@@ -569,6 +673,7 @@ function unravel(flow)
 		unravelrec(exp,name,asm)
 	end
 
+	local log = function()end
 	log('# Unravel')
 	for i,v in ipairs(asm) do
 		log(v[2],':= '..unlisp(v[3]))
@@ -582,6 +687,9 @@ eqs = lisp(io.read('*a'))
 as = ass(eqs)
 flow,un = solve(as, 'stdout')
 asm = unravel(flow)
+if dim(asm).stdout ~= 1 then
+	error('stdout moet een lijst zijn: '..unlisp(dim(flow).stdout))
+end
 plan = plan(asm)
 print(unlisp(plan))
 

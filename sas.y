@@ -99,7 +99,7 @@
 /*%token CAT 300	"||"*/
 %precedence NU
 /*%left CAT*/
-%left '>'
+/*%left '<' '=' '>'*/
 %left '~'
 %left '-' '+'
 %left '*' '/'
@@ -130,7 +130,7 @@ single:
 exp:
   NUM
 | single
-| exp '~' exp       	{ $$ = exp3(a("~"), $1, $3); }
+| exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
 | exp '/' exp       	{ $$ = exp3(a("/"), $1, $3); }
@@ -140,9 +140,10 @@ exp:
 
 /*| exp CAT exp       	{ $$ = exp3(a("||"), $1, $3); }*/
 | exp '|' '|' exp       	{ $$ = exp3(a("||"), $1, $4); }
+| exp '.' '.' exp       	{ $$ = exp3(a(".."), $1, $4); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
-| exp single exp			{ $$ = exp3($2, $1, $3); }
+/*| exp single exp			{ $$ = exp3($2, $1, $3); }*/
 | single single					{ $$ = _exp2($1, $2); }
 | exp '>' exp					{ $$ = _exp2($1, $3); }
 ;

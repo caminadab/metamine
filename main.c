@@ -17,7 +17,8 @@ void yyerror (char const * s) {
 }
 
 char token[0x100];
-int yylex (void) {
+
+int yylex(void) {
 	int c;
 
 	// wit overslaan
@@ -36,7 +37,7 @@ int yylex (void) {
 	// tokens
 	if (isalnum(c)) {
 		int i;
-		for (i = 0; i < 0x10 && isalnum(c); i++) {
+		for (i = 0; i < 0x10 && (isalnum(c) || c == '-'); i++) {
 			token[i] = c;
 			c = getchar();
 		}
@@ -73,4 +74,3 @@ int main(void) {
 	if (a) return a;
 	puts(")");
 }
-
