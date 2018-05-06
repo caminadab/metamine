@@ -44,8 +44,17 @@ function rewrite(eq,name)
 				if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			end
 		end
+		if exp(l) and l[1] == '[]' then
+			-- a = [x,b]
+			for i,el in ipairs(l) do
+				if contains(el,name) then
+					eq0 = {'=', el, {r, i-1-1}}
+					break
+				end
+			end
+		end
 		if exp(l) and #l == 3 then
-			local f,a,b,x = l[1],l[2],l[3],r
+			local x,f,a,b = r,l[1],l[2],l[3]
 			local out
 			local n = 0
 			if contains(a,name) then out = 0; n = n + 1 end
@@ -114,6 +123,8 @@ tests = {
 	{'(= 6 (* a 3))', 'a', '(/ 6 3)'},
 	{'(= b (* (/ a 2) c))', 'a', '(* (/ b c) 2)'},
 	{'(= c (+ (* a 2) (* b 2)) c)', 'a', '(/ (- c (* b 2)) 2)'}, -- c = a * 2 + b * 2. a?
+
+	{'(= a (- b))', 'b', '(- a)'},
 }
 
 for i,test in ipairs(tests) do

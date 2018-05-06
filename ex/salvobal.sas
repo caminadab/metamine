@@ -14,4 +14,4 @@ rechts / veld = rechtsScherm / scherm
 bal / veld = balScherm / scherm
 
 cirkels = [linksScherm, rechtsScherm, balScherm]
-stdout = cirkels
+stdout = cat cirkels
