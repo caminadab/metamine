@@ -32,7 +32,7 @@ xsp / beweeg-snelheid = [1,1,-1]
 ysp = - spring-snelheid + zwaartekracht
 links-snelheid = [xsp, ysp]
 
-links = links-start + links-snelheid * dt
+links = links-start + som links-snelheid * dt
 
 ; uitvoer
 enter = [10]

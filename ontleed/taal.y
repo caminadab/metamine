@@ -21,12 +21,13 @@
 	};
 	node nodes[0x1000];
 	int numnodes = 0;
+	node* wortel;
 
 	node* node_new() {
 		return &nodes[numnodes++];
 	}
 
-	void write_node(node* n) {
+	void print_node(node* n) {
 		if (n->exp) {
 			printf("(");
 			for (node* kid = n->first; kid; kid = kid->next) {
@@ -41,6 +42,25 @@
 		}
 	}
 
+	int write_node(node* n, char* out, int left) {
+		char* out0 = out;
+		if (n->exp) {
+			*out++ = '(';
+			for (node* kid = n->first; kid; kid = kid->next) {
+				out += write_node(kid, out, left);
+				if (kid->next)
+					*out++ = ' ';
+			}
+			*out++ = ')';
+		}
+		else {
+			int len = strlen(n->data);
+			memcpy(out, n->data, len);
+			out += len;
+		}
+		return out - out0;
+	}
+
 	node* a(char* t) {
 		node* n = node_new();
 		strcpy(&n->data, t);
@@ -48,8 +68,22 @@
 	}
 
 	node* append(node* exp, node* atom) {
-		exp->last->next = atom;
-		exp->last = atom;
+		if (exp->last) {
+			exp->last->next = atom;
+			exp->last = atom;
+		} else {
+			exp->first = atom;
+			exp->last = atom;
+		}
+		return exp;
+	}
+
+	node* exp0() {
+		node* n = node_new();
+		n->exp = true;
+		n->first = 0;
+		n->last = 0;
+		return n;
 	}
 
 	node* exp1(node* a) {
@@ -100,7 +134,6 @@
 %precedence NU
 /*%left CAT*/
 /*%left '<' '=' '>'*/
-%left '~'
 %left '-' '+'
 %left '*' '/'
 %precedence NEG
@@ -110,13 +143,9 @@
 %%
 
 input:
-  %empty
-| input line
-;
-
-line:
-  '\n'
-|	eq 	{ putchar('\t'); write_node($$); putchar('\n'); }
+  %empty							{ wortel = exp0(); $$ = wortel; }
+| input eq						{ $$ = append($$, $1); }
+| input '\n'
 ;
 
 eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
