@@ -27,21 +27,6 @@
 		return &nodes[numnodes++];
 	}
 
-	void print_node(node* n) {
-		if (n->exp) {
-			printf("(");
-			for (node* kid = n->first; kid; kid = kid->next) {
-				write_node(kid);
-				if (kid->next)
-					putchar(' ');
-			}
-			printf(")");
-		}
-		else {
-			printf("%s", n->data);
-		}
-	}
-
 	int write_node(node* n, char* out, int left) {
 		char* out0 = out;
 		if (n->exp) {
@@ -63,8 +48,23 @@
 
 	node* a(char* t) {
 		node* n = node_new();
-		strcpy(&n->data, t);
+		strcpy(n->data, t);
 		return n;
+	}
+
+	void print_node(node* n) {
+		if (n->exp) {
+			printf("(");
+			for (node* kid = n->first; kid; kid = kid->next) {
+				print_node(kid);
+				if (kid->next)
+					putchar(' ');
+			}
+			printf(")");
+		}
+		else {
+			printf("%s", n->data);
+		}
 	}
 
 	node* append(node* exp, node* atom) {
@@ -143,7 +143,7 @@
 %%
 
 input:
-  %empty							{ $$ = wortel = exp0(); /*$$ = wortel;*/ }
+  %empty							{ $$ = wortel = exp0(); }
 | input eq						{ $$ = append($1, $2); }
 | input '\n'					{ $$ = $1; }
 ;

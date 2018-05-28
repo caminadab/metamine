@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <unistd.h>
 #include <lua.h>
 #include <lauxlib.h>
 
@@ -23,9 +26,12 @@ void yyerror (char const * s) {
 	fprintf(stderr, "%s\n", s);
 }
 
+int write_node(node* n, char* out, int left);
+void yyparse();
+
 char token[0x100];
 char buf[0x1000];
-char* in;
+const char* in;
 
 int yylex(void) {
 	int c;
