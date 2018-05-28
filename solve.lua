@@ -10,43 +10,6 @@ local colors = {
 	name = color.purple,
 }
 
-function isvar(name)
-	if tonumber(name) then
-		return false
-	elseif string.upper(name) == name then
-		return false
-	end
-	return true
-end
-
-function var(exp,t)
-	t = t or {}
-	if atom(exp) then
-		if isvar(exp) then
-			t[#t+1] = exp
-		end
-	else
-		for i,s in ipairs(exp) do
-			var(s,t)
-		end
-	end
-	return t
-end
-
-function varset(exp,t)
-	local t = t or {}
-	if atom(exp) then
-		if isvar(exp) then
-			t[exp] = true
-		end
-	else
-		for i,s in ipairs(exp) do
-			varset(s,t)
-		end
-	end
-	return t
-end
-
 function contains(exp, name)
 	if atom(exp) then
 		return exp == name

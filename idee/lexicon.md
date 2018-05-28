@@ -1,7 +1,7 @@
 taal
 code
 
-cc: code compileren
+vertaal: code compileren
 ce: code evalueren
 
 bron

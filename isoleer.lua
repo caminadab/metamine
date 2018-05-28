@@ -12,7 +12,7 @@ function contains(exp, name)
 end
 
 -- rewrite (a + b = c, a) -> c - b
-function rewrite(eq,name)
+function isoleer(eq,name)
 	local flip = false
 	while true do
 		local eq0
@@ -105,7 +105,7 @@ function rewrite(eq,name)
 				if out == 1 then eq0 = {'=', b, {x, {'..', {'#', a}, {'#', x}}}} end -- b = x (#a..#x)
 				--if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
 			else
-				log('weet niet hoe te herschrijven '..f)
+				log('weet niet hoe te isoleren '..f)
 				return false -- kan operator niet oplossen
 			end
 		end
@@ -138,6 +138,6 @@ tests = {
 for i,test in ipairs(tests) do
 	local eq = L(test[1])
 	local name = L(test[2])
-	local r = rewrite(eq, name)
+	local r = isoleer(eq, name)
 	assert(U(r) == test[3], test[1]..' voor '..name .. ' was '..U(r)..' maar hoort '..test[3])
 end

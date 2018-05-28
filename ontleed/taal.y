@@ -23,6 +23,21 @@
 	int numnodes = 0;
 	node* wortel;
 
+	// fouten
+	struct fout {
+		int lijn;
+		char wat[0x1000];
+	};
+
+	int lijn;
+	int foutlen = 0;
+	struct fout fouten[0x10];
+
+	void fout(int lijn) {
+		struct fout fout = {lijn, "?"};
+		fouten[foutlen++] = fout;
+	}
+
 	node* node_new() {
 		return &nodes[numnodes++];
 	}
@@ -148,7 +163,10 @@ input:
 | input '\n'					{ $$ = $1; }
 ;
 
-eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
+eq:
+	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
+|	error								{ fout(lijn); }
+;
 
 single:
 	NUM

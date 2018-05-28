@@ -1,7 +1,10 @@
 #!/usr/bin/lua
 require 'util'
-require 'ontleed'
 require 'lisp'
+require 'func'
+
+require 'ontleed'
+require 'deduceer'
 
 -- argumenten
 local taal = 'nl'
@@ -28,15 +31,19 @@ for i=1,#args do
 	end
 end
 
-local alle = {}
-for i,v in ipairs(code) do
-	local code = file(v)
-	local boom = ontleed(code)
-	for i,v in ipairs(boom) do
-		alle[#alle+1] = v
-	end
+if #code == 0 then
+	print('geen invoer')
+	return
 end
 
-for k,v in ipairs(alle) do
-	print(k,unlisp(v))
-end
+
+-- lees in
+local code = map(code, file)
+code = table.concat(code, '\n')
+
+-- ontleed
+local feiten = ontleed(code)
+local feiten = deduceer(feiten)
+
+-- uitvoer
+file(doel, unlisp(feiten))
