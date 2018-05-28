@@ -1,5 +1,0 @@
-#!/bin/bash
-
-app=$(mktemp)
-cat $1 | ./parse | ./solve.lua > $app
-./eval.lua $app
