@@ -143,9 +143,9 @@
 %%
 
 input:
-  %empty							{ wortel = exp0(); $$ = wortel; }
-| input eq						{ $$ = append($$, $1); }
-| input '\n'
+  %empty							{ $$ = wortel = exp0(); /*$$ = wortel;*/ }
+| input eq						{ $$ = append($1, $2); }
+| input '\n'					{ $$ = $1; }
 ;
 
 eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
@@ -157,8 +157,7 @@ single:
 ;
 
 exp:
-  NUM
-| single
+	single
 | exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
