@@ -5,17 +5,13 @@ local function link(graaf,a,b)
 		error('niet toegevoegd')
 	end
 
-	--insert(graaf.randen, {a,b})
 	graaf.van[a][b] = true
 	graaf.naar[b][a] = true
 end
 
 local function ontlink(graaf,a,b)
-	graaf.van[a][b] = false
-	graaf.naar[b][a] =  false
-
-	if not next(graaf.van[a]) and not next(graaf.naar[a]) then graaf.punten[a] = false end
-	if not next(graaf.van[b]) and not next(graaf.naar[b]) then graaf.punten[b] = false end
+	graaf.van[a][b] = nil
+	graaf.naar[b][a] =  nil
 end
 
 local function voegtoe(graaf, a)
@@ -37,7 +33,7 @@ local function tekst(graaf)
 		else
 			t[#t+1] = ' -> '
 
-			for doel in pairs(graaf.van[bron]) do
+			for doel in spairs(graaf.van[bron]) do
 				t[#t+1] = doel
 				t[#t+1] = ' '
 			end
