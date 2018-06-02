@@ -1,9 +1,9 @@
-local function link(graaf,a,b)
-	graaf.punten[a] = true
-	graaf.punten[b] = true
+local remove = table.remove
 
-	graaf.van[a] = graaf.van[a] or {}
-	graaf.naar[b] = graaf.naar[b] or {}
+local function link(graaf,a,b)
+	if not graaf.punten[a] or not graaf.punten[b] then
+		error('niet toegevoegd')
+	end
 
 	--insert(graaf.randen, {a,b})
 	graaf.van[a][b] = true
@@ -18,58 +18,65 @@ local function ontlink(graaf,a,b)
 	if not next(graaf.van[b]) and not next(graaf.naar[b]) then graaf.punten[b] = false end
 end
 
+local function voegtoe(graaf, a)
+	graaf.punten[a] = true
+	graaf.van[a] = {}
+	graaf.naar[a] = {}
+end
+
 local function bevat(graaf,a,b)
 	return graaf.van[a] and graaf.van[a][b]
 end
 
-function hascycles(graph)
-	local index = 1
-	local s = {}
-	local strong = {}
-	local cycle = false
+local function tekst(graaf)
+	local t = {}
+	for bron in spairs(graaf.van) do
+		t[#t+1] = bron
+		if not next(graaf.van[bron]) then
+			t[#t+1] = '.'
+		else
+			t[#t+1] = ' -> '
 
-	function strongconnect(v)
-		v.index = index
-		v.lowlink = index
-		index = index + 1
-		s[#s+1] = v
-		v.onstack = true
+			for doel in pairs(graaf.van[bron]) do
+				t[#t+1] = doel
+				t[#t+1] = ' '
+			end
 
-		for n,w in pairs(v.to) do
-			if not w.index then
-				strongconnect(w)
-				v.lowlink = math.min(v.lowlink, w.lowlink)
-			elseif w.onstack then
-				v.lowlink = math.min(v.lowlink, w.index)
+		end
+		t[#t+1] = '\n'
+	end
+	return table.concat(t)
+end
+
+local function cyclisch(graaf)
+	local indices = {}
+	local index = 0
+	local nieuw = {}
+	
+	for punt in pairs(graaf.punten) do
+		if not next(graaf.naar[punt]) then
+			nieuw[#nieuw+1] = punt
+			indices[punt] = index
+			index = index + 1
+		end
+	end
+	if index == 0 then
+		return true
+	end
+
+	while #nieuw > 0 do
+		local bron = remove(nieuw, 1)
+		for doel in pairs(graaf.van[bron]) do
+			if indices[doel] and indices[doel] < indices[bron] then
+				return true
+			else
+				indices[doel] = indices[bron] + 1
+				nieuw[#nieuw+1] = doel
 			end
 		end
-
-		if v.lowlink == v.index then
-			local st = {}
-			local w
-			repeat
-				w = s[#s]
-				s[#s] = nil
-				w.onstack = false
-				st[#st+1] = w.name
-			until w == v
-			if #st > 1 then
-				cycle = true
-			end
-		end
 	end
 
-	for n,v in pairs(graph) do
-		v.index,v.lowlink,v.onstack = nil,nil,false
-	end
-
-	for n,v in pairs(graph) do
-			if not v.index then
-			strongconnect(v)
-		end
-	end
-
-	return cycle
+	return false
 end
 
 function graaf()
@@ -84,12 +91,25 @@ function graaf()
 		ontlink = ontlink,
 		cyclisch = cyclisch,
 		bevat = bevat,
+		voegtoe = voegtoe,
+		tekst = tekst,
 	}
 end
 
 -- test
 local a = graaf()
+a:voegtoe('a')
+a:voegtoe('b')
 a:link('a', 'b')
 assert(not a:cyclisch())
 a:link('b', 'a')
 assert(a:cyclisch())
+
+local b = graaf()
+b:voegtoe('a')
+b:voegtoe('b')
+b:voegtoe('c')
+b:link('a','b')
+b:link('b','c')
+b:link('c','b')
+assert(b:cyclisch())

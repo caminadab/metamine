@@ -58,7 +58,7 @@ function rangschik(waarden,naar)
 	local stroom = {}
 
 	for naam in pairs(waarden) do
-		graaf.punten[naam] = true
+		graaf:voegtoe(naam)
 	end
 
 	while #nieuw > 0 do
@@ -69,14 +69,19 @@ function rangschik(waarden,naar)
 		local ok
 		local hoeken = {}
 		for i,exp in ipairs(exps) do
-			for v in pairs(var(exp)) do
-				if graaf.punten[v] and not graaf:bevat(v,naam) then
-					hoeken[#hoeken+1] = {naam,v}
-					graaf:link(naam,v)
+			local cyc = false
+			for bron in spairs(var(exp)) do
+				if graaf:bevat(naam,bron) then
+					cyc = true
+				elseif not graaf.punten[bron] then
+					print('onherkende bron: '..bron)
+				else
+					hoeken[#hoeken+1] = {bron,naam}
+					graaf:link(bron,naam)
 				end
 			end
-			if not graaf:cyclisch() then
-				print('ACYCLISCH',naam,unlisp(setlijst(var(exp))))
+			if not cyc and not graaf:cyclisch() then
+				--print(graaf:tekst())
 				ok = exp
 				break
 			else
