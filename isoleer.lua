@@ -34,7 +34,6 @@ function isoleer(eq,name)
 			if contains(a,name) then out = 0; n = n + 1 end
 			if contains(x,name) then out = 1; n = n + 1 end
 			if n ~= 1 then
-				log('FOUT',unlisp(eq),name)
 				return false -- onoplosbaar
 			end
 

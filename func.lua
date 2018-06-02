@@ -5,10 +5,18 @@ function map(v, fn)
 	return r
 end
 
-function reverse(t)
+function keerom(t)
 	local r = {}
 	for i,v in ipairs(t) do
 		r[#t-i+1] = v
+	end
+	return r
+end
+
+function setlijst(set)
+	local r = {}
+	for k in spairs(set) do
+		r[#r+1] = k
 	end
 	return r
 end

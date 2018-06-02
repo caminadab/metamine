@@ -4,7 +4,8 @@ require 'lisp'
 require 'func'
 
 require 'ontleed'
-require 'deduceer'
+require 'noem'
+require 'rangschik'
 
 -- argumenten
 local taal = 'nl'
@@ -22,9 +23,14 @@ for i=1,#args do
 		doel = args[i+1] or doel
 		i = i + 1
 	elseif vlag == 'l' then
-		taal = string.lower(arg:sub(2,4))
+		taal = string.lower(arg:sub(3,5))
 		if taal == '' then taal = args[i+1] end
 		if not taal then taal = 'nl' end
+
+		if taal ~= 'nl' and taal ~= 'NL' then
+			print('onherkende taal '..taal)
+			return
+		end
 	else
 		-- code
 		code[#code+1] = arg
@@ -43,7 +49,10 @@ code = table.concat(code, '\n')
 
 -- ontleed
 local feiten = ontleed(code)
-local feiten = deduceer(feiten)
+local waarden = noem(feiten)
+local stroom = rangschik(waarden, 'stdout')
+
+print(unlisp(stroom))
 
 -- uitvoer
-file(doel, unlisp(feiten))
+file(doel, unlisp(stroom))

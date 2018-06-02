@@ -24,13 +24,17 @@ function var(exp,t)
 	return t
 end
 
-function deduceer(feiten)
+-- feiten -> (naam -> exp)
+function noem(feiten)
 	local r = {}
 	for i,feit in ipairs(feiten) do
 		for naam in spairs(var(feit)) do
 			local exp = isoleer(feit, naam)
 			if exp then
-				r[#r+1] = {'=', naam, exp}
+				r[naam] = r[naam] or {}
+				r[naam][#r[naam]+1] = exp
+			else
+				--print('kon niet oplossen voor '..naam)
 			end
 		end
 	end

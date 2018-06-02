@@ -1,5 +1,3 @@
-local socket = require 'socket'
-
 function log(...)
 	local t = {...}
 	local r = {}
