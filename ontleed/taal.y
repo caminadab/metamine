@@ -187,6 +187,7 @@ exp:
 /*| exp CAT exp       	{ $$ = exp3(a("||"), $1, $3); }*/
 | exp '|' '|' exp       	{ $$ = exp3(a("||"), $1, $4); }
 | exp '.' '.' exp       	{ $$ = exp3(a(".."), $1, $4); }
+| exp 'x' 'x' exp       	{ $$ = exp3(a("xx"), $1, $4); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 /*| exp single exp			{ $$ = exp3($2, $1, $3); }*/
