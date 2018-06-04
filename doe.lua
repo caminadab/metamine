@@ -1,8 +1,6 @@
-#!/usr/bin/lua5.2
 require 'lisp'
 require 'util'
 
-local stdin
 local fn = {
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
@@ -78,20 +76,6 @@ local fn = {
 		return r
 	end;
 }
-
-setmetatable(fn, {
-	__index = function(t,v)
-		if v == 'stdin' then
-			stdin = stdin or io.read('*a')
-			if type(stdin) == 'string' then
-				stdin = table.pack(string.byte(stdin))
-			end
-			return stdin
-		elseif v == 'tijd' then
-			return os.time()
-		end
-	end;
-})
 
 function eval0(env,exp)
 	if atom(exp) then
@@ -241,16 +225,13 @@ if test then
 	end
 end
 
--- a
-path = ...
-if path then
-	app = file(path)
-	proc = lisp(app)
-	v = eval(proc)
-
-	if not v then
-		error('geen uitvoer')
+function doe(stroom)
+	local env = {}
+	for i,noem in ipairs(stroom) do
+		local naam,exp = noem[2],noem[3]
+		env[naam] = eval0(env, exp)
 	end
-	if type(v) == 'table' then v = string.char(table.unpack(v)) end
-	io.write(v)
+	local uit = env['uit']
+	if type(uit) == 'table' then uit = string.char(table.unpack(uit)) end
+	return uit
 end

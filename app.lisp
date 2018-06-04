@@ -1,1 +1,1 @@
-((:= fotos ([] bal)))
+((:= uit (tekst 3)))

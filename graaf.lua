@@ -49,13 +49,14 @@ local function cyclisch(graaf)
 	local index = 0
 	local nieuw = {}
 	
-	for punt in pairs(graaf.punten) do
+	for punt in spairs(graaf.punten) do
 		if not next(graaf.naar[punt]) then
 			nieuw[#nieuw+1] = punt
 			indices[punt] = index
 			index = index + 1
 		end
 	end
+	print('NIEUW:',unlisp(nieuw))
 	if index == 0 then
 		return true
 	end

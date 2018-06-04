@@ -69,18 +69,11 @@ function rangschik(waarden,naar)
 		local ok
 		local hoeken = {}
 		for i,exp in ipairs(exps) do
-			local cyc = false
 			for bron in spairs(var(exp)) do
-				if graaf:bevat(naam,bron) then
-					cyc = true
-				elseif not graaf.punten[bron] then
-					print('onherkende bron: '..bron)
-				else
-					hoeken[#hoeken+1] = {bron,naam}
-					graaf:link(bron,naam)
-				end
+				hoeken[#hoeken+1] = {bron,naam}
+				graaf:link(bron,naam)
 			end
-			if not cyc and not graaf:cyclisch() then
+			if not graaf:cyclisch() then
 				--print(graaf:tekst())
 				ok = exp
 				break
@@ -111,7 +104,18 @@ function rangschik(waarden,naar)
 				end
 			end
 		else
-			print('Geen oplossing voor '..naam)
+			print('geen oplossing voor '..naam)
+			print('mogelijkheden:')
+			for i,exp in ipairs(exps) do
+				print(naam..' := '..unlisp(exp))
+			end
+			print('graaf:')
+			print(graaf:tekst())
+			print('overtredende hoeken:')
+			for i,hoek in ipairs(hoeken) do
+				print(hoek[1]..' -> '..hoek[2])
+			end
+			error('afbreken.')
 		end
 	end
 

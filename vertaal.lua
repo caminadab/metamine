@@ -6,12 +6,14 @@ require 'func'
 require 'ontleed'
 require 'noem'
 require 'rangschik'
+require 'doe'
 
 -- argumenten
 local taal = 'nl'
-local doel = 'app.lisp'
+local doel
 local code = {}
 local arch = 'amd64'
+local immediate = false
 
 local args = {...}
 for i=1,#args do
@@ -25,6 +27,8 @@ for i=1,#args do
 		i = i + 1
 	elseif vlag == 't' then
 		arch = string.lower(arg:sub(3))
+	elseif vlag == 'i' then
+		immediate = true
 	elseif vlag == 'l' then
 		taal = string.lower(arg:sub(3,5))
 		if taal == '' then taal = args[i+1] end
@@ -52,9 +56,19 @@ code = table.concat(code, '\n')
 -- ontleed
 local feiten = ontleed(code)
 local waarden = noem(feiten)
-local stroom = rangschik(waarden, 'fotos')
+local stroom = rangschik(waarden, 'uit')
+local uit 
 
-print(unlisp(stroom))
+if not immediate then
+	uit = unlisp(stroom)
+else
+	uit = unlisp(doe(stroom))
+end
 
 -- uitvoer
-file(doel, unlisp(stroom))
+if doel then
+	file(doel, unlisp(stroom))
+else
+	print(uit)
+end
+
