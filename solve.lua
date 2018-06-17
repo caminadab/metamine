@@ -10,43 +10,6 @@ local colors = {
 	name = color.purple,
 }
 
-function isvar(name)
-	if tonumber(name) then
-		return false
-	elseif string.upper(name) == name then
-		return false
-	end
-	return true
-end
-
-function var(exp,t)
-	t = t or {}
-	if atom(exp) then
-		if isvar(exp) then
-			t[#t+1] = exp
-		end
-	else
-		for i,s in ipairs(exp) do
-			var(s,t)
-		end
-	end
-	return t
-end
-
-function varset(exp,t)
-	local t = t or {}
-	if atom(exp) then
-		if isvar(exp) then
-			t[exp] = true
-		end
-	else
-		for i,s in ipairs(exp) do
-			varset(s,t)
-		end
-	end
-	return t
-end
-
 function contains(exp, name)
 	if atom(exp) then
 		return exp == name
@@ -103,57 +66,6 @@ function loggraph(graph)
 		io.write('\n')
 	end
 end
-
-function hascycles(graph)
-	local index = 1
-	local s = {}
-	local strong = {}
-	local cycle = false
-
-	function strongconnect(v)
-		v.index = index
-		v.lowlink = index
-		index = index + 1
-		s[#s+1] = v
-		v.onstack = true
-
-		for n,w in pairs(v.to) do
-			if not w.index then
-				strongconnect(w)
-				v.lowlink = math.min(v.lowlink, w.lowlink)
-			elseif w.onstack then
-				v.lowlink = math.min(v.lowlink, w.index)
-			end
-		end
-
-		if v.lowlink == v.index then
-			local st = {}
-			local w
-			repeat
-				w = s[#s]
-				s[#s] = nil
-				w.onstack = false
-				st[#st+1] = w.name
-			until w == v
-			if #st > 1 then
-				cycle = true
-			end
-		end
-	end
-
-	for n,v in pairs(graph) do
-		v.index,v.lowlink,v.onstack = nil,nil,false
-	end
-
-	for n,v in pairs(graph) do
-		if not v.index then
-			strongconnect(v)
-		end
-	end
-	
-	return cycle
-end
-
 
 -- ass -> flow
 function solve(ass,val)
@@ -636,51 +548,6 @@ function dim(asm)
 	end
 	log()
 	return dims,dodims
-end
-
--- gegeven een (benoemde) expressie
--- voeg simpele ops aan asm toe
--- zoals (+ 1 tijd0)
-function unravelrec(exp,name,asm,g)
-	local aname = name
-	if g then aname = name .. g end
-	local g = g or -1
-	g = g + 1
-	if atom(exp) then
-		asm[#asm+1] = {':=', aname, exp}
-	else
-		-- subs
-		local args = {}
-		for i,sub in ipairs(exp) do
-			if atom(sub) then
-				args[i] = sub
-			else
-				args[i] = name..g
-				g = unravelrec(sub,name,asm,g)
-			end
-		end
-		-- zelf
-		asm[#asm+1] = {':=', aname, args}
-	end
-	return g
-end
-
--- [(:= name exp)] -> [(:= name0 fn)]
-function unravel(flow)
-	local asm = {}
-	for i,v in ipairs(flow) do
-		local name,exp = v[2],v[3]
-		unravelrec(exp,name,asm)
-	end
-
-	local log = function()end
-	log('# Unravel')
-	for i,v in ipairs(asm) do
-		log(v[2],':= '..unlisp(v[3]))
-	end
-	log()
-
-	return asm
 end
 
 eqs = lisp(io.read('*a'))

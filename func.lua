@@ -1,14 +1,35 @@
 function map(v, fn)
 	local r = {}
 	for k,v in pairs(v) do r[k] = fn(v) end
-	for k,v in ipairs(v) do r[k] = fn(v) end
+	--for k,v in ipairs(v) do r[k] = fn(v) end
 	return r
 end
 
-function reverse(t)
+function keerom(t)
 	local r = {}
 	for i,v in ipairs(t) do
 		r[#t-i+1] = v
+	end
+	return r
+end
+
+function setlijst(set)
+	local r = {}
+	for k in spairs(set) do
+		r[#r+1] = k
+	end
+	return r
+end
+
+function cat(a,b)
+	local r = {}
+	for i,v in ipairs(a) do
+		for i,v in ipairs(v) do
+			r[#r+1] = v
+		end
+		if b then
+			r[#r+1] = b
+		end
 	end
 	return r
 end
@@ -29,18 +50,7 @@ func = {
 	end;
 
 	-- lib
-	['cat'] = function(a,b)
-		local r = {}
-		for i,v in ipairs(a) do
-			for i,v in ipairs(v) do
-				r[#r+1] = v
-			end
-			if b then
-				r[#r+1] = b
-			end
-		end
-		return r
-	end;
+	['cat'] = cat;
 
 	['split'] = function(a,b)
 		local r = {}

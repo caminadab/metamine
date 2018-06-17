@@ -23,23 +23,23 @@
 	int numnodes = 0;
 	node* wortel;
 
-	node* node_new() {
-		return &nodes[numnodes++];
+	// fouten
+	struct fout {
+		int lijn;
+		char wat[0x1000];
+	};
+
+	int lijn;
+	int foutlen = 0;
+	struct fout fouten[0x10];
+
+	void fout(int lijn) {
+		struct fout fout = {lijn, "?"};
+		fouten[foutlen++] = fout;
 	}
 
-	void print_node(node* n) {
-		if (n->exp) {
-			printf("(");
-			for (node* kid = n->first; kid; kid = kid->next) {
-				write_node(kid);
-				if (kid->next)
-					putchar(' ');
-			}
-			printf(")");
-		}
-		else {
-			printf("%s", n->data);
-		}
+	node* node_new() {
+		return &nodes[numnodes++];
 	}
 
 	int write_node(node* n, char* out, int left) {
@@ -63,8 +63,23 @@
 
 	node* a(char* t) {
 		node* n = node_new();
-		strcpy(&n->data, t);
+		strcpy(n->data, t);
 		return n;
+	}
+
+	void print_node(node* n) {
+		if (n->exp) {
+			printf("(");
+			for (node* kid = n->first; kid; kid = kid->next) {
+				print_node(kid);
+				if (kid->next)
+					putchar(' ');
+			}
+			printf(")");
+		}
+		else {
+			printf("%s", n->data);
+		}
 	}
 
 	node* append(node* exp, node* atom) {
@@ -143,12 +158,15 @@
 %%
 
 input:
-  %empty							{ wortel = exp0(); $$ = wortel; }
-| input eq						{ $$ = append($$, $1); }
-| input '\n'
+  %empty							{ $$ = wortel = exp0(); }
+| input eq						{ $$ = append($1, $2); }
+| input '\n'					{ $$ = $1; }
 ;
 
-eq: exp '=' exp				{ $$ = exp3(a("="), $1, $3); }
+eq:
+	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
+|	error								{ fout(lijn); }
+;
 
 single:
 	NUM
@@ -157,8 +175,7 @@ single:
 ;
 
 exp:
-  NUM
-| single
+	single
 | exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -170,6 +187,7 @@ exp:
 /*| exp CAT exp       	{ $$ = exp3(a("||"), $1, $3); }*/
 | exp '|' '|' exp       	{ $$ = exp3(a("||"), $1, $4); }
 | exp '.' '.' exp       	{ $$ = exp3(a(".."), $1, $4); }
+| exp 'x' 'x' exp       	{ $$ = exp3(a("xx"), $1, $4); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 /*| exp single exp			{ $$ = exp3($2, $1, $3); }*/

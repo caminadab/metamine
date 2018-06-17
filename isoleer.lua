@@ -12,7 +12,7 @@ function contains(exp, name)
 end
 
 -- rewrite (a + b = c, a) -> c - b
-function rewrite(eq,name)
+function isoleer(eq,name)
 	local flip = false
 	while true do
 		local eq0
@@ -33,8 +33,8 @@ function rewrite(eq,name)
 			local n = 0
 			if contains(a,name) then out = 0; n = n + 1 end
 			if contains(x,name) then out = 1; n = n + 1 end
+			if contains(f,name) then out = 2; n = n + 1 end
 			if n ~= 1 then
-				log('FOUT',unlisp(eq),name)
 				return false -- onoplosbaar
 			end
 
@@ -42,14 +42,16 @@ function rewrite(eq,name)
 				-- x = - a
 				if out == 0 then eq0 = {'=', a, {'-', x}} end -- a = - x
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
-			end
-			if f == 'tekst' then
+			elseif f == 'tekst' then
 				-- x = tekst a
 				if out == 0 then eq0 = {'=', a, {'getal', x}} end -- a = getal x
-			end
-			if f == 'getal' then
-				-- x = tekst a
+			elseif f == 'getal' then
+				-- x = getal a
 				if out == 0 then eq0 = {'=', a, {'tekst', x}} end -- a = tekst x
+			else
+				-- x = f a
+				if out == 0 then eq0 = {'=', a, {{'inverse', f}, x}} end -- a = (inverse f) x
+				if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
 		if exp(l) and l[1] == '[]' then
@@ -105,7 +107,7 @@ function rewrite(eq,name)
 				if out == 1 then eq0 = {'=', b, {x, {'..', {'#', a}, {'#', x}}}} end -- b = x (#a..#x)
 				--if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
 			else
-				log('weet niet hoe te herschrijven '..f)
+				log('weet niet hoe te isoleren '..f)
 				return false -- kan operator niet oplossen
 			end
 		end
@@ -138,6 +140,6 @@ tests = {
 for i,test in ipairs(tests) do
 	local eq = L(test[1])
 	local name = L(test[2])
-	local r = rewrite(eq, name)
+	local r = isoleer(eq, name)
 	assert(U(r) == test[3], test[1]..' voor '..name .. ' was '..U(r)..' maar hoort '..test[3])
 end

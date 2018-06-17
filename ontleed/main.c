@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <unistd.h>
 #include <lua.h>
 #include <lauxlib.h>
 
@@ -16,16 +19,28 @@ node* a(char* t);
 extern node* yylval;
 extern node* wortel;
 
+struct fout {
+	int lijn;
+	char wat[0x1000];
+};
+
+extern int lijn;
+extern int foutlen;
+struct fout fouten[0x10];
+
 #define NUM 258
 //#define CAT 300
 
 void yyerror (char const * s) {
-	fprintf(stderr, "%s\n", s);
+	//fprintf(stderr, "%s\n", s);
 }
+
+int write_node(node* n, char* out, int left);
+void yyparse();
 
 char token[0x100];
 char buf[0x1000];
-char* in;
+const char* in;
 
 int yylex(void) {
 	int c;
@@ -37,6 +52,7 @@ int yylex(void) {
 		while (c == ';') {
 			while ((c = *in++) != '\n')
 				continue;
+			lijn++;
 			c = *in++;
 		}
 		if (c != ' ' && c != '\t' && c != ';')
@@ -59,6 +75,9 @@ int yylex(void) {
 	// klaar
 	if (!c)
 		return 0;
+
+	if (c == '\n')
+		lijn++;
 
 	token[0] = c;
 	token[1] = 0;
@@ -83,10 +102,24 @@ void lua_pushnode(lua_State* L, node* node) {
 
 int ontleed(lua_State* L) {
 	in = luaL_checkstring(L, 1);
+	lijn = 0;
+	foutlen = 0;
 	yyparse();
 
+	int r = 1;
 	lua_pushnode(L, wortel);
-	return 1;
+
+	// fouten
+	if (foutlen) {
+		r++;
+		lua_createtable(L, foutlen, 0);
+		for (int i = 0; i < foutlen; i++) {
+			lua_pushinteger(L, i+1);
+			lua_pushinteger(L, fouten[i].lijn + 1);
+			lua_settable(L, -3);
+		}
+	}
+	return r;
 }
 
 int luaopen_ontleed(lua_State* L) {
