@@ -42,16 +42,10 @@ function isoleer(eq,name)
 				-- x = - a
 				if out == 0 then eq0 = {'=', a, {'-', x}} end -- a = - x
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
-			elseif f == 'tekst' then
-				-- x = tekst a
-				if out == 0 then eq0 = {'=', a, {'getal', x}} end -- a = getal x
-			elseif f == 'getal' then
-				-- x = getal a
-				if out == 0 then eq0 = {'=', a, {'tekst', x}} end -- a = tekst x
 			else
 				-- x = f a
-				if out == 0 then eq0 = {'=', a, {{'inverse', f}, x}} end -- a = (inverse f) x
-				if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
+				--if out == 0 then eq0 = {'=', a, {{'inverse', f}, x}} end -- a = (inverse f) x
+				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
 		if exp(l) and l[1] == '[]' then

@@ -46,6 +46,11 @@ end
 
 if #code == 0 then
 	print('geen invoer')
+	print(
+[[gebruik: vt [-i] [-o uitvoer] bestanden...
+		-i	voer  meteen uit
+		-l	lokale
+]])
 	return
 end
 
@@ -56,6 +61,8 @@ code = table.concat(code, '\n')
 -- ontleed
 local feiten = ontleed(code)
 local waarden = noem(feiten)
+waarden.tekst = {}
+waarden.getal = {}
 local stroom = rangschik(waarden, 'uit')
 local uit 
 

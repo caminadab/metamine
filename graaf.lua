@@ -1,8 +1,15 @@
+require 'util'
+
 local remove = table.remove
 
 local function link(graaf,a,b)
 	if not graaf.punten[a] or not graaf.punten[b] then
-		error('niet toegevoegd')
+		if not graaf.punten[a] then
+			error('zit niet in de graaf: '..unlisp(a))
+		end
+		if not graaf.punten[b] then
+			error('zit niet in de graaf: '..unlisp(b))
+		end
 	end
 
 	graaf.van[a][b] = true
@@ -56,8 +63,10 @@ local function cyclisch(graaf)
 			index = index + 1
 		end
 	end
-	print('NIEUW:',unlisp(nieuw))
+
+	-- geen begin
 	if index == 0 then
+		print('geen begin')
 		return true
 	end
 
@@ -67,7 +76,8 @@ local function cyclisch(graaf)
 			if indices[doel] and indices[doel] < indices[bron] then
 				return true
 			else
-				indices[doel] = indices[bron] + 1
+				indices[doel] = index
+        index = index + 1
 				nieuw[#nieuw+1] = doel
 			end
 		end
@@ -94,6 +104,7 @@ function graaf()
 end
 
 -- test
+--[[
 local a = graaf()
 a:voegtoe('a')
 a:voegtoe('b')
@@ -108,5 +119,16 @@ b:voegtoe('b')
 b:voegtoe('c')
 b:link('a','b')
 b:link('b','c')
+assert(not b:cyclisch())
 b:link('c','b')
 assert(b:cyclisch())
+--]]
+-- bug 10/6
+local c = graaf()
+c:voegtoe('a')
+c:voegtoe('t')
+c:voegtoe('uit')
+c:voegtoe('getal')
+c:link('a', 'uit')
+c:link('t', 'uit')
+assert(not c:cyclisch(), c:tekst())

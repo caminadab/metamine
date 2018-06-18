@@ -64,6 +64,7 @@ function rangschik(waarden,naar)
 	while #nieuw > 0 do
 		local naam = remove(nieuw, 1)
 		local exps = waarden[naam] or {}
+		local foutegraaf
 
 		-- link, dan testen of goed
 		local ok
@@ -74,10 +75,10 @@ function rangschik(waarden,naar)
 				graaf:link(bron,naam)
 			end
 			if not graaf:cyclisch() then
-				--print(graaf:tekst())
 				ok = exp
 				break
 			else
+				foutegraaf = graaf:tekst()
 				for i,hoek in ipairs(hoeken) do
 					graaf:ontlink(hoek[1], hoek[2])
 				end
@@ -104,7 +105,13 @@ function rangschik(waarden,naar)
 				end
 			end
 		else
-			print('geen oplossing voor '..naam)
+			if false then
+				print('geen oplossing voor '..naam)
+				print('foute graaf:')
+				print(foutegraaf)
+				print('---')
+			end
+			--[[
 			print('mogelijkheden:')
 			for i,exp in ipairs(exps) do
 				print(naam..' := '..unlisp(exp))
@@ -116,6 +123,7 @@ function rangschik(waarden,naar)
 				print(hoek[1]..' -> '..hoek[2])
 			end
 			error('afbreken.')
+			]]
 		end
 	end
 
