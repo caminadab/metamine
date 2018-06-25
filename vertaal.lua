@@ -36,6 +36,8 @@ for i=1,#args do
 		doel = 'main.lua'
 	elseif vlag == 'i' then
 		immediate = true
+	elseif vlag == 'v' then
+		print_losse_waarden = true
 	elseif vlag == 'l' then
 		taal = string.lower(arg:sub(3,5))
 		if taal == '' then taal = args[i+1] end
@@ -61,6 +63,7 @@ Opties:
 		-l	lokale van broncode
 		-o	uitvoerbestand
 		-L	compileer naar lov2d broncode
+		-v	verboos zijn
 ]])
 	return
 end
@@ -74,7 +77,7 @@ local feiten = ontleed(code)
 local waarden = noem(feiten)
 waarden.tekst = {}
 waarden.getal = {}
-local stroom = sorteer(waarden, 'uit', {'in', 'sqrt'})
+local stroom = sorteer(waarden, 'uit', {'in', 'sqrt', 'sin', 'cos', 'tijd'})
 local uit 
 
 if love then

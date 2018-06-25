@@ -74,7 +74,6 @@ local function cyclisch(graaf)
 		local bron = remove(nieuw, 1)
 		for doel in pairs(graaf.van[bron]) do
 			if indices[doel] and indices[doel] < indices[bron] then
-				return true
 			else
 				indices[doel] = index
         index = index + 1
@@ -104,31 +103,44 @@ function graaf()
 end
 
 -- test
---[[
-local a = graaf()
-a:voegtoe('a')
-a:voegtoe('b')
-a:link('a', 'b')
-assert(not a:cyclisch())
-a:link('b', 'a')
-assert(a:cyclisch())
+if test then
+	local a = graaf()
+	a:voegtoe('a')
+	a:voegtoe('b')
+	a:link('a', 'b')
+	assert(not a:cyclisch())
+	a:link('b', 'a')
+	assert(a:cyclisch())
 
-local b = graaf()
-b:voegtoe('a')
-b:voegtoe('b')
-b:voegtoe('c')
-b:link('a','b')
-b:link('b','c')
-assert(not b:cyclisch())
-b:link('c','b')
-assert(b:cyclisch())
---]]
--- bug 10/6
-local c = graaf()
-c:voegtoe('a')
-c:voegtoe('t')
-c:voegtoe('uit')
-c:voegtoe('getal')
-c:link('a', 'uit')
-c:link('t', 'uit')
-assert(not c:cyclisch(), c:tekst())
+	local b = graaf()
+	b:voegtoe('a')
+	b:voegtoe('b')
+	b:voegtoe('c')
+	b:link('a','b')
+	b:link('b','c')
+	assert(not b:cyclisch())
+	b:link('c','b')
+	assert(b:cyclisch())
+
+	-- bug 10/6
+	local c = graaf()
+	c:voegtoe('a')
+	c:voegtoe('t')
+	c:voegtoe('uit')
+	c:voegtoe('getal')
+	c:link('a', 'uit')
+	c:link('t', 'uit')
+	assert(not c:cyclisch(), c:tekst())
+end
+
+	local d = graaf()
+	d:voegtoe('a')
+	d:voegtoe('b')
+	d:voegtoe('uit')
+	d:voegtoe('toets-links')
+	d:link('a', 'uit')
+	d:link('b', 'uit')
+	d:link('toets-links', 'b')
+	assert(not d:cyclisch(), d:tekst())
+--end
+print('HOI')

@@ -50,7 +50,7 @@ function ontrafel(flow)
 end
 
 -- graaf = [punten, randen]
-function sorteer(waarden,naar,van)
+function sorteer(waarden,naar,van0)
 	local graaf = graaf()
 	local oud = {}
 	local nieuw = {naar}
@@ -58,15 +58,18 @@ function sorteer(waarden,naar,van)
 	local stroom = {}
 
 	-- corrigeer invoer
-	if type(van) == 'table' then
-		for k,v in ipairs(van) do
+	local van = {}
+	if type(van0) == 'table' then
+		for k,v in ipairs(van0) do
 			van[v] = true
 		end
+	else
+		van = van0
 	end
 
-	for naam in pairs(waarden) do
-		graaf:voegtoe(naam)
-	end
+	for naam in pairs(waarden) do graaf:voegtoe(naam) end
+	for naam in pairs(van) do graaf:voegtoe(naam) end
+	--for naam in pairs(naar) do graaf:voegtoe(naam) end
 
 	while #nieuw > 0 do
 		local naam = remove(nieuw, 1)
@@ -77,6 +80,7 @@ function sorteer(waarden,naar,van)
 		local ok
 		local hoeken = {}
 		for i,exp in ipairs(exps) do
+			print('EXP', naam, unlisp(exp))
 			for bron in spairs(var(exp)) do
 				hoeken[#hoeken+1] = {bron,naam}
 				graaf:link(bron,naam)
@@ -85,6 +89,7 @@ function sorteer(waarden,naar,van)
 				ok = exp
 				break
 			else
+				print('FOUT', graaf:cyclisch())
 				foutegraaf = graaf:tekst()
 				for i,hoek in ipairs(hoeken) do
 					graaf:ontlink(hoek[1], hoek[2])
