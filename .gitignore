@@ -1,5 +1,4 @@
-*.swp
-*.swo
+.*
 *.tab.c
 
-*.so
+bin/

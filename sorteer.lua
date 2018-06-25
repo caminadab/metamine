@@ -50,12 +50,19 @@ function ontrafel(flow)
 end
 
 -- graaf = [punten, randen]
-function rangschik(waarden,naar)
+function sorteer(waarden,naar,van)
 	local graaf = graaf()
 	local oud = {}
 	local nieuw = {naar}
 	local klaar = {}
 	local stroom = {}
+
+	-- corrigeer invoer
+	if type(van) == 'table' then
+		for k,v in ipairs(van) do
+			van[v] = true
+		end
+	end
 
 	for naam in pairs(waarden) do
 		graaf:voegtoe(naam)
@@ -104,8 +111,13 @@ function rangschik(waarden,naar)
 					end
 				end
 			end
+
+		-- constante
+		elseif van[naam] then
+			print('constante')
+
 		else
-			if false then
+			if true then
 				print('geen oplossing voor '..naam)
 				print('foute graaf:')
 				print(foutegraaf)

@@ -1,7 +1,4 @@
-#!/usr/bin/lua5.2
 require 'lisp'
-
-local proc = lisp(io.stdin:read('*a'))
 
 local infix = {
 	['^'] = true, ['_'] = true,
@@ -51,6 +48,14 @@ function tolo(exp,t)
 	return t
 end
 
+function stat2love(stat,t,vars)
+	t[#t+1] = stat[2]
+	t[#t+1] = ' = '
+	tolo(stat[3],t)
+	t[#t+1] = '\n'
+	vars[#vars+1] = stat[2]
+end
+
 function tolove(proc)
 	local t = {
 [[
@@ -65,23 +70,14 @@ end
 		if block[1] == 'const' then
 			for i=2,#block do
 				local stat = block[i]
-				t[#t+1] = stat[2]
-				t[#t+1] = ' = '
-				tolo(stat[3],t)
-				t[#t+1] = '\n'
-				vars[#vars+1] = stat[2]
+				stat2love(stat,t,vars)
 			end
 		end
 		if block[1] == 'sec' then
 			t[#t+1] = 'function love.update()\n'
 			for i=2,#block do
 				local stat = block[i]
-				t[#t+1] = '\t'
-				t[#t+1] = stat[2]
-				t[#t+1] = ' = '
-				tolo(stat[3],t)
-				t[#t+1] = '\n'
-				vars[#vars+1] = stat[2]
+				stat2love(stat,t,vars)
 			end
 			t[#t+1] = 'end\n'
 		end
@@ -92,7 +88,7 @@ end
 require 'lisp'
 love.window.setMode(1280,1024,{fullscreen=true})
 function love.draw()
-	for i,v in ipairs(stdout) do
+	for i,v in ipairs(uit) do
 		love.graphics.circle('fill', v[1], v[2], 20)
 	end
 ]]
@@ -108,5 +104,3 @@ function love.draw()
 
 	return table.concat(t)
 end
-
-print(tolove(proc))

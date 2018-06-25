@@ -1,19 +1,23 @@
 #!/usr/bin/lua
+package.path = package.path .. ";../?.lua"
 require 'util'
 require 'lisp'
 require 'func'
 
 require 'ontleed'
 require 'noem'
-require 'rangschik'
+require 'sorteer'
 require 'doe'
+
+require 'love'
 
 -- argumenten
 local taal = 'nl'
 local doel
 local code = {}
 local arch = 'amd64'
-local immediate = false
+local immediate
+local love
 
 local args = {...}
 for i=1,#args do
@@ -27,6 +31,9 @@ for i=1,#args do
 		i = i + 1
 	elseif vlag == 't' then
 		arch = string.lower(arg:sub(3))
+	elseif vlag == 'L' then
+		love = true
+		doel = 'main.lua'
 	elseif vlag == 'i' then
 		immediate = true
 	elseif vlag == 'l' then
@@ -47,9 +54,13 @@ end
 if #code == 0 then
 	print('geen invoer')
 	print(
-[[gebruik: vt [-i] [-o uitvoer] bestanden...
-		-i	voer  meteen uit
-		-l	lokale
+[[gebruik: vt [OPTIES...] [BESTANDEN...]
+Vertaalt broncode naar applicaties.
+Opties:
+		-i	voer meteen uit
+		-l	lokale van broncode
+		-o	uitvoerbestand
+		-L	compileer naar lov2d broncode
 ]])
 	return
 end
@@ -63,10 +74,12 @@ local feiten = ontleed(code)
 local waarden = noem(feiten)
 waarden.tekst = {}
 waarden.getal = {}
-local stroom = rangschik(waarden, 'uit')
+local stroom = sorteer(waarden, 'uit', {'in', 'sqrt'})
 local uit 
 
-if not immediate then
+if love then
+	uit = tolove(stroom)
+elseif not immediate then
 	uit = unlisp(stroom)
 else
 	uit = unlisp(doe(stroom))
@@ -74,7 +87,7 @@ end
 
 -- uitvoer
 if doel then
-	file(doel, unlisp(stroom))
+	file(doel, uit)
 else
 	print(uit)
 end

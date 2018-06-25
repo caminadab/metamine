@@ -65,7 +65,7 @@ function isoleer(eq,name)
 			if contains(b,name) then out = 1; n = n + 1 end
 			if contains(x,name) then out = 2; n = n + 1 end
 			if n ~= 1 then
-				log('FOUT',unlisp(eq),name)
+				--log('FOUT',unlisp(eq),name)
 				return false -- onoplosbaar
 			end
 

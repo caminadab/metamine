@@ -44,7 +44,7 @@ local function unparse_work(sexpr, maxlen, tabs, res)
         table.insert(res, string.rep('  ', tabs+1))
       end
       unparse_work(sub, maxlen, tabs+1, res)
-      if next(sexpr, i) then
+      if next(sexpr, i) and type(next(sexpr, i)) == 'number' then
         table.insert(res, ' ')
       end
     end
