@@ -78,7 +78,9 @@ local stroom = sorteer(waarden, 'uit', {'in', 'sqrt'})
 local uit 
 
 if love then
+	print(unlisp(stroom))
 	uit = tolove(stroom)
+	print('uit',uit)
 elseif not immediate then
 	uit = unlisp(stroom)
 else
