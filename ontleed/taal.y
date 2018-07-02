@@ -95,6 +95,8 @@ exp:
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
+
+| single single				{ $$ = _exp2($1, $2); }
 ;
 
 list:

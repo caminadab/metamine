@@ -16,6 +16,8 @@ assert(err)
 assert(unlisp(ontleed('f = a + b')), '((= f (+ a b)))')
 
 -- functies
-assert(unlisp(ontleed('f = a + b')), '((= f (+ a b)))')
-assert(unlisp(ontleed('f = a -> a')), '((= f (-> a b)))')
-assert(unlisp(ontleed('f = a -> a + 1')), '((= f (-> a (+ a 1))))')
+assert(unlisp(ontleed('f = a + b')) == '((= f (+ a b)))')
+assert(unlisp(ontleed('f = a -> a')) == '((= f (-> a a)))')
+assert(unlisp(ontleed('f = a -> a + 1')) == '((= f (-> a (+ a 1))))')
+
+assert(unlisp(ontleed('b = f(a)')) == '((= b (f a)))')
