@@ -18,9 +18,13 @@ local vertaal = {
 }
 
 local function naam2love(naam)
-	return naam:gsub('(-.)', function (chars)
-		return chars:sub(2,2):upper()
-	end)
+	if type(naam) == 'string' then
+		return naam:gsub('(-.)', function (chars)
+			return chars:sub(2,2):upper()
+		end)
+	else
+		return naam
+	end
 end
 
 function tolo(exp,t)

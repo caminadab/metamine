@@ -5,38 +5,25 @@
 #include <lua.h>
 #include <lauxlib.h>
 
-typedef struct node node;
-struct node {
-	// kids?
-	int exp;
-	char data[0x100];
-	node* first;
-	node* last;
-	node* next;
-};
+#include "node.h"
+#include "taal.h"
 
-node* a(char* t);
 extern node* yylval;
 extern node* wortel;
 
+typedef struct fout fout;
 struct fout {
 	int lijn;
-	char wat[0x1000];
+	char bericht[0x1000];
 };
 
 extern int lijn;
 extern int foutlen;
 struct fout fouten[0x10];
 
-#define NUM 258
-//#define CAT 300
-
 void yyerror (char const * s) {
 	//fprintf(stderr, "%s\n", s);
 }
-
-int write_node(node* n, char* out, int left);
-void yyparse();
 
 char token[0x100];
 char buf[0x1000];
@@ -59,17 +46,19 @@ int yylex(void) {
 			break;
 	}
 
-	// tokens
+	const char* cc = in - 1;
+
+	// naam
 	if (isalnum(c)) {
 		int i;
 		for (i = 0; i < 0x100 && (isalnum(c) || c == '-'); i++) {
 			token[i] = c;
 			c = *in++;
 		}
-		in--; //ungetc(c, stdin);
+		in--;
 		token[i] = 0;
 		yylval = a(token);
-		return NUM;
+		return NAME;
 	}
 
 	// klaar
@@ -79,10 +68,19 @@ int yylex(void) {
 	if (c == '\n')
 		lijn++;
 
-	token[0] = c;
-	token[1] = 0;
+	// multi-symbool
+	int id;
+	if (!strcmp(cc, "->"))			{ strcpy(token, "->"); id = TO; }
+	else if (!strcmp(cc, "||")) { strcpy(token, "||"); id = CAT; }
+	else if (!strcmp(cc, "..")) { strcpy(token, ".."); id = TIL; }
+	else if (!strcmp(cc, "xx")) { strcpy(token, "xx"); id = CART; }
+	else {
+		token[0] = c;
+		token[1] = 0;
+		id = c;
+	}
 	yylval = a(token);
-	return c;
+	return id;
 }
 
 void lua_pushnode(lua_State* L, node* node) {
@@ -92,7 +90,7 @@ void lua_pushnode(lua_State* L, node* node) {
 		for (struct node* n = node->first; n; n = n->next) {
 			lua_pushinteger(L, i+1);
 			lua_pushnode(L, n);
-			lua_settable(L,-3);
+			lua_settable(L, -3);
 			i++;
 		}
 	} else {
@@ -100,10 +98,20 @@ void lua_pushnode(lua_State* L, node* node) {
 	}
 }
 
+void lua_pushfout(lua_State* L, fout fout) {
+	lua_createtable(L, 0, 2);
+	lua_pushinteger(L, fout.lijn + 1);
+	lua_setfield(L, -2, "lijn");
+	lua_pushstring(L, fout.bericht);
+	lua_setfield(L, -2, "bericht");
+}
+
+// niet threadsafe lol
 int ontleed(lua_State* L) {
 	in = luaL_checkstring(L, 1);
 	lijn = 0;
 	foutlen = 0;
+	numnodes = 0;
 	yyparse();
 
 	int r = 1;
@@ -115,7 +123,7 @@ int ontleed(lua_State* L) {
 		lua_createtable(L, foutlen, 0);
 		for (int i = 0; i < foutlen; i++) {
 			lua_pushinteger(L, i+1);
-			lua_pushinteger(L, fouten[i].lijn + 1);
+			lua_pushfout(L, fouten[i]);
 			lua_settable(L, -3);
 		}
 	}
@@ -124,17 +132,19 @@ int ontleed(lua_State* L) {
 
 int luaopen_ontleed(lua_State* L) {
 	in = luaL_checkstring(L, 1);
-
 	lua_pushcfunction(L, ontleed);
 	lua_setglobal(L, "ontleed");
 	return 1;
 }
 
 int main() {
-	strcpy(buf, "a = 5 * 8\nb = a * 2 - 3 * - 8\n"); in = buf;
+	strcpy(buf, "*");
+	in = buf;
 	yyparse();
 	char out[1024];
 	int len = write_node(wortel, out, 0x400);
 	write(1, out, len);
 	return 0;
 }
+
+extern int yydebug = 1;
