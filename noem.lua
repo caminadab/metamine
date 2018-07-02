@@ -44,3 +44,5 @@ function noem(feiten)
 	end
 	return r
 end
+
+assert(unlisp(noem(lisp'((= a 0) (= a 1))').a) == '(0 1)')

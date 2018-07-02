@@ -1,5 +1,6 @@
 require 'func'
 require 'graaf'
+require 'noem' -- var()
 
 local insert = table.insert
 local remove = table.remove
@@ -64,7 +65,7 @@ function sorteer(waarden,naar,van0)
 			van[v] = true
 		end
 	else
-		van = van0
+		van = {van0 = true}
 	end
 
 	for naam in pairs(waarden) do graaf:voegtoe(naam) end
@@ -80,7 +81,6 @@ function sorteer(waarden,naar,van0)
 		local ok
 		local hoeken = {}
 		for i,exp in ipairs(exps) do
-			print('EXP', naam, unlisp(exp))
 			for bron in spairs(var(exp)) do
 				hoeken[#hoeken+1] = {bron,naam}
 				graaf:link(bron,naam)
@@ -119,7 +119,7 @@ function sorteer(waarden,naar,van0)
 
 		-- constante
 		elseif van[naam] then
-			print('constante')
+			print('GOED! constante')
 
 		else
 			if true then
@@ -165,3 +165,8 @@ function sorteer(waarden,naar,van0)
 	return stroom, {}
 end
 
+-- TESTS
+require 'lisp'
+local a = {a = {'b'}, b = {'a'}}
+local b = unlisp(sorteer(a, 'b', 'a'))
+assert(b == '((= b a))', b)

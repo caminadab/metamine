@@ -55,8 +55,10 @@ local function cyclisch(graaf)
 	local indices = {}
 	local index = 0
 	local nieuw = {}
+  local grootte = 0
 	
 	for punt in spairs(graaf.punten) do
+    grootte = grootte + 1
 		if not next(graaf.naar[punt]) then
 			nieuw[#nieuw+1] = punt
 			indices[punt] = index
@@ -66,7 +68,6 @@ local function cyclisch(graaf)
 
 	-- geen begin
 	if index == 0 then
-		print('geen begin')
 		return true
 	end
 
@@ -74,14 +75,27 @@ local function cyclisch(graaf)
 		local bron = remove(nieuw, 1)
 		for doel in pairs(graaf.van[bron]) do
 			if indices[doel] and indices[doel] < indices[bron] then
-			else
-				indices[doel] = index
-        index = index + 1
-				nieuw[#nieuw+1] = doel
+        return true
+			elseif not indices[doel] then
+        -- alle vertices klaar?
+        local zeker = true
+        for bron in pairs(graaf.naar[doel]) do
+          if not indices[bron] then
+            zeker = false
+          end
+        end
+        if zeker then
+          indices[doel] = index
+          index = index + 1
+          nieuw[#nieuw+1] = doel
+        end
 			end
 		end
 	end
 
+  if index ~= grootte then
+    return true
+  end
 	return false
 end
 
@@ -103,7 +117,7 @@ function graaf()
 end
 
 -- test
-if test then
+if true then
 	local a = graaf()
 	a:voegtoe('a')
 	a:voegtoe('b')
@@ -131,7 +145,6 @@ if test then
 	c:link('a', 'uit')
 	c:link('t', 'uit')
 	assert(not c:cyclisch(), c:tekst())
-end
 
 	local d = graaf()
 	d:voegtoe('a')
@@ -142,5 +155,4 @@ end
 	d:link('b', 'uit')
 	d:link('toets-links', 'b')
 	assert(not d:cyclisch(), d:tekst())
---end
-print('HOI')
+end
