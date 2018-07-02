@@ -2,14 +2,20 @@ require 'ontleed'
 require 'lisp'
 
 local a,err = ontleed('*')
-do return end
+assert(err)
 
-local a,err = ontleed('1 + 1 = 2\n3 * 3 = 9')
-assert(not err, unlisp(err))
+local a,err = ontleed('a = 2\nb = 3')
+assert(not err)
+
+local a,err = ontleed('a * 2 = 3\na - 4 = b / 8 ^ 3')
+assert(not err)
 
 local a,err = ontleed('a = 2\n\n 3 +')
-assert(err and #err == 1, unlisp(a))
+assert(err)
+
+assert(unlisp(ontleed('f = a + b')), '((= f (+ a b)))')
 
 -- functies
-local a,err = ontleed('f = x -> x')
-assert(unlisp(a) == '(= f (-> x x))', unlisp(a))
+assert(unlisp(ontleed('f = a + b')), '((= f (+ a b)))')
+assert(unlisp(ontleed('f = a -> a')), '((= f (-> a b)))')
+assert(unlisp(ontleed('f = a -> a + 1')), '((= f (-> a (+ a 1))))')

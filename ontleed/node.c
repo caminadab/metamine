@@ -7,7 +7,8 @@ int numnodes;
 node nodes[0x1000];
 
 node* node_new() {
-	return &nodes[numnodes++];
+	node* new = &nodes[numnodes++];
+	memset(new, 0, sizeof(node));
 }
 
 int write_node(node* n, char* out, int left) {
@@ -51,6 +52,8 @@ void print_node(node* n) {
 }
 
 node* append(node* exp, node* atom) {
+	if (exp == atom)
+		puts("REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 	if (exp->last) {
 		exp->last->next = atom;
 		exp->last = atom;

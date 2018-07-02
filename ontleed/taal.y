@@ -14,17 +14,17 @@
 	// fouten
 	struct fout {
 		int lijn;
-		char wat[0x1000];
+		char bericht[0x1000];
 	};
 
 	int lijn;
 	int foutlen = 0;
 	struct fout fouten[0x10];
 
-	void fout(int lijn, char* bericht) {
+	void rapporteer(int lijn, char* bericht) {
 		struct fout fout;
 		fout.lijn = lijn;
-		strcpy(fout.wat, bericht);
+		strcpy(fout.bericht, bericht);
 		fouten[foutlen++] = fout;
 	}
 %}
@@ -55,19 +55,23 @@
 input:
 	%empty							{ $$ = wortel = exp0(); }
 |	'\n' input					{ $$ = $2; }
-/*|	input '\n'					{ $$ = $1; }*/
+|	input '\n'					{ $$ = $1; }
 | input eq						{ $$ = append($1, $2); }
+|	error '\n'					{ rapporteer(lijn, "ongeldige vergelijking"); yyerrok; }
+|	error 							{ rapporteer(lijn, "onherkend"); yyerror; }
 ;
 
 eq:
 	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
-|	error								{ fout(lijn, "geen vergelijking"); }
 ;
 
 single:
 	NAME
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
+
+|	'(' error ')'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
+|	'[' error ']'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
 ;
 
 exp:

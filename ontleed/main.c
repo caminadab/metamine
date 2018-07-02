@@ -21,13 +21,14 @@ extern int lijn;
 extern int foutlen;
 struct fout fouten[0x10];
 
-void yyerror (char const * s) {
-	//fprintf(stderr, "%s\n", s);
-}
-
 char token[0x100];
 char buf[0x1000];
 const char* in;
+
+void rapporteer(int lijn, char* bericht);
+void yyerror (char const * s) {
+	//fprintf(stderr, "%s\n", s);
+}
 
 int yylex(void) {
 	int c;
@@ -51,7 +52,7 @@ int yylex(void) {
 	// naam
 	if (isalnum(c)) {
 		int i;
-		for (i = 0; i < 0x100 && (isalnum(c) || c == '-'); i++) {
+		for (i = 0; i < 0x1000 && (isalnum(c) || c == '-'); i++) {
 			token[i] = c;
 			c = *in++;
 		}
@@ -70,15 +71,16 @@ int yylex(void) {
 
 	// multi-symbool
 	int id;
-	if (!strcmp(cc, "->"))			{ strcpy(token, "->"); id = TO; }
-	else if (!strcmp(cc, "||")) { strcpy(token, "||"); id = CAT; }
-	else if (!strcmp(cc, "..")) { strcpy(token, ".."); id = TIL; }
-	else if (!strcmp(cc, "xx")) { strcpy(token, "xx"); id = CART; }
+	if (!memcmp(cc, "->", 2))				{ strcpy(token, "->"); in++; id = TO; }
+	else if (!memcmp(cc, "||", 2))	{ strcpy(token, "||"); in++; id = CAT; }
+	else if (!memcmp(cc, "..", 2))	{ strcpy(token, ".."); in++; id = TIL; }
+	else if (!memcmp(cc, "xx", 2))	{ strcpy(token, "xx"); in++; id = CART; }
 	else {
 		token[0] = c;
 		token[1] = 0;
 		id = c;
 	}
+	
 	yylval = a(token);
 	return id;
 }
@@ -112,33 +114,42 @@ int ontleed(lua_State* L) {
 	lijn = 0;
 	foutlen = 0;
 	numnodes = 0;
+	wortel = 0;
+	
+	// doe het!
 	yyparse();
 
-	int r = 1;
-	lua_pushnode(L, wortel);
+	// TEMP ERROR FIX
+	if (!wortel && foutlen == 0)
+		rapporteer(-2, "kon er niets van maken");
+
+	if (wortel)
+		lua_pushnode(L, wortel);
+	else
+		lua_pushnil(L);
 
 	// fouten
-	if (foutlen) {
-		r++;
+	if (!foutlen)
+		return 1;
+	else {
 		lua_createtable(L, foutlen, 0);
 		for (int i = 0; i < foutlen; i++) {
 			lua_pushinteger(L, i+1);
 			lua_pushfout(L, fouten[i]);
 			lua_settable(L, -3);
 		}
+		return 2;
 	}
-	return r;
 }
 
 int luaopen_ontleed(lua_State* L) {
-	in = luaL_checkstring(L, 1);
 	lua_pushcfunction(L, ontleed);
 	lua_setglobal(L, "ontleed");
 	return 1;
 }
 
 int main() {
-	strcpy(buf, "*");
+	strcpy(buf, "f = x -> x");
 	in = buf;
 	yyparse();
 	char out[1024];
@@ -146,5 +157,3 @@ int main() {
 	write(1, out, len);
 	return 0;
 }
-
-extern int yydebug = 1;
