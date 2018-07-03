@@ -76,7 +76,7 @@ function isoleer(eq,name)
 				--if out == 2 then eq0 = {'=', x, {'+', a, b}} end -- x = a + b
 			elseif f == '-' then
 				-- x = a - b
-				if out == 0 then eq0 = {'=', a, {'-', x, b}} end -- a = x - b
+				if out == 0 then eq0 = {'=', a, {'+', x, b}} end -- a = x - b
 				if out == 1 then eq0 = {'=', b, {'-', x, a}} end -- b = x + a
 				--if out == 2 then eq0 = {'=', x, {'-', a, b}} end -- x = a - b
 			elseif f == '*' then
