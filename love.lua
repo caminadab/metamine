@@ -19,18 +19,31 @@ local vertaal = {
 
 local function naam2love(naam)
 	if type(naam) == 'string' then
-		return naam:gsub('(-.)', function (chars)
-			return chars:sub(2,2):upper()
+		return naam:gsub('.%-(.)', function (char)
+			return char:upper()
 		end)
 	else
 		return naam
 	end
 end
 
+function tofunc(naar,van,t)
+	t[#t+1] = 'function ('
+	t[#t+1] = van
+	t[#t+1] = ')\n'
+
+	t[#t+1] = 'return '
+	tolo(naar, t)
+	t[#t+1] = '\n'
+	t[#t+1] = 'end'
+end
+
 function tolo(exp,t)
 	t = t or {}
 	if atom(exp) then
-		t[#t+1] = vertaal[exp] or naam2love(exp)
+		t[#t+1] = vertaal[exp] or naam2love(exp) or exp
+	elseif exp[1] == '->' then
+		tofunc(exp[3], exp[2], t)
 	elseif infix[exp[1]] and exp[3] then
 		t[#t+1] = '('
 		tolo(exp[2], t)

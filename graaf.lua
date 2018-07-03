@@ -21,10 +21,12 @@ local function ontlink(graaf,a,b)
 	graaf.naar[b][a] =  nil
 end
 
-local function voegtoe(graaf, a)
-	graaf.punten[a] = true
-	graaf.van[a] = {}
-	graaf.naar[a] = {}
+local function voegtoe(graaf, ...)
+	for i,v in ipairs({...}) do
+		graaf.punten[v] = true
+		graaf.van[v] = {}
+		graaf.naar[v] = {}
+	end
 end
 
 local function bevat(graaf,a,b)
@@ -117,7 +119,7 @@ function graaf()
 end
 
 -- test
-if true then
+do
 	local a = graaf()
 	a:voegtoe('a')
 	a:voegtoe('b')
@@ -155,4 +157,14 @@ if true then
 	d:link('b', 'uit')
 	d:link('toets-links', 'b')
 	assert(not d:cyclisch(), d:tekst())
+
+	local a = graaf()
+	a:voegtoe('f', 'a', 'x', 'tekst', 'uit')
+	a:link('f', 'x')
+	a:link('f', 'a')
+	a:link('x', 'a')
+	a:link('a', 'uit')
+	a:link('tekst', 'uit')
+
+	assert(not a:cyclisch())
 end

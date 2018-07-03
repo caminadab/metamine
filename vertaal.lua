@@ -77,7 +77,10 @@ local feiten = ontleed(code)
 local waarden = noem(feiten)
 waarden.tekst = {}
 waarden.getal = {}
-local stroom = sorteer(waarden, 'uit', {'in', 'sqrt', 'sin', 'cos', 'tijd'})
+local stroom = sorteer(waarden, 'uit', {
+	'in', 'sqrt', 'sin', 'cos', 'tijd', 'tekst', 'getal',
+	'toets-links', 'toets-rechts', 'toets-omhoog', 'toets-omlaag',
+})
 local uit 
 
 if love then

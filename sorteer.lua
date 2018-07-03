@@ -14,7 +14,7 @@ function unravelrec(exp,name,asm,g)
 	local g = g or -1
 	g = g + 1
 	if atom(exp) then
-		asm[#asm+1] = {':=', aname, exp}
+		asm[#asm+1] = {'=', aname, exp}
 	else
 		-- subs
 		local args = {}
@@ -27,12 +27,12 @@ function unravelrec(exp,name,asm,g)
 			end
 		end
 		-- zelf
-		asm[#asm+1] = {':=', aname, args}
+		asm[#asm+1] = {'=', aname, args}
 	end
 	return g
 end
 
--- [(:= name exp)] -> [(:= name0 fn)]
+-- [(= name exp)] -> [(= name0 fn)]
 function ontrafel(flow)
 	local asm = {}
 	for i,v in ipairs(flow) do
@@ -43,7 +43,7 @@ function ontrafel(flow)
 	local log = function()end
 	log('# Unravel')
 	for i,v in ipairs(asm) do
-		log(v[2],':= '..unlisp(v[3]))
+		log(v[2],'= '..unlisp(v[3]))
 	end
 	log()
 
@@ -51,7 +51,7 @@ function ontrafel(flow)
 end
 
 -- graaf = [punten, randen]
-function sorteer(waarden,naar,van0)
+function sorteer(waarden,naar,van)
 	local graaf = graaf()
 	local oud = {}
 	local nieuw = {naar}
@@ -59,14 +59,15 @@ function sorteer(waarden,naar,van0)
 	local stroom = {}
 
 	-- corrigeer invoer
-	local van = {}
-	if type(van0) == 'table' then
-		for k,v in ipairs(van0) do
-			van[v] = true
+	local van0 = {}
+	if type(van) == 'table' then
+		for k,v in ipairs(van) do
+			van0[v] = true
 		end
 	else
-		van = {van0 = true}
+		van0 = {[van] = true}
 	end
+	van = van0
 
 	for naam in pairs(waarden) do graaf:voegtoe(naam) end
 	for naam in pairs(van) do graaf:voegtoe(naam) end
@@ -81,6 +82,11 @@ function sorteer(waarden,naar,van0)
 		local ok
 		local hoeken = {}
 		for i,exp in ipairs(exps) do
+
+			-- BEGIN CUSTOM
+			if atom(exp) or exp[1] ~= '->' then
+			-- END CUSTOM
+
 			for bron in spairs(var(exp)) do
 				hoeken[#hoeken+1] = {bron,naam}
 				graaf:link(bron,naam)
@@ -89,17 +95,30 @@ function sorteer(waarden,naar,van0)
 				ok = exp
 				break
 			else
-				print('FOUT', graaf:cyclisch())
 				foutegraaf = graaf:tekst()
 				for i,hoek in ipairs(hoeken) do
 					graaf:ontlink(hoek[1], hoek[2])
 				end
 			end
+
+			-- BEGIN STIEKEME SKIP
+			else
+				ok = exp
+				break
+			end
+			-- END
 		end
 
 		-- goed
 		if ok then
-			stroom[#stroom+1] = {':=', naam, ok}
+			stroom[#stroom+1] = {'=', naam, ok}
+			
+			-- BEGIN
+			if not atom(ok) and ok[1] == '->' then
+				ok = {}
+			end
+			-- EIND
+
 			for naar in spairs(var(ok)) do
 				if not klaar[naar] then
 					nieuw[#nieuw+1] = naar
@@ -119,7 +138,7 @@ function sorteer(waarden,naar,van0)
 
 		-- constante
 		elseif van[naam] then
-			print('GOED! constante')
+			--print('GOED! constante')
 
 		else
 			if true then
@@ -127,11 +146,12 @@ function sorteer(waarden,naar,van0)
 				print('foute graaf:')
 				print(foutegraaf)
 				print('---')
+				error("AAAA")
 			end
 			--[[
 			print('mogelijkheden:')
 			for i,exp in ipairs(exps) do
-				print(naam..' := '..unlisp(exp))
+				print(naam..' = '..unlisp(exp))
 			end
 			print('graaf:')
 			print(graaf:tekst())
@@ -166,7 +186,21 @@ function sorteer(waarden,naar,van0)
 end
 
 -- TESTS
-require 'lisp'
-local a = {a = {'b'}, b = {'a'}}
-local b = unlisp(sorteer(a, 'b', 'a'))
-assert(b == '((= b a))', b)
+do
+	require 'lisp'
+
+	local g = {a = {'b'}, b = {'a'}}
+	local b = unlisp(sorteer(g, 'b', 'a'))
+	assert(b == '((= b a))', b)
+	
+	local code = [[
+	(
+		(= f (-> a a))
+		(= x (f 0))
+	)
+	]]
+
+	local a = noem(lisp(code))
+	local b = unlisp(sorteer(a, 'x', 'f'))
+	assert(b == '((= f (-> a a)) (= x (f 0)))')
+end

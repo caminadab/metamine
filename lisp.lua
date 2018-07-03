@@ -27,9 +27,8 @@ function exp(sexp)
 end
 
 local function unparse_work(sexpr, maxlen, tabs, res)
-	if type(sexpr) == 'number' then
-		sexpr = tostring(sexpr)
-	end
+	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
+	if type(sexpr) == 'function' then sexpr = '<LAMBDA>' end
   tabs = tabs or 0
   res = res or {}
   if atom(sexpr) then
