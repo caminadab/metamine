@@ -9,6 +9,7 @@ node nodes[0x1000];
 node* node_new() {
 	node* new = &nodes[numnodes++];
 	memset(new, 0, sizeof(node));
+	return new;
 }
 
 int write_node(node* n, char* out, int left) {
@@ -27,6 +28,7 @@ int write_node(node* n, char* out, int left) {
 		memcpy(out, n->data, len);
 		out += len;
 	}
+	*out = 0;
 	return out - out0;
 }
 
@@ -34,6 +36,31 @@ node* a(char* t) {
 	node* n = node_new();
 	strcpy(n->data, t);
 	return n;
+}
+
+void node_assign(node* new, node* old) {
+	/*if (old->prev) old->prev->next = new;
+	if (old->next) old->next->prev = new;
+	if (old->root) {
+		if (old->root->first == old) old->root->first = new;
+		if (old->root->last == old) old->root->last = new;
+	}
+	memcpy(new, old, sizeof(node));
+	*/
+	new->first = old->first;
+	new->last = old->last;
+	new->exp = old->exp;
+	strcpy(new->data, old->data);
+
+	// fix parents
+	for (node* n = new->first; n; n = n->next)
+		n->root = new;
+}
+
+node* node_copy(node* orig) {
+	node* copy = node_new();
+	node_assign(copy, orig);
+	return copy;
 }
 
 void print_node(node* n) {
@@ -54,8 +81,10 @@ void print_node(node* n) {
 node* append(node* exp, node* atom) {
 	if (exp == atom)
 		puts("REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+	atom->root = exp;
 	if (exp->last) {
 		exp->last->next = atom;
+		atom->prev = exp->last->next;
 		exp->last = atom;
 	} else {
 		exp->first = atom;
@@ -77,6 +106,7 @@ node* exp1(node* a) {
 	n->exp = true;
 	n->first = a;
 	n->last = a;
+	a->root = n;
 	return n;
 }
 
@@ -85,7 +115,8 @@ node* _exp2(node* a, node* b) {
 	n->exp = true;
 	n->first = a;
 	n->last = b;
-	a->next = b;
+	a->next = b; b->prev = a;
+	a->root = b->root = n;
 	return n;
 }
 
@@ -94,8 +125,9 @@ node* exp3(node* a, node* b, node* c) {
 	n->exp = true;
 	n->first = a;
 	n->last = c;
-	a->next = b;
-	b->next = c;
+	a->next = b; b->prev = a;
+	b->next = c; c->prev = b;
+	a->root = b->root = c->root = n;
 	return n;
 }
 
@@ -104,8 +136,9 @@ node* exp4(node* a, node* b, node* c, node* d) {
 	n->exp = true;
 	n->first = a;
 	n->last = d;
-	a->next = b;
-	b->next = c;
-	c->next = d;
+	a->next = b; b->prev = a;
+	b->next = c; c->prev = b;
+	c->next = d; d->prev = c;
+	a->root = b->root = c->root = d->root = n;
 	return n;
 }

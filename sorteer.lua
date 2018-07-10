@@ -51,7 +51,8 @@ function ontrafel(flow)
 end
 
 -- graaf = [punten, randen]
-function sorteer(waarden,naar,van)
+function sorteer(waarden, volgorde)
+	local van, naar = volgorde.van, volgorde.naar
 	local graaf = graaf()
 	local oud = {}
 	local nieuw = {naar}
@@ -142,11 +143,10 @@ function sorteer(waarden,naar,van)
 
 		else
 			if true then
-				print('geen oplossing voor '..naam)
+				print('geen oplossing voor '..unlisp(naam))
 				print('foute graaf:')
 				print(foutegraaf)
 				print('---')
-				error("AAAA")
 			end
 			--[[
 			print('mogelijkheden:')
@@ -190,7 +190,7 @@ do
 	require 'lisp'
 
 	local g = {a = {'b'}, b = {'a'}}
-	local b = unlisp(sorteer(g, 'b', 'a'))
+	local b = unlisp(sorteer(g, {naar='b',van='a'}))
 	assert(b == '((= b a))', b)
 	
 	local code = [[
@@ -201,6 +201,6 @@ do
 	]]
 
 	local a = noem(lisp(code))
-	local b = unlisp(sorteer(a, 'x', 'f'))
+	local b = unlisp(sorteer(a, {naar='x', van='f'}))
 	assert(b == '((= f (-> a a)) (= x (f 0)))')
 end

@@ -20,6 +20,8 @@ local immediate
 local love
 
 local args = {...}
+local args = {'-L', '-i', 'a.code'}
+
 for i=1,#args do
 	local arg = args[i]
 	local vlag
@@ -68,25 +70,96 @@ Opties:
 	return
 end
 
+-- standaard
+local bieb = {
+	-- arit
+	'^', '_',
+	'*', '/', '%',
+	'+', '-',
+
+	-- multi arit
+	'^=', '_=',
+	'*=', '/=', '%=',
+	'+=', '-=',
+
+	-- trig
+	'sin', 'cos', 'tan',
+	'asin', 'acos', 'atan',
+	'abs',
+	'som',
+
+	-- logica
+	'als',
+	'ja', 'nee', 'ok',
+	'en', 'of', 'noch',
+	'niet',
+	'=>',
+	'=', '!=', '~=',
+	'>', '<', '>=', '<=',
+
+	-- types
+	'getal', 'int', 'tekst', 'bit',
+	'goed', 'fout',
+	':', 'is',
+	'|', '&',
+	'>>', '<<',
+
+	-- func
+	'->', '@',
+
+	-- multi
+	'[]', '#', '||', '{}',
+	'..', 'xx',
+
+	-- tijd
+	'nu',
+	'\'',
+
+	-- meta
+	'.',
+
+	-- converteer
+	'tekst', 'getal',
+
+	-- kleur
+	'kleur', 'rgb',
+	'rood', 'groen', 'blauw',
+	'geel', 'oranje', 'roze', 'cyaan',
+	'zwart', 'wit', 'grijs', 'lichtgrijs',
+	'donkergroen', 'donkerrood', 'donkerblauw',
+	'donkergeel', 'bruin', 'paars', 'magenta',
+
+	-- toetsenbord
+	'toets-links', 'toets-rechts', 'toets-omhoog', 'toets-omlaag',
+	'toets-w', 'toets-s', 'toets-d', 'toets-a',
+
+	-- tijdelijk
+	'index',
+}
+
 -- lees in
 local code = map(code, file)
 code = table.concat(code, '\n')
-
 -- ontleed
 local feiten = ontleed(code)
 local waarden = noem(feiten)
 waarden.tekst = {}
 waarden.getal = {}
-local stroom = sorteer(waarden, 'uit', {
-	'in', 'sqrt', 'sin', 'cos', 'tijd', 'tekst', 'getal',
-	'toets-links', 'toets-rechts', 'toets-omhoog', 'toets-omlaag',
-})
-local uit 
+
+-- speel = bieb -> cirkels
+local invoer = {'in'}
+local speel = {
+	van = cat(invoer, bieb),
+	naar = 'cirkels',
+}
+
+--local naar = {'uit', 'cirkels', 'schrift'}
+
+local stroom = sorteer(waarden, speel)
 
 if love then
-	print(unlisp(stroom))
 	uit = tolove(stroom)
-	print('uit',uit)
+	print(uit)
 elseif not immediate then
 	uit = unlisp(stroom)
 else
@@ -100,3 +173,7 @@ else
 	print(uit)
 end
 
+--
+if immediate then
+	os.execute('love .')
+end

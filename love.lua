@@ -10,17 +10,15 @@ local vertaal = {
 	['tijd'] = 'love.timer.getTime()',
 	['sin'] = 'math.sin',
 	['cos'] = 'math.cos',
+	['abs'] = 'math.abs',
 	['.'] = 'index',
-	['toets-links'] = '(love.keyboard.isDown("left") and 1 or 0)',
-	['toets-rechts'] = '(love.keyboard.isDown("right") and 1 or 0)',
-	['toets-omhoog'] = '(love.keyboard.isDown("up") and 1 or 0)',
-	['toets-omlaag'] = '(love.keyboard.isDown("down") and 1 or 0)',
+	['||'] = 'cat',
 }
 
 local function naam2love(naam)
 	if type(naam) == 'string' then
-		return naam:gsub('.%-(.)', function (char)
-			return char:upper()
+		return naam:gsub('.%-.', function (a)
+				return a:sub(1,1):lower() .. a:sub(3,3):upper()
 		end)
 	else
 		return naam
@@ -86,11 +84,39 @@ function tolove(block)
 [[local function index(a,b)
 	return a[b+1]
 end
+local function som(a)
+	local som = 0
+	for i,v in pairs(a) do
+		som = som + v
+	end
+	return som
+end
+
+local toetsRechts = {}
+local toetsLinks = {}
+local toetsOmhoog = {}
+local toetsOmlaag = {}
+for i=1,600 do toetsRechts[i] = 0 end
+for i=1,600 do toetsLinks[i] = 0 end
+for i=1,600 do toetsOmhoog[i] = 0 end
+for i=1,600 do toetsOmlaag[i] = 0 end
 ]]}
 
 	-- update
 	local vars = {}
 	t[#t+1] = 'function love.update()\n'
+
+	-- update toets
+	t[#t+1] = [[
+	for i=1,600 do toetsRechts[i] = toetsRechts[i+1] end
+	for i=1,600 do toetsLinks[i] = toetsLinks[i+1] end
+	for i=1,600 do toetsOmhoog[i] = toetsOmhoog[i+1] end
+	for i=1,600 do toetsOmlaag[i] = toetsOmlaag[i+1] end
+	toetsRechts[600] = (love.keyboard.isDown("right") and 1/60 or 0)
+	toetsLinks[600] = (love.keyboard.isDown("left") and 1/60 or 0)
+	toetsOmhoog[600] = (love.keyboard.isDown("up") and 1/60 or 0)
+	toetsOmlaag[600] = (love.keyboard.isDown("down") and 1/60 or 0) ]]
+
 	for i=1,#block do
 		local stat = block[i]
 		stat2love(stat,t,vars)
@@ -102,7 +128,7 @@ end
 require 'lisp'
 --love.window.setMode(1280,1024,{fullscreen=true})
 function love.draw()
-	for i,v in ipairs(uit) do
+	for i,v in ipairs(cirkels) do
 		love.graphics.circle('fill', v[1], v[2], 20)
 	end
 ]]
