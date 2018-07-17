@@ -25,10 +25,6 @@ function file(name, data)
 	end
 end
 
-function slaap(s)
-	socket.select(nil, nil, s)
-end
-
 function ls(dir)
 	local dir = dir or '.'
 	local ls = io.popen('ls')
