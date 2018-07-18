@@ -40,7 +40,7 @@ end
 function tojs(exp,t)
 	t = t or {}
 	if atom(exp) then
-		t[#t+1] = vertaal[exp] or naam2love(exp) or exp
+		t[#t+1] = vertaal[exp] or naam2js(exp) or exp
 	elseif exp[1] == '->' then
 		tofunc(exp[3], exp[2], t)
 	elseif infix[exp[1]] and exp[3] then
@@ -50,14 +50,14 @@ function tojs(exp,t)
 		tojs(exp[3], t)
 		t[#t+1] = ')'
 	elseif exp[1] == '[]' then
-		t[#t+1] = '{'
+		t[#t+1] = '['
 		for i=2,#exp do
 			tojs(exp[i], t)
 			if i ~= #exp then
 				t[#t+1] = ', '
 			end
 		end
-		t[#t+1] = '}'
+		t[#t+1] = ']'
 	else
 		tojs(exp[1], t)
 		t[#t+1] = ' '
@@ -76,7 +76,7 @@ function stat2js(stat,t,vars)
 	t[#t+1] = naam2js(stat[2])
 	t[#t+1] = ' = '
 	tojs(stat[3],t)
-	t[#t+1] = '\n'
+	t[#t+1] = ';\n'
 	vars[#vars+1] = stat[2]
 end
 
@@ -131,19 +131,20 @@ window.requestAnimationFrame(function() {
 	t[#t+1] = [[
 			// teken cirkel
 			ctx.beginPath();
-			ctx.arc(200, 200, 50, 0, Math.PI*2, true);
+			ctx.arc(cirkel[0], cirkel[1], cirkel[2] || 50, 0, Math.PI*2, true);
 			ctx.closePath();
 			ctx.fillStyle = '#2D0';
 			ctx.fill();
 	]]
 
-	
+	--[[
 	for i,var in ipairs(vars) do
 		t[#t+1] = '\tlove.graphics.print('
 		t[#t+1] = '"'..var..' = "..unlisp('
 		t[#t+1] = naam2love(var)
 		t[#t+1] = '), 10, ' .. i*16 .. ')\n'
 	end
+	]]
 
 	t[#t+1] = [[
 }	

@@ -10,6 +10,7 @@ require 'sorteer'
 require 'doe'
 
 require 'love'
+require 'js'
 
 -- argumenten
 local taal = 'nl'
@@ -18,9 +19,10 @@ local code = {}
 local arch = 'amd64'
 local immediate
 local love
+local js
 
 local args = {...}
-local args = {'-L', '-i', 'a.code'}
+local args = {'-J', 'a.code'}
 
 for i=1,#args do
 	local arg = args[i]
@@ -33,6 +35,9 @@ for i=1,#args do
 		i = i + 1
 	elseif vlag == 't' then
 		arch = string.lower(arg:sub(3))
+	elseif vlag == 'J' then
+		js = true
+		doel = 'main.js'
 	elseif vlag == 'L' then
 		love = true
 		doel = 'main.lua'
@@ -64,7 +69,8 @@ Opties:
 		-i	voer meteen uit
 		-l	lokale van broncode
 		-o	uitvoerbestand
-		-L	compileer naar lov2d broncode
+		-L	compileer naar love2d
+		-J	compileer naar javascript
 		-v	verboos zijn
 ]])
 	return
@@ -147,10 +153,10 @@ waarden.tekst = {}
 waarden.getal = {}
 
 -- speel = bieb -> cirkels
-local invoer = {'in'}
+local invoer = {}
 local speel = {
 	van = cat(invoer, bieb),
-	naar = 'cirkels',
+	naar = 'cirkel',
 }
 
 --local naar = {'uit', 'cirkels', 'schrift'}
@@ -159,7 +165,8 @@ local stroom = sorteer(waarden, speel)
 
 if love then
 	uit = tolove(stroom)
-	print(uit)
+elseif js then
+	uit = toJs(stroom)
 elseif not immediate then
 	uit = unlisp(stroom)
 else
@@ -167,6 +174,8 @@ else
 end
 
 -- uitvoer
+print(doel)
+print(uit)
 if doel then
 	file(doel, uit)
 else
@@ -174,6 +183,6 @@ else
 end
 
 --
-if immediate then
+if love and immediate then
 	os.execute('love .')
 end
