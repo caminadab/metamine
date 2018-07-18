@@ -89,12 +89,12 @@ var index = function(a,b) {
 var som = function (a) {
 	var som = 0
 	for (var i = 0; i < a.length; i++) {
-		som = som + v;
+		som = som + a[i];
 	}
 	return som;
 }
 
-var key = {}
+var key = new Array(128).fill(0);
 window.onkeydown = function(e) { key[e.keyCode] = true; }
 window.onkeyup = function(e) { key[e.keyCode] = false; }
 
@@ -108,7 +108,7 @@ var toetsOmlaag = new Array(600).fill(0);
 	local vars = {}
 	t[#t+1] = 
 [[
-window.requestAnimationFrame(function() {
+function step() {
 	// update
 	for (var i = 0; i < 600; i++) {
 		toetsRechts[i] = toetsRechts[i+1];
@@ -116,11 +116,11 @@ window.requestAnimationFrame(function() {
 		toetsOmhoog[i] = toetsOmhoog[i+1];
 		toetsOmlaag[i] = toetsOmlaag[i+1];
 	}
-	toetsRechts[599] = key[39] + 0;
-	toetsLinks[599] = key[37] + 0;
-	toetsOmhoog[599] = key[38] + 0;
-	toetsOmlaag[599] = key[40] + 0;
-]]
+	toetsRechts[599] = key[39] / 60;
+	toetsLinks[599] = key[37] / 60;
+	toetsOmhoog[599] = key[38] / 60;
+	toetsOmlaag[599] = key[40] / 60;
+	]]
 
 	for i=1,#block do
 		local stat = block[i]
@@ -129,12 +129,15 @@ window.requestAnimationFrame(function() {
 
 	-- draw
 	t[#t+1] = [[
-			// teken cirkel
-			ctx.beginPath();
-			ctx.arc(cirkel[0], cirkel[1], cirkel[2] || 50, 0, Math.PI*2, true);
-			ctx.closePath();
-			ctx.fillStyle = '#2D0';
-			ctx.fill();
+	// schoonmaken
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	// teken cirkel
+	ctx.beginPath();
+	ctx.arc(cirkel[0], cirkel[1], cirkel[2] || 50, 0, Math.PI*2, true);
+	ctx.closePath();
+	ctx.fillStyle = '#2D0';
+	ctx.fill();
 	]]
 
 	--[[
@@ -147,7 +150,9 @@ window.requestAnimationFrame(function() {
 	]]
 
 	t[#t+1] = [[
+	window.requestAnimationFrame(step);
 }	
+window.requestAnimationFrame(step);
 	]]
 
 	return table.concat(t)
