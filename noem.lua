@@ -33,6 +33,10 @@ function noem(feiten)
 			if exp then
 				r[naam] = r[naam] or {}
 				r[naam][#r[naam]+1] = exp
+
+				if print_losse_waarden then
+					print(naam..' = '..unlisp(exp))
+				end
 			else
 				--print('kon niet oplossen voor '..naam)
 			end
@@ -40,3 +44,5 @@ function noem(feiten)
 	end
 	return r
 end
+
+assert(unlisp(noem(lisp'((= a 0) (= a 1))').a) == '(0 1)')

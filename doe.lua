@@ -56,6 +56,9 @@ local fn = {
 	end;
 
 	['tekst'] = function(a)
+		if type(a) == 'table' then
+			a = unlisp(a)
+		end
 		return table.pack(string.byte(tostring(a),1,#tostring(a)))
 	end;
 	['getal'] = function(a)

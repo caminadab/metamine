@@ -1,5 +1,6 @@
-*.swp
-*.swo
-*.tab.c
+.*
 
-*.so
+ontleed/taal.c
+ontleed/taal.h
+
+bin/

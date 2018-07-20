@@ -21,7 +21,18 @@ function setlijst(set)
 	return r
 end
 
-function cat(a,b)
+function cat(...)
+	local tt = {...}
+	local r = {}
+	for i,t in ipairs(tt) do
+		for i,v in ipairs(t) do
+			r[#r+1] = v
+		end
+	end
+	return r
+end
+
+function join(a,b)
 	local r = {}
 	for i,v in ipairs(a) do
 		for i,v in ipairs(v) do

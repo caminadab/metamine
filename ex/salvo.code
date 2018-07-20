@@ -3,11 +3,11 @@ toetsLinks = 0
 toetsOmhoog = 0
 toetsOmlaag = 0
 
-links = [5+toetsRechts-toetsLinks,toetsOmhoog]
-rechts = [15,0]
-bal = [10,10]
+links = [5 + toetsRechts - toetsLinks, toetsOmhoog]
+rechts = [15, 0]
+bal = [10, 10]
 
-scherm = [1280,1024]
+scherm = [1280, 1024]
 veld = 20
 links / veld = linksScherm / scherm
 rechts / veld = rechtsScherm / scherm

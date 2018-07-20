@@ -214,11 +214,13 @@ local function getOperator(ss)
 	return table.concat(text)
 end
 
+
 local function getVariable(ss)
 	local get,consume = ss.get,ss.consume
 	local text = {}
-	while get() and get():match('[%w%d-]') do
-		if get() == '-' and not get(1):match('[%w%d]') then break end
+	--while get() and get():match('[%w%d-]') do
+	while get() and get() ~= '(' and get() ~= ')' and get() ~= ' ' do
+		--if get() == '-' and not get(1):match('[%w%d]') then break end
 		table.insert(text, get())
 		consume()
 	end
@@ -284,7 +286,7 @@ function lex(src)
 			token = getOperator(ss)
 
 		-- variabele
-		elseif get():match('%w') then
+		elseif true or get():match('%w') then
 			token = getVariable(ss)
 
 		-- error
@@ -309,6 +311,8 @@ local function test(src,num)
 		assert(#tokens == num)
 	end
 end
+
+do return end
 
 test[[a + 3]]
 test[[+- a]]

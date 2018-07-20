@@ -1,3 +1,5 @@
+require 'lex'
+
 local function unparse_atom(atom)
   atom = string.format('%q', atom)
   atom = string.gsub(atom, '\n', '\\n')
@@ -27,9 +29,8 @@ function exp(sexp)
 end
 
 local function unparse_work(sexpr, maxlen, tabs, res)
-	if type(sexpr) == 'number' then
-		sexpr = tostring(sexpr)
-	end
+	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
+	if type(sexpr) == 'function' then sexpr = '<LAMBDA>' end
   tabs = tabs or 0
   res = res or {}
   if atom(sexpr) then
@@ -44,7 +45,7 @@ local function unparse_work(sexpr, maxlen, tabs, res)
         table.insert(res, string.rep('  ', tabs+1))
       end
       unparse_work(sub, maxlen, tabs+1, res)
-      if next(sexpr, i) then
+      if next(sexpr, i) and type(next(sexpr, i)) == 'number' then
         table.insert(res, ' ')
       end
     end
@@ -192,7 +193,8 @@ function lisp(t)
 	local i = 1
 	local noise = {[';']=true, [' ']=true,
 	['\r']=true, ['\n']=true, ['\t']=true}
-	local tokens = lex(t)
+	for k,v in pairs(lex) do print(lex) end
+	local tokens = lex.lex(t)
 	local stack = {{}}
 	if not tokens then
 		error('parse-error')

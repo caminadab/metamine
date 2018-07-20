@@ -2,45 +2,31 @@
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
-#include <lua.h>
-#include <lauxlib.h>
 
-typedef struct node node;
-struct node {
-	// kids?
-	int exp;
-	char data[0x100];
-	node* first;
-	node* last;
-	node* next;
-};
+#include "node.h"
+#include "taal.h"
 
-node* a(char* t);
 extern node* yylval;
 extern node* wortel;
 
+typedef struct fout fout;
 struct fout {
 	int lijn;
-	char wat[0x1000];
+	char bericht[0x1000];
 };
 
 extern int lijn;
 extern int foutlen;
 struct fout fouten[0x10];
 
-#define NUM 258
-//#define CAT 300
-
-void yyerror (char const * s) {
-	//fprintf(stderr, "%s\n", s);
-}
-
-int write_node(node* n, char* out, int left);
-void yyparse();
-
 char token[0x100];
 char buf[0x1000];
 const char* in;
+
+void rapporteer(int lijn, char* bericht);
+void yyerror (char const * s) {
+	//fprintf(stderr, "%s\n", s);
+}
 
 int yylex(void) {
 	int c;
@@ -59,17 +45,19 @@ int yylex(void) {
 			break;
 	}
 
-	// tokens
+	const char* cc = in - 1;
+
+	// naam
 	if (isalnum(c)) {
 		int i;
-		for (i = 0; i < 0x100 && (isalnum(c) || c == '-'); i++) {
+		for (i = 0; i < 0x1000 && (isalnum(c) || c == '-'); i++) {
 			token[i] = c;
 			c = *in++;
 		}
-		in--; //ungetc(c, stdin);
+		in--;
 		token[i] = 0;
 		yylval = a(token);
-		return NUM;
+		return NAME;
 	}
 
 	// klaar
@@ -79,59 +67,32 @@ int yylex(void) {
 	if (c == '\n')
 		lijn++;
 
-	token[0] = c;
-	token[1] = 0;
+	// multi-symbool
+	int id;
+	if (!memcmp(cc, "->", 2))				{ strcpy(token, "->"); in++; id = TO; }
+	else if (!memcmp(cc, "||", 2))	{ strcpy(token, "||"); in++; id = CAT; }
+	else if (!memcmp(cc, "..", 2))	{ strcpy(token, ".."); in++; id = TIL; }
+	else if (!memcmp(cc, "xx", 2))	{ strcpy(token, "xx"); in++; id = CART; }
+	else {
+		token[0] = c;
+		token[1] = 0;
+		id = c;
+	}
+	
 	yylval = a(token);
-	return c;
+	return id;
 }
 
-void lua_pushnode(lua_State* L, node* node) {
-	if (node->exp) {
-		lua_newtable(L);
-		int i = 0;
-		for (struct node* n = node->first; n; n = n->next) {
-			lua_pushinteger(L, i+1);
-			lua_pushnode(L, n);
-			lua_settable(L,-3);
-			i++;
-		}
-	} else {
-		lua_pushstring(L, node->data);
-	}
-}
-
-int ontleed(lua_State* L) {
-	in = luaL_checkstring(L, 1);
-	lijn = 0;
-	foutlen = 0;
+char* ontleed(char* code) {
+	in = code;
 	yyparse();
-
-	int r = 1;
-	lua_pushnode(L, wortel);
-
-	// fouten
-	if (foutlen) {
-		r++;
-		lua_createtable(L, foutlen, 0);
-		for (int i = 0; i < foutlen; i++) {
-			lua_pushinteger(L, i+1);
-			lua_pushinteger(L, fouten[i].lijn + 1);
-			lua_settable(L, -3);
-		}
-	}
-	return r;
-}
-
-int luaopen_ontleed(lua_State* L) {
-	in = luaL_checkstring(L, 1);
-
-	lua_pushcfunction(L, ontleed);
-	lua_setglobal(L, "ontleed");
-	return 1;
+	int len = write_node(wortel, buf, 0x1000);
+	return buf;
 }
 
 int main() {
-	strcpy(buf, "a = 5 * 8\nb = a * 2 - 3 * - 8\n"); in = buf;
+	strcpy(buf, "f = x -> x");
+	in = buf;
 	yyparse();
 	char out[1024];
 	int len = write_node(wortel, out, 0x400);
