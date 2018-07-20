@@ -1,3 +1,7 @@
+windows: main.c taal.c node.c
+	mkdir -p bin
+	gcc -std=c99 -shared -o bin/ontleed.dll -fPIC main.c taal.c node.c
+
 bin/ontleed.so: main.c taal.c node.c
 	mkdir -p bin
 	gcc -shared -o bin/ontleed.so -fPIC main.c taal.c node.c
