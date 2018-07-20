@@ -1,3 +1,6 @@
+module 'lisp'
+require 'lex'
+
 local function unparse_atom(atom)
   atom = string.format('%q', atom)
   atom = string.gsub(atom, '\n', '\\n')
@@ -191,7 +194,8 @@ function lisp(t)
 	local i = 1
 	local noise = {[';']=true, [' ']=true,
 	['\r']=true, ['\n']=true, ['\t']=true}
-	local tokens = lex(t)
+	for k,v in pairs(lex) do print(lex) end
+	local tokens = lex.lex(t)
 	local stack = {{}}
 	if not tokens then
 		error('parse-error')
