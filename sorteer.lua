@@ -180,7 +180,7 @@ function sorteer(waarden, volgorde)
 		end
 	end
 
-	--local stroom = ontrafel(stroom)
+	local stroom = ontrafel(stroom)
 
 	return stroom, {}
 end

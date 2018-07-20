@@ -22,7 +22,6 @@ local love
 local js
 
 local args = {...}
-local args = {'-J', 'a.code'}
 
 for i=1,#args do
 	local arg = args[i]
@@ -175,7 +174,6 @@ end
 
 -- uitvoer
 print(doel)
-print(uit)
 if doel then
 	file(doel, uit)
 else

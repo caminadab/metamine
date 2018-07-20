@@ -81,7 +81,9 @@ end
 
 function tolove(block)
 	local t = {
-[[local function index(a,b)
+[[
+package.path = package.path .. ';../?.lua'
+local function index(a,b)
 	return a[b+1]
 end
 local function som(a)
@@ -126,11 +128,8 @@ for i=1,600 do toetsOmlaag[i] = 0 end
 	-- draw
 	t[#t+1] = [[
 require 'lisp'
---love.window.setMode(1280,1024,{fullscreen=true})
 function love.draw()
-	for i,v in ipairs(cirkels) do
-		love.graphics.circle('fill', v[1], v[2], 20)
-	end
+	love.graphics.circle('fill', cirkel[1], cirkel[2], cirkel[3] or 20)
 ]]
 
 	for i,var in ipairs(vars) do

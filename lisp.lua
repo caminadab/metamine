@@ -193,8 +193,7 @@ function lisp(t)
 	local i = 1
 	local noise = {[';']=true, [' ']=true,
 	['\r']=true, ['\n']=true, ['\t']=true}
-	for k,v in pairs(lex) do print(lex) end
-	local tokens = lex.lex(t)
+	local tokens = lex(t)
 	local stack = {{}}
 	if not tokens then
 		error('parse-error')
