@@ -1,5 +1,3 @@
-module 'lex'
-
 -- token types
 local comment = 'comment'
 local insert = table.insert

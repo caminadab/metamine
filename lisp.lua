@@ -1,4 +1,3 @@
-module 'lisp'
 require 'lex'
 
 local function unparse_atom(atom)
