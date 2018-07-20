@@ -5,18 +5,10 @@
 
 #include "node.h"
 #include "taal.h"
+#include "global.h"
 
 extern node* yylval;
-extern node* wortel;
 
-typedef struct fout fout;
-struct fout {
-	int lijn;
-	char bericht[0x1000];
-};
-
-extern int lijn;
-extern int foutlen;
 struct fout fouten[0x10];
 
 char token[0x100];

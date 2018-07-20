@@ -3,6 +3,7 @@
 
 #include "node.h"
 #include "taal.h"
+#include "global.h"
 
 void lua_pushnode(lua_State* L, node* node) {
 	if (node->exp) {
@@ -61,7 +62,7 @@ int lua_ontleed(lua_State* L) {
 	}
 }
 
-int luaopen_ontleed(lua_State* L) {
+__declspec(dllexport) int luaopen_ontleed(lua_State* L) {
 	lua_pushcfunction(L, lua_ontleed);
 	lua_setglobal(L, "ontleed");
 	return 1;
