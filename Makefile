@@ -1,8 +1,18 @@
-pc:
+linux:
 	cd ontleed; make
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
 	
+windows:
+	mkdir -p bin
+	cd ontleed; make windows
+	cp -r ontleed/bin/* bin/
+
+all:
+	mkdir -p bin	
+	cd ontleed; make
+	cp -r ontleed/bin/* bin/
+
 web:
 	cd ontleed; make web
 	mkdir -p bin
