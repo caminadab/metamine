@@ -167,12 +167,15 @@ g.step = function() {
 
 var g = window;
 if (typeof g.active === 'undefined') {
-	g.init(g);
 	g.active = true;
+	g.init(g);
 
 	function dostep() {
-		g.active = true;
-		g.step();
+		try {
+			g.step();
+		} catch (err) {
+			console.log(err.message);
+		}
 	}
 
 	window.requestAnimationFrame(dostep);
