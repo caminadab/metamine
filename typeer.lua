@@ -46,6 +46,7 @@ local function verenig(ta, tb)
 	if tb == 'onbekend' then tb = nil end
 	if ta and not tb then return ta end
 	if tb and not ta then return tb end
+	if not ta and not tb then return 'onbekend' end 
 	if unlisp(ta) == unlisp(tb) then
 		return ta
 	end
@@ -134,7 +135,7 @@ local function exptypeer(exp, typen)
 		end	
 
 		if exp[1] == '[]' then
-			local t
+			local t = 'onbekend'
 			for i=2,#exp do
 				local a = exp[i]
 				local ta = exptypeer(a, typen)
@@ -151,11 +152,20 @@ local function exptypeer(exp, typen)
 				typen[exp] = {'fout-is-geen-functie', ft}
 				return typen[exp]
 			else
+
+				-- lijsten
 				if ft[1] == '^' then
-					typen[exp[2]] = 'int' -- index
+					-- index
+					if ft[3] == 'int' then
+						typen[exp[2]] = 'int'
+					else
+						typen[exp[2]] = {'..', 0, ft[3]}
+					end
 					typen[exp] = ft[2]
 					return ft[2]
 				end
+
+				-- functies
 				if ft[1] == '->' then
 					local van,naar = ft[2],ft[3]
 					typen[exp[2]] = van
@@ -196,15 +206,21 @@ function typeer(feiten)
 		vroegerOnbekend = typen.aantalOnbekend
 	end
 
-	if typen.aantalOnbekend > 0 then
-		error('onbekende types')
-	end
-
 	for naam,type in spairs(typen) do
 		if naam ~= 'aantalOnbekend' then
 			print(leed(naam)..': '..leed(type))
 		end
 	end
 	print()
+
+	if typen.aantalOnbekend > 0 then
+		for k,v in pairs(typen) do
+			if v == 'onbekend' then
+				print('ONBEKEND:',leed(v))
+			end
+		end
+		--error('onbekende types')
+	end
+
 	return typen, fouten
 end
