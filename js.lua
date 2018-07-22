@@ -15,16 +15,6 @@ local vertaal = {
 	['||'] = 'cat',
 }
 
-local function _naam2js(naam)
-	if type(naam) == 'string' then
-		return naam:gsub('.%-.', function (a)
-				return a:sub(1,1):lower() .. a:sub(3,3):upper()
-		end)
-	else
-		return naam
-	end
-end
-
 local function naam2js(naam)
 	if type(naam) == 'string' then
 		local r = {}
@@ -66,7 +56,6 @@ function tojs(exp,t)
 		tojs(exp[3], t)
 		t[#t+1] = ')'
 	elseif exp[1] == '[]' then
-		--[[
 		t[#t+1] = '['
 		for i=2,#exp do
 			tojs(exp[i], t)
@@ -75,8 +64,6 @@ function tojs(exp,t)
 			end
 		end
 		t[#t+1] = ']'
-		]]
-		t[#t+1] = '[200,200]'
 	else
 		tojs(exp[1], t)
 		t[#t+1] = ' '
@@ -93,6 +80,7 @@ end
 
 function stat2js(stat,t,vars)
 	t[#t+1] = '\t'
+	t[#t+1] = 'var '
 	t[#t+1] = naam2js(stat[2])
 	t[#t+1] = ' = '
 	tojs(stat[3],t)
@@ -103,44 +91,48 @@ end
 function toJs(block)
 	local t = {
 [[
-var index = function(a,b) {
-	return a[b];
-};
-var som = function (a) {
-	var som = 0
-	for (var i = 0; i < a.length; i++) {
-		som = som + a[i];
+var g = window;
+
+g.init = function() {
+	g.index = function(a,b) {
+		return a[b];
+	};
+	g.som = function (a) {
+		var som = 0
+		for (var i = 0; i < a.length; i++) {
+			som = som + a[i];
+		}
+		return som;
 	}
-	return som;
-}
 
-var key = new Array(128).fill(0);
-window.onkeydown = function(e) { key[e.keyCode] = true; }
-window.onkeyup = function(e) { key[e.keyCode] = false; }
+	g.key = new Array(128).fill(0);
+	window.onkeydown = function(e) { key[e.keyCode] = true; }
+	window.onkeyup = function(e) { key[e.keyCode] = false; }
 
-var toetsRechts = new Array(600).fill(0);
-var toetsLinks = new Array(600).fill(0);
-var toetsOmhoog = new Array(600).fill(0);
-var toetsOmlaag = new Array(600).fill(0);
+	g.toets_rechts = new Array(600).fill(0);
+	g.toets_links = new Array(600).fill(0);
+	g.toets_omhoog = new Array(600).fill(0);
+	g.toets_omlaag = new Array(600).fill(0);
+};
 ]]}
 
 	-- update
 	local vars = {}
 	t[#t+1] = 
 [[
-function step() {
+g.step = function() {
 	// update
 	for (var i = 0; i < 600; i++) {
-		toetsRechts[i] = toetsRechts[i+1];
-		toetsLinks[i] = toetsLinks[i+1];
-		toetsOmhoog[i] = toetsOmhoog[i+1];
-		toetsOmlaag[i] = toetsOmlaag[i+1];
+		toets_rechts[i] = toets_rechts[i+1];
+		toets_links[i] = toets_links[i+1];
+		toets_omhoog[i] = toets_omhoog[i+1];
+		toets_omlaag[i] = toets_omlaag[i+1];
 	}
-	toetsRechts[599] = key[39] / 60;
-	toetsLinks[599] = key[37] / 60;
-	toetsOmhoog[599] = key[38] / 60;
-	toetsOmlaag[599] = key[40] / 60;
-	]]
+	toets_rechts[599] = key[39] / 60;
+	toets_links[599] = key[37] / 60;
+	toets_omhoog[599] = key[38] / 60;
+	toets_omlaag[599] = key[40] / 60;
+]]
 
 	for i=1,#block do
 		local stat = block[i]
@@ -158,7 +150,7 @@ function step() {
 	ctx.closePath();
 	ctx.fillStyle = '#2D0';
 	ctx.fill();
-	]]
+]]
 
 	--[[
 	for i,var in ipairs(vars) do
@@ -171,9 +163,21 @@ function step() {
 
 	t[#t+1] = [[
 	window.requestAnimationFrame(step);
-}	
-window.requestAnimationFrame(step);
-	]]
+};
+
+var g = window;
+if (typeof g.active === 'undefined') {
+	g.init(g);
+	g.active = true;
+
+	function dostep() {
+		g.active = true;
+		g.step();
+	}
+
+	window.requestAnimationFrame(dostep);
+}
+]]
 
 	return table.concat(t)
 end
