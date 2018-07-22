@@ -186,7 +186,7 @@ function sorteer(waarden, volgorde)
 end
 
 -- TESTS
-do
+if false then
 	require 'lisp'
 
 	local g = {a = {'b'}, b = {'a'}}

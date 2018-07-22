@@ -1,14 +1,13 @@
 function log(...)
 	local t = {...}
 	local r = {}
-	if #t == 0 then io.stderr:write('\n'); return end
+	if #t == 0 then print(); return end
 	for i,v in ipairs(t) do
 		r[#r+1] = tostring(v)
 		r[#r+1] = '\t'
 	end
-	r[#r] = '\n'
 	local s = table.concat(r)
-	io.stderr:write(s)
+	print(s)
 end
 
 function file(name, data)
@@ -23,16 +22,6 @@ function file(name, data)
 		f:write(data)
 		f:close()
 	end
-end
-
-function ls(dir)
-	local dir = dir or '.'
-	local ls = io.popen('ls')
-	local d = {}
-	for file in ls:lines() do
-		table.insert(d, file)
-	end
-	return d
 end
 
 function copy(t)
@@ -173,3 +162,17 @@ color = {
 	cyan = '\x1B[36m',
 	white = '\x1B[37m',
 }
+
+if false then
+
+function ls(dir)
+	local dir = dir or '.'
+	local ls = io.popen('ls')
+	local d = {}
+	for file in ls:lines() do
+		table.insert(d, file)
+	end
+	return d
+end
+
+end

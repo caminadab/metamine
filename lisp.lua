@@ -1,9 +1,9 @@
 require 'lex'
 
 function unparse_atom(atom)
-  atom = string.format('%q', atom)
+  --atom = string.format('%q', atom)
   --atom = string.gsub(atom, '\n', '\\n')
-  atom = atom:sub(2,-2)
+  --atom = atom:sub(2,-2)
   return atom
 end
 
@@ -31,6 +31,7 @@ end
 function unparse_work(sexpr, maxlen, tabs, res)
 	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
 	if type(sexpr) == 'function' then sexpr = '<LAMBDA>' end
+
   tabs = tabs or 0
   res = res or {}
   if atom(sexpr) then
@@ -241,7 +242,7 @@ function lisp(t)
 	end
 
 	if #stack[1] > 1 then
-		error('ruis na data')
+		--error('ruis na data')
 	end
 	return stack[1][1]
 end

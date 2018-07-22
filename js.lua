@@ -15,11 +15,27 @@ local vertaal = {
 	['||'] = 'cat',
 }
 
-local function naam2js(naam)
+local function _naam2js(naam)
 	if type(naam) == 'string' then
 		return naam:gsub('.%-.', function (a)
 				return a:sub(1,1):lower() .. a:sub(3,3):upper()
 		end)
+	else
+		return naam
+	end
+end
+
+local function naam2js(naam)
+	if type(naam) == 'string' then
+		local r = {}
+		for i=1,#naam do
+			if naam:sub(i,i) == '-' then
+				r[#r+1] = '_'
+			else
+				r[#r+1] = naam:sub(i,i)
+			end
+		end
+		return table.concat(r)
 	else
 		return naam
 	end
@@ -50,6 +66,7 @@ function tojs(exp,t)
 		tojs(exp[3], t)
 		t[#t+1] = ')'
 	elseif exp[1] == '[]' then
+		--[[
 		t[#t+1] = '['
 		for i=2,#exp do
 			tojs(exp[i], t)
@@ -58,6 +75,8 @@ function tojs(exp,t)
 			end
 		end
 		t[#t+1] = ']'
+		]]
+		t[#t+1] = '[200,200]'
 	else
 		tojs(exp[1], t)
 		t[#t+1] = ' '
@@ -73,6 +92,7 @@ function tojs(exp,t)
 end
 
 function stat2js(stat,t,vars)
+	t[#t+1] = '\t'
 	t[#t+1] = naam2js(stat[2])
 	t[#t+1] = ' = '
 	tojs(stat[3],t)

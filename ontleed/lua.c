@@ -62,7 +62,19 @@ int lua_ontleed(lua_State* L) {
 	}
 }
 
-__declspec(dllexport) int luaopen_ontleed(lua_State* L) {
+#ifdef defined(_MSC_VER)
+	#define EXPORT __declspec(dllexport)
+	#define IMPORT __declspec(dllimport)
+#elif defined(__GNUC__)
+	#define EXPORT __attribute__((visibility("default")))
+	#define IMPORT
+#else
+	#define EXPORT
+	#define IMPORT
+	#pragma warning Hoe te exporteren?
+#endif
+
+EXPORT int luaopen_ontleed(lua_State* L) {
 	lua_pushcfunction(L, lua_ontleed);
 	lua_setglobal(L, "ontleed");
 	return 1;

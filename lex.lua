@@ -197,7 +197,13 @@ local function getOperator(ss)
 	insert(text, first)
 	consume()
 
+	while get() and operator[get()] do
+		insert(text, get())
+		consume()
+	end
+
 	-- triple?
+	--[[
 	if get(1) and triple[first..get(0)..get(1)] then
 		insert(text, get(0))
 		insert(text, get(1))
@@ -210,16 +216,20 @@ local function getOperator(ss)
 		insert(text, get())
 		consume()
 	end
+	]]
 
 	return table.concat(text)
 end
 
+local function isvar(ch)
+	return ch:upper() ~= ch:lower() or ch == '-'
+end
 
 local function getVariable(ss)
 	local get,consume = ss.get,ss.consume
 	local text = {}
-	while get() and get():match('[%w%d-]') do
-		if get() == '-' and not get(1):match('[%w%d]') then break end
+	while get() and isvar(get()) do
+		if get() == '-' and not isvar(get(1)) then break end
 		table.insert(text, get())
 		consume()
 	end
@@ -285,14 +295,8 @@ function lex(src)
 			token = getOperator(ss)
 
 		-- variabele
-		elseif get():match('%w') then
-			token = getVariable(ss)
-
-		-- error
 		else
-			local c = get()
-			error('onherkenbaar karakter '..c..' ('..string.byte(c)..')')
-
+			token = getVariable(ss)
 		end
 
 		table.insert(tokens,token)

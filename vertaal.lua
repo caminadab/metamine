@@ -1,6 +1,5 @@
 require 'util'
 require 'lisp'
-require 'func'
 
 require 'ontleed'
 require 'noem'
@@ -75,9 +74,10 @@ local bieb = {
 	'index',
 }
 
+-- code in lisp formaat
 function vertaalJs(code)
 	-- ontleed
-	local feiten = ontleed(code)
+	local feiten = lisp(code)
 	local waarden = noem(feiten)
 
 	-- speel = bieb -> cirkels
@@ -91,5 +91,3 @@ function vertaalJs(code)
 	local func = toJs(stroom)
 	return func
 end
-
-print(vertaalJs('cirkel = [200,200]'))
