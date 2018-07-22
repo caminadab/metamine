@@ -2,6 +2,7 @@ linux:
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
+	ln -sf ../vt bin/vt
 	
 windows:
 	mkdir -p bin

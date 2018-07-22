@@ -63,7 +63,7 @@ function spairs(t)
 	for key in pairs(t) do
 		table.insert(keys, key)
 	end
-	table.sort(keys, function (a,b) return tostring(a) < tostring(b) end)
+	table.sort(keys, function (a,b) return unlisp(a) < unlisp(b) end)
 	local index = 1
 
 	return function()

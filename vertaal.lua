@@ -4,6 +4,7 @@ require 'lisp'
 require 'ontleed'
 require 'noem'
 require 'sorteer'
+require 'typeer'
 
 require 'js'
 
@@ -75,9 +76,9 @@ local bieb = {
 }
 
 -- code in lisp formaat
-function vertaalJs(code)
+function vertaalJs(lispcode)
 	-- ontleed
-	local feiten = lisp(code)
+	local feiten = lisp(lispcode)
 	local waarden = noem(feiten)
 
 	-- speel = bieb -> cirkels
@@ -91,3 +92,21 @@ function vertaalJs(code)
 	local func = toJs(stroom)
 	return func
 end
+
+-- vertaal = code -> stroom
+function vertaal(code)
+	local feiten = ontleed(code)
+	local types = typeer(feiten)
+	local waarden = noem(feiten)
+
+	-- speel = bieb -> cirkels
+	local invoer = {}
+	local speel = {
+		van = cat(invoer, bieb),
+		naar = 'cirkel',
+	}
+
+	local stroom = sorteer(waarden, speel)
+	return stroom
+end
+

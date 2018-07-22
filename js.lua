@@ -7,7 +7,7 @@ local infix = {
 }
 
 local vertaal = {
-	['tijd'] = 'Date.now()',
+	['tijd'] = '(Date.now()/1000)',
 	['sin'] = 'Math.sin',
 	['cos'] = 'Math.cos',
 	['abs'] = 'Math.abs',

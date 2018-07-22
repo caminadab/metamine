@@ -21,3 +21,4 @@ assert(unlisp(ontleed('f = a -> a')) == '((= f (-> a a)))')
 assert(unlisp(ontleed('f = a -> a + 1')) == '((= f (-> a (+ a 1))))')
 
 assert(unlisp(ontleed('b = f(a)')) == '((= b (f a)))')
+assert(unlisp(ontleed('a : b')) == '((: a b))')

@@ -7,7 +7,7 @@ local infix = {
 }
 
 local vertaal = {
-	['tijd'] = 'love.timer.getTime()',
+	['nu'] = 'love.timer.getTime()',
 	['sin'] = 'math.sin',
 	['cos'] = 'math.cos',
 	['abs'] = 'math.abs',
@@ -117,7 +117,8 @@ for i=1,600 do toetsOmlaag[i] = 0 end
 	toetsRechts[600] = (love.keyboard.isDown("right") and 1/60 or 0)
 	toetsLinks[600] = (love.keyboard.isDown("left") and 1/60 or 0)
 	toetsOmhoog[600] = (love.keyboard.isDown("up") and 1/60 or 0)
-	toetsOmlaag[600] = (love.keyboard.isDown("down") and 1/60 or 0) ]]
+	toetsOmlaag[600] = (love.keyboard.isDown("down") and 1/60 or 0)
+]]
 
 	for i=1,#block do
 		local stat = block[i]

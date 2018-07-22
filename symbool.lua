@@ -22,3 +22,10 @@ function var(exp,t)
 	return t
 end
 
+function isatoom(exp)
+	return type(exp) ~= 'table'
+end
+
+function isexp(exp)
+	return type(exp) == 'table'
+end

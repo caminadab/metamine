@@ -5,6 +5,16 @@ function map(v, fn)
 	return r
 end
 
+function filter(t,fn)
+	local r = {}
+	for i,v in ipairs(t) do
+		if fn(v) then
+			r[#r+1] = v
+		end
+	end
+	return r
+end
+
 function keerom(t)
 	local r = {}
 	for i,v in ipairs(t) do

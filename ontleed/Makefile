@@ -1,6 +1,7 @@
 linux: main.c taal.c node.c lua.c
 	mkdir -p bin
 	gcc -shared -o bin/ontleed.so -fPIC main.c taal.c node.c lua.c
+	ln -sf bin/ontleed.so ontleed.so
 
 windows: main.c taal.c node.c lua.c
 	mkdir -p bin

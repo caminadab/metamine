@@ -62,7 +62,8 @@ input:
 ;
 
 eq:
-	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
+		exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
+	| exp ':' exp					{ $$ = exp3(a(":"), $1, $3); }
 ;
 
 single:
