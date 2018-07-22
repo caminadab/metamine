@@ -162,7 +162,6 @@ g.step = function() {
 	]]
 
 	t[#t+1] = [[
-	window.requestAnimationFrame(step);
 };
 
 var g = window;
@@ -176,6 +175,7 @@ if (typeof g.active === 'undefined') {
 		} catch (err) {
 			console.log(err.message);
 		}
+		window.requestAnimationFrame(dostep);
 	}
 
 	window.requestAnimationFrame(dostep);
