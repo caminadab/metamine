@@ -1,13 +1,13 @@
 require 'lex'
 
-local function unparse_atom(atom)
+function unparse_atom(atom)
   atom = string.format('%q', atom)
-  atom = string.gsub(atom, '\n', '\\n')
+  --atom = string.gsub(atom, '\n', '\\n')
   atom = atom:sub(2,-2)
   return atom
 end
 
-local function unparse_len(sexp)
+function unparse_len(sexp)
 	if type(sexp) == 'number' then sexp = tostring(sexp) end
   local len
   if atom(sexp) then
@@ -28,7 +28,7 @@ function exp(sexp)
 	return type(sexp) == 'table'
 end
 
-local function unparse_work(sexpr, maxlen, tabs, res)
+function unparse_work(sexpr, maxlen, tabs, res)
 	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
 	if type(sexpr) == 'function' then sexpr = '<LAMBDA>' end
   tabs = tabs or 0
@@ -193,8 +193,7 @@ function lisp(t)
 	local i = 1
 	local noise = {[';']=true, [' ']=true,
 	['\r']=true, ['\n']=true, ['\t']=true}
-	for k,v in pairs(lex) do print(lex) end
-	local tokens = lex.lex(t)
+	local tokens = lex(t)
 	local stack = {{}}
 	if not tokens then
 		error('parse-error')
