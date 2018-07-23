@@ -24,11 +24,11 @@ function file(name, data)
 	end
 end
 
-function copy(t)
+function kopie(t)
 	if type(t) == 'table' then
 		local c = {}
 		for i,v in pairs(t) do
-			c[i] = copy(v)
+			c[i] = kopie(v)
 		end
 		return c
 	else

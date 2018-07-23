@@ -13,6 +13,7 @@ local vertaal = {
 	['abs'] = 'math.abs',
 	['.'] = 'index',
 	['||'] = 'cat',
+	['sincos'] = 'sincos',
 }
 
 local function naam2love(naam)
@@ -36,7 +37,7 @@ function tofunc(naar,van,t)
 	t[#t+1] = 'end'
 end
 
-function tolo(exp,t)
+function tolo(exp,t,typen)
 	t = t or {}
 	if atom(exp) then
 		t[#t+1] = vertaal[exp] or naam2love(exp) or exp
@@ -44,25 +45,35 @@ function tolo(exp,t)
 		tofunc(exp[3], exp[2], t)
 	elseif infix[exp[1]] and exp[3] then
 		t[#t+1] = '('
-		tolo(exp[2], t)
+		tolo(exp[2], t, typen)
 		t[#t+1] = exp[1]
-		tolo(exp[3], t)
+		tolo(exp[3], t, typen)
 		t[#t+1] = ')'
 	elseif exp[1] == '[]' then
 		t[#t+1] = '{'
 		for i=2,#exp do
-			tolo(exp[i], t)
+			tolo(exp[i], t, typen)
 			if i ~= #exp then
 				t[#t+1] = ', '
 			end
 		end
 		t[#t+1] = '}'
+	elseif isexp(typen[exp[1]]) and typen[exp[1]][1] == '^' then
+		tolo(exp[1], t, typen)
+		t[#t+1] = ''
+		t[#t+1] = '[1+'
+		for i=2,#exp do
+			tolo(exp[i], t, typen)
+			t[#t+1] = ', '
+		end
+		t[#t] = nil
+		t[#t+1] = ']'
 	else
-		tolo(exp[1], t)
-		t[#t+1] = ' '
+		tolo(exp[1], t, typen)
+		t[#t+1] = ''
 		t[#t+1] = '('
 		for i=2,#exp do
-			tolo(exp[i], t)
+			tolo(exp[i], t, typen)
 			t[#t+1] = ', '
 		end
 		t[#t] = nil
@@ -71,15 +82,15 @@ function tolo(exp,t)
 	return t
 end
 
-function stat2love(stat,t,vars)
+function stat2love(stat,t,vars,typen)
 	t[#t+1] = naam2love(stat[2])
 	t[#t+1] = ' = '
-	tolo(stat[3],t)
+	tolo(stat[3],t,typen)
 	t[#t+1] = '\n'
 	vars[#vars+1] = stat[2]
 end
 
-function tolove(block)
+function tolove(block,typen)
 	local t = {
 [[
 package.path = package.path .. ';../?.lua'
@@ -92,6 +103,9 @@ local function som(a)
 		som = som + v
 	end
 	return som
+end
+local function sincos(hoek)
+	return {math.cos(hoek), math.sin(hoek)}
 end
 
 local toetsRechts = {}
@@ -122,7 +136,7 @@ for i=1,600 do toetsOmlaag[i] = 0 end
 
 	for i=1,#block do
 		local stat = block[i]
-		stat2love(stat,t,vars)
+		stat2love(stat,t,vars,typen)
 	end
 	t[#t+1] = 'end\n'
 

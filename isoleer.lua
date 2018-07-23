@@ -13,6 +13,9 @@ end
 
 -- rewrite (a + b = c, a) -> c - b
 function isoleer(eq,name)
+	if eq[1] ~= '=' then
+		return
+	end
 	local flip = false
 	while true do
 		local eq0

@@ -10,6 +10,10 @@ require 'doe'
 require 'love'
 require 'js'
 
+-- GLOBALEN
+print_typen_bron = false
+print_typen_stroom = false
+
 -- argumenten
 local taal = 'nl'
 local bron = {}
@@ -78,13 +82,13 @@ end
 
 -- lees in
 local code = file(bron[1])
-local stroom = vertaal(code)
+local stroom,typen = vertaal(code)
 
 local uit
 if doel == 'love' then
-	uit = tolove(stroom)
+	uit = tolove(stroom,typen)
 elseif doel == 'js' then
-	uit = toJs(stroom)
+	uit = toJs(stroom,typen)
 else
 	uit = unlisp(stroom)
 end

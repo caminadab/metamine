@@ -5,6 +5,7 @@ require 'ontleed'
 require 'noem'
 require 'sorteer'
 require 'typeer'
+require 'uitrol'
 
 require 'js'
 
@@ -22,6 +23,7 @@ local bieb = {
 
 	-- trig
 	'sin', 'cos', 'tan',
+	'sincos',
 	'asin', 'acos', 'atan',
 	'abs',
 	'som',
@@ -93,10 +95,25 @@ function vertaalJs(lispcode)
 	return func
 end
 
+local basis = {
+	['+'] = {'->', 'getal', 'getal'},
+	['-'] = {'->', 'getal', 'getal'},
+	['*'] = {'->', 'getal', 'getal'},
+	['/'] = {'->', 'getal', 'getal'},
+	['^'] = {'->', 'getal', 'getal'},
+	['_'] = {'->', 'getal', 'getal'},
+	['->'] = {'->', 'iets', 'iets'},
+	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}},
+	['sin'] = {'->', 'getal', 'getal'},
+	['cos'] = {'->', 'getal', 'getal'},
+	['tan'] = {'->', 'getal', 'getal'},
+}
+
 -- vertaal = code -> stroom
 function vertaal(code)
+	print_typen = print_typen_bron
 	local feiten = ontleed(code)
-	local types = typeer(feiten)
+	local typen = typeer(feiten,basis)
 	local waarden = noem(feiten)
 
 	-- speel = bieb -> cirkels
@@ -107,6 +124,15 @@ function vertaal(code)
 	}
 
 	local stroom = sorteer(waarden, speel)
-	return stroom
+
+	-- frisse avondbries
+	print_typen = print_typen_stroom
+	local typen = typeer(stroom,basis)
+
+	-- breid uit
+	local asmeta = uitrol(stroom, typen)
+	    
+
+	return asmeta, typen
 end
 

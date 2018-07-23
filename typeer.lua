@@ -75,9 +75,9 @@ local vastetypen = {
 }
 
 -- lengte of een lijst type
-local function lijstlen(t, typen)
+function lijstlen(t, typen)
 	if isatoom(t) then return nil end
-	if t[1] == '^' then return t[3] end
+	if t[1] == '^' then return tostring(t[3]) end --TEMP tostring
 end
 
 -- gaat ervan uit dat typen.aantalOnbekend ingevuld is
@@ -116,6 +116,9 @@ local function exptypeer(exp, typen)
 				if la == lb then
 					t = {'^', verenig(ta[2], tb[2]), ta[3]}
 					typen[exp] = t
+				else
+					print(type(la), type(lb))
+					print("!", leed(la), leed(lb))
 				end
 				return t
 			end
@@ -180,8 +183,9 @@ local function exptypeer(exp, typen)
 	return 'onbekend'
 end
 
-function typeer(feiten)
-	local typen = {aantalOnbekend = 0}
+-- invoer: _G.print_typen
+function typeer(feiten,typen)
+	local typen = typen or {aantalOnbekend = 0}
 	local fouten = {}
 	local vroegerOnbekend = 999999
 
@@ -206,17 +210,19 @@ function typeer(feiten)
 		vroegerOnbekend = typen.aantalOnbekend
 	end
 
-	for naam,type in spairs(typen) do
-		if naam ~= 'aantalOnbekend' then
-			print(leed(naam)..': '..leed(type))
+	if print_typen then
+		for naam,type in spairs(typen) do
+			if naam ~= 'aantalOnbekend' then
+				print(leed(naam)..': '..leed(type))
+			end
 		end
+		print()
 	end
-	print()
 
 	if typen.aantalOnbekend > 0 then
-		for k,v in pairs(typen) do
+		for k,v in spairs(typen) do
 			if v == 'onbekend' then
-				print('ONBEKEND:',leed(v))
+				print('ONBEKEND:',leed(k))
 			end
 		end
 		--error('onbekende types')
