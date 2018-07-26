@@ -32,6 +32,8 @@ web:
 	lua2js func.lua > bin/func.js
 	lua2js graaf.lua > bin/graaf.js
 	lua2js js.lua > bin/js.js
+	lua2js typeer.lua > bin/typeer.js
+	lua2js uitrol.lua > bin/uitrol.js
 
 clean:
 	rm -r bin/
