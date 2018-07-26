@@ -1,6 +1,13 @@
 require 'ontleed'
 require 'lisp'
 
+local function asserto(code,doel)
+	local doel = unlisp(lisp(doel))
+	local res = unlisp(ontleed(code))
+	assert(res == doel, res..' maar moet zijn '..doel)
+	return unlisp(ontleed(code))
+end
+
 local a,err = ontleed('*')
 assert(err)
 
@@ -13,12 +20,30 @@ assert(not err)
 local a,err = ontleed('a = 2\n\n 3 +')
 assert(err)
 
-assert(unlisp(ontleed('f = a + b')), '((= f (+ a b)))')
-
 -- functies
-assert(unlisp(ontleed('f = a + b')) == '((= f (+ a b)))')
-assert(unlisp(ontleed('f = a -> a')) == '((= f (-> a a)))')
-assert(unlisp(ontleed('f = a -> a + 1')) == '((= f (-> a (+ a 1))))')
+asserto('f = a + b', '((= f (+ a b)))')
+asserto('f = a -> a', '((= f (-> a a)))')
+asserto('f = a -> a + 1', '((= f (-> a (+ a 1))))')
+asserto('b = f(a)', '((= b (f a)))')
+asserto('b = f a', '((= b (f a)))')
+asserto('b = sin a + 1', '((= b (+ (sin a) 1)))')
+asserto([[
+f = a -> b
+	a: int
+	a * 2 = b * 3
+]],[[
+(
+	(= b
+		(
+			(-> a b)
+			(
+				(: a int)
+				(= (* a 2) (* b 3))
+			)
+		)
+	)
+)
+]])
 
-assert(unlisp(ontleed('b = f(a)')) == '((= b (f a)))')
-assert(unlisp(ontleed('a : b')) == '((: a b))')
+--asserto('a : b', '((: a b))')
+--
