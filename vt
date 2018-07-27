@@ -11,7 +11,7 @@ require 'love'
 require 'js'
 
 -- GLOBALEN
-print_typen_bron = false
+print_typen_bron = true
 print_typen_stroom = false
 
 -- argumenten

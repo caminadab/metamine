@@ -31,7 +31,7 @@ function uitrol(stroom, typen)
 			local doeltype = typen[naam]
 
 			if isexp(val) then
-				print(naam,n,leed(tfn),leed(doeltype))
+				print('UITROL',naam,n,leed(tfn),leed(doeltype))
 			end
 
 			-- array unpacking

@@ -9,6 +9,18 @@ local prios = {
 	['='] = 0,
 }
 
+local function issimpel1(t)
+	return isexp(t) and t[1] == '->' and isatoom(t[2]) and isatoom(t[3])
+end
+assert(issimpel1{'->', 'getal', 'getal'})
+
+local function issimpel2(t)
+	if not isexp(t) then return false end
+	local argn = t[2]
+	local bi = isexp(argn) and #argn == 3 and isatoom(argn[2]) and isatoom(argn[3])
+	return isexp(t) and t[1] == '->' and bi
+end
+
 local dichtbij = {['^']=true,['_']=true,['.']=true}
 function leedwerk(exp, t)
 	local prio = 0
@@ -56,7 +68,7 @@ local function verenig_of(ta, tb)
 	if tonumber(tb) then ta,tb = tb,ta end
 
 	if tonumber(ta) and tonumber(tb) and ta ~= tb then
-		return 'fout', leed(ta)..' != '..tb
+		return 'getal'
 	end
 	if tonumber(ta) and (tb == 'getal' or tb == 'int') then
 		return tb
@@ -106,6 +118,10 @@ function lijstlen(t, typen)
 	if t[1] == '^' then return tostring(t[3]) end --TEMP tostring
 end
 
+local function issimpelefunctie(t)
+	return isexp(t) and t[1] == '->' and isatoom(t[2]) and isatoom(t[3])
+end
+
 -- gaat ervan uit dat typen.aantalOnbekend ingevuld is
 -- exp,typen -> {exp -> type}
 function exptypeer(exp, typen)
@@ -129,6 +145,7 @@ function exptypeer(exp, typen)
 	elseif exp[1] == ':' then
 		local a,b = exp[2], exp[3]
 		T[a] = b
+		t = 'ok'
 
 	-- vergelijking
 	elseif exp[1] == '=' then
@@ -162,9 +179,57 @@ function exptypeer(exp, typen)
 		end
 
 	-- functie
-	elseif exp[1] == '+' or exp[1] == '*' or exp[1] == '/' or exp[1] == '-' then
-			local fn,a,b = exp[1], exp[2], exp[3]
-			
+	elseif issimpel1(typen[exp[1]]) or issimpel2(typen[exp[1]]) then
+			local fn,a,b,c = table.unpack(exp) --exp[1], exp[2], exp[3], exp[4]
+
+			-- lengte
+			local lengte = nil
+
+			-- subtypen, fouten, lengten
+			local ti,fi = nil,{}
+			for i=2,#exp do
+				local a = exp[i]
+				local ti1,f1 = exptypeer(a, typen)
+				local l1 = lijstlen(a)
+				
+				if t1 == 'fout' then
+					t,f = 'fout',f1
+					break
+				end
+
+				fi[#fi+1] = f
+
+				-- subtype
+				local t0 = ti
+				ti = verenig_of(ti0, ti1)
+				if ti == 'fout' then
+					t = 'fout'
+					f = '???'
+					break
+				end
+
+				lengte = verenig_en(l0,l1)
+				
+				if lengte == 'fout' then
+					t = 'fout'
+					f = 'lijstlengte ongelijkheid: '..leed(l0)..' != '..leed(l1)
+					break
+				end
+			end
+
+			-- verenig lengten
+			-- TODO
+
+			-- bouwen
+			ti = ti or 'iets'
+			lengte = lengte or 1
+			if lengte == 1 then
+				t = ti
+			else
+				t = {'^', ti, lengte}
+			end
+
+			--[[
 			local ta,tb = exptypeer(a, typen), exptypeer(b, typen)
 			
 			-- elementswijs
@@ -175,7 +240,6 @@ function exptypeer(exp, typen)
 				else
 					t = 'fout'
 					f = 'lijstlengte ongelijkheid: '..leed(la)..' != '..leed(lb)
-					gf = f
 				end
 			end
 
@@ -195,6 +259,7 @@ function exptypeer(exp, typen)
 				t = 'fout'
 				f = 'lijstlengte onbekend'
 			end
+			]]
 
 		-- zit hij erin?
 		elseif typen[exp[1]] then
@@ -278,7 +343,7 @@ function typeer(feiten,typen)
 	end
 	for t,f in spairs(typen.fouten) do
 		if type(f) == 'boolean' then
-			print(color.yellow..'  '..leed(t)..color.white)
+			print(color.orange..'  '..leed(t)..color.white)
 		end
 	end
 	print()
@@ -292,6 +357,7 @@ function typeer(feiten,typen)
 	end
 
 	local fouten = typen.fouten
+	if not next(fouten) then fouten = nil end
 	typen.fouten = nil
 	return typen, fouten
 end

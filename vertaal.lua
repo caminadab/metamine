@@ -79,17 +79,21 @@ local bieb = {
 	'index',
 }
 
+local bi = {',', 'getal', 'getal'}
+local mofn = {'->', 'getal', 'getal'}
+local bifn = {'->', bi, 'getal'}
 local basis = {
-	['+'] = {'->', 'getal', 'getal'},
-	['-'] = {'->', 'getal', 'getal'},
-	['*'] = {'->', 'getal', 'getal'},
-	['/'] = {'->', 'getal', 'getal'},
-	['^'] = {'->', 'getal', 'getal'},
-	['_'] = {'->', 'getal', 'getal'},
-	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}},
-	['sin'] = {'->', 'getal', 'getal'},
-	['cos'] = {'->', 'getal', 'getal'},
-	['tan'] = {'->', 'getal', 'getal'},
+	['+'] = bifn,
+	['-'] = bifn,
+	['*'] = bifn,
+	['/'] = bifn,
+	['^'] = bifn,
+	['_'] = bifn,
+	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}}, -- 'getal -> getal^2'
+	['wortel'] = mofn,
+	['sin'] = mofn,
+	['cos'] = mofn,
+	['tan'] = mofn,
 }
 
 -- code in lisp formaat
@@ -135,8 +139,8 @@ function vertaal(code)
 	local typen = typeer(stroom,basis)
 
 	-- breid uit
-	local asmeta = uitrol(stroom, typen)
+	local stroom = uitrol(stroom, typen)
 
-	return asmeta, typen
+	return stroom, typen
 end
 
