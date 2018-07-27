@@ -86,7 +86,6 @@ local basis = {
 	['/'] = {'->', 'getal', 'getal'},
 	['^'] = {'->', 'getal', 'getal'},
 	['_'] = {'->', 'getal', 'getal'},
-	['->'] = {'->', 'iets', 'iets'},
 	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}},
 	['sin'] = {'->', 'getal', 'getal'},
 	['cos'] = {'->', 'getal', 'getal'},
@@ -117,7 +116,9 @@ end
 function vertaal(code)
 	print_typen = print_typen_bron
 	local feiten = ontleed(code)
-	local typen = typeer(feiten,basis)
+	local typen,fouten = typeer(feiten,basis)
+	if fouten then return nil, fouten end
+
 	local waarden = noem(feiten)
 
 	-- speel = bieb -> cirkels
@@ -135,7 +136,6 @@ function vertaal(code)
 
 	-- breid uit
 	local asmeta = uitrol(stroom, typen)
-	    
 
 	return asmeta, typen
 end

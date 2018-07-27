@@ -36,8 +36,7 @@ function uitrol(stroom, typen)
 
 			-- array unpacking
 			if isexp(val) and val[1] == '[]' then
-				print('INLINE LIJST')
-				uitgerold[naam] = true
+				uitgerold[naam] = #val-1
 				for i=2,#val do
 					local naam = naam..(i-2)
 					r[#r+1] = {'=', naam, val[i]}
@@ -46,7 +45,6 @@ function uitrol(stroom, typen)
 			-- kleine loopjes
 			elseif tfn and isexp(val) and
 					isatoom(tfn[2]) and isatoom(tfn[3]) then
-				print('UITROL')
 				for i=1,n do
 					local val = kopie(val)
 					local index = tostring(i-1)
@@ -83,6 +81,7 @@ function uitrol(stroom, typen)
 	if uitgerold[doel] then
 		-- inrollen
 		local a = {'[]'}
+		print(uitgerold[doel])
 		for i=1,uitgerold[doel] do
 			local index = tostring(i-1)
 			a[#a+1] = doel..index

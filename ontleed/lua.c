@@ -5,6 +5,8 @@
 #include "taal.h"
 #include "global.h"
 
+extern void rapporteer(int t, char* str);
+
 void lua_pushnode(lua_State* L, node* node) {
 	if (node->exp) {
 		lua_newtable(L);
@@ -62,7 +64,7 @@ int lua_ontleed(lua_State* L) {
 	}
 }
 
-#ifdef defined(_MSC_VER)
+#ifdef _WIN32 //defined(_MSC_VER)
 	#define EXPORT __declspec(dllexport)
 	#define IMPORT __declspec(dllimport)
 #elif defined(__GNUC__)

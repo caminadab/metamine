@@ -11,6 +11,7 @@ web:
 	mkdir -p bin
 	emcc -o bin/em-ontleed.js -s EXPORTED_FUNCTIONS='["_main", "_ontleed"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' main.c taal.c node.c
 
+
 taal.h taal.c: taal.y
 	bison -d -t --defines=taal.h --output=taal.c taal.y
 

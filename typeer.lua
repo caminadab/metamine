@@ -1,5 +1,6 @@
 require 'symbool'
 require 'func'
+require 'util'
 
 local prios = {
 	['^'] = 3, ['_'] = 3,
@@ -37,16 +38,16 @@ function leedwerk(exp, t)
 end
 
 function leed(exp)
+	local exp = exp or 'niets'
 	local t = leedwerk(exp, {})
 	return table.concat(t)
 end
 
 local function verenig_of(ta, tb)
-	if ta == 'onbekend' then ta = nil end
-	if tb == 'onbekend' then tb = nil end
+	if ta == 'fout' or tb == 'fout' then return 'fout' end
 	if ta and not tb then return ta end
 	if tb and not ta then return tb end
-	if not ta and not tb then return 'onbekend' end 
+	if not ta and not tb then return nil end 
 	if unlisp(ta) == unlisp(tb) then
 		return ta
 	end
@@ -55,22 +56,22 @@ local function verenig_of(ta, tb)
 	if tonumber(tb) then ta,tb = tb,ta end
 
 	if tonumber(ta) and tonumber(tb) and ta ~= tb then
-		return {'fout-ongelijkheid', ta, tb}
+		return 'fout', leed(ta)..' != '..tb
 	end
 	if tonumber(ta) and (tb == 'getal' or tb == 'int') then
 		return tb
 	end
 
-	return 'onbekend'
+	return 'fout', leed(ta)..' != '..leed(tb)
 end
 assert(verenig_of('2', 'int') == 'int')
 
+-- nil = onbekend, fout = fout
 local function verenig_en(ta, tb)
-	if ta == 'onbekend' then ta = nil end
-	if tb == 'onbekend' then tb = nil end
 	if ta and not tb then return ta end
 	if tb and not ta then return tb end
-	if not ta and not tb then return 'onbekend' end 
+	if not ta and not tb then return nil end 
+	if ta == 'fout' or tb == 'fout' then return 'fout' end
 	if unlisp(ta) == unlisp(tb) then
 		return ta
 	end
@@ -79,13 +80,13 @@ local function verenig_en(ta, tb)
 	if tonumber(tb) then ta,tb = tb,ta end
 
 	if tonumber(ta) and tonumber(tb) and ta ~= tb then
-		return {'fout-ongelijkheid', ta, tb}
+		return 'fout', leed(ta)..' != '..tb
 	end
 	if tonumber(ta) and (tb == 'getal' or tb == 'int') then
 		return ta
 	end
 
-	return nil
+	return 'fout', leed(ta)..' != '..leed(tb)
 end
 assert(verenig_en('2', 'int') == '2')
 
@@ -106,43 +107,75 @@ function lijstlen(t, typen)
 end
 
 -- gaat ervan uit dat typen.aantalOnbekend ingevuld is
+-- exp,typen -> {exp -> type}
 function exptypeer(exp, typen)
-	-- type van de expressie
-	local t
+	typen.fouten = typen.fouten or {}
+	local fouten = typen.fouten
+	-- is al bekend?
+	if typen[exp] then return typen[exp] end
+
+	-- type, subtypen
+	local t,T = nil,{}
+	local f,F = nil,{}
+
 	if isatoom(exp) then
-		if typen[exp] then
-			t = typen[exp]
-		elseif tonumber(exp) then
+		if tonumber(exp) then
 			t = 'getal'
-		end
-	else
-		if exp[1] == '=' then
-			local a,b = exp[2], exp[3]
-			local ta,tb = exptypeer(a, typen), exptypeer(b, typen)
-			t = verenig_en(ta,tb)
-			if not t then
-				t = {'fout-ongelijk', ta, tb}
-			end
-			--print('T', leed(ta), leed(tb), leed(t))
-			-- t = verenig(ta, tb)
-			--typen[a] = t
-			--typen[b] = t
+		else
+			-- onbekend
 		end
 
-		if exp[1] == '+' or exp[1] == '*' or exp[1] == '/' or exp[1] == '-' then
-			local a,b = exp[2], exp[3]
+	-- direct type
+	elseif exp[1] == ':' then
+		local a,b = exp[2], exp[3]
+		T[a] = b
+
+	-- vergelijking
+	elseif exp[1] == '=' then
+		local a,b = exp[2], exp[3]
+		local ta,fa = exptypeer(a, typen)
+		local tb,fb = exptypeer(b, typen)
+		local tab,fab = verenig_en(ta,tb)
+		T[a] = tab
+		T[b] = tab
+		if tab and tab~='fout' then
+			t = 'ok'
+		else
+			t = 'fout'
+			--print(fa,fb,fab)
+			f = nil--fa or fb or fab or 'uhh'--leed(ta)..' != '..leed(tb)
+		end
+
+	-- lijsten
+	elseif exp[1] == '[]' then
+		local ti = nil
+		for i=2,#exp do
+			local a = exp[i]
+			local ta = exptypeer(a, typen)
+			ti = verenig_of(ti, ta)
+		end
+		if not ti then
+			t = 'fout'
+			f = 'kon type van lijst niet bepalen'
+		else
+			t = {'^', ti, #exp-1}
+		end
+
+	-- functie
+	elseif exp[1] == '+' or exp[1] == '*' or exp[1] == '/' or exp[1] == '-' then
+			local fn,a,b = exp[1], exp[2], exp[3]
+			
 			local ta,tb = exptypeer(a, typen), exptypeer(b, typen)
-			t = 'fout-lijst-lengte-discrepantie'
 			
 			-- elementswijs
 			local la, lb = lijstlen(ta), lijstlen(tb)
 			if la and lb then
 				if la == lb then
 					t = {'^', verenig_of(ta[2], tb[2]), ta[3]}
-					typen[exp] = t
 				else
-					print(type(la), type(lb))
-					print("!", leed(la), leed(lb))
+					t = 'fout'
+					f = 'lijstlengte ongelijkheid: '..leed(la)..' != '..leed(lb)
+					gf = f
 				end
 			end
 
@@ -151,30 +184,23 @@ function exptypeer(exp, typen)
 				la,lb = lb,la
 				ta,tb = tb,ta
 			end
+
 			-- [0,1] + 0
 			-- ta: getal^2, tb: getal
 			if la and not lb then
 				t = {'^', verenig_of(ta[2], tb), ta[3]}
 			end
-		end	
 
-		if exp[1] == '[]' then
-			local ti = nil
-			for i=2,#exp do
-				local a = exp[i]
-				local ta = exptypeer(a, typen)
-				ti = verenig_of(ti, ta)
-				-- t
+			if not la and not lb then
+				t = 'fout'
+				f = 'lijstlengte onbekend'
 			end
-			t = {'^', ti, #exp-1}
-			
-		end
 
 		-- zit hij erin?
-		if typen[exp[1]] then
+		elseif typen[exp[1]] then
 			local ft = typen[exp[1]] -- functie type
 			if isatoom(ft) then
-				typen[exp] = {'fout-is-geen-functie', ft}
+				typen[exp] = 'fout'
 				return typen[exp]
 			else
 
@@ -197,33 +223,40 @@ function exptypeer(exp, typen)
 				end
 			end
 		end
+
+	local t,f0 = verenig_en(t, typen[exp])
+	typen[exp] = t
+	if t == 'fout' then
+		fouten[exp] = f or f0 or true
 	end
 
-	if not t then return typen[exp] end
-	if not typen[exp] then typen[exp] = t; return t end
-
-	typen[exp] = verenig_en(t, typen[exp])
-
-	--print(leed(t)..' & '..leed(typen[exp])..' => '..leed(typen[exp]))
-
-	typen.aantalOnbekend = typen.aantalOnbekend + 1
-	return t
-end
-
--- invoer: _G.print_typen
-function typeer(feiten,typen)
-	local typen = typen or {aantalOnbekend = 0}
-	local fouten = {}
-	local vroegerOnbekend = 999999
-
-	-- zoek types
-	for i,feit in ipairs(feiten) do
-		if isexp(feit) and feit[1] == ':' then
-			typen[feit[2]] = feit[3]
+	for exp,t0 in pairs(T) do
+		local t1 = typen[exp]
+		local t,f0 = verenig_en(t0,t1)
+		if t and t ~= 'fout' then
+			typen[exp] = t
+		else
+			fouten[exp] = fouten[exp] or f or f0 or true
+		end
+		--print('T', leed(t0), leed(t1), leed(t), f)
+	end
+	
+	if print_typen then
+		print(leed(exp)..': '..leed(t))
+		for exp,t in pairs(T) do
+			print('  '..leed(exp)..': '..leed(t))
 		end
 	end
 
-	local feiten = filter(feiten, function (feit) return isexp(feit) and feit[1] == '=' end)
+	typen.aantalOnbekend = typen.aantalOnbekend + 1
+	return t, f
+end
+
+-- invoer: print_typen
+function typeer(feiten,typen)
+	local typen = typen or {aantalOnbekend = 0,fouten = {}}
+	local vroegerOnbekend = 999999
+
 	while true do
 		typen.aantalOnbekend = 0
 	
@@ -237,14 +270,18 @@ function typeer(feiten,typen)
 		vroegerOnbekend = typen.aantalOnbekend
 	end
 
-	if print_typen then
-		for naam,type in spairs(typen) do
-			if naam ~= 'aantalOnbekend' then
-				print(leed(naam)..': '..leed(type))
-			end
+	-- fouten
+	for t,f in spairs(typen.fouten) do
+		if type(f) == 'string' then
+			print(color.red..leed(t)..': '..f..color.white)
 		end
-		print()
 	end
+	for t,f in spairs(typen.fouten) do
+		if type(f) == 'boolean' then
+			print(color.yellow..'  '..leed(t)..color.white)
+		end
+	end
+	print()
 
 	if typen.aantalOnbekend > 0 then
 		for k,v in spairs(typen) do
@@ -252,8 +289,9 @@ function typeer(feiten,typen)
 				print('ONBEKEND:',leed(k))
 			end
 		end
-		--error('onbekende types')
 	end
 
+	local fouten = typen.fouten
+	typen.fouten = nil
 	return typen, fouten
 end
