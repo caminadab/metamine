@@ -23,6 +23,7 @@ function uitrol(stroom, typen)
 	for i,v in ipairs(stroom) do
 		local naam,val = v[2],v[3]
 		local t = typen[naam]
+
 		if isexp(t) and t[1] == '^' and tonumber(t[3]) then
 			local n = tonumber(t[3])
 			local fn = val[1]
@@ -30,11 +31,22 @@ function uitrol(stroom, typen)
 			local doeltype = typen[naam]
 
 			if isexp(val) then
-				print(naam,n,leed(typen[fn]),leed(typen[naam]))
+				print(naam,n,leed(tfn),leed(doeltype))
 			end
 
-			if tfn and isexp(val) and
+			-- array unpacking
+			if isexp(val) and val[1] == '[]' then
+				print('INLINE LIJST')
+				uitgerold[naam] = true
+				for i=2,#val do
+					local naam = naam..(i-2)
+					r[#r+1] = {'=', naam, val[i]}
+				end
+
+			-- kleine loopjes
+			elseif tfn and isexp(val) and
 					isatoom(tfn[2]) and isatoom(tfn[3]) then
+				print('UITROL')
 				for i=1,n do
 					local val = kopie(val)
 					local index = tostring(i-1)

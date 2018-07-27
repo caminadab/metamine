@@ -146,7 +146,35 @@ require 'lisp'
 function love.draw()
 	love.graphics.circle('fill', cirkel[1], cirkel[2], cirkel[3] or 20)
 ]]
+	
+	-- grafiek
+	t[#t+1] = [[
+	local sx,sy = 10,310
+	local x,y = sx,sy
+	--love.graphics.line(sx,sy,sx,sy+100)
+	--love.graphics.line(sx,sy,sx+600,sy)
+	--love.graphics.line(sx+600,sy,sx+600,sy+100)
+	
+	function grafiek(lijst,sx,sy,w,h)
+		local w = w or #lijst
+		local h = h or 100
+		local xsch = 1
+		local ysch = 1
+		local vx,vy
+		for i=1,#lijst do
+			local x = xsch * i
+			local y = lijst[i] * ysch
+			local bx,by = sx+x,sy+100-y*100*60
+			love.graphics.line(vx or bx,vy or by,bx,by)
+			vx,vy = bx,by
+		end
+	end
 
+	grafiek(toetsRechts,20,320)
+	grafiek(toetsLinks,20,440)
+]]
+
+	-- debug tekst
 	for i,var in ipairs(vars) do
 		t[#t+1] = '\tlove.graphics.print('
 		t[#t+1] = '"'..var..' = "..unlisp('

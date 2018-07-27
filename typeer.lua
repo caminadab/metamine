@@ -41,7 +41,7 @@ function leed(exp)
 	return table.concat(t)
 end
 
-local function verenig(ta, tb)
+local function verenig_of(ta, tb)
 	if ta == 'onbekend' then ta = nil end
 	if tb == 'onbekend' then tb = nil end
 	if ta and not tb then return ta end
@@ -63,6 +63,31 @@ local function verenig(ta, tb)
 
 	return 'onbekend'
 end
+assert(verenig_of('2', 'int') == 'int')
+
+local function verenig_en(ta, tb)
+	if ta == 'onbekend' then ta = nil end
+	if tb == 'onbekend' then tb = nil end
+	if ta and not tb then return ta end
+	if tb and not ta then return tb end
+	if not ta and not tb then return 'onbekend' end 
+	if unlisp(ta) == unlisp(tb) then
+		return ta
+	end
+
+	-- echte logica
+	if tonumber(tb) then ta,tb = tb,ta end
+
+	if tonumber(ta) and tonumber(tb) and ta ~= tb then
+		return {'fout-ongelijkheid', ta, tb}
+	end
+	if tonumber(ta) and (tb == 'getal' or tb == 'int') then
+		return ta
+	end
+
+	return nil
+end
+assert(verenig_en('2', 'int') == '2')
 
 local vastetypen = {
 	nu = 'moment',
@@ -82,45 +107,43 @@ end
 
 -- gaat ervan uit dat typen.aantalOnbekend ingevuld is
 function exptypeer(exp, typen)
+	-- type van de expressie
+	local t
 	if isatoom(exp) then
-		if vastetypen[exp] then
-			typen[exp] = vastetypen[exp]
-			return vastetypen[exp]
-		end
-		if tonumber(exp) then
-			typen[exp] = 'getal'
-			return 'getal'
-		end
 		if typen[exp] then
-			return typen[exp]
+			t = typen[exp]
+		elseif tonumber(exp) then
+			t = 'getal'
 		end
-	
 	else
 		if exp[1] == '=' then
 			local a,b = exp[2], exp[3]
 			local ta,tb = exptypeer(a, typen), exptypeer(b, typen)
-			local t = verenig(ta, tb)
-			typen[a] = t
-			typen[b] = t
-			return 'bit'
+			t = verenig_en(ta,tb)
+			if not t then
+				t = {'fout-ongelijk', ta, tb}
+			end
+			--print('T', leed(ta), leed(tb), leed(t))
+			-- t = verenig(ta, tb)
+			--typen[a] = t
+			--typen[b] = t
 		end
 
 		if exp[1] == '+' or exp[1] == '*' or exp[1] == '/' or exp[1] == '-' then
 			local a,b = exp[2], exp[3]
 			local ta,tb = exptypeer(a, typen), exptypeer(b, typen)
-			local t = 'fout-lijst-lengte-discrepantie'
+			t = 'fout-lijst-lengte-discrepantie'
 			
 			-- elementswijs
 			local la, lb = lijstlen(ta), lijstlen(tb)
 			if la and lb then
 				if la == lb then
-					t = {'^', verenig(ta[2], tb[2]), ta[3]}
+					t = {'^', verenig_of(ta[2], tb[2]), ta[3]}
 					typen[exp] = t
 				else
 					print(type(la), type(lb))
 					print("!", leed(la), leed(lb))
 				end
-				return t
 			end
 
 			-- automagie
@@ -131,21 +154,20 @@ function exptypeer(exp, typen)
 			-- [0,1] + 0
 			-- ta: getal^2, tb: getal
 			if la and not lb then
-				t = {'^', verenig(ta[2], tb), ta[3]}
-				typen[exp] = t
-				return typen[exp]
+				t = {'^', verenig_of(ta[2], tb), ta[3]}
 			end
 		end	
 
 		if exp[1] == '[]' then
-			local t = 'onbekend'
+			local ti = nil
 			for i=2,#exp do
 				local a = exp[i]
 				local ta = exptypeer(a, typen)
-				t = verenig(t, ta)
+				ti = verenig_of(ti, ta)
+				-- t
 			end
-			typen[exp] = {'^', t, #exp-1}
-			return typen[exp]
+			t = {'^', ti, #exp-1}
+			
 		end
 
 		-- zit hij erin?
@@ -164,23 +186,28 @@ function exptypeer(exp, typen)
 					else
 						typen[exp[2]] = {'..', 0, ft[3]}
 					end
-					typen[exp] = ft[2]
-					return ft[2]
+					t = ft[2]
 				end
 
 				-- functies
 				if ft[1] == '->' then
 					local van,naar = ft[2],ft[3]
 					typen[exp[2]] = van
-					typen[exp] = naar
-					return naar
+					t = naar
 				end
 			end
 		end
 	end
 
+	if not t then return typen[exp] end
+	if not typen[exp] then typen[exp] = t; return t end
+
+	typen[exp] = verenig_en(t, typen[exp])
+
+	--print(leed(t)..' & '..leed(typen[exp])..' => '..leed(typen[exp]))
+
 	typen.aantalOnbekend = typen.aantalOnbekend + 1
-	return 'onbekend'
+	return t
 end
 
 -- invoer: _G.print_typen
