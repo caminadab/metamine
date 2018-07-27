@@ -7,7 +7,7 @@ local infix = {
 }
 
 local vertaal = {
-	['tijd'] = '(Date.now()/1000)',
+	['nu'] = '(Date.now()/1000)',
 	['sin'] = 'Math.sin',
 	['cos'] = 'Math.cos',
 	['abs'] = 'Math.abs',
@@ -31,19 +31,19 @@ local function naam2js(naam)
 	end
 end
 
-function tofunc(naar,van,t)
+function tofunc(naar,van,t,typen)
 	t[#t+1] = 'function ('
 	t[#t+1] = van
 	t[#t+1] = ')\n {'
 
 	t[#t+1] = 'return '
-	tojs(naar, t)
+	tojs(naar, t,typen)
 	t[#t+1] = '\n'
 	t[#t+1] = '}'
 	t[#t+1] = '\n'
 end
 
-function tojs(exp,t)
+function tojs(exp,t,typen)
 	t = t or {}
 	if atom(exp) then
 		t[#t+1] = vertaal[exp] or naam2js(exp) or exp
@@ -51,25 +51,35 @@ function tojs(exp,t)
 		tofunc(exp[3], exp[2], t)
 	elseif infix[exp[1]] and exp[3] then
 		t[#t+1] = '('
-		tojs(exp[2], t)
+		tojs(exp[2], t,typen)
 		t[#t+1] = exp[1]
-		tojs(exp[3], t)
+		tojs(exp[3], t,typen)
 		t[#t+1] = ')'
 	elseif exp[1] == '[]' then
 		t[#t+1] = '['
 		for i=2,#exp do
-			tojs(exp[i], t)
+			tojs(exp[i], t,typen)
 			if i ~= #exp then
 				t[#t+1] = ', '
 			end
 		end
 		t[#t+1] = ']'
+	elseif isexp(typen[exp[1]]) and typen[exp[1]][1] == '^' then
+		tojs(exp[1], t, typen)
+		t[#t+1] = ''
+		t[#t+1] = '['
+		for i=2,#exp do
+			tojs(exp[i], t, typen)
+			t[#t+1] = ', '
+		end
+		t[#t] = nil
+		t[#t+1] = ']'
 	else
-		tojs(exp[1], t)
+		tojs(exp[1], t,typen)
 		t[#t+1] = ' '
 		t[#t+1] = '('
 		for i=2,#exp do
-			tojs(exp[i], t)
+			tojs(exp[i], t,typen)
 			t[#t+1] = ', '
 		end
 		t[#t] = nil
@@ -78,17 +88,17 @@ function tojs(exp,t)
 	return t
 end
 
-function stat2js(stat,t,vars)
+function stat2js(stat,t,vars,typen)
 	t[#t+1] = '\t'
 	t[#t+1] = 'var '
 	t[#t+1] = naam2js(stat[2])
 	t[#t+1] = ' = '
-	tojs(stat[3],t)
+	tojs(stat[3],t,typen)
 	t[#t+1] = ';\n'
 	vars[#vars+1] = stat[2]
 end
 
-function toJs(block)
+function toJs(block,typen)
 	local t = {
 [[
 var g = window;
@@ -103,7 +113,10 @@ g.init = function() {
 			som = som + a[i];
 		}
 		return som;
-	}
+	};
+	g.sincos = function(hoek) {
+		return [Math.cos(hoek), Math.sin(hoek)];
+	};
 
 	g.key = new Array(128).fill(0);
 	window.onkeydown = function(e) { key[e.keyCode] = true; }
@@ -136,7 +149,7 @@ g.step = function() {
 
 	for i=1,#block do
 		local stat = block[i]
-		stat2js(stat,t,vars)
+		stat2js(stat,t,vars,typen)
 	end
 
 	-- draw

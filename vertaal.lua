@@ -77,6 +77,20 @@ local bieb = {
 	'index',
 }
 
+local basis = {
+	['+'] = {'->', 'getal', 'getal'},
+	['-'] = {'->', 'getal', 'getal'},
+	['*'] = {'->', 'getal', 'getal'},
+	['/'] = {'->', 'getal', 'getal'},
+	['^'] = {'->', 'getal', 'getal'},
+	['_'] = {'->', 'getal', 'getal'},
+	['->'] = {'->', 'iets', 'iets'},
+	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}},
+	['sin'] = {'->', 'getal', 'getal'},
+	['cos'] = {'->', 'getal', 'getal'},
+	['tan'] = {'->', 'getal', 'getal'},
+}
+
 -- code in lisp formaat
 function vertaalJs(lispcode)
 	-- ontleed
@@ -91,23 +105,11 @@ function vertaalJs(lispcode)
 	}
 
 	local stroom = sorteer(waarden, speel)
-	local func = toJs(stroom)
+	local typen = typeer(stroom,basis)
+	local asmeta = uitrol(stroom, typen)
+	local func = toJs(asmeta,typen)
 	return func
 end
-
-local basis = {
-	['+'] = {'->', 'getal', 'getal'},
-	['-'] = {'->', 'getal', 'getal'},
-	['*'] = {'->', 'getal', 'getal'},
-	['/'] = {'->', 'getal', 'getal'},
-	['^'] = {'->', 'getal', 'getal'},
-	['_'] = {'->', 'getal', 'getal'},
-	['->'] = {'->', 'iets', 'iets'},
-	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}},
-	['sin'] = {'->', 'getal', 'getal'},
-	['cos'] = {'->', 'getal', 'getal'},
-	['tan'] = {'->', 'getal', 'getal'},
-}
 
 -- vertaal = code -> stroom
 function vertaal(code)

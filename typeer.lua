@@ -9,7 +9,7 @@ local prios = {
 }
 
 local dichtbij = {['^']=true,['_']=true,['.']=true}
-local function leedwerk(exp, t)
+function leedwerk(exp, t)
 	local prio = 0
 	if isatoom(exp) then
 		t[#t+1] = exp
@@ -81,7 +81,7 @@ function lijstlen(t, typen)
 end
 
 -- gaat ervan uit dat typen.aantalOnbekend ingevuld is
-local function exptypeer(exp, typen)
+function exptypeer(exp, typen)
 	if isatoom(exp) then
 		if vastetypen[exp] then
 			typen[exp] = vastetypen[exp]
