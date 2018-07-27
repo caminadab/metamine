@@ -36,6 +36,7 @@ function uitrol(stroom, typen)
 
 			-- array unpacking
 			if isexp(val) and val[1] == '[]' then
+				print('INLINE LIJST')
 				uitgerold[naam] = true
 				for i=2,#val do
 					local naam = naam..(i-2)
@@ -45,6 +46,7 @@ function uitrol(stroom, typen)
 			-- kleine loopjes
 			elseif tfn and isexp(val) and
 					isatoom(tfn[2]) and isatoom(tfn[3]) then
+				print('UITROL')
 				for i=1,n do
 					local val = kopie(val)
 					local index = tostring(i-1)
