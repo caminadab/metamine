@@ -94,6 +94,7 @@ local basis = {
 	['sin'] = mofn,
 	['cos'] = mofn,
 	['tan'] = mofn,
+	['som'] = {'->', {'^', 'getal', 'getal'}, 'getal'},
 }
 
 -- code in lisp formaat

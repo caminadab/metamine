@@ -154,24 +154,37 @@ function love.draw()
 	--love.graphics.line(sx,sy,sx,sy+100)
 	--love.graphics.line(sx,sy,sx+600,sy)
 	--love.graphics.line(sx+600,sy,sx+600,sy+100)
-	
+	love.graphics.setLineJoin('miter')
+
 	function grafiek(lijst,sx,sy,w,h)
-		local w = w or #lijst
+		local w = w or 600--#lijst
 		local h = h or 100
 		local xsch = 1
 		local ysch = 1
-		local vx,vy
+		--local vx,vy = xsch*0, lijst[1]*ysch
+		local p = {}
 		for i=1,#lijst do
 			local x = xsch * i
 			local y = lijst[i] * ysch
 			local bx,by = sx+x,sy+100-y*100*60
-			love.graphics.line(vx or bx,vy or by,bx,by)
+
+			-- horiz
+			if vy ~= by or i == 1 or i == 599 then
+				p[#p+1] = (vx or bx) + 0.5
+				p[#p+1] = (vy or by) + 0.5
+				p[#p+1] = bx
+				p[#p+1] = by
+			end
 			vx,vy = bx,by
 		end
+
+		love.graphics.setLineStyle('rough')
+		love.graphics.line(p)
 	end
 
 	grafiek(toetsRechts,20,320)
-	grafiek(toetsLinks,20,440)
+	--grafiek(toetsLinks,20,440)
+	love.graphics.print(tostring(love.timer.getFPS()), love.window.getWidth() - 30, 10)
 ]]
 
 	-- debug tekst

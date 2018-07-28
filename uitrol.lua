@@ -17,6 +17,19 @@ function subst(exp, van, naar)
 	end
 end
 
+function issimpel(t)
+	if isatoom(t) then return true
+	elseif t[1] ~= ',' then return false
+	else
+		for i=2,#t do
+			if type(t[i]) ~= 'string' then
+				return false
+			end
+		end
+		return true
+	end
+end
+
 function uitrol(stroom, typen)
 	local r = {}
 	local uitgerold = {} -- naam -> uitrol?
@@ -31,25 +44,31 @@ function uitrol(stroom, typen)
 			local doeltype = typen[naam]
 
 			if isexp(val) then
-				print('UITROL',naam,n,leed(tfn),leed(doeltype))
+				--print('UITROL',naam..'^'..n,leed(tfn),leed(doeltype))
 			end
 
 			-- array unpacking
 			if isexp(val) and val[1] == '[]' then
+				--[[
 				uitgerold[naam] = #val-1
+				local stam = naam
 				for i=2,#val do
-					local naam = naam..(i-2)
+					local naam = stam..''..(i-2)
 					r[#r+1] = {'=', naam, val[i]}
 				end
+				]]
+				r[#r+1] = {'=', naam, val}
 
 			-- kleine loopjes
+			-- TODO te strak gematcht
 			elseif tfn and isexp(val) and
-					isatoom(tfn[2]) and isatoom(tfn[3]) then
+					issimpel(tfn[2]) and isatoom(tfn[3]) then
 				for i=1,n do
+					local naam = naam..'_'..(i-1)
 					local val = kopie(val)
 					local index = tostring(i-1)
 					-- doorloop bronnen, fix ariteit
-					for bron in pairs(var(val)) do
+					for bron in spairs(var(val)) do
 						local len = lijstlen(typen[bron])
 						uitgerold[naam] = len
 						if len then
@@ -62,9 +81,17 @@ function uitrol(stroom, typen)
 							val = subst(val,bron,doel)
 						end
 					end
-					local naam = naam .. (i-1)
+					--local naam = naam .. '_'..(i-1)
 					r[#r+1] = {'=', naam, val}
 				end
+
+				-- collect
+				local l = {'[]'}
+				for i=1,n do
+					l[#l+1] = tostring(naam)..'_'..(i-1)
+				end
+				r[#r+1] = {'=', naam, l}
+
 			else
 				r[#r+1] = v
 			end
@@ -75,9 +102,7 @@ function uitrol(stroom, typen)
 
 	-- laatste maken
 	local doel = stroom[#stroom][2]
-	print('DOEL',doel)
-	for n,v in pairs(uitgerold) do print(n,v) end
-	print('dat')
+	for n,v in spairs(uitgerold) do print(n,v) end
 	if uitgerold[doel] then
 		-- inrollen
 		local a = {'[]'}

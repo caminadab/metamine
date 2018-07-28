@@ -171,123 +171,100 @@ function exptypeer(exp, typen)
 			local ta = exptypeer(a, typen)
 			ti = verenig_of(ti, ta)
 		end
-		if not ti then
+		if ti == 'fout' then
 			t = 'fout'
 			f = 'kon type van lijst niet bepalen'
+		elseif not ti then
+			t = nil
 		else
 			t = {'^', ti, #exp-1}
 		end
 
-	-- functie
-	elseif issimpel1(typen[exp[1]]) or issimpel2(typen[exp[1]]) then
-			local fn,a,b,c = table.unpack(exp) --exp[1], exp[2], exp[3], exp[4]
+	-- zit hij erin?
+	elseif typen[exp[1]] == 'som' then
+		local ft = typen[exp[1]] -- functie type
+		if isatoom(ft) then
+			typen[exp] = 'fout'
+			return typen[exp]
+		else
 
-			-- lengte
-			local lengte = nil
-
-			-- subtypen, fouten, lengten
-			local ti,fi = nil,{}
-			for i=2,#exp do
-				local a = exp[i]
-				local ti1,f1 = exptypeer(a, typen)
-				local l1 = lijstlen(a)
-				
-				if t1 == 'fout' then
-					t,f = 'fout',f1
-					break
-				end
-
-				fi[#fi+1] = f
-
-				-- subtype
-				local t0 = ti
-				ti = verenig_of(ti0, ti1)
-				if ti == 'fout' then
-					t = 'fout'
-					f = '???'
-					break
-				end
-
-				lengte = verenig_en(l0,l1)
-				
-				if lengte == 'fout' then
-					t = 'fout'
-					f = 'lijstlengte ongelijkheid: '..leed(l0)..' != '..leed(l1)
-					break
-				end
-			end
-
-			-- verenig lengten
-			-- TODO
-
-			-- bouwen
-			ti = ti or 'iets'
-			lengte = lengte or 1
-			if lengte == 1 then
-				t = ti
-			else
-				t = {'^', ti, lengte}
-			end
-
-			--[[
-			local ta,tb = exptypeer(a, typen), exptypeer(b, typen)
-			
-			-- elementswijs
-			local la, lb = lijstlen(ta), lijstlen(tb)
-			if la and lb then
-				if la == lb then
-					t = {'^', verenig_of(ta[2], tb[2]), ta[3]}
+			-- lijsten
+			if ft[1] == '^' then
+				-- index
+				if ft[3] == 'int' then
+					typen[exp[2]] = 'int'
 				else
-					t = 'fout'
-					f = 'lijstlengte ongelijkheid: '..leed(la)..' != '..leed(lb)
+					typen[exp[2]] = {'..', 0, ft[3]}
 				end
+				t = ft[2]
 			end
 
-			-- automagie
-			if lb and not la then
-				la,lb = lb,la
-				ta,tb = tb,ta
-			end
-
-			-- [0,1] + 0
-			-- ta: getal^2, tb: getal
-			if la and not lb then
-				t = {'^', verenig_of(ta[2], tb), ta[3]}
-			end
-
-			if not la and not lb then
-				t = 'fout'
-				f = 'lijstlengte onbekend'
-			end
-			]]
-
-		-- zit hij erin?
-		elseif typen[exp[1]] then
-			local ft = typen[exp[1]] -- functie type
-			if isatoom(ft) then
-				typen[exp] = 'fout'
-				return typen[exp]
-			else
-
-				-- lijsten
-				if ft[1] == '^' then
-					-- index
-					if ft[3] == 'int' then
-						typen[exp[2]] = 'int'
-					else
-						typen[exp[2]] = {'..', 0, ft[3]}
-					end
-					t = ft[2]
-				end
-
-				-- functies
-				if ft[1] == '->' then
-					local van,naar = ft[2],ft[3]
-					typen[exp[2]] = van
-					t = naar
-				end
+			-- functies
+			if ft[1] == '->' then
+				local van,naar = ft[2],ft[3]
+				typen[exp[2]] = van
+				t = naar
 			end
 		end
+
+	-- functie
+	elseif issimpel1(typen[exp[1]]) or issimpel2(typen[exp[1]]) then
+		local fn,a,b,c = table.unpack(exp) --exp[1], exp[2], exp[3], exp[4]
+
+		-- lengte
+		local lengte = nil
+		local l0
+
+		-- subtype, fout
+		local ti,fi = nil,{}
+		for i=2,#exp do
+			local a = exp[i]
+			local ti1,f1 = exptypeer(a, typen)
+			local l1 = lijstlen(ti1, typen)
+			
+			if ti1 == 'fout' then
+				t,f = 'fout',f1
+				break
+			end
+
+			fi[#fi+1] = f
+
+			-- subtype
+			local fi0
+			local ti0 = ti and ti[2]
+			local ti1 = l1 and ti1[2] or ti1
+			ti,fi0 = verenig_of(ti0, ti1)
+			if ti == 'fout' then
+				t = 'fout'
+				f = fi0
+				break
+			end
+
+			lengte = verenig_en(l0,l1)
+
+			if lengte == 'fout' then
+				t = 'fout'
+				f = 'lijstlengte ongelijkheid: '..leed(l0)..' != '..leed(l1)
+				break
+			end
+			l0 = lengte
+		end
+
+		-- verenig lengten
+		-- TODO
+
+		-- bouwen
+		ti = ti or 'iets'
+		lengte = lengte or 1
+		if lengte == 'fout' then
+			t = 'fout'
+			f = f
+		elseif lengte == 1 then
+			t = ti
+		else
+			t = {'^', ti, lengte}
+		end
+	end
 
 	local t,f0 = verenig_en(t, typen[exp])
 	typen[exp] = t
@@ -308,7 +285,7 @@ function exptypeer(exp, typen)
 	
 	if print_typen then
 		print(leed(exp)..': '..leed(t))
-		for exp,t in pairs(T) do
+		for exp,t in spairs(T) do
 			print('  '..leed(exp)..': '..leed(t))
 		end
 	end
@@ -343,7 +320,7 @@ function typeer(feiten,typen)
 	end
 	for t,f in spairs(typen.fouten) do
 		if type(f) == 'boolean' then
-			print(color.orange..'  '..leed(t)..color.white)
+			print(color.yellow..'  '..leed(t)..color.white)
 		end
 	end
 	print()
