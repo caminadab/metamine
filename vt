@@ -11,8 +11,8 @@ require 'love'
 require 'js'
 
 -- GLOBALEN
-print_typen_bron = false
-print_typen_stroom = true
+print_typen_bron = true
+print_typen_stroom = false
 
 -- argumenten
 local taal = 'nl'
@@ -21,6 +21,7 @@ local arch = 'amd64'
 local immediate
 local love
 local js
+local tostdout = false
 
 -- stroom, love, js
 local doel = 'stroom'
@@ -31,32 +32,34 @@ local args = {...}
 for i=1,#args do
 	local arg = args[i]
 	local vlag
-	if arg:sub(1,1) == '-' then
+	if arg == '-' then
+		tostdout = true
+	elseif arg:sub(1,1) == '-' then
 		vlag = arg:sub(2,2)
-	end
-	if vlag == 'o' then
-		doel = args[i+1] or doel
-		i = i + 1
-	elseif vlag == 't' then
-		arch = string.lower(arg:sub(3))
-	elseif vlag == 'J' then
-		doel = 'js'
-		uitvoer = 'main.js'
-	elseif vlag == 'L' then
-		doel = 'love'
-		uitvoer = 'main.lua'
-	elseif vlag == 'i' then
-		immediate = true
-	elseif vlag == 'v' then
-		print_losse_waarden = true
-	elseif vlag == 'l' then
-		taal = string.lower(arg:sub(3,5))
-		if taal == '' then taal = args[i+1] end
-		if not taal then taal = 'nl' end
+		if vlag == 'o' then
+			doel = args[i+1] or doel
+			i = i + 1
+		elseif vlag == 't' then
+			arch = string.lower(arg:sub(3))
+		elseif vlag == 'J' then
+			doel = 'js'
+			uitvoer = 'main.js'
+		elseif vlag == 'L' then
+			doel = 'love'
+			uitvoer = 'main.lua'
+		elseif vlag == 'i' then
+			immediate = true
+		elseif vlag == 'v' then
+			print_losse_waarden = true
+		elseif vlag == 'l' then
+			taal = string.lower(arg:sub(3,5))
+			if taal == '' then taal = args[i+1] end
+			if not taal then taal = 'nl' end
 
-		if taal ~= 'nl' and taal ~= 'NL' then
-			print('onherkende taal '..taal)
-			return
+			if taal ~= 'nl' and taal ~= 'NL' then
+				print('onherkende taal '..taal)
+				return
+			end
 		end
 	else
 		-- code
@@ -70,6 +73,7 @@ if #bron == 0 then
 [[gebruik: vt [OPTIES...] [BESTANDEN...]
 Vertaalt broncode naar applicaties.
 Opties:
+		-		
 		-i	voer meteen uit
 		-l	stel lokale van broncode in (standaard NL)
 		-o	uitvoerbestand
@@ -81,7 +85,7 @@ Opties:
 end
 
 -- lees in
-local code = file(bron[1])
+code = file(bron[1])
 local stroom,typen = vertaal(code)
 
 local uit
@@ -105,4 +109,8 @@ if immediate then
 end
 
 -- uitvoer
-file(uitvoer, uit)
+if tostdout then
+	print(uit)
+else
+	file(uitvoer, uit)
+end

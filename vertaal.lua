@@ -95,6 +95,11 @@ local basis = {
 	['cos'] = mofn,
 	['tan'] = mofn,
 	['som'] = {'->', {'^', 'getal', 'getal'}, 'getal'},
+	
+	['toets-rechts']	= {'^', 'getal', 'int'},
+	['toets-links']		= {'^', 'getal', 'int'},
+	['toets-omhoog']	= {'^', 'getal', 'int'},
+	['toets-omlaag']	= {'^', 'getal', 'int'},
 }
 
 -- code in lisp formaat
@@ -111,7 +116,10 @@ function vertaalJs(lispcode)
 	}
 
 	local stroom = sorteer(waarden, speel)
-	local typen = typeer(stroom,basis)
+	local typen,fouten = typeer(stroom,basis)
+	if fouten then
+		print('ERROR')
+	end
 	local asmeta = uitrol(stroom, typen)
 	local func = toJs(asmeta,typen)
 	return func

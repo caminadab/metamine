@@ -104,7 +104,9 @@ function isoleer(eq,name)
 				if out == 1 then eq0 = {'=', b, {x, {'..', {'#', a}, {'#', x}}}} end -- b = x (#a..#x)
 				--if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
 			else
-				log('weet niet hoe te isoleren '..f)
+				if print_niet_isoleerbaar then
+					log('weet niet hoe te isoleren '..f)
+				end
 				return false -- kan operator niet oplossen
 			end
 		end

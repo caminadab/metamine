@@ -1,6 +1,7 @@
 require 'symbool'
 require 'func'
 require 'util'
+require 'lisp'
 
 local prios = {
 	['^'] = 3, ['_'] = 3,
@@ -80,12 +81,27 @@ assert(verenig_of('2', 'int') == 'int')
 
 -- nil = onbekend, fout = fout
 local function verenig_en(ta, tb)
+	if ta == 'iets' then ta = nil end
+	if tb == 'iets' then tb = nil end
 	if ta and not tb then return ta end
 	if tb and not ta then return tb end
 	if not ta and not tb then return nil end 
 	if ta == 'fout' or tb == 'fout' then return 'fout' end
 	if unlisp(ta) == unlisp(tb) then
 		return ta
+	end
+
+	-- deelmatch
+	if isexp(ta) and isexp(tb) and #ta == #tb then
+		local t = {}
+		for i=1,#ta do
+			local ti,fi = verenig_en(ta[i],tb[i])
+			if ti == 'fout' then
+				return ti,fi
+			end
+			t[i] = ti
+		end
+		return t
 	end
 
 	-- echte logica
@@ -100,7 +116,11 @@ local function verenig_en(ta, tb)
 
 	return 'fout', leed(ta)..' != '..leed(tb)
 end
+
 assert(verenig_en('2', 'int') == '2')
+local varlijst = {'^', 'getal', 'int'}
+local vastlijst = {'^', 'getal', '2'}
+assert(unlisp(verenig_en(varlijst, vastlijst)) == '(^ getal 2)')
 
 local vastetypen = {
 	nu = 'moment',
