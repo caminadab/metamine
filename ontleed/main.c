@@ -39,6 +39,14 @@ int yylex(void) {
 
 	const char* cc = in - 1;
 
+	// ass
+	if (c == '\'') {
+		token[0] = '\'';
+		token[1] = 0;
+		yylval = a(token);
+		return ASS;
+	}
+
 	// naam
 	if (isalnum(c)) {
 		int i;
@@ -65,6 +73,8 @@ int yylex(void) {
 	else if (!memcmp(cc, "||", 2))	{ strcpy(token, "||"); in++; id = CAT; }
 	else if (!memcmp(cc, "..", 2))	{ strcpy(token, ".."); in++; id = TIL; }
 	else if (!memcmp(cc, "xx", 2))	{ strcpy(token, "xx"); in++; id = CART; }
+	else if (!memcmp(cc, "=>", 2))	{ strcpy(token, "=>"); in++; id = DAN; }
+	else if (!memcmp(cc, ":=", 2))	{ strcpy(token, ":="); in++; id = ASS; }
 	else {
 		token[0] = c;
 		token[1] = 0;

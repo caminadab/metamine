@@ -65,12 +65,36 @@ local function verenig_of(ta, tb)
 		return ta
 	end
 
+	-- handmatige groepen
+	if ta == 'int' and tb == 'getal' then return 'getal' end
+	if tb == 'int' and ta == 'getal' then return 'getal' end
+
+	-- deelmatch
+	if isexp(ta) and isexp(tb) and #ta == #tb then
+		local t = {}
+		for i=1,#ta do
+			local ti,fi = verenig_of(ta[i],tb[i])
+			if ti == 'fout' then
+				return ti,fi
+			end
+			t[i] = ti
+		end
+		return t
+	end
+
 	-- echte logica
 	if tonumber(tb) then ta,tb = tb,ta end
 
-	if tonumber(ta) and tonumber(tb) and ta ~= tb then
-		return 'getal'
+	if tonumber(ta) and tonumber(tb) then
+		local na = tonumber(ta)
+		local nb = tonumber(tb)
+		if math.floor(na) == na and math.floor(nb) == nb then
+			return 'int'
+		else
+			return 'getal'
+		end
 	end
+
 	if tonumber(ta) and (tb == 'getal' or tb == 'int') then
 		return tb
 	end
@@ -78,6 +102,9 @@ local function verenig_of(ta, tb)
 	return 'fout', leed(ta)..' != '..leed(tb)
 end
 assert(verenig_of('2', 'int') == 'int')
+assert(verenig_of('2', '3') == 'int', verenig_of('2','3'))
+assert(verenig_of('getal', '2') == 'getal')
+assert(verenig_of('int', 'getal') == 'getal')
 
 -- nil = onbekend, fout = fout
 local function verenig_en(ta, tb)
@@ -90,6 +117,10 @@ local function verenig_en(ta, tb)
 	if unlisp(ta) == unlisp(tb) then
 		return ta
 	end
+
+	-- handmatig
+	if ta == 'getal' and tb == 'int' then return 'int' end
+	if tb == 'getal' and ta == 'int' then return 'int' end
 
 	-- deelmatch
 	if isexp(ta) and isexp(tb) and #ta == #tb then
@@ -118,18 +149,20 @@ local function verenig_en(ta, tb)
 end
 
 assert(verenig_en('2', 'int') == '2')
+assert(verenig_en('2', '3') == 'fout')
+assert(verenig_en('int', 'getal') == 'int')
 local varlijst = {'^', 'getal', 'int'}
 local vastlijst = {'^', 'getal', '2'}
 assert(unlisp(verenig_en(varlijst, vastlijst)) == '(^ getal 2)')
 
 local vastetypen = {
-	nu = 'moment',
+	nu = 'getal',
 	tau = 'getal',
-	['toets-rechts'] = 	'getal',
-	['toets-links'] =		'getal',
-	['toets-omhoog'] = 	'getal',
-	['toets-omlaag'] = 	'getal',
-	['toets-spatie'] = 	'getal',
+	['toets-rechts'] = 	{'^', 'getal', 'int'},
+	['toets-links'] =		{'^', 'getal', 'int'},
+	['toets-omhoog'] = 	{'^', 'getal', 'int'},
+	['toets-omlaag'] =	{'^', 'getal', 'int'},
+	['toets-spatie'] = 	{'^', 'getal', 'int'},
 }
 
 -- lengte of een lijst type
@@ -201,20 +234,20 @@ function exptypeer(exp, typen)
 		end
 
 	-- zit hij erin?
-	elseif typen[exp[1]] == 'som' then
+	elseif exp[1] == 'som' then
 		local ft = typen[exp[1]] -- functie type
 		if isatoom(ft) then
-			typen[exp] = 'fout'
-			return typen[exp]
+			t = 'fout'
+			f = 'kon geen som van '..leed(ft)..' nemen'
 		else
 
 			-- lijsten
 			if ft[1] == '^' then
 				-- index
 				if ft[3] == 'int' then
-					typen[exp[2]] = 'int'
+					T[exp[2]] = 'int'
 				else
-					typen[exp[2]] = {'..', 0, ft[3]}
+					T[exp[2]] = {'..', 0, ft[3]}
 				end
 				t = ft[2]
 			end
@@ -222,7 +255,7 @@ function exptypeer(exp, typen)
 			-- functies
 			if ft[1] == '->' then
 				local van,naar = ft[2],ft[3]
-				typen[exp[2]] = van
+				T[exp[2]] = van
 				t = naar
 			end
 		end
@@ -285,6 +318,7 @@ function exptypeer(exp, typen)
 			t = {'^', ti, lengte}
 		end
 	end
+
 
 	local t,f0 = verenig_en(t, typen[exp])
 	typen[exp] = t
@@ -350,6 +384,12 @@ function typeer(feiten,typen)
 			if v == 'onbekend' then
 				print('ONBEKEND:',leed(k))
 			end
+		end
+	end
+
+	for exp,type in pairs(typen) do
+		if isatoom(exp) then
+			print(color.blue..leed(exp)..': '..leed(type)..color.white)
 		end
 	end
 

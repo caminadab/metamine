@@ -27,7 +27,7 @@ asserto('f = a -> a + 1', '((= f (-> a (+ a 1))))')
 asserto('b = f(a)', '((= b (f a)))')
 asserto('b = f a', '((= b (f a)))')
 asserto('b = sin a + 1', '((= b (+ (sin a) 1)))')
-asserto([[
+--[=[asserto([[
 f = a -> b
 	a: int
 	a * 2 = b * 3
@@ -44,6 +44,12 @@ f = a -> b
 	)
 )
 ]])
+]=]
+asserto('p => a = b', '((=> p (= a b)))')
+asserto('a > 0 => b', '((=> (> a 0) b))')
+asserto("a := 10", "((:= a 10))")
+asserto("a nu = a net + 3", "((= (a nu) (+ (a net) 3)))")
+--asserto("a' = 10", "((= (' a) 10))")
 
 --asserto('a : b', '((: a b))')
 --

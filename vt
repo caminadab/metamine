@@ -11,8 +11,9 @@ require 'love'
 require 'js'
 
 -- GLOBALEN
+print_ingewanden = true
 print_typen_bron = true
-print_typen_stroom = false
+print_typen_stroom = true
 
 -- argumenten
 local taal = 'nl'

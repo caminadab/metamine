@@ -82,6 +82,7 @@ local bieb = {
 local bi = {',', 'getal', 'getal'}
 local mofn = {'->', 'getal', 'getal'}
 local bifn = {'->', bi, 'getal'}
+local vglfn = {'->', {',', 'getal', 'getal'}, 'bit'}
 local basis = {
 	['+'] = bifn,
 	['-'] = bifn,
@@ -89,17 +90,27 @@ local basis = {
 	['/'] = bifn,
 	['^'] = bifn,
 	['_'] = bifn,
+	['>'] = vglfn,
+	['<'] = vglfn,
+	['='] = vglfn,
+	['>='] = vglfn,
+	['<='] = vglfn,
+	['=>'] = {'->', 'bit', 'iets'},
 	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}}, -- 'getal -> getal^2'
 	['wortel'] = mofn,
 	['sin'] = mofn,
 	['cos'] = mofn,
 	['tan'] = mofn,
-	['som'] = {'->', {'^', 'getal', 'getal'}, 'getal'},
+	['som'] = {'->', {'^', 'getal', 'int'}, 'getal'},
+	['nu'] = 'getal',
+	['tau'] = 'getal',
 	
-	['toets-rechts']	= {'^', 'getal', 'int'},
-	['toets-links']		= {'^', 'getal', 'int'},
-	['toets-omhoog']	= {'^', 'getal', 'int'},
-	['toets-omlaag']	= {'^', 'getal', 'int'},
+	['toets-rechts']	= {'^', 'getal', '600'},
+	['toets-links']		= {'^', 'getal', '600'},
+	['toets-omhoog']	= {'^', 'getal', '600'},
+	['toets-omlaag']	= {'^', 'getal', '600'},
+	['toets-spatie']	= {'^', 'getal', '600'},
+
 }
 
 -- code in lisp formaat
@@ -129,6 +140,7 @@ end
 function vertaal(code)
 	print_typen = print_typen_bron
 	local feiten = ontleed(code)
+	if print_ingewanden then print(unlisp(feiten)) end
 	local typen,fouten = typeer(feiten,basis)
 	if fouten then return nil, fouten end
 

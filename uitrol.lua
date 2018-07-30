@@ -37,7 +37,7 @@ function uitrol(stroom, typen)
 		local naam,val = v[2],v[3]
 		local t = typen[naam]
 
-		if isexp(t) and t[1] == '^' and tonumber(t[3]) then
+		if lijstlen(t) then
 			local n = tonumber(t[3])
 			local fn = val[1]
 			local tfn = typen[fn]
@@ -47,9 +47,10 @@ function uitrol(stroom, typen)
 				--print('UITROL',naam..'^'..n,leed(tfn),leed(doeltype))
 			end
 
-			-- array unpacking
+			-- lijst
 			if isexp(val) and val[1] == '[]' then
 				--[[
+				-- uitgerold
 				uitgerold[naam] = #val-1
 				local stam = naam
 				for i=2,#val do
@@ -63,6 +64,32 @@ function uitrol(stroom, typen)
 			-- TODO te strak gematcht
 			elseif tfn and isexp(val) and
 					issimpel(tfn[2]) and isatoom(tfn[3]) then
+					print('ROL')
+				
+				-- uitgerolde loop
+				for i=1,n do
+					local naam = naam..'_'..(i-1)
+					local val = kopie(val)
+					local index = tostring(i-1)
+					-- doorloop bronnen, fix ariteit
+					for bron in spairs(var(val)) do
+						local len = lijstlen(typen[bron])
+						uitgerold[naam] = len
+						if len then
+							local doel
+							if uitgerold[bron] then
+								doel = bron..index
+							else
+								doel = {bron, index}
+							end
+							val = subst(val,bron,doel)
+						end
+					end
+					--local naam = naam .. '_'..(i-1)
+					r[#r+1] = {'=', naam, val}
+				end
+
+				-- normale loop
 				for i=1,n do
 					local naam = naam..'_'..(i-1)
 					local val = kopie(val)
@@ -93,6 +120,7 @@ function uitrol(stroom, typen)
 				r[#r+1] = {'=', naam, l}
 
 			else
+				print('EMIT normale loop')
 				r[#r+1] = v
 			end
 		else

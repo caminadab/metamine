@@ -1,4 +1,5 @@
 require 'lex'
+require 'util'
 
 function unparse_atom(atom)
   --atom = string.format('%q', atom)
@@ -29,8 +30,12 @@ function exp(sexp)
 end
 
 function unparse_work(sexpr, maxlen, tabs, res)
+	if type(sexpr) == 'boolean' then
+		if sexpr then return color.cyan .. 'ja' .. color.cyan
+		else return color.cyan .. 'nee' .. color.cyan end
+	end
 	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
-	if type(sexpr) == 'function' then sexpr = '<LAMBDA>' end
+	if type(sexpr) == 'function' then sexpr = color.cyan..'functie'..color.cyan end
 
   tabs = tabs or 0
   res = res or {}

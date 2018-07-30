@@ -32,13 +32,19 @@
 /* Bison declarations.  */
 %define api.value.type {node*}
 %token NAME
+%token DAN "=>"
 %token TO "->"
+%token ASS ":="
 %token CAT "||"
 %token TIL ".."
 %token CART "xx"
 %token END 0 "invoereinde"
 %token NEG '-'
+%token IS '='
+%token DELTA '\''
 
+%left "=>"
+%left '='
 %left "->"
 %left '<' '>' "<=" ">="
 %left "||"
@@ -48,6 +54,7 @@
 %left '*' '/'
 %precedence NEG
 %right '^' '_'
+%left DELTA
 %left '.'
 
 %%
@@ -62,7 +69,9 @@ input:
 ;
 
 eq:
-		exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
+		exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
+	|	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
+	|	exp ASS exp					{ $$ = exp3(a(":="), $1, $3); }
 	| exp ':' exp					{ $$ = exp3(a(":"), $1, $3); }
 ;
 
@@ -77,6 +86,7 @@ single:
 
 exp:
 	single
+| exp '\'' %prec DELTA						{ printf("HOI"); $$ = _exp2(a("'"), $1); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '_' exp       	{ $$ = exp3(a("_"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -88,10 +98,13 @@ exp:
 | exp ".." exp				{ $$ = exp3(a(".."), $1, $3); }
 | exp "xx" exp				{ $$ = exp3(a("xx"), $1, $3); }
 
+| exp '='	exp					{ $$ = exp3(a("="), $1, $3); }
 | exp '>' exp					{ $$ = exp3(a(">"), $1, $3); }
 | exp '<' exp					{ $$ = exp3(a("<"), $1, $3); }
 | exp ">=" exp				{ $$ = exp3(a(">="), $1, $3); }
 | exp "<=" exp				{ $$ = exp3(a("<="), $1, $3); }
+
+| exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 
