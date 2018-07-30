@@ -1,11 +1,13 @@
 #include <lua.h>
 #include <lauxlib.h>
+#include <string.h>
 
 #include "node.h"
 #include "taal.h"
 #include "global.h"
 
 extern void rapporteer(int t, char* str);
+extern void yyreset();
 
 void lua_pushnode(lua_State* L, node* node) {
 	if (node->exp) {
@@ -32,12 +34,12 @@ void lua_pushfout(lua_State* L, fout fout) {
 
 // niet threadsafe lol
 int lua_ontleed(lua_State* L) {
-	in = luaL_checkstring(L, 1);
-	lijn = 0;
-	foutlen = 0;
-	numnodes = 0;
-	wortel = 0;
-	
+	// reset
+	yyreset();
+	char* str = luaL_checkstring(L, 1);
+	strcpy(buf, str);
+	in = buf;
+
 	// doe het!
 	yyparse();
 

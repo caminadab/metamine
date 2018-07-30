@@ -7,6 +7,9 @@ windows: main.c taal.c node.c lua.c
 	mkdir -p bin
 	gcc -std=c99 -shared -o bin/ontleed.dll main.c taal.c node.c lua.c -llua 
 
+wintest: main.c taal.c node.c
+	gcc -std=c99 -ggdb -o bin/test main.c taal.c node.c -lm
+
 web:
 	mkdir -p bin
 	emcc -o bin/em-ontleed.js -s EXPORTED_FUNCTIONS='["_main", "_ontleed"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' main.c taal.c node.c
@@ -16,7 +19,7 @@ taal.h taal.c: taal.y
 	bison -d -t --defines=taal.h --output=taal.c taal.y
 
 bin/ontleed: main.c taal.c node.c
-	gcc -ggdb -o ../bin/ontleed main.c taal.c node.c -lm -llua 
+	gcc -ggdb -o bin/ontleed main.c taal.c node.c -lm -llua 
 
 clean:
 	rm -f taal.h taal.c ontleed.so ontleed

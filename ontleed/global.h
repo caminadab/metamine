@@ -7,6 +7,7 @@ struct fout {
 
 extern struct fout fouten[0x10];
 
+extern char buf[0x1000];
 extern node* wortel;
 extern int foutlen;
 extern const char* in;

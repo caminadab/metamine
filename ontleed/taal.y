@@ -42,9 +42,14 @@
 %token NEG '-'
 %token IS '='
 %token DELTA '\''
+%token EN "en"
+%token OF "of"
+%token EXOF "exof"
+%token NOCH "noch"
 
 %left "=>"
 %left '='
+%left "en" "of" "exof" "noch"
 %left "->"
 %left '<' '>' "<=" ">="
 %left "||"
@@ -63,15 +68,15 @@ input:
 	%empty							{ $$ = wortel = exp0(); }
 |	'\n' input					{ $$ = $2; }
 |	input '\n'					{ $$ = $1; }
-| input eq						{ $$ = append($1, $2); }
+| input feit					{ $$ = append($1, $2); }
 |	error '\n'					{ rapporteer(lijn, "ongeldige vergelijking"); yyerrok; }
 |	error 							{ rapporteer(lijn, "onherkend"); yyerror; }
 ;
 
-eq:
+feit:
 		exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
 	|	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
-	|	exp ASS exp					{ $$ = exp3(a(":="), $1, $3); }
+	|	exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
 	| exp ':' exp					{ $$ = exp3(a(":"), $1, $3); }
 ;
 
@@ -104,13 +109,18 @@ exp:
 | exp ">=" exp				{ $$ = exp3(a(">="), $1, $3); }
 | exp "<=" exp				{ $$ = exp3(a("<="), $1, $3); }
 
+| exp "en" exp				{ $$ = exp3(a("en"), $1, $3); }
+| exp "of" exp				{ $$ = exp3(a("of"), $1, $3); }
+| exp "exof" exp			{ $$ = exp3(a("exof"), $1, $3); }
+| exp "noch" exp			{ $$ = exp3(a("noch"), $1, $3); }
+
 | exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
 
-| single single				{ $$ = _exp2($1, $2); }
+| single single %prec NEG				{ $$ = _exp2($1, $2); }
 ;
 
 list:

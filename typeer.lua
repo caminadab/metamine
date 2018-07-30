@@ -10,15 +10,18 @@ local prios = {
 	['='] = 0,
 }
 
+local function issimpel(t)
+	return isatoom(t) and (t == 'bit' or t == 'getal' or t == 'int')
+end
 local function issimpel1(t)
-	return isexp(t) and t[1] == '->' and isatoom(t[2]) and isatoom(t[3])
+	return isexp(t) and t[1] == '->' and issimpel(t[2]) and issimpel(t[3])
 end
 assert(issimpel1{'->', 'getal', 'getal'})
 
 local function issimpel2(t)
 	if not isexp(t) then return false end
 	local argn = t[2]
-	local bi = isexp(argn) and #argn == 3 and isatoom(argn[2]) and isatoom(argn[3])
+	local bi = isexp(argn) and #argn == 3 and issimpel(argn[2]) and issimpel(argn[3])
 	return isexp(t) and t[1] == '->' and bi
 end
 
@@ -51,7 +54,7 @@ function leedwerk(exp, t)
 end
 
 function leed(exp)
-	local exp = exp or 'niets'
+	local exp = exp or 'onbekend'
 	local t = leedwerk(exp, {})
 	return table.concat(t)
 end
@@ -155,16 +158,6 @@ local varlijst = {'^', 'getal', 'int'}
 local vastlijst = {'^', 'getal', '2'}
 assert(unlisp(verenig_en(varlijst, vastlijst)) == '(^ getal 2)')
 
-local vastetypen = {
-	nu = 'getal',
-	tau = 'getal',
-	['toets-rechts'] = 	{'^', 'getal', 'int'},
-	['toets-links'] =		{'^', 'getal', 'int'},
-	['toets-omhoog'] = 	{'^', 'getal', 'int'},
-	['toets-omlaag'] =	{'^', 'getal', 'int'},
-	['toets-spatie'] = 	{'^', 'getal', 'int'},
-}
-
 -- lengte of een lijst type
 function lijstlen(t, typen)
 	if isatoom(t) then return nil end
@@ -200,6 +193,12 @@ function exptypeer(exp, typen)
 		T[a] = b
 		t = 'ok'
 
+	elseif exp[1] == '..' then
+		local a,b = exp[2], exp[3]
+		T[a] = exptypeer(a,typen)
+		T[b] = exptypeer(b,typen)
+		t = {'^', 'getal', 'int'}
+
 	-- vergelijking
 	elseif exp[1] == '=' then
 		local a,b = exp[2], exp[3]
@@ -210,6 +209,8 @@ function exptypeer(exp, typen)
 		T[b] = tab
 		if tab and tab~='fout' then
 			t = 'ok'
+		elseif not tab then
+			t = nil
 		else
 			t = 'fout'
 			--print(fa,fb,fab)
@@ -232,6 +233,19 @@ function exptypeer(exp, typen)
 		else
 			t = {'^', ti, #exp-1}
 		end
+
+	-- of, en, exof, noch
+	elseif exp[1] == 'of' then
+		local a,b = exp[2],exp[3]
+		local ta,fa = exptypeer(a,typen)
+		local tb,fb = exptypeer(b,typen)
+		T[a],T[b] = ta,tb
+		F[a],F[b] = fa,fb
+		t,f = verenig_of(ta,tb)
+
+	elseif exp[1] == '=>' then
+		local a,b = exp[2],exp[3]
+		t = exptypeer(b, typen)
 
 	-- zit hij erin?
 	elseif exp[1] == 'som' then
@@ -328,6 +342,7 @@ function exptypeer(exp, typen)
 
 	for exp,t0 in pairs(T) do
 		local t1 = typen[exp]
+		local f = F[exp]
 		local t,f0 = verenig_en(t0,t1)
 		if t and t ~= 'fout' then
 			typen[exp] = t
@@ -389,7 +404,7 @@ function typeer(feiten,typen)
 
 	for exp,type in pairs(typen) do
 		if isatoom(exp) then
-			print(color.blue..leed(exp)..': '..leed(type)..color.white)
+			--print(color.blue..leed(exp)..': '..leed(type)..color.white)
 		end
 	end
 

@@ -18,16 +18,38 @@ function subst(exp, van, naar)
 end
 
 function issimpel(t)
-	if isatoom(t) then return true
+	if isatoom(t) and t ~= 'iets' then return true
 	elseif t[1] ~= ',' then return false
 	else
 		for i=2,#t do
-			if type(t[i]) ~= 'string' then
+			if type(t[i]) ~= 'string' and t[i] ~= 'bit' and t[i] ~= 'int' and t[i] ~= 'getal' then
 				return false
 			end
 		end
+		print('issimpel', leed(t))
 		return true
 	end
+end
+
+-- EMIT naam(index) = LOOP_SUBST(val, index)
+function loop_subst(val, naam, index, typen, uitgerold)
+	local val = kopie(val)
+	-- doorloop bronnen, fix ariteit
+	for bron in spairs(var(val)) do
+		local len = lijstlen(typen[bron])
+		uitgerold[naam] = len
+		if len then
+			local doel
+			if uitgerold[bron] then
+				doel = bron..index
+			else
+				doel = {bron, index}
+			end
+			val = subst(val,bron,doel)
+		end
+	end
+	--local naam = naam .. '_'..(i-1)
+	return {'=', naam, val}
 end
 
 function uitrol(stroom, typen)
@@ -61,64 +83,61 @@ function uitrol(stroom, typen)
 				r[#r+1] = {'=', naam, val}
 
 			-- kleine loopjes
-			-- TODO te strak gematcht
 			elseif tfn and isexp(val) and
 					issimpel(tfn[2]) and isatoom(tfn[3]) then
-					print('ROL')
+
+				print('ROL')
 				
+				-- gebounde loop
+				if not n or n > 8 then
+					local inaam = naam..'_i'
+
+					-- lengte
+					local lijst
+
+					if n then
+						lijst = {'..', '0', n}
+					else
+						for bron in spairs(var(val)) do
+							local len = lijstlen(typen[bron])
+							if tonumber(len) then
+								lijst = {'..', '0', tostring(len)}
+								break
+							else
+								lijst = {'..', '0', {'#', bron}}
+								break
+							end
+						end
+							
+					end
+
+					-- goed
+					if lijst then
+
+						r[#r+1] = {'=', inaam, lijst}
+						r[#r+1] = loop_subst(val, {naam, inaam}, inaam, typen, uitgerold)
+
+					-- fout
+					else
+						error(color.red..'kon lengte niet bepalen van '..leed(val)..color.white)
+					end
+
 				-- uitgerolde loop
-				for i=1,n do
-					local naam = naam..'_'..(i-1)
-					local val = kopie(val)
-					local index = tostring(i-1)
-					-- doorloop bronnen, fix ariteit
-					for bron in spairs(var(val)) do
-						local len = lijstlen(typen[bron])
-						uitgerold[naam] = len
-						if len then
-							local doel
-							if uitgerold[bron] then
-								doel = bron..index
-							else
-								doel = {bron, index}
-							end
-							val = subst(val,bron,doel)
-						end
+				elseif n and n <= 8 then
+					for i=1,n do
+						local index = tostring(i-1)
+						r[#r+1] = loop_subst(val, naam..'_'..index, index, typen, uitgerold)
 					end
-					--local naam = naam .. '_'..(i-1)
-					r[#r+1] = {'=', naam, val}
-				end
 
-				-- normale loop
-				for i=1,n do
-					local naam = naam..'_'..(i-1)
-					local val = kopie(val)
-					local index = tostring(i-1)
-					-- doorloop bronnen, fix ariteit
-					for bron in spairs(var(val)) do
-						local len = lijstlen(typen[bron])
-						uitgerold[naam] = len
-						if len then
-							local doel
-							if uitgerold[bron] then
-								doel = bron..index
-							else
-								doel = {bron, index}
-							end
-							val = subst(val,bron,doel)
-						end
+					-- collect
+					local l = {'[]'}
+					for i=1,n do
+						l[#l+1] = tostring(naam)..'_'..(i-1)
 					end
-					--local naam = naam .. '_'..(i-1)
-					r[#r+1] = {'=', naam, val}
-				end
+					r[#r+1] = {'=', naam, l}
 
-				-- collect
-				local l = {'[]'}
-				for i=1,n do
-					l[#l+1] = tostring(naam)..'_'..(i-1)
 				end
-				r[#r+1] = {'=', naam, l}
-
+					
 			else
 				print('EMIT normale loop')
 				r[#r+1] = v

@@ -10,7 +10,9 @@ local infix = {
 }
 
 local vertaal = {
-	['nu'] = 'love.timer.getTime()',
+	['nu'] = '(love.timer.getTime()-start)',
+	['start'] = 'start',
+	['of'] = 'of',
 	['sin'] = 'math.sin',
 	['cos'] = 'math.cos',
 	['abs'] = 'math.abs',
@@ -18,6 +20,8 @@ local vertaal = {
 	['||'] = 'cat',
 	['sincos'] = 'sincos',
 	['=>'] = 'dan',
+	['..'] = 'tot',
+	['#'] = 'len',
 }
 
 local function naam2love(naam)
@@ -87,17 +91,40 @@ function tolo(exp,t,typen)
 end
 
 function stat2love(stat,t,vars,typen)
-	t[#t+1] = naam2love(stat[2])
+	local doel = stat[2]
+	local naam
+	if isexp(doel) then
+		t[#t+1] = doel[1]..' = {}\n'
+		naam = doel[1]..'['..doel[2]..']'
+		local len = doel[2]
+		t[#t+1] = 'for '..len..'=0,-1+#'..len..' do\n'
+	else
+		naam = doel
+	end
+	t[#t+1] = naam2love(naam)
 	t[#t+1] = ' = '
 	tolo(stat[3],t,typen)
 	t[#t+1] = '\n'
 	vars[#vars+1] = stat[2]
+	if isexp(doel) then
+		t[#t+1] = 'end\n'
+	end
 end
 
 function tolove(block,typen)
 	local t = {
 [[
 package.path = package.path .. ';../?.lua'
+start = love.timer.getTime()
+local function len(a) return #a-1 end
+local function of(a,b) return a or b end
+local function tot(a,b)
+	local r = {}
+	for i=a,b-1 do
+		r[#r+1] = i
+	end
+	return r
+end
 local function index(a,b)
 	return a[b+1]
 end
@@ -226,7 +253,10 @@ function love.draw()
 	love.graphics.reset()
 
 	-- framerate
-	love.graphics.print(tostring(love.timer.getFPS()), love.window.getWidth() - 30, 10)
+	local w
+	if love.graphics.getWidth then w = love.graphics.getWidth()
+	else w = love.window.getWidth() end
+	love.graphics.print(tostring(love.timer.getFPS()), w - 30, 10)
 ]]
 
 	-- debug tekst

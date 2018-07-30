@@ -75,6 +75,8 @@ local bieb = {
 	'toets-links', 'toets-rechts', 'toets-omhoog', 'toets-omlaag',
 	'toets-w', 'toets-s', 'toets-d', 'toets-a',
 
+	'toets-spatie-aan', 'toets-spatie-uit',
+
 	-- tijdelijk
 	'index',
 }
@@ -82,7 +84,7 @@ local bieb = {
 local bi = {',', 'getal', 'getal'}
 local mofn = {'->', 'getal', 'getal'}
 local bifn = {'->', bi, 'getal'}
-local vglfn = {'->', {',', 'getal', 'getal'}, 'bit'}
+local vglfn = {'->', bi, 'bit'}
 local basis = {
 	['+'] = bifn,
 	['-'] = bifn,
@@ -95,7 +97,7 @@ local basis = {
 	['='] = vglfn,
 	['>='] = vglfn,
 	['<='] = vglfn,
-	['=>'] = {'->', 'bit', 'iets'},
+	['=>'] = {'->', 'iets', 'iets'},
 	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}}, -- 'getal -> getal^2'
 	['wortel'] = mofn,
 	['sin'] = mofn,
@@ -104,12 +106,15 @@ local basis = {
 	['som'] = {'->', {'^', 'getal', 'int'}, 'getal'},
 	['nu'] = 'getal',
 	['tau'] = 'getal',
+	['..'] = {'->', bifn, {'^', 'getal', 'int'}},
 	
 	['toets-rechts']	= {'^', 'getal', '600'},
 	['toets-links']		= {'^', 'getal', '600'},
 	['toets-omhoog']	= {'^', 'getal', '600'},
 	['toets-omlaag']	= {'^', 'getal', '600'},
 	['toets-spatie']	= {'^', 'getal', '600'},
+	['toets-spatie-aan'] = 'int',
+	['toets-spatie-uit'] = 'int',
 
 }
 
