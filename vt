@@ -11,7 +11,7 @@ require 'love'
 require 'js'
 
 -- GLOBALEN
-print_ingewanden = true
+--print_ingewanden = true
 print_typen_bron = true
 print_typen_stroom = true
 
@@ -74,7 +74,7 @@ if #bron == 0 then
 [[gebruik: vt [OPTIES...] [BESTANDEN...]
 Vertaalt broncode naar applicaties.
 Opties:
-		-		
+		-		print naar stdout
 		-i	voer meteen uit
 		-l	stel lokale van broncode in (standaard NL)
 		-o	uitvoerbestand

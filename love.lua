@@ -60,6 +60,9 @@ function tolo(exp,t,typen)
 	elseif exp[1] == '[]' then
 		t[#t+1] = '{'
 		for i=2,#exp do
+			if i == 2 then
+				t[#t+1] = '[0] = '
+			end
 			tolo(exp[i], t, typen)
 			if i ~= #exp then
 				t[#t+1] = ', '
@@ -69,7 +72,7 @@ function tolo(exp,t,typen)
 	elseif isexp(typen[exp[1]]) and typen[exp[1]][1] == '^' then
 		tolo(exp[1], t, typen)
 		t[#t+1] = ''
-		t[#t+1] = '[1+'
+		t[#t+1] = '['
 		for i=2,#exp do
 			tolo(exp[i], t, typen)
 			t[#t+1] = ', '
@@ -116,17 +119,19 @@ function tolove(block,typen)
 [[
 package.path = package.path .. ';../?.lua'
 start = love.timer.getTime()
-local function len(a) return #a-1 end
+local function len(a) return #a+1 end
 local function of(a,b) return a or b end
 local function tot(a,b)
 	local r = {}
+	local j = 0
 	for i=a,b-1 do
-		r[#r+1] = i
+		r[j] = i
+		j = j + 1
 	end
 	return r
 end
 local function index(a,b)
-	return a[b+1]
+	return a[b]
 end
 local function som(a)
 	local som = 0
@@ -150,12 +155,15 @@ local toetsRechts = {}
 local toetsLinks = {}
 local toetsOmhoog = {}
 local toetsOmlaag = {}
-local toetsRechtsSom = {}
+local toetsSpatie = {}
 for i=1,600 do toetsRechts[i] = 0 end
 for i=1,600 do toetsLinks[i] = 0 end
 for i=1,600 do toetsOmhoog[i] = 0 end
 for i=1,600 do toetsOmlaag[i] = 0 end
-for i=1,600 do toetsRechtsSom[i] = 0 end
+for i=1,600 do toetsSpatie[i] = 0 end
+local prevSpaceDown = false
+local toetsSpatieAan = 0
+local toetsSpatieUit = 0
 ]]}
 
 	-- update
@@ -168,15 +176,24 @@ for i=1,600 do toetsRechtsSom[i] = 0 end
 	for i=1,600-1 do toetsLinks[i] = toetsLinks[i+1] end
 	for i=1,600-1 do toetsOmhoog[i] = toetsOmhoog[i+1] end
 	for i=1,600-1 do toetsOmlaag[i] = toetsOmlaag[i+1] end
-	for i=1,600-1 do toetsRechtsSom[i] = toetsRechtsSom[i+1] end
+	for i=1,600-1 do toetsSpatie[i] = toetsSpatie[i+1] end
 	toetsRechts[600] = (love.keyboard.isDown("right") and 1/60 or 0)
 	toetsLinks[600] = (love.keyboard.isDown("left") and 1/60 or 0)
 	toetsOmhoog[600] = (love.keyboard.isDown("up") and 1/60 or 0)
 	toetsOmlaag[600] = (love.keyboard.isDown("down") and 1/60 or 0)
-	toetsRechtsSom[600] = 0
-	for i=1,600 do
-		toetsRechtsSom[600] = toetsRechtsSom[600] + toetsRechts[i] / 10
+	toetsSpatie[600] = ((love.keyboard.isDown("space")) and 1/60 or 0)
+
+	if toetsSpatieAan > 0 then toetsSpatieAan = toetsSpatieAan - 1 end
+	if toetsSpatieUit > 0 then toetsSpatieUit = toetsSpatieUit - 1 end
+
+	if love.keyboard.isDown("space") and prevSpaceDown == false then
+		prevSpaceDown = true
+		toetsSpatieAan = 600
+	elseif not love.keyboard.isDown("space") and prevSpaceDown == true then
+		prevSpaceDown = false
+		toetsSpatieUit = 600
 	end
+
 ]]
 
 	for i=1,#block do
@@ -197,8 +214,8 @@ love.graphics.setColor = function(r,g,b,a)
 end
 
 function love.draw()
-	if cirkel and cirkel[1] and cirkel[2] then
-		love.graphics.circle('fill', cirkel[1], cirkel[2], cirkel[3] or 20)
+	if cirkel and cirkel[0] and cirkel[1] then
+		love.graphics.circle('fill', cirkel[0], cirkel[1], cirkel[2] or 20)
 	end
 ]]
 
@@ -211,9 +228,6 @@ function love.draw()
 	t[#t+1] = [[
 	local sx,sy = 10,310
 	local x,y = sx,sy
-	--love.graphics.line(sx,sy,sx,sy+100)
-	--love.graphics.line(sx,sy,sx+600,sy)
-	--love.graphics.line(sx+600,sy,sx+600,sy+100)
 	love.graphics.setLineJoin('none')
 
 	function grafiek(lijst,sx,sy,w,h)
@@ -248,7 +262,7 @@ function love.draw()
 	love.graphics.setColor(0,.7,1) grafiek(toetsLinks,		20, 350)
 	love.graphics.setColor(0,.5,1) grafiek(toetsOmhoog,	20, 380)
 	love.graphics.setColor(0,.3,1) grafiek(toetsOmlaag,	20, 410)
-	--love.graphics.setColor(1,1,0) grafiek(toetsRechtsSom,	20, 440)
+	love.graphics.setColor(0,.1,1) grafiek(toetsSpatie,	20, 440)
 	love.graphics.setColor(1,1,1)
 	love.graphics.reset()
 

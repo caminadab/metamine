@@ -25,7 +25,7 @@ local function issimpel2(t)
 	return isexp(t) and t[1] == '->' and bi
 end
 
-local dichtbij = {['^']=true,['_']=true,['.']=true}
+local dichtbij = {['^']=true,['_']=true,['.']=true,['..']=true}
 function leedwerk(exp, t)
 	local prio = 0
 	if isatoom(exp) then
@@ -161,7 +161,7 @@ assert(unlisp(verenig_en(varlijst, vastlijst)) == '(^ getal 2)')
 -- lengte of een lijst type
 function lijstlen(t, typen)
 	if isatoom(t) then return nil end
-	if t[1] == '^' then return tostring(t[3]) end --TEMP tostring
+	if t[1] == '^' then return tostring(t[3]) or t[3] end --TEMP tostring
 end
 
 local function issimpelefunctie(t)
@@ -180,6 +180,14 @@ function exptypeer(exp, typen)
 	local t,T = nil,{}
 	local f,F = nil,{}
 
+	-- hulp
+	local fn = isexp(exp) and exp[1]
+	local a = isexp(exp) and exp[2]
+	local b = isexp(exp) and exp[3]
+	local tfn,ffn = fn and exptypeer(fn,typen)
+	local ta,fa = a and exptypeer(a,typen)
+	local tb,fb = b and exptypeer(b,typen)
+
 	if isatoom(exp) then
 		if tonumber(exp) then
 			t = 'getal'
@@ -195,9 +203,12 @@ function exptypeer(exp, typen)
 
 	elseif exp[1] == '..' then
 		local a,b = exp[2], exp[3]
-		T[a] = exptypeer(a,typen)
-		T[b] = exptypeer(b,typen)
-		t = {'^', 'getal', 'int'}
+		T[a],F[a] = exptypeer(a,typen)
+		T[b],F[b] = exptypeer(b,typen)
+		if F[a] or F[b] then
+			t = 'fout'
+		end
+		t = {'^', 'int', 'int'}
 
 	-- vergelijking
 	elseif exp[1] == '=' then
@@ -274,9 +285,16 @@ function exptypeer(exp, typen)
 			end
 		end
 
+	-- tafel
+	--elseif lijstlen(typen[exp[1]]) then
+		
+
 	-- functie
-	elseif issimpel1(typen[exp[1]]) or issimpel2(typen[exp[1]]) then
-		local fn,a,b,c = table.unpack(exp) --exp[1], exp[2], exp[3], exp[4]
+	elseif issimpel1(tfn) or issimpel2(tfn) or lijstlen(tfn) then
+		if ta[1] == '^' then
+			a,b = b,a
+			ta,tb = tb,ta
+		end
 
 		-- lengte
 		local lengte = nil
@@ -333,7 +351,6 @@ function exptypeer(exp, typen)
 		end
 	end
 
-
 	local t,f0 = verenig_en(t, typen[exp])
 	typen[exp] = t
 	if t == 'fout' then
@@ -353,9 +370,9 @@ function exptypeer(exp, typen)
 	end
 	
 	if print_typen then
-		print(leed(exp)..': '..leed(t))
+		if t and not tonumber(exp) then print(leed(exp)..': '..leed(t)) end
 		for exp,t in spairs(T) do
-			print('  '..leed(exp)..': '..leed(t))
+			if t and not tonumber(exp) then print('  '..leed(exp)..': '..leed(t)) end
 		end
 	end
 

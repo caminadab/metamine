@@ -37,7 +37,6 @@ function loop_subst(val, naam, index, typen, uitgerold)
 	-- doorloop bronnen, fix ariteit
 	for bron in spairs(var(val)) do
 		local len = lijstlen(typen[bron])
-		uitgerold[naam] = len
 		if len then
 			local doel
 			if uitgerold[bron] then
@@ -45,7 +44,10 @@ function loop_subst(val, naam, index, typen, uitgerold)
 			else
 				doel = {bron, index}
 			end
-			val = subst(val,bron,doel)
+			-- niet voor lijsten zelf
+			for i = 2,#val do
+				val[i] = subst(val[i],bron,doel)
+			end
 		end
 	end
 	--local naam = naam .. '_'..(i-1)
@@ -86,8 +88,6 @@ function uitrol(stroom, typen)
 			elseif tfn and isexp(val) and
 					issimpel(tfn[2]) and isatoom(tfn[3]) then
 
-				print('ROL')
-				
 				-- gebounde loop
 				if not n or n > 8 then
 					local inaam = naam..'_i'
@@ -124,6 +124,7 @@ function uitrol(stroom, typen)
 
 				-- uitgerolde loop
 				elseif n and n <= 8 then
+					uitgerold[naam] = len
 					for i=1,n do
 						local index = tostring(i-1)
 						r[#r+1] = loop_subst(val, naam..'_'..index, index, typen, uitgerold)
@@ -138,8 +139,8 @@ function uitrol(stroom, typen)
 
 				end
 					
+			-- geen lus
 			else
-				print('EMIT normale loop')
 				r[#r+1] = v
 			end
 		else
