@@ -35,6 +35,7 @@
 %token DAN "=>"
 %token TO "->"
 %token ASS ":="
+%token INC "+="
 %token CAT "||"
 %token TIL ".."
 %token CART "xx"
@@ -51,6 +52,7 @@
 
 %left "=>"
 %left '='
+%left ":=" "+=" "-=" "|=" "&="
 %left "en" "of" "exof" "noch" "niet"
 %left "->"
 %left '<' '>' "<=" ">="
@@ -73,10 +75,12 @@ input:
 |	'\n' input					{ $$ = $2; }
 |	input '\n'					{ $$ = $1; }
 | input feit					{ $$ = append($1, $2); }
+| input error '\n'		{ $$ = append($1, a("fout")); yyerrok; }
 |	error '\n'					{ $$ = a("fout"); yyerrok; }
 |	error 							{ $$ = a("fout"); yyerror; }
 ;
 
+/*
 subfeit:
 	'\t' feit '\n'
 
@@ -87,12 +91,14 @@ subfeiten:
 
 set:
 		'{' '\n' subfeiten '\n' '}'
+*/
 
 /*	| exp '=' set					{ $$ = exp3(a("="), $1, $3); }*/
 feit:
 		exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
 	|	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
 	|	exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
+	|	exp "+=" exp				{ $$ = exp3(a("+="), $1, $3); }
 	| exp ':' exp					{ $$ = exp3(a(":"), $1, $3); }
 ;
 
@@ -120,24 +126,22 @@ exp:
 | exp ".." exp				{ $$ = exp3(a(".."), $1, $3); }
 | exp "xx" exp				{ $$ = exp3(a("xx"), $1, $3); }
 
-| NIET exp 						{ $$ = _exp2(a("niet"), $2); }
-| exp OF exp					{ $$ = exp3(a("of"), $1, $3); }
-| exp EN exp					{ $$ = exp3(a("en"), $1, $3); }
-| exp EXOF exp				{ $$ = exp3(a("exof"), $1, $3); }
-| exp NOCH exp				{ $$ = exp3(a("noch"), $1, $3); }
-
 | exp '='	exp					{ $$ = exp3(a("="), $1, $3); }
 | exp '>' exp					{ $$ = exp3(a(">"), $1, $3); }
 | exp '<' exp					{ $$ = exp3(a("<"), $1, $3); }
 | exp ">=" exp				{ $$ = exp3(a(">="), $1, $3); }
 | exp "<=" exp				{ $$ = exp3(a("<="), $1, $3); }
 
+| exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
+| exp "+=" exp				{ $$ = exp3(a("+="), $1, $3); }
+| exp "-=" exp				{ $$ = exp3(a("-="), $1, $3); }
+| exp "|=" exp				{ $$ = exp3(a("|="), $1, $3); }
+| exp "&=" exp				{ $$ = exp3(a("&="), $1, $3); }
+
 | exp "en" exp				{ $$ = exp3(a("en"), $1, $3); }
 | exp "of" exp				{ $$ = exp3(a("of"), $1, $3); }
 | exp "exof" exp			{ $$ = exp3(a("exof"), $1, $3); }
 | exp "noch" exp			{ $$ = exp3(a("noch"), $1, $3); }
-
-| exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 
