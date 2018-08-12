@@ -8,7 +8,7 @@ windows: main.c taal.c node.c lua.c
 	gcc -std=c99 -shared -o bin/ontleed.dll main.c taal.c node.c lua.c -llua 
 
 wintest: main.c taal.c node.c
-	gcc -std=c99 -ggdb -o bin/test main.c taal.c node.c -lm
+	gcc -std=c99 -ggdb -o bin/test main.c taal.c node.c test.c -lm
 
 web:
 	mkdir -p bin

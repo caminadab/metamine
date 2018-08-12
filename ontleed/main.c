@@ -56,6 +56,14 @@ int yylex() {
 		return ASS;
 	}
 
+	// tab
+	if (c == '\t') {
+		token[0] = '\t';
+		token[1] = 0;
+		yylval = a(token);
+		return TAB;
+	}
+
 	// klaar
 	if (!c)
 		return 0;
@@ -73,6 +81,7 @@ int yylex() {
 	else if (!memcmp(cc, ":=", 2))	{ strcpy(token, ":="); in++; id = ASS; }
 	else if (!memcmp(cc, "en", 2))	{ strcpy(token, "en"); in++; id = EN; }
 	else if (!memcmp(cc, "of", 2))	{ strcpy(token, "of"); in++; id = OF; }
+	else if (!memcmp(cc, "niet", 4))	{ strcpy(token, "niet"); in++; id = EXOF; }
 	else if (!memcmp(cc, "exof", 4))	{ strcpy(token, "exof"); in++; id = EXOF; }
 	else if (!memcmp(cc, "noch", 4))	{ strcpy(token, "noch"); in++; id = NOCH; }
 	else if (!isalnum(c)) {
@@ -107,34 +116,7 @@ char* ontleed(char* code) {
 	return buf;
 }
 
-int test() {
-	char* tests[][2] = {
-		{"a = 1", "((= a 1))"},
-		{"a = b + 1", "((= a (+ b 1)))"},
-		{"b = f(a)", "((= b (f a)))"},
-		{"b = f a", "((= b (f a)))"},
-		{"a = (p => b)", "((= a (=> p b)))"},
-		{"a : getal", "((: a getal))"},
-		{"a = (b > c)", "((= a (> b c)))"},
-		{"a = (b of c)", "((= a (of b c)))"},
-
-		// funcs
-		{"f = a -> a", "((= f (-> a a)))"},
-		{"f = a -> a + 1", "((= f (-> a (+ a 1))))"},
-		//{"f = a,b -> c,d+1,e", "((= f (-> a (+ a 1))))"},
-
-		{NULL, NULL},
-	};
-
-	for (int i = 0; tests[i][0]; i++) {
-		char* test = tests[i][0];
-		char* doel = tests[i][1];
-		char* lisp = ontleed(test);
-		if (strcmp(lisp, doel))
-			printf("%s != %s\n", lisp, doel);
-	}
-}
-
+void test();
 
 int main() {
 	test();

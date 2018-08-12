@@ -42,25 +42,29 @@
 %token NEG '-'
 %token IS '='
 %token DELTA '\''
+%token TAB '\t'
 %token EN "en"
 %token OF "of"
+%token NIET "niet"
 %token EXOF "exof"
 %token NOCH "noch"
 
 %left "=>"
 %left '='
-%left "en" "of" "exof" "noch"
+%left "en" "of" "exof" "noch" "niet"
 %left "->"
 %left '<' '>' "<=" ">="
 %left "||"
 %left ".."
 %left "xx"
+%precedence CALL
 %left '+' '-'
 %left '*' '/'
 %precedence NEG
 %right '^' '_'
 %left DELTA
 %left '.'
+%precedence '%'
 
 %%
 
@@ -69,10 +73,22 @@ input:
 |	'\n' input					{ $$ = $2; }
 |	input '\n'					{ $$ = $1; }
 | input feit					{ $$ = append($1, $2); }
-|	error '\n'					{ rapporteer(lijn, "ongeldige vergelijking"); yyerrok; }
-|	error 							{ rapporteer(lijn, "onherkend"); yyerror; }
+|	error '\n'					{ $$ = a("fout"); yyerrok; }
+|	error 							{ $$ = a("fout"); yyerror; }
 ;
 
+subfeit:
+	'\t' feit '\n'
+
+subfeiten:
+	%empty							{ $$ = a("{}"); }
+|	subfeiten subfeit		{ $$ = append($1, $2); }
+;
+
+set:
+		'{' '\n' subfeiten '\n' '}'
+
+/*	| exp '=' set					{ $$ = exp3(a("="), $1, $3); }*/
 feit:
 		exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
 	|	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
@@ -82,6 +98,7 @@ feit:
 
 single:
 	NAME
+| exp '%'							{ $$ = _exp2(a("%"), $1); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 
@@ -103,6 +120,12 @@ exp:
 | exp ".." exp				{ $$ = exp3(a(".."), $1, $3); }
 | exp "xx" exp				{ $$ = exp3(a("xx"), $1, $3); }
 
+| NIET exp 						{ $$ = _exp2(a("niet"), $2); }
+| exp OF exp					{ $$ = exp3(a("of"), $1, $3); }
+| exp EN exp					{ $$ = exp3(a("en"), $1, $3); }
+| exp EXOF exp				{ $$ = exp3(a("exof"), $1, $3); }
+| exp NOCH exp				{ $$ = exp3(a("noch"), $1, $3); }
+
 | exp '='	exp					{ $$ = exp3(a("="), $1, $3); }
 | exp '>' exp					{ $$ = exp3(a(">"), $1, $3); }
 | exp '<' exp					{ $$ = exp3(a("<"), $1, $3); }
@@ -120,7 +143,7 @@ exp:
 
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
 
-| single single %prec NEG				{ $$ = _exp2($1, $2); }
+| single single %prec CALL				{ $$ = _exp2($1, $2); }
 ;
 
 list:
