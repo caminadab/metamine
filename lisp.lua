@@ -1,6 +1,9 @@
 require 'lex'
 require 'util'
 
+local insert = table.insert
+local concat = table.concat
+
 function unparse_atom(atom)
   --atom = string.format('%q', atom)
   --atom = string.gsub(atom, '\n', '\\n')
@@ -41,32 +44,39 @@ function unparse_work(sexpr, maxlen, tabs, res)
   res = res or {}
   if atom(sexpr) then
     len = #sexpr
-    table.insert(res, unparse_atom(sexpr))
+    insert(res, unparse_atom(sexpr))
   else
     local split = unparse_len(sexpr) > maxlen
-    table.insert(res, '(')
+    insert(res, '(')
     for i,sub in ipairs(sexpr) do
       if split then
-        table.insert(res, '\n')
-        table.insert(res, string.rep('  ', tabs+1))
+        insert(res, '\n')
+        insert(res, string.rep('  ', tabs+1))
       end
       unparse_work(sub, maxlen, tabs+1, res)
       if next(sexpr, i) and type(next(sexpr, i)) == 'number' then
-        table.insert(res, ' ')
+        insert(res, ' ')
       end
+			if split then
+				-- commentaar
+				if sub[';'] then
+					res[#res+1] = '\t; '
+					res[#res+1] = sub[';']
+				end
+			end
     end
     if split then
-      table.insert(res, '\n')
-      table.insert(res, string.rep('  ', tabs))
+      insert(res, '\n')
+      insert(res, string.rep('  ', tabs))
     end
-    table.insert(res, ')')
+    insert(res, ')')
   end
   return res
 end
 
 function unparseSexp(sexpr)
   if not sexpr then return 'none' end
-  return table.concat(unparse_work(sexpr, 40))
+  return concat(unparse_work(sexpr, 40))
 end
 unlisp = unparseSexp
 
@@ -128,7 +138,7 @@ function parseSexp2(sexpr)
 		
 		-- bracket?
 		if get() == '(' then
-			table.insert(stack, new())
+			insert(stack, new())
 			consume()
 		
 		-- close?
@@ -137,7 +147,7 @@ function parseSexp2(sexpr)
 				return stack[1]
 				--error(line..':'..ch..'\tclosing too much')
 			end
-			table.insert(stack[#stack-1], stack[#stack])
+			insert(stack[#stack-1], stack[#stack])
 			table.remove(stack, #stack)
 			consume()
 
@@ -152,34 +162,34 @@ function parseSexp2(sexpr)
 			if get() == "'" then
 				while get() and get() ~= "'" do
 					if get() == '\\' then
-						table.insert(id, '\\')
+						insert(id, '\\')
 						consume()
-						table.insert(id, get())
+						insert(id, get())
 						consume()
 					elseif get() == "'" then
-						table.insert(id, get())
+						insert(id, get())
 						consume()
 						break
 					else
 						consume()
-						table.insert(id, get())
+						insert(id, get())
 					end
 				end
 
 			-- normal token
 			else
 				while get() and not blank[get()] and get()~=')' and get()~='(' do
-					table.insert(id, get())
+					insert(id, get())
 					consume()
 				end
 			end
-			id = table.concat(id)
+			id = concat(id)
 			if #stack == 0 then
-				table.insert(stack, id)
+				insert(stack, id)
 			elseif type(stack[#stack]) ~= 'table' then
 				error(line..':'..ch..'\tteveel delen')
 			else
-				table.insert(stack[#stack], id)
+				insert(stack[#stack], id)
 			end
 		end
 	end
@@ -230,20 +240,20 @@ function lisp(t)
 			if #stack == 1 then
 				error('teveel sluitende haakjes')
 			end
-			table.insert(stack[#stack-1], stack[#stack])
+			insert(stack[#stack-1], stack[#stack])
 			stack[#stack] = nil
 		
 		elseif not token then
 			break
 		
 		else
-			table.insert(stack[#stack], token)
+			insert(stack[#stack], token)
 		end
 	end
 
 	-- samenvoeg
 	for i=#stack,2,-1 do
-		table.insert(stack[i-1], stack[i])
+		insert(stack[i-1], stack[i])
 	end
 
 	if #stack[1] > 1 then

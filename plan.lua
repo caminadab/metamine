@@ -10,7 +10,7 @@ function plan(stroom)
 	for i,eq in ipairs(stroom) do
 		local naam,args = eq[2],eq[3]
 		for naam in pairs(var(eq[3])) do
-			
+		end
 	end
 	return plan
 end

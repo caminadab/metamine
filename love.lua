@@ -204,8 +204,6 @@ local toetsSpatieUit = 0
 
 	-- draw
 	t[#t+1] = [[
-require 'lisp'
-
 local lgsc = love.graphics.setColor
 love.graphics.setColor = function(r,g,b,a)
 	local a = a or 1

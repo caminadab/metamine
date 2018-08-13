@@ -54,11 +54,11 @@ local bieb = {
 	'..', 'xx',
 
 	-- tijd
-	'nu',
+	'nu', 'start',
 	'\'',
 
 	-- meta
-	'.',
+	'.', 'onbekend',
 
 	-- converteer
 	'tekst', 'getal',
@@ -104,8 +104,9 @@ local basis = {
 	['cos'] = mofn,
 	['tan'] = mofn,
 	['som'] = {'->', {'^', 'getal', 'int'}, 'getal'},
-	['nu'] = 'getal',
 	['tau'] = 'getal',
+	['start'] = 'int',
+	['nu'] = 'int',
 	['..'] = {'->', bifn, {'^', 'getal', 'int'}},
 	
 	['toets-rechts']	= {'^', 'getal', '600'},

@@ -4,10 +4,11 @@ require 'util'
 require 'lisp'
 
 local prios = {
-	['^'] = 3, ['_'] = 3,
-	['*'] = 2, ['/'] = 2,
-	['+'] = 1, ['-'] = 1,
-	['='] = 0,
+	['^'] = 4, ['_'] = 4,
+	['*'] = 3, ['/'] = 3,
+	['+'] = 2, ['-'] = 2,
+	['='] = 1,
+	[':='] = 0,
 }
 
 local function issimpel(t)
@@ -56,6 +57,7 @@ end
 function leed(exp)
 	local exp = exp or 'onbekend'
 	local t = leedwerk(exp, {})
+	t[#t+1] = color.white
 	return table.concat(t)
 end
 
@@ -211,7 +213,7 @@ function exptypeer(exp, typen)
 		t = {'^', 'int', 'int'}
 
 	-- vergelijking
-	elseif exp[1] == '=' then
+	elseif exp[1] == '=' or exp[1] == ':=' then
 		local a,b = exp[2], exp[3]
 		local ta,fa = exptypeer(a, typen)
 		local tb,fb = exptypeer(b, typen)
@@ -291,7 +293,7 @@ function exptypeer(exp, typen)
 
 	-- functie
 	elseif issimpel1(tfn) or issimpel2(tfn) or lijstlen(tfn) then
-		if ta[1] == '^' then
+		if ta and ta[1] == '^' then
 			a,b = b,a
 			ta,tb = tb,ta
 		end
@@ -370,9 +372,9 @@ function exptypeer(exp, typen)
 	end
 	
 	if print_typen then
-		if t and not tonumber(exp) then print(leed(exp)..': '..leed(t)) end
+		if t and not tonumber(exp) then print(leed(exp)..':\t'..color.yellow..leed(t)..color.white) end
 		for exp,t in spairs(T) do
-			if t and not tonumber(exp) then print('  '..leed(exp)..': '..leed(t)) end
+			if t and not tonumber(exp) then print('  '..leed(exp)..':\t'..color.yellow..leed(t)..color.white) end
 		end
 	end
 

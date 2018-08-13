@@ -1,6 +1,8 @@
 require 'symbool'
 require 'typeer'
 
+max_uitrol_lengte = 8
+
 function subst(exp, van, naar)
 	if isatoom(exp) then
 		if exp == van then
@@ -26,7 +28,6 @@ function issimpel(t)
 				return false
 			end
 		end
-		print('issimpel', leed(t))
 		return true
 	end
 end
@@ -40,7 +41,7 @@ function loop_subst(val, naam, index, typen, uitgerold)
 		if len then
 			local doel
 			if uitgerold[bron] then
-				doel = bron..index
+				doel = bron..'_'..index
 			else
 				doel = {bron, index}
 			end
@@ -51,7 +52,8 @@ function loop_subst(val, naam, index, typen, uitgerold)
 		end
 	end
 	--local naam = naam .. '_'..(i-1)
-	return {'=', naam, val}
+	local noot = 'lus, i='..unlisp(index)
+	return {':=', naam, val, [';'] = noot}
 end
 
 function uitrol(stroom, typen)
@@ -73,23 +75,23 @@ function uitrol(stroom, typen)
 
 			-- lijst
 			if isexp(val) and val[1] == '[]' then
-				--[[
+				----[[
 				-- uitgerold
 				uitgerold[naam] = #val-1
 				local stam = naam
 				for i=2,#val do
-					local naam = stam..''..(i-2)
-					r[#r+1] = {'=', naam, val[i]}
+					local naam = stam..'_'..(i-2)
+					r[#r+1] = {':=', naam, val[i], [';'] = 'lijst'}
 				end
-				]]
-				r[#r+1] = {'=', naam, val}
+				--]]
+				--r[#r+1] = {':=', naam, val} 
 
 			-- kleine loopjes
 			elseif tfn and isexp(val) and
 					issimpel(tfn[2]) and isatoom(tfn[3]) then
 
 				-- gebounde loop
-				if not n or n > 8 then
+				if not n or n > max_uitrol_lengte then
 					local inaam = naam..'_i'
 
 					-- lengte
@@ -114,7 +116,7 @@ function uitrol(stroom, typen)
 					-- goed
 					if lijst then
 
-						r[#r+1] = {'=', inaam, lijst}
+						r[#r+1] = {':=', inaam, lijst, [';'] = 'aggr'}
 						r[#r+1] = loop_subst(val, {naam, inaam}, inaam, typen, uitgerold)
 
 					-- fout
@@ -123,8 +125,8 @@ function uitrol(stroom, typen)
 					end
 
 				-- uitgerolde loop
-				elseif n and n <= 8 then
-					uitgerold[naam] = len
+				elseif n and n <= max_uitrol_lengte then
+					uitgerold[naam] = n
 					for i=1,n do
 						local index = tostring(i-1)
 						r[#r+1] = loop_subst(val, naam..'_'..index, index, typen, uitgerold)
@@ -135,7 +137,7 @@ function uitrol(stroom, typen)
 					for i=1,n do
 						l[#l+1] = tostring(naam)..'_'..(i-1)
 					end
-					r[#r+1] = {'=', naam, l}
+					--r[#r+1] = {':=', naam, l}
 
 				end
 					
@@ -150,18 +152,17 @@ function uitrol(stroom, typen)
 
 	-- laatste maken
 	local doel = stroom[#stroom][2]
-	for n,v in spairs(uitgerold) do print(n,v) end
+	for n,v in spairs(uitgerold) do print('uitgerold',n,v) end
 	if uitgerold[doel] then
 		-- inrollen
 		local a = {'[]'}
 		print(uitgerold[doel])
 		for i=1,uitgerold[doel] do
 			local index = tostring(i-1)
-			a[#a+1] = doel..index
+			a[#a+1] = doel..'_'..index
 		end
-		r[#r+1] = {'=', doel, a}
+		r[#r+1] = {':=', doel, a, [';'] = 'resultaat oprollen'}
 	end
-	--if stroom[#stroom]
 	return r
 end
 			

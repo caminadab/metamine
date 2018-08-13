@@ -12,8 +12,10 @@ require 'js'
 
 -- GLOBALEN
 --print_ingewanden = true
-print_typen_bron = true
+print_typen_bron = false
 print_typen_stroom = true
+print_syntax = false
+print_losse_waarden = false
 
 -- argumenten
 local taal = 'nl'
@@ -50,6 +52,8 @@ for i=1,#args do
 			uitvoer = 'main.lua'
 		elseif vlag == 'i' then
 			immediate = true
+		elseif vlag == 's' then
+			print_ingewanden = true
 		elseif vlag == 'v' then
 			print_losse_waarden = true
 		elseif vlag == 'l' then
@@ -76,6 +80,7 @@ Vertaalt broncode naar applicaties.
 Opties:
 		-		print naar stdout
 		-i	voer meteen uit
+		-s	print syntax
 		-l	stel lokale van broncode in (standaard NL)
 		-o	uitvoerbestand
 		-L	compileer naar love2d

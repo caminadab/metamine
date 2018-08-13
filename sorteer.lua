@@ -14,7 +14,7 @@ function unravelrec(exp,name,asm,g)
 	local g = g or -1
 	g = g + 1
 	if atom(exp) then
-		asm[#asm+1] = {'=', aname, exp}
+		asm[#asm+1] = {':=', aname, exp}
 	else
 		-- subs
 		local args = {}
@@ -27,7 +27,7 @@ function unravelrec(exp,name,asm,g)
 			end
 		end
 		-- zelf
-		asm[#asm+1] = {'=', aname, args}
+		asm[#asm+1] = {':=', aname, args}
 	end
 	return g
 end
@@ -76,8 +76,9 @@ function sorteer(waarden, volgorde)
 
 	while #nieuw > 0 do
 		local naam = remove(nieuw, 1)
-		local exps = waarden[naam] or {}
+		local exps = waarden[naam]
 		local foutegraaf
+		assert(exps)
 
 		-- link, dan testen of goed
 		local ok
@@ -89,6 +90,16 @@ function sorteer(waarden, volgorde)
 			-- END CUSTOM
 
 			for bron in spairs(var(exp)) do
+				-- als bron niet in de graaf zit
+				-- dan laat hem van 'onbekend' afleiden
+				if not waarden[bron] then
+					print(color.red..bron .. ' is onbekend!'..color.white)
+					waarden[bron] = {}
+					hoeken[#hoeken+1] = {'onbekend',bron}
+					graaf:voegtoe(bron)
+					graaf:link('onbekend',bron)
+					klaar[bron] = true
+				end
 				hoeken[#hoeken+1] = {bron,naam}
 				graaf:link(bron,naam)
 			end
@@ -112,7 +123,7 @@ function sorteer(waarden, volgorde)
 
 		-- goed
 		if ok then
-			stroom[#stroom+1] = {'=', naam, ok}
+			stroom[#stroom+1] = {':=', naam, ok}
 			
 			-- BEGIN
 			if not atom(ok) and ok[1] == '->' then
@@ -143,6 +154,7 @@ function sorteer(waarden, volgorde)
 
 		else
 			if true then
+				print(van[naam], 'OK', naam)
 				print('geen oplossing voor '..unlisp(naam))
 				print('foute graaf:')
 				print(foutegraaf)
