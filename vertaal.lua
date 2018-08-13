@@ -54,7 +54,7 @@ local bieb = {
 	'..', 'xx',
 
 	-- tijd
-	'nu', 'start',
+	'nu', 'start', 'beeld',
 	'\'',
 
 	-- meta
@@ -99,6 +99,7 @@ local basis = {
 	['>='] = vglfn,
 	['<='] = vglfn,
 	['[]'] = {'->', {'...'}, {'^', 'iets', 'int'}},
+	['{}'] = {'->', {'...'}, {'->', 'iets', 'bit'}},
 	['=>'] = {'->', 'iets', 'iets'},
 	['->'] = {'->', {',', 'iets', 'iets'}, {'->', 'iets', 'iets'}},
 	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}}, -- 'getal -> getal^2'
@@ -117,9 +118,11 @@ local basis = {
 	['toets-omhoog']	= {'^', 'getal', '600'},
 	['toets-omlaag']	= {'^', 'getal', '600'},
 	['toets-spatie']	= {'^', 'getal', '600'},
-	['toets-spatie-aan'] = 'int',
-	['toets-spatie-uit'] = 'int',
+	['toets-spatie-aan'] = 'moment',
+	['toets-spatie-uit'] = 'moment',
 
+	['start'] = 'moment',
+	['beeld'] = 'moment',
 }
 
 -- code in lisp formaat

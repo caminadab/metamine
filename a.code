@@ -1,2 +1,2 @@
-a := 3
+a = {start => 3, beeld => 2}
 cirkel = 100 * [a,a]

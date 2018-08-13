@@ -31,6 +31,15 @@ function leedwerk(exp, t)
 	local prio = 0
 	if isatoom(exp) then
 		t[#t+1] = exp
+	elseif exp[1] == '{}' then
+		t[#t+1] = '{'
+		for i=2,#exp do
+			leedwerk(exp[i], t)
+			if next(exp,i) then
+				t[#t+1] = ','
+			end
+		end
+		t[#t+1] = '}'
 	elseif exp[1] == '[]' then
 		t[#t+1] = '['
 		for i=2,#exp do
@@ -237,6 +246,29 @@ function exptypeer(exp, typen)
 			t = 'fout'
 			--print(fa,fb,fab)
 			f = nil--fa or fb or fab or 'uhh'--leed(ta)..' != '..leed(tb)
+		end
+
+	-- predicaat dat alleen van tijd afhangt
+	-- (tijd -> 
+	-- a => b
+	-- {a => 0, b => 1} is  T => getal
+
+	-- sets
+	-- [1,2,3] is int^3, {1,2,3} is  int->bit
+	elseif exp[1] == '{}' then
+		local ti = nil
+		for i=2,#exp do
+			local a = exp[i]
+			local ta = exptypeer(a, typen)
+			ti = verenig_of(ti, ta)
+		end
+		if ti == 'fout' then
+			t = 'fout'
+			f = 'kon type van lijst niet bepalen'
+		elseif not ti then
+			t = nil
+		else
+			t = {'->', ti, 'bit'}
 		end
 
 	-- lijsten
