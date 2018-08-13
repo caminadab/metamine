@@ -107,9 +107,11 @@ single:
 | exp '%'							{ $$ = _exp2(a("%"), $1); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
+| '{' set '}'					{ $$ = $2; }
 
 |	'(' error ')'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
 |	'[' error ']'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
+|	'{' error '}'				{ $$ = _exp2(a("{}"), a("fout")); rapporteer(lijn, "?"); yyerrok; }
 ;
 
 exp:
@@ -131,6 +133,7 @@ exp:
 | exp '<' exp					{ $$ = exp3(a("<"), $1, $3); }
 | exp ">=" exp				{ $$ = exp3(a(">="), $1, $3); }
 | exp "<=" exp				{ $$ = exp3(a("<="), $1, $3); }
+| exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
 
 | exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
 | exp "+=" exp				{ $$ = exp3(a("+="), $1, $3); }
@@ -153,6 +156,16 @@ exp:
 list:
 	%empty							{ $$ = exp1(a("[]")); }
 |	items
+;
+
+set:
+	%empty							{ $$ = exp1(a("{}")); }
+|	setitems
+;
+
+setitems:
+	exp									{ $$ = _exp2(a("{}"), $1); }
+| setitems ',' exp			{ $$ = append($1, $3); }
 ;
 
 items:
