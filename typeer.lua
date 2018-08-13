@@ -203,6 +203,15 @@ function exptypeer(exp, typen)
 		T[a] = b
 		t = 'ok'
 
+	-- dynamisch
+	--elseif exp[1] == '=>' and ta == 'moment' then
+		--t = tb or 'iets'
+
+	-- functie
+	elseif exp[1] == '->' then
+		t = {'->', ta or 'iets', tb or 'iets'}
+
+	-- interval
 	elseif exp[1] == '..' then
 		local a,b = exp[2], exp[3]
 		T[a],F[a] = exptypeer(a,typen)
@@ -359,6 +368,18 @@ function exptypeer(exp, typen)
 		fouten[exp] = f or f0 or true
 	end
 
+	-- print de typen
+	if print_typen then
+		if t and not tonumber(exp) then
+			print(leed(exp)..':\t'..color.yellow..leed(t)..color.white)
+		end
+		for exp,t in spairs(T) do
+			if t and not tonumber(exp) and not typen[exp] then
+				print('  '..leed(exp)..':\t'..color.yellow..leed(t)..color.white)
+			end
+		end
+	end
+
 	for exp,t0 in pairs(T) do
 		local t1 = typen[exp]
 		local f = F[exp]
@@ -371,15 +392,19 @@ function exptypeer(exp, typen)
 		--print('T', leed(t0), leed(t1), leed(t), f)
 	end
 	
-	if print_typen then
-		if t and not tonumber(exp) then print(leed(exp)..':\t'..color.yellow..leed(t)..color.white) end
-		for exp,t in spairs(T) do
-			if t and not tonumber(exp) then print('  '..leed(exp)..':\t'..color.yellow..leed(t)..color.white) end
-		end
-	end
-
 	typen.aantalOnbekend = typen.aantalOnbekend + 1
 	return t, f
+end
+
+local function print_onbekende_typen(exp, typen)
+	if not typen[exp] then
+		print(color.red .. 'kon type niet bepalen van ' .. unlisp(exp) .. color.white)
+	end
+	if isexp(exp) then
+		for i,exp in ipairs(exp) do
+			print_onbekende_typen(exp, typen)
+		end
+	end
 end
 
 -- invoer: print_typen
@@ -424,6 +449,13 @@ function typeer(feiten,typen)
 	for exp,type in pairs(typen) do
 		if isatoom(exp) then
 			--print(color.blue..leed(exp)..': '..leed(type)..color.white)
+		end
+	end
+
+	-- alles na gaan
+	if print_typen then
+		for i,feit in ipairs(feiten) do
+			print_onbekende_typen(feit, typen)
 		end
 	end
 

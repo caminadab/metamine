@@ -95,9 +95,12 @@ local basis = {
 	['>'] = vglfn,
 	['<'] = vglfn,
 	['='] = vglfn,
+	[':='] = vglfn,
 	['>='] = vglfn,
 	['<='] = vglfn,
+	['[]'] = {'->', {'...'}, {'^', 'iets', 'int'}},
 	['=>'] = {'->', 'iets', 'iets'},
+	['->'] = {'->', {',', 'iets', 'iets'}, {'->', 'iets', 'iets'}},
 	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}}, -- 'getal -> getal^2'
 	['wortel'] = mofn,
 	['sin'] = mofn,
@@ -105,7 +108,7 @@ local basis = {
 	['tan'] = mofn,
 	['som'] = {'->', {'^', 'getal', 'int'}, 'getal'},
 	['tau'] = 'getal',
-	['start'] = 'int',
+	['start'] = 'moment',
 	['nu'] = 'int',
 	['..'] = {'->', bifn, {'^', 'getal', 'int'}},
 	
@@ -147,6 +150,10 @@ function vertaal(code)
 	print_typen = print_typen_bron
 	local feiten = ontleed(code)
 	if print_ingewanden then print(unlisp(feiten)) end
+	if #feiten == 0 then
+		print(color.red..'geen geldige invoer gevonden'..color.white)
+		return
+	end
 	local typen,fouten = typeer(feiten,basis)
 	if fouten then return nil, fouten end
 
