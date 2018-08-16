@@ -58,7 +58,7 @@ local bieb = {
 	'\'',
 
 	-- meta
-	'.', 'onbekend',
+	'.', 'onbekend', 'tijd',
 
 	-- converteer
 	'tekst', 'getal',
@@ -99,7 +99,7 @@ local basis = {
 	['>='] = vglfn,
 	['<='] = vglfn,
 	['[]'] = {'->', {'...'}, {'^', 'iets', 'int'}},
-	['{}'] = {'->', {'...'}, {'->', 'iets', 'bit'}},
+	['{}'] = {'->', {'...'}, {'{}', 'iets', }},
 	['=>'] = {'->', 'iets', 'iets'},
 	['->'] = {'->', {',', 'iets', 'iets'}, {'->', 'iets', 'iets'}},
 	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}}, -- 'getal -> getal^2'
@@ -112,6 +112,7 @@ local basis = {
 	['start'] = 'moment',
 	['nu'] = 'int',
 	['..'] = {'->', bifn, {'^', 'getal', 'int'}},
+	['var'] = {'->', {'{}', {'->', 'moment', 'getal'}}, 'getal'},
 	
 	['toets-rechts']	= {'^', 'getal', '600'},
 	['toets-links']		= {'^', 'getal', '600'},
@@ -121,8 +122,15 @@ local basis = {
 	['toets-spatie-aan'] = 'moment',
 	['toets-spatie-uit'] = 'moment',
 
-	['start'] = 'moment',
-	['beeld'] = 'moment',
+	-- impl
+	[':='] = {'->', {'iets', 'iets'}, 'ok'},
+	['+='] = {'->', {'iets', 'iets'}, 'ok'},
+	
+	-- hack
+	['VROEGER'] = 'getal',
+
+	['start'] = 'getal',
+	['beeld'] = 'getal',
 }
 
 -- code in lisp formaat

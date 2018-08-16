@@ -153,7 +153,7 @@ function sorteer(waarden, volgorde)
 			--print('GOED! constante')
 
 		else
-			if true then
+			if false then
 				print(van[naam], 'OK', naam)
 				print('geen oplossing voor '..unlisp(naam))
 				print('foute graaf:')

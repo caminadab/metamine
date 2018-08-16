@@ -254,7 +254,7 @@ function exptypeer(exp, typen)
 	-- {a => 0, b => 1} is  T => getal
 
 	-- sets
-	-- [1,2,3] is int^3, {1,2,3} is  int->bit
+	-- [1,2,3] is int^3, {1,2,3} is  {int}
 	elseif exp[1] == '{}' then
 		local ti = nil
 		for i=2,#exp do
@@ -264,11 +264,11 @@ function exptypeer(exp, typen)
 		end
 		if ti == 'fout' then
 			t = 'fout'
-			f = 'kon type van lijst niet bepalen'
+			f = 'kon type van set niet bepalen'
 		elseif not ti then
 			t = nil
 		else
-			t = {'->', ti, 'bit'}
+			t = {'{}', ti}
 		end
 
 	-- lijsten
@@ -301,6 +301,25 @@ function exptypeer(exp, typen)
 		local a,b = exp[2],exp[3]
 		t = exptypeer(b, typen)
 
+	elseif exp[1] == '+=' then
+		local a,b = exp[2],exp[3]
+		exptypeer(a, typen)
+		exptypeer(b, typen)
+		T[a] = 'getal'
+		T[b] = 'getal'
+		t = 'ok'
+
+	elseif exp[1] == ':=' then
+		local a,b = exp[2],exp[3]
+		exptypeer(a, typen)
+		exptypeer(b, typen)
+		T[a] = 'getal'
+		T[b] = 'getal'
+		t = 'ok'
+
+	elseif exp[1] == 'var' then
+		t = 'getal'
+
 	-- zit hij erin?
 	elseif exp[1] == 'som' then
 		local ft = typen[exp[1]] -- functie type
@@ -324,7 +343,9 @@ function exptypeer(exp, typen)
 			if ft[1] == '->' then
 				local van,naar = ft[2],ft[3]
 				T[exp[2]] = van
-				t = naar
+				T[exp[3]] = naar
+				t = {'->', van, naar}
+				--t = naar
 			end
 		end
 

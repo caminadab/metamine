@@ -6,13 +6,11 @@ local infix = {
 	['+'] = true, ['-'] = true,
 	['>'] = true, ['<'] = true,
 	['>='] = true, ['<='] = true,
-	['='] = true,
 }
 
 local vertaal = {
-	['nu'] = '(love.timer.getTime()-start)',
-	['start'] = 'start',
 	['of'] = 'of',
+	['{}'] = 'agg',
 	['sin'] = 'math.sin',
 	['cos'] = 'math.cos',
 	['abs'] = 'math.abs',
@@ -22,6 +20,7 @@ local vertaal = {
 	['=>'] = 'dan',
 	['..'] = 'tot',
 	['#'] = 'len',
+	['='] = 'eq',
 }
 
 local function naam2love(naam)
@@ -118,9 +117,20 @@ function tolove(block,typen)
 	local t = {
 [[
 package.path = package.path .. ';../?.lua'
-start = love.timer.getTime()
 local function len(a) return #a+1 end
 local function of(a,b) return a or b end
+local function agg(...)
+	-- functies
+	local a = {...}
+	local r = {}
+	for i,v in ipairs(a) do
+		r[v] = true
+		-- conditie, feit
+		--local c,f = v[2],v[3]
+		--r[c] = f
+	end
+	return r
+end
 local function tot(a,b)
 	local r = {}
 	local j = 0
@@ -150,6 +160,26 @@ local function dan(cond,v)
 		return nil
 	end
 end
+local function eq(a,b)
+	if type(a) == 'number' and type(b) == 'number' then
+		return math.abs(a-b) < 1e-3
+	else
+		return a == b
+	end
+end
+local bag = {}
+local function var(ass)
+	for cond in pairs(ass) do
+		if cond then
+			bag[ass] = cond
+			return cond
+		end
+	end
+	return bag[ass] or 0
+end
+VROEGER = 0
+start = love.timer.getTime()
+nu = start
 
 local toetsRechts = {}
 local toetsLinks = {}
@@ -172,6 +202,7 @@ local toetsSpatieUit = 0
 
 	-- update toets
 	t[#t+1] = [[
+	-- update toets
 	for i=1,600-1 do toetsRechts[i] = toetsRechts[i+1] end
 	for i=1,600-1 do toetsLinks[i] = toetsLinks[i+1] end
 	for i=1,600-1 do toetsOmhoog[i] = toetsOmhoog[i+1] end
@@ -193,14 +224,20 @@ local toetsSpatieUit = 0
 		prevSpaceDown = false
 		toetsSpatieUit = 600
 	end
-
 ]]
 
 	for i=1,#block do
 		local stat = block[i]
 		stat2love(stat,t,vars,typen)
 	end
-	t[#t+1] = 'end\n'
+
+	-- paraguay
+	beeld = nu
+	t[#t+1] = [[
+		nu = love.timer.getTime()
+		beeld = nu
+	end
+]]
 
 	-- draw
 	t[#t+1] = [[
