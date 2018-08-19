@@ -113,7 +113,23 @@ function stat2love(stat,t,vars,typen)
 	end
 end
 
+-- toetsen
+local toets = {
+	'rechts', 'links', 'omhoog', 'omlaag',
+	'spatie',
+	'a', 's', 'd', 'f', 'h', 'j', 'k', 'l',
+}
+
+local engels = {
+	rechts = 'right',
+	links = 'left',
+	omhoog = 'up',
+	omlaag = 'down',
+	spatie = 'space',
+}
+
 function tolove(block,typen)
+
 	local t = {
 [[
 package.path = package.path .. ';../?.lua'
@@ -181,39 +197,38 @@ VROEGER = 0
 start = love.timer.getTime()
 nu = start
 
-local toetsRechts = {}
-local toetsLinks = {}
-local toetsOmhoog = {}
-local toetsOmlaag = {}
-local toetsSpatie = {}
-for i=1,600 do toetsRechts[i] = 0 end
-for i=1,600 do toetsLinks[i] = 0 end
-for i=1,600 do toetsOmhoog[i] = 0 end
-for i=1,600 do toetsOmlaag[i] = 0 end
-for i=1,600 do toetsSpatie[i] = 0 end
-local prevSpaceDown = false
+]] }
+
+	-- vars
+	for i,toets in ipairs(toets) do
+		local naam = toets:gsub("^%l", string.upper) -- Links
+		t[#t+1] = 'toets'..naam..' = '..'{ }\n'
+		t[#t+1] = 'for i=1,600 do toets'..naam..'[i] = 0 end\n'
+		t[#t+1] = 'local toets'..naam..'Aan = 0\n'
+		t[#t+1] = 'local toets'..naam..'Uit = 0\n'
+	end
+
+	t[#t+1] = [[local prevSpaceDown = false
+
 local toetsSpatieAan = 0
 local toetsSpatieUit = 0
-]]}
+]]
 
 	-- update
 	local vars = {}
 	t[#t+1] = 'function love.update()\n'
 
 	-- update toets
+	for i,toets in ipairs(toets) do
+		local naam = toets:gsub("^%l", string.upper) -- Links
+		--t[#t+1] = 'toets'..naam..' = '..'{ }\n'
+		--t[#t+1] = 'for i=1,600 do toets'..naam..'[i] = 0 end\n'
+		t[#t+1] = 'for i=1,600-1 do toets'..naam..'[i] = toets'..naam..'[i+1] or 0 end\n'
+		t[#t+1]  = 'toets'..naam..'[600] = (love.keyboard.isDown("'..(engels[toets] or toets)..'") and 1/60 or 0)\n'
+	end
+
 	t[#t+1] = [[
 	-- update toets
-	for i=1,600-1 do toetsRechts[i] = toetsRechts[i+1] end
-	for i=1,600-1 do toetsLinks[i] = toetsLinks[i+1] end
-	for i=1,600-1 do toetsOmhoog[i] = toetsOmhoog[i+1] end
-	for i=1,600-1 do toetsOmlaag[i] = toetsOmlaag[i+1] end
-	for i=1,600-1 do toetsSpatie[i] = toetsSpatie[i+1] end
-	toetsRechts[600] = (love.keyboard.isDown("right") and 1/60 or 0)
-	toetsLinks[600] = (love.keyboard.isDown("left") and 1/60 or 0)
-	toetsOmhoog[600] = (love.keyboard.isDown("up") and 1/60 or 0)
-	toetsOmlaag[600] = (love.keyboard.isDown("down") and 1/60 or 0)
-	toetsSpatie[600] = ((love.keyboard.isDown("space")) and 1/60 or 0)
-
 	if toetsSpatieAan > 0 then toetsSpatieAan = toetsSpatieAan - 1 end
 	if toetsSpatieUit > 0 then toetsSpatieUit = toetsSpatieUit - 1 end
 
@@ -289,15 +304,21 @@ function love.draw()
 		end
 
 		love.graphics.setLineStyle('rough')
-		love.graphics.line(p)
+		if #p < 2 then
+			love.graphics.print('niet genoeg data',sx,sy)
+		else
+			love.graphics.line(p)
+		end
 	end
 
 	-- grafieken
-	love.graphics.setColor(0,.9,1) grafiek(toetsRechts,	20, 320)
-	love.graphics.setColor(0,.7,1) grafiek(toetsLinks,		20, 350)
-	love.graphics.setColor(0,.5,1) grafiek(toetsOmhoog,	20, 380)
-	love.graphics.setColor(0,.3,1) grafiek(toetsOmlaag,	20, 410)
-	love.graphics.setColor(0,.1,1) grafiek(toetsSpatie,	20, 440)
+	]]
+	for i,toets in ipairs(toets) do
+		local naam = toets:gsub("^%l", string.upper) -- Links
+		t[#t+1] = 'love.graphics.setColor(0,.05*'..i..',1) grafiek(toets'..naam..', 20, 120+10*'..i..',100,6)\n'
+	end
+
+	t[#t+1] = [[
 	love.graphics.setColor(1,1,1)
 	love.graphics.reset()
 
