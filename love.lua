@@ -138,14 +138,15 @@ local function of(a,b) return a or b end
 local function agg(...)
 	-- functies
 	local a = {...}
-	local r = {}
+	--local r = {}
 	for i,v in ipairs(a) do
-		r[v] = true
+		if v then return v end
+		--r[v] = true
 		-- conditie, feit
 		--local c,f = v[2],v[3]
 		--r[c] = f
 	end
-	return r
+	return false
 end
 local function tot(a,b)
 	local r = {}
