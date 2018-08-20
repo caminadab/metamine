@@ -230,15 +230,15 @@ local toetsSpatieUit = 0
 
 	t[#t+1] = [[
 	-- update toets
-	if toetsSpatieAan > 0 then toetsSpatieAan = toetsSpatieAan - 1 end
-	if toetsSpatieUit > 0 then toetsSpatieUit = toetsSpatieUit - 1 end
+	toetsSpatieAan = false
+	toetsSpatieUit = false
 
 	if love.keyboard.isDown("space") and prevSpaceDown == false then
 		prevSpaceDown = true
-		toetsSpatieAan = 600
+		toetsSpatieAan = true
 	elseif not love.keyboard.isDown("space") and prevSpaceDown == true then
 		prevSpaceDown = false
-		toetsSpatieUit = 600
+		toetsSpatieUit = true
 	end
 ]]
 
