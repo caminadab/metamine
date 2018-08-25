@@ -50,12 +50,17 @@
 %token EXOF "exof"
 %token NOCH "noch"
 
+%token DISJ '|'
+%token CONJ '&'
+
 %left "=>"
 %left '='
 %left ":=" "+=" "-=" "|=" "&="
 %left "en" "of" "exof" "noch" "niet"
 %left "->"
 %left '<' '>' "<=" ">="
+
+%left '&' '|'
 %left "||"
 %left ".."
 %left "xx"
@@ -134,6 +139,9 @@ exp:
 | exp ">=" exp				{ $$ = exp3(a(">="), $1, $3); }
 | exp "<=" exp				{ $$ = exp3(a("<="), $1, $3); }
 | exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
+
+| exp DISJ exp				{ $$ = exp3(a("|"), $1, $3); }
+| exp CONJ exp				{ $$ = exp3(a("&"), $1, $3); }
 
 | exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
 | exp "+=" exp				{ $$ = exp3(a("+="), $1, $3); }

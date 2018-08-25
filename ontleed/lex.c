@@ -58,6 +58,9 @@ int yylex() {
 		token[0] = c;
 		token[1] = 0;
 		id = c;
+
+		if (c == '|') id = DISJ;
+		if (c == '&') id = CONJ;
 	}
 
 	// naam
