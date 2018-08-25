@@ -42,7 +42,7 @@
 %token END 0 "invoereinde"
 %token NEG '-'
 %token IS '='
-%token DELTA '\''
+%token OUD '\''
 %token TAB '\t'
 %token EN "en"
 %token OF "of"
@@ -64,7 +64,7 @@
 %left '*' '/'
 %precedence NEG
 %right '^' '_'
-%left DELTA
+%left OUD
 %left '.'
 %precedence '%'
 
@@ -105,6 +105,7 @@ feit:
 single:
 	NAME
 | exp '%'							{ $$ = _exp2(a("%"), $1); }
+| exp '\'' %prec OUD						{ $$ = _exp2(a("\'"), $1); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
@@ -116,7 +117,6 @@ single:
 
 exp:
 	single
-| exp '\'' %prec DELTA						{ printf("HOI"); $$ = _exp2(a("'"), $1); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '_' exp       	{ $$ = exp3(a("_"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -149,6 +149,7 @@ exp:
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
+/*| exp '\'' %prec OUD	{ printf("HOI"); $$ = _exp2(a("'"), $1); }*/
 
 | single single %prec CALL				{ $$ = _exp2($1, $2); }
 ;
