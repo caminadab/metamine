@@ -127,8 +127,6 @@ local basis = {
 	['+='] = {'->', {'iets', 'iets'}, 'ok'},
 	
 	-- hack
-	['VROEGER'] = 'getal',
-
 	['start'] = 'getal',
 	['beeld'] = 'getal',
 }
@@ -156,18 +154,74 @@ function vertaalJs(lispcode)
 	return func
 end
 
--- vertaal = code -> stroom
+function suikervrij(feiten)
+	local r = {}
+	for i,feit in ipairs(feiten) do
+		if feit[1] == ':=' then
+			local a,b = feit[2],feit[3]
+			r[i] = {'=', a, {'=>', 'start', b}}
+		elseif feit[1] == '+=' then
+			--		a += 1
+			-- =>	a = (beeld => a' + 1 / 60)
+			local a,b = feit[2],feit[3]
+			local ao = {"'", a}
+			local an = {'+', ao, {'/', b, '60'}}
+			r[i] = {'=', a, {'=>', 'beeld', an}}
+		else
+			r[i] = feit
+		end
+	end
+	return r
+end
+
+--[[
+	a = (T < 5 => 2)
+	a = (T > 5 => 3)
+]]
+
+--[[
+vertaal = code -> stroom
+	ontleed: code -> feiten
+	typeer: feiten => (tak -> type)
+	noem: feiten => (naam -> exp)
+	sorteer: namen -> stroom
+
+	typeer stroom
+	uitrol: stroom -> makkelijke-stroom
+]]
 function vertaal(code)
 	print_typen = print_typen_bron
 	local feiten = ontleed(code)
-	if print_ingewanden then print(unlisp(feiten)) end
+
+	-- syntax
+	if print_ingewanden then
+		print('# Ontleed')
+		print(unlisp(feiten))
+		print()
+	end
+
+	-- stroef doen
 	if #feiten == 0 then
 		print(color.red..'geen geldige invoer gevonden'..color.white)
 		return
 	end
+
 	local typen,fouten = typeer(feiten,basis)
 	if fouten then return nil, fouten end
 
+	-- syn suiker
+	local feiten = suikervrij(feiten)
+
+	if print_suikervrij then
+		print('# Suikervrij')
+		print(unlisp(feiten))
+		print()
+	end
+
+	-- aggregeer verspreide waarden
+	local feiten = verzamel(feiten)
+
+	-- isoleer allen
 	local waarden = noem(feiten)
 
 	-- speel = bieb -> cirkels

@@ -16,6 +16,7 @@ print_typen_bron = true
 print_typen_stroom = true
 print_syntax = false
 print_losse_waarden = false
+print_suikervrij = true
 
 -- argumenten
 local taal = 'nl'
