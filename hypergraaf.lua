@@ -5,14 +5,14 @@ function voorwaartse_hypergraaf()
 		link = function (h,van,naar)
 			h.hoeken[{van,naar,van=van,naar=naar}] = true
 		end,
-		naar = function (h,bron)
+		naar = function (self,bron)
 			local hoek = nil
 			return function()
-				while next(hoeken,hoeken) do
-					local kan = next(hoeken,hoek)
+				while next(self.hoeken, hoek) do
+					local kan = next(self.hoeken, hoek)
 					hoek = kan
 					if kan.naar == bron then
-						return kan
+						return kan.van
 					end
 				end
 				-- klaar
@@ -24,5 +24,7 @@ end
 
 if test then
 	local hgraaf = voorwaartse_hypergraaf()
-	hgraaf:link('a', {'b'})
+	hgraaf:link({a = true}, 'b')
+
+	assert(hgraaf:naar('b')().a, 'a niet gedefinieerd')
 end
