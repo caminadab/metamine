@@ -1,5 +1,3 @@
-#!/usr/bin/lua
-package.path = package.path..';../?.lua'
 require 'util'
 require 'lisp'
 
@@ -8,6 +6,7 @@ require 'noem'
 require 'sorteer'
 require 'typeer'
 require 'uitrol'
+require 'hypergraaf'
 
 require 'js'
 
@@ -219,19 +218,21 @@ function vertaal(code)
 	end
 
 	-- aggregeer verspreide waarden
-	local feiten = verzamel(feiten)
+	--local feiten = verzamel(feiten)
 
-	-- isoleer allen
-	local waarden = noem(feiten)
+	-- extra info (vgl herschrijven)
+	local feiten = deduceer(feiten)
+
+	local afh = berekenbaarheid(feiten)
 
 	-- speel = bieb -> cirkels
-	local invoer = {}
 	local speel = {
-		van = cat(invoer, bieb),
+		van = bieb,
 		naar = 'cirkel',
 	}
 
-	local stroom = sorteer(waarden, speel)
+	local pad = sorteer(afh, speel)
+	--local stroom = afh(pad).plet
 
 	-- frisse avondbries
 	print_typen = print_typen_stroom
@@ -242,4 +243,3 @@ function vertaal(code)
 
 	return stroom, typen
 end
-

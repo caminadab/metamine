@@ -1,5 +1,6 @@
 require 'func'
 require 'graaf'
+require 'hypergraaf'
 require 'noem' -- var()
 
 local insert = table.insert
@@ -51,7 +52,8 @@ function ontrafel(flow)
 end
 
 -- graaf = [punten, randen]
-function sorteer(waarden, volgorde)
+-- valuaties,volgorde -> stroom
+function sorteer0(waarden, volgorde)
 	local van, naar = volgorde.van, volgorde.naar
 	local graaf = graaf()
 	local oud = {}
@@ -216,3 +218,28 @@ if false then
 	local b = unlisp(sorteer(a, {naar='x', van='f'}))
 	assert(b == '((= f (-> a a)) (= x (f 0)))')
 end
+
+function sorteer(hgraaf, volgorde)
+	local van,naar = volgorde.van,volgorde.naar
+	--local nieuw = {naar = true}
+	local nieuw = {naar}
+	local oud = {}
+	local pad = {}
+
+	while #nieuw > 0 do
+		local doel = remove(nieuw, 1)
+		oud[doel] = true
+		for bronnen in hgraaf:naar(doel) do
+			local ok = true
+			for bron in pairs(bronnen) do
+				-- klaar?
+				if van[bron] then break end
+				-- ongeldig?
+				if oud[bron] then break end
+			end
+		end
+	end
+
+	return pad
+end
+

@@ -226,7 +226,7 @@ function equals(a,b)
 end
 
 -- test
-if test then
+if false and test then
 	local t = {
 		{'((:= stdout 0))', 0},
 		{'((:= a 0) (:= stdout a))', 0},
@@ -239,18 +239,4 @@ if test then
 		local r = eval(lisp(q))
 		assert(equals(r,a), q .. ' geeft ' .. unlisp(r) .. ', maar hoort te zijn ' .. unlisp(a))
 	end
-end
-
--- a
-path = ...
-if path then
-	app = file(path)
-	proc = lisp(app)
-	v = eval(proc)
-
-	if not v then
-		error('geen uitvoer')
-	end
-	if type(v) == 'table' then v = string.char(table.unpack(v)) end
-	io.write(v)
 end

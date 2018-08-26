@@ -342,10 +342,10 @@ function exptypeer(exp, typen)
 			-- functies
 			if ft[1] == '->' then
 				local van,naar = ft[2],ft[3]
-				T[exp[2]] = van
-				T[exp[3]] = naar
-				t = {'->', van, naar}
-				--t = naar
+				--T[exp[2]] = van
+				--T[exp[3]] = naar
+				--t = {'->', van, naar}
+				t = naar
 			end
 		end
 

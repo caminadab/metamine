@@ -3,7 +3,9 @@ require 'symbool'
 function wanneer(exp)
 	if tonumber(exp) then
 		return 0
-	elseif exp == 'toets-'
+	end
+	return 0
+end
 
 function plan(stroom)
 	local plan = {} -- tijdstip -> assignments
@@ -16,5 +18,3 @@ function plan(stroom)
 end
 
 -- tests
-require 'lisp'
-assert(plan(lisp('a = 3'))[0])

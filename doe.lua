@@ -1,6 +1,8 @@
 require 'lisp'
 require 'util'
 
+local log = function() end
+
 local fn = {
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
@@ -113,7 +115,7 @@ end
 function eval(proc)
 	log('# Eval')
 	log()
-	local stdin = io.read('*a')
+	local stdin = ''
 	local env = {stdin = table.pack(string.byte(stdin,1,-1))}
 	for i,block in ipairs(proc) do
 		local header = block[1]
@@ -213,7 +215,7 @@ function equals(a,b)
 end
 
 -- test
-if test then
+if false and test then
 	local t = {
 		{'((:= stdout 0))', 0},
 		{'((:= a 0) (:= stdout a))', 0},
