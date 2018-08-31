@@ -219,27 +219,59 @@ if false then
 	assert(b == '((= f (-> a a)) (= x (f 0)))')
 end
 
-function sorteer(hgraaf, volgorde)
+--[[
+Sorteert een hypergraaf:
+Vindt een pad van hyperhoeken dat voldoet aan de volgorde
+
+Houdt een lijst met onopgeloste namen bij en
+voegt iteratief 
+]]
+--[[function sorteer(hgraaf, volgorde)
 	local van,naar = volgorde.van,volgorde.naar
 	--local nieuw = {naar = true}
 	local nieuw = {naar}
 	local oud = {}
+	local klaar = {}
 	local pad = {}
 
 	while #nieuw > 0 do
 		local doel = remove(nieuw, 1)
-		oud[doel] = true
+
 		for bronnen in hgraaf:naar(doel) do
-			local ok = true
 			for bron in pairs(bronnen) do
-				-- klaar?
-				if van[bron] then break end
-				-- ongeldig?
-				if oud[bron] then break end
+				if not klaar[bron] then nieuw[#nieuw+1] = bron end
+				io.write(bron)
+				if next(bronnen,bron) then io.write(',') end
 			end
+			io.write(' -> ', doel, '\n')
+			pad[#pad+1] = {van = bronnen, naar = doel}
+			klaar[doel] = true
+			break
 		end
 	end
 
 	return pad
 end
+]]
 
+function sorteer(hgraaf, van, naar)
+end
+
+if test then
+	-- a -> b
+	local hgraaf = voorwaartse_hypergraaf()
+	hgraaf:link({a=true}, 'b')
+	local pad = sorteer(hgraaf, {van='a',naar='b'})
+	assert(#pad == 1)
+	assert(pad[1].van.a)
+	assert(pad[1].naar == 'b')
+
+	-- b -> a, a -> b
+	local hgraaf = voorwaartse_hypergraaf()
+	hgraaf:link({b=true}, 'a')
+	hgraaf:link({a=true}, 'b')
+	local pad = sorteer(hgraaf, {van='a',naar='b'})
+	assert(#pad == 1)
+	assert(pad[1].van.a)
+	assert(pad[1].naar == 'b')
+end
