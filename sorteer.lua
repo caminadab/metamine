@@ -1,6 +1,6 @@
 require 'func'
 require 'graaf'
-require 'hypergraaf'
+require 'voorwaartse_hypergraaf'
 require 'noem' -- var()
 
 local insert = table.insert
@@ -257,7 +257,7 @@ end
 function sorteer(hgraaf, van, naar)
 end
 
-if test then
+if false and test then
 	-- a -> b
 	local hgraaf = voorwaartse_hypergraaf()
 	hgraaf:link({a=true}, 'b')
