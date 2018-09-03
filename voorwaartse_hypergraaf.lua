@@ -1,15 +1,59 @@
 require 'voorwaartse_acyclische_hypergraaf'
 
--- bedenk hyperroute door hypergraaf
-function routeer(hgraaf, van, naar)
-	local onbekend = {naar}
-	local pad = voorwaartse_acyclische_hypergraaf()
+local function pijl2tekst(pijl)
+	local r = {}
+	for bron in pairs(pijl.van) do
+		r[#r+1] = bron
+	end
+	table.sort(r)
+	return table.concat(r, ' ') .. ' -> ' .. pijl.naar
+end
 
-	-- alternatieve routen
-	for doel in pairs(onbekend) do
+local function tekst(graaf)
+	if not next(graaf.pijlen) then
+		return '<lege graaf>'
+	end
+	local p = {}
+	for pijl in pairs(graaf.pijlen) do
+		p[#p+1] = pijl2tekst(pijl)
+	end
+	table.sort(p)
+	return table.concat(p, '\n')
+end
+
+local function sorteer_itereer(hgraaf, onbekend, stroom)
+end
+
+
+-- bedenk alle hyperroutes door hypergraaf
+local function sorteer(hgraaf, van, naar)
+	local onbekend = {[naar]=true}
+	local stroom = voorwaartse_acyclische_hypergraaf()
+	local bekend = {}
+
+	-- alle mogelijke opties
+	local it = 999
+	while next(onbekend) and it > 0 do
+		it = it - 1
+		local doel = next(onbekend)
+		bekend[doel] = true
+		onbekend[doel] = nil
+		print('DOEL', doel)
+
 		for pijl in hgraaf:naar(doel) do
+			if stroom:link(pijl) then
+				print('OPTIE', pijl2tekst(pijl))
+				for bron in pairs(pijl.van) do
+					-- wanneer proberen?
+					if not bekend[bron] and not van[bron] then
+						onbekend[bron] = true
+					end
+				end
+			end
 		end
 	end
+
+	return stroom
 			
 end
 
@@ -48,14 +92,33 @@ function voorwaartse_hypergraaf()
 			end
 		end,
 
-		pad = routeer,
-		routeer = routeer,
+		sorteer = sorteer,
+		tekst = tekst,
 	}
 end
 
-if test then
-	local hgraaf = voorwaartse_hypergraaf()
-	hgraaf:link({a = true}, 'b')
+if true or test then
+	local graaf = voorwaartse_hypergraaf()
+	graaf:link({a = true}, 'b')
+	assert(graaf:naar('b')().van.a)
 
-	assert(hgraaf:naar('b')().van.a, 'a niet gedefinieerd')
+	-- sorteer
+	local graaf = voorwaartse_hypergraaf()
+	graaf:link({a = true}, 'b')
+	graaf:link({b = true}, 'a')
+	local stroom = graaf:sorteer({a=true}, 'b')
+
+	-- sorteer
+	local graaf = voorwaartse_hypergraaf()
+	graaf:link({a = true}, 'b')
+	graaf:link({b = true}, 'c')
+	graaf:link({c = true}, 'a')
+	print('# Graaf')
+	print(graaf:tekst())
+	print()
+	local stroom = graaf:sorteer({a=true}, 'c')
+	print('# Stroom')
+	print(stroom:tekst())
+	--assert(next(stroom.pijlen).van.a)
+
 end

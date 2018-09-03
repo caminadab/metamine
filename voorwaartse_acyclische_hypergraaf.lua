@@ -1,6 +1,7 @@
 -- is er, zonder alle pijlen te vervullen, een route van bron naar doel mogelijk?
 -- zoekt achterstevoren
 local function bereikbaar_disj(graaf, van, naar)
+	local print = function () end
 	print()
 	print('# start')
 	print(graaf:tekst())
