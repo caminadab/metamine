@@ -121,6 +121,7 @@ if true or test then
 	local stroom = graaf:sorteer({a=true}, 'c')
 	print('# Stroom')
 	print(stroom:tekst())
+	print()
 	--assert(next(stroom.pijlen).van.a)
 
 end

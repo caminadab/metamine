@@ -190,7 +190,6 @@ vertaal = code -> stroom
 	uitrol: stroom -> makkelijke-stroom
 ]]
 function vertaal(code)
-	print_typen = print_typen_bron
 	local feiten = ontleed(code)
 
 	-- syntax
@@ -206,7 +205,11 @@ function vertaal(code)
 		return
 	end
 
+	-- typeer
+	print_typen = print_typen_bron
+	if print_typen then print('# Typen') end
 	local typen,fouten = typeer(feiten,basis)
+	if print_typen then print() end
 	if fouten then return nil, fouten end
 
 	-- syn suiker

@@ -508,7 +508,7 @@ function typeer(feiten,typen)
 	-- alles na gaan
 	if print_typen then
 		for i,feit in ipairs(feiten) do
-			print_onbekende_typen(feit, typen)
+			--print_onbekende_typen(feit, typen)
 		end
 	end
 

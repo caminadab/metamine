@@ -1,0 +1,6 @@
+horiz = toets-rechts - toets-links
+verti = toets-omlaag - toets-omhoog
+x = som horiz
+y = som verti
+cirkel = 100 * [x,y]
+
