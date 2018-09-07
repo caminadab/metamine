@@ -7,6 +7,7 @@ require 'sorteer'
 require 'typeer'
 require 'uitrol'
 require 'voorwaartse_hypergraaf'
+require 'ontrafel'
 
 require 'js'
 
@@ -223,20 +224,34 @@ function vertaal(code)
 	-- extra info (vgl herschrijven)
 	local feiten = deduceer(feiten)
 
-	local afh = berekenbaarheid(feiten)
-
 	-- speel = bieb -> cirkels
-	local speel = {
+	local volgorde = {
 		van = bieb,
 		naar = 'cirkel',
 	}
 
-	local pad = sorteer(afh, speel)
-	--local stroom = afh(pad).plet
+	local afh,map = berekenbaarheid(feiten)
+	local infostroom = afh:sorteer(bieb, 'cirkel')
+
+	print('# Infostroom')
+	print(infostroom:tekst())
+	print()
+
+	-- terugmappen
+	local stroom = {}
+	for pijl,naar in infostroom:topologisch(map) do
+		stroom[#stroom+1] = map[pijl]
+	end
+
+	-- makkelijker maken
+	stroom = ontrafel(stroom)
 
 	-- frisse avondbries
 	print_typen = print_typen_stroom
+	if print_typen then print('# Typen Stroom') end
 	local typen = typeer(stroom,basis)
+	if print_typen then print() end
+
 
 	-- breid uit
 	local stroom = uitrol(stroom, typen)

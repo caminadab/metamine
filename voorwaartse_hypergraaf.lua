@@ -27,6 +27,7 @@ end
 
 -- bedenk alle hyperroutes door hypergraaf
 local function sorteer(hgraaf, van, naar)
+	local print = function () end
 	local onbekend = {[naar]=true}
 	local stroom = voorwaartse_acyclische_hypergraaf()
 	local bekend = {}
@@ -64,16 +65,17 @@ function voorwaartse_hypergraaf()
 
 		-- maak een hyperpijl
 		link = function (h,pijl_of_van,naar)
-			local van
+			local van, pijl
 			if naar then
 				van = pijl_of_van
+				pijl = {van=van,naar=naar}
 			else
-				local pijl = pijl_of_van
+				pijl = pijl_of_van
 				van = pijl.van
 				naar = pijl.naar 
 			end
 
-			h.pijlen[{van,naar,van=van,naar=naar}] = true
+			h.pijlen[pijl] = true
 		end,
 
 		-- hyperpijlen naar doel

@@ -6,7 +6,7 @@ require 'voorwaartse_hypergraaf'
 -- herschrijft vergelijkingen
 -- herbruikt 'feiten'
 function deduceer(feiten)
-	local f = feiten
+	local f = {}
 	if print_deducties then print('# Deducties') end
 	for i,feit in ipairs(feiten) do
 		for naam in pairs(var(feit)) do
@@ -26,24 +26,31 @@ function deduceer(feiten)
 end
 
 -- feiten -> AFHANKELIJKHEIDSHYPERGRAAF
+-- plus: pijl -> feiten
 function berekenbaarheid(feiten)
-	local hgraaf = hypergraaf()
+	local hgraaf = voorwaartse_hypergraaf()
+	local map = {}
+
 	for i,feit in ipairs(feiten) do
 		-- vergelijking?
 		if isexp(feit) and feit[1] == '=' then
 			local a,b = feit[2],feit[3]
 			-- a = 1 + 2
 			if isvar(a) then
-				hgraaf:link(a, var(b))
+				local pijl = {van = var(b), naar = a}
+				map[pijl] = feit
+				hgraaf:link(pijl)
 			end
 		
 			-- 1 + 2 = b
 			if isvar(b) then
-				hgraaf:link(b, var(a))
+				local pijl = {van = var(a), naar = b}
+				map[pijl] = feit
+				hgraaf:link(pijl)
 			end
 		end
 	end
-	return hgraaf
+	return hgraaf, map
 end
 
 --assert(unlisp(noem(lisp'((= a 0) (= a 1))').a) == '(0 1)')

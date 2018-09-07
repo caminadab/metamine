@@ -1,5 +1,7 @@
-
 function isvar(name)
+	if not isatoom(name) then
+		return false
+	end
 	if tonumber(name) then
 		return false
 	elseif string.upper(name) == name then

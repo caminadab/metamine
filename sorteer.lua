@@ -42,7 +42,7 @@ function ontrafel(flow)
 	end
 
 	local log = function()end
-	log('# Unravel')
+	log('# Ontrafel')
 	for i,v in ipairs(asm) do
 		log(v[2],'= '..unlisp(v[3]))
 	end

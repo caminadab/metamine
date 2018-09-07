@@ -1,3 +1,5 @@
+require 'func'
+
 -- is er, zonder alle pijlen te vervullen, een route van bron naar doel mogelijk?
 -- zoekt achterstevoren
 local function bereikbaar_disj(graaf, van, naar)
@@ -35,6 +37,79 @@ local function bereikbaar_disj(graaf, van, naar)
 	return false
 end
 
+function pijl2tekst(pijl)
+	local r = {}
+	for bron in pairs(pijl.van) do
+		r[#r+1] = bron
+	end
+	if #r == 0 then
+		r[#r+1] = '()'
+	end
+	table.sort(r)
+	return table.concat(r, ' ') .. ' -> ' .. pijl.naar
+end
+
+local function tekst(graaf)
+	if not next(graaf.pijlen) then
+		return '<lege graaf>'
+	end
+	local p = {}
+	for pijl in pairs(graaf.pijlen) do
+		p[#p+1] = pijl2tekst(pijl) .. '\t\t'..tostring(pijl)
+	end
+	table.sort(p)
+	return table.concat(p, '\n')
+end
+
+-- generator functie (pijl, punt)
+-- geeft een topologische volgore over graaf
+local function topologisch(graaf, map)
+	-- eind
+	local nieteinde = {}
+	for pijl in pairs(graaf.pijlen) do
+		for bron in pairs(pijl.van) do
+			nieteinde[bron] = true
+		end
+	end
+	local einde = false
+	for punt in pairs(graaf.punten) do
+		if not nieteinde[punt] then
+			einde = punt
+			break
+		end
+	end
+	if not einde then error('geen einde in acyclische hypergraaf!') end
+
+	-- itereer
+	local topo = {}
+	local onbekend = { einde }
+	-- hoe is het echt dan? ik weet niet helemaal hoe het nu echt is maar toch ben ik wel ff benieuwd hoe deze zin zich uiteindelijk gaat uitpaken. Vooral beniewud ben ik voor de interactie binnen bepaalde moeilijke woorden. Bijvoorbeeld? ik weet het niet zeker, maar uiteindelijk vermoed ik dat het toch wel ietsje meer dan 3 schrijffjoute zijn. Op een off andere manier is het eeen geetje schaken;  je weet wel hoe het is zeker met al die overbodige spaties aan de linkerkant. en ook heb ik het gevoel dat er veel meer aan de linker kant van het toetsenbord word getypt wanneer je Nederlands alleen aan het typen bent. Miscchien ook omdat alle speciale symbolen aan de rechterkant zitten. Ja dus zo is het wel eventjes mooi geweest hoor dit is al een hele alinea aan het worden.
+
+	while #onbekend > 0 do
+		local doel = table.remove(onbekend, 1)
+		for pijl in graaf:naar(doel) do
+			topo[#topo+1] = pijl
+			for bron in pairs(pijl.van) do
+				onbekend[#onbekend+1] = bron
+			end
+		end
+	end
+
+	local topo = keerom(topo)
+	local i = 1
+
+	return function ()
+		if not topo[i] then
+			return nil,nil
+		end
+		local pijl,doel = topo[i],topo[i].naar
+		print(pijl2tekst(pijl))
+		-- topo[i].naar
+		i = i + 1
+		return pijl,doel
+	end
+end
+
 -- hyperpijlen naar doel
 local function naar(self,doel)
 	local pijl = nil
@@ -49,27 +124,6 @@ local function naar(self,doel)
 		-- klaar
 		return nil
 	end
-end
-
-local function pijl2tekst(pijl)
-	local r = {}
-	for bron in pairs(pijl.van) do
-		r[#r+1] = bron
-	end
-	table.sort(r)
-	return table.concat(r, ' ') .. ' -> ' .. pijl.naar
-end
-
-local function tekst(graaf)
-	if not next(graaf.pijlen) then
-		return '<lege graaf>'
-	end
-	local p = {}
-	for pijl in pairs(graaf.pijlen) do
-		p[#p+1] = pijl2tekst(pijl)
-	end
-	table.sort(p)
-	return table.concat(p, '\n')
 end
 
 function link(vahgraaf, pijl_of_van, naar)
@@ -91,6 +145,12 @@ function link(vahgraaf, pijl_of_van, naar)
 		end
 	end
 
+	-- registreer punten
+	vahgraaf.punten[naar] = true
+	for bron in pairs(van) do
+		vahgraaf.punten[bron] = true
+	end
+
 	vahgraaf.pijlen[pijl] = true
 	return true
 end
@@ -107,6 +167,8 @@ function voorwaartse_acyclische_hypergraaf()
 		link = link,
 		bereikbaar_disj = bereikbaar_disj,
 		tekst = tekst,
+		topologisch = topologisch,
+		topo = topologisch,
 	}
 end
 
@@ -138,5 +200,9 @@ if test or true then
 	assert(not graaf:link({b=true}, 'a'))
 	-- a,c->b mag niet
 	assert(not graaf:link({a=true,c=true}, 'b'))
-	
+
+	-- topologisch
+	local topo = graaf:topologisch()
+	assert(topo().naar == 'b')
+	assert(topo().naar == 'c')
 end
