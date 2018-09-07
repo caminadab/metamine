@@ -204,7 +204,7 @@ nu = start
 	for i,toets in ipairs(toets) do
 		local naam = toets:gsub("^%l", string.upper) -- Links
 		t[#t+1] = 'toets'..naam..' = '..'{ }\n'
-		t[#t+1] = 'for i=1,600 do toets'..naam..'[i] = 0 end\n'
+		t[#t+1] = 'for i=0,599 do toets'..naam..'[i] = 0 end\n'
 		t[#t+1] = 'local toets'..naam..'Aan = 0\n'
 		t[#t+1] = 'local toets'..naam..'Uit = 0\n'
 	end
@@ -224,7 +224,7 @@ local toetsSpatieUit = 0
 		local naam = toets:gsub("^%l", string.upper) -- Links
 		--t[#t+1] = 'toets'..naam..' = '..'{ }\n'
 		--t[#t+1] = 'for i=1,600 do toets'..naam..'[i] = 0 end\n'
-		t[#t+1] = 'for i=1,600-1 do toets'..naam..'[i] = toets'..naam..'[i+1] or 0 end\n'
+		t[#t+1] = 'for i=0,600-1 do toets'..naam..'[i] = toets'..naam..'[i+1] or 0 end\n'
 		t[#t+1]  = 'toets'..naam..'[600] = (love.keyboard.isDown("'..(engels[toets] or toets)..'") and 1/60 or 0)\n'
 	end
 
