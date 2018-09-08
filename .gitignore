@@ -5,3 +5,5 @@ ontleed/taal.h
 
 bin/
 *.dll
+
+*.stackdump

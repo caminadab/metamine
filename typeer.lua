@@ -27,10 +27,18 @@ local function issimpel2(t)
 end
 
 local dichtbij = {['^']=true,['_']=true,['.']=true,['..']=true}
-function leedwerk(exp, t)
+local op = {['^']=true,['_']=true,['*']=true,['/']=true,['+']=true,['-']=true}
+
+function leedwerk(exp, t, arg)
 	local prio = 0
 	if isatoom(exp) then
-		t[#t+1] = exp
+		if arg and op[exp] then
+			t[#t+1] = '('
+			t[#t+1] = exp
+			t[#t+1] = ')'
+		else
+			t[#t+1] = exp
+		end
 	elseif exp[1] == '{}' then
 		t[#t+1] = '{'
 		for i=2,#exp do
@@ -52,13 +60,13 @@ function leedwerk(exp, t)
 	elseif #exp == 2 then
 		leedwerk(exp[1], t)
 		t[#t+1] = ' '
-		leedwerk(exp[2], t)
+		leedwerk(exp[2], t, true)
 	elseif #exp == 3 then
-		leedwerk(exp[2], t)
+		leedwerk(exp[2], t, true)
 		if not dichtbij[exp[1]] then t[#t+1] = ' ' end
 		leedwerk(exp[1], t)
 		if not dichtbij[exp[1]] then t[#t+1] = ' ' end
-		leedwerk(exp[3], t)
+		leedwerk(exp[3], t, true)
 	end
 	return t
 end
@@ -219,6 +227,10 @@ function exptypeer(exp, typen)
 	-- functie
 	elseif exp[1] == '->' then
 		t = {'->', ta or 'iets', tb or 'iets'}
+
+	-- schaduw
+	elseif exp[1] == "'" then
+		t,f = ta,tf
 
 	-- interval
 	elseif exp[1] == '..' then

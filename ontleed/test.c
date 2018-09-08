@@ -56,14 +56,27 @@ int test() {
 		// multi
 		{"a = b | c + 2", "((= a (| b (+ c 2))))"},
 
+		// operatoren
+		{"a = (+)", "((= a +))"},
+		{"a = (*)", "((= a *))"},
+
+		// parameters
+		{"a = int,int -> int", "((= a (-> (, int int) int)))"},
+
 		{0, 0},
 	};
+
+	int fout = 0, totaal = 0;
 
 	for (int i = 0; tests[i][0]; i++) {
 		char* test = tests[i][0];
 		char* doel = tests[i][1];
 		char* lisp = ontleed(test);
-		if (strcmp(lisp, doel))
+		if (strcmp(lisp, doel)) {
 			printf("%s != %s\n", lisp, doel);
+			fout++;
+		}
+		totaal++;
 	}
+	printf("%d/%d fout\n", fout, totaal);
 }
