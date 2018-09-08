@@ -92,9 +92,9 @@ teken : int
 (xx) : iets -> iets ; ehh
 
 ; tijd
-nu : int
-start : int
-beeld : int
+nu : getal
+start : getal
+beeld : getal
 (') : iets -> iets
 
 ; kleur

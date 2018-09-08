@@ -14,10 +14,13 @@ local prios = {
 local function issimpel(t)
 	return isatoom(t) and (t == 'bit' or t == 'getal' or t == 'int')
 end
+
 local function issimpel1(t)
-	return isexp(t) and t[1] == '->' and issimpel(t[2]) and issimpel(t[3])
+	if not isexp(t) then return false end
+	local argn = t[2]
+	local mono = isexp(argn) and #argn == 2 and issimpel(argn[2])
+	return isexp(t) and t[1] == '->' and mono
 end
-assert(issimpel1{'->', 'getal', 'getal'})
 
 local function issimpel2(t)
 	if not isexp(t) then return false end
@@ -385,6 +388,7 @@ function exptypeer(exp, typen)
 
 	-- functie
 	elseif issimpel1(tfn) or issimpel2(tfn) or lijstlen(tfn) then
+		print('IS SIMPEL', leed(tfn))
 		if ta and ta[1] == '^' then
 			a,b = b,a
 			ta,tb = tb,ta
