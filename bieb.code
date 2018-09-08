@@ -44,8 +44,8 @@ toets-k : getal^600
 toets-l : getal^600
 toets-puntkomma : getal^600
 toets-spatie : getal^600
-toets-spatie-aan : moment
-toets-spatie-uit : moment
+toets-spatie-aan : bit
+toets-spatie-uit : bit
 
 ; logica
 als : iets
@@ -54,7 +54,7 @@ ja : bit
 nee : bit
 ok : iets
 
-niet : bit -> bit
+(niet) : bit -> bit
 en : bit,bit -> bit
 of : bit,bit -> bit
 xof : bit,bit -> bit
@@ -124,6 +124,7 @@ in : (iets,iets) -> ok
 onbekend : iets
 tijd : iets
 (.) : iets,iets -> iets
+(') : iets -> iets
 
 ; geo
 stip : getal^2

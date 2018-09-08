@@ -156,6 +156,7 @@ single:
 | '(' "of" ')'				{ $$ = a("of"); }
 | '(' "exof" ')'			{ $$ = a("exof"); }
 | '(' "noch" ')'			{ $$ = a("noch"); }
+| '(' "niet" ')'			{ $$ = a("niet"); }
 
 | '(' '.' ')'       	{ $$ = a("."); }
 | '(' '@' ')'       	{ $$ = a("@"); }
@@ -204,6 +205,7 @@ exp:
 | exp "of" exp				{ $$ = exp3(a("of"), $1, $3); }
 | exp "exof" exp			{ $$ = exp3(a("exof"), $1, $3); }
 | exp "noch" exp			{ $$ = exp3(a("noch"), $1, $3); }
+| "niet" exp					{ $$ = _exp2(a("niet"), $2); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 | exp '@' exp       	{ $$ = exp3(a("@"), $1, $3); }

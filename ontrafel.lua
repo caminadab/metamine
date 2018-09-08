@@ -28,6 +28,7 @@ end
 -- [(= name exp)] -> [(= name0 fn)]
 function ontrafel(flow)
 	local asm = {}
+	local num = {}
 	for i,v in ipairs(flow) do
 		local name,exp = v[2],v[3]
 		ontrafel0(exp,name,asm)

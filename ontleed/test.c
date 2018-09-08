@@ -22,7 +22,6 @@ int test() {
 		{"f = int,int -> int", "((= f (-> (, int int) int)))"},
 		{"f = (intd,intd) -> intq", "((= f (-> (, intd intd) intq)))"},
 		{"f = (int^2,int^2) -> int", "((= f (-> (, (^ int 2) (^ int 2)) int)))"},
-
 		
 		// blok
 		{
@@ -32,6 +31,7 @@ int test() {
 
 		// logica
 		{"a = goed en lekker", "((= a (en goed lekker)))"},
+		{"a = niet goed", "((= a (niet goed)))"},
 
 		// fouten
 		{"a = (3 =)", "((= a fout))"},

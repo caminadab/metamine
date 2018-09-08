@@ -2,13 +2,15 @@ require 'lisp'
 
 local infix = {
 	['^'] = true, ['_'] = true,
-	['*'] = true, ['/'] = true,
-	['+'] = true, ['-'] = true,
+	['* '] = true, ['/'] = true,
+	['+ '] = true, ['-'] = true,
 	['>'] = true, ['<'] = true,
 	['>='] = true, ['<='] = true,
 }
 
 local vertaal = {
+	['+'] = 'plus',
+	['*'] = 'keer',
 	['of'] = 'of',
 	['{}'] = 'agg',
 	['sin'] = 'math.sin',
@@ -16,6 +18,8 @@ local vertaal = {
 	['abs'] = 'math.abs',
 	['.'] = 'index',
 	['||'] = 'cat',
+	['|'] = 'combineer',
+	['&'] = 'multi',
 	['sincos'] = 'sincos',
 	['=>'] = 'dan',
 	['..'] = 'tot',
@@ -48,6 +52,13 @@ function tolo(exp,t,typen)
 	t = t or {}
 	if atom(exp) then
 		t[#t+1] = vertaal[exp] or naam2love(exp) or exp
+
+	-- schaduw
+	elseif exp[1] == "'" then
+		local naam = naam2love(exp[2])
+		t[#t+1] = 'schaduw_'..naam
+		t[#t+1] = ' or '
+		t[#t+1] = naam
 	elseif exp[1] == '->' then
 		tofunc(exp[3], exp[2], t)
 	elseif infix[exp[1]] and exp[3] then
@@ -157,9 +168,21 @@ local function tot(a,b)
 	end
 	return r
 end
+
+local function plus(a,b) if tonumber(a) and tonumber(b) then return a + b end end
+local function keer(a,b) if tonumber(a) and tonumber(b) then return a * b end end
+
+local function combineer(a,b)
+	if a and b and a ~= b then error('meerdere waarden passen niet in enkele variabele: '..tostring(a)..' en '..tostring(b)) end
+	if b then return b end
+	if a then return a end
+	return nil
+end
+
 local function index(a,b)
 	return a[b]
 end
+
 local function som(a)
 	local som = 0
 	for i,v in pairs(a) do
@@ -170,6 +193,7 @@ end
 local function sincos(hoek)
 	return {math.cos(hoek), math.sin(hoek)}
 end
+
 local function dan(cond,v)
 	if cond then
 		return v
@@ -177,9 +201,10 @@ local function dan(cond,v)
 		return nil
 	end
 end
+
 local function eq(a,b)
 	if type(a) == 'number' and type(b) == 'number' then
-		return math.abs(a-b) < 1e-3
+		return math.abs(a-b) < 1e-2
 	else
 		return a == b
 	end
@@ -211,8 +236,8 @@ nu = start
 
 	t[#t+1] = [[local prevSpaceDown = false
 
-local toetsSpatieAan = 0
-local toetsSpatieUit = 0
+local toetsSpatieAan = false
+local toetsSpatieUit = false
 ]]
 
 	-- update
@@ -245,6 +270,15 @@ local toetsSpatieUit = 0
 	for i=1,#block do
 		local stat = block[i]
 		stat2love(stat,t,vars,typen)
+	end
+
+	-- schaduw
+	for i,stat in ipairs(block) do
+		local naam = stat[2]
+		t[#t+1] = 'schaduw_'..naam2love(naam)
+		t[#t+1] = ' = '
+		t[#t+1] = naam2love(naam)
+		t[#t+1] = '\n'
 	end
 
 	-- paraguay
@@ -331,12 +365,13 @@ function love.draw()
 ]]
 
 	-- debug tekst
-	--[[for i,var in ipairs(vars) do
+	t[#t+1] = ''--[[for i,var in ipairs(vars) do
 		t[#t+1] = '\tlove.graphics.print('
 		t[#t+1] = '"'..var..' = "..unlisp('
 		t[#t+1] = naam2love(var)
 		t[#t+1] = '), 10, ' .. i*16 .. ')\n'
-	end]]
+	end
+	]]
 
 	t[#t+1] = [[end]]
 

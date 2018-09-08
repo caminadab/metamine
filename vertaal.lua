@@ -21,7 +21,7 @@ function vertaalJs(lispcode)
 	local invoer = {}
 	local speel = {
 		van = cat(invoer, bieb),
-		naar = 'cirkel',
+		naar = 'stip',
 	}
 
 	local stroom = sorteer(waarden, speel)
@@ -39,7 +39,7 @@ function suikervrij(feiten)
 	for i,feit in ipairs(feiten) do
 		if feit[1] == ':=' then
 			local a,b = feit[2],feit[3]
-			r[i] = {'=', a, {'=>', 'start', b}}
+			r[i] = {'=', a, {'=>', {'=', 'nu', 'start'}, b}}
 		elseif feit[1] == '+=' then
 			--		a += 1
 			-- =>	a = (beeld => a' + 1 / 60)
@@ -87,13 +87,11 @@ function vertaal(code)
 
 	-- bieb
 	local bieb = ontleed(file('bieb.code'))
-	print('# Bieb')
 	local basis,fouten = typeer(bieb)
 	if print_typen then print() end
 	if fouten then
-		for i,fout in ipairs(fouten) do print(leed(fout)) end
+		for i,fout in ipairs(fouten) do print('BIEBFOUT',leed(fout)) end
 	end
-	print()
 
 	-- typeer
 	print_typen = print_typen_bron

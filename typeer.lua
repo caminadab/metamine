@@ -27,7 +27,7 @@ local function issimpel2(t)
 end
 
 local dichtbij = {['^']=true,['_']=true,['.']=true,['..']=true}
-local op = {['^']=true,['_']=true,['*']=true,['/']=true,['+']=true,['-']=true}
+local op = {['^']=true,['_']=true,['*']=true,['/']=true,['+']=true,['-']=true,["'"]=true}
 
 function leedwerk(exp, t, arg)
 	local prio = 0
@@ -48,6 +48,11 @@ function leedwerk(exp, t, arg)
 			end
 		end
 		t[#t+1] = '}'
+
+	-- postfix
+	elseif exp[1] == "'" or exp[1] == '%' then
+		leedwerk(exp[2], t)
+		t[#t+1] = exp[1]
 	elseif exp[1] == '[]' then
 		t[#t+1] = '['
 		for i=2,#exp do
@@ -228,6 +233,10 @@ function exptypeer(exp, typen)
 	elseif exp[1] == '->' then
 		t = {'->', ta or 'iets', tb or 'iets'}
 
+	-- of
+	elseif exp[1] == '|' then
+		t,f = verenig_en(ta,tb)
+
 	-- schaduw
 	elseif exp[1] == "'" then
 		t,f = ta,tf
@@ -309,6 +318,9 @@ function exptypeer(exp, typen)
 		T[a],T[b] = ta,tb
 		F[a],F[b] = fa,fb
 		t,f = verenig_of(ta,tb)
+
+	elseif exp[1] == 'niet' then
+		t,f = verenig_en(ta,'bit')
 
 	elseif exp[1] == '=>' then
 		local a,b = exp[2],exp[3]

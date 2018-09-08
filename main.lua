@@ -23,9 +23,21 @@ local function tot(a,b)
 	end
 	return r
 end
+
+local function plus(a,b) if tonumber(a) and tonumber(b) then return a + b end end
+local function keer(a,b) if tonumber(a) and tonumber(b) then return a * b end end
+
+local function combineer(a,b)
+	if a and b and a ~= b then error('meerdere waarden passen niet in enkele variabele: '..tostring(a)..' en '..tostring(b)) end
+	if b then return b end
+	if a then return a end
+	return nil
+end
+
 local function index(a,b)
 	return a[b]
 end
+
 local function som(a)
 	local som = 0
 	for i,v in pairs(a) do
@@ -36,6 +48,7 @@ end
 local function sincos(hoek)
 	return {math.cos(hoek), math.sin(hoek)}
 end
+
 local function dan(cond,v)
 	if cond then
 		return v
@@ -43,9 +56,10 @@ local function dan(cond,v)
 		return nil
 	end
 end
+
 local function eq(a,b)
 	if type(a) == 'number' and type(b) == 'number' then
-		return math.abs(a-b) < 1e-3
+		return math.abs(a-b) < 1e-2
 	else
 		return a == b
 	end
@@ -118,8 +132,8 @@ local toetsLAan = 0
 local toetsLUit = 0
 local prevSpaceDown = false
 
-local toetsSpatieAan = 0
-local toetsSpatieUit = 0
+local toetsSpatieAan = false
+local toetsSpatieUit = false
 function love.update()
 for i=0,600-1 do toetsRechts[i] = toetsRechts[i+1] or 0 end
 toetsRechts[600] = (love.keyboard.isDown("right") and 1/60 or 0)
@@ -158,12 +172,36 @@ toetsL[600] = (love.keyboard.isDown("l") and 1/60 or 0)
 		prevSpaceDown = false
 		toetsSpatieUit = true
 	end
-a = 1
+a1 = eq(nu, start)
+a0 = dan(a1, 0)
+a4 = schaduw_a or a
+a6 = schaduw_a or a
+a7 = (1/60)
+a5 = plus(a6, a7)
+a3 = dan(a4, a5)
+a8 = dan(toetsSpatieAan, 0)
+a2 = combineer(a3, a8)
+a = combineer(a0, a2)
 stip0_0 = a
 stip0_1 = a
-stip_0 = (100*stip0_0)
-stip_1 = (100*stip0_1)
+stip_0 = keer(100, stip0_0)
+stip_1 = keer(100, stip0_1)
 stip = {[0] = stip_0, stip_1}
+schaduw_a1 = a1
+schaduw_a0 = a0
+schaduw_a4 = a4
+schaduw_a6 = a6
+schaduw_a7 = a7
+schaduw_a5 = a5
+schaduw_a3 = a3
+schaduw_a8 = a8
+schaduw_a2 = a2
+schaduw_a = a
+schaduw_stip0_0 = stip0_0
+schaduw_stip0_1 = stip0_1
+schaduw_stip_0 = stip_0
+schaduw_stip_1 = stip_1
+schaduw_stip = stip
 		nu = love.timer.getTime()
 		beeld = nu
 	end
@@ -178,8 +216,15 @@ function love.draw()
 	if stip and stip[0] and stip[1] then
 		love.graphics.circle('fill', stip[0], stip[1], stip[2] or 20)
 	end
-love.graphics.print("a = 1\
+love.graphics.print(";a := 0\
+;a = a' + 1/60\
+\
+a = (nu = start => 0) | (a' => a' + 1/60) | (toets-spatie-aan => 0)\
+;a = (niet(nu = start + 1) => 1)\
+\
 stip = 100 * [a,a]\
+\
+toets-spatie-aan => a = 0\
 ", 500, 10)
 	local sx,sy = 10,310
 	local x,y = sx,sy
