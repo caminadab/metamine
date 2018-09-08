@@ -1,9 +1,6 @@
 ;a := 0
 ;a = a' + 1/60
 
-a = (nu = start => 0) | (a' => a' + 1/60) | (toets-spatie-aan => 0)
-;a = (niet(nu = start + 1) => 1)
+a = (nu = start => 0) | (a' en niet(toets-spatie-aan) => a' + 1/60) | (toets-spatie-aan => 0)
 
 stip = 100 * [a,a]
-
-toets-spatie-aan => a = 0

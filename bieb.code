@@ -55,7 +55,7 @@ nee : bit
 ok : iets
 
 (niet) : bit -> bit
-en : bit,bit -> bit
+(en) : bit,bit -> bit
 of : bit,bit -> bit
 xof : bit,bit -> bit
 noch : bit,bit -> bit

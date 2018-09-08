@@ -322,6 +322,11 @@ function exptypeer(exp, typen)
 	elseif exp[1] == 'niet' then
 		t,f = verenig_en(ta,'bit')
 
+	elseif exp[1] == 'en' then
+		local ta = verenig_en(ta, 'bit')
+		local tb = verenig_en(tb, 'bit')
+		t,f = 'bit'
+
 	elseif exp[1] == '=>' then
 		local a,b = exp[2],exp[3]
 		t = exptypeer(b, typen)

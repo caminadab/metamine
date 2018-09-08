@@ -12,6 +12,8 @@ local vertaal = {
 	['+'] = 'plus',
 	['*'] = 'keer',
 	['of'] = 'of',
+	['en'] = 'en',
+	['niet'] = 'not',
 	['{}'] = 'agg',
 	['sin'] = 'math.sin',
 	['cos'] = 'math.cos',
@@ -144,8 +146,6 @@ function tolove(block,typen)
 	local t = {
 [[
 package.path = package.path .. ';../?.lua'
-local function len(a) return #a+1 end
-local function of(a,b) return a or b end
 local function agg(...)
 	-- functies
 	local a = {...}
@@ -168,6 +168,11 @@ local function tot(a,b)
 	end
 	return r
 end
+
+local function len(a) return #a+1 end
+local function en(a,b) return a and b end
+local function of(a,b) return a or b end
+local function niet(a) return not a end
 
 local function plus(a,b) if tonumber(a) and tonumber(b) then return a + b end end
 local function keer(a,b) if tonumber(a) and tonumber(b) then return a * b end end
@@ -204,7 +209,7 @@ end
 
 local function eq(a,b)
 	if type(a) == 'number' and type(b) == 'number' then
-		return math.abs(a-b) < 1e-2
+		return math.abs(a-b) < 1e-3
 	else
 		return a == b
 	end
