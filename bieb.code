@@ -92,7 +92,7 @@ teken : int
 
 ; tijd
 nu : getal
-start : getal
+start : bit
 beeld : getal
 ;(') : iets -> iets
 

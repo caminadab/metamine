@@ -41,7 +41,7 @@ function suikervrij(feiten)
 		-- start
 		if feit[1] == ':=' then
 			local a,b = feit[2],feit[3]
-			r[i] = {'=', a, {'=>', {'=', 'nu', 'start'}, b}}
+			r[i] = {'=', a, {'=>', 'start', b}}
 
 		-- => omschrijffe
 		elseif feit[1] == '=>' and isexp(feit[3]) and feit[3][1] == '=' then
