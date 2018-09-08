@@ -1,18 +1,18 @@
 ; arith
-(^) : getal,getal -> getal
-(_) : getal,getal -> getal
-(*) : getal,getal -> getal
-(/) : getal,getal -> getal
-(+) : getal,getal -> getal
-(-) : getal,getal -> getal
+(^) : (getal,getal) -> getal
+(_) : (getal,getal) -> getal
+(*) : (getal,getal) -> getal
+(/) : (getal,getal) -> getal
+(+) : (getal,getal) -> getal
+(-) : (getal,getal) -> getal
 
 ; relatief
-;(^=) : getal,getal -> ok
-;(_=) : getal,getal -> ok
-;(*=) : getal,getal -> ok
-;(/=) : getal,getal -> ok
-;(+=) : getal,getal -> ok
-;(-=) : getal,getal -> ok
+;(^=) : (getal,getal) -> ok
+;(_=) : (getal,getal) -> ok
+;(*=) : (getal,getal) -> ok
+;(/=) : (getal,getal) -> ok
+;(+=) : (getal,getal) -> ok
+;(-=) : (getal,getal) -> ok
 
 ; trig
 sin : getal -> getal
@@ -62,14 +62,14 @@ noch : bit,bit -> bit
 (=>) : bit,iets -> iets
 
 ; vergelijking
-(=) : iets,iets -> bit
-;(!=) : iets,iets -> bit
-;(~=) : iets,iets -> bit
-;(:=) : iets,iets -> bit
-(>) : iets,iets -> bit
-(<) : iets,iets -> bit
-(>=) : iets,iets -> bit
-(<=) : iets,iets -> bit
+(=)		: (iets,iets) -> bit
+;(!=) : (iets,iets) -> bit
+;(~=) : (iets,iets) -> bit
+(:=)	: (iets,iets) -> bit
+(>)		: (iets,iets) -> bit
+(<)		: (iets,iets) -> bit
+(>=)	: (iets,iets) -> bit
+(<=)	: (iets,iets) -> bit
 
 goed : bit
 ;fout : bit
@@ -87,7 +87,7 @@ teken : int
 ([]) : iets -> iets^int
 ({}) : iets -> iets^int ; klopt niet!
 (#) : iets^int -> int
-(||) : iets^int, iets^int -> iets^int
+(||) : (iets^int, iets^int) -> iets^int
 ;(..) : getal,getal -> getal..getal
 (xx) : iets -> iets ; ehh
 
@@ -114,13 +114,16 @@ paars : kleur
 magenta : kleur
 
 ; divers
-(:) : iets,iets -> ok
-in : iets,iets -> ok
-(|) : iets,iets -> iets
-(&) : iets,iets -> iets
-;(>>) : iets,iets -> iets
-;(<<) : iets,iets -> iets
+(:) : (iets,iets) -> ok
+in : (iets,iets) -> ok
+(|) : (iets,iets) -> iets
+(&) : (iets,iets) -> iets
+;(>>) : (iets,iets) -> iets
+;(<<) : (iets,iets) -> iets
 
 onbekend : iets
 tijd : iets
 (.) : iets,iets -> iets
+
+; geo
+stip : getal^2

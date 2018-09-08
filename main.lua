@@ -65,55 +65,55 @@ start = love.timer.getTime()
 nu = start
 
 toetsRechts = { }
-for i=1,600 do toetsRechts[i] = 0 end
+for i=0,599 do toetsRechts[i] = 0 end
 local toetsRechtsAan = 0
 local toetsRechtsUit = 0
 toetsLinks = { }
-for i=1,600 do toetsLinks[i] = 0 end
+for i=0,599 do toetsLinks[i] = 0 end
 local toetsLinksAan = 0
 local toetsLinksUit = 0
 toetsOmhoog = { }
-for i=1,600 do toetsOmhoog[i] = 0 end
+for i=0,599 do toetsOmhoog[i] = 0 end
 local toetsOmhoogAan = 0
 local toetsOmhoogUit = 0
 toetsOmlaag = { }
-for i=1,600 do toetsOmlaag[i] = 0 end
+for i=0,599 do toetsOmlaag[i] = 0 end
 local toetsOmlaagAan = 0
 local toetsOmlaagUit = 0
 toetsSpatie = { }
-for i=1,600 do toetsSpatie[i] = 0 end
+for i=0,599 do toetsSpatie[i] = 0 end
 local toetsSpatieAan = 0
 local toetsSpatieUit = 0
 toetsA = { }
-for i=1,600 do toetsA[i] = 0 end
+for i=0,599 do toetsA[i] = 0 end
 local toetsAAan = 0
 local toetsAUit = 0
 toetsS = { }
-for i=1,600 do toetsS[i] = 0 end
+for i=0,599 do toetsS[i] = 0 end
 local toetsSAan = 0
 local toetsSUit = 0
 toetsD = { }
-for i=1,600 do toetsD[i] = 0 end
+for i=0,599 do toetsD[i] = 0 end
 local toetsDAan = 0
 local toetsDUit = 0
 toetsF = { }
-for i=1,600 do toetsF[i] = 0 end
+for i=0,599 do toetsF[i] = 0 end
 local toetsFAan = 0
 local toetsFUit = 0
 toetsH = { }
-for i=1,600 do toetsH[i] = 0 end
+for i=0,599 do toetsH[i] = 0 end
 local toetsHAan = 0
 local toetsHUit = 0
 toetsJ = { }
-for i=1,600 do toetsJ[i] = 0 end
+for i=0,599 do toetsJ[i] = 0 end
 local toetsJAan = 0
 local toetsJUit = 0
 toetsK = { }
-for i=1,600 do toetsK[i] = 0 end
+for i=0,599 do toetsK[i] = 0 end
 local toetsKAan = 0
 local toetsKUit = 0
 toetsL = { }
-for i=1,600 do toetsL[i] = 0 end
+for i=0,599 do toetsL[i] = 0 end
 local toetsLAan = 0
 local toetsLUit = 0
 local prevSpaceDown = false
@@ -121,31 +121,31 @@ local prevSpaceDown = false
 local toetsSpatieAan = 0
 local toetsSpatieUit = 0
 function love.update()
-for i=1,600-1 do toetsRechts[i] = toetsRechts[i+1] or 0 end
+for i=0,600-1 do toetsRechts[i] = toetsRechts[i+1] or 0 end
 toetsRechts[600] = (love.keyboard.isDown("right") and 1/60 or 0)
-for i=1,600-1 do toetsLinks[i] = toetsLinks[i+1] or 0 end
+for i=0,600-1 do toetsLinks[i] = toetsLinks[i+1] or 0 end
 toetsLinks[600] = (love.keyboard.isDown("left") and 1/60 or 0)
-for i=1,600-1 do toetsOmhoog[i] = toetsOmhoog[i+1] or 0 end
+for i=0,600-1 do toetsOmhoog[i] = toetsOmhoog[i+1] or 0 end
 toetsOmhoog[600] = (love.keyboard.isDown("up") and 1/60 or 0)
-for i=1,600-1 do toetsOmlaag[i] = toetsOmlaag[i+1] or 0 end
+for i=0,600-1 do toetsOmlaag[i] = toetsOmlaag[i+1] or 0 end
 toetsOmlaag[600] = (love.keyboard.isDown("down") and 1/60 or 0)
-for i=1,600-1 do toetsSpatie[i] = toetsSpatie[i+1] or 0 end
+for i=0,600-1 do toetsSpatie[i] = toetsSpatie[i+1] or 0 end
 toetsSpatie[600] = (love.keyboard.isDown("space") and 1/60 or 0)
-for i=1,600-1 do toetsA[i] = toetsA[i+1] or 0 end
+for i=0,600-1 do toetsA[i] = toetsA[i+1] or 0 end
 toetsA[600] = (love.keyboard.isDown("a") and 1/60 or 0)
-for i=1,600-1 do toetsS[i] = toetsS[i+1] or 0 end
+for i=0,600-1 do toetsS[i] = toetsS[i+1] or 0 end
 toetsS[600] = (love.keyboard.isDown("s") and 1/60 or 0)
-for i=1,600-1 do toetsD[i] = toetsD[i+1] or 0 end
+for i=0,600-1 do toetsD[i] = toetsD[i+1] or 0 end
 toetsD[600] = (love.keyboard.isDown("d") and 1/60 or 0)
-for i=1,600-1 do toetsF[i] = toetsF[i+1] or 0 end
+for i=0,600-1 do toetsF[i] = toetsF[i+1] or 0 end
 toetsF[600] = (love.keyboard.isDown("f") and 1/60 or 0)
-for i=1,600-1 do toetsH[i] = toetsH[i+1] or 0 end
+for i=0,600-1 do toetsH[i] = toetsH[i+1] or 0 end
 toetsH[600] = (love.keyboard.isDown("h") and 1/60 or 0)
-for i=1,600-1 do toetsJ[i] = toetsJ[i+1] or 0 end
+for i=0,600-1 do toetsJ[i] = toetsJ[i+1] or 0 end
 toetsJ[600] = (love.keyboard.isDown("j") and 1/60 or 0)
-for i=1,600-1 do toetsK[i] = toetsK[i+1] or 0 end
+for i=0,600-1 do toetsK[i] = toetsK[i+1] or 0 end
 toetsK[600] = (love.keyboard.isDown("k") and 1/60 or 0)
-for i=1,600-1 do toetsL[i] = toetsL[i+1] or 0 end
+for i=0,600-1 do toetsL[i] = toetsL[i+1] or 0 end
 toetsL[600] = (love.keyboard.isDown("l") and 1/60 or 0)
 	-- update toets
 	toetsSpatieAan = false
@@ -158,12 +158,12 @@ toetsL[600] = (love.keyboard.isDown("l") and 1/60 or 0)
 		prevSpaceDown = false
 		toetsSpatieUit = true
 	end
-a = 2
-cirkel0_0 = a
-cirkel0_1 = a
-cirkel_0 = (100*cirkel0_0)
-cirkel_1 = (100*cirkel0_1)
-cirkel = {[0] = cirkel_0, cirkel_1}
+a = 1
+stip0_0 = a
+stip0_1 = a
+stip_0 = (100*stip0_0)
+stip_1 = (100*stip0_1)
+stip = {[0] = stip_0, stip_1}
 		nu = love.timer.getTime()
 		beeld = nu
 	end
@@ -175,11 +175,11 @@ love.graphics.setColor = function(r,g,b,a)
 end
 
 function love.draw()
-	if cirkel and cirkel[0] and cirkel[1] then
-		love.graphics.circle('fill', cirkel[0], cirkel[1], cirkel[2] or 20)
+	if stip and stip[0] and stip[1] then
+		love.graphics.circle('fill', stip[0], stip[1], stip[2] or 20)
 	end
-love.graphics.print("a = 2\
-cirkel = 100 * [a,a]\
+love.graphics.print("a = 1\
+stip = 100 * [a,a]\
 ", 500, 10)
 	local sx,sy = 10,310
 	local x,y = sx,sy

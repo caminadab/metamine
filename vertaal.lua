@@ -11,126 +11,6 @@ require 'ontrafel'
 
 require 'js'
 
--- standaard
-local bieb = {
-	-- arit
-	'^', '_',
-	'*', '/', '%',
-	'+', '-',
-
-	-- multi arit
-	'^=', '_=',
-	'*=', '/=', '%=',
-	'+=', '-=',
-
-	-- trig
-	'sin', 'cos', 'tan',
-	'sincos',
-	'asin', 'acos', 'atan',
-	'abs',
-	'som',
-
-	-- logica
-	'als',
-	'ja', 'nee', 'ok',
-	'en', 'of', 'noch',
-	'niet',
-	'=>',
-	'=', '!=', '~=',
-	'>', '<', '>=', '<=',
-
-	-- types
-	'getal', 'int', 'tekst', 'bit',
-	'goed', 'fout',
-	':', 'is',
-	'|', '&',
-	'>>', '<<',
-
-	-- func
-	'->', '@',
-
-	-- multi
-	'[]', '#', '||', '{}',
-	'..', 'xx',
-
-	-- tijd
-	'nu', 'start', 'beeld',
-	'\'',
-
-	-- meta
-	'.', 'onbekend', 'tijd',
-
-	-- converteer
-	'tekst', 'getal',
-
-	-- kleur
-	'kleur', 'rgb',
-	'rood', 'groen', 'blauw',
-	'geel', 'oranje', 'roze', 'cyaan',
-	'zwart', 'wit', 'grijs', 'lichtgrijs',
-	'donkergroen', 'donkerrood', 'donkerblauw',
-	'donkergeel', 'bruin', 'paars', 'magenta',
-
-	-- toetsenbord
-	'toets-links', 'toets-rechts', 'toets-omhoog', 'toets-omlaag',
-	'toets-w', 'toets-s', 'toets-d', 'toets-a',
-
-	'toets-spatie-aan', 'toets-spatie-uit',
-
-	-- tijdelijk
-	'index',
-}
-
-local bi = {',', 'getal', 'getal'}
-local mofn = {'->', 'getal', 'getal'}
-local bifn = {'->', bi, 'getal'}
-local vglfn = {'->', bi, 'bit'}
-local basis = {
-	['+'] = bifn,
-	['-'] = bifn,
-	['*'] = bifn,
-	['/'] = bifn,
-	['^'] = bifn,
-	['_'] = bifn,
-	['>'] = vglfn,
-	['<'] = vglfn,
-	['='] = vglfn,
-	[':='] = vglfn,
-	['>='] = vglfn,
-	['<='] = vglfn,
-	['[]'] = {'->', {'...'}, {'^', 'iets', 'int'}},
-	['{}'] = {'->', {'...'}, {'{}', 'iets', }},
-	['=>'] = {'->', 'iets', 'iets'},
-	['->'] = {'->', {',', 'iets', 'iets'}, {'->', 'iets', 'iets'}},
-	['sincos'] = {'->', 'getal', {'^', 'getal', '2'}}, -- 'getal -> getal^2'
-	['wortel'] = mofn,
-	['sin'] = mofn,
-	['cos'] = mofn,
-	['tan'] = mofn,
-	['som'] = {'->', {'^', 'getal', 'int'}, 'getal'},
-	['tau'] = 'getal',
-	['start'] = 'moment',
-	['nu'] = 'int',
-	['..'] = {'->', bifn, {'^', 'getal', 'int'}},
-	['var'] = {'->', {'{}', {'->', 'moment', 'getal'}}, 'getal'},
-	
-	['toets-rechts']	= {'^', 'getal', '600'},
-	['toets-links']		= {'^', 'getal', '600'},
-	['toets-omhoog']	= {'^', 'getal', '600'},
-	['toets-omlaag']	= {'^', 'getal', '600'},
-	['toets-spatie']	= {'^', 'getal', '600'},
-	['toets-spatie-aan'] = 'moment',
-	['toets-spatie-uit'] = 'moment',
-
-	-- impl
-	[':='] = {'->', {'iets', 'iets'}, 'ok'},
-	['+='] = {'->', {'iets', 'iets'}, 'ok'},
-	
-	-- hack
-	['start'] = 'getal',
-	['beeld'] = 'getal',
-}
-
 -- code in lisp formaat
 function vertaalJs(lispcode)
 	-- ontleed
@@ -209,14 +89,11 @@ function vertaal(code)
 	local bieb = ontleed(file('bieb.code'))
 	print('# Bieb')
 	local basis,fouten = typeer(bieb)
-	print('HALVERWEGE')
 	if print_typen then print() end
 	if fouten then
-		print('FOUTEN')
 		for i,fout in ipairs(fouten) do print(leed(fout)) end
 	end
-	if fouten then return nil, fouten end
-	print('KLAAR')
+	print()
 
 	-- typeer
 	print_typen = print_typen_bron
@@ -240,14 +117,8 @@ function vertaal(code)
 	-- extra info (vgl herschrijven)
 	local feiten = deduceer(feiten)
 
-	-- speel = bieb -> cirkels
-	local volgorde = {
-		van = bieb,
-		naar = 'cirkel',
-	}
-
 	local afh,map = berekenbaarheid(feiten)
-	local infostroom = afh:sorteer(bieb, 'cirkel')
+	local infostroom = afh:sorteer(bieb, 'stip')
 
 	print('# Infostroom')
 	print(infostroom:tekst())

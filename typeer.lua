@@ -258,6 +258,7 @@ function exptypeer(exp, typen)
 			t = 'fout'
 			--print(fa,fb,fab)
 			f = nil--fa or fb or fab or 'uhh'--leed(ta)..' != '..leed(tb)
+			f = fab
 		end
 
 	-- predicaat dat alleen van tijd afhangt
@@ -498,7 +499,7 @@ function typeer(feiten,typen)
 	end
 	for t,f in spairs(typen.fouten) do
 		if type(f) == 'boolean' then
-			print(color.yellow..'  '..leed(t)..color.white)
+			print(color.yellow..'  '..leed(t)..color.white..': '..leed(typen[t]))
 		end
 	end
 	print()

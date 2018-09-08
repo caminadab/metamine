@@ -32,9 +32,6 @@
 /* Bison declarations.  */
 %define api.value.type {node*}
 %token NAME
-%token GDGA ">="
-%token KDGA "<="
-%token DAN "=>"
 %token DAN "=>"
 %token TO "->"
 %token ASS ":="
@@ -45,6 +42,8 @@
 %token END 0 "invoereinde"
 %token NEG '-'
 %token IS '='
+%token GDGA ">="
+%token KDGA "<="
 %token OUD '\''
 %token TAB '\t'
 %token EN "en"
@@ -56,11 +55,13 @@
 %token DISJ '|'
 %token CONJ '&'
 
+%precedence NAME
 %left "=>"
 %left '='
 %left ":=" "+=" "-=" "|=" "&="
 %left "en" "of" "exof" "noch" "niet"
 %left "->"
+%left ','
 %left '<' '>' "<=" ">="
 
 %left '&' '|'
@@ -113,10 +114,10 @@ feit:
 single:
 	NAME
 | exp '%'							{ $$ = _exp2(a("%"), $1); }
-| exp '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
+| exp '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
 
 | '(' '^' ')'       	{ $$ = a("^"); }
 | '(' '_' ')'       	{ $$ = a("_"); }
@@ -124,6 +125,9 @@ single:
 | '(' '/' ')'       	{ $$ = a("/"); }
 | '(' '+' ')'       	{ $$ = a("+"); }
 | '(' '-' ')'       	{ $$ = a("-"); }
+| '(' '-' ')'       	{ $$ = a("-"); }
+| '(' '[' ']' ')'     { $$ = a("[]"); }
+| '(' '{' '}' ')'     { $$ = a("{}"); }
 
 | '(' "->" ')'				{ $$ = a("->"); }
 | '(' "||" ')'				{ $$ = a("||"); }
@@ -165,7 +169,7 @@ single:
 ;
 
 exp:
-	single
+	single %prec NAME
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '_' exp       	{ $$ = exp3(a("_"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -173,8 +177,7 @@ exp:
 | exp '+' exp       	{ $$ = exp3(a("+"), $1, $3); }
 | exp '-' exp       	{ $$ = exp3(a("-"), $1, $3); }
 
-| single ',' single "->" exp				{ $$ = exp3(a("->"), exp3(a(","), $1, $3), $5); }
-| exp "->" exp				{ $$ = exp3(a("->"), $1, $3); }
+| params "->" exp			{ $$ = exp3(a("->"), $1, $3); }
 | exp "||" exp				{ $$ = exp3(a("||"), $1, $3); }
 | exp ".." exp				{ $$ = exp3(a(".."), $1, $3); }
 | exp "xx" exp				{ $$ = exp3(a("xx"), $1, $3); }
@@ -229,4 +232,10 @@ setitems:
 items:
 	exp									{ $$ = _exp2(a("[]"), $1); }
 | items ',' exp				{ $$ = append($1, $3); }
+;
+
+params:
+	'(' exp ',' exp  ')'			{ $$ = exp3(a(","), $2, $4); }
+|	NAME												{ $$ = _exp2(a(","), $1); }
+/*|	params ',' NAME			{ $$ = append($1, $3); } */
 ;

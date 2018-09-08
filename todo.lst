@@ -1,7 +1,12 @@
 blok syntax
-partiÃle valuaties
-planning
-typesysteem als set
+partiele valuaties
+tijdsplanning stap
+typesysteem als set/gag
+positie meegeven van syntaxfout
+	meerder foutposities (a = 2, a = 3)
+alle wegen bewandelen bij het sorteren van de infograaf
+allocatie stap
+correct ontleden: f = int,int -> int
 
 assembly generatie
 zichzelf in taal

@@ -265,8 +265,8 @@ love.graphics.setColor = function(r,g,b,a)
 end
 
 function love.draw()
-	if cirkel and cirkel[0] and cirkel[1] then
-		love.graphics.circle('fill', cirkel[0], cirkel[1], cirkel[2] or 20)
+	if stip and stip[0] and stip[1] then
+		love.graphics.circle('fill', stip[0], stip[1], stip[2] or 20)
 	end
 ]]
 
