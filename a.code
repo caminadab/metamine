@@ -1,7 +1,3 @@
-;a := 0
-;a = a' + 1/60
-;a = (nu = start => 0) | (a' en niet(toets-spatie-aan) => a' + 1/60) | (toets-spatie-aan => 0)
+stip := 100 * [2,2]
 
-
-a = 1 + sincos nu
-stip = 100 * a
+;toets-rechts => (stip = stip' + 10)

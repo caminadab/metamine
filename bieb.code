@@ -31,19 +31,19 @@ som : getal^int -> getal
 wortel : getal -> getal
 
 ; toetsen
-toets-links : getal^600
-toets-rechts : getal^600
-toets-omhoog : getal^600
-toets-omlaag : getal^600
-toets-a : getal^600
-toets-s : getal^600
-toets-d : getal^600
-toets-f : getal^600
-toets-j : getal^600
-toets-k : getal^600
-toets-l : getal^600
-toets-puntkomma : getal^600
-toets-spatie : getal^600
+toets-links : bit
+toets-rechts : bit
+toets-omhoog : bit
+toets-omlaag : bit
+toets-a : bit
+toets-s : bit
+toets-d : bit
+toets-f : bit
+toets-j : bit
+toets-k : bit
+toets-l : bit
+toets-puntkomma : bit
+toets-spatie : bit
 toets-spatie-aan : bit
 toets-spatie-uit : bit
 
@@ -94,7 +94,7 @@ teken : int
 nu : getal
 start : getal
 beeld : getal
-(') : iets -> iets
+;(') : iets -> iets
 
 ; kleur
 kleur : int^3

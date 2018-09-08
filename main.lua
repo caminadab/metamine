@@ -175,15 +175,19 @@ toetsL[600] = (love.keyboard.isDown("l") and 1/60 or 0)
 		prevSpaceDown = false
 		toetsSpatieUit = true
 	end
-a0 = sincos(nu)
-a_0 = plus(1, a0[0])
-a_1 = plus(1, a0[1])
-stip_0 = keer(100, a_0)
-stip_1 = keer(100, a_1)
+stip0 = eq(nu, start)
+stip2_0 = 2
+stip2_1 = 2
+stip1_0 = keer(100, stip2_0)
+stip1_1 = keer(100, stip2_1)
+stip_0 = dan(stip0, stip1_0)
+stip_1 = dan(stip0, stip1_1)
 stip = {[0] = stip_0, stip_1}
-schaduw_a0 = a0
-schaduw_a_0 = a_0
-schaduw_a_1 = a_1
+schaduw_stip0 = stip0
+schaduw_stip2_0 = stip2_0
+schaduw_stip2_1 = stip2_1
+schaduw_stip1_0 = stip1_0
+schaduw_stip1_1 = stip1_1
 schaduw_stip_0 = stip_0
 schaduw_stip_1 = stip_1
 schaduw_stip = stip
@@ -201,13 +205,9 @@ function love.draw()
 	if stip and stip[0] and stip[1] then
 		love.graphics.circle('fill', stip[0], stip[1], stip[2] or 20)
 	end
-love.graphics.print(";a := 0\
-;a = a' + 1/60\
-;a = (nu = start => 0) | (a' en niet(toets-spatie-aan) => a' + 1/60) | (toets-spatie-aan => 0)\
+love.graphics.print("stip := 100 * [2,2]\
 \
-\
-a = 1 + sincos nu\
-stip = 100 * a\
+;toets-rechts => (stip = stip' + 10)\
 ", 500, 10)
 	local sx,sy = 10,310
 	local x,y = sx,sy

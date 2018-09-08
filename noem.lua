@@ -48,6 +48,7 @@ function berekenbaarheid(feiten)
 				map[pijl] = feit
 				hgraaf:link(pijl)
 			end
+
 		end
 	end
 	return hgraaf, map

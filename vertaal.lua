@@ -37,9 +37,17 @@ end
 function suikervrij(feiten)
 	local r = {}
 	for i,feit in ipairs(feiten) do
+
+		-- start
 		if feit[1] == ':=' then
 			local a,b = feit[2],feit[3]
 			r[i] = {'=', a, {'=>', {'=', 'nu', 'start'}, b}}
+
+		-- => omschrijffe
+		elseif feit[1] == '=>' and isexp(feit[3]) and feit[3][1] == '=' then
+			r[i] = {'=', feit[3][2], {'=>', feit[2], feit[3][3]}}
+
+		-- inc
 		elseif feit[1] == '+=' then
 			--		a += 1
 			-- =>	a = (beeld => a' + 1 / 60)
