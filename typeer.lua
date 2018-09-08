@@ -454,11 +454,13 @@ function exptypeer(exp, typen)
 	-- print de typen
 	if print_typen then
 		if t and not tonumber(exp) then
-			print(leed(exp)..':\t'..color.yellow..leed(t)..color.white)
+			io.write(color.yellow, leed(t), color.white)
+			io.write('\t', leed(exp), '\n')
 		end
 		for exp,t in spairs(T) do
 			if t and not tonumber(exp) and not typen[exp] then
-				print('  '..leed(exp)..':\t'..color.yellow..leed(t)..color.white)
+				io.write(color.yellow, leed(t), color.white)
+				io.write('\t', leed(exp), '\n')
 			end
 		end
 	end
