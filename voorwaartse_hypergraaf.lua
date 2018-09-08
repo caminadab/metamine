@@ -99,7 +99,7 @@ function voorwaartse_hypergraaf()
 	}
 end
 
-if true or test then
+if test then
 	local graaf = voorwaartse_hypergraaf()
 	graaf:link({a = true}, 'b')
 	assert(graaf:naar('b')().van.a)
@@ -115,13 +115,5 @@ if true or test then
 	graaf:link({a = true}, 'b')
 	graaf:link({b = true}, 'c')
 	graaf:link({c = true}, 'a')
-	print('# Graaf')
-	print(graaf:tekst())
-	print()
 	local stroom = graaf:sorteer({a=true}, 'c')
-	print('# Stroom')
-	print(stroom:tekst())
-	print()
-	--assert(next(stroom.pijlen).van.a)
-
 end

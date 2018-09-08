@@ -152,11 +152,9 @@ function uitrol(stroom, typen)
 
 	-- laatste maken
 	local doel = stroom[#stroom][2]
-	for n,v in spairs(uitgerold) do print('uitgerold',n,v) end
 	if uitgerold[doel] then
 		-- inrollen
 		local a = {'[]'}
-		print(uitgerold[doel])
 		for i=1,uitgerold[doel] do
 			local index = tostring(i-1)
 			a[#a+1] = doel..'_'..index

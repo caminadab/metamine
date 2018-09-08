@@ -118,9 +118,11 @@ function vertaal(code)
 	local afh,map = berekenbaarheid(feiten)
 	local infostroom = afh:sorteer(bieb, 'stip')
 
-	print('# Infostroom')
-	print(infostroom:tekst())
-	print()
+	if print_infostroom then
+		print('# Infostroom')
+		print(infostroom:tekst())
+		print()
+	end
 
 	-- terugmappen
 	local stroom = {}
@@ -140,6 +142,12 @@ function vertaal(code)
 
 	-- breid uit
 	local stroom = uitrol(stroom, typen)
+
+	if print_pseudocode then
+		for i,ass in ipairs(stroom) do
+			print(leed(ass))
+		end
+	end
 
 	return stroom, typen
 end

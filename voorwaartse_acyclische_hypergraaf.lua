@@ -103,7 +103,6 @@ local function topologisch(graaf, map)
 			return nil,nil
 		end
 		local pijl,doel = topo[i],topo[i].naar
-		print(pijl2tekst(pijl))
 		-- topo[i].naar
 		i = i + 1
 		return pijl,doel

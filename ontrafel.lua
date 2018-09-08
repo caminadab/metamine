@@ -34,7 +34,7 @@ function ontrafel(flow)
 		ontrafel0(exp,name,asm)
 	end
 
-	local log = print --function()end
+	local log = function()end
 	log('# Ontrafel')
 	for i,v in ipairs(asm) do
 		log(v[2],'= '..unlisp(v[3]))

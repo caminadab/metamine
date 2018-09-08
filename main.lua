@@ -175,34 +175,14 @@ toetsL[600] = (love.keyboard.isDown("l") and 1/60 or 0)
 		prevSpaceDown = false
 		toetsSpatieUit = true
 	end
-a1 = eq(nu, start)
-a0 = dan(a1, 0)
-a5 = schaduw_a or a
-a6 = not(toetsSpatieAan)
-a4 = en(a5, a6)
-a8 = schaduw_a or a
-a9 = (1/60)
-a7 = plus(a8, a9)
-a3 = dan(a4, a7)
-a10 = dan(toetsSpatieAan, 0)
-a2 = combineer(a3, a10)
-a = combineer(a0, a2)
+a0 = math.sin(nu)
+a = plus(1, a0)
 stip0_0 = a
 stip0_1 = a
 stip_0 = keer(100, stip0_0)
 stip_1 = keer(100, stip0_1)
 stip = {[0] = stip_0, stip_1}
-schaduw_a1 = a1
 schaduw_a0 = a0
-schaduw_a5 = a5
-schaduw_a6 = a6
-schaduw_a4 = a4
-schaduw_a8 = a8
-schaduw_a9 = a9
-schaduw_a7 = a7
-schaduw_a3 = a3
-schaduw_a10 = a10
-schaduw_a2 = a2
 schaduw_a = a
 schaduw_stip0_0 = stip0_0
 schaduw_stip0_1 = stip0_1
@@ -225,8 +205,9 @@ function love.draw()
 	end
 love.graphics.print(";a := 0\
 ;a = a' + 1/60\
+;a = (nu = start => 0) | (a' en niet(toets-spatie-aan) => a' + 1/60) | (toets-spatie-aan => 0)\
 \
-a = (nu = start => 0) | (a' en niet(toets-spatie-aan) => a' + 1/60) | (toets-spatie-aan => 0)\
+a = 1 + sin nu\
 \
 stip = 100 * [a,a]\
 ", 500, 10)

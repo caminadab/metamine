@@ -82,7 +82,6 @@ end
 function leed(exp)
 	local exp = exp or 'onbekend'
 	local t = leedwerk(exp, {})
-	t[#t+1] = color.white
 	return table.concat(t)
 end
 
@@ -388,7 +387,6 @@ function exptypeer(exp, typen)
 
 	-- functie
 	elseif issimpel1(tfn) or issimpel2(tfn) or lijstlen(tfn) then
-		print('IS SIMPEL', leed(tfn))
 		if ta and ta[1] == '^' then
 			a,b = b,a
 			ta,tb = tb,ta
@@ -522,10 +520,9 @@ function typeer(feiten,typen)
 	end
 	for t,f in spairs(typen.fouten) do
 		if type(f) == 'boolean' then
-			print(color.yellow..'  '..leed(t)..color.white..': '..leed(typen[t]))
+			print(color.purple..leed(t)..': '..leed(typen[t])..color.white)
 		end
 	end
-	print()
 
 	if typen.aantalOnbekend > 0 then
 		for k,v in spairs(typen) do

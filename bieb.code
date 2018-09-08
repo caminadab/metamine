@@ -48,11 +48,10 @@ toets-spatie-aan : bit
 toets-spatie-uit : bit
 
 ; logica
-als : iets
-bit : iets
+bit : int
 ja : bit
 nee : bit
-ok : iets
+;ok : iets
 
 (niet) : bit -> bit
 (en) : bit,bit -> bit
@@ -73,14 +72,14 @@ noch : bit,bit -> bit
 
 goed : bit
 ;fout : bit
-getal : iets
+;getal : iets
 int : getal
 bit : int
 tekst : teken^int
 teken : int
 
 ; functioneel
-(->) : iets,iets -> (iets -> iets)
+;(->) : iets,iets -> (iets -> iets)
 (@) : (iets->iets),(iets->iets) -> (iets->iets)
 
 ; collectie
@@ -121,9 +120,7 @@ in : (iets,iets) -> ok
 ;(>>) : (iets,iets) -> iets
 ;(<<) : (iets,iets) -> iets
 
-onbekend : iets
-tijd : iets
-(.) : iets,iets -> iets
+;(.) : iets,iets -> iets
 (') : iets -> iets
 
 ; geo
