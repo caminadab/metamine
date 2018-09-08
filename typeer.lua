@@ -19,14 +19,14 @@ local function issimpel1(t)
 	if not isexp(t) then return false end
 	local argn = t[2]
 	local mono = isexp(argn) and #argn == 2 and issimpel(argn[2])
-	return isexp(t) and t[1] == '->' and mono
+	return t[1] == '->' and mono and issimpel(t[3])
 end
 
 local function issimpel2(t)
 	if not isexp(t) then return false end
 	local argn = t[2]
 	local bi = isexp(argn) and #argn == 3 and issimpel(argn[2]) and issimpel(argn[3])
-	return isexp(t) and t[1] == '->' and bi
+	return t[1] == '->' and bi and issimpel(t[3])
 end
 
 local dichtbij = {['^']=true,['_']=true,['.']=true,['..']=true}
@@ -387,6 +387,13 @@ function exptypeer(exp, typen)
 
 	-- functie
 	elseif issimpel1(tfn) or issimpel2(tfn) or lijstlen(tfn) then
+		if exp[1] == 'sincos' then
+			print('jahoor', leed(tfn))
+			if issimpel2(tfn) then
+				print('IS SIMPEL', leed(tfn))
+			end
+		end
+
 		if ta and ta[1] == '^' then
 			a,b = b,a
 			ta,tb = tb,ta
@@ -445,6 +452,11 @@ function exptypeer(exp, typen)
 		else
 			t = {'^', ti, lengte}
 		end
+	
+	-- onvectoriseerbare functie
+	else
+		t = tfn and tfn[3]
+
 	end
 
 	local t,f0 = verenig_en(t, typen[exp])

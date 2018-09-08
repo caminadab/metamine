@@ -49,7 +49,7 @@ local function som(a)
 	return som
 end
 local function sincos(hoek)
-	return {math.cos(hoek), math.sin(hoek)}
+	return {[0]=math.cos(hoek), math.sin(hoek)}
 end
 
 local function dan(cond,v)
@@ -175,17 +175,15 @@ toetsL[600] = (love.keyboard.isDown("l") and 1/60 or 0)
 		prevSpaceDown = false
 		toetsSpatieUit = true
 	end
-a0 = math.sin(nu)
-a = plus(1, a0)
-stip0_0 = a
-stip0_1 = a
-stip_0 = keer(100, stip0_0)
-stip_1 = keer(100, stip0_1)
+a0 = sincos(nu)
+a_0 = plus(1, a0[0])
+a_1 = plus(1, a0[1])
+stip_0 = keer(100, a_0)
+stip_1 = keer(100, a_1)
 stip = {[0] = stip_0, stip_1}
 schaduw_a0 = a0
-schaduw_a = a
-schaduw_stip0_0 = stip0_0
-schaduw_stip0_1 = stip0_1
+schaduw_a_0 = a_0
+schaduw_a_1 = a_1
 schaduw_stip_0 = stip_0
 schaduw_stip_1 = stip_1
 schaduw_stip = stip
@@ -207,9 +205,9 @@ love.graphics.print(";a := 0\
 ;a = a' + 1/60\
 ;a = (nu = start => 0) | (a' en niet(toets-spatie-aan) => a' + 1/60) | (toets-spatie-aan => 0)\
 \
-a = 1 + sin nu\
 \
-stip = 100 * [a,a]\
+a = 1 + sincos nu\
+stip = 100 * a\
 ", 500, 10)
 	local sx,sy = 10,310
 	local x,y = sx,sy

@@ -196,7 +196,7 @@ local function som(a)
 	return som
 end
 local function sincos(hoek)
-	return {math.cos(hoek), math.sin(hoek)}
+	return {[0]=math.cos(hoek), math.sin(hoek)}
 end
 
 local function dan(cond,v)
