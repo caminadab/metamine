@@ -46,6 +46,8 @@ int yylex() {
 	else if (!memcmp(cc, "||", 2))	{ strcpy(token, "||"); in++; id = CAT; }
 	else if (!memcmp(cc, "..", 2))	{ strcpy(token, ".."); in++; id = TIL; }
 	else if (!memcmp(cc, "xx", 2))	{ strcpy(token, "xx"); in++; id = CART; }
+	else if (!memcmp(cc, ">=", 2))	{ strcpy(token, ">="); in++; id = GDGA; }
+	else if (!memcmp(cc, "<=", 2))	{ strcpy(token, "<="); in++; id = KDGA; }
 	else if (!memcmp(cc, "=>", 2))	{ strcpy(token, "=>"); in++; id = DAN; }
 	else if (!memcmp(cc, ":=", 2))	{ strcpy(token, ":="); in++; id = ASS; }
 	else if (!memcmp(cc, "+=", 2))	{ strcpy(token, "+="); in++; id = INC; }

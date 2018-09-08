@@ -474,7 +474,7 @@ end
 
 -- invoer: print_typen
 function typeer(feiten,typen)
-	local typen = typen or {aantalOnbekend = 0,fouten = {}}
+	local typen = typen or {fouten = {}}
 	local vroegerOnbekend = 999999
 
 	while true do
@@ -520,7 +520,7 @@ function typeer(feiten,typen)
 	-- alles na gaan
 	if print_typen then
 		for i,feit in ipairs(feiten) do
-			--print_onbekende_typen(feit, typen)
+			print_onbekende_typen(feit, typen)
 		end
 	end
 

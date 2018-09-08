@@ -63,8 +63,8 @@ noch : bit,bit -> bit
 
 ; vergelijking
 (=) : iets,iets -> bit
-(!=) : iets,iets -> bit
-(~=) : iets,iets -> bit
+;(!=) : iets,iets -> bit
+;(~=) : iets,iets -> bit
 ;(:=) : iets,iets -> bit
 (>) : iets,iets -> bit
 (<) : iets,iets -> bit
@@ -72,7 +72,7 @@ noch : bit,bit -> bit
 (<=) : iets,iets -> bit
 
 goed : bit
-fout : bit
+;fout : bit
 getal : iets
 int : getal
 bit : int
@@ -114,14 +114,12 @@ paars : kleur
 magenta : kleur
 
 ; divers
-goed : bit
-fout : bit
 (:) : iets,iets -> ok
 in : iets,iets -> ok
 (|) : iets,iets -> iets
 (&) : iets,iets -> iets
-(>>) : iets,iets -> iets
-(<<) : iets,iets -> iets
+;(>>) : iets,iets -> iets
+;(<<) : iets,iets -> iets
 
 onbekend : iets
 tijd : iets

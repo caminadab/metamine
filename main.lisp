@@ -1,1 +1,1 @@
-((:= cirkel (* 100 fout)))
+none

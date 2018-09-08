@@ -205,6 +205,19 @@ function vertaal(code)
 		return
 	end
 
+	-- bieb
+	local bieb = ontleed(file('bieb.code'))
+	print('# Bieb')
+	local basis,fouten = typeer(bieb)
+	print('HALVERWEGE')
+	if print_typen then print() end
+	if fouten then
+		print('FOUTEN')
+		for i,fout in ipairs(fouten) do print(leed(fout)) end
+	end
+	if fouten then return nil, fouten end
+	print('KLAAR')
+
 	-- typeer
 	print_typen = print_typen_bron
 	if print_typen then print('# Typen') end

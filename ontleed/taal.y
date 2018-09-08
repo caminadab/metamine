@@ -32,6 +32,9 @@
 /* Bison declarations.  */
 %define api.value.type {node*}
 %token NAME
+%token GDGA ">="
+%token KDGA "<="
+%token DAN "=>"
 %token DAN "=>"
 %token TO "->"
 %token ASS ":="
@@ -115,7 +118,6 @@ single:
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
 
-| '(' '^' ')'					{ $$ = a("+"); }
 | '(' '^' ')'       	{ $$ = a("^"); }
 | '(' '_' ')'       	{ $$ = a("_"); }
 | '(' '*' ')'       	{ $$ = a("*"); }
@@ -153,6 +155,9 @@ single:
 
 | '(' '.' ')'       	{ $$ = a("."); }
 | '(' '@' ')'       	{ $$ = a("@"); }
+| '(' ':' ')'       	{ $$ = a(":"); }
+| '(' ">>" ')'       	{ $$ = a(">>"); }
+| '(' "<<" ')'       	{ $$ = a("<<"); }
 
 |	'(' error ')'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
 |	'[' error ']'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
