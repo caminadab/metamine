@@ -31,7 +31,8 @@
 
 /* Bison declarations.  */
 %define api.value.type {node*}
-%token NAME
+%token NAAM
+%token TEKST
 %token DAN "=>"
 %token TO "->"
 %token ASS ":="
@@ -55,7 +56,7 @@
 %token DISJ '|'
 %token CONJ '&'
 
-%precedence NAME
+%precedence NAAM TEKST
 %left "=>"
 %left '='
 %left ":=" "+=" "-=" "|=" "&="
@@ -112,7 +113,8 @@ feit:
 ;
 
 single:
-	NAME
+	NAAM 
+| TEKST								{ $$ = tekst($1); }
 | exp '%'							{ $$ = _exp2(a("%"), $1); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
@@ -170,7 +172,7 @@ single:
 ;
 
 exp:
-	single %prec NAME
+	single %prec NAAM
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '_' exp       	{ $$ = exp3(a("_"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -238,6 +240,7 @@ items:
 
 params:
 	'(' exp ',' exp  ')'			{ $$ = exp3(a(","), $2, $4); }
-|	NAME												{ $$ = _exp2(a(","), $1); }
-/*|	params ',' NAME			{ $$ = append($1, $3); } */
+|	NAAM												{ $$ = _exp2(a(","), $1); }
+|	TEKST												{ $$ = _exp2(a(","), $1); }
+/*|	params ',' NAAM			{ $$ = append($1, $3); } */
 ;

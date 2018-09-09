@@ -93,6 +93,18 @@ node* append(node* exp, node* atom) {
 	return exp;
 }
 
+node* tekst(node* str0) {
+	char* str = str0->data;
+	node* t = exp1(a("[]"));
+	for (int i = 1; str[i] != '"' && str[i]; i++) {
+		char ch[16];
+		//itoa(str[i], 
+		sprintf(ch, "%d", str[i]);
+		t = append(t, a(ch));
+	}
+	return t;
+}
+
 node* exp0() {
 	node* n = node_new();
 	n->exp = true;
