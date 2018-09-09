@@ -20,17 +20,15 @@ local fn = {
 	['..'] = function(a,b)
 		local r = {}
 		for i=a,b-1 do
-			r[i-a] = i
+			r[i-a+1] = i
 		end
 		return r
 	end;
 
 	['||'] = function(a,b)
-		local j = 0
+		local j = 1
 		local t = {}
-		if a[0] then t[j] = a[0]; j=j+1 end
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
-		if b[0] then t[j] = b[0]; j=j+1 end
 		for i,v in ipairs(b) do t[j] = v; j=j+1 end
 		return t
 	end;
@@ -103,7 +101,7 @@ function eval0(env,exp)
 		end
 		
 		if type(r[1]) == 'table' then
-			return r[1][r[2]]
+			return r[1][r[2]+1]
 		end
 
 		if type(r[1]) ~= 'function' then
@@ -244,16 +242,9 @@ function doe(stroom)
 		if type(naam) == 'table' then
 			local naam,it = naam[1],naam[2]
 
-			-- lengte
-			if env[it][0] == nil then
-				len = 0
-			else
-				len = #env[it]+1
-			end
-
 			env[naam] = {}
-			for i=0,len-1 do
-				env[it] = i
+			for i=1,#it do
+				env[it] = env[it]
 				env[naam][i] = eval0(env, exp)
 			end
 			env[it] = nil
@@ -263,12 +254,12 @@ function doe(stroom)
 			env[naam] = eval0(env, exp)
 
 		end
+		print('GEDAAN',unlisp(exp))
 	end
 
 	local uit = env['uit']
 	if type(uit) == 'table' then
-		if not uit[0] then return '' end
-		uit = string.char(uit[0],table.unpack(uit))
+		uit = string.char(table.unpack(uit))
 	end
 	return uit
 end
