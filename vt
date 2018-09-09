@@ -18,7 +18,7 @@ print_syntax = false
 print_losse_waarden = false
 print_suikervrij = false
 print_deducties = false
-print_infostroom = false
+print_infostroom = true
 print_pseudocode = true
 
 -- argumenten

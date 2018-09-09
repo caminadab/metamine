@@ -76,6 +76,10 @@ function leedwerk(exp, t, arg)
 		if not dichtbij[exp[1]] then t[#t+1] = ' ' end
 		leedwerk(exp[3], t, true)
 	end
+	if isexp(exp) and exp[';'] then
+		t[#t+1] = '\t; '
+		t[#t+1] = exp[';']
+	end
 	return t
 end
 
@@ -128,7 +132,7 @@ local function verenig_of(ta, tb)
 		return tb
 	end
 
-	return 'fout', leed(ta)..' != '..leed(tb)
+	return 'fout', leed(ta)..' !!= '..leed(tb)
 end
 assert(verenig_of('2', 'int') == 'int')
 assert(verenig_of('2', '3') == 'int', verenig_of('2','3'))
@@ -168,13 +172,13 @@ local function verenig_en(ta, tb)
 	if tonumber(tb) then ta,tb = tb,ta end
 
 	if tonumber(ta) and tonumber(tb) and ta ~= tb then
-		return 'fout', leed(ta)..' != '..tb
+		return 'fout', leed(ta)..' !!= '..tb
 	end
 	if tonumber(ta) and (tb == 'getal' or tb == 'int') then
 		return ta
 	end
 
-	return 'fout', leed(ta)..' != '..leed(tb)
+	return 'fout', leed(ta)..' !!= '..leed(tb)
 end
 
 assert(verenig_en('2', 'int') == '2')
@@ -238,6 +242,18 @@ function exptypeer(exp, typen)
 	-- of
 	elseif exp[1] == '|' then
 		t,f = verenig_en(ta,tb)
+
+	-- cat
+	elseif exp[1] == '||' then
+		local el = verenig_of(ta[2], tb[2])
+		local la = lijstlen(ta)
+		local lb = lijstlen(tb)
+		local len = verenig_of(la,lb)
+		if tonumber(la) and tonumber(lb) then
+			len = la + lb
+		end
+		--local el = verenig_of(ta,tb)
+		t,f = {'^', el, len}
 
 	-- schaduw
 	elseif exp[1] == "'" then
@@ -387,13 +403,6 @@ function exptypeer(exp, typen)
 
 	-- functie
 	elseif issimpel1(tfn) or issimpel2(tfn) or lijstlen(tfn) then
-		if exp[1] == 'sincos' then
-			print('jahoor', leed(tfn))
-			if issimpel2(tfn) then
-				print('IS SIMPEL', leed(tfn))
-			end
-		end
-
 		if ta and ta[1] == '^' then
 			a,b = b,a
 			ta,tb = tb,ta

@@ -114,7 +114,7 @@ magenta : kleur
 
 ; divers
 (:) : (iets,iets) -> ok
-in : (iets,iets) -> ok
+;in : (iets,iets) -> ok
 (|) : (iets,iets) -> iets
 (&) : (iets,iets) -> iets
 ;(>>) : (iets,iets) -> iets

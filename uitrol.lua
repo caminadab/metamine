@@ -1,7 +1,7 @@
 require 'symbool'
 require 'typeer'
 
-max_uitrol_lengte = 8
+max_uitrol_lengte = 0
 
 function subst(exp, van, naar)
 	if isatoom(exp) then
@@ -75,16 +75,17 @@ function uitrol(stroom, typen)
 
 			-- lijst
 			if isexp(val) and val[1] == '[]' then
-				----[[
 				-- uitgerold
-				uitgerold[naam] = #val-1
-				local stam = naam
-				for i=2,#val do
-					local naam = stam..'_'..(i-2)
-					r[#r+1] = {':=', naam, val[i], [';'] = 'lijst'}
+				if #val <= max_uitrol_lengte then
+					uitgerold[naam] = #val-1
+					local stam = naam
+					for i=2,#val do
+						local naam = stam..'_'..(i-2)
+						r[#r+1] = {':=', naam, val[i], [';'] = 'lijst'}
+					end
+				else
+					r[#r+1] = {':=', naam, val} 
 				end
-				--]]
-				--r[#r+1] = {':=', naam, val} 
 
 			-- kleine loopjes
 			elseif tfn and isexp(val) and

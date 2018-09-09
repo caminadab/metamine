@@ -136,6 +136,7 @@ function vertaal(code, vt_doel)
 	local stroom = {}
 	for pijl,naar in infostroom:topologisch(map) do
 		stroom[#stroom+1] = map[pijl]
+		print('PIJL',pijl2tekst(pijl), leed(map[pijl]))
 	end
 
 	-- makkelijker maken
