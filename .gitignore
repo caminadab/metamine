@@ -4,6 +4,7 @@ ontleed/taal.c
 ontleed/taal.h
 
 bin/
+*.so
 *.dll
 
 *.stackdump

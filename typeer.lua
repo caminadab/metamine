@@ -56,6 +56,8 @@ function leedwerk(exp, t, arg)
 	elseif exp[1] == "'" or exp[1] == '%' then
 		leedwerk(exp[2], t)
 		t[#t+1] = exp[1]
+
+	-- lijst
 	elseif exp[1] == '[]' then
 		t[#t+1] = '['
 		for i=2,#exp do
@@ -65,10 +67,14 @@ function leedwerk(exp, t, arg)
 			end
 		end
 		t[#t+1] = ']'
+
+	-- sin a
 	elseif #exp == 2 then
+		t[#t+1] = '('
 		leedwerk(exp[1], t)
 		t[#t+1] = ' '
 		leedwerk(exp[2], t, true)
+		t[#t+1] = ')'
 	elseif #exp == 3 then
 		leedwerk(exp[2], t, true)
 		if not dichtbij[exp[1]] then t[#t+1] = ' ' end

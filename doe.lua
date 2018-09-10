@@ -99,19 +99,20 @@ function eval0(env,exp)
 		for i=1,#exp do
 			r[i] = eval0(env,exp[i])
 		end
+		local f,a,b = r[1],r[2],r[3]
 		
 		if type(r[1]) == 'table' then
-			return r[1][r[2]+1]
+			return f[a]
 		end
 
 		if type(r[1]) ~= 'function' then
-			error('geen functie: '..tostring(r[1])..' '..unlisp(exp))
+			error('geen functie: '..tostring(f)..' '..unlisp(exp))
 		end
 
 		-- functie
 		local t = {}
 		for i=2,#r do t[i-1] = r[i] end
-		return r[1](table.unpack(t))
+		return f(table.unpack(t))
 	end
 end
 
@@ -237,15 +238,25 @@ function doe(stroom)
 	local env = {}
 	for i,noem in ipairs(stroom) do
 		local naam,exp = noem[2],noem[3]
+		print('DOE', leed(noem))
 
 		-- lus
 		if type(naam) == 'table' then
-			local naam,it = naam[1],naam[2]
+			local naam,itnaam = naam[1],naam[2]
+			local it = env[itnaam]
+			if not it or type(it) ~= 'table' then
+				error('ongeldige lus '..itnaam)
+			end
 
-			env[naam] = {}
-			for i=1,#it do
-				env[it] = env[it]
-				env[naam][i] = eval0(env, exp)
+			env[naam] = env[naam] or {}
+			local naar = env[naam]
+
+			for i = 1,#it do
+				print('it', it[i])
+				env[itnaam] = it[i]
+				print('eval0', unlisp(exp))
+				naar[i] = eval0(env, exp)
+				print('naar',naar[i])
 			end
 			env[it] = nil
 
@@ -254,7 +265,7 @@ function doe(stroom)
 			env[naam] = eval0(env, exp)
 
 		end
-		print('GEDAAN',unlisp(exp))
+		print('GEDAAN',unlisp(env[naam]))
 	end
 
 	local uit = env['uit']
