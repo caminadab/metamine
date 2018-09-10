@@ -249,8 +249,13 @@ function exptypeer(exp, typen)
 	elseif exp[1] == '|' then
 		t,f = verenig_en(ta,tb)
 
+	-- len
+	elseif exp[1] == '#' then
+		t = 'int'
+		--if isexp(ta) then return ta[3] end
+
 	-- cat
-	elseif exp[1] == '||' then
+	elseif exp[1] == '||' and ta and tb then
 		local el = verenig_of(ta[2], tb[2])
 		local la = lijstlen(ta)
 		local lb = lijstlen(tb)

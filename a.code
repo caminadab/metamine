@@ -1,3 +1,8 @@
-in = [3] || "hoi"
-uit = in (1 .. 4)
+; inpakken
+bericht = "hoi"
+data = [# bericht] || bericht
 
+; uitpakken
+len = data 0
+inhoud = data(1+(0..len))
+uit = "inhoud: " || inhoud

@@ -238,7 +238,7 @@ function doe(stroom)
 	local env = {}
 	for i,noem in ipairs(stroom) do
 		local naam,exp = noem[2],noem[3]
-		print('DOE', leed(noem))
+		--print('DOE',leed(noem))
 
 		-- lus
 		if type(naam) == 'table' then
@@ -252,11 +252,8 @@ function doe(stroom)
 			local naar = env[naam]
 
 			for i = 1,#it do
-				print('it', it[i])
 				env[itnaam] = it[i]
-				print('eval0', unlisp(exp))
 				naar[i] = eval0(env, exp)
-				print('naar',naar[i])
 			end
 			env[it] = nil
 
@@ -265,7 +262,6 @@ function doe(stroom)
 			env[naam] = eval0(env, exp)
 
 		end
-		print('GEDAAN',unlisp(env[naam]))
 	end
 
 	local uit = env['uit']

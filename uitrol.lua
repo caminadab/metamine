@@ -96,17 +96,21 @@ function uitrol(stroom, typen)
 					local inaam = naam..'_i'
 
 					-- lengte
-					local lijst
+					local lijst, noot
 
 					if n then
 						lijst = {'..', '0', n}
 					else
 						for bron in spairs(var(val)) do
 							local len = lijstlen(typen[bron])
-							if tonumber(len) then
+							if bron == val[1] then
+								-- niets
+							elseif tonumber(len) then
+								noot = 'statische lengte van bron "'..bron..'"'
 								lijst = {'..', '0', tostring(len)}
 								break
 							else
+								noot = 'dynamische lengte van bron "'..bron..'"'
 								lijst = {'..', '0', {'#', bron}}
 								break
 							end
@@ -117,7 +121,7 @@ function uitrol(stroom, typen)
 					-- goed
 					if lijst then
 
-						r[#r+1] = {':=', inaam, lijst, [';'] = 'aggr'}
+						r[#r+1] = {':=', inaam, lijst, [';'] = noot}
 						r[#r+1] = loop_subst(val, {naam, inaam}, inaam, typen, uitgerold)
 
 					-- fout
