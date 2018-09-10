@@ -9,10 +9,8 @@ local fn = {
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
-	['[]'] = function(a,...)
-		local t = table.pack(...)
-		t[0] = a
-		return t
+	['[]'] = function(...)
+		return table.pack(...)
 	end,
 
 	['#'] = function(a) return #a end;
@@ -101,10 +99,12 @@ function eval0(env,exp)
 		end
 		local f,a,b = r[1],r[2],r[3]
 		
+		-- tabel
 		if type(r[1]) == 'table' then
-			return f[a]
+			return f[a+1]
 		end
 
+		-- aanroep
 		if type(r[1]) ~= 'function' then
 			error('geen functie: '..tostring(f)..' '..unlisp(exp))
 		end
