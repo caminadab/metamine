@@ -8,6 +8,7 @@ require 'typeer'
 require 'uitrol'
 require 'voorwaartse_hypergraaf'
 require 'ontrafel'
+require 'plan'
 
 require 'js'
 
@@ -156,6 +157,9 @@ function vertaal(code)
 			print(leed(ass))
 		end
 	end
+
+	-- lekker plannen
+	local tijdstroom = plan(stroom)
 
 	return stroom, typen
 end
