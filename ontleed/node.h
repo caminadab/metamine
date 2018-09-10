@@ -29,3 +29,4 @@ node* exp3(node* a, node* b, node* c);
 node* exp4(node* a, node* b, node* c, node* d);
 void node_assign(node* new, node* old);
 node* node_copy(node* orig);
+node* tekst(node* str);

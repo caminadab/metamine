@@ -9,21 +9,27 @@ local fn = {
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
-	['[]'] = function(...) return table.pack(...) end;
+	['[]'] = function(a,...)
+		local t = table.pack(...)
+		t[0] = a
+		return t
+	end,
+
 	['#'] = function(a) return #a end;
 	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
 	['..'] = function(a,b)
 		local r = {}
 		for i=a,b-1 do
-			r[#r+1] = i
+			r[i-a+1] = i
 		end
 		return r
 	end;
 
 	['||'] = function(a,b)
+		local j = 1
 		local t = {}
-		for i,v in ipairs(a) do t[#t+1] = v end
-		for i,v in ipairs(b) do t[#t+1] = v end
+		for i,v in ipairs(a) do t[j] = v; j=j+1 end
+		for i,v in ipairs(b) do t[j] = v; j=j+1 end
 		return t
 	end;
 
@@ -63,6 +69,7 @@ local fn = {
 		end
 		return table.pack(string.byte(tostring(a),1,#tostring(a)))
 	end;
+
 	['getal'] = function(a)
 		return tonumber(string.char(table.unpack(a)))
 	end;
@@ -92,20 +99,16 @@ function eval0(env,exp)
 		for i=1,#exp do
 			r[i] = eval0(env,exp[i])
 		end
+		
 		if type(r[1]) == 'table' then
-			local x = {}
-			if type(r[2]) == 'number' then
-				x = r[1][r[2]+1]
-			else
-				for i,v in ipairs(r[2]) do
-					x[#x+1] = r[1][v+1]
-				end
-			end
-			return x
+			return r[1][r[2]+1]
 		end
+
 		if type(r[1]) ~= 'function' then
 			error('geen functie: '..tostring(r[1])..' '..unlisp(exp))
 		end
+
+		-- functie
 		local t = {}
 		for i=2,#r do t[i-1] = r[i] end
 		return r[1](table.unpack(t))
@@ -234,9 +237,29 @@ function doe(stroom)
 	local env = {}
 	for i,noem in ipairs(stroom) do
 		local naam,exp = noem[2],noem[3]
-		env[naam] = eval0(env, exp)
+
+		-- lus
+		if type(naam) == 'table' then
+			local naam,it = naam[1],naam[2]
+
+			env[naam] = {}
+			for i=1,#it do
+				env[it] = env[it]
+				env[naam][i] = eval0(env, exp)
+			end
+			env[it] = nil
+
+		-- geen lus
+		else
+			env[naam] = eval0(env, exp)
+
+		end
+		print('GEDAAN',unlisp(exp))
 	end
+
 	local uit = env['uit']
-	if type(uit) == 'table' then uit = string.char(table.unpack(uit)) end
+	if type(uit) == 'table' then
+		uit = string.char(table.unpack(uit))
+	end
 	return uit
 end

@@ -45,6 +45,7 @@ function berekenbaarheid(feiten)
 			-- 1 + 2 = b
 			if isvar(b) then
 				local pijl = {van = var(a), naar = b}
+				local feit = {feit[1],feit[3],feit[2]}
 				map[pijl] = feit
 				hgraaf:link(pijl)
 			end

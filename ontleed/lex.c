@@ -36,6 +36,24 @@ int yylex() {
 		return TAB;
 	}
 
+	// tekst
+	if (c == '"') {
+		int i = 0;
+		// begin
+		token[i++] = c;
+		c = *in++;
+		while (c != '"' && c) {
+			token[i++] = c;
+			c = *in++;
+		}
+		// eind
+		token[i++] = c;
+		// sluiter
+		token[i++] = 0;
+		yylval = a(token);
+		return TEKST;
+	}
+
 	// klaar
 	if (!c)
 		return 0;
@@ -75,7 +93,7 @@ int yylex() {
 		in--;
 		token[i] = 0;
 		yylval = a(token);
-		return NAME;
+		return NAAM;
 	}
 
 	

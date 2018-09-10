@@ -30,11 +30,14 @@ void yyreset() {
 	wortel = 0;
 }
 
-
 char* ontleed(char* code) {
 	yyreset();
 	in = code;
 	yyparse();
+	if (!wortel) {
+		strcpy(buf, "fout");
+		return buf;
+	}
 	int len = write_node(wortel, buf, 0x1000);
 	return buf;
 }

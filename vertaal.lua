@@ -78,7 +78,7 @@ vertaal = code -> stroom
 	typeer stroom
 	uitrol: stroom -> makkelijke-stroom
 ]]
-function vertaal(code)
+function vertaal(code, vt_doel)
 	local feiten = ontleed(code)
 
 	-- syntax
@@ -125,7 +125,7 @@ function vertaal(code)
 	local feiten = deduceer(feiten)
 
 	local afh,map = berekenbaarheid(feiten)
-	local infostroom = afh:sorteer(bieb, 'stip')
+	local infostroom = afh:sorteer(bieb, vt_doel)
 
 	if print_infostroom then
 		print('# Infostroom')
@@ -137,6 +137,7 @@ function vertaal(code)
 	local stroom = {}
 	for pijl,naar in infostroom:topologisch(map) do
 		stroom[#stroom+1] = map[pijl]
+		print('PIJL',pijl2tekst(pijl), leed(map[pijl]))
 	end
 
 	-- makkelijker maken
