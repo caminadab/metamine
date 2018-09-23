@@ -10,6 +10,8 @@ require 'doe'
 require 'love'
 require 'js'
 
+require 'rapport'
+
 -- GLOBALEN
 --print_ingewanden = false
 print_typen_bron = true
@@ -99,6 +101,9 @@ end
 
 -- lees in
 code = file(bron[1])
+
+file('rapport.html', rapport(code))
+
 if doel == 'js' then vt_doel = 'stip' end
 if doel == 'love' then vt_doel = 'stip' end
 if doel == 'tekst' then vt_doel = 'uit' end

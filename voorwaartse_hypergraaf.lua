@@ -62,6 +62,7 @@ end
 function voorwaartse_hypergraaf()
 	return {
 		pijlen = {},
+		punten = {},
 
 		-- maak een hyperpijl
 		link = function (h,pijl_of_van,naar)
@@ -75,6 +76,10 @@ function voorwaartse_hypergraaf()
 				naar = pijl.naar 
 			end
 
+			for bron in pairs(van) do
+				h.punten[bron] = true
+			end
+			h.punten[naar] = true
 			h.pijlen[pijl] = true
 		end,
 

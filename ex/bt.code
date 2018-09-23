@@ -1,0 +1,21 @@
+; inpakken
+groet = "hoi"
+eind = "doei"
+data = [# groet] || groet || [# eind] || eind
+
+; uitpakken
+a-len-pos = 0
+a-begin = a-len-pos + 1
+a-eind = a-begin + a-len
+
+b-len-pos = a-eind
+b-begin = b-len-pos + 1
+b-eind = b-begin + b-len
+
+a-len = data a-len-pos
+b-len = data b-len-pos
+
+a = data (a-begin .. a-eind)
+b = data (a-begin .. a-eind)
+
+uit = a || " " || b
