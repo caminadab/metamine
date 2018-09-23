@@ -20,7 +20,7 @@ web:
 
 
 taal.h taal.c: taal.y
-	bison -d -t --defines=taal.h --output=taal.c taal.y
+	bison -d -t --locations --defines=taal.h --output=taal.c taal.y
 
 bin/ontleed: main.c taal.c node.c
 	gcc -ggdb -o bin/ontleed main.c taal.c node.c lex.c -lm -llua
