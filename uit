@@ -1,0 +1,253 @@
+DOEL	b
+OPTIE	a -> b
+DOEL	c
+OPTIE	b -> c
+DOEL	b
+OPTIE	a -> b
+DOEL	uit
+OPTIE	a b -> uit
+DOEL	b
+OPTIE	b-begin b-eind data -> b
+DOEL	data
+OPTIE	eind groet -> data
+DOEL	b-eind
+OPTIE	b-begin b-len -> b-eind
+DOEL	b-begin
+OPTIE	a-eind -> b-begin
+DOEL	groet
+OPTIE	 -> groet
+DOEL	eind
+OPTIE	 -> eind
+DOEL	b-len
+OPTIE	b-len-pos data -> b-len
+DOEL	b-len-pos
+OPTIE	a-eind -> b-len-pos
+OPTIE	a-eind -> b-len-pos
+DOEL	a-eind
+OPTIE	a-begin a-len -> a-eind
+DOEL	a-begin
+OPTIE	a-len-pos -> a-begin
+DOEL	a-len-pos
+OPTIE	 -> a-len-pos
+DOEL	a-len
+OPTIE	a-len-pos data -> a-len
+DOEL	a
+OPTIE	a-begin a-eind data -> a
+# Typen
+[33mgetal^3[37m	[104,111,105]
+[33mok[37m	groet = [104,111,105]
+[33mgetal^3[37m	groet
+[33mgetal^4[37m	[100,111,101,105]
+[33mok[37m	eind = [100,111,101,105]
+[33mgetal^4[37m	eind
+[33mint[37m	(# groet)
+[33mint^1[37m	[(# groet)]
+[33mgetal^4[37m	[(# groet)] || groet
+[33mint[37m	(# eind)
+[33mint^1[37m	[(# eind)]
+[33mgetal^5[37m	[(# groet)] || groet || [(# eind)]
+[33mgetal^9[37m	[(# groet)] || groet || [(# eind)] || eind
+[33mok[37m	data = [(# groet)] || groet || [(# eind)] || eind
+[33mgetal^9[37m	data
+[33mok[37m	a-len-pos = 0
+[33mgetal[37m	a-len-pos
+[33mgetal[37m	a-len-pos + 1
+[33mok[37m	a-begin = a-len-pos + 1
+[33mgetal[37m	a-begin
+[33mgetal[37m	a-eind + 1
+[33mok[37m	b-begin = a-eind + 1
+[33mgetal[37m	b-begin
+[33mgetal[37m	(data a-len-pos)
+[33mok[37m	a-len = (data a-len-pos)
+[33mgetal[37m	a-len
+[33mint^int[37m	a-begin..a-eind
+[33mint^int[37m	(data a-begin..a-eind)
+[33mok[37m	a = (data a-begin..a-eind)
+[33mint^int[37m	a
+[33mint^int[37m	b-begin..b-eind
+[33mint^int[37m	(data b-begin..b-eind)
+[33mok[37m	b = (data b-begin..b-eind)
+[33mint^int[37m	b
+[33mgetal^1[37m	[32]
+[33mgetal^int[37m	a || [32]
+[33mgetal^int[37m	a || [32] || b
+[33mok[37m	uit = a || [32] || b
+[33mgetal^int[37m	uit
+[33mgetal[37m	a-begin + a-len
+[33mok[37m	a-eind = a-begin + a-len
+[33mgetal[37m	a-eind
+[33mok[37m	b-len-pos = a-eind
+[33mgetal[37m	b-len-pos
+[33mgetal[37m	(data b-len-pos)
+[33mok[37m	b-len = (data b-len-pos)
+[33mgetal[37m	b-len
+[33mgetal[37m	b-begin + b-len
+[33mok[37m	b-eind = b-begin + b-len
+[33mgetal[37m	b-eind
+[31mkon type niet bepalen van #[37m
+[31mkon type niet bepalen van #[37m
+[31mkon type niet bepalen van ..[37m
+[31mkon type niet bepalen van ..[37m
+
+DOEL	uit
+OPTIE	a b -> uit
+DOEL	b
+OPTIE	b-begin b-eind data -> b
+DOEL	data
+OPTIE	eind groet -> data
+DOEL	b-eind
+OPTIE	b-begin b-len -> b-eind
+DOEL	b-begin
+OPTIE	a-eind -> b-begin
+DOEL	groet
+OPTIE	 -> groet
+DOEL	eind
+OPTIE	 -> eind
+DOEL	b-len
+OPTIE	b-len-pos data -> b-len
+DOEL	b-len-pos
+OPTIE	a-eind -> b-len-pos
+OPTIE	a-eind -> b-len-pos
+DOEL	a-eind
+OPTIE	a-begin a-len -> a-eind
+DOEL	a-begin
+OPTIE	a-len-pos -> a-begin
+DOEL	a-len-pos
+OPTIE	 -> a-len-pos
+DOEL	a-len
+OPTIE	a-len-pos data -> a-len
+DOEL	a
+OPTIE	a-begin a-eind data -> a
+# Infostroom
+() -> a-len-pos		table: 0x200c08f8
+() -> eind		table: 0x200c0670
+() -> groet		table: 0x200c0588
+a b -> uit		table: 0x200c0ef8
+a-begin a-eind data -> a		table: 0x200c1b98
+a-begin a-len -> a-eind		table: 0x200c0d40
+a-eind -> b-begin		table: 0x200c11d0
+a-eind -> b-len-pos		table: 0x200c1530
+a-eind -> b-len-pos		table: 0x200c1620
+a-len-pos -> a-begin		table: 0x200c0bb8
+a-len-pos data -> a-len		table: 0x200c1a18
+b-begin b-eind data -> b		table: 0x200c0890
+b-begin b-len -> b-eind		table: 0x200c17b8
+b-len-pos data -> b-len		table: 0x200c1ad8
+eind groet -> data		table: 0x200c0768
+
+# Pseudocode
+groet := [104,111,105]
+eind := [100,111,101,105]
+groet := [104,111,105]
+eind := [100,111,101,105]
+a-len-pos := 0
+a-len-pos := 0
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+a-len-pos := 0
+a-len-pos := 0
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+groet := [104,111,105]
+eind := [100,111,101,105]
+groet := [104,111,105]
+eind := [100,111,101,105]
+a-begin := a-len-pos + 1
+a-len := (data a-len-pos)
+a-begin := a-len-pos + 1
+a-len := (data a-len-pos)
+a-len-pos := 0
+a-len-pos := 0
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+groet := [104,111,105]
+eind := [100,111,101,105]
+a-len-pos := 0
+a-len-pos := 0
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+a-eind := a-begin + a-len
+a-eind := a-begin + a-len
+groet := [104,111,105]
+eind := [100,111,101,105]
+a-begin := a-len-pos + 1
+a-len := (data a-len-pos)
+a-len-pos := 0
+a-len-pos := 0
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+a-begin := a-len-pos + 1
+a-len := (data a-len-pos)
+b-len-pos := a-eind
+b-len-pos := a-eind
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+a-eind := a-begin + a-len
+a-len-pos := 0
+groet := [104,111,105]
+eind := [100,111,101,105]
+a-begin := a-len-pos + 1
+a-len := (data a-len-pos)
+groet := [104,111,105]
+eind := [100,111,101,105]
+a-eind := a-begin + a-len
+b-len := (data b-len-pos)
+b-begin := a-eind + 1
+a-begin := a-len-pos + 1
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+a-eind := a-begin + a-len
+data3 := (# groet)
+data2 := [data3]
+data1 := data2 || groet
+data5 := (# eind)
+data4 := [data5]
+data0 := data1 || data4
+data := data0 || eind
+b-begin := a-eind + 1
+b-eind := b-begin + b-len
+a0 := a-begin..a-eind
+a_i := 0..(# a0)	; dynamische lengte van bron "a0"
+(a a_i) := (data (a0 a_i))	; lus, i=a_i
+b0 := b-begin..b-eind
+b_i := 0..(# b0)	; dynamische lengte van bron "b0"
+(b b_i) := (data (b0 b_i))	; lus, i=b_i
+uit1 := [32]
+uit0 := a || uit1
+uit := uit0 || b
+

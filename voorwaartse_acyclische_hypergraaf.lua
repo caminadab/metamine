@@ -154,6 +154,20 @@ function link(vahgraaf, pijl_of_van, naar)
 	return true
 end
 
+function ontlink(vahgraaf, pijl_of_van, naar)
+	local van, pijl
+	if naar then
+		van = pijl_of_van
+		pijl = {van=van,naar=naar}
+	else
+		pijl = pijl_of_van
+		van = pijl.van
+		naar = pijl.naar 
+	end
+
+	vahgraaf.pijlen[pijl] = nil
+end
+
 function voorwaartse_acyclische_hypergraaf()
 	return {
 		punten = {},
@@ -164,6 +178,7 @@ function voorwaartse_acyclische_hypergraaf()
 		end,
 		naar = naar,
 		link = link,
+		ontlink = ontlink,
 		bereikbaar_disj = bereikbaar_disj,
 		tekst = tekst,
 		topologisch = topologisch,

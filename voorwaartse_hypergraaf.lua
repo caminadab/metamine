@@ -21,13 +21,40 @@ local function tekst(graaf)
 	return table.concat(p, '\n')
 end
 
-local function sorteer_itereer(hgraaf, onbekend, stroom)
+--[[
+local function sorteer_itereer(onbekend)
+	-- VOOR ELKE PIJL
+	for punt in pairs(onbekend) do
+		for pijl in graaf:naar(punt) do
+			-- voeg toe
+			if stroom:pijl(pijl) then
+				local af = sorteer_itereer(...)
+				if af then
+					return af
+				end
+			end
+		end
+	end
+
+	print('Opties uitgeput, geen resultante')
+	return false
 end
 
+local function sorteer(graaf, van, naar)
+	local stroom = voorwaartse_acyclische_hypergraaf()
+	
+	return sorteer_itereer(...)
+
+	--[[
+	voor elke onontdekte pijl doe
+		voeg hem toe
+		recurseer
+	]]
+--end
 
 -- bedenk alle hyperroutes door hypergraaf
 local function sorteer(hgraaf, van, naar)
-	local print = function () end
+	--local print = function () end
 	local onbekend = {[naar]=true}
 	local stroom = voorwaartse_acyclische_hypergraaf()
 	local bekend = {}
@@ -53,6 +80,8 @@ local function sorteer(hgraaf, van, naar)
 			end
 		end
 	end
+
+	-- backtracken
 
 	return stroom
 			
@@ -104,7 +133,7 @@ function voorwaartse_hypergraaf()
 	}
 end
 
-if test then
+if test or true then
 	local graaf = voorwaartse_hypergraaf()
 	graaf:link({a = true}, 'b')
 	assert(graaf:naar('b')().van.a)
