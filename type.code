@@ -1,0 +1,8 @@
+; herleid vectors
+als
+	#a : int
+	a(i) : getal
+dan
+	a : getal^#a
+
+:
