@@ -123,8 +123,7 @@ function graaf2js(graaf, id, layout)
 	local data = table.concat(d)
 
 	-- alles
-	return [[
-		cytoscape({
+	return id..[[ = cytoscape({
 			container: document.getElementById(']]..id..[['),
 			style: [
 				{
@@ -193,6 +192,8 @@ function rapport(code)
 			jslib 'https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.16/cytoscape.min.js',
 			jslib 'https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js',
     	jslib 'https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js',
+			jslib 'http://code.jquery.com/jquery-2.0.0.min.js',
+			jslib 'http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js',
 		},
 		body {
 			deel { pre(code) },
@@ -200,6 +201,22 @@ function rapport(code)
 			div('infostroom', {class='deel'}),
 			js (graaf2js(afh, 'afh')),
 			js (graaf2js(infostroom, 'infostroom', 'dagre')),
+			js [[
+				infostroom.on('mouseover', 'node', function(event) {
+					var node = event.cyTarget || [];
+					$(this).each(function() {$(this).qtip({content:'hello'});});
+					$.qtip({
+					content: 'hello',
+						show: {
+							event: event.type,
+							//ready: true
+						},
+						hide: {
+							event: 'mouseout unfocus'
+						}
+					}, event);
+				});
+			]]
 		}
 	}
 end

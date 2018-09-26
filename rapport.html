@@ -9,7 +9,7 @@
 				}
 
 				pre { font-size: 20px; font-weight: bold; }
-			</style><script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.16/cytoscape.min.js"></script><script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script><script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script></head><body><div class="deel"><pre>; inpakken
+			</style><script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.16/cytoscape.min.js"></script><script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script><script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script><script src="http://code.jquery.com/jquery-2.0.0.min.js"></script><script src="http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js"></script></head><body><div class="deel"><pre>; inpakken
 groet = "hoi"
 eind = "doei"
 data = [# groet] || groet || [# eind] || eind
@@ -19,10 +19,8 @@ a-len-pos = 0
 a-begin = a-len-pos + 1
 a-eind = a-begin + a-len
 
-;b-len-pos = a-eind
-;b-begin = b-len-pos + 1
-b-begin = a-eind + 1
 b-len-pos = a-eind
+b-begin = a-eind + 1
 b-eind = b-begin + b-len
 
 a-len = data a-len-pos
@@ -32,7 +30,7 @@ a = data (a-begin .. a-eind)
 b = data (b-begin .. b-eind)
 
 uit = a || " " || b
-</pre></div><div id="afh" class="deel"></div><div id="infostroom" class="deel"></div><script>		cytoscape({
+</pre></div><div id="afh" class="deel"></div><div id="infostroom" class="deel"></div><script>afh = cytoscape({
 			container: document.getElementById('afh'),
 			style: [
 				{
@@ -66,206 +64,206 @@ uit = a || " " || b
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'a-begin'}, classes: 'waarde' },{ data: {id: 'a-eind'}, classes: 'waarde' },{ data: {id: 'a-len'}, classes: 'waarde' },{ data: {id: 'a-len-pos'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'b-begin'}, classes: 'waarde' },{ data: {id: 'b-eind'}, classes: 'waarde' },{ data: {id: 'b-len'}, classes: 'waarde' },{ data: {id: 'b-len-pos'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'eind'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'a-begin'}, classes: 'waarde' },{ data: {id: 'a-eind'}, classes: 'waarde' },{ data: {id: 'a-len'}, classes: 'waarde' },{ data: {id: 'a-len-pos'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'b-begin'}, classes: 'waarde' },{ data: {id: 'b-eind'}, classes: 'waarde' },{ data: {id: 'b-len'}, classes: 'waarde' },{ data: {id: 'b-len-pos'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'eind'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x0.69000103217084'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.69000103217084',
-					source: 'a-eind',
-					target: 'b-begin',
-				}
-			},
-		{ data: {id: 'x0.5054183972559'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.59149053999758',
-					source: 'x0.5054183972559',
-					target: 'groet',
-				}
-			},
-		{ data: {id: 'x0.55478491334002'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.37842881883421',
-					source: 'x0.55478491334002',
-					target: 'eind',
-				}
-			},
-		{ data: {id: 'x0.2577321176686'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.20738213891507',
-					source: 'x0.2577321176686',
-					target: 'data',
+					id: 'x0.5054183972559',
+					source: 'x0.69000103217084',
+					target: 'b-len',
 				}
 			},
 							{
 						data: {
+							id: 'x0.59149053999758',
+							source: 'b-len-pos',
+							target: 'x0.69000103217084',
+						}
+					},
+									{
+						data: {
+							id: 'x0.55478491334002',
+							source: 'data',
+							target: 'x0.69000103217084',
+						}
+					},
+				{ data: {id: 'x0.37842881883421'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.2577321176686',
+					source: 'x0.37842881883421',
+					target: 'a',
+				}
+			},
+							{
+						data: {
+							id: 'x0.20738213891507',
+							source: 'a-begin',
+							target: 'x0.37842881883421',
+						}
+					},
+									{
+						data: {
 							id: 'x0.62626193120436',
-							source: 'eind',
-							target: 'x0.2577321176686',
+							source: 'a-eind',
+							target: 'x0.37842881883421',
 						}
 					},
 									{
 						data: {
 							id: 'x0.34012703985913',
-							source: 'groet',
-							target: 'x0.2577321176686',
-						}
-					},
-				{ data: {id: 'x0.84385188289166'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.068778037591268',
-					source: 'x0.84385188289166',
-					target: 'a-len-pos',
-				}
-			},
-					{
-				data: {
-					id: 'x0.4099068936938',
-					source: 'a-begin',
-					target: 'a-len-pos',
-				}
-			},
-					{
-				data: {
-					id: 'x0.87999405520037',
-					source: 'a-len-pos',
-					target: 'a-begin',
-				}
-			},
-		{ data: {id: 'x0.3194802931135'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.98056816914145',
-					source: 'x0.3194802931135',
-					target: 'a-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.085004788397348',
-							source: 'a-begin',
-							target: 'x0.3194802931135',
-						}
-					},
-									{
-						data: {
-							id: 'x0.90762895108556',
-							source: 'a-eind',
-							target: 'x0.3194802931135',
-						}
-					},
-				{ data: {id: 'x0.10250944928383'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.92197776302787',
-					source: 'x0.10250944928383',
-					target: 'a-eind',
-				}
-			},
-							{
-						data: {
-							id: 'x0.50755121396275',
-							source: 'a-begin',
-							target: 'x0.10250944928383',
-						}
-					},
-									{
-						data: {
-							id: 'x0.87228925799592',
-							source: 'a-len',
-							target: 'x0.10250944928383',
-						}
-					},
-				{ data: {id: 'x0.33325974239654'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.69240945051071',
-					source: 'x0.33325974239654',
-					target: 'a-begin',
-				}
-			},
-							{
-						data: {
-							id: 'x0.5569462052346',
-							source: 'a-eind',
-							target: 'x0.33325974239654',
-						}
-					},
-									{
-						data: {
-							id: 'x0.36191520297989',
-							source: 'a-len',
-							target: 'x0.33325974239654',
+							source: 'data',
+							target: 'x0.37842881883421',
 						}
 					},
 							{
 				data: {
-					id: 'x0.031993828263131',
+					id: 'x0.84385188289166',
 					source: 'b-begin',
 					target: 'a-eind',
 				}
 			},
 					{
 				data: {
-					id: 'x0.85851110045729',
-					source: 'b-len-pos',
-					target: 'a-eind',
-				}
-			},
-					{
-				data: {
-					id: 'x0.09898449857672',
+					id: 'x0.068778037591268',
 					source: 'a-eind',
-					target: 'b-len-pos',
+					target: 'b-begin',
 				}
 			},
-					{
+		{ data: {id: 'x0.4099068936938'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.87706752348555',
-					source: 'a-eind',
-					target: 'b-len-pos',
-				}
-			},
-					{
-				data: {
-					id: 'x0.44925891302957',
-					source: 'b-len-pos',
-					target: 'a-eind',
-				}
-			},
-		{ data: {id: 'x0.43219260472441'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.60626791213',
-					source: 'x0.43219260472441',
-					target: 'b-eind',
+					id: 'x0.87999405520037',
+					source: 'x0.4099068936938',
+					target: 'b-begin',
 				}
 			},
 							{
 						data: {
-							id: 'x0.92783765444897',
+							id: 'x0.3194802931135',
+							source: 'b-eind',
+							target: 'x0.4099068936938',
+						}
+					},
+									{
+						data: {
+							id: 'x0.98056816914145',
+							source: 'b-len',
+							target: 'x0.4099068936938',
+						}
+					},
+				{ data: {id: 'x0.085004788397348'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.90762895108556',
+					source: 'x0.085004788397348',
+					target: 'groet',
+				}
+			},
+		{ data: {id: 'x0.10250944928383'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.92197776302787',
+					source: 'x0.10250944928383',
+					target: 'eind',
+				}
+			},
+		{ data: {id: 'x0.50755121396275'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.87228925799592',
+					source: 'x0.50755121396275',
+					target: 'b-len',
+				}
+			},
+							{
+						data: {
+							id: 'x0.33325974239654',
 							source: 'b-begin',
-							target: 'x0.43219260472441',
+							target: 'x0.50755121396275',
+						}
+					},
+									{
+						data: {
+							id: 'x0.69240945051071',
+							source: 'b-eind',
+							target: 'x0.50755121396275',
+						}
+					},
+							{
+				data: {
+					id: 'x0.5569462052346',
+					source: 'a-eind',
+					target: 'b-len-pos',
+				}
+			},
+					{
+				data: {
+					id: 'x0.36191520297989',
+					source: 'a-begin',
+					target: 'a-len-pos',
+				}
+			},
+		{ data: {id: 'x0.031993828263131'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.85851110045729',
+					source: 'x0.031993828263131',
+					target: 'a-eind',
+				}
+			},
+							{
+						data: {
+							id: 'x0.09898449857672',
+							source: 'a-begin',
+							target: 'x0.031993828263131',
+						}
+					},
+									{
+						data: {
+							id: 'x0.87706752348555',
+							source: 'a-len',
+							target: 'x0.031993828263131',
+						}
+					},
+				{ data: {id: 'x0.44925891302957'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.43219260472441',
+					source: 'x0.44925891302957',
+					target: 'b',
+				}
+			},
+							{
+						data: {
+							id: 'x0.60626791213',
+							source: 'b-begin',
+							target: 'x0.44925891302957',
+						}
+					},
+									{
+						data: {
+							id: 'x0.92783765444897',
+							source: 'b-eind',
+							target: 'x0.44925891302957',
 						}
 					},
 									{
 						data: {
 							id: 'x0.66428567500053',
-							source: 'b-len',
-							target: 'x0.43219260472441',
+							source: 'data',
+							target: 'x0.44925891302957',
 						}
 					},
 				{ data: {id: 'x0.39536535525479'}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.43846895938668',
 					source: 'x0.39536535525479',
-					target: 'b-begin',
+					target: 'uit',
 				}
 			},
 							{
 						data: {
 							id: 'x0.65212507948844',
-							source: 'b-eind',
+							source: 'a',
 							target: 'x0.39536535525479',
 						}
 					},
 									{
 						data: {
 							id: 'x0.92886356214474',
-							source: 'b-len',
+							source: 'b',
 							target: 'x0.39536535525479',
 						}
 					},
@@ -273,20 +271,20 @@ uit = a || " " || b
 				data: {
 					id: 'x0.30733574382371',
 					source: 'x0.94914336826147',
-					target: 'b-len',
+					target: 'a',
 				}
 			},
 							{
 						data: {
 							id: 'x0.59648294169292',
-							source: 'b-begin',
+							source: 'b',
 							target: 'x0.94914336826147',
 						}
 					},
 									{
 						data: {
 							id: 'x0.78307618470074',
-							source: 'b-eind',
+							source: 'uit',
 							target: 'x0.94914336826147',
 						}
 					},
@@ -300,14 +298,14 @@ uit = a || " " || b
 							{
 						data: {
 							id: 'x0.94219663969343',
-							source: 'a-len-pos',
+							source: 'a-begin',
 							target: 'x0.33803037849163',
 						}
 					},
 									{
 						data: {
 							id: 'x0.066473349494149',
-							source: 'data',
+							source: 'a-eind',
 							target: 'x0.33803037849163',
 						}
 					},
@@ -315,145 +313,145 @@ uit = a || " " || b
 				data: {
 					id: 'x0.97721833641511',
 					source: 'x0.85708681953004',
-					target: 'b-len',
+					target: 'a-len-pos',
+				}
+			},
+					{
+				data: {
+					id: 'x0.88964620413708',
+					source: 'a-len-pos',
+					target: 'a-begin',
+				}
+			},
+		{ data: {id: 'x0.54527562649235'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.86437174624967',
+					source: 'x0.54527562649235',
+					target: 'b',
 				}
 			},
 							{
 						data: {
-							id: 'x0.88964620413708',
-							source: 'b-len-pos',
-							target: 'x0.85708681953004',
+							id: 'x0.45777267984011',
+							source: 'a',
+							target: 'x0.54527562649235',
 						}
 					},
 									{
-						data: {
-							id: 'x0.54527562649235',
-							source: 'data',
-							target: 'x0.85708681953004',
-						}
-					},
-				{ data: {id: 'x0.86437174624967'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.45777267984011',
-					source: 'x0.86437174624967',
-					target: 'a',
-				}
-			},
-							{
 						data: {
 							id: 'x0.80021942723553',
-							source: 'a-begin',
-							target: 'x0.86437174624967',
+							source: 'uit',
+							target: 'x0.54527562649235',
 						}
 					},
-									{
-						data: {
-							id: 'x0.87370557052722',
-							source: 'a-eind',
-							target: 'x0.86437174624967',
-						}
-					},
-									{
-						data: {
-							id: 'x0.82181842523712',
-							source: 'data',
-							target: 'x0.86437174624967',
-						}
-					},
-				{ data: {id: 'x0.18572622453129'}, classes: 'hyper' },			{
+				{ data: {id: 'x0.87370557052722'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.086265023372259',
-					source: 'x0.18572622453129',
-					target: 'b',
+					id: 'x0.82181842523712',
+					source: 'x0.87370557052722',
+					target: 'b-eind',
 				}
 			},
 							{
 						data: {
-							id: 'x0.63815579127434',
+							id: 'x0.18572622453129',
 							source: 'b-begin',
-							target: 'x0.18572622453129',
+							target: 'x0.87370557052722',
 						}
 					},
 									{
 						data: {
-							id: 'x0.23382797056522',
-							source: 'b-eind',
-							target: 'x0.18572622453129',
+							id: 'x0.086265023372259',
+							source: 'b-len',
+							target: 'x0.87370557052722',
 						}
 					},
-									{
+				{ data: {id: 'x0.63815579127434'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.23382797056522',
+					source: 'x0.63815579127434',
+					target: 'a-len',
+				}
+			},
+							{
 						data: {
 							id: 'x0.46272172334731',
-							source: 'data',
-							target: 'x0.18572622453129',
+							source: 'a-len-pos',
+							target: 'x0.63815579127434',
 						}
 					},
-				{ data: {id: 'x0.0074198953841906'}, classes: 'hyper' },			{
+									{
+						data: {
+							id: 'x0.0074198953841906',
+							source: 'data',
+							target: 'x0.63815579127434',
+						}
+					},
+							{
 				data: {
 					id: 'x0.63501054450637',
-					source: 'x0.0074198953841906',
-					target: 'b',
+					source: 'a-eind',
+					target: 'b-len-pos',
 				}
 			},
-							{
-						data: {
-							id: 'x0.42125105365238',
-							source: 'a',
-							target: 'x0.0074198953841906',
-						}
-					},
-									{
-						data: {
-							id: 'x0.95365830741527',
-							source: 'uit',
-							target: 'x0.0074198953841906',
-						}
-					},
-				{ data: {id: 'x0.21012046197901'}, classes: 'hyper' },			{
+		{ data: {id: 'x0.42125105365238'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.97075055026019',
-					source: 'x0.21012046197901',
-					target: 'a',
+					id: 'x0.95365830741527',
+					source: 'x0.42125105365238',
+					target: 'a-begin',
 				}
 			},
 							{
 						data: {
-							id: 'x0.26125254680461',
-							source: 'b',
-							target: 'x0.21012046197901',
+							id: 'x0.21012046197901',
+							source: 'a-eind',
+							target: 'x0.42125105365238',
 						}
 					},
 									{
 						data: {
-							id: 'x0.85706432063927',
-							source: 'uit',
-							target: 'x0.21012046197901',
+							id: 'x0.97075055026019',
+							source: 'a-len',
+							target: 'x0.42125105365238',
 						}
 					},
-				{ data: {id: 'x0.58133271084229'}, classes: 'hyper' },			{
+				{ data: {id: 'x0.26125254680461'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.70731831235221',
-					source: 'x0.58133271084229',
-					target: 'uit',
+					id: 'x0.85706432063927',
+					source: 'x0.26125254680461',
+					target: 'data',
 				}
 			},
 							{
 						data: {
-							id: 'x0.2859752249373',
-							source: 'a',
-							target: 'x0.58133271084229',
+							id: 'x0.58133271084229',
+							source: 'eind',
+							target: 'x0.26125254680461',
 						}
 					},
 									{
 						data: {
-							id: 'x0.31820377582601',
-							source: 'b',
-							target: 'x0.58133271084229',
+							id: 'x0.70731831235221',
+							source: 'groet',
+							target: 'x0.26125254680461',
 						}
 					},
-							]
+							{
+				data: {
+					id: 'x0.2859752249373',
+					source: 'b-len-pos',
+					target: 'a-eind',
+				}
+			},
+					{
+				data: {
+					id: 'x0.31820377582601',
+					source: 'b-len-pos',
+					target: 'a-eind',
+				}
+			},
+					]
 		});
-	</script><script>		cytoscape({
+	</script><script>infostroom = cytoscape({
 			container: document.getElementById('infostroom'),
 			style: [
 				{
@@ -487,102 +485,102 @@ uit = a || " " || b
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'a-begin'}, classes: 'waarde' },{ data: {id: 'a-eind'}, classes: 'waarde' },{ data: {id: 'a-len'}, classes: 'waarde' },{ data: {id: 'a-len-pos'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'b-begin'}, classes: 'waarde' },{ data: {id: 'b-eind'}, classes: 'waarde' },{ data: {id: 'b-len'}, classes: 'waarde' },{ data: {id: 'b-len-pos'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'eind'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'a-begin'}, classes: 'waarde' },{ data: {id: 'a-eind'}, classes: 'waarde' },{ data: {id: 'a-len'}, classes: 'waarde' },{ data: {id: 'a-len-pos'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'b-begin'}, classes: 'waarde' },{ data: {id: 'b-eind'}, classes: 'waarde' },{ data: {id: 'b-len'}, classes: 'waarde' },{ data: {id: 'b-len-pos'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'eind'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x0.64395167662015'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.64395167662015',
-					source: 'a-eind',
-					target: 'b-begin',
-				}
-			},
-		{ data: {id: 'x0.85851831820724'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.66888999551017',
-					source: 'x0.85851831820724',
-					target: 'groet',
-				}
-			},
-		{ data: {id: 'x0.44314969305096'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.055894952759098',
-					source: 'x0.44314969305096',
-					target: 'eind',
-				}
-			},
-		{ data: {id: 'x0.77745263687216'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.59469258254147',
-					source: 'x0.77745263687216',
-					target: 'data',
+					id: 'x0.85851831820724',
+					source: 'x0.64395167662015',
+					target: 'b-len',
 				}
 			},
 							{
 						data: {
+							id: 'x0.66888999551017',
+							source: 'b-len-pos',
+							target: 'x0.64395167662015',
+						}
+					},
+									{
+						data: {
+							id: 'x0.44314969305096',
+							source: 'data',
+							target: 'x0.64395167662015',
+						}
+					},
+				{ data: {id: 'x0.055894952759098'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.77745263687216',
+					source: 'x0.055894952759098',
+					target: 'a',
+				}
+			},
+							{
+						data: {
+							id: 'x0.59469258254147',
+							source: 'a-begin',
+							target: 'x0.055894952759098',
+						}
+					},
+									{
+						data: {
 							id: 'x0.10208163834274',
-							source: 'eind',
-							target: 'x0.77745263687216',
+							source: 'a-eind',
+							target: 'x0.055894952759098',
 						}
 					},
 									{
 						data: {
 							id: 'x0.29955401844324',
-							source: 'groet',
-							target: 'x0.77745263687216',
+							source: 'data',
+							target: 'x0.055894952759098',
 						}
 					},
-				{ data: {id: 'x0.95071931600139'}, classes: 'hyper' },			{
+							{
 				data: {
-					id: 'x0.66572013016125',
-					source: 'x0.95071931600139',
-					target: 'a-len-pos',
+					id: 'x0.95071931600139',
+					source: 'b-begin',
+					target: 'a-eind',
 				}
 			},
-					{
+		{ data: {id: 'x0.66572013016125'}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.94772421100537',
-					source: 'a-len-pos',
-					target: 'a-begin',
-				}
-			},
-		{ data: {id: 'x0.87943906331409'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.70086648068431',
-					source: 'x0.87943906331409',
-					target: 'a-eind',
+					source: 'x0.66572013016125',
+					target: 'b-begin',
 				}
 			},
 							{
 						data: {
-							id: 'x0.37598726776242',
-							source: 'a-begin',
-							target: 'x0.87943906331409',
+							id: 'x0.87943906331409',
+							source: 'b-eind',
+							target: 'x0.66572013016125',
 						}
 					},
 									{
 						data: {
-							id: 'x0.61348208906757',
-							source: 'a-len',
-							target: 'x0.87943906331409',
+							id: 'x0.70086648068431',
+							source: 'b-len',
+							target: 'x0.66572013016125',
 						}
 					},
-							{
+				{ data: {id: 'x0.37598726776242'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.86314061324258',
-					source: 'a-eind',
-					target: 'b-len-pos',
+					id: 'x0.61348208906757',
+					source: 'x0.37598726776242',
+					target: 'groet',
 				}
 			},
-					{
+		{ data: {id: 'x0.86314061324258'}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.13617131166913',
-					source: 'a-eind',
-					target: 'b-len-pos',
+					source: 'x0.86314061324258',
+					target: 'eind',
 				}
 			},
 		{ data: {id: 'x0.4396852028741'}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.27457193391145',
 					source: 'x0.4396852028741',
-					target: 'b-eind',
+					target: 'b',
 				}
 			},
 							{
@@ -595,129 +593,143 @@ uit = a || " " || b
 									{
 						data: {
 							id: 'x0.50616436195847',
-							source: 'b-len',
+							source: 'b-eind',
 							target: 'x0.4396852028741',
 						}
 					},
-				{ data: {id: 'x0.57051020235313'}, classes: 'hyper' },			{
+									{
+						data: {
+							id: 'x0.57051020235313',
+							source: 'data',
+							target: 'x0.4396852028741',
+						}
+					},
+				{ data: {id: 'x0.67282809767538'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.67282809767538',
-					source: 'x0.57051020235313',
+					id: 'x0.62362672557292',
+					source: 'x0.67282809767538',
+					target: 'uit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.06129809471839',
+							source: 'a',
+							target: 'x0.67282809767538',
+						}
+					},
+									{
+						data: {
+							id: 'x0.55045632810819',
+							source: 'b',
+							target: 'x0.67282809767538',
+						}
+					},
+				{ data: {id: 'x0.56395400854012'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.53658123479066',
+					source: 'x0.56395400854012',
+					target: 'a-len-pos',
+				}
+			},
+					{
+				data: {
+					id: 'x0.10423364215728',
+					source: 'a-len-pos',
+					target: 'a-begin',
+				}
+			},
+		{ data: {id: 'x0.59953290345125'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.27632385877721',
+					source: 'x0.59953290345125',
 					target: 'a-len',
 				}
 			},
 							{
 						data: {
-							id: 'x0.62362672557292',
-							source: 'a-len-pos',
-							target: 'x0.57051020235313',
-						}
-					},
-									{
-						data: {
-							id: 'x0.06129809471839',
-							source: 'data',
-							target: 'x0.57051020235313',
-						}
-					},
-				{ data: {id: 'x0.55045632810819'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.56395400854012',
-					source: 'x0.55045632810819',
-					target: 'b-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.53658123479066',
-							source: 'b-len-pos',
-							target: 'x0.55045632810819',
-						}
-					},
-									{
-						data: {
-							id: 'x0.10423364215728',
-							source: 'data',
-							target: 'x0.55045632810819',
-						}
-					},
-				{ data: {id: 'x0.59953290345125'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.27632385877721',
-					source: 'x0.59953290345125',
-					target: 'a',
-				}
-			},
-							{
-						data: {
 							id: 'x0.34235707127599',
-							source: 'a-begin',
+							source: 'a-len-pos',
 							target: 'x0.59953290345125',
 						}
 					},
 									{
 						data: {
 							id: 'x0.74028922325945',
-							source: 'a-eind',
-							target: 'x0.59953290345125',
-						}
-					},
-									{
-						data: {
-							id: 'x0.96384180288941',
 							source: 'data',
 							target: 'x0.59953290345125',
 						}
 					},
-				{ data: {id: 'x0.31147267683943'}, classes: 'hyper' },			{
+				{ data: {id: 'x0.96384180288941'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.37638687453064',
-					source: 'x0.31147267683943',
-					target: 'b',
+					id: 'x0.31147267683943',
+					source: 'x0.96384180288941',
+					target: 'a-begin',
 				}
 			},
 							{
+						data: {
+							id: 'x0.37638687453064',
+							source: 'a-eind',
+							target: 'x0.96384180288941',
+						}
+					},
+									{
 						data: {
 							id: 'x0.55967204811036',
-							source: 'b-begin',
-							target: 'x0.31147267683943',
+							source: 'a-len',
+							target: 'x0.96384180288941',
 						}
 					},
-									{
-						data: {
-							id: 'x0.47263844472945',
-							source: 'b-eind',
-							target: 'x0.31147267683943',
-						}
-					},
-									{
-						data: {
-							id: 'x0.97136982482456',
-							source: 'data',
-							target: 'x0.31147267683943',
-						}
-					},
-				{ data: {id: 'x0.63413048518548'}, classes: 'hyper' },			{
+				{ data: {id: 'x0.47263844472945'}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.35444766485805',
-					source: 'x0.63413048518548',
-					target: 'uit',
+					id: 'x0.97136982482456',
+					source: 'x0.47263844472945',
+					target: 'data',
 				}
 			},
 							{
 						data: {
-							id: 'x0.3730008366392',
-							source: 'a',
-							target: 'x0.63413048518548',
+							id: 'x0.63413048518548',
+							source: 'eind',
+							target: 'x0.47263844472945',
 						}
 					},
 									{
 						data: {
-							id: 'x0.33998099404386',
-							source: 'b',
-							target: 'x0.63413048518548',
+							id: 'x0.35444766485805',
+							source: 'groet',
+							target: 'x0.47263844472945',
 						}
 					},
-							]
+							{
+				data: {
+					id: 'x0.3730008366392',
+					source: 'b-len-pos',
+					target: 'a-eind',
+				}
+			},
+					{
+				data: {
+					id: 'x0.33998099404386',
+					source: 'b-len-pos',
+					target: 'a-eind',
+				}
+			},
+					]
 		});
-	</script></body>
+	</script><script>				infostroom.on('mouseover', 'node', function(event) {
+					var node = event.cyTarget || [];
+					$(this).each(function() {$(this).qtip({content:'hello'});});
+					$.qtip({
+					content: 'hello',
+						show: {
+							event: event.type,
+							//ready: true
+						},
+						hide: {
+							event: 'mouseout unfocus'
+						}
+					}, event);
+				});
+			</script></body>
