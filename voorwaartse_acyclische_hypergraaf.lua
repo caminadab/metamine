@@ -125,7 +125,7 @@ local function naar(self,doel)
 	end
 end
 
-function link(vahgraaf, pijl_of_van, naar)
+function maglink(vahgraaf, pijl_of_van, naar)
 	local van, pijl
 	if naar then
 		van = pijl_of_van
@@ -142,6 +142,24 @@ function link(vahgraaf, pijl_of_van, naar)
 		if vahgraaf:bereikbaar_disj(naar, bron) then
 			return false
 		end
+	end
+
+	return true
+end
+
+function link(vahgraaf, pijl_of_van, naar)
+	local van, pijl
+	if naar then
+		van = pijl_of_van
+		pijl = {van=van,naar=naar}
+	else
+		pijl = pijl_of_van
+		van = pijl.van
+		naar = pijl.naar 
+	end
+
+	if not vahgraaf:maglink(pijl) then
+		return false
 	end
 
 	-- registreer punten
@@ -178,6 +196,7 @@ function voorwaartse_acyclische_hypergraaf()
 		end,
 		naar = naar,
 		link = link,
+		maglink = maglink,
 		ontlink = ontlink,
 		bereikbaar_disj = bereikbaar_disj,
 		tekst = tekst,

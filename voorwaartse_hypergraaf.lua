@@ -54,34 +54,76 @@ local function sorteer(graaf, van, naar)
 
 -- bedenk alle hyperroutes door hypergraaf
 local function sorteer(hgraaf, van, naar)
-	--local print = function () end
-	local onbekend = {[naar]=true}
+	print = function () end
+	local onbekend = {}
+	for pijl in hgraaf:naar(naar) do
+		onbekend[pijl] = true
+	end
 	local stroom = voorwaartse_acyclische_hypergraaf()
 	local bekend = {}
+	local fout = {}
 
 	-- alle mogelijke opties
-	local it = 999
-	while next(onbekend) and it > 0 do
-		it = it - 1
-		local doel = next(onbekend)
-		bekend[doel] = true
-		onbekend[doel] = nil
-		print('DOEL', doel)
+	while next(onbekend) do
+		local pijl = next(onbekend)
+		bekend[pijl] = true
+		onbekend[pijl] = nil
 
-		for pijl in hgraaf:naar(doel) do
-			if stroom:link(pijl) then
-				print('OPTIE', pijl2tekst(pijl))
-				for bron in pairs(pijl.van) do
-					-- wanneer proberen?
-					if not bekend[bron] and not van[bron] then
-						onbekend[bron] = true
+		local doodlopend = false
+
+		if stroom:link(pijl) then
+			print('LINK', pijl2tekst(pijl))
+			bekend[pijl] = true
+			for punt in pairs(pijl.van) do
+				print('  BRON', punt)
+
+				-- zoek verder als dit niet START is,
+				if not van[punt] then
+					local iets = false
+
+					for pijl in hgraaf:naar(punt) do
+						-- wanneer proberen?
+						local mag = stroom:maglink(pijl)
+						print('   MAG?',pijl2tekst(pijl),mag and 'ja' or 'nee')
+
+						if stroom:maglink(pijl) then
+							iets = true
+
+							if not bekend[pijl] and not fout[pijl] then
+								onbekend[pijl] = true
+								print('    mogelijkheid',pijl2tekst(pijl))
+							end
+						end
 					end
+
+					if not iets then
+						doodlopend = true
+					end
+				
+				-- START: wat dit punt betreft is alles O.K.
+				else
+					print('   OK:',punt)
+				end
+
+			end
+		end
+
+		if doodlopend then
+			print('DOODLOPEND!!', pijl2tekst(pijl))
+			stroom:ontlink(pijl)
+			fout[pijl] = true
+
+			-- opnieuw
+			for pijl in hgraaf:naar(pijl.naar) do
+				if not fout[pijl] then
+					onbekend[pijl] = true
 				end
 			end
 		end
 	end
 
-	-- backtracken
+	print('KLAAR')
+	print(stroom:tekst())
 
 	return stroom
 			
@@ -133,21 +175,55 @@ function voorwaartse_hypergraaf()
 	}
 end
 
-if test or true then
+require 'util'
+
+if test then
+	-- link
 	local graaf = voorwaartse_hypergraaf()
-	graaf:link({a = true}, 'b')
+	graaf:link(set('a'), 'b')
 	assert(graaf:naar('b')().van.a)
 
 	-- sorteer
 	local graaf = voorwaartse_hypergraaf()
-	graaf:link({a = true}, 'b')
-	graaf:link({b = true}, 'a')
-	local stroom = graaf:sorteer({a=true}, 'b')
+	graaf:link(set('a'), 'b')
+	graaf:link(set('b'), 'a')
+	local stroom = graaf:sorteer(set('a'), 'b')
+	assert(stroom:naar('b')().van.a)
 
-	-- sorteer
+	-- sorteer 2
 	local graaf = voorwaartse_hypergraaf()
-	graaf:link({a = true}, 'b')
-	graaf:link({b = true}, 'c')
-	graaf:link({c = true}, 'a')
-	local stroom = graaf:sorteer({a=true}, 'c')
+	graaf:link(set('a'), 'b')
+	graaf:link(set('b'), 'c')
+	graaf:link(set('c'), 'a')
+	local stroom = graaf:sorteer(set('a'), 'c')
+	assert(stroom:naar('c')().van.b)
+	assert(stroom:naar('b')().van.a)
+end
+
+if true then
+	--[[ 
+	Graaf:
+		IN -> A
+		B -> A
+		A -> B
+		A, B -> UIT
+	Foute keuze maken is mogelijk:
+		A, B -> UIT
+		B -> A
+		GEEN OPTIES MEER
+	Goed:
+		A, B -> UIT
+		A -> B
+		IN -> A
+	]]
+	local graaf = voorwaartse_hypergraaf()
+	--graaf:link(set('in'), 'a')
+	graaf:link(set('in'), 'a')
+	graaf:link(set('b'), 'a')
+	graaf:link(set('a'), 'b')
+	graaf:link(set('a', 'b'), 'uit')
+	local stroom = graaf:sorteer(set('in'), 'uit')
+	-- a -> b moet erin zitten
+	assert(stroom:naar('b')() and stroom:naar('b')().van.a, stroom:tekst())
+
 end

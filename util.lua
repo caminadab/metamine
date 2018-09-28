@@ -145,7 +145,10 @@ function hton(num, len)
 	return string.char(table.unpack(n))
 end
 
-function set(list)
+function set(list,b,...)
+	if b or type(list) ~= 'table' then
+		return set {list,b,...}
+	end
 	local s = {}
 	for i,v in ipairs(list) do
 		s[v] = true

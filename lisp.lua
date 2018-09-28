@@ -59,7 +59,7 @@ function unparse_work(sexpr, maxlen, tabs, res)
       end
 			if split then
 				-- commentaar
-				if sub[';'] then
+				if isexp(sub) and sub[';'] then
 					res[#res+1] = '\t; '
 					res[#res+1] = sub[';']
 				end
