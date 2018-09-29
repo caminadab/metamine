@@ -28,6 +28,22 @@ function var(exp,t)
 	return t
 end
 
+function val(exp,t)
+	local t = t or {}
+	if atom(exp) then
+		t[exp] = true
+	else
+		-- SHADUW IS GEEN VAR
+		if exp[1] == "'" then
+			return t
+		end
+		for i,s in ipairs(exp) do
+			var(s,t)
+		end
+	end
+	return t
+end
+
 function isatoom(exp)
 	return type(exp) ~= 'table'
 end

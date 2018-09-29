@@ -122,8 +122,10 @@ function vertaal(code, vt_doel)
 	--local feiten = verzamel(feiten)
 
 	-- extra info (vgl herschrijven)
+	-- 1:19:00
 	local feiten = deduceer(feiten)
 
+	local getallen = 
 	local afh,map = berekenbaarheid(feiten)
 	local infostroom = afh:sorteer(bieb, vt_doel)
 

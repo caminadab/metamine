@@ -85,12 +85,16 @@ local function topologisch(graaf, map)
 	local onbekend = { einde }
 	-- hoe is het echt dan? ik weet niet helemaal hoe het nu echt is maar toch ben ik wel ff benieuwd hoe deze zin zich uiteindelijk gaat uitpaken. Vooral beniewud ben ik voor de interactie binnen bepaalde moeilijke woorden. Bijvoorbeeld? ik weet het niet zeker, maar uiteindelijk vermoed ik dat het toch wel ietsje meer dan 3 schrijffjoute zijn. Op een off andere manier is het eeen geetje schaken;  je weet wel hoe het is zeker met al die overbodige spaties aan de linkerkant. en ook heb ik het gevoel dat er veel meer aan de linker kant van het toetsenbord word getypt wanneer je Nederlands alleen aan het typen bent. Miscchien ook omdat alle speciale symbolen aan de rechterkant zitten. Ja dus zo is het wel eventjes mooi geweest hoor dit is al een hele alinea aan het worden.
 
+	local bekend = {}
 	while #onbekend > 0 do
 		local doel = table.remove(onbekend, 1)
 		for pijl in graaf:naar(doel) do
-			topo[#topo+1] = pijl
-			for bron in pairs(pijl.van) do
-				onbekend[#onbekend+1] = bron
+			if not bekend[pijl] then
+				bekend[pijl] = true
+				topo[#topo+1] = pijl
+				for bron in pairs(pijl.van) do
+					onbekend[#onbekend+1] = bron
+				end
 			end
 		end
 	end

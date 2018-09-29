@@ -9,7 +9,7 @@ a-begin = a-len-pos + 1
 a-eind = a-begin + a-len
 
 b-len-pos = a-eind
-b-begin = a-eind + 1
+b-begin = b-len-pos + 1
 b-eind = b-begin + b-len
 
 a-len = data a-len-pos

@@ -35,16 +35,17 @@ function berekenbaarheid(feiten)
 		-- vergelijking?
 		if isexp(feit) and feit[1] == '=' then
 			local a,b = feit[2],feit[3]
+
 			-- a = 1 + 2
 			if isvar(a) then
-				local pijl = {van = var(b), naar = a}
+				local pijl = {van = val(b), naar = a}
 				map[pijl] = feit
 				hgraaf:link(pijl)
 			end
 		
 			-- 1 + 2 = b
 			if isvar(b) then
-				local pijl = {van = var(a), naar = b}
+				local pijl = {van = val(a), naar = b}
 				local feit = {feit[1],feit[3],feit[2]}
 				map[pijl] = feit
 				hgraaf:link(pijl)

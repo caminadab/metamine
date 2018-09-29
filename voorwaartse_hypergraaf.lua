@@ -54,7 +54,7 @@ local function sorteer(graaf, van, naar)
 
 -- bedenk alle hyperroutes door hypergraaf
 local function sorteer(hgraaf, van, naar)
-	print = function () end
+	--print = function () end
 	local onbekend = {}
 	for pijl in hgraaf:naar(naar) do
 		onbekend[pijl] = true
@@ -114,10 +114,17 @@ local function sorteer(hgraaf, van, naar)
 			fout[pijl] = true
 
 			-- opnieuw
+			local kan = false
 			for pijl in hgraaf:naar(pijl.naar) do
 				if not fout[pijl] then
+					kan = true
+					print('  OPTIE', pijl2tekst(pijl))
 					onbekend[pijl] = true
 				end
+			end
+			if not kan then --and not next(onbekend) then
+				print("NEEEEEEEEEEEE")
+				return false
 			end
 		end
 	end
@@ -127,6 +134,51 @@ local function sorteer(hgraaf, van, naar)
 
 	return stroom
 			
+end
+
+function sorteer(hgraaf, van, naar)
+	local stroom = voorwaartse_acyclische_hypergraaf()
+	local nieuw = {}
+	local bekend = {}
+
+	-- verzamel begin
+	for punt in pairs(van) do
+		for pijl in hgraaf:van(punt) do
+			nieuw[pijl] = true
+			print('BEGIN',pijl2tekst(pijl))
+		end
+	end
+
+	while next(nieuw) do
+		local pijl = next(nieuw)
+		print('LINK?',pijl2tekst(pijl))
+		nieuw[pijl] = nil
+
+		-- alle bronnen bekend?
+		local ok = true
+		for bron in pairs(pijl.van) do
+			if not bekend[bron] and not van[bron] then
+				ok = false
+				print('ONBEKEND', bron)
+			end
+		end
+
+		if ok and not bekend[pijl] and stroom:link(pijl) then
+			print('LINK',pijl2tekst(pijl))
+			bekend[pijl.naar] = true
+			for pijl in hgraaf:van(pijl.naar) do
+				if not bekend[pijl.naar] then
+					nieuw[pijl] = true
+				end
+			end
+			bekend[pijl] = true
+		end
+
+	end
+	print('KLAAR')
+	print(stroom:tekst())
+
+	return stroom
 end
 
 -- een voorwaartse hypergraaf is een hypergraaf waarbij elke hoek een specifiek punt als doel heefft
@@ -152,6 +204,22 @@ function voorwaartse_hypergraaf()
 			end
 			h.punten[naar] = true
 			h.pijlen[pijl] = true
+		end,
+
+		-- hyperpijlen van bron
+		van = function (self,bron)
+			local hoek = nil
+			return function()
+				while next(self.pijlen, hoek) do
+					local kan = next(self.pijlen, hoek)
+					hoek = kan
+					if kan.van[bron] then
+						return kan
+					end
+				end
+				-- klaar
+				return nil
+			end
 		end,
 
 		-- hyperpijlen naar doel
