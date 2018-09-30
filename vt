@@ -14,14 +14,14 @@ require 'rapport'
 
 -- GLOBALEN
 --print_ingewanden = false
-print_typen_bron = true
+print_typen_bron = false
 print_typen_stroom = false
 print_syntax = false
 print_losse_waarden = false
 print_suikervrij = false
 print_deducties = false
-print_infostroom = true
-print_pseudocode = true
+print_infostroom = false
+print_pseudocode = false
 
 -- argumenten
 local taal = 'nl'

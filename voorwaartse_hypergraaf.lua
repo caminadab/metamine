@@ -137,6 +137,7 @@ local function sorteer(hgraaf, van, naar)
 end
 
 function sorteer(hgraaf, van, naar)
+	local print = function () end
 	if isatoom(van) then van = {[van] = true} end
 	--TODO if isatoom(van) then van = {[van] = true} end
 	local stroom = voorwaartse_acyclische_hypergraaf()
