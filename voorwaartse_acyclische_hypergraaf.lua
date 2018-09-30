@@ -173,7 +173,7 @@ function link(vahgraaf, pijl_of_van, naar)
 	end
 
 	vahgraaf.pijlen[pijl] = true
-	return true
+	return pijl
 end
 
 function ontlink(vahgraaf, pijl_of_van, naar)

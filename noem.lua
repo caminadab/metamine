@@ -41,11 +41,6 @@ function berekenbaarheid(feiten)
 				local pijl = {van = val(b), naar = a}
 				map[pijl] = feit
 				hgraaf:link(pijl)
-
-				local a = {}
-				local c = val(b)
-				for p in pairs(c) do a[#a+1] = p end
-				print('BBHEID', unlisp(feit), table.concat(a, ' '))
 			end
 		
 			-- 1 + 2 = b
@@ -54,6 +49,13 @@ function berekenbaarheid(feiten)
 				local feit = {feit[1],feit[3],feit[2]}
 				map[pijl] = feit
 				hgraaf:link(pijl)
+			end
+
+			-- (1): in -> 1
+			for c in pairs(val(feit)) do
+				if tonumber(c) then
+					local pijl = hgraaf:link(set('in'), c)
+				end
 			end
 
 		end

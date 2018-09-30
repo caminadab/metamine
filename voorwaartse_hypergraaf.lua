@@ -3,7 +3,7 @@ require 'voorwaartse_acyclische_hypergraaf'
 local function pijl2tekst(pijl)
 	local r = {}
 	for bron in pairs(pijl.van) do
-		r[#r+1] = bron
+		r[#r+1] = tostring(bron)
 	end
 	table.sort(r)
 	return table.concat(r, ' ') .. ' -> ' .. pijl.naar
@@ -137,6 +137,8 @@ local function sorteer(hgraaf, van, naar)
 end
 
 function sorteer(hgraaf, van, naar)
+	if isatoom(van) then van = {[van] = true} end
+	--TODO if isatoom(van) then van = {[van] = true} end
 	local stroom = voorwaartse_acyclische_hypergraaf()
 	local nieuw = {}
 	local bekend = {}
@@ -147,6 +149,9 @@ function sorteer(hgraaf, van, naar)
 			nieuw[pijl] = true
 			print('BEGIN',pijl2tekst(pijl))
 		end
+	end
+	if not next(nieuw) then
+		error(color.red..'GEEN BEGIN GEVONDEN!! \n'.. hgraaf:tekst()..color.white..'\n')
 	end
 
 	while next(nieuw) do
@@ -159,12 +164,12 @@ function sorteer(hgraaf, van, naar)
 		for bron in pairs(pijl.van) do
 			if not bekend[bron] and not van[bron] then
 				ok = false
-				print('ONBEKEND', bron)
+				print('  NEE: '.. bron..' is onbekend')
 			end
 		end
 
 		if ok and not bekend[pijl] and stroom:link(pijl) then
-			print('LINK',pijl2tekst(pijl))
+			print('  JA')
 			bekend[pijl.naar] = true
 			for pijl in hgraaf:van(pijl.naar) do
 				if not bekend[pijl.naar] then
@@ -204,6 +209,7 @@ function voorwaartse_hypergraaf()
 			end
 			h.punten[naar] = true
 			h.pijlen[pijl] = true
+			return pijl
 		end,
 
 		-- hyperpijlen van bron

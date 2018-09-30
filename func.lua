@@ -31,6 +31,16 @@ function setlijst(set)
 	return r
 end
 
+function union(...)
+	local t = {...}
+	local r = {}
+	for i,set in ipairs(t) do
+		for v in pairs(set) do
+			r[v] = true
+		end
+	end
+end
+
 function cat(...)
 	local tt = {...}
 	local r = {}

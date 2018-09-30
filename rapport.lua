@@ -169,7 +169,7 @@ function rapport(code)
 	local feiten = ontleed(code)
 	local feiten = deduceer(feiten)
 	local afh,map = berekenbaarheid(feiten)
-	local infostroom = afh:sorteer({}, 'uit')
+	local infostroom = afh:sorteer('in', 'uit')
 
 	local deel = tag('div', nil, {class='deel'})
 

@@ -12,29 +12,6 @@ require 'plan'
 
 require 'js'
 
--- code in lisp formaat
-function vertaalJs(lispcode)
-	-- ontleed
-	local feiten = lisp(lispcode)
-	local waarden = noem(feiten)
-
-	-- speel = bieb -> cirkels
-	local invoer = {}
-	local speel = {
-		van = cat(invoer, bieb),
-		naar = 'stip',
-	}
-
-	local stroom = sorteer(waarden, speel)
-	local typen,fouten = typeer(stroom,basis)
-	if fouten then
-		print('ERROR')
-	end
-	local asmeta = uitrol(stroom, typen)
-	local func = toJs(asmeta,typen)
-	return func
-end
-
 function suikervrij(feiten)
 	local r = {}
 	for i,feit in ipairs(feiten) do
@@ -139,9 +116,10 @@ function vertaal(code, vt_doel)
 	-- 1:19:00
 	local feiten = deduceer(feiten)
 
-	local cen = constanten(feiten)
+	local bronnen = val(feiten)
 	local afh,map = berekenbaarheid(feiten)
-	local van = cat(bieb,cen)
+	--local van = union(basis,bronnen)
+	local van = 'in'
 	local infostroom = afh:sorteer(van, vt_doel)
 
 	if print_infostroom then
@@ -163,6 +141,7 @@ function vertaal(code, vt_doel)
 	-- frisse avondbries
 	print_typen = print_typen_stroom
 	if print_typen then print('# Typen Stroom') end
+	print('hhh',stroom,basis)
 	local typen = typeer(stroom,basis)
 	if print_typen then print() end
 
