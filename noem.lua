@@ -10,9 +10,8 @@ function deduceer(feiten)
 	if print_deducties then print('# Deducties') end
 	for i,feit in ipairs(feiten) do
 		for naam in pairs(var(feit)) do
-			local exp = isoleer(feit, naam)
-			if exp then
-				local dfeit = {'=', naam, exp}
+			local dfeit = isoleer(feit, naam)
+			if dfeit then
 				f[#f+1] = dfeit
 
 				if print_deducties then

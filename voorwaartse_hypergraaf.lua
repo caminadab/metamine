@@ -68,15 +68,10 @@ local function sorteer(hgraaf, van, naar)
 
 	end
 
-	print('KLAAR')
-	print(stroom:tekst())
-	print('RAALK')
-
 	if not bekend[naar] then
-		return false,'doel '..naar..' niet bereikt'
+		return false,'doel "'..naar..'" niet bereikt'
 	end
 
-	print('>',stroom)
 	return stroom
 end
 

@@ -13,11 +13,12 @@ end
 
 -- rewrite (a + b = c, a) -> c - b
 function isoleer(eq,name)
-	if eq[1] == ':' and isatoom(eq[2]) then
-		return eq[3]
+	local fn = eq[1]
+	if fn == ':' and isatoom(eq[2]) then
+		return eq
 	end
 	if eq[1] ~= '=' then
-		return
+		return false
 	end
 	local flip = false
 	while true do
@@ -30,8 +31,8 @@ function isoleer(eq,name)
 			r,l = eq[2],eq[3]
 			flip = false
 		end
-		if name == l then return r end
-		if name == r then return l end
+		if name == l then return {fn,l,r} end
+		if name == r then return {fn,r,l} end
 
 		if exp(l) and #l == 2 then
 			local f,a,x = l[1],l[2],r
@@ -126,22 +127,22 @@ end
 local L,U = lisp,unlisp
 
 tests = {
-	{'(= a b)', 'b', 'a'},
-	{'(= a b)', 'a', 'b'},
+	{'(= a b)', 'b', '(= b a)'},
+	{'(= a b)', 'a', '(= a b)'},
 
-	{'(= 7 (+ (+ a 1) 2))', 'a', '(- (- 7 2) 1)'},
-	{'(= (+ a b) c)', 'a', '(- c b)'},
-	{'(= c (+ a b))', 'a', '(- c b)'},
-	{'(= 6 (* a 3))', 'a', '(/ 6 3)'},
-	{'(= b (* (/ a 2) c))', 'a', '(* (/ b c) 2)'},
-	{'(= c (+ (* a 2) (* b 2)) c)', 'a', '(/ (- c (* b 2)) 2)'}, -- c = a * 2 + b * 2. a?
+	{'(= 7 (+ (+ a 1) 2))', 'a', '(= a (- (- 7 2) 1))'},
+	{'(= (+ a b) c)', 'a', '(= a (- c b))'},
+	{'(= c (+ a b))', 'a', '(= a (- c b))'},
+	{'(= 6 (* a 3))', 'a', '(= a (/ 6 3))'},
+	{'(= b (* (/ a 2) c))', 'a', '(= a (* (/ b c) 2))'},
+	{'(= c (+ (* a 2) (* b 2)) c)', 'a', '(= a (/ (- c (* b 2)) 2))'}, -- c = a * 2 + b * 2. a?
 
-	{'(= a (- b))', 'b', '(- a)'},
+	{'(= a (- b))', 'b', '(= b (- a))'},
 }
 
 for i,test in ipairs(tests) do
 	local eq = L(test[1])
 	local name = L(test[2])
 	local r = isoleer(eq, name)
-	assert(U(r) == test[3], test[1]..' voor '..name .. ' was '..U(r)..' maar hoort '..test[3])
+	assert(U(r) == test[3], 'test #'..i..': '..test[1]..' voor '..name .. ' was '..U(r)..' maar hoort '..test[3])
 end

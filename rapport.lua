@@ -169,7 +169,6 @@ function rapport(code)
 	local dfeiten = deduceer(feiten)
 	local afh,map = berekenbaarheid(dfeiten)
 	local infostroom, fout = afh:sorteer('in', 'uit')
-	print('< ', infostroom, fout)
 	if not infostroom then error(color.red..fout..color.white) end
 
 	local deel = tag('div', nil, {class='deel'})
