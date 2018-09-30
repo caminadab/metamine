@@ -41,6 +41,11 @@ function berekenbaarheid(feiten)
 				local pijl = {van = val(b), naar = a}
 				map[pijl] = feit
 				hgraaf:link(pijl)
+
+				local a = {}
+				local c = val(b)
+				for p in pairs(c) do a[#a+1] = p end
+				print('BBHEID', unlisp(feit), table.concat(a, ' '))
 			end
 		
 			-- 1 + 2 = b

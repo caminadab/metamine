@@ -63,6 +63,20 @@ function suikervrij(feiten)
 	return r
 end
 
+function constanten(exp,t)
+	local t = t or {}
+	if isexp(exp) then
+		for i,v in ipairs(exp) do
+			constanten(v,t)
+		end
+	else
+		if tonumber(exp) then
+			t[exp] = true
+		end
+	end
+	return t
+end
+
 --[[
 	a = (T < 5 => 2)
 	a = (T > 5 => 3)
@@ -125,9 +139,10 @@ function vertaal(code, vt_doel)
 	-- 1:19:00
 	local feiten = deduceer(feiten)
 
-	local getallen = 
+	local cen = constanten(feiten)
 	local afh,map = berekenbaarheid(feiten)
-	local infostroom = afh:sorteer(bieb, vt_doel)
+	local van = cat(bieb,cen)
+	local infostroom = afh:sorteer(van, vt_doel)
 
 	if print_infostroom then
 		print('# Infostroom')
