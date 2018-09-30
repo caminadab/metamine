@@ -59,6 +59,9 @@ function escape(t)
 end
 
 function spairs(t)
+	if type(t) ~= 'table' then
+		error('kan alleen over tabellen itereren')
+	end
 	local keys = {}
 	for key in pairs(t) do
 		table.insert(keys, key)

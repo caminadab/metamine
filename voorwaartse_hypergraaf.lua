@@ -1,4 +1,5 @@
 require 'voorwaartse_acyclische_hypergraaf'
+require 'symbool'
 
 local function pijl2tekst(pijl)
 	local r = {}
@@ -21,123 +22,8 @@ local function tekst(graaf)
 	return table.concat(p, '\n')
 end
 
---[[
-local function sorteer_itereer(onbekend)
-	-- VOOR ELKE PIJL
-	for punt in pairs(onbekend) do
-		for pijl in graaf:naar(punt) do
-			-- voeg toe
-			if stroom:pijl(pijl) then
-				local af = sorteer_itereer(...)
-				if af then
-					return af
-				end
-			end
-		end
-	end
-
-	print('Opties uitgeput, geen resultante')
-	return false
-end
-
-local function sorteer(graaf, van, naar)
-	local stroom = voorwaartse_acyclische_hypergraaf()
-	
-	return sorteer_itereer(...)
-
-	--[[
-	voor elke onontdekte pijl doe
-		voeg hem toe
-		recurseer
-	]]
---end
-
--- bedenk alle hyperroutes door hypergraaf
 local function sorteer(hgraaf, van, naar)
-	--print = function () end
-	local onbekend = {}
-	for pijl in hgraaf:naar(naar) do
-		onbekend[pijl] = true
-	end
-	local stroom = voorwaartse_acyclische_hypergraaf()
-	local bekend = {}
-	local fout = {}
-
-	-- alle mogelijke opties
-	while next(onbekend) do
-		local pijl = next(onbekend)
-		bekend[pijl] = true
-		onbekend[pijl] = nil
-
-		local doodlopend = false
-
-		if stroom:link(pijl) then
-			print('LINK', pijl2tekst(pijl))
-			bekend[pijl] = true
-			for punt in pairs(pijl.van) do
-				print('  BRON', punt)
-
-				-- zoek verder als dit niet START is,
-				if not van[punt] then
-					local iets = false
-
-					for pijl in hgraaf:naar(punt) do
-						-- wanneer proberen?
-						local mag = stroom:maglink(pijl)
-						print('   MAG?',pijl2tekst(pijl),mag and 'ja' or 'nee')
-
-						if stroom:maglink(pijl) then
-							iets = true
-
-							if not bekend[pijl] and not fout[pijl] then
-								onbekend[pijl] = true
-								print('    mogelijkheid',pijl2tekst(pijl))
-							end
-						end
-					end
-
-					if not iets then
-						doodlopend = true
-					end
-				
-				-- START: wat dit punt betreft is alles O.K.
-				else
-					print('   OK:',punt)
-				end
-
-			end
-		end
-
-		if doodlopend then
-			print('DOODLOPEND!!', pijl2tekst(pijl))
-			stroom:ontlink(pijl)
-			fout[pijl] = true
-
-			-- opnieuw
-			local kan = false
-			for pijl in hgraaf:naar(pijl.naar) do
-				if not fout[pijl] then
-					kan = true
-					print('  OPTIE', pijl2tekst(pijl))
-					onbekend[pijl] = true
-				end
-			end
-			if not kan then --and not next(onbekend) then
-				print("NEEEEEEEEEEEE")
-				return false
-			end
-		end
-	end
-
-	print('KLAAR')
-	print(stroom:tekst())
-
-	return stroom
-			
-end
-
-function sorteer(hgraaf, van, naar)
-	local print = function () end
+	--local print = function () end
 	if isatoom(van) then van = {[van] = true} end
 	--TODO if isatoom(van) then van = {[van] = true} end
 	local stroom = voorwaartse_acyclische_hypergraaf()
@@ -152,7 +38,7 @@ function sorteer(hgraaf, van, naar)
 		end
 	end
 	if not next(nieuw) then
-		error(color.red..'GEEN BEGIN GEVONDEN!! \n'.. hgraaf:tekst()..color.white..'\n')
+		return false,'geen begin gevonden'
 	end
 
 	while next(nieuw) do
@@ -181,9 +67,16 @@ function sorteer(hgraaf, van, naar)
 		end
 
 	end
+
 	print('KLAAR')
 	print(stroom:tekst())
+	print('RAALK')
 
+	if not bekend[naar] then
+		return false,'doel '..naar..' niet bereikt'
+	end
+
+	print('>',stroom)
 	return stroom
 end
 
@@ -215,11 +108,11 @@ function voorwaartse_hypergraaf()
 
 		-- hyperpijlen van bron
 		van = function (self,bron)
-			local hoek = nil
+			local pijl = nil
 			return function()
-				while next(self.pijlen, hoek) do
-					local kan = next(self.pijlen, hoek)
-					hoek = kan
+				while next(self.pijlen, pijl) do
+					local kan = next(self.pijlen, pijl)
+					pijl = kan
 					if kan.van[bron] then
 						return kan
 					end

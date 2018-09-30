@@ -528,7 +528,8 @@ end
 
 -- invoer: print_typen
 function typeer(feiten,typen)
-	local typen = typen or {fouten = {}}
+	local typen = typen or {}
+	typen.fouten = typen.fouten or {}
 	local vroegerOnbekend = 999999
 
 	while true do

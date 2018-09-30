@@ -13,6 +13,9 @@ end
 
 -- rewrite (a + b = c, a) -> c - b
 function isoleer(eq,name)
+	if eq[1] == ':' and isatoom(eq[2]) then
+		return eq[3]
+	end
 	if eq[1] ~= '=' then
 		return
 	end

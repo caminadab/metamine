@@ -55,7 +55,7 @@ local function tekst(graaf)
 	end
 	local p = {}
 	for pijl in pairs(graaf.pijlen) do
-		p[#p+1] = pijl2tekst(pijl) .. '\t\t'..tostring(pijl)
+		p[#p+1] = pijl2tekst(pijl)
 	end
 	table.sort(p)
 	return table.concat(p, '\n')
@@ -63,7 +63,7 @@ end
 
 -- generator functie (pijl, punt)
 -- geeft een topologische volgore over graaf
-local function topologisch(graaf, map)
+local function topologisch(graaf)
 	-- eind
 	local nieteinde = {}
 	for pijl in pairs(graaf.pijlen) do

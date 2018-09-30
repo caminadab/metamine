@@ -165,11 +165,12 @@ end
 
 require 'noem'
 function rapport(code)
-	local code = code
 	local feiten = ontleed(code)
-	local feiten = deduceer(feiten)
-	local afh,map = berekenbaarheid(feiten)
-	local infostroom = afh:sorteer('in', 'uit')
+	local dfeiten = deduceer(feiten)
+	local afh,map = berekenbaarheid(dfeiten)
+	local infostroom, fout = afh:sorteer('in', 'uit')
+	print('< ', infostroom, fout)
+	if not infostroom then error(color.red..fout..color.white) end
 
 	local deel = tag('div', nil, {class='deel'})
 
@@ -185,6 +186,7 @@ function rapport(code)
 					border-color: black;
 					margin: 8px;
 					display: inline-block;
+					overflow: scroll;
 				}
 
 				pre { font-size: 20px; font-weight: bold; }
@@ -197,6 +199,8 @@ function rapport(code)
 		},
 		body {
 			deel { pre(code) },
+			deel { pre(unlisp(feiten)) },
+			deel { pre(unlisp(dfeiten)) },
 			div('afh', {class='deel'}),
 			div('infostroom', {class='deel'}),
 			js (graaf2js(afh, 'afh')),
