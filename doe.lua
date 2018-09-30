@@ -238,6 +238,7 @@ function doe(stroom)
 	local env = {['in']=0}
 	for i,noem in ipairs(stroom) do
 		local naam,exp = noem[2],noem[3]
+		io.write('DOE\t',unlisp(noem),'\t')
 		--print('DOE',leed(noem))
 
 		-- lus
@@ -262,6 +263,7 @@ function doe(stroom)
 			env[naam] = eval0(env, exp)
 
 		end
+		print(unlisp(env[naam]))
 	end
 
 	local uit = env['uit']

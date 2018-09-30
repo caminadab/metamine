@@ -8,6 +8,15 @@ require 'voorwaartse_hypergraaf'
 function deduceer(feiten)
 	local f = {}
 	if print_deducties then print('# Deducties') end
+
+	-- constanten
+	for c in pairs(val(feiten)) do
+		if tonumber(c) then
+			f[#f+1] = {':', c, 'getal'}
+		end
+	end
+
+	-- vglen herschrijven
 	for i,feit in ipairs(feiten) do
 		for naam in pairs(var(feit)) do
 			local dfeit = isoleer(feit, naam)
