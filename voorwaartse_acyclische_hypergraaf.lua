@@ -63,7 +63,7 @@ end
 
 -- generator functie (pijl, punt)
 -- geeft een topologische volgore over graaf
-local function topologisch(graaf)
+local function topologisch2(graaf)
 	-- eind
 	local nieteinde = {}
 	for pijl in pairs(graaf.pijlen) do
@@ -111,6 +111,75 @@ local function topologisch(graaf)
 		i = i + 1
 		return pijl,doel
 	end
+end
+
+local function topologisch(hgraaf)
+	--local print = function () end
+	--TODO if isatoom(van) then van = {[van] = true} end
+	local volgorde = {}
+	local nieuw = {}
+	local bekend = {}
+
+	-- verzamel begin
+	local van = {}
+	local nietbegin = {}
+	for pijl in pairs(hgraaf.pijlen) do
+		nietbegin[pijl.naar] = true
+	end
+	for punt in pairs(hgraaf.punten) do
+		if not nietbegin[punt] then
+			van[punt] = true
+		end
+	end
+
+	for punt in pairs(van) do
+		for pijl in hgraaf:van(punt) do
+			nieuw[pijl] = true
+		end
+	end
+	if not next(nieuw) then
+		return false,'geen begin gevonden'
+	end
+
+	while next(nieuw) do
+		local pijl = next(nieuw)
+		print('LINK?',pijl2tekst(pijl))
+		nieuw[pijl] = nil
+
+		-- alle bronnen bekend?
+		local ok = true
+		for bron in pairs(pijl.van) do
+			if not bekend[bron] and not van[bron] then
+				ok = false
+				print('  NEE: '.. bron..' is onbekend')
+			end
+		end
+
+		if ok and not bekend[pijl] then
+			volgorde[#volgorde+1] = pijl
+			print('  JA')
+			bekend[pijl.naar] = true
+			for pijl in hgraaf:van(pijl.naar) do
+				if not bekend[pijl.naar] then
+					nieuw[pijl] = true
+				end
+			end
+			bekend[pijl] = true
+		end
+
+	end
+
+	--if not bekend[naar] then
+		--return false,'doel "'..naar..'" niet bereikt'
+	--end
+
+	local i = 1
+	return function ()
+		i = i + 1
+		return volgorde[i-1]
+	end
+
+	--return volgorde
 end
 
 -- hyperpijlen naar doel
@@ -206,6 +275,39 @@ function voorwaartse_acyclische_hypergraaf()
 		tekst = tekst,
 		topologisch = topologisch,
 		topo = topologisch,
+
+		-- hyperpijlen van bron
+		van = function (self,bron)
+			local pijl = nil
+			return function()
+				while next(self.pijlen, pijl) do
+					local kan = next(self.pijlen, pijl)
+					pijl = kan
+					if kan.van[bron] then
+						return kan
+					end
+				end
+				-- klaar
+				return nil
+			end
+		end,
+
+		-- hyperpijlen naar doel
+		naar = function (self,doel)
+			local hoek = nil
+			return function()
+				while next(self.pijlen, hoek) do
+					local kan = next(self.pijlen, hoek)
+					hoek = kan
+					if kan.naar == doel then
+						return kan
+					end
+				end
+				-- klaar
+				return nil
+			end
+		end,
+
 	}
 end
 
@@ -239,6 +341,7 @@ if test or true then
 	assert(not graaf:link({a=true,c=true}, 'b'))
 
 	-- topologisch
+	local topo = graaf:topologisch()
 	local topo = graaf:topologisch()
 	assert(topo().naar == 'b')
 	assert(topo().naar == 'c')

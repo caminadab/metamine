@@ -57,7 +57,6 @@ function loop_subst(val, naam, index, typen, uitgerold)
 end
 
 function uitrol(stroom, typen)
-do return stroom end
 	local r = {}
 	local uitgerold = {} -- naam -> uitrol?
 	for i,v in ipairs(stroom) do
