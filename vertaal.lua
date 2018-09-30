@@ -130,7 +130,6 @@ function vertaal(code, vt_doel)
 	-- frisse avondbries
 	print_typen = print_typen_stroom
 	if print_typen then print('# Typen Stroom') end
-	print('hhh',stroom,basis)
 	local typen = typeer(stroom,basis)
 	if print_typen then print() end
 

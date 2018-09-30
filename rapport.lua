@@ -168,6 +168,8 @@ function rapport(code)
 	local feiten = ontleed(code)
 	local dfeiten = deduceer(feiten)
 	local afh,map = berekenbaarheid(dfeiten)
+	print('AFH')
+	print(afh:tekst())
 	local infostroom, fout = afh:sorteer('in', 'uit')
 	if not infostroom then error(color.red..fout..color.white) end
 

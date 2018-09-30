@@ -235,7 +235,7 @@ if false and test then
 end
 
 function doe(stroom)
-	local env = {}
+	local env = {['in']=0}
 	for i,noem in ipairs(stroom) do
 		local naam,exp = noem[2],noem[3]
 		--print('DOE',leed(noem))

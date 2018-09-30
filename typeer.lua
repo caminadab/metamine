@@ -138,7 +138,7 @@ local function verenig_of(ta, tb)
 		return tb
 	end
 
-	return 'fout', leed(ta)..' !!= '..leed(tb)
+	return 'fout', 'onverenigbaar: '..leed(ta)..' != '..leed(tb)
 end
 assert(verenig_of('2', 'int') == 'int')
 assert(verenig_of('2', '3') == 'int', verenig_of('2','3'))
@@ -184,7 +184,7 @@ local function verenig_en(ta, tb)
 		return ta
 	end
 
-	return 'fout', leed(ta)..' !!= '..leed(tb)
+	return 'fout', 'unie tussen "'..leed(ta)..'" en "'..leed(tb)..'" bestaat niet'
 end
 
 assert(verenig_en('2', 'int') == '2')

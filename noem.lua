@@ -32,6 +32,14 @@ function berekenbaarheid(feiten)
 
 	for i,feit in ipairs(feiten) do
 		-- vergelijking?
+		if isexp(feit) and feit[1] == ':' then
+			local a,b = feit[2],feit[3]
+			local pijl = {van = val(b), naar = a}
+			-- a : getal
+			map[pijl] = feit
+			hgraaf:link(pijl)
+		end
+
 		if isexp(feit) and feit[1] == '=' then
 			local a,b = feit[2],feit[3]
 
@@ -43,7 +51,7 @@ function berekenbaarheid(feiten)
 			end
 		
 			-- 1 + 2 = b
-			if isvar(b) then
+			if isvar(b) and not isvar(a) then
 				local pijl = {van = val(a), naar = b}
 				local feit = {feit[1],feit[3],feit[2]}
 				map[pijl] = feit
@@ -51,11 +59,11 @@ function berekenbaarheid(feiten)
 			end
 
 			-- (1): in -> 1
-			for c in pairs(val(feit)) do
+			--[[for c in pairs(val(feit)) do
 				if tonumber(c) then
 					local pijl = hgraaf:link(set('in'), c)
 				end
-			end
+			end]]
 
 		end
 	end
