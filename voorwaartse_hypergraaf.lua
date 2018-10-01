@@ -69,7 +69,7 @@ local function sorteer(hgraaf, van, naar)
 	end
 
 	if not bekend[naar] then
-		return false,'doel "'..naar..'" niet bereikt'
+		return false,'doel "'..naar..'" niet bereikt',stroom
 	end
 
 	return stroom

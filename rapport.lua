@@ -168,10 +168,11 @@ function rapport(code)
 	local feiten = ontleed(code)
 	local dfeiten = deduceer(feiten)
 	local afh,map = berekenbaarheid(dfeiten)
-	print('AFH')
-	print(afh:tekst())
-	local infostroom, fout = afh:sorteer('in', 'uit')
-	if not infostroom then error(color.red..fout..color.white) end
+	local infostroom, fout, half = afh:sorteer('in', 'uit')
+	if not infostroom then
+		print(color.red..fout..color.white)
+		infostroom = half
+	end
 
 	local deel = tag('div', nil, {class='deel'})
 

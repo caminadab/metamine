@@ -157,6 +157,10 @@ local function verenig_en(ta, tb)
 		return ta
 	end
 
+	-- skip ruig
+	if ta == 'in' then return tb end
+	if tb == 'in' then return ta end
+
 	-- handmatig
 	if ta == 'getal' and tb == 'int' then return 'int' end
 	if tb == 'getal' and ta == 'int' then return 'int' end

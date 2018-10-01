@@ -236,34 +236,39 @@ end
 
 function doe(stroom)
 	local env = {['in']=0}
-	for i,noem in ipairs(stroom) do
-		local naam,exp = noem[2],noem[3]
-		io.write('DOE\t',unlisp(noem),'\t')
+	for i,feit in ipairs(stroom) do
+		local fn,naam,exp = feit[1],feit[2],feit[3]
+		io.write('DOE\t',unlisp(feit),'\t')
 		--print('DOE',leed(noem))
 
-		-- lus
-		if type(naam) == 'table' then
-			local naam,itnaam = naam[1],naam[2]
-			local it = env[itnaam]
-			if not it or type(it) ~= 'table' then
-				error('ongeldige lus '..itnaam)
+		if fn == '=' or fn == ':=' then
+
+			-- lus
+			if type(naam) == 'table' then
+				local naam,itnaam = naam[1],naam[2]
+				local it = env[itnaam]
+				if not it or type(it) ~= 'table' then
+					error('ongeldige lus '..itnaam)
+				end
+
+				env[naam] = env[naam] or {}
+				local naar = env[naam]
+
+				for i = 1,#it do
+					env[itnaam] = it[i]
+					naar[i] = eval0(env, exp)
+				end
+				env[it] = nil
+
+			-- geen lus
+			else
+				env[naam] = eval0(env, exp)
+
 			end
-
-			env[naam] = env[naam] or {}
-			local naar = env[naam]
-
-			for i = 1,#it do
-				env[itnaam] = it[i]
-				naar[i] = eval0(env, exp)
-			end
-			env[it] = nil
-
-		-- geen lus
-		else
-			env[naam] = eval0(env, exp)
-
 		end
+
 		print(unlisp(env[naam]))
+
 	end
 
 	local uit = env['uit']
