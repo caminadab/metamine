@@ -1,4 +1,5 @@
 require 'func'
+local print = function () end
 
 -- is er, zonder alle pijlen te vervullen, een route van bron naar doel mogelijk?
 -- zoekt achterstevoren
@@ -155,12 +156,12 @@ local function topologisch(hgraaf)
 			end
 		end
 
-		if ok and not bekend[pijl] then
+		if ok then --and not bekend[pijl] then
 			volgorde[#volgorde+1] = pijl
 			print('  JA')
 			bekend[pijl.naar] = true
 			for pijl in hgraaf:van(pijl.naar) do
-				if not bekend[pijl.naar] then
+				if true or not bekend[pijl.naar] then
 					nieuw[pijl] = true
 				end
 			end
@@ -172,6 +173,14 @@ local function topologisch(hgraaf)
 	--if not bekend[naar] then
 		--return false,'doel "'..naar..'" niet bereikt'
 	--end
+	
+	-- we moeten helaas alle dubbelen uitfilteren, achterstevoren _.-._
+	local al = {}
+	for i=#volgorde,1,-1 do
+		local naam = volgorde[i]
+		if al[naam] then table.remove(volgorde,i)
+		else al[naam] = true end
+	end
 
 	local i = 1
 	return function ()

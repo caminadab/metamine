@@ -1,5 +1,6 @@
 require 'voorwaartse_acyclische_hypergraaf'
 require 'symbool'
+local print = function () end
 
 local function pijl2tekst(pijl)
 	local r = {}
@@ -54,13 +55,16 @@ local function sorteer(hgraaf, van, naar)
 				print('  NEE: '.. bron..' is onbekend')
 			end
 		end
+		print('  DOEL?', pijl.naar)
 
-		if ok and not bekend[pijl] and stroom:link(pijl) then
+		if ok --[[and not bekend[pijl] ]] and stroom:link(pijl) then
 			print('  JA')
 			bekend[pijl.naar] = true
 			for pijl in hgraaf:van(pijl.naar) do
-				if not bekend[pijl.naar] then
+				if true or not bekend[pijl.naar] then
 					nieuw[pijl] = true
+				else
+					print('   al bekend', pijl.naar)
 				end
 			end
 			bekend[pijl] = true
@@ -92,6 +96,7 @@ function voorwaartse_hypergraaf()
 				van = pijl.van
 				naar = pijl.naar 
 			end
+			if type(van) ~= 'table' then van = {[van]=true} end
 
 			for bron in pairs(van) do
 				h.punten[bron] = true
@@ -161,9 +166,7 @@ if test then
 	local stroom = graaf:sorteer(set('a'), 'c')
 	assert(stroom:naar('c')().van.b)
 	assert(stroom:naar('b')().van.a)
-end
 
-if true then
 	--[[ 
 	Graaf:
 		IN -> A
@@ -179,6 +182,7 @@ if true then
 		A -> B
 		IN -> A
 	]]
+
 	local graaf = voorwaartse_hypergraaf()
 	--graaf:link(set('in'), 'a')
 	graaf:link(set('in'), 'a')
@@ -189,4 +193,25 @@ if true then
 	-- a -> b moet erin zitten
 	assert(stroom:naar('b')() and stroom:naar('b')().van.a, stroom:tekst())
 
+end
+
+if true then
+	local graaf = voorwaartse_hypergraaf()
+	graaf:link(set'a', 'b')
+	graaf:link(set'a', 'c')
+	graaf:link(set'b', 'd')
+	graaf:link(set'c', 'd')
+	print('GRAAF')
+	print(graaf:tekst())
+
+	local stroom,fout = graaf:sorteer('a', 'd')
+	-- a -> b moet erin zitten
+	assert(stroom:naar('b')() and stroom:naar('b')().van.a, stroom:tekst())
+	assert(stroom:naar('c')() and stroom:naar('c')().van.a, stroom:tekst())
+	local b,c
+	for bc in stroom:naar('d') do
+		if bc.van.b then b = 1 end
+		if bc.van.c then c = 1 end
+	end
+	assert(b and c, stroom:tekst())
 end
