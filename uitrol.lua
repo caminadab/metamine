@@ -53,7 +53,7 @@ function loop_subst(val, naam, index, typen, uitgerold)
 	end
 	--local naam = naam .. '_'..(i-1)
 	local noot = 'lus, i='..unlisp(index)
-	return {':=', naam, val, [';'] = noot}
+	return {'=', naam, val, [';'] = noot}
 end
 
 function uitrol(stroom, typen)
@@ -81,10 +81,10 @@ function uitrol(stroom, typen)
 					local stam = naam
 					for i=2,#val do
 						local naam = stam..'_'..(i-2)
-						r[#r+1] = {':=', naam, val[i], [';'] = 'lijst'}
+						r[#r+1] = {'=', naam, val[i], [';'] = 'lijst'}
 					end
 				else
-					r[#r+1] = {':=', naam, val} 
+					r[#r+1] = {'=', naam, val} 
 				end
 
 			-- kleine loopjes
@@ -121,7 +121,7 @@ function uitrol(stroom, typen)
 					-- goed
 					if lijst then
 
-						r[#r+1] = {':=', inaam, lijst, [';'] = noot}
+						r[#r+1] = {'=', inaam, lijst, [';'] = noot}
 						r[#r+1] = loop_subst(val, {naam, inaam}, inaam, typen, uitgerold)
 
 					-- fout
@@ -142,7 +142,7 @@ function uitrol(stroom, typen)
 					for i=1,n do
 						l[#l+1] = tostring(naam)..'_'..(i-1)
 					end
-					--r[#r+1] = {':=', naam, l}
+					--r[#r+1] = {'=', naam, l}
 
 				end
 					
@@ -164,7 +164,7 @@ function uitrol(stroom, typen)
 			local index = tostring(i-1)
 			a[#a+1] = doel..'_'..index
 		end
-		r[#r+1] = {':=', doel, a, [';'] = 'resultaat oprollen'}
+		r[#r+1] = {'=', doel, a, [';'] = 'resultaat oprollen'}
 	end
 	return r
 end
