@@ -15,6 +15,7 @@ if not pad then
 [[gebruik: doe [OPTIES...] [BESTANDEN...]
 Voert een programma uit. Het programma moet opgeslagen zijn als lispbestand
 en een lijst van waarderingen representeren.
+	-v	verboos zijn
 ]])
 	return
 end

@@ -111,7 +111,7 @@ function vertaal(code, vt_doel)
 		print(color.red..fout..color.white)
 	end
 
-	if true or print_infostroom then
+	if print_infostroom then
 		print('# Infostroom')
 		print(infostroom:tekst())
 		print()

@@ -4,7 +4,6 @@ require 'symbool'
 require 'voorwaartse-hypergraaf'
 
 -- herschrijft vergelijkingen
--- herbruikt 'feiten'
 function deduceer(feiten)
 	local f = {}
 	if print_deducties then print('# Deducties') end
@@ -29,6 +28,10 @@ function deduceer(feiten)
 			end
 		end
 	end
+
+	-- extra toevoegen
+	f[#f+1] = {':', 'getal', 'in'}
+
 	if print_deducties then print() end
 	return f
 end
