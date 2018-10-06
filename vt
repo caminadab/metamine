@@ -129,6 +129,8 @@ if immediate then
 		print('kan niet direct javascript uitvoeren')
 	else
 		uit = unlisp(doe(stroom))
+		print(uit)
+		return
 	end
 end
 

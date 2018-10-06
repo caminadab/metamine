@@ -31,6 +31,7 @@ function deduceer(feiten)
 
 	-- extra toevoegen
 	f[#f+1] = {':', 'getal', 'in'}
+	f[#f+1] = {'=', 'uit', 'stdout'}
 
 	if print_deducties then print() end
 	return f
