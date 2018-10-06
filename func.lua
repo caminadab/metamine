@@ -1,3 +1,7 @@
+function curry(a,b)
+	return nil
+end
+
 function map(v, fn)
 	local r = {}
 	for k,v in pairs(v) do r[k] = fn(v) end
