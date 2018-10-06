@@ -1,4 +1,4 @@
-require 'voorwaartse_acyclische_hypergraaf'
+require 'voorwaartse-acyclische-hypergraaf'
 require 'symbool'
 local print = function () end
 

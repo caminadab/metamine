@@ -1,7 +1,7 @@
 require 'util'
 require 'isoleer'
 require 'symbool'
-require 'voorwaartse_hypergraaf'
+require 'voorwaartse-hypergraaf'
 
 -- herschrijft vergelijkingen
 -- herbruikt 'feiten'

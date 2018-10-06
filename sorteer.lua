@@ -1,6 +1,6 @@
 require 'func'
 require 'graaf'
-require 'voorwaartse_hypergraaf'
+require 'voorwaartse-hypergraaf'
 require 'noem' -- var()
 
 local insert = table.insert
