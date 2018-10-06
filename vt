@@ -61,7 +61,7 @@ for i=1,#args do
 		elseif vlag == 's' then
 			print_ingewanden = true
 		elseif vlag == 'v' then
-			print_losse_waarden = true
+			_G.verboos = true
 		elseif vlag == 'l' then
 			taal = string.lower(arg:sub(3,5))
 			if taal == '' then taal = args[i+1] end
@@ -115,6 +115,13 @@ if not stroom then
 	local fout = typen
 	print(color.red .. fout .. color.white)
 	return
+end
+
+if verboos then
+	require 'infix'
+	for i,v in ipairs(stroom) do
+		print(unparseInfix(v))
+	end
 end
 
 local uit

@@ -45,6 +45,14 @@ end
 	a = (T > 5 => 3)
 ]]
 
+-- bieb
+local bieb = ontleed(file('bieb.code'))
+local basis,fouten = typeer(bieb)
+if print_typen then print() end
+if fouten then
+	for i,fout in ipairs(fouten) do print('BIEBFOUT',leed(fout)) end
+end
+
 --[[
 vertaal = code -> stroom
 	ontleed: code -> feiten
@@ -55,7 +63,7 @@ vertaal = code -> stroom
 	typeer stroom
 	uitrol: stroom -> makkelijke-stroom
 ]]
-function vertaal(code, vt_doel)
+function vertaal(code)
 	local feiten = ontleed(code)
 
 	-- stroef doen
@@ -64,20 +72,9 @@ function vertaal(code, vt_doel)
 		return false
 	end
 
-	-- bieb
-	local bieb = ontleed(file('bieb.code'))
-	local basis,fouten = typeer(bieb)
-	if print_typen then print() end
-	if fouten then
-		for i,fout in ipairs(fouten) do print('BIEBFOUT',leed(fout)) end
-	end
-
 	-- typeer
 	local typen,fouten = typeer(feiten,basis)
 	if fouten then return nil, fouten end
-
-	-- syn suiker
-	local feiten = suikervrij(feiten)
 
 	-- herschrijf
 	local feiten = deduceer(feiten)
