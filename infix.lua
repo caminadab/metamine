@@ -298,6 +298,11 @@ local function unparseInfix_work(sexp, tt)
 			end
 			insert(tt, sexp[1]:sub(2,2))
 
+		-- procent
+		elseif sexp[1] == '%' then
+			unparseInfix_work(sexp[2], tt)
+			insert(tt, '%')
+
 		-- unop
 		elseif #sexp == 2 then
 			insert(tt, op)

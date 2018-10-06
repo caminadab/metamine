@@ -9,6 +9,7 @@ local fn = {
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b) return a ^ b end;
+	['%'] = function(a) return a / 100 end;
 	['[]'] = function(...)
 		return table.pack(...)
 	end,

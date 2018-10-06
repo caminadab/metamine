@@ -79,12 +79,6 @@ function vertaal(code, vt_doel)
 	-- syn suiker
 	local feiten = suikervrij(feiten)
 
-	if print_suikervrij then
-		print('# Suikervrij')
-		print(unlisp(feiten))
-		print()
-	end
-
 	-- herschrijf
 	local feiten = deduceer(feiten)
 
