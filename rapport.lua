@@ -1,4 +1,5 @@
 require 'html'
+require 'infix'
 
 function tag(naam,id,props)
 	if type(id) == 'table' then
@@ -74,7 +75,7 @@ function rid()
 	return 'x'..math.random()
 end
 
-function graaf2js(graaf, id, layout)
+function graaf2js(graaf, id, layout, map)
 	local layout = layout or 'cose'
 	-- punten
 	local d = {}
@@ -89,7 +90,8 @@ function graaf2js(graaf, id, layout)
 		if haspseudo then
 			-- pseudo punt
 			pseudo = rid()
-			d[#d+1] = "{ data: {id: '"..pseudo.."'}, classes: 'hyper' },"
+			local exp = unparseInfix(map[pijl])
+			d[#d+1] = "{ data: {id: '"..pseudo.."', exp: '"..exp.."'}, classes: 'hyper' },"
 		else
 			pseudo = next(pijl.van)
 		end
@@ -144,9 +146,10 @@ function graaf2js(graaf, id, layout)
 				{
 					selector: '.hyper',
 					style: {
+							label: 'data(exp)',
 							shape: 'none',
 							'background-color': 'black',
-							label: '',
+							'font-size': '8px',
 							width: '10px',
 							height: '10px',
 					}
@@ -205,8 +208,8 @@ function rapport(code)
 			deel { pre(unlisp(dfeiten)) },
 			div('afh', {class='deel'}),
 			div('infostroom', {class='deel'}),
-			js (graaf2js(afh, 'afh')),
-			js (graaf2js(infostroom, 'infostroom', 'dagre')),
+			js (graaf2js(afh, 'afh', nil, map)),
+			js (graaf2js(infostroom, 'infostroom', 'dagre', map)),
 			js [[
 				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

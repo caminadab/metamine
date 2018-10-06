@@ -1,5 +1,5 @@
 --require 'token'
-require 'sexp'
+require 'lisp'
 require 'func'
 
 local insert = table.insert
@@ -287,8 +287,19 @@ local function unparseInfix_work(sexp, tt)
 	else
 		local op = sexp[1]
 
+		-- lijst/set
+		if sexp[1] == '[]' or sexp[1] == '{}' then
+			insert(tt, sexp[1]:sub(1,1))
+			for i=2,#sexp do
+				unparseInfix_work(sexp[i], tt)
+				if i ~= #sexp then
+					insert(tt, ', ')
+				end
+			end
+			insert(tt, sexp[1]:sub(2,2))
+
 		-- unop
-		if #sexp == 2 then
+		elseif #sexp == 2 then
 			insert(tt, op)
 			if atom(sexp[2]) then
 				insert(tt, ' ')
@@ -324,6 +335,12 @@ local function unparseInfix_work(sexp, tt)
 
 		end
 	end
+	-- plet
+	for i,v in ipairs(tt) do
+		if isexp(v) then
+			tt[i] = unlisp(tt[i])
+		end
+	end
 	return tt
 end
 
@@ -337,8 +354,6 @@ function unparseInfix(sexp)
 end
 
 -- zelf test
-require 'sexp'
-
 local function test(infix,prefix)
 	-- fase A
 	local sexp = parseInfix(infix)
