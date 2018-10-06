@@ -1,0 +1,32 @@
+#!/usr/bin/lua
+package.path = package.path .. ";../?.lua"
+require 'doe'
+require 'lisp'
+require 'util'
+
+local vlag,pad = ...
+if vlag == '-v' then
+	_G.verboos = true
+end
+if not pad then pad = vlag end
+if not pad then
+	print('geen invoer')
+	print(
+[[gebruik: doe [OPTIES...] [BESTANDEN...]
+Voert een programma uit. Het programma moet opgeslagen zijn als lispbestand
+en een lijst van waarderingen representeren.
+]])
+	return
+end
+if pad:sub(-9) ~= '.app.lisp' then
+	pad = pad .. '.app.lisp'
+end
+local opdrachten = file(pad)
+if not opdrachten then
+	print('bestand niet gevonden')
+	return
+end
+local opdrachten = lisp(opdrachten)
+
+local res = doe(opdrachten)
+print(unlisp(res))

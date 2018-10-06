@@ -34,7 +34,7 @@ local tostdout = false
 
 -- stroom, love, js
 local doel = 'tekst'
-local uitvoer = 'main.lisp'
+local uitvoer = nil
 
 local args = {...}
 
@@ -76,6 +76,9 @@ for i=1,#args do
 		-- code
 		if arg:sub(-5) ~= '.code' then
 			arg = arg .. '.code'
+		end
+		if not uitvoer then
+			uitvoer = arg:sub(1,-6)..'.app.lisp'
 		end
 		bron[#bron+1] = arg
 	end

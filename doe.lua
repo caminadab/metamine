@@ -235,10 +235,16 @@ if false and test then
 end
 
 function doe(stroom)
-	local env = {['in']=0}
+	local io_write = io.write
+	local print = print
+	if not verboos then
+		io_write = function () end
+		print = function () end
+	end
+	local env = {}
 	for i,feit in ipairs(stroom) do
 		local fn,naam,exp = feit[1],feit[2],feit[3]
-		io.write('DOE\t',unlisp(feit),'\t')
+		io_write('DOE\t',unlisp(feit),'\t\t= ')
 		--print('DOE',leed(noem))
 
 		if fn == '=' or fn == ':=' then

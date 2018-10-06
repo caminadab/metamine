@@ -3,11 +3,14 @@ linux:
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
 	ln -sf ../vt bin/vt
+	ln -sf ../doe bin/doe
 	
 windows:
 	mkdir -p bin
 	cd ontleed; make windows
 	cp -r ontleed/bin/* bin/
+	ln -sf ../vt bin/vt
+	ln -sf ../doe bin/doe
 
 all:
 	mkdir -p bin	

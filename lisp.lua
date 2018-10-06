@@ -75,7 +75,7 @@ function unparse_work(sexpr, maxlen, tabs, res)
 end
 
 function unparseSexp(sexpr)
-  if not sexpr then return 'none' end
+  if not sexpr then return 'niets' end
   return concat(unparse_work(sexpr, 40))
 end
 unlisp = unparseSexp
