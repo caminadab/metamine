@@ -21,3 +21,5 @@ b = data (b-begin .. b-eind)
 uit = a || " " || b
 
 in = getal
+
+stip = [100,100]

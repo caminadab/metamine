@@ -280,6 +280,9 @@ local toetsSpatieUit = false
 	-- schaduw
 	for i,stat in ipairs(block) do
 		local naam = stat[2]
+		if type(naam) == 'table' then
+			naam = naam[1]..'_'..naam[2]
+		end
 		t[#t+1] = 'schaduw_'..naam2love(naam)
 		t[#t+1] = ' = '
 		t[#t+1] = naam2love(naam)

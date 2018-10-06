@@ -79,4 +79,3 @@ function berekenbaarheid(feiten)
 	return hgraaf, map
 end
 
---assert(unlisp(noem(lisp'((= a 0) (= a 1))').a) == '(0 1)')
