@@ -1,0 +1,3 @@
+data = 3 || "hoi" || 2 || "ok" || 4 || "doei"
+
+uit = data
