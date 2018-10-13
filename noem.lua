@@ -6,7 +6,6 @@ require 'voorwaartse-hypergraaf'
 -- herschrijft vergelijkingen
 function deduceer(feiten)
 	local f = {}
-	if print_deducties then print('# Deducties') end
 
 	-- constanten
 	for c in pairs(val(feiten)) do
@@ -21,10 +20,6 @@ function deduceer(feiten)
 			local dfeit = isoleer(feit, naam)
 			if dfeit then
 				f[#f+1] = dfeit
-
-				if print_deducties then
-					print(leed(dfeit))
-				end
 			end
 		end
 	end
