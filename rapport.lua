@@ -53,6 +53,8 @@ div = function (id,props)
 end
 span = tag('span')
 pre = tag('pre')
+tabel = tag('tabel')
+tr,th,td = tag'tr', tag'th', tag'td'
 h1 = tag('h1')
 css = tag('style')
 canvas = function (id)
@@ -179,15 +181,13 @@ function rapport(code)
 	-- types
 	local types = typeer(dfeiten)
 	local tt = {}
-	for exp,type in pairs(types) do
-		tt[#tt+1] = '('
-		tt[#tt+1] = leed(type)
-		tt[#tt+1] = ')'
-		tt[#tt+1] = '\t\t'
-		tt[#tt+1] = leed(exp)
-		tt[#tt+1] = '\n'
+	for exp,type in spairs(types) do
+		tt[#tt+1] = tr "hoi" --{
+			--td( leed(type) ),
+			--td( leed(exp) ),
+		--}
 	end
-	local typetext = table.concat(tt)
+	local typetabel = tabel(tt)
 
 	return html {
 		head {
@@ -218,7 +218,7 @@ function rapport(code)
 			deel { pre(unlisp(dfeiten)) },
 			div('afh', {class='deel'}),
 			div('infostroom', {class='deel'}),
-			deel { pre(typetext) },
+			deel { typetabel },
 			js (graaf2js(afh, 'afh', nil, map)),
 			js (graaf2js(infostroom, 'infostroom', 'dagre', map)),
 			js [[
