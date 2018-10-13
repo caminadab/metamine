@@ -53,7 +53,7 @@ div = function (id,props)
 end
 span = tag('span')
 pre = tag('pre')
-tabel = tag('tabel')
+tabel = tag('table')
 tr,th,td = tag'tr', tag'th', tag'td'
 h1 = tag('h1')
 css = tag('style')
@@ -182,10 +182,10 @@ function rapport(code)
 	local types = typeer(dfeiten)
 	local tt = {}
 	for exp,type in spairs(types) do
-		tt[#tt+1] = tr "hoi" --{
-			--td( leed(type) ),
-			--td( leed(exp) ),
-		--}
+		tt[#tt+1] = tr {
+			td( leed(type) ),
+			td( leed(exp) ),
+		}
 	end
 	local typetabel = tabel(tt)
 
