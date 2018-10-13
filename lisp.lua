@@ -31,6 +31,7 @@ end
 function exp(sexp)
 	return type(sexp) == 'table'
 end
+isexp = exp
 
 function unparse_work(sexpr, maxlen, tabs, res)
 	if type(sexpr) == 'boolean' then
