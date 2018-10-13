@@ -58,22 +58,22 @@
 
 %precedence NAAM TEKST
 %left "=>"
+%left EN OF EXOF NOCH NIET
 %left '='
 %left ":=" "+=" "-=" "|=" "&="
-%left "en" "of" "exof" "noch" "niet"
 %left "->"
 %left ','
 %left '<' '>' "<=" ">="
-
 %left '&' '|'
 %left "||"
 %left ".."
 %left "xx"
-%precedence CALL
 %left '+' '-'
 %left '*' '/'
 %precedence NEG
 %right '^' '_'
+%left ':'
+%precedence CALL
 %left OUD
 %left '.'
 %precedence '%'
@@ -104,22 +104,16 @@ set:
 */
 
 /*	| exp '=' set					{ $$ = exp3(a("="), $1, $3); }*/
-feit:
-		exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
-	|	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
-	|	exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
-	|	exp "+=" exp				{ $$ = exp3(a("+="), $1, $3); }
-	| exp ':' exp					{ $$ = exp3(a(":"), $1, $3); }
-;
+feit: exp;
 
 single:
 	NAAM 
 | TEKST								{ $$ = tekst($1); }
-| exp '%'							{ $$ = _exp2(a("%"), $1); }
+| single '%'							{ $$ = _exp2(a("%"), $1); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
-| exp '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
+| single '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
 
 | '(' '^' ')'       	{ $$ = a("^"); }
 | '(' '_' ')'       	{ $$ = a("_"); }
@@ -173,7 +167,7 @@ single:
 ;
 
 exp:
-	single %prec NAAM
+	single
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '_' exp       	{ $$ = exp3(a("_"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -213,11 +207,13 @@ exp:
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 | exp '@' exp       	{ $$ = exp3(a("@"), $1, $3); }
+| exp ':' exp       	{ $$ = exp3(a(":"), $1, $3); }
 
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
 /*| exp '\'' %prec OUD	{ printf("HOI"); $$ = _exp2(a("'"), $1); }*/
 
 | single single %prec CALL				{ $$ = _exp2($1, $2); }
+| single single single %prec CALL				{ $$ = exp3($2, $1, $3); }
 ;
 
 list:
@@ -241,7 +237,8 @@ items:
 ;
 
 params:
-	'(' exp ',' exp  ')'			{ $$ = exp3(a(","), $2, $4); }
+	'(' exp ',' exp  ')'				{ $$ = exp3(a(","), $2, $4); }
+/*|	exp ',' exp 			 					{ $$ = exp3(a(","), $1, $3); }*/
 |	NAAM												{ $$ = _exp2(a(","), $1); }
 |	TEKST												{ $$ = _exp2(a(","), $1); }
 /*|	params ',' NAAM			{ $$ = append($1, $3); } */

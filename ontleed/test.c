@@ -21,8 +21,8 @@ int test() {
 		{"f = a -> a + 1", "((= f (-> (, a) (+ a 1))))"},
 		{"f = a,b -> c", "((= f (-> (, a b) c)))"},
 		{"f = int,int -> int", "((= f (-> (, int int) int)))"},
-		{"f = (intd,intd) -> intq", "((= f (-> (, intd intd) intq)))"},
-		{"f = (int^2,int^2) -> int", "((= f (-> (, (^ int 2) (^ int 2)) int)))"},
+		{"f = intd,intd -> intq", "((= f (-> (, intd intd) intq)))"},
+		{"f = int^2,int^2 -> int", "((= f (-> (, (^ int 2) (^ int 2)) int)))"},
 		
 		// blok
 		{
@@ -31,8 +31,9 @@ int test() {
 		},
 
 		// logica
-		{"a = goed en lekker", "((= a (en goed lekker)))"},
+		{"a = (goed en lekker)", "((= a (en goed lekker)))"},
 		{"a = niet goed", "((= a (niet goed)))"},
+		{"a = ja en a = nee", "((en (= a ja) (= a nee)))"},
 
 		// fouten
 		{"a = (3 =)", "((= a fout))"},
@@ -74,6 +75,15 @@ int test() {
 		// tekst
 		{"a = \"hoi\"", "((= a ([] 104 111 105)))"},
 		{"\"hoi\" = a", "((= ([] 104 111 105) a))"},
+
+		// (a b)
+		{"a = sin x", "((= a (sin x)))"},
+		{"a : sin x", "((: a (sin x)))"},
+		{"sin x : a", "((: (sin x) a))"},
+		{"a 0 : getal", "((: (a 0) getal))"},
+		{"a 0 : getal en a 1 : getal", "((en (: (a 0) getal) (: (a 1) getal)))"},
+		{"a mod b c", "fout"},
+		{"a mod (b c)", "((mod a (b c)))"},
 
 		{0, 0},
 	};
