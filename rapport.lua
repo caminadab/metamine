@@ -172,12 +172,22 @@ function rapport(code)
 	local dfeiten = deduceer(feiten)
 	local afh,map = berekenbaarheid(dfeiten)
 	local infostroom, fout, half = afh:sorteer('in', 'uit')
-	if not infostroom then
-		print(color.red..fout..color.white)
-		infostroom = half
-	end
+	infostroom = infostroom or half
 
 	local deel = tag('div', nil, {class='deel'})
+
+	-- types
+	local types = typeer(dfeiten)
+	local tt = {}
+	for exp,type in pairs(types) do
+		tt[#tt+1] = '('
+		tt[#tt+1] = leed(type)
+		tt[#tt+1] = ')'
+		tt[#tt+1] = '\t\t'
+		tt[#tt+1] = leed(exp)
+		tt[#tt+1] = '\n'
+	end
+	local typetext = table.concat(tt)
 
 	return html {
 		head {
@@ -208,6 +218,7 @@ function rapport(code)
 			deel { pre(unlisp(dfeiten)) },
 			div('afh', {class='deel'}),
 			div('infostroom', {class='deel'}),
+			deel { pre(typetext) },
 			js (graaf2js(afh, 'afh', nil, map)),
 			js (graaf2js(infostroom, 'infostroom', 'dagre', map)),
 			js [[

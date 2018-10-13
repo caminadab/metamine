@@ -168,4 +168,3 @@ function uitrol(stroom, typen)
 	end
 	return r
 end
-			

@@ -27,6 +27,8 @@ local fn = {
 	['||'] = function(a,b)
 		local j = 1
 		local t = {}
+		if isatoom(a) then a = {a} end
+		if isatoom(b) then b = {b} end
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
 		for i,v in ipairs(b) do t[j] = v; j=j+1 end
 		return t

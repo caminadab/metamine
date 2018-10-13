@@ -95,6 +95,9 @@ function leed(exp)
 	return table.concat(t)
 end
 
+require 'infix'
+leed = unparseInfix
+
 local function verenig_of(ta, tb)
 	if ta == 'fout' or tb == 'fout' then return 'fout' end
 	if ta and not tb then return ta end

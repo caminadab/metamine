@@ -16,6 +16,6 @@ a-len = data a-len-pos
 b-len = data b-len-pos
 
 a = data (a-begin .. a-eind)
-b = data (a-begin .. a-eind)
+b = data (b-begin .. b-eind)
 
 uit = a || " " || b
