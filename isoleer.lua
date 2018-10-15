@@ -50,9 +50,9 @@ function isoleer(eq,name)
 				if out == 0 then eq0 = {'=', a, {'-', x}} end -- a = - x
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			else
-				-- x = f a
+				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'inverse', f}, x}} end -- a = (inverse f) x
-				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
+				if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
 		if exp(l) and l[1] == '[]' then
