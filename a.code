@@ -1,3 +1,4 @@
-berichten = ["hoi", "ok", "doei"]
-data(i) = # berichten(i)
-uit = data
+a = "aa"
+b i = a i + 1
+uit = b
+i : {0,1}
