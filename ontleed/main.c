@@ -11,8 +11,8 @@ extern node* yylval;
 
 struct fout fouten[0x10];
 
-char token[0x100];
-char buf[0x1000];
+char token[0x1000];
+char buf[0x10000];
 const char* in;
 
 void rapporteer(int lijn, char* bericht);

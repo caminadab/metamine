@@ -1,4 +1,6 @@
 a = "aa"
 b i = a i + 1
 uit = b
+
 i : {0,1}
+uit : int^int

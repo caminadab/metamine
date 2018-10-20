@@ -6,8 +6,8 @@
 #include "node.h"
 #include "taal.h"
 
-extern char token[0x100];
-extern char buf[0x1000];
+extern char token[0x1000];
+extern char buf[0x10000];
 extern const char* in;
 
 int yylex() {

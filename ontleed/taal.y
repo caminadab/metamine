@@ -61,6 +61,7 @@
 %left EN OF EXOF NOCH NIET
 %left '='
 %left ":=" "+=" "-=" "|=" "&="
+%left ':'
 %left "->"
 %left ','
 %left '<' '>' "<=" ">="
@@ -72,7 +73,6 @@
 %left '*' '/'
 %precedence NEG
 %right '^' '_'
-%left ':'
 %precedence CALL
 %left OUD
 %left '.'

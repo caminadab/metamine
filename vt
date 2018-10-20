@@ -12,6 +12,9 @@ require 'js'
 
 require 'rapport'
 
+print('OKE')
+
+
 -- GLOBALEN
 --print_ingewanden = false
 print_typen_bron = true
