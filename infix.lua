@@ -375,6 +375,7 @@ local function test(infix,prefix)
 end
 
 if _G.test then
+	do return end
 	test('sin(a) * b', '(* (sin a) b)')
 
 	-- functies!

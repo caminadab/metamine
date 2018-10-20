@@ -3,13 +3,13 @@ linux: main.c taal.c node.c lua.c test.c lex.c
 	gcc -std=c11 -shared -I/usr/include/lua5.2 -o bin/ontleed.so -fPIC main.c taal.c node.c lua.c lex.c test.c
 	ln -sf bin/ontleed.so ontleed.so
 
-test: main.c taal.c node.c lua.c test.c lex.c
+test: main.c taal.c node.c test.c lex.c
 	mkdir -p bin
-	gcc -g -o bin/test -fPIC main.c taal.c node.c lua.c lex.c test.c -llua -lm
+	gcc -g -o bin/test -std=c11 -fPIC main.c taal.c node.c lex.c test.c -lm
 
 windows: main.c taal.c node.c lua.c
 	mkdir -p bin
-	gcc -std=c99 -ggdb -shared -I/usr/include/lua5.2 -o bin/ontleed.dll main.c taal.c node.c lua.c -llua test.c lex.c
+	gcc -std=c99 -ggdb -fPIC -shared -I/usr/include/lua5.2 -o bin/ontleed.dll main.c taal.c node.c lua.c -llua test.c lex.c
 
 wintest: main.c taal.c node.c
 	gcc -std=c99 -ggdb -o bin/test main.c taal.c node.c test.c lex.c -lm

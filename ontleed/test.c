@@ -17,8 +17,8 @@ int test() {
 		{"a = 1 + #b", "((= a (+ 1 (# b))))"},
 
 		// funcs
-		{"f = a -> a", "((= f (-> (, a) a)))"},
-		{"f = a -> a + 1", "((= f (-> (, a) (+ a 1))))"},
+		{"f = a -> a", "((= f (-> a a)))"},
+		{"f = a -> a + 1", "((= f (-> a (+ a 1))))"},
 		{"f = a,b -> c", "((= f (-> (, a b) c)))"},
 		{"f = int,int -> int", "((= f (-> (, int int) int)))"},
 		{"f = intd,intd -> intq", "((= f (-> (, intd intd) intq)))"},
@@ -82,8 +82,15 @@ int test() {
 		{"sin x : a", "((: (sin x) a))"},
 		{"a 0 : getal", "((: (a 0) getal))"},
 		{"a 0 : getal en a 1 : getal", "((en (: (a 0) getal) (: (a 1) getal)))"},
-		{"a mod b c", "fout"},
+		{"a mod b c", "(fout)"},
+		{"f = a b c d", "((= f fout))"},
 		{"a mod (b c)", "((mod a (b c)))"},
+
+		// func,
+		
+		{"f = [a,b] -> [b,a+b]", "((= f (-> ([] a b) ([] b (+ a b)))))"},
+		{"fib = n -> (f^n [1,1]) 0", "((= fib (-> n (((^ f n) ([] 1 1)) 1))))"},
+		{"a^n (1)", "(((^ a n) 1))"},
 
 		{0, 0},
 	};
@@ -92,12 +99,17 @@ int test() {
 
 	for (int i = 0; tests[i][0]; i++) {
 		char* test = tests[i][0];
+		char t[0x100];
+		strcpy(t, test);
+		strcat(t, "\n");
 		char* doel = tests[i][1];
-		char* lisp = ontleed(test);
+		char* lisp = ontleed(t);
 		if (strcmp(lisp, doel)) {
 			printf("%s != %s\n", lisp, doel);
 			fout++;
 		}
+		puts(test);
+		getc(stdin);
 		totaal++;
 	}
 	printf("%d/%d fout\n", fout, totaal);
