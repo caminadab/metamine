@@ -16,9 +16,6 @@ require 'js'
 -- (a => b = c) => b = (a => c)
 -- a += b => (beeld => a = a' + 1/60)
 
--- bieb
-local bieb = ontleed(file('bieb.code'))
-
 function sorteer(kennis)
 	local afh,map = berekenbaarheid(kennis)
 	local infostroom,fout = afh:sorteer('in', 'uit')

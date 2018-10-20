@@ -9,7 +9,7 @@ test: main.c taal.c node.c lua.c test.c lex.c
 
 windows: main.c taal.c node.c lua.c
 	mkdir -p bin
-	gcc -std=c99 -ggdb -shared -I/usr/include/lua5.2 -o bin/ontleed.dll main.c taal.c node.c lua.c -llua test.c lex.c
+	gcc -std=c99 -ggdb -fPIC -shared -I/usr/include/lua5.2 -o bin/ontleed.dll main.c taal.c node.c lua.c -llua test.c lex.c
 
 wintest: main.c taal.c node.c
 	gcc -std=c99 -ggdb -o bin/test main.c taal.c node.c test.c lex.c -lm
