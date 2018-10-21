@@ -52,7 +52,7 @@ function isoleer(eq,name)
 			else
 				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'inverse', f}, x}} end -- a = (inverse f) x
-				if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
+				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
 		if exp(l) and l[1] == '[]' then

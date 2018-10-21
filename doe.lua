@@ -8,7 +8,18 @@ local fn = {
 	['-'] = function(a,b) if b then return a - b else return -a end end;
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
-	['^'] = function(a,b) return a ^ b end;
+	['^'] = function(a,b)
+		if type(a) == 'function' then
+			return function (x)
+				for i=1,b do
+					x = a(x)
+				end
+				return x
+			end
+		else
+			return a ^ b
+		end
+	end;
 	['%'] = function(a) return a / 100 end;
 	['[]'] = function(...)
 		return table.pack(...)
@@ -96,6 +107,14 @@ function eval0(env,exp)
 		if not v then error('onbekend: "'..unlisp(exp)..'"') end
 		return v
 	else
+		if exp[1] == '->' then
+			local arg = exp[2]
+			local fn = exp[3]
+			return function(a)
+				env[arg] = a
+				return eval0(env, fn)
+			end
+		end
 		local r = {}
 		for i=1,#exp do
 			r[i] = eval0(env,exp[i])
@@ -103,12 +122,18 @@ function eval0(env,exp)
 		local f,a,b = r[1],r[2],r[3]
 		
 		-- tabel
-		if type(r[1]) == 'table' then
-			return f[a+1]
+		if type(f) == 'table' then
+			if isexp(f) and f[1] == '->' then
+				local arg,func = f[2],f[3]
+				env[arg] = r[2]
+				return eval0(env,func)
+			else
+				return f[a+1]
+			end
 		end
 
 		-- aanroep
-		if type(r[1]) ~= 'function' then
+		if type(f) ~= 'function' then
 			error('geen functie: '..tostring(f)..' '..unlisp(exp))
 		end
 

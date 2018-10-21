@@ -13,7 +13,7 @@ pos 0 = 0
 pos (i+1) = pos i + data(pos i) + 1
 
 p = n -> n + data(pos)
-pos i = p^i 0
+pos i = (p^i) 0
 
 ; pos 0 = 0
 ; pos 1 = 0 + data(0) + 1 = 3

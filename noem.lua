@@ -54,16 +54,31 @@ function berekenbaarheid(feiten)
 			-- a = 1 + 2
 			if isvar(a) then
 				local pijl = {van = val(b), naar = a}
+				if b[1] == '->' then pijl.van[b[2]] = nil end
 				map[pijl] = feit
 				hgraaf:link(pijl)
+
+				if isexp(b) and b[1] == '->' then
+					local pijl = {van = set('in'), naar = a}
+					map[pijl] = {'=', a, b}
+					--hgraaf:link(pijl)
+				end
 			end
 		
 			-- 1 + 2 = b
 			if isvar(b) and not isvar(a) then
 				local pijl = {van = val(a), naar = b}
+				if a[1] == '->' then pijl.van[b[2]] = nil end
 				local feit = {feit[1],feit[3],feit[2]}
 				map[pijl] = feit
 				hgraaf:link(pijl)
+				print('ok', pijl2tekst(pijl))
+
+				if isexp(a) and a[1] == '->' then
+					local pijl = {van = set('in'), naar = b}
+					map[pijl] = {'=', b, a}
+					--hgraaf:link(pijl)
+				end
 			end
 
 			-- (1): in -> 1
