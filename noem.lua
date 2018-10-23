@@ -26,8 +26,10 @@ function deduceer(feiten)
 
 	-- extra toevoegen
 	f[#f+1] = {':', 'getal', 'in'}
-	f[#f+1] = {'=', 'uit', 'stdout'}
+	f[#f+1] = {'=', 'uit', 'stduit'}
 	f[#f+1] = {':', 'cat', 'in'}
+	f[#f+1] = {':', 'unie', 'in'}
+	f[#f+1] = {':', 'uit', {'^', 'byte', 'int'}}
 
 	return f
 end

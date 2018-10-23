@@ -12,7 +12,7 @@ function unparse_atom(atom)
 end
 
 function unparse_len(sexp)
-	if type(sexp) == 'number' then sexp = tostring(sexp) end
+	if type(sexp) == 'number' or type(sexp) == 'boolean' then sexp = tostring(sexp) end
   local len
   if atom(sexp) then
     len = #unparse_atom(sexp)
@@ -50,6 +50,9 @@ function unparse_work(sexpr, maxlen, tabs, res)
     local split = unparse_len(sexpr) > maxlen
     insert(res, '(')
     for i,sub in ipairs(sexpr) do
+			if type(sub) == 'boolean' then
+				sub = tostring(sub)
+			end
       if split then
         insert(res, '\n')
         insert(res, string.rep('  ', tabs+1))

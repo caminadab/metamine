@@ -30,4 +30,4 @@ end
 local opdrachten = lisp(opdrachten)
 
 local res = doe(opdrachten)
-print(unlisp(res))
+print(leed(red))

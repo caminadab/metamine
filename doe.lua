@@ -24,6 +24,14 @@ local fn = {
 	['[]'] = function(...)
 		return table.pack(...)
 	end,
+	['{}'] = function(...)
+		local t = {...}
+		local s = {is_set=true}
+		for _,v in pairs(t) do
+			s[v] = true
+		end
+		return s
+	end,
 
 	['#'] = function(a) return #a end;
 	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
@@ -98,6 +106,13 @@ local fn = {
 			end
 		end
 		return r
+	end;
+
+	['unie'] = function(a,b)
+		local s = {}
+		for v in pairs(a) do s[v] = true end
+		for v in pairs(b) do s[v] = true end
+		return s
 	end;
 }
 
@@ -262,6 +277,25 @@ if false and test then
 	end
 end
 
+function set2tekst(set)
+	local t = {'{'}
+	set.is_set = nil -- voorkom iteratie (;
+	for v in pairs(set) do
+		if type(v) == 'number' then
+			t[#t+1] = string.format('%.f', v)
+		else
+			t[#t+1] = tostring(v)
+		end
+		if next(set,v) then
+			t[#t+1] = ', '
+		end
+	end
+	set.is_set = true
+	t[#t+1] = '}'
+	return table.concat(t)
+end
+
+
 function doe(stroom)
 	local io_write = io.write
 	local print = print
@@ -306,7 +340,9 @@ function doe(stroom)
 	end
 
 	local uit = env['uit']
-	if type(uit) == 'table' then
+	if uit.is_set then
+		uit = set2tekst(uit)
+	elseif type(uit) == 'table' then
 		uit = string.char(table.unpack(uit))
 	end
 	return uit

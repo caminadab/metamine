@@ -36,6 +36,14 @@ int yylex() {
 		return TAB;
 	}
 
+	// unicode oeps
+	if (c == 0xE2) {
+		if (*in++ == 0x88 && *in++ == 0xAA) {
+			yylval = a("unie");
+			return NAAM;
+		}
+	}
+
 	// tekst
 	if (c == '"') {
 		int i = 0;
