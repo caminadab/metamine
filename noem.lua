@@ -13,6 +13,7 @@ function deduceer(feiten)
 			f[#f+1] = {':', c, 'getal'}
 		end
 	end
+	f[#f+1] = {':', '1', 'getal'}
 
 	-- vglen herschrijven
 	for i,feit in ipairs(feiten) do

@@ -11,6 +11,7 @@ extern char buf[0x10000];
 extern const char* in;
 
 int yylex() {
+	yylval = a("fout");
 	int c;
 
 	// wit overslaan
@@ -37,11 +38,63 @@ int yylex() {
 	}
 
 	// unicode oeps
-	if (c == 0xE2) {
-		if (*in++ == 0x88 && *in++ == 0xAA) {
-			yylval = a("unie");
-			return NAAM;
+	// ²
+	if (c == 0xC2) {
+		int ch0 = *in++;
+		if (ch0 == 0xB2)
+			strcpy(token, "^2");
+		return KWADRAAT;
+	}
+	else if (c == 0xC3) {
+		int ch0 = *in++;
+		if (ch0 == 0x97)
+			yylval = a("xx");
+		return NAAM;
+	}
+	else if (c == 0xCF) {
+		int ch0 = *in++;
+		if (ch0 == 0x84)
+			yylval = a("tau");
+		return NAAM;
+	}
+			
+	else if (c == 0xE2) {
+		int ch0 = *in++;
+		int ch1 = *in++;
+		if (ch0 == 0x86 && ch1 == 0x92) {
+			strcpy(token, "->");
+			return TO;
 		}
+		else if (ch0 == 0x89 && ch1 == 0x88) {
+			strcpy(token, "~=");
+			return ISB;
+		}
+		else if (ch0 == 0x89 && ch1 == 0xA0) {
+			strcpy(token, ">=");
+			return GDGA;
+		}
+		else if (ch0 == 0x89 && ch1 == 0xA5) {
+			strcpy(token, "<=");
+			return KDGA;
+		}
+		else if (ch0 == 0x89 && ch1 == 0xA4) {
+			strcpy(token, "!=");
+			return ISN;
+		}
+		else if (ch0 == 0x88) {
+			if (ch1 == 0xAA)
+				yylval = a("unie");
+			else if (ch1 == 0xA9)
+				yylval = a("intersectie");
+			else if (ch1 == 0x91)
+				yylval = a("som");
+			//E2 88 98
+			else if (ch1 == 0x98) {
+				strcpy(token, "@");
+				return COMP;
+			}
+		}
+		return NAAM;
 	}
 
 	// tekst

@@ -33,8 +33,16 @@ local fn = {
 		return s
 	end,
 
+	['@'] = function(a,b)
+		return function(...)
+			return b(a(...))
+		end
+	end;
+
 	['#'] = function(a) return #a end;
 	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
+	['!='] = function(a,b) return a ~= b end;
+	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
 	['..'] = function(a,b)
 		local r = {}
 		for i=a,b-1 do

@@ -24,6 +24,7 @@ local function tekst(graaf)
 end
 
 local function sorteer(hgraaf, van, naar)
+	local print = _G.print
 	--local print = function () end
 	if isatoom(van) then van = {[van] = true} end
 	--TODO if isatoom(van) then van = {[van] = true} end
@@ -52,13 +53,13 @@ local function sorteer(hgraaf, van, naar)
 		for bron in pairs(pijl.van) do
 			if not bekend[bron] and not van[bron] then
 				ok = false
-				print('  NEE: '.. bron..' is onbekend')
+				print('  NEE: '.. bron..' is onbekend', type(bron))
 			end
 		end
 		print('  DOEL?', pijl.naar)
 
 		if ok --[[and not bekend[pijl] ]] and stroom:link(pijl) then
-			print('  JA')
+			print('  JA', type(pijl.naar))
 			bekend[pijl.naar] = true
 			for pijl in hgraaf:van(pijl.naar) do
 				if true or not bekend[pijl.naar] then

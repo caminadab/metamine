@@ -37,14 +37,18 @@
 %token DAN "=>"
 %token TO "->"
 %token ASS ":="
+%token ISN "!="
 %token INC "+="
 %token CAT "||"
 %token TIL ".."
 %token CART "xx"
+%token COMP '@'
 %token END 0 "invoereinde"
 %token NEG '-'
 %token IS '='
+%token ONG '='
 %token GDGA ">="
+%token ISB "~="
 %token KDGA "<="
 %token OUD '\''
 %token TAB '\t'
@@ -60,7 +64,7 @@
 /* %precedence NAAM TEKST */
 %left "=>"
 %left EN OF EXOF NOCH NIET
-%left '='
+%left '=' "!=" "~="
 %left ":=" "+=" "-=" "|=" "&="
 %left '@'
 %left ':'
@@ -78,7 +82,7 @@
 %right '^' '_'
 %left OUD
 %left '.'
-%nonassoc '%'
+%nonassoc '%' KWADRAAT
 %left NAAM TEKST
 
 %%
@@ -112,6 +116,7 @@ single:
 	NAAM 
 | TEKST								{ $$ = tekst($1); }
 | single '%'					{ $$ = _exp2(a("%"), $1); }
+| single KWADRAAT			{ $$ = exp3(a("^"), $1, a("2")); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
