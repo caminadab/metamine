@@ -24,7 +24,8 @@ local function tekst(graaf)
 end
 
 local function sorteer(hgraaf, van, naar)
-	local print = _G.print
+	--local print = _G.print
+	if _G.verboos then print = _G.print end
 	--local print = function () end
 	if isatoom(van) then van = {[van] = true} end
 	--TODO if isatoom(van) then van = {[van] = true} end

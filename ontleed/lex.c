@@ -65,6 +65,10 @@ int yylex() {
 			strcpy(token, "->");
 			return TO;
 		}
+		else if (ch0 == 0x87 && ch1 == 0x92) {
+			strcpy(token, "=>");
+			return DAN;
+		}
 		else if (ch0 == 0x89 && ch1 == 0x88) {
 			strcpy(token, "~=");
 			return ISB;
@@ -81,6 +85,10 @@ int yylex() {
 			strcpy(token, "!=");
 			return ISN;
 		}
+		else if (ch0 == 0x88 && ch1 == 0x98) {
+			strcpy(token, "@");
+			return '@';
+		}
 		else if (ch0 == 0x88) {
 			if (ch1 == 0xAA)
 				yylval = a("unie");
@@ -88,11 +96,6 @@ int yylex() {
 				yylval = a("intersectie");
 			else if (ch1 == 0x91)
 				yylval = a("som");
-			//E2 88 98
-			else if (ch1 == 0x98) {
-				strcpy(token, "@");
-				return COMP;
-			}
 		}
 		return NAAM;
 	}

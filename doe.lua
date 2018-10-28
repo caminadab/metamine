@@ -4,6 +4,7 @@ require 'util'
 local log = function() end
 
 local fn = {
+	['tau'] = 2 * math.pi;
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
 	['*'] = function(a,b) return a * b end;
@@ -348,8 +349,10 @@ function doe(stroom)
 	end
 
 	local uit = env['uit']
-	if uit.is_set then
+	if type(uit) == 'table' and uit.is_set then
 		uit = set2tekst(uit)
+	elseif type(uit) == 'number' then
+		uit = tostring(uit)
 	elseif type(uit) == 'table' then
 		uit = string.char(table.unpack(uit))
 	end

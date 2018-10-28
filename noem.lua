@@ -31,6 +31,8 @@ function deduceer(feiten)
 	f[#f+1] = {':', 'cat', 'in'}
 	f[#f+1] = {':', 'unie', 'in'}
 	f[#f+1] = {':', 'uit', {'^', 'byte', 'int'}}
+	f[#f+1] = {'=', 'tau', tostring(2*math.pi)}
+	f[#f+1] = {':', 'tau', 'getal'}
 
 	return f
 end

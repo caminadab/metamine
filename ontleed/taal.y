@@ -42,7 +42,7 @@
 %token CAT "||"
 %token TIL ".."
 %token CART "xx"
-%token COMP '@'
+/* %token COMP '@' */
 %token END 0 "invoereinde"
 %token NEG '-'
 %token IS '='
