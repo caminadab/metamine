@@ -45,7 +45,9 @@ function vertaal(code)
 	if not kennis then return false,'ontleed' end
 
 	-- herleidt alle info
-	local kennis = deduceer(kennis)
+	--local kennis = ontrafel(kennis)
+	--local kennis = deduceer(kennis)
+	local kennis = ontrafel(kennis)
 	
 	-- sorteer
 	local stroom,fout = sorteer(kennis)

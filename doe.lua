@@ -348,7 +348,7 @@ function doe(stroom)
 
 	end
 
-	local uit = env['uit']
+	local uit = env['stduit']
 	if type(uit) == 'table' and uit.is_set then
 		uit = set2tekst(uit)
 	elseif type(uit) == 'number' then

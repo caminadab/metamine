@@ -175,10 +175,13 @@ end
 require 'noem'
 function rapport(code)
 	local feiten = ontleed(code)
-	local dfeiten = deduceer(feiten)
+	--local ofeiten = ontrafel(feiten)
+	local dfeiten = deduceer(dfeiten)
+	local dfeiten = ontrafel(feiten)
 	local afh,map = berekenbaarheid(dfeiten)
 	local infostroom, fout, half = afh:sorteer('in', 'uit')
 	infostroom = infostroom or half
+	if not infostroom then print('OEPS'); infostroom = stroom() end
 
 	local deel = tag('div', nil, {class='deel'})
 
