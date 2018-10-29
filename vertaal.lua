@@ -6,7 +6,7 @@ require 'noem'
 require 'sorteer'
 require 'typeer'
 require 'uitrol'
-require 'voorwaartse-hypergraaf'
+require 'vhgraaf'
 require 'ontrafel'
 require 'plan'
 

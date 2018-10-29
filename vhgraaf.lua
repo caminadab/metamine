@@ -1,4 +1,4 @@
-require 'voorwaartse-acyclische-hypergraaf'
+require 'stroom'
 require 'symbool'
 local print = function () end
 
@@ -29,7 +29,7 @@ local function sorteer(hgraaf, van, naar)
 	--local print = function () end
 	if isatoom(van) then van = {[van] = true} end
 	--TODO if isatoom(van) then van = {[van] = true} end
-	local stroom = voorwaartse_acyclische_hypergraaf()
+	local stroom = stroom()
 	local nieuw = {}
 	local bekend = {}
 
@@ -82,7 +82,7 @@ local function sorteer(hgraaf, van, naar)
 end
 
 -- een voorwaartse hypergraaf is een hypergraaf waarbij elke hoek een specifiek punt als doel heefft
-function voorwaartse_hypergraaf()
+function vhgraaf()
 	return {
 		pijlen = {},
 		punten = {},
@@ -149,19 +149,19 @@ require 'util'
 
 if test then
 	-- link
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	graaf:link(set('a'), 'b')
 	assert(graaf:naar('b')().van.a)
 
 	-- sorteer
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	graaf:link(set('a'), 'b')
 	graaf:link(set('b'), 'a')
 	local stroom = graaf:sorteer(set('a'), 'b')
 	assert(stroom:naar('b')().van.a)
 
 	-- sorteer 2
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	graaf:link(set('a'), 'b')
 	graaf:link(set('b'), 'c')
 	graaf:link(set('c'), 'a')
@@ -185,7 +185,7 @@ if test then
 		IN -> A
 	]]
 
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	--graaf:link(set('in'), 'a')
 	graaf:link(set('in'), 'a')
 	graaf:link(set('b'), 'a')
@@ -198,7 +198,7 @@ if test then
 end
 
 if true then
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	graaf:link(set'a', 'b')
 	graaf:link(set'a', 'c')
 	graaf:link(set'b', 'd')

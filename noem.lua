@@ -1,7 +1,7 @@
 require 'util'
 require 'isoleer'
 require 'symbool'
-require 'voorwaartse-hypergraaf'
+require 'vhgraaf'
 
 -- herschrijft vergelijkingen
 function deduceer(feiten)
@@ -40,7 +40,7 @@ end
 -- feiten -> AFHANKELIJKHEIDSHYPERGRAAF
 -- plus: pijl -> feiten
 function berekenbaarheid(feiten)
-	local hgraaf = voorwaartse_hypergraaf()
+	local hgraaf = vhgraaf()
 	local map = {}
 
 	for i,feit in ipairs(feiten) do
