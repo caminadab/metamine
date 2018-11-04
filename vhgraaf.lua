@@ -24,11 +24,8 @@ local function tekst(graaf)
 end
 
 local function sorteer(hgraaf, van, naar)
-	--local print = _G.print
 	if _G.verboos then print = _G.print end
-	--local print = function () end
 	if isatoom(van) then van = {[van] = true} end
-	--TODO if isatoom(van) then van = {[van] = true} end
 	local stroom = stroom()
 	local nieuw = {}
 	local bekend = {}
@@ -41,6 +38,7 @@ local function sorteer(hgraaf, van, naar)
 		end
 	end
 	if not next(nieuw) then
+		_G.print(hgraaf:tekst())
 		return false,'geen begin gevonden'
 	end
 

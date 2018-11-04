@@ -49,8 +49,13 @@ int lua_ontleed(lua_State* L) {
 
 	if (wortel)
 		lua_pushnode(L, wortel);
-	else
-		lua_pushnil(L);
+	else {
+		lua_createtable(L, 0, 1);
+		lua_pushliteral(L, "fout");
+		lua_pushinteger(L, 1);
+		lua_settable(L, -3);
+		//lua_pushnil(L);
+	}
 
 	// fouten
 	if (!foutlen)

@@ -51,7 +51,8 @@ function isoleer(eq,name)
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			else
 				-- x = f(a)
-				--if out == 0 then eq0 = {'=', a, {{'inverse', f}, x}} end -- a = (inverse f) x
+				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
+				if out == 0 then eq0 = {'=', a, {{'inverteer', f}, x}} end -- a = (f^-1) x
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end

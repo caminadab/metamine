@@ -30,9 +30,14 @@ function deduceer(feiten)
 	f[#f+1] = {'=', 'uit', 'stduit'}
 	f[#f+1] = {':', 'cat', 'in'}
 	f[#f+1] = {':', 'unie', 'in'}
+	f[#f+1] = {':', 'sin', 'in'}
+	f[#f+1] = {':', 'asin', 'in'}
+	f[#f+1] = {':', 'cos', 'in'}
+	f[#f+1] = {':', 'acos', 'in'}
 	f[#f+1] = {':', 'uit', {'^', 'byte', 'int'}}
 	f[#f+1] = {'=', 'tau', tostring(2*math.pi)}
 	f[#f+1] = {':', 'tau', 'getal'}
+	f[#f+1] = {':', '-1', 'getal'}
 
 	return f
 end
@@ -63,7 +68,7 @@ function berekenbaarheid(feiten)
 				map[pijl] = feit
 				hgraaf:link(pijl)
 
-				if isexp(b) and b[1] == '->' then
+				if false and isexp(b) and b[1] == '->' then
 					local pijl = {van = set('in'), naar = a}
 					map[pijl] = {'=', a, b}
 					--hgraaf:link(pijl)

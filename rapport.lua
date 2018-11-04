@@ -175,9 +175,9 @@ end
 require 'noem'
 function rapport(code)
 	local feiten = ontleed(code)
-	--local ofeiten = ontrafel(feiten)
-	local dfeiten = deduceer(dfeiten)
-	local dfeiten = ontrafel(feiten)
+	--local dfeiten = ontrafel(feiten)
+	local dfeiten = deduceer(feiten)
+	--local dfeiten = ontrafel(feiten)
 	local afh,map = berekenbaarheid(dfeiten)
 	local infostroom, fout, half = afh:sorteer('in', 'uit')
 	infostroom = infostroom or half

@@ -35,6 +35,7 @@ function kopie(t)
 		return t
 	end
 end
+kopieer = kopie
 
 function push(t,v) t[#t+1] = v end
 function pop(t)

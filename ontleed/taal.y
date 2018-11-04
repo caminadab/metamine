@@ -68,6 +68,7 @@
 %left ":=" "+=" "-=" "|=" "&="
 %left '@'
 %left ':'
+%left DISJ
 %left "->" 
 %left ','
 %left '<' '>' "<=" ">="

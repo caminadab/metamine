@@ -17,6 +17,7 @@ require 'js'
 -- a += b => (beeld => a = a' + 1/60)
 
 function sorteer(kennis)
+	local kennis = deduceer(kennis)
 	local afh,map = berekenbaarheid(kennis)
 	local infostroom,fout = afh:sorteer('in', 'uit')
 	if not infostroom then
@@ -28,7 +29,8 @@ function sorteer(kennis)
 	for pijl,naar in infostroom:topologisch(map) do
 		stroom[#stroom+1] = map[pijl]
 	end
-	return stroom
+	local beek = ontrafel(stroom)
+	return beek
 end
 
 --[[

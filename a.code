@@ -1,4 +1,5 @@
-a = [97,97]
-b = a
-c = b
-stduit = c
+cos x = 1/2
+stduit = x
+
+inverteer = (sin -> asin) | (cos -> acos)
+; | (cos -> acos)

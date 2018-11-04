@@ -39,6 +39,21 @@ local fn = {
 			return b(a(...))
 		end
 	end;
+	['|'] = function(a,b)
+		local fa = type(a) == 'function'
+		local fb = type(b) == 'function'
+		if fa ~= fb then return 'fout' end
+		if fa and fb then
+			return function(...)
+				local ta = a(...)
+				local tb = b(...)
+				if not ta == not tb then
+					return 'fout'
+				end
+				return ta or tb
+			end
+		end
+	end;
 
 	['#'] = function(a) return #a end;
 	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
@@ -74,6 +89,18 @@ local fn = {
 			end
 		end
 		return r
+	end;
+
+	-- trig
+	['sin'] = math.sin;
+	['asin'] = math.asin;
+	['cos'] = math.cos;
+	['acos'] = math.acos;
+	['tan'] = math.tan;
+	['atan'] = function(a,b)
+		if b then return math.atan2(a,b)
+			else return math.atan(a)
+		end
 	end;
 
 	['som'] = function(a)
@@ -135,7 +162,12 @@ function eval0(env,exp)
 			local arg = exp[2]
 			local fn = exp[3]
 			return function(a)
-				env[arg] = a
+				-- maplet
+				if env[arg] and a ~= env[arg] then
+					return nil
+				end
+				-- misschien overschrijf scoping
+				env[arg] = env[arg] or a
 				return eval0(env, fn)
 			end
 		end
@@ -312,7 +344,7 @@ function doe(stroom)
 		io_write = function () end
 		print = function () end
 	end
-	local env = {}
+	local env = kopieer(fn)
 	for i,feit in ipairs(stroom) do
 		local fn,naam,exp = feit[1],feit[2],feit[3]
 		io_write('DOE\t',unlisp(feit),'\t\t= ')
