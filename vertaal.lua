@@ -29,8 +29,8 @@ function sorteer(kennis)
 	for pijl,naar in infostroom:topologisch(map) do
 		stroom[#stroom+1] = map[pijl]
 	end
-	local beek = ontrafel(stroom)
-	return beek
+	--local beek = ontrafel(stroom)
+	return stroom
 end
 
 --[[
@@ -49,7 +49,7 @@ function vertaal(code)
 	-- herleidt alle info
 	--local kennis = ontrafel(kennis)
 	--local kennis = deduceer(kennis)
-	local kennis = ontrafel(kennis)
+	--local kennis = ontrafel(kennis)
 	
 	-- sorteer
 	local stroom,fout = sorteer(kennis)

@@ -48,11 +48,12 @@ local fn = {
 				local ta = a(...)
 				local tb = b(...)
 				if not ta == not tb then
-					return 'fout'
+					return nil
 				end
 				return ta or tb
 			end
 		end
+		return a or b
 	end;
 
 	['#'] = function(a) return #a end;
@@ -154,7 +155,7 @@ local fn = {
 
 function eval0(env,exp)
 	if atom(exp) then
-		local v = tonumber(exp) or env[exp] or fn[exp]
+		local v = tonumber(exp) or env[exp]
 		if not v then error('onbekend: "'..unlisp(exp)..'"') end
 		return v
 	else
@@ -181,7 +182,7 @@ function eval0(env,exp)
 		if type(f) == 'table' then
 			if isexp(f) and f[1] == '->' then
 				local arg,func = f[2],f[3]
-				env[arg] = r[2]
+				env[arg] = env[arg] or r[2]
 				return eval0(env,func)
 			else
 				return f[a+1]
@@ -190,7 +191,7 @@ function eval0(env,exp)
 
 		-- aanroep
 		if type(f) ~= 'function' then
-			error('geen functie: '..tostring(f)..' '..unlisp(exp))
+			error('geen functie: '..unlisp(r)..' '..unlisp(exp))
 		end
 
 		-- functie
@@ -374,9 +375,12 @@ function doe(stroom)
 				env[naam] = eval0(env, exp)
 
 			end
+			print(unlisp(env[naam]))
+		else
+			--print('ok')
+			print(unlisp(env[naam]))
 		end
 
-		print(unlisp(env[naam]))
 
 	end
 

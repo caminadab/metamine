@@ -1,5 +1,8 @@
-cos x = 1/2
-stduit = x
+f = x -> x + 1
+f a = 100
+stduit = a
 
-inverteer = (sin -> asin) | (cos -> acos)
+x : in
+y : in
+inverteer = (sin -> asin) | (cos -> acos) | (f -> (y -> y - 1))
 ; | (cos -> acos)
