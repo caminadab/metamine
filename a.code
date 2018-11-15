@@ -1,8 +1,8 @@
-f = x -> x + 1
-f a = 100
-stduit = a
+;tcp-uit = { [meteen,addr,
+;x =
+	;1 -> 2
+	;2 -> 3
 
-x : in
-y : in
-inverteer = (sin -> asin) | (cos -> acos) | (f -> (y -> y - 1))
-; | (cos -> acos)
+f = (1 -> 2) coproduct (2 -> 3)
+
+stduit = f(2)

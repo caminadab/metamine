@@ -55,6 +55,11 @@ local fn = {
 		end
 		return a or b
 	end;
+	['coproduct'] = function(f,g)
+		return function(...)
+			return f(...) or g(...)
+		end
+	end;
 
 	['#'] = function(a) return #a end;
 	['='] = function(a,b) return unlisp(a)==unlisp(b) end;

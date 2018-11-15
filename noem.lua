@@ -38,6 +38,7 @@ function deduceer(feiten)
 	f[#f+1] = {'=', 'tau', tostring(2*math.pi)}
 	f[#f+1] = {':', 'tau', 'getal'}
 	f[#f+1] = {':', '-1', 'getal'}
+	f[#f+1] = {':', 'coproduct', 'in'}
 
 	return f
 end

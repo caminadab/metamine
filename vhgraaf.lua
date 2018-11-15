@@ -29,6 +29,7 @@ local function sorteer(hgraaf, van, naar)
 	local stroom = stroom()
 	local nieuw = {}
 	local bekend = {}
+	local nuttig = {} -- gebruikte punten
 
 	-- verzamel begin
 	for punt in pairs(van) do
@@ -57,8 +58,12 @@ local function sorteer(hgraaf, van, naar)
 		end
 		print('  DOEL?', pijl.naar)
 
+		-- mag linken
 		if ok --[[and not bekend[pijl] ]] and stroom:link(pijl) then
 			print('  JA', type(pijl.naar))
+			for bron in pairs(pijl.van) do
+				nuttig[bron] = true
+			end
 			bekend[pijl.naar] = true
 			for pijl in hgraaf:van(pijl.naar) do
 				if true or not bekend[pijl.naar] then
@@ -70,6 +75,14 @@ local function sorteer(hgraaf, van, naar)
 			bekend[pijl] = true
 		end
 
+	end
+
+	-- snoei!
+	for pijl in pairs(stroom.pijlen) do
+		if not nuttig[pijl.naar] and pijl.naar ~= naar then
+			stroom:ontlink(pijl)
+			stroom.punten[pijl.naar] = nil
+		end
 	end
 
 	if not bekend[naar] then
@@ -197,6 +210,9 @@ end
 
 if true then
 	local graaf = vhgraaf()
+	--   / b \
+	--  a     d
+	--   \ c / 
 	graaf:link(set'a', 'b')
 	graaf:link(set'a', 'c')
 	graaf:link(set'b', 'd')

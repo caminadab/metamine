@@ -9,6 +9,7 @@ require 'uitrol'
 require 'vhgraaf'
 require 'ontrafel'
 require 'plan'
+require 'snoei'
 
 require 'js'
 
@@ -48,11 +49,12 @@ function vertaal(code)
 
 	-- herleidt alle info
 	--local kennis = ontrafel(kennis)
-	--local kennis = deduceer(kennis)
-	--local kennis = ontrafel(kennis)
+	local kennis = deduceer(kennis)
+	local kennis = ontrafel(kennis)
 	
 	-- sorteer
 	local stroom,fout = sorteer(kennis)
+	local stroom = snoei(stroom)
 
 	return stroom,fout
 end
