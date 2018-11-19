@@ -1,8 +1,11 @@
-;tcp-uit = { [meteen,addr,
-;x =
-	;1 -> 2
-	;2 -> 3
+van =  net-adres "127.0.0.1:10101"
+naar = net-adres "127.0.0.1:10101"
+udp-uit = [van, naar, "hoi"]
 
-f = (1 -> 2) coproduct (2 -> 3)
+; OPTIE A: udp-uit = pakket{}, pakket = [tijdstip,van,naar,inhoud]
+; OPTIE B: udp-uit = pakket[], pakket = [van,naar,inhoud]
+; APP: udp-uit = mset(pakket)
+; SYS: udp-uit = (tijd -> [van,naar,inhoud])
 
-stduit = f(2)
+net-adres : in
+uit : udp-uit

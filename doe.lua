@@ -156,6 +156,11 @@ local fn = {
 		for v in pairs(b) do s[v] = true end
 		return s
 	end;
+
+	-- aux
+	['net-adres'] = function(a)
+		local socket = require 'socket'
+		return socket.
 }
 
 function eval0(env,exp)

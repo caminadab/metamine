@@ -1,5 +1,8 @@
 
 function snoei(stroom)
+	if not stroom then
+		return false
+	end
 	local s = {}
 	for i,feit in ipairs(stroom) do
 		local fn,a,b = feit[1],feit[2],feit[3]

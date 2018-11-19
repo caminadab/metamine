@@ -10,6 +10,11 @@ local function bereikbaar_disj(graaf, van, naar)
 	print(graaf:tekst())
 
 	print(van..' ?-> '..naar)
+
+	if type(van) ~= 'table' then
+		van = {[van] = true}
+	end
+
 	local nieuw = {naar}
 	local klaar = {}
 	local bereikbaar = {}
