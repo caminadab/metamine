@@ -46,7 +46,7 @@ end
 function pijl2tekst(pijl)
 	local r = {}
 	for bron in pairs(pijl.van) do
-		r[#r+1] = bron
+		r[#r+1] = tostring(bron)
 	end
 	if #r == 0 then
 		r[#r+1] = '()'

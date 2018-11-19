@@ -1,6 +1,6 @@
-van =  net-adres "127.0.0.1:10101"
-naar = net-adres "127.0.0.1:10101"
-udp-uit = [van, naar, "hoi"]
+zelf =  net-adres "127.0.0.1:10101"
+ander = net-adres "127.0.0.1:10101"
+udp-uit = [zelf, naar, "hoi"]
 
 ; OPTIE A: udp-uit = pakket{}, pakket = [tijdstip,van,naar,inhoud]
 ; OPTIE B: udp-uit = pakket[], pakket = [van,naar,inhoud]
