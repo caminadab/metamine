@@ -50,7 +50,7 @@ function vertaal(code)
 	-- herleidt alle info
 	--local kennis = ontrafel(kennis)
 	local kennis = deduceer(kennis)
-	local kennis = ontrafel(kennis)
+	--local kennis = ontrafel(kennis)
 	
 	-- sorteer
 	local stroom,fout = sorteer(kennis)

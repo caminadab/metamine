@@ -160,7 +160,9 @@ local fn = {
 	-- aux
 	['net-adres'] = function(a)
 		local socket = require 'socket'
-		return socket.
+		local ip = string.char(table.unpack(a))
+		return table.pack(ip:match('([^:]*):(.*)'))
+  end;
 }
 
 function eval0(env,exp)
@@ -389,6 +391,34 @@ function doe(stroom)
 		else
 			--print('ok')
 			print(unlisp(env[naam]))
+		end
+
+		-- actie ondernemen?
+		if naam == 'udp-uit' then
+			local s = require 'socket'
+			local pakketten = env[naam]
+
+			env.kanaal = env.kanaal or {}
+
+			pakketten.is_set = nil
+			for pakket in pairs(pakketten) do
+			_G.print(unlisp(pakket),': ',type(pakket))
+				local van,naar,inhoud = table.unpack(pakket)
+				local poort = van[2]
+				local kanaal = env.kanaal[poort]
+
+				-- maak kanaal
+				if not kanaal then
+					kanaal = s.udp()
+					kanaal:setsockname(van[1], van[2])
+					env.kanaal[poort] = kanaal
+				end
+
+				print('[UDP] '..van[1]..':'..van[2]..' -> '..naar[1]..':'..naar[2]..'  '..string.char(table.unpack(inhoud)))
+				kanaal:sendto(string.char(table.unpack(inhoud)),naar[1],naar[2])
+			end
+			pakketten.is_set = true
+
 		end
 
 
