@@ -1,10 +1,15 @@
 zelf =  net-adres "0:10101"
 ander = net-adres "192.168.1.62:10101"
+rn = [13, 10]
+bericht = "HTTP/1.1 200 OK" || rn || "Content-Length: 3" || rn || rn || "hoi"
+;header = "GET / HTTP/1.1" || rn || "Host: ymte.net" || rn || rn
 
-n : in
-pakketa = [zelf, ander, "[A] "]
-pakketb = [zelf, ander, "[B] "]
-udp-uit = {pakketa, pakketb}
+web-zelf = net-adres "0:80"
+web-klanten = tcp-in (web-zelf)
+tcp-uit = web-klanten map (klant -> (klant -> bericht))
+;web-klanten.uit = 
+;(.)(web-klanten, uit) =
+;tcp-uit = header => {[web-zelf, web-ander, bericht]}
 
 ; OPTIE A: udp-uit = pakket{}, pakket = [tijdstip,van,naar,inhoud]
 ; OPTIE B: udp-uit = pakket[], pakket = [van,naar,inhoud]
@@ -12,4 +17,8 @@ udp-uit = {pakketa, pakketb}
 ; SYS: udp-uit = (tijd -> [van,naar,inhoud])
 
 net-adres : in
+tcp-in : in
 uit : udp-uit
+uit : tcp-uit
+map : in
+klant : in

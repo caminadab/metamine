@@ -1,5 +1,6 @@
 require 'stroom'
 require 'symbool'
+require 'set'
 local print = function () end
 
 local function pijl2tekst(pijl)
@@ -86,7 +87,13 @@ local function sorteer(hgraaf, van, naar)
 	end
 
 	if not bekend[naar] then
-		return false,'doel "'..naar..'" niet bereikt',stroom
+		local t = {}
+		t[#t+1] = 'doel "'..naar..'" niet bereikt'
+		t[#t+1] = '  liep vast op:'
+		for punt in pairs(verschil(nuttig,bekend)) do
+			t[#t+1] = '    '..tostring(punt)
+		end
+		return nil,color.red..table.concat(t,'\n')..color.white, stroom
 	end
 
 	return stroom

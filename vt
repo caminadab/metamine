@@ -105,6 +105,8 @@ end
 -- lees in
 code = file(bron[1])
 
+if print_ingewanden then print(unlisp(ontleed(code))) end
+
 file('rapport.html', rapport(code))
 
 local stroom,typen = vertaal(code, 'in', 'uit')

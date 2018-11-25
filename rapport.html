@@ -1,0 +1,1784 @@
+<!DOCTYPE html><head><meta charset="utf-8"><title>Rapport</title><style>				.deel {
+					width: calc(100% - 50px);
+					height: calc(100vh - 50px);
+					border-style: solid;
+					border-width: 4px;
+					border-color: black;
+					margin: 8px;
+					display: inline-block;
+					overflow: scroll;
+				}
+
+				pre { font-size: 20px; font-weight: bold; }
+			</style><script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.16/cytoscape.min.js"></script><script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script><script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script><script src="http://code.jquery.com/jquery-2.0.0.min.js"></script><script src="http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js"></script></head><body><div class="deel"><pre>zelf =  net-adres "0:10101"
+ander = net-adres "192.168.1.62:10101"
+rn = [13, 10]
+bericht = "HTTP/1.1 200 OK" || rn || "Content-Length: 3" || rn || rn || "hoi"
+;header = "GET / HTTP/1.1" || rn || "Host: ymte.net" || rn || rn
+
+web-zelf = net-adres "0:80"
+web-klanten = tcp-in (web-zelf)
+tcp-uit = web-klanten map (klant -> (klant -> bericht))
+;web-klanten.uit = 
+;(.)(web-klanten, uit) =
+;tcp-uit = header => {[web-zelf, web-ander, bericht]}
+
+; OPTIE A: udp-uit = pakket{}, pakket = [tijdstip,van,naar,inhoud]
+; OPTIE B: udp-uit = pakket[], pakket = [van,naar,inhoud]
+; APP: udp-uit = mset(pakket)
+; SYS: udp-uit = (tijd -> [van,naar,inhoud])
+
+net-adres : in
+tcp-in : in
+uit : udp-uit
+uit : tcp-uit
+map : in
+klant : in
+</pre></div><div class="deel"><pre>(
+  (
+    = 
+    zelf 
+    (net-adres ([] 48 58 49 48 49 48 49))
+  ) 
+  (
+    = 
+    ander 
+    (
+      net-adres 
+      (
+        [] 
+        49 
+        57 
+        50 
+        46 
+        49 
+        54 
+        56 
+        46 
+        49 
+        46 
+        54 
+        50 
+        58 
+        49 
+        48 
+        49 
+        48 
+        49
+      )
+    )
+  ) 
+  (= rn ([] 13 10)) 
+  (
+    = 
+    bericht 
+    (
+      || 
+      (
+        || 
+        (
+          || 
+          (
+            || 
+            (
+              || 
+              (
+                [] 
+                72 
+                84 
+                84 
+                80 
+                47 
+                49 
+                46 
+                49 
+                32 
+                50 
+                48 
+                48 
+                32 
+                79 
+                75
+              ) 
+              rn
+            ) 
+            (
+              [] 
+              67 
+              111 
+              110 
+              116 
+              101 
+              110 
+              116 
+              45 
+              76 
+              101 
+              110 
+              103 
+              116 
+              104 
+              58 
+              32 
+              51
+            )
+          ) 
+          rn
+        ) 
+        rn
+      ) 
+      ([] 104 111 105)
+    )
+  ) 
+  (
+    = 
+    web-zelf 
+    (net-adres ([] 48 58 56 48))
+  ) 
+  (= web-klanten (tcp-in web-zelf)) 
+  (
+    = 
+    tcp-uit 
+    (
+      map 
+      web-klanten 
+      (-> klant (-> klant bericht))
+    )
+  ) 
+  (: net-adres in) 
+  (: tcp-in in) 
+  (: uit udp-uit) 
+  (: uit tcp-uit) 
+  (: map in) 
+  (: klant in)
+)</pre></div><div class="deel"><pre>(
+  (: 80 getal) 
+  (: 72 getal) 
+  (: 111 getal) 
+  (: 84 getal) 
+  (: 10 getal) 
+  (: 46 getal) 
+  (: 116 getal) 
+  (: 32 getal) 
+  (: 48 getal) 
+  (: 58 getal) 
+  (: 105 getal) 
+  (: 67 getal) 
+  (: 75 getal) 
+  (: 45 getal) 
+  (: 47 getal) 
+  (: 51 getal) 
+  (: 50 getal) 
+  (: 104 getal) 
+  (: 56 getal) 
+  (: 57 getal) 
+  (: 54 getal) 
+  (: 103 getal) 
+  (: 79 getal) 
+  (: 13 getal) 
+  (: 49 getal) 
+  (: 110 getal) 
+  (: 76 getal) 
+  (: 101 getal) 
+  (: 1 getal) 
+  (
+    = 
+    zelf 
+    (net-adres ([] 48 58 49 48 49 48 49))
+  ) 
+  (
+    = 
+    ander 
+    (
+      net-adres 
+      (
+        [] 
+        49 
+        57 
+        50 
+        46 
+        49 
+        54 
+        56 
+        46 
+        49 
+        46 
+        54 
+        50 
+        58 
+        49 
+        48 
+        49 
+        48 
+        49
+      )
+    )
+  ) 
+  (= rn ([] 13 10)) 
+  (
+    = 
+    bericht 
+    (
+      || 
+      (
+        || 
+        (
+          || 
+          (
+            || 
+            (
+              || 
+              (
+                [] 
+                72 
+                84 
+                84 
+                80 
+                47 
+                49 
+                46 
+                49 
+                32 
+                50 
+                48 
+                48 
+                32 
+                79 
+                75
+              ) 
+              rn
+            ) 
+            (
+              [] 
+              67 
+              111 
+              110 
+              116 
+              101 
+              110 
+              116 
+              45 
+              76 
+              101 
+              110 
+              103 
+              116 
+              104 
+              58 
+              32 
+              51
+            )
+          ) 
+          rn
+        ) 
+        rn
+      ) 
+      ([] 104 111 105)
+    )
+  ) 
+  (
+    = 
+    web-zelf 
+    (net-adres ([] 48 58 56 48))
+  ) 
+  (= web-klanten (tcp-in web-zelf)) 
+  (
+    = 
+    web-zelf 
+    ((inverteer tcp-in) web-klanten)
+  ) 
+  (
+    = 
+    tcp-uit 
+    (
+      map 
+      web-klanten 
+      (-> klant (-> klant bericht))
+    )
+  ) 
+  (: net-adres in) 
+  (: net-adres in) 
+  (: tcp-in in) 
+  (: tcp-in in) 
+  (: uit udp-uit) 
+  (: uit udp-uit) 
+  (: uit tcp-uit) 
+  (: uit tcp-uit) 
+  (: map in) 
+  (: map in) 
+  (: klant in) 
+  (: klant in) 
+  (: getal in) 
+  (= uit stduit) 
+  (: cat in) 
+  (: unie in) 
+  (: sin in) 
+  (: asin in) 
+  (: cos in) 
+  (: acos in) 
+  (: uit (^ byte int)) 
+  (= tau 6.2831853071796) 
+  (: tau getal) 
+  (: -1 getal) 
+  (: coproduct in)
+)</pre></div><div id="afh" class="deel"></div><div id="infostroom" class="deel"></div><div class="deel"><table><tr><td>getal</td><td>-1</td></tr><tr><td>getal</td><td>1</td></tr><tr><td>getal</td><td>10</td></tr><tr><td>getal</td><td>101</td></tr><tr><td>getal</td><td>103</td></tr><tr><td>getal</td><td>104</td></tr><tr><td>getal</td><td>105</td></tr><tr><td>getal</td><td>110</td></tr><tr><td>getal</td><td>111</td></tr><tr><td>getal</td><td>116</td></tr><tr><td>getal</td><td>13</td></tr><tr><td>getal</td><td>32</td></tr><tr><td>getal</td><td>45</td></tr><tr><td>getal</td><td>46</td></tr><tr><td>getal</td><td>47</td></tr><tr><td>getal</td><td>48</td></tr><tr><td>getal</td><td>49</td></tr><tr><td>getal</td><td>50</td></tr><tr><td>getal</td><td>51</td></tr><tr><td>getal</td><td>54</td></tr><tr><td>getal</td><td>56</td></tr><tr><td>getal</td><td>57</td></tr><tr><td>getal</td><td>58</td></tr><tr><td>getal</td><td>6.2831853071796</td></tr><tr><td>getal</td><td>67</td></tr><tr><td>getal</td><td>72</td></tr><tr><td>getal</td><td>75</td></tr><tr><td>getal</td><td>76</td></tr><tr><td>getal</td><td>79</td></tr><tr><td>getal</td><td>80</td></tr><tr><td>getal</td><td>84</td></tr><tr><td>46</td><td>aantalOnbekend</td></tr><tr><td>in</td><td>acos</td></tr><tr><td>in</td><td>asin</td></tr><tr><td>getal^41</td><td>bericht</td></tr><tr><td>in</td><td>cat</td></tr><tr><td>in</td><td>coproduct</td></tr><tr><td>in</td><td>cos</td></tr><tr><td>in</td><td>getal</td></tr><tr><td>in</td><td>klant</td></tr><tr><td>in</td><td>map</td></tr><tr><td>in</td><td>net-adres</td></tr><tr><td>getal^2</td><td>rn</td></tr><tr><td>in</td><td>sin</td></tr><tr><td>udp-uit</td><td>stduit</td></tr><tr><td>ok</td><td>80 : getal</td></tr><tr><td>ok</td><td>72 : getal</td></tr><tr><td>ok</td><td>111 : getal</td></tr><tr><td>ok</td><td>84 : getal</td></tr><tr><td>ok</td><td>10 : getal</td></tr><tr><td>ok</td><td>46 : getal</td></tr><tr><td>getal^17</td><td>[67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]</td></tr><tr><td>getal^3</td><td>[104, 111, 105]</td></tr><tr><td>getal^4</td><td>[48, 58, 56, 48]</td></tr><tr><td>ok</td><td>uit : udp-uit</td></tr><tr><td>iets -> iets -> getal^41</td><td>klant -> klant -> bericht</td></tr><tr><td>iets -> getal^41</td><td>klant -> bericht</td></tr><tr><td>ok</td><td>net-adres : in</td></tr><tr><td>ok</td><td>tcp-in : in</td></tr><tr><td>getal^7</td><td>[48, 58, 49, 48, 49, 48, 49]</td></tr><tr><td>getal^18</td><td>[49, 57, 50, 46, 49, 54, 56, 46, 49, 46, 54, 50, 58, 49, 48, 49, 48, 49]</td></tr><tr><td>getal^2</td><td>[13, 10]</td></tr><tr><td>getal^41</td><td>(((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]</td></tr><tr><td>getal^38</td><td>((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn</td></tr><tr><td>getal^36</td><td>(([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn</td></tr><tr><td>getal^34</td><td>([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]</td></tr><tr><td>getal^17</td><td>[72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn</td></tr><tr><td>getal^15</td><td>[72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75]</td></tr><tr><td>ok</td><td>uit : tcp-uit</td></tr><tr><td>ok</td><td>map : in</td></tr><tr><td>ok</td><td>klant : in</td></tr><tr><td>ok</td><td>58 : getal</td></tr><tr><td>ok</td><td>116 : getal</td></tr><tr><td>ok</td><td>32 : getal</td></tr><tr><td>ok</td><td>48 : getal</td></tr><tr><td>ok</td><td>104 : getal</td></tr><tr><td>ok</td><td>56 : getal</td></tr><tr><td>ok</td><td>105 : getal</td></tr><tr><td>ok</td><td>67 : getal</td></tr><tr><td>ok</td><td>75 : getal</td></tr><tr><td>ok</td><td>45 : getal</td></tr><tr><td>ok</td><td>47 : getal</td></tr><tr><td>ok</td><td>51 : getal</td></tr><tr><td>ok</td><td>50 : getal</td></tr><tr><td>ok</td><td>57 : getal</td></tr><tr><td>ok</td><td>54 : getal</td></tr><tr><td>ok</td><td>103 : getal</td></tr><tr><td>ok</td><td>79 : getal</td></tr><tr><td>ok</td><td>13 : getal</td></tr><tr><td>ok</td><td>49 : getal</td></tr><tr><td>ok</td><td>110 : getal</td></tr><tr><td>ok</td><td>76 : getal</td></tr><tr><td>ok</td><td>101 : getal</td></tr><tr><td>ok</td><td>1 : getal</td></tr><tr><td>ok</td><td>rn = [13, 10]</td></tr><tr><td>ok</td><td>bericht = (((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]</td></tr><tr><td>ok</td><td>getal : in</td></tr><tr><td>ok</td><td>uit = stduit</td></tr><tr><td>ok</td><td>cat : in</td></tr><tr><td>ok</td><td>unie : in</td></tr><tr><td>ok</td><td>sin : in</td></tr><tr><td>ok</td><td>asin : in</td></tr><tr><td>ok</td><td>cos : in</td></tr><tr><td>ok</td><td>acos : in</td></tr><tr><td>ok</td><td>uit : byte^int</td></tr><tr><td>ok</td><td>tau = 6.2831853071796</td></tr><tr><td>ok</td><td>tau : getal</td></tr><tr><td>ok</td><td>-1 : getal</td></tr><tr><td>ok</td><td>coproduct : in</td></tr><tr><td>getal</td><td>tau</td></tr><tr><td>in</td><td>tcp-in</td></tr><tr><td>udp-uit</td><td>uit</td></tr><tr><td>in</td><td>unie</td></tr></table></div><script>afh = cytoscape({
+			container: document.getElementById('afh'),
+			style: [
+				{
+					selector: '.waarde',
+					style: {
+							shape: 'hexagon',
+							'background-color': 'blue',
+							label: 'data(id)'
+					}
+				},
+				{
+					selector: 'edge',
+					style: {
+						'curve-style': 'bezier',
+						'target-arrow-shape': 'triangle',
+					}
+				},
+				{
+					selector: '.hyper',
+					style: {
+							label: 'data(exp)',
+							shape: 'none',
+							'background-color': 'black',
+							'font-size': '8px',
+							width: '10px',
+							height: '10px',
+					}
+				},
+			],
+			layout: {
+				name: 'cose',
+				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
+			},
+			elements: [
+				{ data: {id: '-1'}, classes: 'waarde' },{ data: {id: '1'}, classes: 'waarde' },{ data: {id: '10'}, classes: 'waarde' },{ data: {id: '101'}, classes: 'waarde' },{ data: {id: '103'}, classes: 'waarde' },{ data: {id: '104'}, classes: 'waarde' },{ data: {id: '105'}, classes: 'waarde' },{ data: {id: '110'}, classes: 'waarde' },{ data: {id: '111'}, classes: 'waarde' },{ data: {id: '116'}, classes: 'waarde' },{ data: {id: '13'}, classes: 'waarde' },{ data: {id: '32'}, classes: 'waarde' },{ data: {id: '45'}, classes: 'waarde' },{ data: {id: '46'}, classes: 'waarde' },{ data: {id: '47'}, classes: 'waarde' },{ data: {id: '48'}, classes: 'waarde' },{ data: {id: '49'}, classes: 'waarde' },{ data: {id: '50'}, classes: 'waarde' },{ data: {id: '51'}, classes: 'waarde' },{ data: {id: '54'}, classes: 'waarde' },{ data: {id: '56'}, classes: 'waarde' },{ data: {id: '57'}, classes: 'waarde' },{ data: {id: '58'}, classes: 'waarde' },{ data: {id: '6.2831853071796'}, classes: 'waarde' },{ data: {id: '67'}, classes: 'waarde' },{ data: {id: '72'}, classes: 'waarde' },{ data: {id: '75'}, classes: 'waarde' },{ data: {id: '76'}, classes: 'waarde' },{ data: {id: '79'}, classes: 'waarde' },{ data: {id: '80'}, classes: 'waarde' },{ data: {id: '84'}, classes: 'waarde' },{ data: {id: 'acos'}, classes: 'waarde' },{ data: {id: 'ander'}, classes: 'waarde' },{ data: {id: 'asin'}, classes: 'waarde' },{ data: {id: 'bericht'}, classes: 'waarde' },{ data: {id: 'byte'}, classes: 'waarde' },{ data: {id: 'cat'}, classes: 'waarde' },{ data: {id: 'coproduct'}, classes: 'waarde' },{ data: {id: 'cos'}, classes: 'waarde' },{ data: {id: 'getal'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'int'}, classes: 'waarde' },{ data: {id: 'inverteer'}, classes: 'waarde' },{ data: {id: 'klant'}, classes: 'waarde' },{ data: {id: 'map'}, classes: 'waarde' },{ data: {id: 'net-adres'}, classes: 'waarde' },{ data: {id: 'rn'}, classes: 'waarde' },{ data: {id: 'sin'}, classes: 'waarde' },{ data: {id: 'stduit'}, classes: 'waarde' },{ data: {id: 'tau'}, classes: 'waarde' },{ data: {id: 'tcp-in'}, classes: 'waarde' },{ data: {id: 'tcp-uit'}, classes: 'waarde' },{ data: {id: 'udp-uit'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'unie'}, classes: 'waarde' },{ data: {id: 'web-klanten'}, classes: 'waarde' },{ data: {id: 'web-zelf'}, classes: 'waarde' },{ data: {id: 'zelf'}, classes: 'waarde' },			{
+				data: {
+					id: 'x0.84018771715471',
+					source: 'in',
+					target: 'map',
+				}
+			},
+					{
+				data: {
+					id: 'x0.39438292681909',
+					source: 'in',
+					target: 'acos',
+				}
+			},
+					{
+				data: {
+					id: 'x0.78309922375861',
+					source: '6.2831853071796',
+					target: 'tau',
+				}
+			},
+					{
+				data: {
+					id: 'x0.79844003347607',
+					source: 'udp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.91164735793678',
+					source: 'in',
+					target: 'klant',
+				}
+			},
+					{
+				data: {
+					id: 'x0.19755136929338',
+					source: 'in',
+					target: 'net-adres',
+				}
+			},
+					{
+				data: {
+					id: 'x0.33522275571489',
+					source: 'in',
+					target: 'net-adres',
+				}
+			},
+					{
+				data: {
+					id: 'x0.7682295948119',
+					source: 'stduit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.27777471080319',
+					source: 'in',
+					target: 'map',
+				}
+			},
+					{
+				data: {
+					id: 'x0.55396995579543',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+		{ data: {id: 'x0.47739705186216', exp: 'tcp-uit = web-klanten map klant -> klant -> bericht'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.62887092476192',
+					source: 'x0.47739705186216',
+					target: 'tcp-uit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.36478447279184',
+							source: 'bericht',
+							target: 'x0.47739705186216',
+						}
+					},
+									{
+						data: {
+							id: 'x0.51340091019562',
+							source: 'klant',
+							target: 'x0.47739705186216',
+						}
+					},
+									{
+						data: {
+							id: 'x0.95222972517471',
+							source: 'map',
+							target: 'x0.47739705186216',
+						}
+					},
+									{
+						data: {
+							id: 'x0.9161950680037',
+							source: 'web-klanten',
+							target: 'x0.47739705186216',
+						}
+					},
+							{
+				data: {
+					id: 'x0.6357117279599',
+					source: 'in',
+					target: 'klant',
+				}
+			},
+					{
+				data: {
+					id: 'x0.71729692943268',
+					source: 'in',
+					target: 'getal',
+				}
+			},
+					{
+				data: {
+					id: 'x0.1416025553558',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+		{ data: {id: 'x0.60696887625706', exp: 'uit : byte^int'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.01630057162433',
+					source: 'x0.60696887625706',
+					target: 'uit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.24288677062974',
+							source: 'byte',
+							target: 'x0.60696887625706',
+						}
+					},
+									{
+						data: {
+							id: 'x0.13723157678602',
+							source: 'int',
+							target: 'x0.60696887625706',
+						}
+					},
+				{ data: {id: 'x0.80417675422699', exp: 'web-zelf = (inverteer tcp-in) web-klanten'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.15667908925408',
+					source: 'x0.80417675422699',
+					target: 'web-zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.40094439424618',
+							source: 'inverteer',
+							target: 'x0.80417675422699',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12979044678146',
+							source: 'tcp-in',
+							target: 'x0.80417675422699',
+						}
+					},
+									{
+						data: {
+							id: 'x0.10880880202577',
+							source: 'web-klanten',
+							target: 'x0.80417675422699',
+						}
+					},
+							{
+				data: {
+					id: 'x0.99892451800356',
+					source: 'getal',
+					target: '80',
+				}
+			},
+					{
+				data: {
+					id: 'x0.21825690531091',
+					source: 'getal',
+					target: '72',
+				}
+			},
+					{
+				data: {
+					id: 'x0.5129323944044',
+					source: 'getal',
+					target: '111',
+				}
+			},
+					{
+				data: {
+					id: 'x0.83911223469261',
+					source: 'getal',
+					target: '84',
+				}
+			},
+					{
+				data: {
+					id: 'x0.61263983259566',
+					source: 'getal',
+					target: '10',
+				}
+			},
+					{
+				data: {
+					id: 'x0.29603161769734',
+					source: 'getal',
+					target: '46',
+				}
+			},
+					{
+				data: {
+					id: 'x0.63755226770302',
+					source: 'getal',
+					target: '116',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52428719006678',
+					source: 'getal',
+					target: '32',
+				}
+			},
+					{
+				data: {
+					id: 'x0.49358298699073',
+					source: 'getal',
+					target: '48',
+				}
+			},
+					{
+				data: {
+					id: 'x0.97277502388357',
+					source: 'getal',
+					target: '58',
+				}
+			},
+					{
+				data: {
+					id: 'x0.29251678441303',
+					source: 'getal',
+					target: '105',
+				}
+			},
+					{
+				data: {
+					id: 'x0.77135769779391',
+					source: 'getal',
+					target: '67',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52674497921334',
+					source: 'getal',
+					target: '75',
+				}
+			},
+					{
+				data: {
+					id: 'x0.76991383627519',
+					source: 'getal',
+					target: '45',
+				}
+			},
+					{
+				data: {
+					id: 'x0.40022862209018',
+					source: 'getal',
+					target: '47',
+				}
+			},
+					{
+				data: {
+					id: 'x0.89152945200518',
+					source: 'getal',
+					target: '51',
+				}
+			},
+		{ data: {id: 'x0.28331474600514', exp: 'rn = [13, 10]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.35245834726489',
+					source: 'x0.28331474600514',
+					target: 'rn',
+				}
+			},
+							{
+						data: {
+							id: 'x0.80772452000888',
+							source: '10',
+							target: 'x0.28331474600514',
+						}
+					},
+									{
+						data: {
+							id: 'x0.91902647396504',
+							source: '13',
+							target: 'x0.28331474600514',
+						}
+					},
+				{ data: {id: 'x0.069755276231913', exp: 'bericht = (((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.94932707536469',
+					source: 'x0.069755276231913',
+					target: 'bericht',
+				}
+			},
+							{
+						data: {
+							id: 'x0.5259953502221',
+							source: '101',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.086055847856242',
+							source: '103',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.19221384599442',
+							source: '104',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.66322692700812',
+							source: '105',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.89023260254889',
+							source: '110',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.34889293524851',
+							source: '111',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.064171320788642',
+							source: '116',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.020023048864688',
+							source: '32',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.45770173727428',
+							source: '45',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.06309583832654',
+							source: '46',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.2382799541756',
+							source: '47',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.97063413167868',
+							source: '48',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.90220807348481',
+							source: '49',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.85091978677126',
+							source: '50',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.26666574937602',
+							source: '51',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.53976034072217',
+							source: '58',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.37520697637238',
+							source: '67',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.76024873636675',
+							source: '72',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.51253536414007',
+							source: '75',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.66772376078541',
+							source: '76',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.53160643416066',
+							source: '79',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.039280343353413',
+							source: '80',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.43763759659493',
+							source: '84',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.93183505625084',
+							source: 'rn',
+							target: 'x0.069755276231913',
+						}
+					},
+				{ data: {id: 'x0.9308097953586', exp: 'web-zelf = net-adres ([48, 58, 56, 48])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.72095234306574',
+					source: 'x0.9308097953586',
+					target: 'web-zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.28429340305007',
+							source: '48',
+							target: 'x0.9308097953586',
+						}
+					},
+									{
+						data: {
+							id: 'x0.73853431490182',
+							source: '56',
+							target: 'x0.9308097953586',
+						}
+					},
+									{
+						data: {
+							id: 'x0.63997881656512',
+							source: '58',
+							target: 'x0.9308097953586',
+						}
+					},
+									{
+						data: {
+							id: 'x0.35404867974764',
+							source: 'net-adres',
+							target: 'x0.9308097953586',
+						}
+					},
+				{ data: {id: 'x0.6878613902665', exp: 'web-klanten = tcp-in web-zelf'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.16597416632156',
+					source: 'x0.6878613902665',
+					target: 'web-klanten',
+				}
+			},
+							{
+						data: {
+							id: 'x0.44010452760388',
+							source: 'tcp-in',
+							target: 'x0.6878613902665',
+						}
+					},
+									{
+						data: {
+							id: 'x0.88007523626093',
+							source: 'web-zelf',
+							target: 'x0.6878613902665',
+						}
+					},
+							{
+				data: {
+					id: 'x0.82920109332968',
+					source: 'getal',
+					target: '50',
+				}
+			},
+					{
+				data: {
+					id: 'x0.33033712968712',
+					source: 'udp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.22896817104377',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.89337241458398',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.3503601785518',
+					source: 'in',
+					target: 'cat',
+				}
+			},
+					{
+				data: {
+					id: 'x0.68666990831805',
+					source: 'in',
+					target: 'unie',
+				}
+			},
+					{
+				data: {
+					id: 'x0.95646825291052',
+					source: 'in',
+					target: 'sin',
+				}
+			},
+					{
+				data: {
+					id: 'x0.58864013319306',
+					source: 'in',
+					target: 'asin',
+				}
+			},
+					{
+				data: {
+					id: 'x0.65730403953106',
+					source: 'in',
+					target: 'cos',
+				}
+			},
+					{
+				data: {
+					id: 'x0.85867632592967',
+					source: 'getal',
+					target: '104',
+				}
+			},
+					{
+				data: {
+					id: 'x0.43955991949866',
+					source: 'getal',
+					target: '56',
+				}
+			},
+					{
+				data: {
+					id: 'x0.92396978890708',
+					source: 'getal',
+					target: '57',
+				}
+			},
+					{
+				data: {
+					id: 'x0.39843666665183',
+					source: 'getal',
+					target: '54',
+				}
+			},
+					{
+				data: {
+					id: 'x0.8147668963367',
+					source: 'getal',
+					target: '103',
+				}
+			},
+					{
+				data: {
+					id: 'x0.68421852527383',
+					source: 'getal',
+					target: '79',
+				}
+			},
+					{
+				data: {
+					id: 'x0.91097203079191',
+					source: 'getal',
+					target: '13',
+				}
+			},
+					{
+				data: {
+					id: 'x0.48249065665644',
+					source: 'getal',
+					target: '49',
+				}
+			},
+					{
+				data: {
+					id: 'x0.21582495896883',
+					source: 'getal',
+					target: '110',
+				}
+			},
+					{
+				data: {
+					id: 'x0.95025237414532',
+					source: 'getal',
+					target: '76',
+				}
+			},
+					{
+				data: {
+					id: 'x0.92012825371704',
+					source: 'getal',
+					target: '101',
+				}
+			},
+					{
+				data: {
+					id: 'x0.147660014754',
+					source: 'getal',
+					target: '1',
+				}
+			},
+		{ data: {id: 'x0.88106216950392', exp: 'zelf = net-adres ([48, 58, 49, 48, 49, 48, 49])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.64108059631711',
+					source: 'x0.88106216950392',
+					target: 'zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.43195341826973',
+							source: '48',
+							target: 'x0.88106216950392',
+						}
+					},
+									{
+						data: {
+							id: 'x0.61959648394007',
+							source: '49',
+							target: 'x0.88106216950392',
+						}
+					},
+									{
+						data: {
+							id: 'x0.28105941241656',
+							source: '58',
+							target: 'x0.88106216950392',
+						}
+					},
+									{
+						data: {
+							id: 'x0.78600209801737',
+							source: 'net-adres',
+							target: 'x0.88106216950392',
+						}
+					},
+				{ data: {id: 'x0.30745787374091', exp: 'ander = net-adres ([49, 57, 50, 46, 49, 54, 56, 46, 49, 46, 54, 50, 58, 49, 48, 49, 48, 49])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.44703357920378',
+					source: 'x0.30745787374091',
+					target: 'ander',
+				}
+			},
+							{
+						data: {
+							id: 'x0.2261066251556',
+							source: '46',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.18753310953618',
+							source: '48',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.2762346720678',
+							source: '49',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.55644375530837',
+							source: '50',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.41650128057995',
+							source: '54',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.16960708618611',
+							source: '56',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.90680393386018',
+							source: '57',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.10317118843234',
+							source: '58',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12607533909663',
+							source: 'net-adres',
+							target: 'x0.30745787374091',
+						}
+					},
+							{
+				data: {
+					id: 'x0.49544406658758',
+					source: 'getal',
+					target: 'tau',
+				}
+			},
+					{
+				data: {
+					id: 'x0.76047522842906',
+					source: 'getal',
+					target: '-1',
+				}
+			},
+					{
+				data: {
+					id: 'x0.9847516650263',
+					source: 'in',
+					target: 'coproduct',
+				}
+			},
+					]
+		});
+	</script><script>infostroom = cytoscape({
+			container: document.getElementById('infostroom'),
+			style: [
+				{
+					selector: '.waarde',
+					style: {
+							shape: 'hexagon',
+							'background-color': 'blue',
+							label: 'data(id)'
+					}
+				},
+				{
+					selector: 'edge',
+					style: {
+						'curve-style': 'bezier',
+						'target-arrow-shape': 'triangle',
+					}
+				},
+				{
+					selector: '.hyper',
+					style: {
+							label: 'data(exp)',
+							shape: 'none',
+							'background-color': 'black',
+							'font-size': '8px',
+							width: '10px',
+							height: '10px',
+					}
+				},
+			],
+			layout: {
+				name: 'dagre',
+				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
+			},
+			elements: [
+				{ data: {id: '10'}, classes: 'waarde' },{ data: {id: '101'}, classes: 'waarde' },{ data: {id: '103'}, classes: 'waarde' },{ data: {id: '104'}, classes: 'waarde' },{ data: {id: '105'}, classes: 'waarde' },{ data: {id: '110'}, classes: 'waarde' },{ data: {id: '111'}, classes: 'waarde' },{ data: {id: '116'}, classes: 'waarde' },{ data: {id: '13'}, classes: 'waarde' },{ data: {id: '32'}, classes: 'waarde' },{ data: {id: '45'}, classes: 'waarde' },{ data: {id: '46'}, classes: 'waarde' },{ data: {id: '47'}, classes: 'waarde' },{ data: {id: '48'}, classes: 'waarde' },{ data: {id: '49'}, classes: 'waarde' },{ data: {id: '50'}, classes: 'waarde' },{ data: {id: '51'}, classes: 'waarde' },{ data: {id: '54'}, classes: 'waarde' },{ data: {id: '56'}, classes: 'waarde' },{ data: {id: '57'}, classes: 'waarde' },{ data: {id: '58'}, classes: 'waarde' },{ data: {id: '67'}, classes: 'waarde' },{ data: {id: '72'}, classes: 'waarde' },{ data: {id: '75'}, classes: 'waarde' },{ data: {id: '76'}, classes: 'waarde' },{ data: {id: '79'}, classes: 'waarde' },{ data: {id: '80'}, classes: 'waarde' },{ data: {id: '84'}, classes: 'waarde' },{ data: {id: 'bericht'}, classes: 'waarde' },{ data: {id: 'getal'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'klant'}, classes: 'waarde' },{ data: {id: 'map'}, classes: 'waarde' },{ data: {id: 'net-adres'}, classes: 'waarde' },{ data: {id: 'rn'}, classes: 'waarde' },{ data: {id: 'tcp-in'}, classes: 'waarde' },{ data: {id: 'tcp-uit'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'web-klanten'}, classes: 'waarde' },{ data: {id: 'web-zelf'}, classes: 'waarde' },			{
+				data: {
+					id: 'x0.93500398655189',
+					source: 'in',
+					target: 'map',
+				}
+			},
+					{
+				data: {
+					id: 'x0.68444501687048',
+					source: 'in',
+					target: 'klant',
+				}
+			},
+					{
+				data: {
+					id: 'x0.38318833121247',
+					source: 'in',
+					target: 'net-adres',
+				}
+			},
+					{
+				data: {
+					id: 'x0.74977088242293',
+					source: 'in',
+					target: 'net-adres',
+				}
+			},
+					{
+				data: {
+					id: 'x0.36866354167865',
+					source: 'in',
+					target: 'map',
+				}
+			},
+					{
+				data: {
+					id: 'x0.29416036200438',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+		{ data: {id: 'x0.23226153861371', exp: 'tcp-uit = web-klanten map klant -> klant -> bericht'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.58448850064747',
+					source: 'x0.23226153861371',
+					target: 'tcp-uit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.24441273568404',
+							source: 'bericht',
+							target: 'x0.23226153861371',
+						}
+					},
+									{
+						data: {
+							id: 'x0.15238979186508',
+							source: 'klant',
+							target: 'x0.23226153861371',
+						}
+					},
+									{
+						data: {
+							id: 'x0.73214851586714',
+							source: 'map',
+							target: 'x0.23226153861371',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12547490472229',
+							source: 'web-klanten',
+							target: 'x0.23226153861371',
+						}
+					},
+							{
+				data: {
+					id: 'x0.79347038818219',
+					source: 'in',
+					target: 'klant',
+				}
+			},
+					{
+				data: {
+					id: 'x0.16410193367121',
+					source: 'in',
+					target: 'getal',
+				}
+			},
+					{
+				data: {
+					id: 'x0.74507138912802',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+					{
+				data: {
+					id: 'x0.074529800598756',
+					source: 'getal',
+					target: '80',
+				}
+			},
+					{
+				data: {
+					id: 'x0.95010403168858',
+					source: 'getal',
+					target: '72',
+				}
+			},
+					{
+				data: {
+					id: 'x0.052529262403273',
+					source: 'getal',
+					target: '111',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52156337980254',
+					source: 'getal',
+					target: '84',
+				}
+			},
+					{
+				data: {
+					id: 'x0.17621065637852',
+					source: 'getal',
+					target: '10',
+				}
+			},
+					{
+				data: {
+					id: 'x0.24006237240511',
+					source: 'getal',
+					target: '46',
+				}
+			},
+					{
+				data: {
+					id: 'x0.79779805187033',
+					source: 'getal',
+					target: '116',
+				}
+			},
+					{
+				data: {
+					id: 'x0.73265441168689',
+					source: 'getal',
+					target: '32',
+				}
+			},
+					{
+				data: {
+					id: 'x0.65656365298506',
+					source: 'getal',
+					target: '48',
+				}
+			},
+					{
+				data: {
+					id: 'x0.96740513852211',
+					source: 'getal',
+					target: '58',
+				}
+			},
+					{
+				data: {
+					id: 'x0.63945834554707',
+					source: 'getal',
+					target: '105',
+				}
+			},
+					{
+				data: {
+					id: 'x0.75973484188306',
+					source: 'getal',
+					target: '67',
+				}
+			},
+					{
+				data: {
+					id: 'x0.093480477153082',
+					source: 'getal',
+					target: '75',
+				}
+			},
+					{
+				data: {
+					id: 'x0.13490241166898',
+					source: 'getal',
+					target: '45',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52021006984646',
+					source: 'getal',
+					target: '47',
+				}
+			},
+					{
+				data: {
+					id: 'x0.07823214171372',
+					source: 'getal',
+					target: '51',
+				}
+			},
+		{ data: {id: 'x0.069906397755214', exp: 'rn = [13, 10]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.20465508625128',
+					source: 'x0.069906397755214',
+					target: 'rn',
+				}
+			},
+							{
+						data: {
+							id: 'x0.46142047339185',
+							source: '10',
+							target: 'x0.069906397755214',
+						}
+					},
+									{
+						data: {
+							id: 'x0.81967728017814',
+							source: '13',
+							target: 'x0.069906397755214',
+						}
+					},
+				{ data: {id: 'x0.57331862839559', exp: 'bericht = (((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.75558083539623',
+					source: 'x0.57331862839559',
+					target: 'bericht',
+				}
+			},
+							{
+						data: {
+							id: 'x0.051938818791853',
+							source: '101',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.1578071285774',
+							source: '103',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.99999357108026',
+							source: '104',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.20432861065694',
+							source: '105',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.88995564444454',
+							source: '110',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12546847580255',
+							source: '111',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.99779899930479',
+							source: '116',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.05405757765009',
+							source: '32',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.87053986493058',
+							source: '45',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.072328799437885',
+							source: '46',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.0041616088730104',
+							source: '47',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.92306912733385',
+							source: '48',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.59389217924042',
+							source: '49',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.18037226571719',
+							source: '50',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.1631314992733',
+							source: '51',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.3916902306451',
+							source: '58',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.91302667740408',
+							source: '67',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.81969515272402',
+							source: '72',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.35909536870154',
+							source: '75',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.55248502248548',
+							source: '76',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.57942999414142',
+							source: '79',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.45257584585463',
+							source: '80',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.68738743462012',
+							source: '84',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.099640063522216',
+							source: 'rn',
+							target: 'x0.57331862839559',
+						}
+					},
+				{ data: {id: 'x0.53080798803401', exp: 'web-zelf = net-adres ([48, 58, 56, 48])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.75729383237534',
+					source: 'x0.53080798803401',
+					target: 'web-zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.3042951497735',
+							source: '48',
+							target: 'x0.53080798803401',
+						}
+					},
+									{
+						data: {
+							id: 'x0.99222846142586',
+							source: '56',
+							target: 'x0.53080798803401',
+						}
+					},
+									{
+						data: {
+							id: 'x0.57697111255348',
+							source: '58',
+							target: 'x0.53080798803401',
+						}
+					},
+									{
+						data: {
+							id: 'x0.87761377816909',
+							source: 'net-adres',
+							target: 'x0.53080798803401',
+						}
+					},
+				{ data: {id: 'x0.74780929635643', exp: 'web-klanten = tcp-in web-zelf'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.62890993134534',
+					source: 'x0.74780929635643',
+					target: 'web-klanten',
+				}
+			},
+							{
+						data: {
+							id: 'x0.03542090674649',
+							source: 'tcp-in',
+							target: 'x0.74780929635643',
+						}
+					},
+									{
+						data: {
+							id: 'x0.74780286697103',
+							source: 'web-zelf',
+							target: 'x0.74780929635643',
+						}
+					},
+							{
+				data: {
+					id: 'x0.83323854200227',
+					source: 'getal',
+					target: '50',
+				}
+			},
+					{
+				data: {
+					id: 'x0.92537655119103',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.87327134277358',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.8310375408414',
+					source: 'getal',
+					target: '104',
+				}
+			},
+					{
+				data: {
+					id: 'x0.97943412930678',
+					source: 'getal',
+					target: '56',
+				}
+			},
+					{
+				data: {
+					id: 'x0.7438112072385',
+					source: 'getal',
+					target: '57',
+				}
+			},
+					{
+				data: {
+					id: 'x0.90336634027928',
+					source: 'getal',
+					target: '54',
+				}
+			},
+					{
+				data: {
+					id: 'x0.98359573817979',
+					source: 'getal',
+					target: '103',
+				}
+			},
+					{
+				data: {
+					id: 'x0.66688033457235',
+					source: 'getal',
+					target: '79',
+				}
+			},
+					{
+				data: {
+					id: 'x0.49725851905405',
+					source: 'getal',
+					target: '13',
+				}
+			},
+					{
+				data: {
+					id: 'x0.16396800343132',
+					source: 'getal',
+					target: '49',
+				}
+			},
+					{
+				data: {
+					id: 'x0.83001183384564',
+					source: 'getal',
+					target: '110',
+				}
+			},
+					{
+				data: {
+					id: 'x0.8889487501648',
+					source: 'getal',
+					target: '76',
+				}
+			},
+					{
+				data: {
+					id: 'x0.076994680835397',
+					source: 'getal',
+					target: '101',
+				}
+			},
+					]
+		});
+	</script><script>				infostroom.on('mouseover', 'node', function(event) {
+					var node = event.cyTarget || [];
+					$(this).each(function() {$(this).qtip({content:'hello'});});
+					$.qtip({
+					content: 'hello',
+						show: {
+							event: event.type,
+							//ready: true
+						},
+						hide: {
+							event: 'mouseout unfocus'
+						}
+					}, event);
+				});
+			</script></body>

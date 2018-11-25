@@ -36,7 +36,7 @@ void lua_pushfout(lua_State* L, fout fout) {
 int lua_ontleed(lua_State* L) {
 	// reset
 	yyreset();
-	char* str = luaL_checkstring(L, 1);
+	const char* str = luaL_checkstring(L, 1);
 	strcpy(buf, str);
 	in = buf;
 

@@ -1,7 +1,24 @@
 require 'lisp'
 require 'util'
 
+-- doe
+local socket = require 'socket'
+
 local log = function() end
+
+-- itereer over een set
+function alle(t)
+	t.is_set = nil
+	local el = next(t)
+	return function ()
+		local a = el
+		el = next(t,el)
+		if a == nil then
+			t.is_set = true
+		end
+		return a
+	end
+end
 
 local fn = {
 	['tau'] = 2 * math.pi;
@@ -154,6 +171,12 @@ local fn = {
 		local s = {}
 		for v in pairs(a) do s[v] = true end
 		for v in pairs(b) do s[v] = true end
+		return s
+	end;
+
+	['verschil'] = function(a,b)
+		local s = {}
+		for k,v in pairs(a) do if not b[k] then s[k] = v end end
 		return s
 	end;
 
@@ -393,29 +416,40 @@ function doe(stroom)
 			print(unlisp(env[naam]))
 		end
 
-		-- actie ondernemen?
-		if naam == 'udp-uit' then
-			local s = require 'socket'
+
+		-- MAGISCHE VALUATIES
+		if naam == 'udp-uit' or naam == 'tcp-uit' then
+				
+			local maak,udp,tcp
+			if naam == 'udp-uit' then maak,udp = socket.udp,true end
+			if naam == 'tcp-uit' then maak,tcp = socket.tcp,true end
 			local pakketten = env[naam]
 
 			env.kanaal = env.kanaal or {}
 
 			pakketten.is_set = nil
-			for pakket in pairs(pakketten) do
-			_G.print(unlisp(pakket),': ',type(pakket))
+			print('PAKKETEN',unlisp(pakketten))
+			for pakket in alle(pakketten) do
+				print('PAKKET',unlisp(pakket),': ',type(pakket))
 				local van,naar,inhoud = table.unpack(pakket)
 				local poort = van[2]
 				local kanaal = env.kanaal[poort]
 
 				-- maak kanaal
 				if not kanaal then
-					kanaal = s.udp()
+					kanaal = maak()
 					kanaal:setsockname(van[1], van[2])
-					env.kanaal[poort] = kanaal
+					if tcp then
+						kanaal:setpeername(naar[1], naar[2])
+					end
 				end
 
-				print('[UDP] '..van[1]..':'..van[2]..' -> '..naar[1]..':'..naar[2]..'  '..string.char(table.unpack(inhoud)))
-				kanaal:sendto(string.char(table.unpack(inhoud)),naar[1],naar[2])
+				if udp then io.write('[UDP]\t') end 
+				if tcp then io.write('[TCP]\t') end 
+				local d = string.char(table.unpack(inhoud))
+				io.write(van[1], ':', van[2], ' -> ', naar[1], ':', naar[2], '\t', d, '\n')
+				if udp then kanaal:sendto(d,naar[1],naar[2]) end
+				if tcp then kanaal:send(d) end
 			end
 			pakketten.is_set = true
 
