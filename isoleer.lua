@@ -118,7 +118,7 @@ function isoleer(eq,name)
 
 		if not eq0 and not flip then break end
 		if eq0 then
-			--log(unlisp(eq) .. ' -> '..unlisp(eq0))
+			if verboos then print(unlisp(eq) .. ' -> '..unlisp(eq0)) end 
 			eq = eq0
 			flip = false
 		end

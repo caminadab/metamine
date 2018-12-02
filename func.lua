@@ -49,6 +49,7 @@ function cat(...)
 	local tt = {...}
 	local r = {}
 	for i,t in ipairs(tt) do
+	log(t)
 		for i,v in ipairs(t) do
 			r[#r+1] = v
 		end

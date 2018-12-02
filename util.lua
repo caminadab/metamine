@@ -3,7 +3,7 @@ function log(...)
 	local r = {}
 	if #t == 0 then print(); return end
 	for i,v in ipairs(t) do
-		r[#r+1] = tostring(v)
+		r[#r+1] = unlisp(v)
 		r[#r+1] = '\t'
 	end
 	local s = table.concat(r)

@@ -79,7 +79,12 @@ local fn = {
 	end;
 
 	['#'] = function(a) return #a end;
-	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
+	['='] = function(a,b)
+		if tonumber(a) and tonumber(b) then
+			return a == b
+		end
+		return unlisp(a)==unlisp(b)
+	end;
 	['!='] = function(a,b) return a ~= b end;
 	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
 	['..'] = function(a,b)
@@ -186,15 +191,40 @@ local fn = {
 		local ip = string.char(table.unpack(a))
 		return table.pack(ip:match('([^:]*):(.*)'))
   end;
+	['bestand-in'] = function(naam)
+		local naam = string.char(table.unpack(naam))
+		local bestand = io.open(naam, 'r')
+		_G.print('OPEN '..naam)
+		return {fd = bestand, buf = false}
+	end;
+	['kan-lezen'] = function(b)
+		if not b.buf then b.buf = b.fd:read(1024) end
+		return b.buf
+	end;
+	['lees'] = function(b)
+		local buf = b.buf
+		b.buf = nil
+		return buf
+	end;
 }
 
 function eval0(env,exp)
 	if atom(exp) then
+		-- magisch
 		local v = tonumber(exp) or env[exp]
 		if not v then error('onbekend: "'..unlisp(exp)..'"') end
 		return v
 	else
-		if exp[1] == '->' then
+		if exp[1] == ':=' then
+			local a,b = exp[2],exp[3]
+			env[a] = eval0(env,b)
+			if a == 'stduit' then
+				local data = env[a]
+				io.write(data)
+				io.flush()
+			end
+			return true
+		elseif exp[1] == '->' then
 			local arg = exp[2]
 			local fn = exp[3]
 			return function(a)
@@ -381,90 +411,112 @@ function doe(stroom)
 		print = function () end
 	end
 	local env = kopieer(fn)
-	for i,feit in ipairs(stroom) do
-		local fn,naam,exp = feit[1],feit[2],feit[3]
-		io_write('DOE\t',unlisp(feit),'\t\t= ')
-		--print('DOE',leed(noem))
+	env.Start = socket.gettime()
 
-		if fn == '=' or fn == ':=' then
+	-- tijd
+	local freq = 1
+	local dt = 1/freq
+	_G.print(freq..' Hz')
+	env.nu = 0
 
-			-- lus
-			if type(naam) == 'table' then
-				local naam,itnaam = naam[1],naam[2]
-				local it = env[itnaam]
-				if not it or type(it) ~= 'table' then
-					error('ongeldige lus '..itnaam)
-				end
+	while true do
+		for i,feit in ipairs(stroom) do
+			local fn,naam,exp = feit[1],feit[2],feit[3]
+			local f,a,b = feit[1],feit[2],feit[3]
+			io_write('DOE\t',unlisp(feit),'\t\t= ')
+			--print('DOE',leed(noem))
 
-				env[naam] = env[naam] or {}
-				local naar = env[naam]
+			if fn == '=' or fn == ':=' then
 
-				for i = 1,#it do
-					env[itnaam] = it[i]
-					naar[i] = eval0(env, exp)
-				end
-				env[it] = nil
-
-			-- geen lus
-			else
-				env[naam] = eval0(env, exp)
-
-			end
-			print(unlisp(env[naam]))
-		else
-			--print('ok')
-			print(unlisp(env[naam]))
-		end
-
-
-		-- MAGISCHE VALUATIES
-		if naam == 'udp-uit' or naam == 'tcp-uit' then
-				
-			local maak,udp,tcp
-			if naam == 'udp-uit' then maak,udp = socket.udp,true end
-			if naam == 'tcp-uit' then maak,tcp = socket.tcp,true end
-			local pakketten = env[naam]
-
-			env.kanaal = env.kanaal or {}
-
-			pakketten.is_set = nil
-			print('PAKKETEN',unlisp(pakketten))
-			for pakket in alle(pakketten) do
-				print('PAKKET',unlisp(pakket),': ',type(pakket))
-				local van,naar,inhoud = table.unpack(pakket)
-				local poort = van[2]
-				local kanaal = env.kanaal[poort]
-
-				-- maak kanaal
-				if not kanaal then
-					kanaal = maak()
-					kanaal:setsockname(van[1], van[2])
-					if tcp then
-						kanaal:setpeername(naar[1], naar[2])
+				-- lus
+				if type(naam) == 'table' then
+					local naam,itnaam = naam[1],naam[2]
+					local it = env[itnaam]
+					if not it or type(it) ~= 'table' then
+						error('ongeldige lus '..itnaam)
 					end
+
+					env[naam] = env[naam] or {}
+					local naar = env[naam]
+
+					for i = 1,#it do
+						env[itnaam] = it[i]
+						naar[i] = eval0(env, exp)
+					end
+					env[it] = nil
+
+				-- geen lus
+				else
+					env[naam] = eval0(env, exp)
+
 				end
-
-				if udp then io.write('[UDP]\t') end 
-				if tcp then io.write('[TCP]\t') end 
-				local d = string.char(table.unpack(inhoud))
-				io.write(van[1], ':', van[2], ' -> ', naar[1], ':', naar[2], '\t', d, '\n')
-				if udp then kanaal:sendto(d,naar[1],naar[2]) end
-				if tcp then kanaal:send(d) end
+				print(unlisp(env[naam]))
+			elseif fn == '=>' then
+				local b = eval0(env, a)
+				if b then
+					env[naam] = eval0(env,feit[3])
+					print('ja')
+				else
+					print('nee')
+				end
+	 		else
+				--print('ok')
+				print(unlisp(env[naam]))
 			end
-			pakketten.is_set = true
 
+
+			-- MAGISCHE VALUATIES
+			if naam == 'stduit' then
+			_G.print('JAAA')
+				local d = env[naam]
+				if type(d) == 'table' then
+					d = string.char(table.unpack(env[naam]))
+				end
+				io.write(d)
+
+			elseif naam == 'udp-uit' or naam == 'tcp-uit' then
+					
+				local maak,udp,tcp
+				if naam == 'udp-uit' then maak,udp = socket.udp,true end
+				if naam == 'tcp-uit' then maak,tcp = socket.tcp,true end
+				local pakketten = env[naam]
+
+				env.kanaal = env.kanaal or {}
+
+				pakketten.is_set = nil
+				print('PAKKETEN',unlisp(pakketten))
+				for pakket in alle(pakketten) do
+					print('PAKKET',unlisp(pakket),': ',type(pakket))
+					local van,naar,inhoud = table.unpack(pakket)
+					local poort = van[2]
+					local kanaal = env.kanaal[poort]
+
+					-- maak kanaal
+					if not kanaal then
+						kanaal = maak()
+						kanaal:setsockname(van[1], van[2])
+						if tcp then
+							kanaal:setpeername(naar[1], naar[2])
+						end
+					end
+
+					if udp then io.write('[UDP]\t') end 
+					if tcp then io.write('[TCP]\t') end 
+					local d = string.char(table.unpack(inhoud))
+					io.write(van[1], ':', van[2], ' -> ', naar[1], ':', naar[2], '\t', d, '\n')
+					if udp then kanaal:sendto(d,naar[1],naar[2]) end
+					if tcp then kanaal:send(d) end
+				end
+				pakketten.is_set = true
+
+			end
 		end
 
+		-- tijdsupdate
+		local over = (socket.gettime() - env.Start) % dt
+		socket.sleep(dt - over)
+		env.nu = math.floor((socket.gettime() - env.Start) * freq) / freq
+		print('nu = '..env.nu)
 
 	end
-
-	local uit = env['stduit']
-	if type(uit) == 'table' and uit.is_set then
-		uit = set2tekst(uit)
-	elseif type(uit) == 'number' then
-		uit = tostring(uit)
-	elseif type(uit) == 'table' then
-		uit = string.char(table.unpack(uit))
-	end
-	return uit
 end

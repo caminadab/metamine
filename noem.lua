@@ -27,9 +27,12 @@ function deduceer(feiten)
 
 	-- extra toevoegen
 	f[#f+1] = {':', 'getal', 'in'}
-	f[#f+1] = {'=', 'uit', 'stduit'}
+	f[#f+1] = {':', 'uit', 'stduit'}
+	f[#f+1] = {':', 'stdin', 'in'}
 	f[#f+1] = {':', 'cat', 'in'}
 	f[#f+1] = {':', 'unie', 'in'}
+
+	--[[
 	f[#f+1] = {':', 'sin', 'in'}
 	f[#f+1] = {':', 'asin', 'in'}
 	f[#f+1] = {':', 'cos', 'in'}
@@ -39,6 +42,7 @@ function deduceer(feiten)
 	f[#f+1] = {':', 'tau', 'getal'}
 	f[#f+1] = {':', '-1', 'getal'}
 	f[#f+1] = {':', 'coproduct', 'in'}
+	]]
 
 	return f
 end
