@@ -1,153 +1,55 @@
 #!/usr/bin/lua
 package.path = package.path .. ";../?.lua"
-require 'vertaal'
-require 'util'
-require 'lisp'
-require 'func'
 
+require 'getopt'
+require 'lisp'
+
+require 'vertaal'
+require 'bouw'
 require 'doe'
 
-require 'love'
-require 'js'
+local opt,bronnen = getopt({...}, "u")
 
-require 'rapport'
-
--- GLOBALEN
---print_ingewanden = false
-print_typen_bron = true
-print_typen_stroom = false
-print_syntax = false
-print_losse_waarden = false
-print_suikervrij = false
-print_deducties = false
-print_infostroom = false
-print_pseudocode = false
-
--- argumenten
-local taal = 'nl'
-local bron = {}
-local arch = 'amd64'
-local immediate
-local love
-local js
-local tostdout = false
-
--- stroom, love, js
-local doel = 'tekst'
-local uitvoer = nil
-
-local args = {...}
-
-for i=1,#args do
-	local arg = args[i]
-	local vlag
-	if arg == '-' then
-		tostdout = true
-	elseif arg:sub(1,1) == '-' then
-		vlag = arg:sub(2,2)
-		if vlag == 'o' then
-			doel = args[i+1] or doel
-			i = i + 1
-		elseif vlag == 't' then
-			arch = string.lower(arg:sub(3))
-		elseif vlag == 'J' then
-			doel = 'js'
-			uitvoer = 'main.js'
-		elseif vlag == 'L' then
-			doel = 'love'
-			uitvoer = 'main.lua'
-		elseif vlag == 'i' then
-			immediate = true
-		elseif vlag == 's' then
-			print_ingewanden = true
-		elseif vlag == 'v' then
-			_G.verboos = true
-		elseif vlag == 'l' then
-			taal = string.lower(arg:sub(3,5))
-			if taal == '' then taal = args[i+1] end
-			if not taal then taal = 'nl' end
-
-			if taal ~= 'nl' and taal ~= 'NL' then
-				print('onherkende taal '..taal)
-				return
-			end
-		end
-	else
-		-- code
-		if arg:sub(-5) ~= '.code' then
-			arg = arg .. '.code'
-		end
-		if not uitvoer then
-			uitvoer = arg:sub(1,-6)..'.app.lisp'
-		end
-		bron[#bron+1] = arg
+for i,bron in pairs(bronnen) do
+	if bron:sub(-5) ~= '.code' then
+		bronnen[i] = bron .. '.code'
 	end
 end
 
-if #bron == 0 then
+if #bronnen == 0 then
 	print('geen invoer')
+end
+
+if opt.h or opt.help or #bronnen == 0 then
 	print(
 [[gebruik: vt [OPTIES...] [BESTANDEN...]
 Vertaalt broncode naar applicaties.
 Opties:
-		-	print naar stdout
-		-i	voer meteen uit
-		-s	print syntax
-		-l	stel lokale van broncode in (standaard NL)
-		-o	uitvoerbestand
-		-L	compileer naar love2d
-		-J	compileer naar javascript
-		-v	spraakzaam zijn
+    -h, --help        print deze hulp
+    -d, --doe         voer meteen uit
+    -s, --syntax     	print syntax
+    -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
+    -u, --uitvoer=UIT	uitvoerbestand
+    -v, --verboos     spraakzaam zijn
 ]])
 	return
 end
 
--- lees in
-code = file(bron[1])
+local code = file(bronnen[1])
 
-if print_ingewanden then print(unlisp(ontleed(code))) end
-
-file('rapport.html', rapport(code))
-
-local stroom,typen = vertaal(code, 'in', 'uit')
-if not stroom then
-	local fout = typen
-	print(color.red .. fout .. color.white)
-	return
-end
-
-if verboos then
-	require 'infix'
-	for i,v in ipairs(stroom) do
-		print(unparseInfix(v))
-	end
-end
-
+local plan = vertaal(code, 'in', 'uit')
 local uit
-if doel == 'love' then
-	uit = tolove(stroom,typen)
-elseif doel == 'js' then
-	uit = toJs(stroom,typen)
+		
+if opt.d or opt.doe then
+	uit = doe(plan)
 else
-	uit = unlisp(stroom)
+	uit = bouw(plan)
 end
+uit = unlisp(uit)
 
-if immediate then
-	if doel == 'love' then
-		file('main.lua', uit)
-		os.execute('love .')
-	elseif doel == 'js' then
-		print('kan niet direct javascript uitvoeren')
-	else
-		uit = unlisp(doe(stroom))
-		print(uit)
-		return
-	end
-end
-
--- uitvoer
-if tostdout then
-	print(uit)
+local u = opt.u or opt.uitvoer
+if u then
+	file(u, uit)
 else
-	file(uitvoer, uit)
+	print(unlisp(uit))
 end

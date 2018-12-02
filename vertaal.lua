@@ -104,8 +104,8 @@ function vertaal(code)
 	local stroom = snoei(stroom)
 
 	-- tijd!
-	local stroom = dt(stroom)
-	log('STROOM',stroom)
+	--local stroom = dt(stroom)
+	--log('STROOM',stroom)
 
 	return stroom,fout
 end

@@ -404,6 +404,7 @@ end
 
 
 function doe(stroom)
+	if not stroom then return nil end
 	local io_write = io.write
 	local print = print
 	if not verboos then

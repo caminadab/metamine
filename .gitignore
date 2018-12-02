@@ -1,9 +1,11 @@
 .*
 
+# autogen
 ontleed/taal.c
 ontleed/taal.h
 
 bin/
+troep/
 *.so
 *.dll
 
