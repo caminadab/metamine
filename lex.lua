@@ -222,7 +222,8 @@ local function getOperator(ss)
 end
 
 local function isvar(ch)
-	return ch:upper() ~= ch:lower() or ch == '-' or ch == '_'
+	--return ch:upper() ~= ch:lower() or ch == '-' or ch == '_'
+	return ch:match('[%w_-]')
 end
 
 local function getVariable(ss)

@@ -1,3 +1,5 @@
+require 'symbool'
+
 -- gegeven een (benoemde) expressie
 -- voeg simpele ops aan asm toe
 -- zoals (+ 1 tijd0)
@@ -6,8 +8,10 @@ local function ontrafel0(exp,name,asm,g,fn)
 	if g then aname = name .. g end
 	local g = g or -1
 	g = g + 1
-	if atom(exp) then
+	-- mag blijven
+	if isatoom(exp) then
 		asm[#asm+1] = {fn, aname, exp}
+
 	else
 		-- subs
 		local args = {}

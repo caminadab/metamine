@@ -1,7 +1,7 @@
 require 'util'
 require 'isoleer'
 require 'symbool'
-require 'voorwaartse-hypergraaf'
+require 'vhgraaf'
 
 -- herschrijft vergelijkingen
 function deduceer(feiten)
@@ -13,6 +13,7 @@ function deduceer(feiten)
 			f[#f+1] = {':', c, 'getal'}
 		end
 	end
+	f[#f+1] = {':', '1', 'getal'}
 
 	-- vglen herschrijven
 	for i,feit in ipairs(feiten) do
@@ -26,8 +27,22 @@ function deduceer(feiten)
 
 	-- extra toevoegen
 	f[#f+1] = {':', 'getal', 'in'}
-	f[#f+1] = {'=', 'uit', 'stdout'}
+	f[#f+1] = {':', 'uit', 'stduit'}
+	f[#f+1] = {':', 'stdin', 'in'}
 	f[#f+1] = {':', 'cat', 'in'}
+	f[#f+1] = {':', 'unie', 'in'}
+
+	--[[
+	f[#f+1] = {':', 'sin', 'in'}
+	f[#f+1] = {':', 'asin', 'in'}
+	f[#f+1] = {':', 'cos', 'in'}
+	f[#f+1] = {':', 'acos', 'in'}
+	f[#f+1] = {':', 'uit', {'^', 'byte', 'int'}}
+	f[#f+1] = {'=', 'tau', tostring(2*math.pi)}
+	f[#f+1] = {':', 'tau', 'getal'}
+	f[#f+1] = {':', '-1', 'getal'}
+	f[#f+1] = {':', 'coproduct', 'in'}
+	]]
 
 	return f
 end
@@ -35,7 +50,7 @@ end
 -- feiten -> AFHANKELIJKHEIDSHYPERGRAAF
 -- plus: pijl -> feiten
 function berekenbaarheid(feiten)
-	local hgraaf = voorwaartse_hypergraaf()
+	local hgraaf = vhgraaf()
 	local map = {}
 
 	for i,feit in ipairs(feiten) do
@@ -54,16 +69,31 @@ function berekenbaarheid(feiten)
 			-- a = 1 + 2
 			if isvar(a) then
 				local pijl = {van = val(b), naar = a}
+				if b[1] == '->' then pijl.van[b[2]] = nil end
 				map[pijl] = feit
 				hgraaf:link(pijl)
+
+				if false and isexp(b) and b[1] == '->' then
+					local pijl = {van = set('in'), naar = a}
+					map[pijl] = {'=', a, b}
+					--hgraaf:link(pijl)
+				end
 			end
 		
 			-- 1 + 2 = b
 			if isvar(b) and not isvar(a) then
 				local pijl = {van = val(a), naar = b}
+				if a[1] == '->' then pijl.van[b[2]] = nil end
 				local feit = {feit[1],feit[3],feit[2]}
 				map[pijl] = feit
 				hgraaf:link(pijl)
+				print('ok', pijl2tekst(pijl))
+
+				if isexp(a) and a[1] == '->' then
+					local pijl = {van = set('in'), naar = b}
+					map[pijl] = {'=', b, a}
+					--hgraaf:link(pijl)
+				end
 			end
 
 			-- (1): in -> 1

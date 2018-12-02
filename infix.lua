@@ -319,7 +319,7 @@ local function unparseInfix_work(sexp, tt)
 		else
 			for i=2,#sexp do
 				local v = sexp[i]
-				local br = exp(v) and binop[v[1]] and binop[v[1]] <= binop[op]
+				local br = exp(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
 
 				if br then insert(tt, '(') end
 
@@ -351,7 +351,8 @@ end
 
 function unparseInfix(sexp)
 	if not sexp then
-		error('ongeldige s-exp')
+		return '<niets>'
+		--error('ongeldige s-exp')
 	end
 
 	local tt = unparseInfix_work(sexp, {})
@@ -374,6 +375,7 @@ local function test(infix,prefix)
 end
 
 if _G.test then
+	do return end
 	test('sin(a) * b', '(* (sin a) b)')
 
 	-- functies!

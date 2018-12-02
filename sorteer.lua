@@ -1,6 +1,6 @@
 require 'func'
 require 'graaf'
-require 'voorwaartse-hypergraaf'
+require 'vhgraaf'
 require 'noem' -- var()
 
 local insert = table.insert
@@ -259,7 +259,7 @@ end
 
 if false and test then
 	-- a -> b
-	local hgraaf = voorwaartse_hypergraaf()
+	local hgraaf = vhgraaf()
 	hgraaf:link({a=true}, 'b')
 	local pad = sorteer(hgraaf, {van='a',naar='b'})
 	assert(#pad == 1)
@@ -267,7 +267,7 @@ if false and test then
 	assert(pad[1].naar == 'b')
 
 	-- b -> a, a -> b
-	local hgraaf = voorwaartse_hypergraaf()
+	local hgraaf = vhgraaf()
 	hgraaf:link({b=true}, 'a')
 	hgraaf:link({a=true}, 'b')
 	local pad = sorteer(hgraaf, {van='a',naar='b'})

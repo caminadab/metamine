@@ -17,12 +17,12 @@ int test() {
 		{"a = 1 + #b", "((= a (+ 1 (# b))))"},
 
 		// funcs
-		{"f = a -> a", "((= f (-> (, a) a)))"},
-		{"f = a -> a + 1", "((= f (-> (, a) (+ a 1))))"},
+		{"f = a -> a", "((= f (-> a a)))"},
+		{"f = a -> a + 1", "((= f (-> a (+ a 1))))"},
 		{"f = a,b -> c", "((= f (-> (, a b) c)))"},
 		{"f = int,int -> int", "((= f (-> (, int int) int)))"},
-		{"f = (intd,intd) -> intq", "((= f (-> (, intd intd) intq)))"},
-		{"f = (int^2,int^2) -> int", "((= f (-> (, (^ int 2) (^ int 2)) int)))"},
+		{"f = intd,intd -> intq", "((= f (-> (, intd intd) intq)))"},
+		{"f = int^2,int^2 -> int", "((= f (-> (, (^ int 2) (^ int 2)) int)))"},
 		
 		// blok
 		{
@@ -31,8 +31,9 @@ int test() {
 		},
 
 		// logica
-		{"a = goed en lekker", "((= a (en goed lekker)))"},
+		{"a = (goed en lekker)", "((= a (en goed lekker)))"},
 		{"a = niet goed", "((= a (niet goed)))"},
+		{"a = ja en a = nee", "((en (= a ja) (= a nee)))"},
 
 		// fouten
 		{"a = (3 =)", "((= a fout))"},
@@ -75,6 +76,25 @@ int test() {
 		{"a = \"hoi\"", "((= a ([] 104 111 105)))"},
 		{"\"hoi\" = a", "((= ([] 104 111 105) a))"},
 
+		// (a b)
+		{"a = sin x", "((= a (sin x)))"},
+		{"a : sin x", "((: a (sin x)))"},
+		{"sin x : a", "((: (sin x) a))"},
+		{"a 0 : getal", "((: (a 0) getal))"},
+		{"a 0 : getal en a 1 : getal", "((en (: (a 0) getal) (: (a 1) getal)))"},
+		{"a mod b c", "(fout)"},
+		{"f = a b c d", "((= f fout))"},
+		{"a mod (b c)", "((mod a (b c)))"},
+
+		// func,
+		
+		{"f = [a,b] -> [b,a+b]", "((= f (-> ([] a b) ([] b (+ a b)))))"},
+		{"fib = n -> (f^n [1,1]) 0", "((= fib (-> n (((^ f n) ([] 1 1)) 1))))"},
+		{"a^n (1)", "(((^ a n) 1))"},
+
+		// unicode
+		{"f = a ∪ b", "((= f (unie a b)))"},
+
 		{0, 0},
 	};
 
@@ -82,12 +102,17 @@ int test() {
 
 	for (int i = 0; tests[i][0]; i++) {
 		char* test = tests[i][0];
+		char t[0x100];
+		strcpy(t, test);
+		strcat(t, "\n");
 		char* doel = tests[i][1];
-		char* lisp = ontleed(test);
+		char* lisp = ontleed(t);
 		if (strcmp(lisp, doel)) {
 			printf("%s != %s\n", lisp, doel);
 			fout++;
 		}
+		puts(test);
+		getc(stdin);
 		totaal++;
 	}
 	printf("%d/%d fout\n", fout, totaal);

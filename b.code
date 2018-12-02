@@ -1,5 +1,20 @@
-a = 1
-b = 2
-c = 3
-d = a + [b,c]
-uit = d
+f = a -> b
+	b + 1 = 2 * a
+
+f = (b + 1 = 2 * a) => (a -> b)
+;(1,2,3) + 4 en zo
+; hoe?
+f = (f.b + 1 = 2 * f.a) oplos (f.a,f.b)
+
+; hoe:
+C  A => B
+D  f = C
+B  a -> b
+
+g = f 4
+E  f 4
+C  g = E
+
+(b + 1 = 2 * a)
+; wat is scoping?
+

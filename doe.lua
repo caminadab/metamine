@@ -1,21 +1,92 @@
 require 'lisp'
 require 'util'
 
+-- doe
+local socket = require 'socket'
+
 local log = function() end
 
+-- itereer over een set
+function alle(t)
+	t.is_set = nil
+	local el = next(t)
+	return function ()
+		local a = el
+		el = next(t,el)
+		if a == nil then
+			t.is_set = true
+		end
+		return a
+	end
+end
+
 local fn = {
+	['tau'] = 2 * math.pi;
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
 	['*'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
-	['^'] = function(a,b) return a ^ b end;
+	['^'] = function(a,b)
+		if type(a) == 'function' then
+			return function (x)
+				for i=1,b do
+					x = a(x)
+				end
+				return x
+			end
+		else
+			return a ^ b
+		end
+	end;
 	['%'] = function(a) return a / 100 end;
 	['[]'] = function(...)
 		return table.pack(...)
 	end,
+	['{}'] = function(...)
+		local t = {...}
+		local s = {is_set=true}
+		for _,v in pairs(t) do
+			s[v] = true
+		end
+		return s
+	end,
+
+	['@'] = function(a,b)
+		return function(...)
+			return b(a(...))
+		end
+	end;
+	['|'] = function(a,b)
+		local fa = type(a) == 'function'
+		local fb = type(b) == 'function'
+		if fa ~= fb then return 'fout' end
+		if fa and fb then
+			return function(...)
+				local ta = a(...)
+				local tb = b(...)
+				if not ta == not tb then
+					return nil
+				end
+				return ta or tb
+			end
+		end
+		return a or b
+	end;
+	['coproduct'] = function(f,g)
+		return function(...)
+			return f(...) or g(...)
+		end
+	end;
 
 	['#'] = function(a) return #a end;
-	['='] = function(a,b) return unlisp(a)==unlisp(b) end;
+	['='] = function(a,b)
+		if tonumber(a) and tonumber(b) then
+			return a == b
+		end
+		return unlisp(a)==unlisp(b)
+	end;
+	['!='] = function(a,b) return a ~= b end;
+	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
 	['..'] = function(a,b)
 		local r = {}
 		for i=a,b-1 do
@@ -46,6 +117,18 @@ local fn = {
 			end
 		end
 		return r
+	end;
+
+	-- trig
+	['sin'] = math.sin;
+	['asin'] = math.asin;
+	['cos'] = math.cos;
+	['acos'] = math.acos;
+	['tan'] = math.tan;
+	['atan'] = function(a,b)
+		if b then return math.atan2(a,b)
+			else return math.atan(a)
+		end
 	end;
 
 	['som'] = function(a)
@@ -88,14 +171,72 @@ local fn = {
 		end
 		return r
 	end;
+
+	['unie'] = function(a,b)
+		local s = {}
+		for v in pairs(a) do s[v] = true end
+		for v in pairs(b) do s[v] = true end
+		return s
+	end;
+
+	['verschil'] = function(a,b)
+		local s = {}
+		for k,v in pairs(a) do if not b[k] then s[k] = v end end
+		return s
+	end;
+
+	-- aux
+	['net-adres'] = function(a)
+		local socket = require 'socket'
+		local ip = string.char(table.unpack(a))
+		return table.pack(ip:match('([^:]*):(.*)'))
+  end;
+	['bestand-in'] = function(naam)
+		local naam = string.char(table.unpack(naam))
+		local bestand = io.open(naam, 'r')
+		_G.print('OPEN '..naam)
+		return {fd = bestand, buf = false}
+	end;
+	['kan-lezen'] = function(b)
+		if not b.buf then b.buf = b.fd:read(1024) end
+		return b.buf
+	end;
+	['lees'] = function(b)
+		local buf = b.buf
+		b.buf = nil
+		return buf
+	end;
 }
 
 function eval0(env,exp)
 	if atom(exp) then
-		local v = tonumber(exp) or env[exp] or fn[exp]
+		-- magisch
+		local v = tonumber(exp) or env[exp]
 		if not v then error('onbekend: "'..unlisp(exp)..'"') end
 		return v
 	else
+		if exp[1] == ':=' then
+			local a,b = exp[2],exp[3]
+			env[a] = eval0(env,b)
+			if a == 'stduit' then
+				local data = env[a]
+				io.write(data)
+				io.flush()
+			end
+			return true
+		elseif exp[1] == '->' then
+			local arg = exp[2]
+			local fn = exp[3]
+			return function(a)
+				-- maplet
+				if env[arg] and a ~= env[arg] then
+					return nil
+				end
+				-- misschien overschrijf scoping
+				env[arg] = env[arg] or a
+				return eval0(env, fn)
+			end
+		end
 		local r = {}
 		for i=1,#exp do
 			r[i] = eval0(env,exp[i])
@@ -103,13 +244,19 @@ function eval0(env,exp)
 		local f,a,b = r[1],r[2],r[3]
 		
 		-- tabel
-		if type(r[1]) == 'table' then
-			return f[a+1]
+		if type(f) == 'table' then
+			if isexp(f) and f[1] == '->' then
+				local arg,func = f[2],f[3]
+				env[arg] = env[arg] or r[2]
+				return eval0(env,func)
+			else
+				return f[a+1]
+			end
 		end
 
 		-- aanroep
-		if type(r[1]) ~= 'function' then
-			error('geen functie: '..tostring(f)..' '..unlisp(exp))
+		if type(f) ~= 'function' then
+			error('geen functie: '..unlisp(r)..' '..unlisp(exp))
 		end
 
 		-- functie
@@ -237,6 +384,25 @@ if false and test then
 	end
 end
 
+function set2tekst(set)
+	local t = {'{'}
+	set.is_set = nil -- voorkom iteratie (;
+	for v in pairs(set) do
+		if type(v) == 'number' then
+			t[#t+1] = string.format('%.f', v)
+		else
+			t[#t+1] = tostring(v)
+		end
+		if next(set,v) then
+			t[#t+1] = ', '
+		end
+	end
+	set.is_set = true
+	t[#t+1] = '}'
+	return table.concat(t)
+end
+
+
 function doe(stroom)
 	local io_write = io.write
 	local print = print
@@ -244,45 +410,113 @@ function doe(stroom)
 		io_write = function () end
 		print = function () end
 	end
-	local env = {}
-	for i,feit in ipairs(stroom) do
-		local fn,naam,exp = feit[1],feit[2],feit[3]
-		io_write('DOE\t',unlisp(feit),'\t\t= ')
-		--print('DOE',leed(noem))
+	local env = kopieer(fn)
+	env.Start = socket.gettime()
 
-		if fn == '=' or fn == ':=' then
+	-- tijd
+	local freq = 1
+	local dt = 1/freq
+	_G.print(freq..' Hz')
+	env.nu = 0
 
-			-- lus
-			if type(naam) == 'table' then
-				local naam,itnaam = naam[1],naam[2]
-				local it = env[itnaam]
-				if not it or type(it) ~= 'table' then
-					error('ongeldige lus '..itnaam)
+	while true do
+		for i,feit in ipairs(stroom) do
+			local fn,naam,exp = feit[1],feit[2],feit[3]
+			local f,a,b = feit[1],feit[2],feit[3]
+			io_write('DOE\t',unlisp(feit),'\t\t= ')
+			--print('DOE',leed(noem))
+
+			if fn == '=' or fn == ':=' then
+
+				-- lus
+				if type(naam) == 'table' then
+					local naam,itnaam = naam[1],naam[2]
+					local it = env[itnaam]
+					if not it or type(it) ~= 'table' then
+						error('ongeldige lus '..itnaam)
+					end
+
+					env[naam] = env[naam] or {}
+					local naar = env[naam]
+
+					for i = 1,#it do
+						env[itnaam] = it[i]
+						naar[i] = eval0(env, exp)
+					end
+					env[it] = nil
+
+				-- geen lus
+				else
+					env[naam] = eval0(env, exp)
+
 				end
-
-				env[naam] = env[naam] or {}
-				local naar = env[naam]
-
-				for i = 1,#it do
-					env[itnaam] = it[i]
-					naar[i] = eval0(env, exp)
+				print(unlisp(env[naam]))
+			elseif fn == '=>' then
+				local b = eval0(env, a)
+				if b then
+					env[naam] = eval0(env,feit[3])
+					print('ja')
+				else
+					print('nee')
 				end
-				env[it] = nil
+	 		else
+				--print('ok')
+				print(unlisp(env[naam]))
+			end
 
-			-- geen lus
-			else
-				env[naam] = eval0(env, exp)
+
+			-- MAGISCHE VALUATIES
+			if naam == 'stduit' then
+			_G.print('JAAA')
+				local d = env[naam]
+				if type(d) == 'table' then
+					d = string.char(table.unpack(env[naam]))
+				end
+				io.write(d)
+
+			elseif naam == 'udp-uit' or naam == 'tcp-uit' then
+					
+				local maak,udp,tcp
+				if naam == 'udp-uit' then maak,udp = socket.udp,true end
+				if naam == 'tcp-uit' then maak,tcp = socket.tcp,true end
+				local pakketten = env[naam]
+
+				env.kanaal = env.kanaal or {}
+
+				pakketten.is_set = nil
+				print('PAKKETEN',unlisp(pakketten))
+				for pakket in alle(pakketten) do
+					print('PAKKET',unlisp(pakket),': ',type(pakket))
+					local van,naar,inhoud = table.unpack(pakket)
+					local poort = van[2]
+					local kanaal = env.kanaal[poort]
+
+					-- maak kanaal
+					if not kanaal then
+						kanaal = maak()
+						kanaal:setsockname(van[1], van[2])
+						if tcp then
+							kanaal:setpeername(naar[1], naar[2])
+						end
+					end
+
+					if udp then io.write('[UDP]\t') end 
+					if tcp then io.write('[TCP]\t') end 
+					local d = string.char(table.unpack(inhoud))
+					io.write(van[1], ':', van[2], ' -> ', naar[1], ':', naar[2], '\t', d, '\n')
+					if udp then kanaal:sendto(d,naar[1],naar[2]) end
+					if tcp then kanaal:send(d) end
+				end
+				pakketten.is_set = true
 
 			end
 		end
 
-		print(unlisp(env[naam]))
+		-- tijdsupdate
+		local over = (socket.gettime() - env.Start) % dt
+		socket.sleep(dt - over)
+		env.nu = math.floor((socket.gettime() - env.Start) * freq) / freq
+		print('nu = '..env.nu)
 
 	end
-
-	local uit = env['uit']
-	if type(uit) == 'table' then
-		uit = string.char(table.unpack(uit))
-	end
-	return uit
 end

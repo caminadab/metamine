@@ -1,5 +1,6 @@
-require 'voorwaartse-acyclische-hypergraaf'
+require 'stroom'
 require 'symbool'
+require 'set'
 local print = function () end
 
 local function pijl2tekst(pijl)
@@ -24,12 +25,12 @@ local function tekst(graaf)
 end
 
 local function sorteer(hgraaf, van, naar)
-	--local print = function () end
+	if _G.verboos then print = _G.print end
 	if isatoom(van) then van = {[van] = true} end
-	--TODO if isatoom(van) then van = {[van] = true} end
-	local stroom = voorwaartse_acyclische_hypergraaf()
+	local stroom = stroom()
 	local nieuw = {}
 	local bekend = {}
+	local nuttig = {} -- gebruikte punten
 
 	-- verzamel begin
 	for punt in pairs(van) do
@@ -39,6 +40,7 @@ local function sorteer(hgraaf, van, naar)
 		end
 	end
 	if not next(nieuw) then
+		_G.print(hgraaf:tekst())
 		return false,'geen begin gevonden'
 	end
 
@@ -52,13 +54,17 @@ local function sorteer(hgraaf, van, naar)
 		for bron in pairs(pijl.van) do
 			if not bekend[bron] and not van[bron] then
 				ok = false
-				print('  NEE: '.. bron..' is onbekend')
+				print('  NEE: '.. bron..' is onbekend', type(bron))
 			end
 		end
 		print('  DOEL?', pijl.naar)
 
+		-- mag linken
 		if ok --[[and not bekend[pijl] ]] and stroom:link(pijl) then
-			print('  JA')
+			print('  JA', type(pijl.naar))
+			for bron in pairs(pijl.van) do
+				nuttig[bron] = true
+			end
 			bekend[pijl.naar] = true
 			for pijl in hgraaf:van(pijl.naar) do
 				if true or not bekend[pijl.naar] then
@@ -72,15 +78,29 @@ local function sorteer(hgraaf, van, naar)
 
 	end
 
+	-- snoei!
+	for pijl in pairs(stroom.pijlen) do
+		if not nuttig[pijl.naar] and pijl.naar ~= naar then
+			stroom:ontlink(pijl)
+			stroom.punten[pijl.naar] = nil
+		end
+	end
+
 	if not bekend[naar] then
-		return false,'doel "'..naar..'" niet bereikt',stroom
+		local t = {}
+		t[#t+1] = 'doel "'..naar..'" niet bereikt'
+		t[#t+1] = '  liep vast op:'
+		for punt in pairs(verschil(nuttig,bekend)) do
+			t[#t+1] = '    '..tostring(punt)
+		end
+		return nil,color.red..table.concat(t,'\n')..color.white, stroom
 	end
 
 	return stroom
 end
 
 -- een voorwaartse hypergraaf is een hypergraaf waarbij elke hoek een specifiek punt als doel heefft
-function voorwaartse_hypergraaf()
+function vhgraaf()
 	return {
 		pijlen = {},
 		punten = {},
@@ -147,19 +167,19 @@ require 'util'
 
 if test then
 	-- link
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	graaf:link(set('a'), 'b')
 	assert(graaf:naar('b')().van.a)
 
 	-- sorteer
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	graaf:link(set('a'), 'b')
 	graaf:link(set('b'), 'a')
 	local stroom = graaf:sorteer(set('a'), 'b')
 	assert(stroom:naar('b')().van.a)
 
 	-- sorteer 2
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	graaf:link(set('a'), 'b')
 	graaf:link(set('b'), 'c')
 	graaf:link(set('c'), 'a')
@@ -183,7 +203,7 @@ if test then
 		IN -> A
 	]]
 
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
 	--graaf:link(set('in'), 'a')
 	graaf:link(set('in'), 'a')
 	graaf:link(set('b'), 'a')
@@ -196,7 +216,10 @@ if test then
 end
 
 if true then
-	local graaf = voorwaartse_hypergraaf()
+	local graaf = vhgraaf()
+	--   / b \
+	--  a     d
+	--   \ c / 
 	graaf:link(set'a', 'b')
 	graaf:link(set'a', 'c')
 	graaf:link(set'b', 'd')

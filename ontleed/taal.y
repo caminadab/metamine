@@ -31,19 +31,24 @@
 
 /* Bison declarations.  */
 %define api.value.type {node*}
+%glr-parser
 %token NAAM
 %token TEKST
 %token DAN "=>"
 %token TO "->"
 %token ASS ":="
+%token ISN "!="
 %token INC "+="
 %token CAT "||"
 %token TIL ".."
 %token CART "xx"
+/* %token COMP '@' */
 %token END 0 "invoereinde"
 %token NEG '-'
 %token IS '='
+%token ONG '='
 %token GDGA ">="
+%token ISB "~="
 %token KDGA "<="
 %token OUD '\''
 %token TAB '\t'
@@ -56,35 +61,37 @@
 %token DISJ '|'
 %token CONJ '&'
 
-%precedence NAAM TEKST
+/* %precedence NAAM TEKST */
 %left "=>"
-%left '='
+%left EN OF EXOF NOCH NIET
+%left '=' "!=" "~="
 %left ":=" "+=" "-=" "|=" "&="
-%left "en" "of" "exof" "noch" "niet"
-%left "->"
+%left '@'
+%left ':'
+%left DISJ
+%left "->" 
 %left ','
 %left '<' '>' "<=" ">="
-
 %left '&' '|'
 %left "||"
 %left ".."
 %left "xx"
-%precedence CALL
 %left '+' '-'
+%nonassoc CALL
 %left '*' '/'
-%precedence NEG
+%left NEG
 %right '^' '_'
 %left OUD
 %left '.'
-%precedence '%'
+%nonassoc '%' KWADRAAT
+%left NAAM TEKST
 
 %%
 
 input:
 	%empty							{ $$ = wortel = exp0(); }
-|	'\n' input					{ $$ = $2; }
-|	input '\n'					{ $$ = $1; }
-| input feit					{ $$ = append($1, $2); }
+| input '\n'			
+| input exp '\n'			{ $$ = append($1, $2); }
 | input error '\n'		{ $$ = append($1, a("fout")); yyerrok; }
 |	error '\n'					{ $$ = a("fout"); yyerrok; }
 |	error 							{ $$ = a("fout"); yyerror; }
@@ -104,22 +111,17 @@ set:
 */
 
 /*	| exp '=' set					{ $$ = exp3(a("="), $1, $3); }*/
-feit:
-		exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
-	|	exp '=' exp					{ $$ = exp3(a("="), $1, $3); }
-	|	exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
-	|	exp "+=" exp				{ $$ = exp3(a("+="), $1, $3); }
-	| exp ':' exp					{ $$ = exp3(a(":"), $1, $3); }
-;
+feit: exp;
 
 single:
 	NAAM 
 | TEKST								{ $$ = tekst($1); }
-| exp '%'							{ $$ = _exp2(a("%"), $1); }
+| single '%'					{ $$ = _exp2(a("%"), $1); }
+| single KWADRAAT			{ $$ = exp3(a("^"), $1, a("2")); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
-| exp '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
+| single '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
 
 | '(' '^' ')'       	{ $$ = a("^"); }
 | '(' '_' ')'       	{ $$ = a("_"); }
@@ -173,7 +175,8 @@ single:
 ;
 
 exp:
-	single %prec NAAM
+	single
+| single single %prec CALL{ $$ = _exp2($1, $2); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '_' exp       	{ $$ = exp3(a("_"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -213,11 +216,14 @@ exp:
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 | exp '@' exp       	{ $$ = exp3(a("@"), $1, $3); }
+| exp ':' exp       	{ $$ = exp3(a(":"), $1, $3); }
 
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
 /*| exp '\'' %prec OUD	{ printf("HOI"); $$ = _exp2(a("'"), $1); }*/
 
-| single single %prec CALL				{ $$ = _exp2($1, $2); }
+| single single single single %prec CALL	{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
+| single single single %prec CALL	{ $$ = exp3($2, $1, $3); }
+|	'[' error ']'				
 ;
 
 list:
@@ -241,8 +247,8 @@ items:
 ;
 
 params:
-	'(' exp ',' exp  ')'			{ $$ = exp3(a(","), $2, $4); }
-|	NAAM												{ $$ = _exp2(a(","), $1); }
-|	TEKST												{ $$ = _exp2(a(","), $1); }
+	'(' exp ',' exp  ')'				{ $$ = exp3(a(","), $2, $4); }
+|	exp ',' exp 			 					{ $$ = exp3(a(","), $1, $3); }
+|	single											{ $$ = $1; }
 /*|	params ',' NAAM			{ $$ = append($1, $3); } */
 ;

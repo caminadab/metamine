@@ -10,6 +10,11 @@ local function bereikbaar_disj(graaf, van, naar)
 	print(graaf:tekst())
 
 	print(van..' ?-> '..naar)
+
+	if type(van) ~= 'table' then
+		van = {[van] = true}
+	end
+
 	local nieuw = {naar}
 	local klaar = {}
 	local bereikbaar = {}
@@ -41,7 +46,7 @@ end
 function pijl2tekst(pijl)
 	local r = {}
 	for bron in pairs(pijl.van) do
-		r[#r+1] = bron
+		r[#r+1] = tostring(bron)
 	end
 	if #r == 0 then
 		r[#r+1] = '()'
@@ -268,7 +273,7 @@ function ontlink(vahgraaf, pijl_of_van, naar)
 	vahgraaf.pijlen[pijl] = nil
 end
 
-function voorwaartse_acyclische_hypergraaf()
+function stroom()
 	return {
 		punten = {},
 		pijlen = {},
@@ -322,7 +327,7 @@ end
 
 if test or true then
 	-- bereikbaar disj
-	local graaf = voorwaartse_acyclische_hypergraaf()
+	local graaf = stroom()
 	graaf:punt('a')
 	graaf:punt('b')
 	assert(not graaf:bereikbaar_disj('a', 'b'))
@@ -330,7 +335,7 @@ if test or true then
 	assert(graaf:bereikbaar_disj('a', 'b'))
 
 	-- link
-	local graaf = voorwaartse_acyclische_hypergraaf()
+	local graaf = stroom()
 	graaf:punt('a')
 	graaf:punt('b')
 	assert(graaf:link({a=true}, 'b'))
@@ -338,7 +343,7 @@ if test or true then
 
 	-- superlink
 	-- a->b  a,b->c
-	local graaf = voorwaartse_acyclische_hypergraaf()
+	local graaf = stroom()
 	graaf:punt('a')
 	graaf:punt('b')
 	graaf:punt('c')

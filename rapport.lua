@@ -1,12 +1,13 @@
 require 'html'
 require 'infix'
 
-function tag(naam,id,props)
+function tag(naam,id,props,autoclose)
 	if type(id) == 'table' then
 		props = id
 		id = nil
 	end
 	return function(inhoud)
+		-- schrijffunctie
 		return function(t)
 			t[#t+1] = '<'
 			t[#t+1] = naam
@@ -37,14 +38,17 @@ function tag(naam,id,props)
 				t[#t+1] = tostring(inhoud)
 			end
 
-			t[#t+1] = '</'
-			t[#t+1] = naam
-			t[#t+1] = '>'
+			if not autoclose then
+				t[#t+1] = '</'
+				t[#t+1] = naam
+				t[#t+1] = '>'
+			end
 		end
 	end
 end
 
 head = tag('head')
+meta_charset = tag('meta',nil,{charset="utf-8"},true)
 body = tag('body')
 title = tag('title')
 div = function (id,props)
@@ -171,10 +175,13 @@ end
 require 'noem'
 function rapport(code)
 	local feiten = ontleed(code)
+	--local dfeiten = ontrafel(feiten)
 	local dfeiten = deduceer(feiten)
+	--local dfeiten = ontrafel(feiten)
 	local afh,map = berekenbaarheid(dfeiten)
 	local infostroom, fout, half = afh:sorteer('in', 'uit')
 	infostroom = infostroom or half
+	if not infostroom then _G.print('OEPS'); infostroom = stroom() end
 
 	local deel = tag('div', nil, {class='deel'})
 
@@ -191,6 +198,7 @@ function rapport(code)
 
 	return html {
 		head {
+			meta_charset(),
 			title 'Rapport',
 			css [[
 				.deel {

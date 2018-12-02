@@ -50,8 +50,9 @@ function isoleer(eq,name)
 				if out == 0 then eq0 = {'=', a, {'-', x}} end -- a = - x
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			else
-				-- x = f a
-				--if out == 0 then eq0 = {'=', a, {{'inverse', f}, x}} end -- a = (inverse f) x
+				-- x = f(a)
+				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
+				if out == 0 then eq0 = {'=', a, {{'inverteer', f}, x}} end -- a = (f^-1) x
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
@@ -98,13 +99,13 @@ function isoleer(eq,name)
 				--if out == 2 then eq0 = {'=', x, {'/', a, b}} end -- x = a / b
 			elseif f == '^' then
 				-- x = a ^ b
-				if out == 0 then eq0 = {'=', a, {'^', x, {'/', 1, b}}} end -- a = x ^ (1 / a)
+				if out == 0 then eq0 = {'=', a, {'^', x, {'/', '1', b}}} end -- a = x ^ (1 / a)
 				if out == 1 then eq0 = {'=', b, {'_', a, x}} end -- b = a _ x
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			elseif f == '||' then
 				-- x = a || b
 				-- a = x (0..(#x-#b))
-				if out == 0 then eq0 = {'=', a, {x, {'..', 0, {'-', {'#', x}, {'#',b}}}}} end
+				if out == 0 then eq0 = {'=', a, {x, {'..', '0', {'-', {'#', x}, {'#',b}}}}} end
 				if out == 1 then eq0 = {'=', b, {x, {'..', {'#', a}, {'#', x}}}} end -- b = x (#a..#x)
 				--if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
 			else
@@ -117,7 +118,7 @@ function isoleer(eq,name)
 
 		if not eq0 and not flip then break end
 		if eq0 then
-			--log(unlisp(eq) .. ' -> '..unlisp(eq0))
+			if verboos then print(unlisp(eq) .. ' -> '..unlisp(eq0)) end 
 			eq = eq0
 			flip = false
 		end

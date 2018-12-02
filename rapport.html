@@ -1,4 +1,4 @@
-<!DOCTYPE html><head><title>Rapport</title><style>				.deel {
+<!DOCTYPE html><head><meta charset="utf-8"><title>Rapport</title><style>				.deel {
 					width: calc(100% - 50px);
 					height: calc(100vh - 50px);
 					border-style: solid;
@@ -10,127 +10,318 @@
 				}
 
 				pre { font-size: 20px; font-weight: bold; }
-			</style><script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.16/cytoscape.min.js"></script><script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script><script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script><script src="http://code.jquery.com/jquery-2.0.0.min.js"></script><script src="http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js"></script></head><body><div class="deel"><pre>; inpakken
-groet = "hoi"
-eind = "doei"
-data = [# groet] || groet || [# eind] || eind
+			</style><script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.16/cytoscape.min.js"></script><script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script><script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script><script src="http://code.jquery.com/jquery-2.0.0.min.js"></script><script src="http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js"></script></head><body><div class="deel"><pre>zelf =  net-adres "0:10101"
+ander = net-adres "192.168.1.62:10101"
+rn = [13, 10]
+bericht = "HTTP/1.1 200 OK" || rn || "Content-Length: 3" || rn || rn || "hoi"
+;header = "GET / HTTP/1.1" || rn || "Host: ymte.net" || rn || rn
 
-; uitpakken
-a-len-pos = 0
-a-begin = a-len-pos + 1
-a-eind = a-begin + a-len
+web-zelf = net-adres "0:80"
+web-klanten = tcp-in (web-zelf)
+tcp-uit = web-klanten map (klant -> (klant -> bericht))
+;web-klanten.uit = 
+;(.)(web-klanten, uit) =
+;tcp-uit = header => {[web-zelf, web-ander, bericht]}
 
-b-len-pos = a-eind
-b-begin = b-len-pos + 1
-b-eind = b-begin + b-len
+; OPTIE A: udp-uit = pakket{}, pakket = [tijdstip,van,naar,inhoud]
+; OPTIE B: udp-uit = pakket[], pakket = [van,naar,inhoud]
+; APP: udp-uit = mset(pakket)
+; SYS: udp-uit = (tijd -> [van,naar,inhoud])
 
-a-len = data a-len-pos
-b-len = data b-len-pos
-
-a = data (a-begin .. a-eind)
-b = data (b-begin .. b-eind)
-
-uit = a || " " || b
-
-in = getal
-
-stip = [100,100]
+net-adres : in
+tcp-in : in
+uit : udp-uit
+uit : tcp-uit
+map : in
+klant : in
 </pre></div><div class="deel"><pre>(
-  (= groet ([] 104 111 105)) 
-  (= eind ([] 100 111 101 105)) 
   (
     = 
-    data 
-    (
-      || 
-      (
-        || 
-        (|| ([] (# groet)) groet) 
-        ([] (# eind))
-      ) 
-      eind
-    )
-  ) 
-  (= a-len-pos 0) 
-  (= a-begin (+ a-len-pos 1)) 
-  (= a-eind (+ a-begin a-len)) 
-  (= b-len-pos a-eind) 
-  (= b-begin (+ b-len-pos 1)) 
-  (= b-eind (+ b-begin b-len)) 
-  (= a-len (data a-len-pos)) 
-  (= b-len (data b-len-pos)) 
-  (= a (data (.. a-begin a-eind))) 
-  (= b (data (.. b-begin b-eind))) 
-  (= uit (|| (|| a ([] 32)) b)) 
-  (= in getal) 
-  (= stip ([] 100 100))
-)</pre></div><div class="deel"><pre>(
-  (: 111 getal) 
-  (: 105 getal) 
-  (: 32 getal) 
-  (: 100 getal) 
-  (: 1 getal) 
-  (: 0 getal) 
-  (: 104 getal) 
-  (: 101 getal) 
-  (= groet ([] 104 111 105)) 
-  (= eind ([] 100 111 101 105)) 
-  (
-    = 
-    data 
-    (
-      || 
-      (
-        || 
-        (|| ([] (# groet)) groet) 
-        ([] (# eind))
-      ) 
-      eind
-    )
-  ) 
-  (= a-len-pos 0) 
-  (= a-len-pos (- a-begin 1)) 
-  (= a-begin (+ a-len-pos 1)) 
-  (= a-eind (+ a-begin a-len)) 
-  (= a-len (- a-eind a-begin)) 
-  (= a-begin (- a-eind a-len)) 
-  (= b-len-pos a-eind) 
-  (= a-eind b-len-pos) 
-  (= b-begin (+ b-len-pos 1)) 
-  (= b-len-pos (- b-begin 1)) 
-  (= b-eind (+ b-begin b-len)) 
-  (= b-begin (- b-eind b-len)) 
-  (= b-len (- b-eind b-begin)) 
-  (= a-len (data a-len-pos)) 
-  (= b-len (data b-len-pos)) 
-  (= a (data (.. a-begin a-eind))) 
-  (= b (data (.. b-begin b-eind))) 
-  (= uit (|| (|| a ([] 32)) b)) 
-  (
-    = 
-    b 
-    (uit (.. (# (|| a ([] 32))) (# uit)))
+    zelf 
+    (net-adres ([] 48 58 49 48 49 48 49))
   ) 
   (
     = 
-    a 
+    ander 
     (
-      (uit (.. 0 (- (# uit) (# b)))) 
+      net-adres 
       (
-        .. 
-        0 
-        (
-          - 
-          (# (uit (.. 0 (- (# uit) (# b))))) 
-          (# ([] 32))
-        )
+        [] 
+        49 
+        57 
+        50 
+        46 
+        49 
+        54 
+        56 
+        46 
+        49 
+        46 
+        54 
+        50 
+        58 
+        49 
+        48 
+        49 
+        48 
+        49
       )
     )
   ) 
-  (= in getal) 
-  (= getal in) 
-  (= stip ([] 100 100))
-)</pre></div><div id="afh" class="deel"></div><div id="infostroom" class="deel"></div><script>afh = cytoscape({
+  (= rn ([] 13 10)) 
+  (
+    = 
+    bericht 
+    (
+      || 
+      (
+        || 
+        (
+          || 
+          (
+            || 
+            (
+              || 
+              (
+                [] 
+                72 
+                84 
+                84 
+                80 
+                47 
+                49 
+                46 
+                49 
+                32 
+                50 
+                48 
+                48 
+                32 
+                79 
+                75
+              ) 
+              rn
+            ) 
+            (
+              [] 
+              67 
+              111 
+              110 
+              116 
+              101 
+              110 
+              116 
+              45 
+              76 
+              101 
+              110 
+              103 
+              116 
+              104 
+              58 
+              32 
+              51
+            )
+          ) 
+          rn
+        ) 
+        rn
+      ) 
+      ([] 104 111 105)
+    )
+  ) 
+  (
+    = 
+    web-zelf 
+    (net-adres ([] 48 58 56 48))
+  ) 
+  (= web-klanten (tcp-in web-zelf)) 
+  (
+    = 
+    tcp-uit 
+    (
+      map 
+      web-klanten 
+      (-> klant (-> klant bericht))
+    )
+  ) 
+  (: net-adres in) 
+  (: tcp-in in) 
+  (: uit udp-uit) 
+  (: uit tcp-uit) 
+  (: map in) 
+  (: klant in)
+)</pre></div><div class="deel"><pre>(
+  (: 80 getal) 
+  (: 72 getal) 
+  (: 111 getal) 
+  (: 84 getal) 
+  (: 10 getal) 
+  (: 46 getal) 
+  (: 116 getal) 
+  (: 32 getal) 
+  (: 48 getal) 
+  (: 58 getal) 
+  (: 105 getal) 
+  (: 67 getal) 
+  (: 75 getal) 
+  (: 45 getal) 
+  (: 47 getal) 
+  (: 51 getal) 
+  (: 50 getal) 
+  (: 104 getal) 
+  (: 56 getal) 
+  (: 57 getal) 
+  (: 54 getal) 
+  (: 103 getal) 
+  (: 79 getal) 
+  (: 13 getal) 
+  (: 49 getal) 
+  (: 110 getal) 
+  (: 76 getal) 
+  (: 101 getal) 
+  (: 1 getal) 
+  (
+    = 
+    zelf 
+    (net-adres ([] 48 58 49 48 49 48 49))
+  ) 
+  (
+    = 
+    ander 
+    (
+      net-adres 
+      (
+        [] 
+        49 
+        57 
+        50 
+        46 
+        49 
+        54 
+        56 
+        46 
+        49 
+        46 
+        54 
+        50 
+        58 
+        49 
+        48 
+        49 
+        48 
+        49
+      )
+    )
+  ) 
+  (= rn ([] 13 10)) 
+  (
+    = 
+    bericht 
+    (
+      || 
+      (
+        || 
+        (
+          || 
+          (
+            || 
+            (
+              || 
+              (
+                [] 
+                72 
+                84 
+                84 
+                80 
+                47 
+                49 
+                46 
+                49 
+                32 
+                50 
+                48 
+                48 
+                32 
+                79 
+                75
+              ) 
+              rn
+            ) 
+            (
+              [] 
+              67 
+              111 
+              110 
+              116 
+              101 
+              110 
+              116 
+              45 
+              76 
+              101 
+              110 
+              103 
+              116 
+              104 
+              58 
+              32 
+              51
+            )
+          ) 
+          rn
+        ) 
+        rn
+      ) 
+      ([] 104 111 105)
+    )
+  ) 
+  (
+    = 
+    web-zelf 
+    (net-adres ([] 48 58 56 48))
+  ) 
+  (= web-klanten (tcp-in web-zelf)) 
+  (
+    = 
+    web-zelf 
+    ((inverteer tcp-in) web-klanten)
+  ) 
+  (
+    = 
+    tcp-uit 
+    (
+      map 
+      web-klanten 
+      (-> klant (-> klant bericht))
+    )
+  ) 
+  (: net-adres in) 
+  (: net-adres in) 
+  (: tcp-in in) 
+  (: tcp-in in) 
+  (: uit udp-uit) 
+  (: uit udp-uit) 
+  (: uit tcp-uit) 
+  (: uit tcp-uit) 
+  (: map in) 
+  (: map in) 
+  (: klant in) 
+  (: klant in) 
+  (: getal in) 
+  (= uit stduit) 
+  (: cat in) 
+  (: unie in) 
+  (: sin in) 
+  (: asin in) 
+  (: cos in) 
+  (: acos in) 
+  (: uit (^ byte int)) 
+  (= tau 6.2831853071796) 
+  (: tau getal) 
+  (: -1 getal) 
+  (: coproduct in)
+)</pre></div><div id="afh" class="deel"></div><div id="infostroom" class="deel"></div><div class="deel"><table><tr><td>getal</td><td>-1</td></tr><tr><td>getal</td><td>1</td></tr><tr><td>getal</td><td>10</td></tr><tr><td>getal</td><td>101</td></tr><tr><td>getal</td><td>103</td></tr><tr><td>getal</td><td>104</td></tr><tr><td>getal</td><td>105</td></tr><tr><td>getal</td><td>110</td></tr><tr><td>getal</td><td>111</td></tr><tr><td>getal</td><td>116</td></tr><tr><td>getal</td><td>13</td></tr><tr><td>getal</td><td>32</td></tr><tr><td>getal</td><td>45</td></tr><tr><td>getal</td><td>46</td></tr><tr><td>getal</td><td>47</td></tr><tr><td>getal</td><td>48</td></tr><tr><td>getal</td><td>49</td></tr><tr><td>getal</td><td>50</td></tr><tr><td>getal</td><td>51</td></tr><tr><td>getal</td><td>54</td></tr><tr><td>getal</td><td>56</td></tr><tr><td>getal</td><td>57</td></tr><tr><td>getal</td><td>58</td></tr><tr><td>getal</td><td>6.2831853071796</td></tr><tr><td>getal</td><td>67</td></tr><tr><td>getal</td><td>72</td></tr><tr><td>getal</td><td>75</td></tr><tr><td>getal</td><td>76</td></tr><tr><td>getal</td><td>79</td></tr><tr><td>getal</td><td>80</td></tr><tr><td>getal</td><td>84</td></tr><tr><td>46</td><td>aantalOnbekend</td></tr><tr><td>in</td><td>acos</td></tr><tr><td>in</td><td>asin</td></tr><tr><td>getal^41</td><td>bericht</td></tr><tr><td>in</td><td>cat</td></tr><tr><td>in</td><td>coproduct</td></tr><tr><td>in</td><td>cos</td></tr><tr><td>in</td><td>getal</td></tr><tr><td>in</td><td>klant</td></tr><tr><td>in</td><td>map</td></tr><tr><td>in</td><td>net-adres</td></tr><tr><td>getal^2</td><td>rn</td></tr><tr><td>in</td><td>sin</td></tr><tr><td>udp-uit</td><td>stduit</td></tr><tr><td>ok</td><td>80 : getal</td></tr><tr><td>ok</td><td>72 : getal</td></tr><tr><td>ok</td><td>111 : getal</td></tr><tr><td>ok</td><td>84 : getal</td></tr><tr><td>ok</td><td>10 : getal</td></tr><tr><td>ok</td><td>46 : getal</td></tr><tr><td>getal^17</td><td>[67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]</td></tr><tr><td>getal^3</td><td>[104, 111, 105]</td></tr><tr><td>getal^4</td><td>[48, 58, 56, 48]</td></tr><tr><td>ok</td><td>uit : udp-uit</td></tr><tr><td>iets -> iets -> getal^41</td><td>klant -> klant -> bericht</td></tr><tr><td>iets -> getal^41</td><td>klant -> bericht</td></tr><tr><td>ok</td><td>net-adres : in</td></tr><tr><td>ok</td><td>tcp-in : in</td></tr><tr><td>getal^7</td><td>[48, 58, 49, 48, 49, 48, 49]</td></tr><tr><td>getal^18</td><td>[49, 57, 50, 46, 49, 54, 56, 46, 49, 46, 54, 50, 58, 49, 48, 49, 48, 49]</td></tr><tr><td>getal^2</td><td>[13, 10]</td></tr><tr><td>getal^41</td><td>(((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]</td></tr><tr><td>getal^38</td><td>((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn</td></tr><tr><td>getal^36</td><td>(([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn</td></tr><tr><td>getal^34</td><td>([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]</td></tr><tr><td>getal^17</td><td>[72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn</td></tr><tr><td>getal^15</td><td>[72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75]</td></tr><tr><td>ok</td><td>uit : tcp-uit</td></tr><tr><td>ok</td><td>map : in</td></tr><tr><td>ok</td><td>klant : in</td></tr><tr><td>ok</td><td>58 : getal</td></tr><tr><td>ok</td><td>116 : getal</td></tr><tr><td>ok</td><td>32 : getal</td></tr><tr><td>ok</td><td>48 : getal</td></tr><tr><td>ok</td><td>104 : getal</td></tr><tr><td>ok</td><td>56 : getal</td></tr><tr><td>ok</td><td>105 : getal</td></tr><tr><td>ok</td><td>67 : getal</td></tr><tr><td>ok</td><td>75 : getal</td></tr><tr><td>ok</td><td>45 : getal</td></tr><tr><td>ok</td><td>47 : getal</td></tr><tr><td>ok</td><td>51 : getal</td></tr><tr><td>ok</td><td>50 : getal</td></tr><tr><td>ok</td><td>57 : getal</td></tr><tr><td>ok</td><td>54 : getal</td></tr><tr><td>ok</td><td>103 : getal</td></tr><tr><td>ok</td><td>79 : getal</td></tr><tr><td>ok</td><td>13 : getal</td></tr><tr><td>ok</td><td>49 : getal</td></tr><tr><td>ok</td><td>110 : getal</td></tr><tr><td>ok</td><td>76 : getal</td></tr><tr><td>ok</td><td>101 : getal</td></tr><tr><td>ok</td><td>1 : getal</td></tr><tr><td>ok</td><td>rn = [13, 10]</td></tr><tr><td>ok</td><td>bericht = (((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]</td></tr><tr><td>ok</td><td>getal : in</td></tr><tr><td>ok</td><td>uit = stduit</td></tr><tr><td>ok</td><td>cat : in</td></tr><tr><td>ok</td><td>unie : in</td></tr><tr><td>ok</td><td>sin : in</td></tr><tr><td>ok</td><td>asin : in</td></tr><tr><td>ok</td><td>cos : in</td></tr><tr><td>ok</td><td>acos : in</td></tr><tr><td>ok</td><td>uit : byte^int</td></tr><tr><td>ok</td><td>tau = 6.2831853071796</td></tr><tr><td>ok</td><td>tau : getal</td></tr><tr><td>ok</td><td>-1 : getal</td></tr><tr><td>ok</td><td>coproduct : in</td></tr><tr><td>getal</td><td>tau</td></tr><tr><td>in</td><td>tcp-in</td></tr><tr><td>udp-uit</td><td>uit</td></tr><tr><td>in</td><td>unie</td></tr></table></div><script>afh = cytoscape({
 			container: document.getElementById('afh'),
 			style: [
 				{
@@ -151,9 +342,10 @@ stip = [100,100]
 				{
 					selector: '.hyper',
 					style: {
+							label: 'data(exp)',
 							shape: 'none',
 							'background-color': 'black',
-							label: '',
+							'font-size': '8px',
 							width: '10px',
 							height: '10px',
 					}
@@ -164,585 +356,816 @@ stip = [100,100]
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: '0'}, classes: 'waarde' },{ data: {id: '0'}, classes: 'waarde' },{ data: {id: '1'}, classes: 'waarde' },{ data: {id: '100'}, classes: 'waarde' },{ data: {id: '101'}, classes: 'waarde' },{ data: {id: '104'}, classes: 'waarde' },{ data: {id: '105'}, classes: 'waarde' },{ data: {id: '111'}, classes: 'waarde' },{ data: {id: '32'}, classes: 'waarde' },{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'a-begin'}, classes: 'waarde' },{ data: {id: 'a-eind'}, classes: 'waarde' },{ data: {id: 'a-len'}, classes: 'waarde' },{ data: {id: 'a-len-pos'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'b-begin'}, classes: 'waarde' },{ data: {id: 'b-eind'}, classes: 'waarde' },{ data: {id: 'b-len'}, classes: 'waarde' },{ data: {id: 'b-len-pos'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'eind'}, classes: 'waarde' },{ data: {id: 'getal'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'stip'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: '-1'}, classes: 'waarde' },{ data: {id: '1'}, classes: 'waarde' },{ data: {id: '10'}, classes: 'waarde' },{ data: {id: '101'}, classes: 'waarde' },{ data: {id: '103'}, classes: 'waarde' },{ data: {id: '104'}, classes: 'waarde' },{ data: {id: '105'}, classes: 'waarde' },{ data: {id: '110'}, classes: 'waarde' },{ data: {id: '111'}, classes: 'waarde' },{ data: {id: '116'}, classes: 'waarde' },{ data: {id: '13'}, classes: 'waarde' },{ data: {id: '32'}, classes: 'waarde' },{ data: {id: '45'}, classes: 'waarde' },{ data: {id: '46'}, classes: 'waarde' },{ data: {id: '47'}, classes: 'waarde' },{ data: {id: '48'}, classes: 'waarde' },{ data: {id: '49'}, classes: 'waarde' },{ data: {id: '50'}, classes: 'waarde' },{ data: {id: '51'}, classes: 'waarde' },{ data: {id: '54'}, classes: 'waarde' },{ data: {id: '56'}, classes: 'waarde' },{ data: {id: '57'}, classes: 'waarde' },{ data: {id: '58'}, classes: 'waarde' },{ data: {id: '6.2831853071796'}, classes: 'waarde' },{ data: {id: '67'}, classes: 'waarde' },{ data: {id: '72'}, classes: 'waarde' },{ data: {id: '75'}, classes: 'waarde' },{ data: {id: '76'}, classes: 'waarde' },{ data: {id: '79'}, classes: 'waarde' },{ data: {id: '80'}, classes: 'waarde' },{ data: {id: '84'}, classes: 'waarde' },{ data: {id: 'acos'}, classes: 'waarde' },{ data: {id: 'ander'}, classes: 'waarde' },{ data: {id: 'asin'}, classes: 'waarde' },{ data: {id: 'bericht'}, classes: 'waarde' },{ data: {id: 'byte'}, classes: 'waarde' },{ data: {id: 'cat'}, classes: 'waarde' },{ data: {id: 'coproduct'}, classes: 'waarde' },{ data: {id: 'cos'}, classes: 'waarde' },{ data: {id: 'getal'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'int'}, classes: 'waarde' },{ data: {id: 'inverteer'}, classes: 'waarde' },{ data: {id: 'klant'}, classes: 'waarde' },{ data: {id: 'map'}, classes: 'waarde' },{ data: {id: 'net-adres'}, classes: 'waarde' },{ data: {id: 'rn'}, classes: 'waarde' },{ data: {id: 'sin'}, classes: 'waarde' },{ data: {id: 'stduit'}, classes: 'waarde' },{ data: {id: 'tau'}, classes: 'waarde' },{ data: {id: 'tcp-in'}, classes: 'waarde' },{ data: {id: 'tcp-uit'}, classes: 'waarde' },{ data: {id: 'udp-uit'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'unie'}, classes: 'waarde' },{ data: {id: 'web-klanten'}, classes: 'waarde' },{ data: {id: 'web-zelf'}, classes: 'waarde' },{ data: {id: 'zelf'}, classes: 'waarde' },			{
 				data: {
-					id: 'x0.69000103217084',
-					source: 'getal',
-					target: '111',
+					id: 'x0.84018771715471',
+					source: 'in',
+					target: 'map',
 				}
 			},
 					{
 				data: {
-					id: 'x0.5054183972559',
-					source: 'getal',
-					target: '105',
+					id: 'x0.39438292681909',
+					source: 'in',
+					target: 'acos',
 				}
 			},
 					{
 				data: {
-					id: 'x0.59149053999758',
-					source: 'getal',
-					target: '32',
+					id: 'x0.78309922375861',
+					source: '6.2831853071796',
+					target: 'tau',
 				}
 			},
 					{
 				data: {
-					id: 'x0.55478491334002',
-					source: 'getal',
-					target: '100',
-				}
-			},
-					{
-				data: {
-					id: 'x0.37842881883421',
-					source: 'getal',
-					target: '1',
-				}
-			},
-					{
-				data: {
-					id: 'x0.2577321176686',
-					source: 'getal',
-					target: '0',
-				}
-			},
-					{
-				data: {
-					id: 'x0.20738213891507',
-					source: 'getal',
-					target: '104',
-				}
-			},
-					{
-				data: {
-					id: 'x0.62626193120436',
-					source: 'getal',
-					target: '101',
-				}
-			},
-		{ data: {id: 'x0.34012703985913'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.84385188289166',
-					source: 'x0.34012703985913',
-					target: 'groet',
-				}
-			},
-							{
-						data: {
-							id: 'x0.068778037591268',
-							source: '104',
-							target: 'x0.34012703985913',
-						}
-					},
-									{
-						data: {
-							id: 'x0.4099068936938',
-							source: '105',
-							target: 'x0.34012703985913',
-						}
-					},
-									{
-						data: {
-							id: 'x0.87999405520037',
-							source: '111',
-							target: 'x0.34012703985913',
-						}
-					},
-				{ data: {id: 'x0.3194802931135'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.98056816914145',
-					source: 'x0.3194802931135',
-					target: 'eind',
-				}
-			},
-							{
-						data: {
-							id: 'x0.085004788397348',
-							source: '100',
-							target: 'x0.3194802931135',
-						}
-					},
-									{
-						data: {
-							id: 'x0.90762895108556',
-							source: '101',
-							target: 'x0.3194802931135',
-						}
-					},
-									{
-						data: {
-							id: 'x0.10250944928383',
-							source: '105',
-							target: 'x0.3194802931135',
-						}
-					},
-									{
-						data: {
-							id: 'x0.92197776302787',
-							source: '111',
-							target: 'x0.3194802931135',
-						}
-					},
-				{ data: {id: 'x0.50755121396275'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.87228925799592',
-					source: 'x0.50755121396275',
-					target: 'data',
-				}
-			},
-							{
-						data: {
-							id: 'x0.33325974239654',
-							source: 'eind',
-							target: 'x0.50755121396275',
-						}
-					},
-									{
-						data: {
-							id: 'x0.69240945051071',
-							source: 'groet',
-							target: 'x0.50755121396275',
-						}
-					},
-							{
-				data: {
-					id: 'x0.5569462052346',
-					source: '0',
-					target: 'a-len-pos',
-				}
-			},
-		{ data: {id: 'x0.36191520297989'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.031993828263131',
-					source: 'x0.36191520297989',
-					target: 'a-len-pos',
-				}
-			},
-							{
-						data: {
-							id: 'x0.85851110045729',
-							source: '1',
-							target: 'x0.36191520297989',
-						}
-					},
-									{
-						data: {
-							id: 'x0.09898449857672',
-							source: 'a-begin',
-							target: 'x0.36191520297989',
-						}
-					},
-				{ data: {id: 'x0.87706752348555'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.44925891302957',
-					source: 'x0.87706752348555',
-					target: 'a-begin',
-				}
-			},
-							{
-						data: {
-							id: 'x0.43219260472441',
-							source: '1',
-							target: 'x0.87706752348555',
-						}
-					},
-									{
-						data: {
-							id: 'x0.60626791213',
-							source: 'a-len-pos',
-							target: 'x0.87706752348555',
-						}
-					},
-				{ data: {id: 'x0.92783765444897'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.66428567500053',
-					source: 'x0.92783765444897',
-					target: 'a-eind',
-				}
-			},
-							{
-						data: {
-							id: 'x0.39536535525479',
-							source: 'a-begin',
-							target: 'x0.92783765444897',
-						}
-					},
-									{
-						data: {
-							id: 'x0.43846895938668',
-							source: 'a-len',
-							target: 'x0.92783765444897',
-						}
-					},
-				{ data: {id: 'x0.65212507948844'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.92886356214474',
-					source: 'x0.65212507948844',
-					target: 'a-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.94914336826147',
-							source: 'a-begin',
-							target: 'x0.65212507948844',
-						}
-					},
-									{
-						data: {
-							id: 'x0.30733574382371',
-							source: 'a-eind',
-							target: 'x0.65212507948844',
-						}
-					},
-				{ data: {id: 'x0.59648294169292'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.78307618470074',
-					source: 'x0.59648294169292',
-					target: 'a-begin',
-				}
-			},
-							{
-						data: {
-							id: 'x0.33803037849163',
-							source: 'a-eind',
-							target: 'x0.59648294169292',
-						}
-					},
-									{
-						data: {
-							id: 'x0.80525280758983',
-							source: 'a-len',
-							target: 'x0.59648294169292',
-						}
-					},
-							{
-				data: {
-					id: 'x0.94219663969343',
-					source: 'a-eind',
-					target: 'b-len-pos',
-				}
-			},
-					{
-				data: {
-					id: 'x0.066473349494149',
-					source: 'b-len-pos',
-					target: 'a-eind',
-				}
-			},
-		{ data: {id: 'x0.85708681953004'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.97721833641511',
-					source: 'x0.85708681953004',
-					target: 'b-begin',
-				}
-			},
-							{
-						data: {
-							id: 'x0.88964620413708',
-							source: '1',
-							target: 'x0.85708681953004',
-						}
-					},
-									{
-						data: {
-							id: 'x0.54527562649235',
-							source: 'b-len-pos',
-							target: 'x0.85708681953004',
-						}
-					},
-				{ data: {id: 'x0.86437174624967'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.45777267984011',
-					source: 'x0.86437174624967',
-					target: 'b-len-pos',
-				}
-			},
-							{
-						data: {
-							id: 'x0.80021942723553',
-							source: '1',
-							target: 'x0.86437174624967',
-						}
-					},
-									{
-						data: {
-							id: 'x0.87370557052722',
-							source: 'b-begin',
-							target: 'x0.86437174624967',
-						}
-					},
-				{ data: {id: 'x0.82181842523712'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.18572622453129',
-					source: 'x0.82181842523712',
-					target: 'b-eind',
-				}
-			},
-							{
-						data: {
-							id: 'x0.086265023372259',
-							source: 'b-begin',
-							target: 'x0.82181842523712',
-						}
-					},
-									{
-						data: {
-							id: 'x0.63815579127434',
-							source: 'b-len',
-							target: 'x0.82181842523712',
-						}
-					},
-				{ data: {id: 'x0.23382797056522'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.46272172334731',
-					source: 'x0.23382797056522',
-					target: 'b-begin',
-				}
-			},
-							{
-						data: {
-							id: 'x0.0074198953841906',
-							source: 'b-eind',
-							target: 'x0.23382797056522',
-						}
-					},
-									{
-						data: {
-							id: 'x0.63501054450637',
-							source: 'b-len',
-							target: 'x0.23382797056522',
-						}
-					},
-				{ data: {id: 'x0.42125105365238'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.95365830741527',
-					source: 'x0.42125105365238',
-					target: 'b-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.21012046197901',
-							source: 'b-begin',
-							target: 'x0.42125105365238',
-						}
-					},
-									{
-						data: {
-							id: 'x0.97075055026019',
-							source: 'b-eind',
-							target: 'x0.42125105365238',
-						}
-					},
-				{ data: {id: 'x0.26125254680461'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.85706432063927',
-					source: 'x0.26125254680461',
-					target: 'a-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.58133271084229',
-							source: 'a-len-pos',
-							target: 'x0.26125254680461',
-						}
-					},
-									{
-						data: {
-							id: 'x0.70731831235221',
-							source: 'data',
-							target: 'x0.26125254680461',
-						}
-					},
-				{ data: {id: 'x0.2859752249373'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.31820377582601',
-					source: 'x0.2859752249373',
-					target: 'b-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.64395167662015',
-							source: 'b-len-pos',
-							target: 'x0.2859752249373',
-						}
-					},
-									{
-						data: {
-							id: 'x0.85851831820724',
-							source: 'data',
-							target: 'x0.2859752249373',
-						}
-					},
-				{ data: {id: 'x0.66888999551017'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.44314969305096',
-					source: 'x0.66888999551017',
-					target: 'a',
-				}
-			},
-							{
-						data: {
-							id: 'x0.055894952759098',
-							source: 'a-begin',
-							target: 'x0.66888999551017',
-						}
-					},
-									{
-						data: {
-							id: 'x0.77745263687216',
-							source: 'a-eind',
-							target: 'x0.66888999551017',
-						}
-					},
-									{
-						data: {
-							id: 'x0.59469258254147',
-							source: 'data',
-							target: 'x0.66888999551017',
-						}
-					},
-				{ data: {id: 'x0.10208163834274'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.29955401844324',
-					source: 'x0.10208163834274',
-					target: 'b',
-				}
-			},
-							{
-						data: {
-							id: 'x0.95071931600139',
-							source: 'b-begin',
-							target: 'x0.10208163834274',
-						}
-					},
-									{
-						data: {
-							id: 'x0.66572013016125',
-							source: 'b-eind',
-							target: 'x0.10208163834274',
-						}
-					},
-									{
-						data: {
-							id: 'x0.94772421100537',
-							source: 'data',
-							target: 'x0.10208163834274',
-						}
-					},
-				{ data: {id: 'x0.87943906331409'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.70086648068431',
-					source: 'x0.87943906331409',
+					id: 'x0.79844003347607',
+					source: 'udp-uit',
 					target: 'uit',
 				}
 			},
-							{
-						data: {
-							id: 'x0.37598726776242',
-							source: '32',
-							target: 'x0.87943906331409',
-						}
-					},
-									{
-						data: {
-							id: 'x0.61348208906757',
-							source: 'a',
-							target: 'x0.87943906331409',
-						}
-					},
-									{
-						data: {
-							id: 'x0.86314061324258',
-							source: 'b',
-							target: 'x0.87943906331409',
-						}
-					},
-				{ data: {id: 'x0.13617131166913'}, classes: 'hyper' },			{
+					{
 				data: {
-					id: 'x0.4396852028741',
-					source: 'x0.13617131166913',
-					target: 'b',
-				}
-			},
-							{
-						data: {
-							id: 'x0.27457193391145',
-							source: '32',
-							target: 'x0.13617131166913',
-						}
-					},
-									{
-						data: {
-							id: 'x0.18680971171093',
-							source: 'a',
-							target: 'x0.13617131166913',
-						}
-					},
-									{
-						data: {
-							id: 'x0.50616436195847',
-							source: 'uit',
-							target: 'x0.13617131166913',
-						}
-					},
-				{ data: {id: 'x0.57051020235313'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.67282809767538',
-					source: 'x0.57051020235313',
-					target: 'a',
-				}
-			},
-							{
-						data: {
-							id: 'x0.62362672557292',
-							source: '0',
-							target: 'x0.57051020235313',
-						}
-					},
-									{
-						data: {
-							id: 'x0.06129809471839',
-							source: '32',
-							target: 'x0.57051020235313',
-						}
-					},
-									{
-						data: {
-							id: 'x0.55045632810819',
-							source: 'b',
-							target: 'x0.57051020235313',
-						}
-					},
-									{
-						data: {
-							id: 'x0.56395400854012',
-							source: 'uit',
-							target: 'x0.57051020235313',
-						}
-					},
-							{
-				data: {
-					id: 'x0.53658123479066',
-					source: 'getal',
-					target: 'in',
+					id: 'x0.91164735793678',
+					source: 'in',
+					target: 'klant',
 				}
 			},
 					{
 				data: {
-					id: 'x0.10423364215728',
+					id: 'x0.19755136929338',
+					source: 'in',
+					target: 'net-adres',
+				}
+			},
+					{
+				data: {
+					id: 'x0.33522275571489',
+					source: 'in',
+					target: 'net-adres',
+				}
+			},
+					{
+				data: {
+					id: 'x0.7682295948119',
+					source: 'stduit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.27777471080319',
+					source: 'in',
+					target: 'map',
+				}
+			},
+					{
+				data: {
+					id: 'x0.55396995579543',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+		{ data: {id: 'x0.47739705186216', exp: 'tcp-uit = web-klanten map klant -> klant -> bericht'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.62887092476192',
+					source: 'x0.47739705186216',
+					target: 'tcp-uit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.36478447279184',
+							source: 'bericht',
+							target: 'x0.47739705186216',
+						}
+					},
+									{
+						data: {
+							id: 'x0.51340091019562',
+							source: 'klant',
+							target: 'x0.47739705186216',
+						}
+					},
+									{
+						data: {
+							id: 'x0.95222972517471',
+							source: 'map',
+							target: 'x0.47739705186216',
+						}
+					},
+									{
+						data: {
+							id: 'x0.9161950680037',
+							source: 'web-klanten',
+							target: 'x0.47739705186216',
+						}
+					},
+							{
+				data: {
+					id: 'x0.6357117279599',
+					source: 'in',
+					target: 'klant',
+				}
+			},
+					{
+				data: {
+					id: 'x0.71729692943268',
 					source: 'in',
 					target: 'getal',
 				}
 			},
 					{
 				data: {
-					id: 'x0.59953290345125',
-					source: '100',
-					target: 'stip',
+					id: 'x0.1416025553558',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+		{ data: {id: 'x0.60696887625706', exp: 'uit : byte^int'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.01630057162433',
+					source: 'x0.60696887625706',
+					target: 'uit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.24288677062974',
+							source: 'byte',
+							target: 'x0.60696887625706',
+						}
+					},
+									{
+						data: {
+							id: 'x0.13723157678602',
+							source: 'int',
+							target: 'x0.60696887625706',
+						}
+					},
+				{ data: {id: 'x0.80417675422699', exp: 'web-zelf = (inverteer tcp-in) web-klanten'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.15667908925408',
+					source: 'x0.80417675422699',
+					target: 'web-zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.40094439424618',
+							source: 'inverteer',
+							target: 'x0.80417675422699',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12979044678146',
+							source: 'tcp-in',
+							target: 'x0.80417675422699',
+						}
+					},
+									{
+						data: {
+							id: 'x0.10880880202577',
+							source: 'web-klanten',
+							target: 'x0.80417675422699',
+						}
+					},
+							{
+				data: {
+					id: 'x0.99892451800356',
+					source: 'getal',
+					target: '80',
+				}
+			},
+					{
+				data: {
+					id: 'x0.21825690531091',
+					source: 'getal',
+					target: '72',
+				}
+			},
+					{
+				data: {
+					id: 'x0.5129323944044',
+					source: 'getal',
+					target: '111',
+				}
+			},
+					{
+				data: {
+					id: 'x0.83911223469261',
+					source: 'getal',
+					target: '84',
+				}
+			},
+					{
+				data: {
+					id: 'x0.61263983259566',
+					source: 'getal',
+					target: '10',
+				}
+			},
+					{
+				data: {
+					id: 'x0.29603161769734',
+					source: 'getal',
+					target: '46',
+				}
+			},
+					{
+				data: {
+					id: 'x0.63755226770302',
+					source: 'getal',
+					target: '116',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52428719006678',
+					source: 'getal',
+					target: '32',
+				}
+			},
+					{
+				data: {
+					id: 'x0.49358298699073',
+					source: 'getal',
+					target: '48',
+				}
+			},
+					{
+				data: {
+					id: 'x0.97277502388357',
+					source: 'getal',
+					target: '58',
+				}
+			},
+					{
+				data: {
+					id: 'x0.29251678441303',
+					source: 'getal',
+					target: '105',
+				}
+			},
+					{
+				data: {
+					id: 'x0.77135769779391',
+					source: 'getal',
+					target: '67',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52674497921334',
+					source: 'getal',
+					target: '75',
+				}
+			},
+					{
+				data: {
+					id: 'x0.76991383627519',
+					source: 'getal',
+					target: '45',
+				}
+			},
+					{
+				data: {
+					id: 'x0.40022862209018',
+					source: 'getal',
+					target: '47',
+				}
+			},
+					{
+				data: {
+					id: 'x0.89152945200518',
+					source: 'getal',
+					target: '51',
+				}
+			},
+		{ data: {id: 'x0.28331474600514', exp: 'rn = [13, 10]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.35245834726489',
+					source: 'x0.28331474600514',
+					target: 'rn',
+				}
+			},
+							{
+						data: {
+							id: 'x0.80772452000888',
+							source: '10',
+							target: 'x0.28331474600514',
+						}
+					},
+									{
+						data: {
+							id: 'x0.91902647396504',
+							source: '13',
+							target: 'x0.28331474600514',
+						}
+					},
+				{ data: {id: 'x0.069755276231913', exp: 'bericht = (((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.94932707536469',
+					source: 'x0.069755276231913',
+					target: 'bericht',
+				}
+			},
+							{
+						data: {
+							id: 'x0.5259953502221',
+							source: '101',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.086055847856242',
+							source: '103',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.19221384599442',
+							source: '104',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.66322692700812',
+							source: '105',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.89023260254889',
+							source: '110',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.34889293524851',
+							source: '111',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.064171320788642',
+							source: '116',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.020023048864688',
+							source: '32',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.45770173727428',
+							source: '45',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.06309583832654',
+							source: '46',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.2382799541756',
+							source: '47',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.97063413167868',
+							source: '48',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.90220807348481',
+							source: '49',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.85091978677126',
+							source: '50',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.26666574937602',
+							source: '51',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.53976034072217',
+							source: '58',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.37520697637238',
+							source: '67',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.76024873636675',
+							source: '72',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.51253536414007',
+							source: '75',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.66772376078541',
+							source: '76',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.53160643416066',
+							source: '79',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.039280343353413',
+							source: '80',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.43763759659493',
+							source: '84',
+							target: 'x0.069755276231913',
+						}
+					},
+									{
+						data: {
+							id: 'x0.93183505625084',
+							source: 'rn',
+							target: 'x0.069755276231913',
+						}
+					},
+				{ data: {id: 'x0.9308097953586', exp: 'web-zelf = net-adres ([48, 58, 56, 48])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.72095234306574',
+					source: 'x0.9308097953586',
+					target: 'web-zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.28429340305007',
+							source: '48',
+							target: 'x0.9308097953586',
+						}
+					},
+									{
+						data: {
+							id: 'x0.73853431490182',
+							source: '56',
+							target: 'x0.9308097953586',
+						}
+					},
+									{
+						data: {
+							id: 'x0.63997881656512',
+							source: '58',
+							target: 'x0.9308097953586',
+						}
+					},
+									{
+						data: {
+							id: 'x0.35404867974764',
+							source: 'net-adres',
+							target: 'x0.9308097953586',
+						}
+					},
+				{ data: {id: 'x0.6878613902665', exp: 'web-klanten = tcp-in web-zelf'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.16597416632156',
+					source: 'x0.6878613902665',
+					target: 'web-klanten',
+				}
+			},
+							{
+						data: {
+							id: 'x0.44010452760388',
+							source: 'tcp-in',
+							target: 'x0.6878613902665',
+						}
+					},
+									{
+						data: {
+							id: 'x0.88007523626093',
+							source: 'web-zelf',
+							target: 'x0.6878613902665',
+						}
+					},
+							{
+				data: {
+					id: 'x0.82920109332968',
+					source: 'getal',
+					target: '50',
+				}
+			},
+					{
+				data: {
+					id: 'x0.33033712968712',
+					source: 'udp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.22896817104377',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.89337241458398',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.3503601785518',
+					source: 'in',
+					target: 'cat',
+				}
+			},
+					{
+				data: {
+					id: 'x0.68666990831805',
+					source: 'in',
+					target: 'unie',
+				}
+			},
+					{
+				data: {
+					id: 'x0.95646825291052',
+					source: 'in',
+					target: 'sin',
+				}
+			},
+					{
+				data: {
+					id: 'x0.58864013319306',
+					source: 'in',
+					target: 'asin',
+				}
+			},
+					{
+				data: {
+					id: 'x0.65730403953106',
+					source: 'in',
+					target: 'cos',
+				}
+			},
+					{
+				data: {
+					id: 'x0.85867632592967',
+					source: 'getal',
+					target: '104',
+				}
+			},
+					{
+				data: {
+					id: 'x0.43955991949866',
+					source: 'getal',
+					target: '56',
+				}
+			},
+					{
+				data: {
+					id: 'x0.92396978890708',
+					source: 'getal',
+					target: '57',
+				}
+			},
+					{
+				data: {
+					id: 'x0.39843666665183',
+					source: 'getal',
+					target: '54',
+				}
+			},
+					{
+				data: {
+					id: 'x0.8147668963367',
+					source: 'getal',
+					target: '103',
+				}
+			},
+					{
+				data: {
+					id: 'x0.68421852527383',
+					source: 'getal',
+					target: '79',
+				}
+			},
+					{
+				data: {
+					id: 'x0.91097203079191',
+					source: 'getal',
+					target: '13',
+				}
+			},
+					{
+				data: {
+					id: 'x0.48249065665644',
+					source: 'getal',
+					target: '49',
+				}
+			},
+					{
+				data: {
+					id: 'x0.21582495896883',
+					source: 'getal',
+					target: '110',
+				}
+			},
+					{
+				data: {
+					id: 'x0.95025237414532',
+					source: 'getal',
+					target: '76',
+				}
+			},
+					{
+				data: {
+					id: 'x0.92012825371704',
+					source: 'getal',
+					target: '101',
+				}
+			},
+					{
+				data: {
+					id: 'x0.147660014754',
+					source: 'getal',
+					target: '1',
+				}
+			},
+		{ data: {id: 'x0.88106216950392', exp: 'zelf = net-adres ([48, 58, 49, 48, 49, 48, 49])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.64108059631711',
+					source: 'x0.88106216950392',
+					target: 'zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.43195341826973',
+							source: '48',
+							target: 'x0.88106216950392',
+						}
+					},
+									{
+						data: {
+							id: 'x0.61959648394007',
+							source: '49',
+							target: 'x0.88106216950392',
+						}
+					},
+									{
+						data: {
+							id: 'x0.28105941241656',
+							source: '58',
+							target: 'x0.88106216950392',
+						}
+					},
+									{
+						data: {
+							id: 'x0.78600209801737',
+							source: 'net-adres',
+							target: 'x0.88106216950392',
+						}
+					},
+				{ data: {id: 'x0.30745787374091', exp: 'ander = net-adres ([49, 57, 50, 46, 49, 54, 56, 46, 49, 46, 54, 50, 58, 49, 48, 49, 48, 49])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.44703357920378',
+					source: 'x0.30745787374091',
+					target: 'ander',
+				}
+			},
+							{
+						data: {
+							id: 'x0.2261066251556',
+							source: '46',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.18753310953618',
+							source: '48',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.2762346720678',
+							source: '49',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.55644375530837',
+							source: '50',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.41650128057995',
+							source: '54',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.16960708618611',
+							source: '56',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.90680393386018',
+							source: '57',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.10317118843234',
+							source: '58',
+							target: 'x0.30745787374091',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12607533909663',
+							source: 'net-adres',
+							target: 'x0.30745787374091',
+						}
+					},
+							{
+				data: {
+					id: 'x0.49544406658758',
+					source: 'getal',
+					target: 'tau',
+				}
+			},
+					{
+				data: {
+					id: 'x0.76047522842906',
+					source: 'getal',
+					target: '-1',
+				}
+			},
+					{
+				data: {
+					id: 'x0.9847516650263',
+					source: 'in',
+					target: 'coproduct',
 				}
 			},
 					]
@@ -768,9 +1191,10 @@ stip = [100,100]
 				{
 					selector: '.hyper',
 					style: {
+							label: 'data(exp)',
 							shape: 'none',
 							'background-color': 'black',
-							label: '',
+							'font-size': '8px',
 							width: '10px',
 							height: '10px',
 					}
@@ -781,382 +1205,564 @@ stip = [100,100]
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: '0'}, classes: 'waarde' },{ data: {id: '1'}, classes: 'waarde' },{ data: {id: '100'}, classes: 'waarde' },{ data: {id: '101'}, classes: 'waarde' },{ data: {id: '104'}, classes: 'waarde' },{ data: {id: '105'}, classes: 'waarde' },{ data: {id: '111'}, classes: 'waarde' },{ data: {id: '32'}, classes: 'waarde' },{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'a-begin'}, classes: 'waarde' },{ data: {id: 'a-eind'}, classes: 'waarde' },{ data: {id: 'a-len'}, classes: 'waarde' },{ data: {id: 'a-len-pos'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'b-begin'}, classes: 'waarde' },{ data: {id: 'b-eind'}, classes: 'waarde' },{ data: {id: 'b-len'}, classes: 'waarde' },{ data: {id: 'b-len-pos'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'eind'}, classes: 'waarde' },{ data: {id: 'getal'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'stip'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: '10'}, classes: 'waarde' },{ data: {id: '101'}, classes: 'waarde' },{ data: {id: '103'}, classes: 'waarde' },{ data: {id: '104'}, classes: 'waarde' },{ data: {id: '105'}, classes: 'waarde' },{ data: {id: '110'}, classes: 'waarde' },{ data: {id: '111'}, classes: 'waarde' },{ data: {id: '116'}, classes: 'waarde' },{ data: {id: '13'}, classes: 'waarde' },{ data: {id: '32'}, classes: 'waarde' },{ data: {id: '45'}, classes: 'waarde' },{ data: {id: '46'}, classes: 'waarde' },{ data: {id: '47'}, classes: 'waarde' },{ data: {id: '48'}, classes: 'waarde' },{ data: {id: '49'}, classes: 'waarde' },{ data: {id: '50'}, classes: 'waarde' },{ data: {id: '51'}, classes: 'waarde' },{ data: {id: '54'}, classes: 'waarde' },{ data: {id: '56'}, classes: 'waarde' },{ data: {id: '57'}, classes: 'waarde' },{ data: {id: '58'}, classes: 'waarde' },{ data: {id: '67'}, classes: 'waarde' },{ data: {id: '72'}, classes: 'waarde' },{ data: {id: '75'}, classes: 'waarde' },{ data: {id: '76'}, classes: 'waarde' },{ data: {id: '79'}, classes: 'waarde' },{ data: {id: '80'}, classes: 'waarde' },{ data: {id: '84'}, classes: 'waarde' },{ data: {id: 'bericht'}, classes: 'waarde' },{ data: {id: 'getal'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'klant'}, classes: 'waarde' },{ data: {id: 'map'}, classes: 'waarde' },{ data: {id: 'net-adres'}, classes: 'waarde' },{ data: {id: 'rn'}, classes: 'waarde' },{ data: {id: 'tcp-in'}, classes: 'waarde' },{ data: {id: 'tcp-uit'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'web-klanten'}, classes: 'waarde' },{ data: {id: 'web-zelf'}, classes: 'waarde' },			{
 				data: {
-					id: 'x0.27632385877721',
-					source: 'getal',
-					target: '111',
+					id: 'x0.93500398655189',
+					source: 'in',
+					target: 'map',
 				}
 			},
 					{
 				data: {
-					id: 'x0.34235707127599',
-					source: 'getal',
-					target: '105',
+					id: 'x0.68444501687048',
+					source: 'in',
+					target: 'klant',
 				}
 			},
 					{
 				data: {
-					id: 'x0.74028922325945',
-					source: 'getal',
-					target: '32',
+					id: 'x0.38318833121247',
+					source: 'in',
+					target: 'net-adres',
 				}
 			},
 					{
 				data: {
-					id: 'x0.96384180288941',
-					source: 'getal',
-					target: '100',
+					id: 'x0.74977088242293',
+					source: 'in',
+					target: 'net-adres',
 				}
 			},
 					{
 				data: {
-					id: 'x0.31147267683943',
-					source: 'getal',
-					target: '1',
+					id: 'x0.36866354167865',
+					source: 'in',
+					target: 'map',
 				}
 			},
 					{
 				data: {
-					id: 'x0.37638687453064',
-					source: 'getal',
-					target: '0',
+					id: 'x0.29416036200438',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+		{ data: {id: 'x0.23226153861371', exp: 'tcp-uit = web-klanten map klant -> klant -> bericht'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.58448850064747',
+					source: 'x0.23226153861371',
+					target: 'tcp-uit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.24441273568404',
+							source: 'bericht',
+							target: 'x0.23226153861371',
+						}
+					},
+									{
+						data: {
+							id: 'x0.15238979186508',
+							source: 'klant',
+							target: 'x0.23226153861371',
+						}
+					},
+									{
+						data: {
+							id: 'x0.73214851586714',
+							source: 'map',
+							target: 'x0.23226153861371',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12547490472229',
+							source: 'web-klanten',
+							target: 'x0.23226153861371',
+						}
+					},
+							{
+				data: {
+					id: 'x0.79347038818219',
+					source: 'in',
+					target: 'klant',
 				}
 			},
 					{
 				data: {
-					id: 'x0.55967204811036',
-					source: 'getal',
-					target: '104',
-				}
-			},
-					{
-				data: {
-					id: 'x0.47263844472945',
-					source: 'getal',
-					target: '101',
-				}
-			},
-		{ data: {id: 'x0.97136982482456'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.63413048518548',
-					source: 'x0.97136982482456',
-					target: 'groet',
-				}
-			},
-							{
-						data: {
-							id: 'x0.35444766485805',
-							source: '104',
-							target: 'x0.97136982482456',
-						}
-					},
-									{
-						data: {
-							id: 'x0.3730008366392',
-							source: '105',
-							target: 'x0.97136982482456',
-						}
-					},
-									{
-						data: {
-							id: 'x0.33998099404386',
-							source: '111',
-							target: 'x0.97136982482456',
-						}
-					},
-				{ data: {id: 'x0.0026768250403352'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.73409682686166',
-					source: 'x0.0026768250403352',
-					target: 'eind',
-				}
-			},
-							{
-						data: {
-							id: 'x0.5904575896405',
-							source: '100',
-							target: 'x0.0026768250403352',
-						}
-					},
-									{
-						data: {
-							id: 'x0.59977103378613',
-							source: '101',
-							target: 'x0.0026768250403352',
-						}
-					},
-									{
-						data: {
-							id: 'x0.87710570165753',
-							source: '105',
-							target: 'x0.0026768250403352',
-						}
-					},
-									{
-						data: {
-							id: 'x0.30694957231495',
-							source: '111',
-							target: 'x0.0026768250403352',
-						}
-					},
-				{ data: {id: 'x0.013229396666041'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.99899441935075',
-					source: 'x0.013229396666041',
-					target: 'data',
-				}
-			},
-							{
-						data: {
-							id: 'x0.53459172860467',
-							source: 'eind',
-							target: 'x0.013229396666041',
-						}
-					},
-									{
-						data: {
-							id: 'x0.83058688362622',
-							source: 'groet',
-							target: 'x0.013229396666041',
-						}
-					},
-							{
-				data: {
-					id: 'x0.92872034335915',
-					source: '0',
-					target: 'a-len-pos',
-				}
-			},
-		{ data: {id: 'x0.0029638935825619'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.45089775810526',
-					source: 'x0.0029638935825619',
-					target: 'a-begin',
-				}
-			},
-							{
-						data: {
-							id: 'x0.72639954030812',
-							source: '1',
-							target: 'x0.0029638935825619',
-						}
-					},
-									{
-						data: {
-							id: 'x0.30452491403768',
-							source: 'a-len-pos',
-							target: 'x0.0029638935825619',
-						}
-					},
-				{ data: {id: 'x0.93655825962152'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.11241925932114',
-					source: 'x0.93655825962152',
-					target: 'a-eind',
-				}
-			},
-							{
-						data: {
-							id: 'x0.32563918750996',
-							source: 'a-begin',
-							target: 'x0.93655825962152',
-						}
-					},
-									{
-						data: {
-							id: 'x0.12161170138121',
-							source: 'a-len',
-							target: 'x0.93655825962152',
-						}
-					},
-							{
-				data: {
-					id: 'x0.91685240991267',
-					source: 'a-eind',
-					target: 'b-len-pos',
-				}
-			},
-		{ data: {id: 'x0.88092762924774'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.89819297515703',
-					source: 'x0.88092762924774',
-					target: 'b-begin',
-				}
-			},
-							{
-						data: {
-							id: 'x0.25282544235365',
-							source: '1',
-							target: 'x0.88092762924774',
-						}
-					},
-									{
-						data: {
-							id: 'x0.52878195304833',
-							source: 'b-len-pos',
-							target: 'x0.88092762924774',
-						}
-					},
-				{ data: {id: 'x0.95894579261492'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.24302159121401',
-					source: 'x0.95894579261492',
-					target: 'b-eind',
-				}
-			},
-							{
-						data: {
-							id: 'x0.40662194993655',
-							source: 'b-begin',
-							target: 'x0.95894579261492',
-						}
-					},
-									{
-						data: {
-							id: 'x0.96454249646726',
-							source: 'b-len',
-							target: 'x0.95894579261492',
-						}
-					},
-				{ data: {id: 'x0.91507895193765'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.71033839774799',
-					source: 'x0.91507895193765',
-					target: 'a-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.099035533191187',
-							source: 'a-len-pos',
-							target: 'x0.91507895193765',
-						}
-					},
-									{
-						data: {
-							id: 'x0.69138720663795',
-							source: 'data',
-							target: 'x0.91507895193765',
-						}
-					},
-				{ data: {id: 'x0.86262971715193'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.24864391714737',
-					source: 'x0.86262971715193',
-					target: 'b-len',
-				}
-			},
-							{
-						data: {
-							id: 'x0.27163531038521',
-							source: 'b-len-pos',
-							target: 'x0.86262971715193',
-						}
-					},
-									{
-						data: {
-							id: 'x0.96895532261997',
-							source: 'data',
-							target: 'x0.86262971715193',
-						}
-					},
-				{ data: {id: 'x0.10108538395776'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.42542623701758',
-					source: 'x0.10108538395776',
-					target: 'a',
-				}
-			},
-							{
-						data: {
-							id: 'x0.8995917946564',
-							source: 'a-begin',
-							target: 'x0.10108538395776',
-						}
-					},
-									{
-						data: {
-							id: 'x0.93252542611795',
-							source: 'a-eind',
-							target: 'x0.10108538395776',
-						}
-					},
-									{
-						data: {
-							id: 'x0.11041922173948',
-							source: 'data',
-							target: 'x0.10108538395776',
-						}
-					},
-				{ data: {id: 'x0.91412658845732'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.38426726795',
-					source: 'x0.91412658845732',
-					target: 'b',
-				}
-			},
-							{
-						data: {
-							id: 'x0.79179886066904',
-							source: 'b-begin',
-							target: 'x0.91412658845732',
-						}
-					},
-									{
-						data: {
-							id: 'x0.091640363955703',
-							source: 'b-eind',
-							target: 'x0.91412658845732',
-						}
-					},
-									{
-						data: {
-							id: 'x0.32882250488215',
-							source: 'data',
-							target: 'x0.91412658845732',
-						}
-					},
-				{ data: {id: 'x0.0046493345893218'}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.92021738547842',
-					source: 'x0.0046493345893218',
-					target: 'uit',
-				}
-			},
-							{
-						data: {
-							id: 'x0.61428141901935',
-							source: '32',
-							target: 'x0.0046493345893218',
-						}
-					},
-									{
-						data: {
-							id: 'x0.20616101576302',
-							source: 'a',
-							target: 'x0.0046493345893218',
-						}
-					},
-									{
-						data: {
-							id: 'x0.10804361901621',
-							source: 'b',
-							target: 'x0.0046493345893218',
-						}
-					},
-							{
-				data: {
-					id: 'x0.26939069399116',
+					id: 'x0.16410193367121',
 					source: 'in',
 					target: 'getal',
 				}
 			},
 					{
 				data: {
-					id: 'x0.14123758307716',
-					source: '100',
-					target: 'stip',
+					id: 'x0.74507138912802',
+					source: 'in',
+					target: 'tcp-in',
+				}
+			},
+					{
+				data: {
+					id: 'x0.074529800598756',
+					source: 'getal',
+					target: '80',
+				}
+			},
+					{
+				data: {
+					id: 'x0.95010403168858',
+					source: 'getal',
+					target: '72',
+				}
+			},
+					{
+				data: {
+					id: 'x0.052529262403273',
+					source: 'getal',
+					target: '111',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52156337980254',
+					source: 'getal',
+					target: '84',
+				}
+			},
+					{
+				data: {
+					id: 'x0.17621065637852',
+					source: 'getal',
+					target: '10',
+				}
+			},
+					{
+				data: {
+					id: 'x0.24006237240511',
+					source: 'getal',
+					target: '46',
+				}
+			},
+					{
+				data: {
+					id: 'x0.79779805187033',
+					source: 'getal',
+					target: '116',
+				}
+			},
+					{
+				data: {
+					id: 'x0.73265441168689',
+					source: 'getal',
+					target: '32',
+				}
+			},
+					{
+				data: {
+					id: 'x0.65656365298506',
+					source: 'getal',
+					target: '48',
+				}
+			},
+					{
+				data: {
+					id: 'x0.96740513852211',
+					source: 'getal',
+					target: '58',
+				}
+			},
+					{
+				data: {
+					id: 'x0.63945834554707',
+					source: 'getal',
+					target: '105',
+				}
+			},
+					{
+				data: {
+					id: 'x0.75973484188306',
+					source: 'getal',
+					target: '67',
+				}
+			},
+					{
+				data: {
+					id: 'x0.093480477153082',
+					source: 'getal',
+					target: '75',
+				}
+			},
+					{
+				data: {
+					id: 'x0.13490241166898',
+					source: 'getal',
+					target: '45',
+				}
+			},
+					{
+				data: {
+					id: 'x0.52021006984646',
+					source: 'getal',
+					target: '47',
+				}
+			},
+					{
+				data: {
+					id: 'x0.07823214171372',
+					source: 'getal',
+					target: '51',
+				}
+			},
+		{ data: {id: 'x0.069906397755214', exp: 'rn = [13, 10]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.20465508625128',
+					source: 'x0.069906397755214',
+					target: 'rn',
+				}
+			},
+							{
+						data: {
+							id: 'x0.46142047339185',
+							source: '10',
+							target: 'x0.069906397755214',
+						}
+					},
+									{
+						data: {
+							id: 'x0.81967728017814',
+							source: '13',
+							target: 'x0.069906397755214',
+						}
+					},
+				{ data: {id: 'x0.57331862839559', exp: 'bericht = (((([72, 84, 84, 80, 47, 49, 46, 49, 32, 50, 48, 48, 32, 79, 75] || rn) || [67, 111, 110, 116, 101, 110, 116, 45, 76, 101, 110, 103, 116, 104, 58, 32, 51]) || rn) || rn) || [104, 111, 105]'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.75558083539623',
+					source: 'x0.57331862839559',
+					target: 'bericht',
+				}
+			},
+							{
+						data: {
+							id: 'x0.051938818791853',
+							source: '101',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.1578071285774',
+							source: '103',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.99999357108026',
+							source: '104',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.20432861065694',
+							source: '105',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.88995564444454',
+							source: '110',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12546847580255',
+							source: '111',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.99779899930479',
+							source: '116',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.05405757765009',
+							source: '32',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.87053986493058',
+							source: '45',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.072328799437885',
+							source: '46',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.0041616088730104',
+							source: '47',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.92306912733385',
+							source: '48',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.59389217924042',
+							source: '49',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.18037226571719',
+							source: '50',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.1631314992733',
+							source: '51',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.3916902306451',
+							source: '58',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.91302667740408',
+							source: '67',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.81969515272402',
+							source: '72',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.35909536870154',
+							source: '75',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.55248502248548',
+							source: '76',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.57942999414142',
+							source: '79',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.45257584585463',
+							source: '80',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.68738743462012',
+							source: '84',
+							target: 'x0.57331862839559',
+						}
+					},
+									{
+						data: {
+							id: 'x0.099640063522216',
+							source: 'rn',
+							target: 'x0.57331862839559',
+						}
+					},
+				{ data: {id: 'x0.53080798803401', exp: 'web-zelf = net-adres ([48, 58, 56, 48])'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.75729383237534',
+					source: 'x0.53080798803401',
+					target: 'web-zelf',
+				}
+			},
+							{
+						data: {
+							id: 'x0.3042951497735',
+							source: '48',
+							target: 'x0.53080798803401',
+						}
+					},
+									{
+						data: {
+							id: 'x0.99222846142586',
+							source: '56',
+							target: 'x0.53080798803401',
+						}
+					},
+									{
+						data: {
+							id: 'x0.57697111255348',
+							source: '58',
+							target: 'x0.53080798803401',
+						}
+					},
+									{
+						data: {
+							id: 'x0.87761377816909',
+							source: 'net-adres',
+							target: 'x0.53080798803401',
+						}
+					},
+				{ data: {id: 'x0.74780929635643', exp: 'web-klanten = tcp-in web-zelf'}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.62890993134534',
+					source: 'x0.74780929635643',
+					target: 'web-klanten',
+				}
+			},
+							{
+						data: {
+							id: 'x0.03542090674649',
+							source: 'tcp-in',
+							target: 'x0.74780929635643',
+						}
+					},
+									{
+						data: {
+							id: 'x0.74780286697103',
+							source: 'web-zelf',
+							target: 'x0.74780929635643',
+						}
+					},
+							{
+				data: {
+					id: 'x0.83323854200227',
+					source: 'getal',
+					target: '50',
+				}
+			},
+					{
+				data: {
+					id: 'x0.92537655119103',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.87327134277358',
+					source: 'tcp-uit',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.8310375408414',
+					source: 'getal',
+					target: '104',
+				}
+			},
+					{
+				data: {
+					id: 'x0.97943412930678',
+					source: 'getal',
+					target: '56',
+				}
+			},
+					{
+				data: {
+					id: 'x0.7438112072385',
+					source: 'getal',
+					target: '57',
+				}
+			},
+					{
+				data: {
+					id: 'x0.90336634027928',
+					source: 'getal',
+					target: '54',
+				}
+			},
+					{
+				data: {
+					id: 'x0.98359573817979',
+					source: 'getal',
+					target: '103',
+				}
+			},
+					{
+				data: {
+					id: 'x0.66688033457235',
+					source: 'getal',
+					target: '79',
+				}
+			},
+					{
+				data: {
+					id: 'x0.49725851905405',
+					source: 'getal',
+					target: '13',
+				}
+			},
+					{
+				data: {
+					id: 'x0.16396800343132',
+					source: 'getal',
+					target: '49',
+				}
+			},
+					{
+				data: {
+					id: 'x0.83001183384564',
+					source: 'getal',
+					target: '110',
+				}
+			},
+					{
+				data: {
+					id: 'x0.8889487501648',
+					source: 'getal',
+					target: '76',
+				}
+			},
+					{
+				data: {
+					id: 'x0.076994680835397',
+					source: 'getal',
+					target: '101',
 				}
 			},
 					]
