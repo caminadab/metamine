@@ -206,6 +206,19 @@ local fn = {
 		b.buf = nil
 		return buf
 	end;
+	-- delta componeer
+	-- 2@∆3 = 5
+	['deltacomp'] = function(val,delta)
+		if val == nil then
+			return delta
+		elseif tonumber(val) then
+			return val + delta
+		elseif val == true then
+			return delta
+		else
+			print('??', val, delta)
+		end
+	end;
 }
 
 function eval0(env,exp)
@@ -227,6 +240,10 @@ function eval0(env,exp)
 		elseif exp[1] == '->' then
 			local arg = exp[2]
 			local fn = exp[3]
+			-- speciaal geval
+			if tonumber(arg) then
+				return {'->', arg, fn}
+			end
 			return function(a)
 				-- maplet
 				if env[arg] and a ~= env[arg] then
@@ -413,6 +430,7 @@ function doe(stroom)
 	end
 	local env = kopieer(fn)
 	env.Start = socket.gettime()
+	env['udp-uit'] = true
 
 	-- tijd
 	local freq = 1
@@ -475,17 +493,19 @@ function doe(stroom)
 				end
 				io.write(d)
 
+			elseif naam == 'udp-uit' then
+
 			elseif naam == 'udp-uit' or naam == 'tcp-uit' then
 					
 				local maak,udp,tcp
 				if naam == 'udp-uit' then maak,udp = socket.udp,true end
 				if naam == 'tcp-uit' then maak,tcp = socket.tcp,true end
-				local pakketten = env[naam]
+				local pakketten = env[naam] or {}
 
 				env.kanaal = env.kanaal or {}
 
 				pakketten.is_set = nil
-				print('PAKKETEN',unlisp(pakketten))
+				print('PAKKETTEN',unlisp(pakketten))
 				for pakket in alle(pakketten) do
 					print('PAKKET',unlisp(pakket),': ',type(pakket))
 					local van,naar,inhoud = table.unpack(pakket)

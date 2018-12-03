@@ -35,6 +35,10 @@ Opties:
 	return
 end
 
+if opt.v or opt.verboos then
+	verboos = true
+end
+
 local code = file(bronnen[1])
 
 local plan = vertaal(code, 'in', 'uit')

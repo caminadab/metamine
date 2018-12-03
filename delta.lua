@@ -1,18 +1,6 @@
 require 'set'
 require 'func'
 
--- pas delta toe
---[[
-2@∆3 = 5
-
-]]
-function deltacomp(val, delta)
-	if val == nil then
-		return delta
-	elseif tonumber(val) then
-		return val + delta
-	end
-end
 
 --[[
 ∆ 3 = (start => 3)
