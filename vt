@@ -7,6 +7,7 @@ require 'lisp'
 require 'vertaal'
 require 'bouw'
 require 'doe'
+require 'rapport'
 
 local opt,bronnen = getopt({...}, "u")
 
@@ -27,10 +28,11 @@ Vertaalt broncode naar applicaties.
 Opties:
     -h, --help        print deze hulp
     -d, --doe         voer meteen uit
-    -s, --syntax     	print syntax
+    -s, --syntax 	  	print syntax
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
     -v, --verboos     spraakzaam zijn
+    -f, --fix         debug modus
 ]])
 	return
 end
@@ -39,7 +41,18 @@ if opt.v or opt.verboos then
 	verboos = true
 end
 
+if opt.s or opt.syntaxis then
+	verboos = true
+end
+
 local code = file(bronnen[1])
+
+-- rapporteer proces
+if opt.f or opt.fix then
+	local html = rapport(code)
+	file('rapport.html', html)
+end
+
 
 local plan = vertaal(code, 'in', 'uit')
 local uit

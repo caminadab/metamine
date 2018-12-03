@@ -83,7 +83,7 @@
 %right '^' '_'
 %left OUD
 %left '.'
-%nonassoc '%' KWADRAAT
+%nonassoc '%' KWADRAAT M0 M1 M2 M3 M4 I0 I1 I2 I3 I4
 %left NAAM TEKST
 
 %%

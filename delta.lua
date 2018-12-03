@@ -33,7 +33,7 @@ function delta(exp)
 
 	-- ∆ 3 = (start => 3)
 	if num then
-		return {'=>', 'start', '3'}
+		return {'=>', 'start', exp}
 	end
 
 	-- ∆ nu = (tik => +dt)

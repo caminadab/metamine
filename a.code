@@ -1,3 +1,2 @@
-udp-uit = 10101 -> (udp-in 10101)
-
+udp-uit = 10101 → udp-in 10101
 

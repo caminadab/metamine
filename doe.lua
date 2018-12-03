@@ -206,11 +206,17 @@ local fn = {
 		b.buf = nil
 		return buf
 	end;
+	['=>'] = function(a,b)
+		if a then return b
+		else return nil end
+	end;
 	-- delta componeer
 	-- 2@∆3 = 5
 	['deltacomp'] = function(val,delta)
 		if val == nil then
 			return delta
+		elseif delta == nil then
+			return val
 		elseif tonumber(val) then
 			return val + delta
 		elseif val == true then
@@ -225,7 +231,9 @@ function eval0(env,exp)
 	if atom(exp) then
 		-- magisch
 		local v = tonumber(exp) or env[exp]
-		if not v then error('onbekend: "'..unlisp(exp)..'"') end
+		if v == nil then
+			error('onbekend: "'..unlisp(exp)..'"')
+		end
 		return v
 	else
 		if exp[1] == ':=' then
@@ -283,7 +291,7 @@ function eval0(env,exp)
 	end
 end
 
-function eval(proc)
+function eval3(proc)
 	log('# Eval')
 	log()
 	local stdin = ''
@@ -437,6 +445,7 @@ function doe(stroom)
 	local dt = 1/freq
 	_G.print(freq..' Hz')
 	env.nu = 0
+	env.start = true
 
 	while true do
 		for i,feit in ipairs(stroom) do
@@ -478,11 +487,11 @@ function doe(stroom)
 				else
 					print('nee')
 				end
+
 	 		else
 				--print('ok')
 				print(unlisp(env[naam]))
 			end
-
 
 			-- MAGISCHE VALUATIES
 			if naam == 'stduit' then
@@ -532,6 +541,9 @@ function doe(stroom)
 
 			end
 		end
+		
+		-- start
+		env.start = false
 
 		-- tijdsupdate
 		local over = (socket.gettime() - env.Start) % dt

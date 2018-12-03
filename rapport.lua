@@ -227,6 +227,7 @@ function rapport(code)
 			div('afh', {class='deel'}),
 			div('infostroom', {class='deel'}),
 			deel { typetabel },
+			div('afh', {class='deel'}),
 			js (graaf2js(afh, 'afh', nil, map)),
 			js (graaf2js(infostroom, 'infostroom', 'dagre', map)),
 			js [[

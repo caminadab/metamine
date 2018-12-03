@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #include "node.h"
 #include "taal.h"
@@ -12,7 +13,7 @@ extern const char* in;
 
 int yylex() {
 	yylval = a("fout");
-	int c;
+	unsigned char c;
 
 	// wit overslaan
 	while (1) {
@@ -39,65 +40,69 @@ int yylex() {
 
 	// unicode oeps
 	// ²
-	if (c == 0xC2) {
-		int ch0 = *in++;
-		if (ch0 == 0xB2)
-			strcpy(token, "^2");
-		return KWADRAAT;
-	}
-	else if (c == 0xC3) {
-		int ch0 = *in++;
-		if (ch0 == 0x97)
-			yylval = a("xx");
-		return NAAM;
-	}
-	else if (c == 0xCF) {
-		int ch0 = *in++;
-		if (ch0 == 0x84)
-			yylval = a("tau");
-		return NAAM;
-	}
-			
-	else if (c == 0xE2) {
-		int ch0 = *in++;
-		int ch1 = *in++;
-		if (ch0 == 0x86 && ch1 == 0x92) {
-			strcpy(token, "->");
-			return TO;
+	if (c & 0x80) {
+		uint32_t u = 0;
+		// 2 bytes
+		if ((c & 0xE0) == 0x6) {
+			puts("2");
+			u |= (c & 0x1F) << 6;
+			c = *in++;
+			u |= (c & 0x3F)  << 0;
 		}
-		else if (ch0 == 0x87 && ch1 == 0x92) {
-			strcpy(token, "=>");
-			return DAN;
+		
+		// 3 bytes
+		else if ((c & 0xF0) == 0xE0u) {
+			puts("3");
+			u |= (c & 0x0F) << 12;
+			c = *in++;
+			u |= (c & 0x3F) << 6;
+			c = *in++;
+			u |= (c & 0x3F) << 0;
 		}
-		else if (ch0 == 0x89 && ch1 == 0x88) {
-			strcpy(token, "~=");
-			return ISB;
+
+		// 4 bytes
+		else if ((c & 0xF8) == 0xF0) {
+			puts("4");
+			u |= (c & 0x7) << 18;
+			c = *in++; // byte 2
+			u |= (c & 0x3F) << 12;
+			c = *in++; // byte 3
+			u |= (c & 0x3F) << 6;
+			c = *in++; // byte 4
+			u |= (c & 0x3F) << 0;
 		}
-		else if (ch0 == 0x89 && ch1 == 0xA0) {
-			strcpy(token, ">=");
-			return GDGA;
-		}
-		else if (ch0 == 0x89 && ch1 == 0xA5) {
-			strcpy(token, "<=");
-			return KDGA;
-		}
-		else if (ch0 == 0x89 && ch1 == 0xA4) {
-			strcpy(token, "!=");
-			return ISN;
-		}
-		else if (ch0 == 0x88 && ch1 == 0x98) {
-			strcpy(token, "@");
-			return '@';
-		}
-		else if (ch0 == 0x88) {
-			if (ch1 == 0xAA)
-				yylval = a("unie");
-			else if (ch1 == 0xA9)
-				yylval = a("intersectie");
-			else if (ch1 == 0x91)
-				yylval = a("som");
-		}
-		return NAAM;
+
+		if (u == L'⁰') { strcpy(token, "^0"); return M0; }
+		if (u == L'¹') { strcpy(token, "^1"); return M1; }
+		if (u == L'²') { strcpy(token, "^2"); return M2; }
+		if (u == L'³') { strcpy(token, "^3"); return M3; }
+		if (u == L'⁴') { strcpy(token, "^4"); return M4; }
+		if (u == L'₀') { strcpy(token, "_0"); return I0; }
+		if (u == L'₁') { strcpy(token, "_1"); return I1; }
+		if (u == L'₂') { strcpy(token, "_2"); return I2; }
+		if (u == L'₃') { strcpy(token, "_3"); return I3; }
+		if (u == L'₄') { strcpy(token, "_4"); return I4; }
+
+		if (u == '×') { strcpy(token, "xx"); return CART; }
+		if (u == L'→') { strcpy(token, "->"); return TO; }
+		if (u == L'⇒') { strcpy(token, "=>"); return DAN; }
+		if (u == L'≈') { strcpy(token, "~="); return ISB; }
+		if (u == L'≥') { strcpy(token, ">="); return GDGA; }
+		if (u == L'≤') { strcpy(token, "<="); return KDGA; }
+		if (u == L'≠') { strcpy(token, "!="); return ISN; }
+		if (u == L'∘') { strcpy(token, "@"); return '@'; }
+		if (u == L'∆') { strcpy(token, "delta"); return KWADRAAT; }
+		if (u == L'τ') { strcpy(token, "tau"); return KWADRAAT; }
+		if (u == L'∑' ) { strcpy(token, "som"); return NAAM; }
+		if (u == L'∪' ) { strcpy(token, "unie"); return NAAM; }
+		if (u == L'∩') { strcpy(token, "intersectie"); return NAAM; }
+		if (u == L'∅') { strcpy(token, "niets"); return NAAM; }
+		if (u == L'∧') { strcpy(token, "en"); return NAAM; }
+		if (u == L'∨') { strcpy(token, "of"); return NAAM; }
+		if (u == L'√') { strcpy(token, "wortel"); return NAAM; }
+		if (u == L'∐') { strcpy(token, "co"); return NAAM; }
+		if (u == L'∏') { strcpy(token, "dis"); return NAAM; }
+		printf("ONGELDIG UNICODE TEKEN ((%x))\n", u);
 	}
 
 	// tekst
