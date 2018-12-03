@@ -1,3 +1,3 @@
 function bouw(plan)
-	return nil
+	return plan
 end

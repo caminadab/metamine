@@ -37,6 +37,10 @@ function set2tekst(set)
 end
 
 function plan(stroom)
+	return stroom
+end
+
+function plan0(stroom)
 	local plan = {} -- tijdstip -> assignments
 	local tijd = {}
 	for i,eq in ipairs(stroom) do

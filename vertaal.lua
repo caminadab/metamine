@@ -100,10 +100,12 @@ function componeer(...)
 			print('@', i-1, unlisp(r))
 			r = table.pack(fn(table.unpack(r)))
 			if #r == 0 then
+			print('niet ok')
 				return nil
 			end
 		end
+		return table.unpack(r)
 	end
 end
 
-vertaal = componeer(ontleed, sorteer, snoei, delta, plan)
+vertaal = componeer(ontleed, sorteer, snoei, deltastroom)--, plan)

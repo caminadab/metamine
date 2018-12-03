@@ -21,8 +21,10 @@ end
 ∆ (a := b) = (∆a => (a := (a deltacomp ∆b)))
 ∆ (a + b) = ∆a co ∆b
 ∆ (a = b) = (∆a en ∆b => (a = b))
+∆ (a -> b) = a -> ∆b
 ∆ (udp-in p)  = { udp-open(p) => [], udp-leesbaar(p)    => udp-lees(p) }
 ∆ (udp-uit p) = { udp-open(p) => ja, udp-schrijfbaar(p) => ja          }
+∆ udp-uit     = { p -> ∆ (udp-uit p)                                   }
 
 udp-in(p)       = { udp-lees }
 udp-lees(p)     = [ander, bericht]
@@ -36,6 +38,7 @@ berekenbare multiset
 ]]
 
 function delta(exp)
+	_G.print('∆ '..unlisp(exp))
 	local fn = isexp(exp) and exp[1]
 	local num = tonumber(exp)
 	local a,b = fn and exp[2], fn and exp[3]
@@ -56,7 +59,7 @@ function delta(exp)
 	end
 		
 	-- ∆ (a := b) = (∆a => (a := (a deltacomp ∆b)))
-	if fn == ':=' then
+	if fn == '=' then
 		local an = {'deltacomp', a, delta(b) }
 		local w = {':=', a, an}
 		return {'=>', delta(a), w}
@@ -71,6 +74,11 @@ function delta(exp)
 	if fn == '=' then
 		local als = {'en', delta(a), delta(b) }
 		return {'=>', als, {'=', a, b}}
+	end
+
+	-- ∆ (a -> b) = a -> ∆b
+	if fn == '->' then
+		return {'->', a, delta(b) }
 	end
 
 	-- ∆ (udp-in a)  = { udp-open(a) => [], udp-leesbaar(a)    => udp-lees(a) }
@@ -89,5 +97,17 @@ function delta(exp)
 		}
 	end
 
+	-- ∆ udp-uit     = { p -> ∆ (udp-uit p)                                   }
+	if exp == 'udp-uit' then
+		do return 'ja' end -- HIER
+		return {'->', '_p', delta({'udp-uit', '_p'}) }
+	end
+
 	error('onbekend: ∆ '..unlisp(exp))
 end
+
+function deltastroom(stroom)
+	local deltas = map(stroom, delta)
+	return binop(deltas, unie)
+end
+
