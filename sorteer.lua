@@ -254,7 +254,7 @@ voegt iteratief
 end
 ]]
 
-function sorteer(hgraaf, van, naar)
+function sorteer2(hgraaf, van, naar)
 end
 
 if false and test then

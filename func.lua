@@ -70,6 +70,24 @@ function join(a,b)
 	return r
 end
 
+-- past binop toe op alle leden
+-- zoals som
+function binop(lijst, fn)
+	local r = lijst[1]
+	for i=2,#lijst do
+		r = fn(r, lijst[i])
+	end
+	return r
+end
+
+function staart(lijst)
+	local t = {}
+	for i=2,#lijst do
+		t[i-1] = lijst[i]
+	end
+	return t
+end
+
 func = {
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return a end end;

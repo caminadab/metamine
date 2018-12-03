@@ -10,6 +10,7 @@ require 'vhgraaf'
 require 'ontrafel'
 require 'plan'
 require 'snoei'
+require 'delta'
 
 require 'js'
 
@@ -60,7 +61,6 @@ local function recdelta(v,p)
 				}
 		else
 			--p[#p+1] = v
-			--log("NANI? "..f)
 		end
 		return {}
 	else
@@ -79,7 +79,8 @@ local function recdelta(v,p)
 	end
 end
 
-function delta(stroom)
+function delta2(stroom)
+	if not stroom then return nil end
 	local p = {}
 	for i,v in ipairs(stroom) do
 		recdelta(v,p)
@@ -87,32 +88,22 @@ function delta(stroom)
 	return p
 end
 
---[[
-vertaal = code -> stroom
-	ontleed: code -> kennis
-	noem: feiten => (naam -> exp)
-	sorteer: namen -> stroom
+function componeer(...)
+	local fns = {...}
+	if #fns == 1 then
+		fns = fns[1]
+	end
 
-	typeer stroom
-	uitrol: stroom -> makkelijke-stroom
-]]
-function vertaal(code)
-	local kennis = ontleed(code)
-	if not kennis then return false,'ontleed' end
-
-	-- herleidt alle info
-	--local kennis = ontrafel(kennis)
-	--local kennis = deduceer(kennis) ; if _G.verboos then print('\n# Kennis\n'..unlisp(kennis)..'\n') end
-	--local kennis = ontrafel(kennis)
-	
-	-- sorteer
-	local stroom,fout = sorteer(kennis)
-	local stroom = snoei(stroom)
-
-	-- tijd!
-	local stroom = delta(stroom)
-
-	-- 
-
-	return stroom,fout
+	return function (...)
+		local r = {...}
+		for i,fn in ipairs(fns) do
+			print('@', i-1, unlisp(r))
+			r = table.pack(fn(table.unpack(r)))
+			if #r == 0 then
+				return nil
+			end
+		end
+	end
 end
+
+vertaal = componeer(ontleed, sorteer, snoei, delta, plan)

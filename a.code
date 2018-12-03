@@ -1,4 +1,3 @@
-;udp-uit 10101 = udp-in 10101
-k = udp 10101
-k.uit = k.in
+udp-uit = 10101 -> (udp-in 10101)
+
 

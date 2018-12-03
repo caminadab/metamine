@@ -32,6 +32,9 @@ function deduceer(feiten)
 	f[#f+1] = {':', 'cat', 'in'}
 	f[#f+1] = {':', 'unie', 'in'}
 
+	f[#f+1] = {':', 'udp-in', 'in'}
+	f[#f+1] = {':', 'uit', 'udp-uit'}
+
 	--[[
 	f[#f+1] = {':', 'sin', 'in'}
 	f[#f+1] = {':', 'asin', 'in'}
