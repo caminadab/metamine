@@ -21,6 +21,7 @@ function sorteer(kennis)
 	local kennis = deduceer(kennis)
 	local afh,map = berekenbaarheid(kennis)
 	local infostroom,fout = afh:sorteer('in', 'uit')
+
 	if not infostroom then
 		return false,fout
 	end
@@ -34,12 +35,17 @@ function sorteer(kennis)
 	return stroom
 end
 
-local function recdt(v,p)
+local function recdelta(v,p)
 	if isexp(v) then
 		local f,a,b = v[1],v[2],v[3]
+
+		-- a = b
+		-- =>
+		-- start =>
+		--   a := b
 		if f == '=' then
 			-- delta b
-			local dtb = recdt(b,p) -- [ (0 -> 3) ]
+			local dtb = recdelta(b,p) -- [ (0 -> 3) ]
 			for i,w in ipairs(dtb) do
 				-- w : ((-> 0 3))
 				w[3] = {':=', a, w[3]} -- (0 -> 3) --> (0 -> (a := 3))
@@ -73,10 +79,10 @@ local function recdt(v,p)
 	end
 end
 
-function dt(stroom)
+function delta(stroom)
 	local p = {}
 	for i,v in ipairs(stroom) do
-		recdt(v,p)
+		recdelta(v,p)
 	end
 	return p
 end
@@ -104,8 +110,9 @@ function vertaal(code)
 	local stroom = snoei(stroom)
 
 	-- tijd!
-	--local stroom = dt(stroom)
-	--log('STROOM',stroom)
+	local stroom = delta(stroom)
+
+	-- 
 
 	return stroom,fout
 end
