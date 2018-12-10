@@ -27,13 +27,13 @@ function deduceer(feiten)
 
 	-- extra toevoegen
 	f[#f+1] = {':', 'getal', 'in'}
-	f[#f+1] = {':', 'uit', 'stduit'}
-	f[#f+1] = {':', 'stdin', 'in'}
+	f[#f+1] = {':', 'std-uit', 'uit'}
+	f[#f+1] = {':', 'std-in', 'in'}
 	f[#f+1] = {':', 'cat', 'in'}
 	f[#f+1] = {':', 'unie', 'in'}
 
 	f[#f+1] = {':', 'udp-in', 'in'}
-	f[#f+1] = {':', 'uit', 'udp-uit'}
+	f[#f+1] = {':', 'udp-uit', 'uit'}
 
 	--[[
 	f[#f+1] = {':', 'sin', 'in'}
@@ -60,13 +60,19 @@ function berekenbaarheid(feiten)
 		-- vergelijking?
 		if isexp(feit) and feit[1] == ':' then
 			local a,b = feit[2],feit[3]
+
 			local pijl = {van = val(b), naar = a}
 			-- a : getal
 			map[pijl] = feit
 			hgraaf:link(pijl)
+
+			local pijl = {van = val(a), naar = b}
+			-- getal : a
+			map[pijl] = feit
+			hgraaf:link(pijl)
 		end
 
-		if isexp(feit) and feit[1] == '=' then
+		if isexp(feit) and feit[1] == ':=' then
 			local a,b = feit[2],feit[3]
 
 			-- a = 1 + 2
@@ -78,7 +84,7 @@ function berekenbaarheid(feiten)
 
 				if false and isexp(b) and b[1] == '->' then
 					local pijl = {van = set('in'), naar = a}
-					map[pijl] = {'=', a, b}
+					map[pijl] = {':=', a, b}
 					--hgraaf:link(pijl)
 				end
 			end
@@ -94,7 +100,7 @@ function berekenbaarheid(feiten)
 
 				if isexp(a) and a[1] == '->' then
 					local pijl = {van = set('in'), naar = b}
-					map[pijl] = {'=', b, a}
+					map[pijl] = {':=', b, a}
 					--hgraaf:link(pijl)
 				end
 			end

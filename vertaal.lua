@@ -99,10 +99,7 @@ function componeer(...)
 		for i,fn in ipairs(fns) do
 			print('@', i-1, unlisp(r))
 			r = table.pack(fn(table.unpack(r)))
-			if #r == 0 then
-			print('niet ok')
-				return nil
-			end
+			if r[1] == nil then return nil end
 		end
 		return table.unpack(r)
 	end

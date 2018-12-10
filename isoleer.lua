@@ -31,8 +31,8 @@ function isoleer(eq,name)
 			r,l = eq[2],eq[3]
 			flip = false
 		end
-		if name == l then return {fn,l,r} end
-		if name == r then return {fn,r,l} end
+		if name == l then return {':=',l,r} end
+		if name == r then return {':=',r,l} end
 
 		if exp(l) and #l == 2 then
 			local f,a,x = l[1],l[2],r
@@ -47,12 +47,12 @@ function isoleer(eq,name)
 
 			if f == '-' then
 				-- x = - a
-				if out == 0 then eq0 = {'=', a, {'-', x}} end -- a = - x
+				if out == 0 then eq0 = {':=', a, {'-', x}} end -- a = - x
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			else
 				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
-				if out == 0 then eq0 = {'=', a, {{'inverteer', f}, x}} end -- a = (f^-1) x
+				if out == 0 then eq0 = {':=', a, {{'inverteer', f}, x}} end -- a = (f^-1) x
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
@@ -60,7 +60,7 @@ function isoleer(eq,name)
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if contains(el,name) then
-					eq0 = {'=', el, {r, i-1-1}}
+					eq0 = {':=', el, {r, i-1-1}}
 					break
 				end
 			end
@@ -79,34 +79,34 @@ function isoleer(eq,name)
 
 			if f == '+' then
 				-- x = a + b
-				if out == 0 then eq0 = {'=', a, {'-', x, b}} end -- a = x - b
-				if out == 1 then eq0 = {'=', b, {'-', x, a}} end -- b = x - a
+				if out == 0 then eq0 = {':=', a, {'-', x, b}} end -- a = x - b
+				if out == 1 then eq0 = {':=', b, {'-', x, a}} end -- b = x - a
 				--if out == 2 then eq0 = {'=', x, {'+', a, b}} end -- x = a + b
 			elseif f == '-' then
 				-- x = a - b
-				if out == 0 then eq0 = {'=', a, {'+', x, b}} end -- a = x - b
-				if out == 1 then eq0 = {'=', b, {'-', x, a}} end -- b = x + a
+				if out == 0 then eq0 = {':=', a, {'+', x, b}} end -- a = x - b
+				if out == 1 then eq0 = {':=', b, {'-', x, a}} end -- b = x + a
 				--if out == 2 then eq0 = {'=', x, {'-', a, b}} end -- x = a - b
 			elseif f == '*' then
 				-- x = a * b
-				if out == 0 then eq0 = {'=', a, {'/', x, b}} end -- a = x / b
-				if out == 1 then eq0 = {'=', b, {'/', x, a}} end -- b = x / a
+				if out == 0 then eq0 = {':=', a, {'/', x, b}} end -- a = x / b
+				if out == 1 then eq0 = {':=', b, {'/', x, a}} end -- b = x / a
 				--if out == 2 then eq0 = {'=', x, {'*', a, b}} end -- x = a * b
 			elseif f == '/' then
 				-- x = a / b
-				if out == 0 then eq0 = {'=', a, {'*', x, b}} end -- a = x * b
-				if out == 1 then eq0 = {'=', b, {'/', a, x}} end -- b = a / x
+				if out == 0 then eq0 = {':=', a, {'*', x, b}} end -- a = x * b
+				if out == 1 then eq0 = {':=', b, {'/', a, x}} end -- b = a / x
 				--if out == 2 then eq0 = {'=', x, {'/', a, b}} end -- x = a / b
 			elseif f == '^' then
 				-- x = a ^ b
-				if out == 0 then eq0 = {'=', a, {'^', x, {'/', '1', b}}} end -- a = x ^ (1 / a)
-				if out == 1 then eq0 = {'=', b, {'_', a, x}} end -- b = a _ x
+				if out == 0 then eq0 = {':=', a, {'^', x, {'/', '1', b}}} end -- a = x ^ (1 / a)
+				if out == 1 then eq0 = {':=', b, {'_', a, x}} end -- b = a _ x
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			elseif f == '||' then
 				-- x = a || b
 				-- a = x (0..(#x-#b))
-				if out == 0 then eq0 = {'=', a, {x, {'..', '0', {'-', {'#', x}, {'#',b}}}}} end
-				if out == 1 then eq0 = {'=', b, {x, {'..', {'#', a}, {'#', x}}}} end -- b = x (#a..#x)
+				if out == 0 then eq0 = {':=', a, {x, {'..', '0', {'-', {'#', x}, {'#',b}}}}} end
+				if out == 1 then eq0 = {':=', b, {x, {'..', {'#', a}, {'#', x}}}} end -- b = x (#a..#x)
 				--if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
 			else
 				if print_niet_isoleerbaar then
@@ -128,17 +128,17 @@ end
 local L,U = lisp,unlisp
 
 tests = {
-	{'(= a b)', 'b', '(= b a)'},
-	{'(= a b)', 'a', '(= a b)'},
+	{'(= a b)', 'b', '(:= b a)'},
+	{'(= a b)', 'a', '(:= a b)'},
 
-	{'(= 7 (+ (+ a 1) 2))', 'a', '(= a (- (- 7 2) 1))'},
-	{'(= (+ a b) c)', 'a', '(= a (- c b))'},
-	{'(= c (+ a b))', 'a', '(= a (- c b))'},
-	{'(= 6 (* a 3))', 'a', '(= a (/ 6 3))'},
-	{'(= b (* (/ a 2) c))', 'a', '(= a (* (/ b c) 2))'},
-	{'(= c (+ (* a 2) (* b 2)) c)', 'a', '(= a (/ (- c (* b 2)) 2))'}, -- c = a * 2 + b * 2. a?
+	{'(= 7 (+ (+ a 1) 2))', 'a', '(:= a (- (- 7 2) 1))'},
+	{'(= (+ a b) c)', 'a', '(:= a (- c b))'},
+	{'(= c (+ a b))', 'a', '(:= a (- c b))'},
+	{'(= 6 (* a 3))', 'a', '(:= a (/ 6 3))'},
+	{'(= b (* (/ a 2) c))', 'a', '(:= a (* (/ b c) 2))'},
+	{'(= c (+ (* a 2) (* b 2)) c)', 'a', '(:= a (/ (- c (* b 2)) 2))'}, -- c = a * 2 + b * 2. a?
 
-	{'(= a (- b))', 'b', '(= b (- a))'},
+	{'(= a (- b))', 'b', '(:= b (- a))'},
 }
 
 for i,test in ipairs(tests) do

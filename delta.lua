@@ -32,7 +32,7 @@ function delta(exp)
 	local a,b = fn and exp[2], fn and exp[3]
 
 	-- ∆ 3 = (start => 3)
-	if num then
+	if num or fn == '[]' then
 		return {'=>', 'start', exp}
 	end
 
@@ -44,6 +44,11 @@ function delta(exp)
 	-- ∆ (a en b) = (∆a unie ∆b)
 	if fn == 'en' then
 		return binop(staart(exp), unie)
+	end
+
+	-- ∆ (std-uit := b) = (std-uit-delta := ∆b)
+	if fn == ':=' and a == 'std-uit' then
+		return {':=', 'std-uit-delta', delta(b)}
 	end
 		
 	-- ∆ (a := b) = (∆a => (a := (a deltacomp ∆b)))
@@ -58,10 +63,26 @@ function delta(exp)
 		return {'co', delta(a), delta(b) }
 	end
 
-	-- ∆ (a = b) = (∆a en ∆b => (a = b))
+	-- ∆ (a || b) = (∆a of ∆b) => a || b
+	if fn == '||' then
+		return {'=>', {'of', delta(a), delta(b)}, {'||', a, b}}
+	end
+
+	-- ∆ (a = b) = (∆a of ∆b => (a = b))
 	if fn == '=' then
-		local als = {'en', delta(a), delta(b) }
+		local als = {'of', delta(a), delta(b) }
 		return {'=>', als, {'=', a, b}}
+	end
+
+	-- ∆ (a > b) = (∆a of ∆b ⇒ (a > b))
+	if fn == '>' then
+		local init =
+		{'=>',
+			{ 'of', 'start', {'en', {'of', delta(a), delta(b)}, {'=', a, b}} },
+			{ '>', a, b }
+		}
+			
+		return init
 	end
 
 	-- ∆ (a -> b) = a -> ∆b
@@ -77,6 +98,12 @@ function delta(exp)
 		}
 	end
 
+	-- ∆ (a ⇒ b)  = { }
+	if fn == '=>' then
+		local echt = {'=>', a, b}
+		return {'=>', {'of', delta(a), delta(b)}, echt}
+	end
+
 	-- ∆ (udp-uit p) = { udp-open(p) => ja, udp-schrijfbaar(p) => ja          }
 	if fn == 'udp-uit' then
 		return {'co',
@@ -86,7 +113,7 @@ function delta(exp)
 	end
 
 	-- ∆ udp-uit     = { p -> ∆ (udp-uit p)                                   }
-	if exp == 'udp-uit' then
+	if exp == 'udp-uit' or exp == 'std-uit' then
 		do return 'ja' end -- HIER
 		return {'->', '_p', delta({'udp-uit', '_p'}) }
 	end
@@ -95,7 +122,9 @@ function delta(exp)
 end
 
 function deltastroom(stroom)
+	if not stroom then return false end
 	local deltas = map(stroom, delta)
-	return binop(deltas, unie)
+	--return binop(deltas, cat)
+	return cat(deltas)
 end
 

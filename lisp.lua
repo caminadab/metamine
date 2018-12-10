@@ -35,8 +35,8 @@ isexp = exp
 
 function unparse_work(sexpr, maxlen, tabs, res)
 	if type(sexpr) == 'boolean' then
-		if sexpr then return color.cyan .. 'ja' .. color.white
-		else return color.cyan .. 'nee' .. color.white end
+		if sexpr then sexpr = color.cyan .. 'ja' .. color.white
+		else sepxr = color.cyan .. 'nee' .. color.white end
 	end
 	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
 	if type(sexpr) == 'function' then sexpr = color.cyan..tostring(sexpr)..color.white end

@@ -85,6 +85,8 @@ local fn = {
 		end
 		return unlisp(a)==unlisp(b)
 	end;
+	['>'] = function(a,b) return tonumber(a) > tonumber(b) end;
+	['<'] = function(a,b) return tonumber(a) < tonumber(b) end;
 	['!='] = function(a,b) return a ~= b end;
 	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
 	['..'] = function(a,b)
@@ -130,6 +132,9 @@ local fn = {
 			else return math.atan(a)
 		end
 	end;
+
+	['of'] = function(a,b) return a or b end;
+	['en'] = function(a,b) return a and b end;
 
 	['som'] = function(a)
 		local r = 0
@@ -231,21 +236,19 @@ function eval0(env,exp)
 	if atom(exp) then
 		-- magisch
 		local v = tonumber(exp) or env[exp]
-		if v == nil then
-			error('onbekend: "'..unlisp(exp)..'"')
-		end
+		--if v == nil then error('onbekend: "'..unlisp(exp)..'"') end
 		return v
 	else
-		if exp[1] == ':=' then
-			local a,b = exp[2],exp[3]
+		local f,a,b = exp[1],exp[2],exp[3]
+		if f == ':=' then
 			env[a] = eval0(env,b)
-			if a == 'stduit' then
+			if a == 'std-uit-delta' then
 				local data = env[a]
 				io.write(data)
 				io.flush()
 			end
 			return true
-		elseif exp[1] == '->' then
+		elseif f == '->' then
 			local arg = exp[2]
 			local fn = exp[3]
 			-- speciaal geval
@@ -284,9 +287,12 @@ function eval0(env,exp)
 			error('geen functie: '..unlisp(r)..' '..unlisp(exp))
 		end
 
+
 		-- functie
 		local t = {}
 		for i=2,#r do t[i-1] = r[i] end
+		--if verboos then print('  DOE',unlisp(exp),'= '..tostring(f(table.unpack(t)))) end
+
 		return f(table.unpack(t))
 	end
 end
@@ -446,13 +452,14 @@ function doe(stroom)
 	_G.print(freq..' Hz')
 	env.nu = 0
 	env.start = true
+	env['std-uit'] = {}
+	env.tik = true
 
 	while true do
 		for i,feit in ipairs(stroom) do
 			local fn,naam,exp = feit[1],feit[2],feit[3]
 			local f,a,b = feit[1],feit[2],feit[3]
 			io_write('DOE\t',unlisp(feit),'\t\t= ')
-			--print('DOE',leed(noem))
 
 			if fn == '=' or fn == ':=' then
 
@@ -494,13 +501,13 @@ function doe(stroom)
 			end
 
 			-- MAGISCHE VALUATIES
-			if naam == 'stduit' then
-			_G.print('JAAA')
+			if naam == 'std-uit-delta' then
 				local d = env[naam]
+				--if d then print(type(d), unlisp(d), #d, string.char(table.unpack(d))) end
 				if type(d) == 'table' then
-					d = string.char(table.unpack(env[naam]))
+					d = string.char(table.unpack(d))
 				end
-				io.write(d)
+				if d then io.write(d) end
 
 			elseif naam == 'udp-uit' then
 
