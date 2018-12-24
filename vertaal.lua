@@ -3,20 +3,10 @@ require 'lisp'
 
 require 'ontleed'
 require 'noem'
-require 'sorteer'
 require 'typeer'
 require 'uitrol'
 require 'vhgraaf'
-require 'ontrafel'
-require 'plan'
-require 'snoei'
 require 'delta'
-
-require 'js'
-
--- a := b => (start => a = b)
--- (a => b = c) => b = (a => c)
--- a += b => (beeld => a = a' + 1/60)
 
 function sorteer(kennis)
 	local kennis = deduceer(kennis)
@@ -32,7 +22,6 @@ function sorteer(kennis)
 	for pijl,naar in infostroom:topologisch(map) do
 		stroom[#stroom+1] = map[pijl]
 	end
-	--local beek = ontrafel(stroom)
 	return stroom
 end
 
@@ -88,21 +77,4 @@ function delta2(stroom)
 	return p
 end
 
-function componeer(...)
-	local fns = {...}
-	if #fns == 1 then
-		fns = fns[1]
-	end
-
-	return function (...)
-		local r = {...}
-		for i,fn in ipairs(fns) do
-			print('@', i-1, unlisp(r))
-			r = table.pack(fn(table.unpack(r)))
-			if r[1] == nil then return nil end
-		end
-		return table.unpack(r)
-	end
-end
-
-vertaal = componeer(ontleed, sorteer, snoei, deltastroom)--, plan)
+vertaal = componeer(ontleed, sorteer, deltastroom)

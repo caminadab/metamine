@@ -4,4 +4,5 @@ function oplos(kennis)
 	local stroom = sorteer(graaf)
 
 	for punt in stroom:topologisch() do
-
+	end
+end

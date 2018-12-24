@@ -10,9 +10,25 @@ function verschil(a,b)
 	return s
 end
 
-function unie(a,b)
-	local t = {}
-	for k,v in pairs(a) do t[k] = v end
-	for k,v in pairs(b) do t[k] = v end
-	return t
+function unie(...)
+	local t = {...}
+	if #t == 1 then t = t[1] end
+	local r = {}
+	for i,set in ipairs(t) do
+		for v in pairs(set) do
+			r[v] = true
+		end
+	end
+end
+
+function cat(...)
+	local tt = {...}
+	local r = {}
+	for i,t in ipairs(tt) do
+	log(t)
+		for i,v in ipairs(t) do
+			r[#r+1] = v
+		end
+	end
+	return r
 end

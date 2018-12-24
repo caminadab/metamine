@@ -1,3 +1,20 @@
+function componeer(...)
+	local fns = {...}
+	if #fns == 1 then
+		fns = fns[1]
+	end
+
+	return function (...)
+		local r = {...}
+		for i,fn in ipairs(fns) do
+			print('@', i-1, unlisp(r))
+			r = table.pack(fn(table.unpack(r)))
+			if r[1] == nil then return nil end
+		end
+		return table.unpack(r)
+	end
+end
+
 function curry(a,b)
 	return nil
 end
@@ -31,28 +48,6 @@ function setlijst(set)
 	local r = {}
 	for k in spairs(set) do
 		r[#r+1] = k
-	end
-	return r
-end
-
-function union(...)
-	local t = {...}
-	local r = {}
-	for i,set in ipairs(t) do
-		for v in pairs(set) do
-			r[v] = true
-		end
-	end
-end
-
-function cat(...)
-	local tt = {...}
-	local r = {}
-	for i,t in ipairs(tt) do
-	log(t)
-		for i,v in ipairs(t) do
-			r[#r+1] = v
-		end
 	end
 	return r
 end

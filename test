@@ -1,8 +1,6 @@
 #!/usr/bin/lua
+package.path = package.path .. ';bin/?.lua'
 test = true
-
---require 'doe'; print(1)
---require 'eval'; print(1)
 
 local bestanden = io.popen('ls *.lua')
 for bestand in bestanden:lines() do
@@ -10,21 +8,3 @@ for bestand in bestanden:lines() do
 	print(kort)
 	require(kort)
 end
-do return end
-require 'func'; print(1)
-require 'graaf'; print(1)
-require 'hypergraaf'; print(1)
-require 'isoleer'; print(1)
-require 'js'; print(1)
-require 'lex'; print(1)
-require 'lisp'; print(1)
-require 'love'; print(1)
-require 'noem'; print(1)
-require 'plan'; print(1)
-require 'sorteer'; print(1)
-require 'symbool'; print(1)
-require 'test'; print(1)
-require 'typeer'; print(1)
-require 'uitrol'; print(1)
-require 'util'; print(1)
-require 'vertaal'; print(1)
