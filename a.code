@@ -1,5 +1,0 @@
-;(nu > 1) ⇒ (stduit = "a")
-std-uit = (nu > 1 ⇒ [10])
-;udp-uit = 10101 → udp-in 10101
-nu : in
-

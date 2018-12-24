@@ -1,1 +1,0 @@
-Taal is een 

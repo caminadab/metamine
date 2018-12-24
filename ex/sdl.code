@@ -1,8 +1,0 @@
-kleur = [0, 1, 0]
-
-bal-data (0..32 xx 0..32) = kleur
-
-bal-foto = foto bal-data
-bal-pos = [100,100]
-bal = [bal-pos, bal-foto]
-fotos = [bal]

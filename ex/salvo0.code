@@ -1,7 +1,0 @@
-spelers = [1, 2]
-bal = 3
-cirkels = spelers || bal
-
-;uit = text cirkels
-
-uit = tekst 1
