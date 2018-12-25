@@ -83,7 +83,7 @@ int yylex() {
 		if (u == L'₃') { strcpy(token, "_3"); return I3; }
 		if (u == L'₄') { strcpy(token, "_4"); return I4; }
 
-		if (u == '×') { strcpy(token, "xx"); return CART; }
+		if (u == L'×') { strcpy(token, "xx"); return CART; }
 		if (u == L'→') { strcpy(token, "->"); return TO; }
 		if (u == L'⇒') { strcpy(token, "=>"); return DAN; }
 		if (u == L'≈') { strcpy(token, "~="); return ISB; }
@@ -148,8 +148,8 @@ int yylex() {
 		token[1] = 0;
 		id = c;
 
-		if (c == '|') id = DISJ;
-		if (c == '&') id = CONJ;
+		if (c == '|') id = '|';
+		if (c == '&') id = '&';
 	}
 
 	// naam

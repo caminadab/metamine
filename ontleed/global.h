@@ -1,4 +1,3 @@
-
 typedef struct fout fout;
 struct fout {
 	int lijn;

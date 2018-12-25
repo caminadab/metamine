@@ -78,3 +78,7 @@ function delta2(stroom)
 end
 
 vertaal = componeer(ontleed, sorteer, deltastroom)
+
+if test then
+	vertaal('a = 10')
+end

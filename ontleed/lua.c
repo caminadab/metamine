@@ -9,13 +9,31 @@
 extern void rapporteer(int t, char* str);
 extern void yyreset();
 
-void lua_pushnode(lua_State* L, node* node) {
+void lua_pushlisp(lua_State* L, node* node) {
 	if (node->exp) {
 		lua_newtable(L);
 		int i = 0;
 		for (struct node* n = node->first; n; n = n->next) {
-			lua_pushinteger(L, i+1);
-			lua_pushnode(L, n);
+			lua_pushinteger(L, i + 1);
+			lua_pushlisp(L, n);
+			lua_settable(L, -3);
+			i++;
+		}
+	} else {
+		lua_pushstring(L, node->data);
+	}
+}
+
+void lua_pushexp(lua_State* L, node* node) {
+	if (node->exp) {
+		lua_newtable(L);
+		int i = 0;
+		for (struct node* n = node->first; n; n = n->next) {
+			if (i == 0)
+				lua_pushliteral(L, "fn");
+			else
+				lua_pushinteger(L, i);
+			lua_pushexp(L, n);
 			lua_settable(L, -3);
 			i++;
 		}
@@ -30,6 +48,19 @@ void lua_pushfout(lua_State* L, fout fout) {
 	lua_setfield(L, -2, "lijn");
 	lua_pushstring(L, fout.bericht);
 	lua_setfield(L, -2, "bericht");
+}
+
+int lua_ontleed0(lua_State* L) {
+	// reset
+	yyreset();
+	const char* str = luaL_checkstring(L, 1);
+	in = str;
+	yyparse();
+	if (wortel)
+		lua_pushexp(L, wortel);
+	else
+		lua_pushliteral(L, "fout");
+	return 1;
 }
 
 // niet threadsafe lol
@@ -47,8 +78,9 @@ int lua_ontleed(lua_State* L) {
 	if (!wortel && foutlen == 0)
 		rapporteer(-2, "kon er niets van maken");
 
-	if (wortel)
-		lua_pushnode(L, wortel);
+	if (wortel) {
+		lua_pushlisp(L, wortel);
+	}
 	else {
 		lua_createtable(L, 0, 1);
 		lua_pushliteral(L, "fout");
@@ -86,6 +118,8 @@ int lua_ontleed(lua_State* L) {
 EXPORT int luaopen_ontleed(lua_State* L) {
 	lua_pushcfunction(L, lua_ontleed);
 	lua_setglobal(L, "ontleed");
+	lua_pushcfunction(L, lua_ontleed0);
+	lua_setglobal(L, "ontleed0");
 	return 1;
 }
 

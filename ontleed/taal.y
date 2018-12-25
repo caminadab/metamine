@@ -46,7 +46,6 @@
 %token END 0 "invoereinde"
 %token NEG '-'
 %token IS '='
-%token ONG '='
 %token GDGA ">="
 %token ISB "~="
 %token KDGA "<="
@@ -58,9 +57,6 @@
 %token EXOF "exof"
 %token NOCH "noch"
 
-%token DISJ '|'
-%token CONJ '&'
-
 /* %precedence NAAM TEKST */
 %left "=>"
 %left EN OF EXOF NOCH NIET
@@ -68,7 +64,6 @@
 %left ":=" "+=" "-=" "|=" "&="
 %left '@'
 %left ':'
-%left DISJ
 %left "->" 
 %left ','
 %left '<' '>' "<=" ">="
@@ -89,29 +84,30 @@
 %%
 
 input:
-	%empty							{ $$ = wortel = exp0(); }
-| input '\n'			
-| input exp '\n'			{ $$ = append($1, $2); }
-| input error '\n'		{ $$ = append($1, a("fout")); yyerrok; }
-|	error '\n'					{ $$ = a("fout"); yyerrok; }
-|	error 							{ $$ = a("fout"); yyerror; }
+	exp sep { $$ = wortel = $1; }
+|	block { $$ = wortel = $1; }
+|	error { $$ = wortel = a("fout"); yyerror; }
 ;
 
-/*
-subfeit:
-	'\t' feit '\n'
-
-subfeiten:
-	%empty							{ $$ = a("{}"); }
-|	subfeiten subfeit		{ $$ = append($1, $2); }
+block:
+	exp sep exp sep { $$ = exp3(a("&"), $1, $3); }
+|	block exp sep { $$ = append($1, $2); }
+|	block error sep { $$ = append($1, a("fout")); yyerrok; }
 ;
 
-set:
-		'{' '\n' subfeiten '\n' '}'
-*/
+/* Een of meer regeleinden */
+sep: '\n' | sep '\n' ;
 
-/*	| exp '=' set					{ $$ = exp3(a("="), $1, $3); }*/
-feit: exp;
+/*op:
+	'^' | '_' | '*' | '/' | '+' | '-'
+| '[' ']' | '{' '}'
+| "->" | "||" | ".." | "xx" | "=>"
+| '=' | "!=" | "~=" | '>' | '<' | ">=" | "<="
+| '|' | '&' | '#'
+| ":=" | "+=" | "-=" | "|=" | "&="
+| "en" | "of" | "exof" | "noch" | "niet"
+| '.' | '@' | ':' | ">>" | "<<"
+;*/
 
 single:
 	NAAM 
@@ -122,6 +118,8 @@ single:
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
 | single '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
+
+/*| '(' op ')'					{ $$ = $2; }*/
 
 | '(' '^' ')'       	{ $$ = a("^"); }
 | '(' '_' ')'       	{ $$ = a("_"); }
@@ -147,8 +145,8 @@ single:
 | '(' ">=" ')'				{ $$ = a(">="); }
 | '(' "<=" ')'				{ $$ = a("<="); }
 
-| '(' DISJ ')'				{ $$ = a("|"); }
-| '(' CONJ ')'				{ $$ = a("&"); }
+| '(' '&' ')'				{ $$ = a("|"); }
+| '(' '|' ')'				{ $$ = a("&"); }
 | '(' '#' ')'       	{ $$ = a("#"); }
 
 | '(' ":=" ')'				{ $$ = a(":="); }
@@ -199,8 +197,8 @@ exp:
 | exp "<=" exp				{ $$ = exp3(a("<="), $1, $3); }
 
 | '#' exp							{ $$ = _exp2(a("#"), $2); }
-| exp DISJ exp				{ $$ = exp3(a("|"), $1, $3); }
-| exp CONJ exp				{ $$ = exp3(a("&"), $1, $3); }
+| exp '|' exp				{ $$ = exp3(a("|"), $1, $3); }
+| exp '&' exp				{ $$ = exp3(a("&"), $1, $3); }
 
 | exp ":=" exp				{ $$ = exp3(a(":="), $1, $3); }
 | exp "+=" exp				{ $$ = exp3(a("+="), $1, $3); }
