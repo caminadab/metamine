@@ -5,6 +5,6 @@ test = true
 local bestanden = io.popen('ls *.lua')
 for bestand in bestanden:lines() do
 	local kort = bestand:sub(1,-5)
-	print(kort)
+	print('TEST',kort)
 	require(kort)
 end

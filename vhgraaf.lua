@@ -34,13 +34,16 @@ local function sorteer(hgraaf, van, naar)
 
 	-- verzamel begin
 	for punt in pairs(van) do
+		print('TEST BEGIN',punt)
 		for pijl in hgraaf:van(punt) do
 			nieuw[pijl] = true
 			print('BEGIN',pijl2tekst(pijl))
 		end
 	end
 	if not next(nieuw) then
+		_G.print('GEEN BEGIN GEVONDEN!')
 		_G.print(hgraaf:tekst())
+		_G.print()
 		return false,'geen begin gevonden'
 	end
 

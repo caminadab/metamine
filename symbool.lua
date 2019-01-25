@@ -28,6 +28,19 @@ function var(exp,t)
 	return t
 end
 
+function var(exp,c,t)
+	local t = t or {}
+	if not isfn(exp) then
+		if not c(exp) then t[exp] = true end
+	else
+		for k,v in pairs(exp) do
+			var(v,c,t)
+		end
+	end
+	return t
+end
+vars = var
+
 function val(exp,t)
 	local t = t or {}
 	if atom(exp) then
@@ -53,3 +66,26 @@ end
 function isexp(exp)
 	return type(exp) == 'table'
 end
+
+function substitueer(exp, van, naar)
+	if isatoom(exp) then
+		if exp == van then
+			return naar
+		else
+			return exp
+		end
+	else
+		local t = {}
+		for k,v in pairs(exp) do
+			t[k] = substitueer(v, van, naar)
+		end
+		local fn
+		if t.type == 'eq' then
+			fn = maakeq(t[1],t[2])
+		else
+			fn = maakfn(t)
+		end
+		return fn
+	end
+end
+

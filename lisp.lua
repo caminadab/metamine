@@ -265,3 +265,16 @@ function lisp(t)
 	end
 	return stack[1][1]
 end
+
+function maprec(waarde, map)
+	if type(waarde) == 'table' then
+		local r = {}
+		for i,v in ipairs(waarde) do
+			r[i] = maprec(v, map)
+		end
+		return r
+	else
+		return map(waarde)
+	end
+end
+

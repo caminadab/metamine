@@ -3,6 +3,14 @@ require 'isoleer'
 require 'symbool'
 require 'vhgraaf'
 
+local bieb = lisp [[
+(
+	(: getal in)
+	(: std-uit uit)
+	(: std-in in)
+)
+]]
+
 -- herschrijft vergelijkingen
 function deduceer(feiten)
 	local f = {}
@@ -13,7 +21,6 @@ function deduceer(feiten)
 			f[#f+1] = {':', c, 'getal'}
 		end
 	end
-	f[#f+1] = {':', '1', 'getal'}
 
 	-- vglen herschrijven
 	for i,feit in ipairs(feiten) do
@@ -26,16 +33,14 @@ function deduceer(feiten)
 	end
 
 	-- extra toevoegen
-	f[#f+1] = {':', 'getal', 'in'}
-	f[#f+1] = {':', 'std-uit', 'uit'}
-	f[#f+1] = {':', 'std-in', 'in'}
+	local f = cat(f, bieb)
+
+	--[[
 	f[#f+1] = {':', 'cat', 'in'}
 	f[#f+1] = {':', 'unie', 'in'}
 
 	f[#f+1] = {':', 'udp-in', 'in'}
 	f[#f+1] = {':', 'udp-uit', 'uit'}
-
-	--[[
 	f[#f+1] = {':', 'sin', 'in'}
 	f[#f+1] = {':', 'asin', 'in'}
 	f[#f+1] = {':', 'cos', 'in'}

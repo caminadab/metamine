@@ -149,14 +149,27 @@ function hton(num, len)
 	return string.char(table.unpack(n))
 end
 
-function set(list,b,...)
-	if b or type(list) ~= 'table' then
-		return set {list,b,...}
-	end
-	local s = {}
+function set(...)
+	local list = {...}
+	local s= {}
 	for i,v in ipairs(list) do
 		s[v] = true
 	end
+	setmetatable(s, {
+		__call = function(s,x) return s[x] end;
+		__tostring = function(s)
+			local t = { '{' }
+			for val in spairs(s) do
+				t[#t+1] = tostring(val)
+				t[#t+1] = ','
+			end
+			if t[#t] == ',' then
+				t[#t] = nil
+			end
+			t[#t+1] = '}'
+			return table.concat(t)
+		end;
+	})
 	return s
 end
 

@@ -1,6 +1,6 @@
 require 'ontleed'
 require 'deduceer'
-require 'oplos'
+--require 'oplos'
 require 'delta'
 
 --[[

@@ -1,0 +1,50 @@
+require 'noem'
+require 'lisp'
+
+function oplos(kennis, inn, uit)
+	_G.verboos = true
+	print('kennis', unlisp(kennis))
+	local kennis = deduceer(kennis)
+	local afh,map = berekenbaarheid(kennis)
+	local infostroom,fout = afh:sorteer(inn, uit)
+
+	if not infostroom then
+		return false,fout
+	end
+
+	-- terugmappen
+	local stroom = {}
+	for pijl,naar in infostroom:topologisch(map) do
+		stroom[#stroom+1] = map[pijl]
+	end
+
+	-- substitutie
+	-- pass 1
+	local waarden = {}
+	for i,vgl in ipairs(stroom) do
+		local f,a,b = unpack(vgl)
+		if vgl[1] == '=' then
+			waarden[a] = b
+		else
+			print('WAT TE DOEN MET '..f..' '..unlisp(vgl))
+		end
+	end
+
+	-- pass 2
+	local diepewaarden = {}
+	for naam,waarde in pairs(waarden) do
+		diepewaarden[naam] = maprec(v, function (a) return waarden[a] end)
+	end
+
+	print('diep',unlisp(diepewaarden))
+
+	return diepewaarden
+end
+
+
+if test then
+	require 'ontleed'
+	assert(oplos(ontleed('a = b\n'), 'a', 'b') == 'b')
+	--function verwacht(a) if not a then print("FOUT!") end end
+	--verwacht(vertaal('std-uit = [69,10]\n') == ontleed('std-uit → (start ⇒ [69,10])\n'))
+end
