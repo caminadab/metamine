@@ -1,5 +1,6 @@
 require 'exp'
 require 'util'
+local print = function() end
 
 -- fn = (n:tekst,p:exp[]) : exp
 -- atoom: term
@@ -8,18 +9,19 @@ require 'util'
 -- ass: naam → term
 -- verenig: eqs → ass
 function verenig(eqs,isconstant)
+	if A then print = _G.print end
 	local isconstant = isconstant or tonumber
 	print()
 	local beter = true
 	local uit = {}
 	repeat
-		print('NU',eqs)
 		beter = false
 		for eq in pairs(eqs) do
 			local L,R = eq[1],eq[2]
+
 			-- verwijder
 			if L == R then
-				print('verwijder',eq,eq.l,eq.r)
+				print('verwijder',eq)
 				eqs[eq] = nil
 				beter = true
 				break
@@ -34,8 +36,16 @@ function verenig(eqs,isconstant)
 					local r = R[i]
 					local eq = maakeq(l,r)
 					eqs[eq] = true
-					print('  +',eq)
+					print('  dus',eq)
 				end
+				beter = true
+				break
+			end
+
+			-- verwissel
+			if (isfn(L) or isconstant(L)) and isatoom(R) and not isconstant(R) then
+				print('verwissel',eq)
+				eq[2],eq[1] = eq[1],eq[2]
 				beter = true
 				break
 			end
@@ -49,14 +59,6 @@ function verenig(eqs,isconstant)
 			if isconstant(L) and isconstant(R) and R ~= L then
 				print('conflict',eq)
 				return false
-			end
-
-			-- verwissel
-			if isfn(L) and isatoom(R) then
-				print('verwissel',eq)
-				eq[2],eq[1] = eq[1],eq[2]
-				beter = true
-				break
 			end
 
 			-- verifieer
@@ -74,11 +76,12 @@ function verenig(eqs,isconstant)
 				print('elimineer',eq)
 				local x,t = L,R
 				uit[x] = t
-				print('  UIT',tostring(x)..' -> '..tostring(t))
+				print('  uit',tostring(x)..' -> '..tostring(t))
 				local vers = set()
 				for eq in pairs(eqs) do
-					print('  substitueer',eq,tostring(x)..' := '..tostring(t))
-					local eq = substitueer(eq,x,t)
+					local eq0 = substitueer(eq,x,t)
+					print('  substitueer',eq,tostring(x)..' := '..tostring(t),eq0)
+					local eq = eq0
 					vers[eq] = true
 				end
 				eqs = vers
@@ -105,7 +108,7 @@ if test then
 	local a = set(aa)
 	assert(not next(verenig(a)))
 
-	-- sin(2) ~= cos(2)
+	-- sin(2) ≠ cos(2)
 	local a = maakfn('sin','2')
 	local b = maakfn('cos','2')
 	local s = set(maakeq(a,b))
@@ -117,11 +120,17 @@ if test then
 	print(s)
 	assert(verenig(s) == false)
 
-	-- a > 0:  a := (_ > 0) ⇒ a)
+	-- a > 0:  a := (_ > 0) ⇒ a
 
 	-- fout
 	local a = maakeq('x', '2')
 	local b = maakeq('x', '3')
+	local s = set(a,b)
+	assert(verenig(s) == false)
+
+	-- fout 2
+	local a = maakeq('x', '3')
+	local b = maakeq('2', 'x')
 	local s = set(a,b)
 	assert(verenig(s) == false)
 

@@ -1,6 +1,6 @@
 require 'ontleed'
 require 'deduceer'
---require 'oplos'
+require 'oplos'
 require 'delta'
 
 --[[
@@ -23,4 +23,8 @@ bereken-strekking
 Berekenbaarheid onderscheidt waarden van kennis
 ]]
 
-vertaal = componeer(ontleed, deduceer, oplos, delta)
+vertaal = componeer(ontleed, --[[deduceer,]] oplos, delta)
+
+if test then
+	print('VERTAAL')
+end

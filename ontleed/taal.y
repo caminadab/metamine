@@ -51,9 +51,9 @@
 %token KDGA "<="
 %token OUD '\''
 %token TAB '\t'
-%token EN "en"
-%token OF "of"
-%token NIET "niet"
+%token EN "/\\"
+%token OF "\\/"
+%token NIET "!"
 %token EXOF "exof"
 %token NOCH "noch"
 
@@ -90,7 +90,7 @@ input:
 ;
 
 block:
-	exp sep exp sep { $$ = exp3(a("&"), $1, $3); }
+	exp sep exp sep { $$ = exp3(a("/\\"), $1, $3); }
 |	block exp sep { $$ = append($1, $2); }
 |	block error sep { $$ = append($1, a("fout")); yyerrok; }
 ;
@@ -206,11 +206,11 @@ exp:
 | exp "|=" exp				{ $$ = exp3(a("|="), $1, $3); }
 | exp "&=" exp				{ $$ = exp3(a("&="), $1, $3); }
 
-| exp "en" exp				{ $$ = exp3(a("en"), $1, $3); }
-| exp "of" exp				{ $$ = exp3(a("of"), $1, $3); }
-| exp "exof" exp			{ $$ = exp3(a("exof"), $1, $3); }
+| exp "/\\" exp				{ $$ = exp3(a("/\\"), $1, $3); }
+| exp "\\/" exp				{ $$ = exp3(a("\\/"), $1, $3); }
+| exp "exof" exp			{ $$ = exp3(a("xof"), $1, $3); }
 | exp "noch" exp			{ $$ = exp3(a("noch"), $1, $3); }
-| "niet" exp					{ $$ = _exp2(a("niet"), $2); }
+| "!" exp					{ $$ = _exp2(a("!"), $2); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 | exp '@' exp       	{ $$ = exp3(a("@"), $1, $3); }

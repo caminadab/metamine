@@ -97,11 +97,13 @@ int yylex() {
 		if (u == L'∪' ) { strcpy(token, "unie"); return NAAM; }
 		if (u == L'∩') { strcpy(token, "intersectie"); return NAAM; }
 		if (u == L'∅') { strcpy(token, "niets"); return NAAM; }
-		if (u == L'∧') { strcpy(token, "en"); return NAAM; }
-		if (u == L'∨') { strcpy(token, "of"); return NAAM; }
+		if (u == L'∧') { strcpy(token, "/\\"); return EN; }
+		if (u == L'∨') { strcpy(token, "\\/"); return OF; }
 		if (u == L'√') { strcpy(token, "wortel"); return NAAM; }
 		if (u == L'∐') { strcpy(token, "co"); return NAAM; }
 		if (u == L'∏') { strcpy(token, "dis"); return NAAM; }
+		if (u == L'¬') { strcpy(token, "!"); return NAAM; }
+		
 		printf("ONGELDIG UNICODE TEKEN ((%x))\n", u);
 	}
 

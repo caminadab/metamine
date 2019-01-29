@@ -10,6 +10,14 @@ function log(...)
 	print(s)
 end
 
+function see(t)
+	if type(t) == 'table' then
+		for k,v in pairs(t) do print(k,v) end
+	else
+		print(t)
+	end
+end
+
 function file(name, data)
 	if not data then
 		local f = io.open(name, 'r')

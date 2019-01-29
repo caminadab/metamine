@@ -53,6 +53,9 @@ void lua_pushfout(lua_State* L, fout fout) {
 int lua_ontleed0(lua_State* L) {
 	// reset
 	yyreset();
+	//const char* str = luaL_checkstring(L, 1);
+	lua_pushliteral(L, "\n");
+	lua_concat(L, 2);
 	const char* str = luaL_checkstring(L, 1);
 	in = str;
 	yyparse();
