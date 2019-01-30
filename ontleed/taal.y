@@ -54,6 +54,7 @@
 %token EN "/\\"
 %token OF "\\/"
 %token NIET "!"
+%token JOKER "_"
 %token EXOF "exof"
 %token NOCH "noch"
 
@@ -78,7 +79,7 @@
 %right '^' '_'
 %left OUD
 %left '.'
-%nonassoc '%' KWADRAAT M0 M1 M2 M3 M4 I0 I1 I2 I3 I4
+%nonassoc '%' M0 M1 M2 M3 M4 I0 I1 I2 I3 I4
 %left NAAM TEKST
 
 %%
@@ -113,7 +114,8 @@ single:
 	NAAM 
 | TEKST								{ $$ = tekst($1); }
 | single '%'					{ $$ = _exp2(a("%"), $1); }
-| single KWADRAAT			{ $$ = exp3(a("^"), $1, a("2")); }
+| single M2						{ $$ = exp3(a("^"), $1, a("2")); }
+| single M3						{ $$ = exp3(a("^"), $1, a("3")); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }

@@ -14,11 +14,9 @@ function oplos(exp)
 end
 
 if test then
-require 'util'
+	require 'util'
 	require 'ontleed'
-	print()
-	print()
-	print('# OPLOS')
+
 	assert(oplos(ontleed0('a = 2')).a == '2')
 
 	-- b = 2 + 2
@@ -36,4 +34,5 @@ require 'util'
 	assert(v)
 	assert(tostring(v.b) == '2',
 		'v.b = '..tostring(v.b)..' ≠ 2')
+	
 end

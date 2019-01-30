@@ -26,5 +26,4 @@ Berekenbaarheid onderscheidt waarden van kennis
 vertaal = componeer(ontleed, --[[deduceer,]] oplos, delta)
 
 if test then
-	print('VERTAAL')
 end

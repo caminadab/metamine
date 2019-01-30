@@ -43,16 +43,14 @@ int yylex() {
 	if (c & 0x80) {
 		uint32_t u = 0;
 		// 2 bytes
-		if ((c & 0xE0) == 0x6) {
-			puts("2");
-			u |= (c & 0x1F) << 6;
+		if ((c & 0xE0) == 0xC0u) {
+			u |= (c & 0x1Fu) << 6;
 			c = *in++;
-			u |= (c & 0x3F)  << 0;
+			u |= (c & 0x3Fu)  << 0;
 		}
 		
 		// 3 bytes
 		else if ((c & 0xF0) == 0xE0u) {
-			puts("3");
 			u |= (c & 0x0F) << 12;
 			c = *in++;
 			u |= (c & 0x3F) << 6;
@@ -61,8 +59,7 @@ int yylex() {
 		}
 
 		// 4 bytes
-		else if ((c & 0xF8) == 0xF0) {
-			puts("4");
+		else if ((c & 0xF8) == 0xF0u) {
 			u |= (c & 0x7) << 18;
 			c = *in++; // byte 2
 			u |= (c & 0x3F) << 12;
@@ -72,37 +69,40 @@ int yylex() {
 			u |= (c & 0x3F) << 0;
 		}
 
-		if (u == L'⁰') { strcpy(token, "^0"); return M0; }
-		if (u == L'¹') { strcpy(token, "^1"); return M1; }
-		if (u == L'²') { strcpy(token, "^2"); return M2; }
-		if (u == L'³') { strcpy(token, "^3"); return M3; }
-		if (u == L'⁴') { strcpy(token, "^4"); return M4; }
-		if (u == L'₀') { strcpy(token, "_0"); return I0; }
-		if (u == L'₁') { strcpy(token, "_1"); return I1; }
-		if (u == L'₂') { strcpy(token, "_2"); return I2; }
-		if (u == L'₃') { strcpy(token, "_3"); return I3; }
-		if (u == L'₄') { strcpy(token, "_4"); return I4; }
+		if (u == L'⁰') { yylval = a(strcpy(token, "^0")); return M0; }
+		if (u == L'¹') { yylval = a(strcpy(token, "^1")); return M1; }
+		if (u == L'²') { yylval = a(strcpy(token, "^2")); return M2; }
+		if (u == L'³') { yylval = a(strcpy(token, "^3")); return M3; }
+		if (u == L'⁴') { yylval = a(strcpy(token, "^4")); return M4; }
+		if (u == L'₀') { yylval = a(strcpy(token, "_0")); return I0; }
+		if (u == L'₁') { yylval = a(strcpy(token, "_1")); return I1; }
+		if (u == L'₂') { yylval = a(strcpy(token, "_2")); return I2; }
+		if (u == L'₃') { yylval = a(strcpy(token, "_3")); return I3; }
+		if (u == L'₄') { yylval = a(strcpy(token, "_4")); return I4; }
 
-		if (u == L'×') { strcpy(token, "xx"); return CART; }
-		if (u == L'→') { strcpy(token, "->"); return TO; }
-		if (u == L'⇒') { strcpy(token, "=>"); return DAN; }
-		if (u == L'≈') { strcpy(token, "~="); return ISB; }
-		if (u == L'≥') { strcpy(token, ">="); return GDGA; }
-		if (u == L'≤') { strcpy(token, "<="); return KDGA; }
-		if (u == L'≠') { strcpy(token, "!="); return ISN; }
-		if (u == L'∘') { strcpy(token, "@"); return '@'; }
-		if (u == L'∆') { strcpy(token, "delta"); return KWADRAAT; }
-		if (u == L'τ') { strcpy(token, "tau"); return KWADRAAT; }
-		if (u == L'∑' ) { strcpy(token, "som"); return NAAM; }
-		if (u == L'∪' ) { strcpy(token, "unie"); return NAAM; }
-		if (u == L'∩') { strcpy(token, "intersectie"); return NAAM; }
-		if (u == L'∅') { strcpy(token, "niets"); return NAAM; }
-		if (u == L'∧') { strcpy(token, "/\\"); return EN; }
-		if (u == L'∨') { strcpy(token, "\\/"); return OF; }
-		if (u == L'√') { strcpy(token, "wortel"); return NAAM; }
-		if (u == L'∐') { strcpy(token, "co"); return NAAM; }
-		if (u == L'∏') { strcpy(token, "dis"); return NAAM; }
-		if (u == L'¬') { strcpy(token, "!"); return NAAM; }
+		if (u == L'×') { yylval = a(strcpy(token, "xx")); return CART; }
+		if (u == L'→') { yylval = a(strcpy(token, "->")); return TO; }
+		if (u == L'⇒') { yylval = a(strcpy(token, "=>")); return DAN; }
+		if (u == L'≈') { yylval = a(strcpy(token, "~=")); return ISB; }
+		if (u == L'≥') { yylval = a(strcpy(token, ">=")); return GDGA; }
+		if (u == L'≤') { yylval = a(strcpy(token, "<=")); return KDGA; }
+		if (u == L'≠') { yylval = a(strcpy(token, "!=")); return ISN; }
+		if (u == L'∘') { yylval = a(strcpy(token, "@")); return '@'; }
+		if (u == L'∆') { yylval = a(strcpy(token, "delta")); return NAAM; }
+		if (u == L'τ') { yylval = a(strcpy(token, "tau")); return NAAM; }
+		if (u == L'∑' ) { yylval = a(strcpy(token, "som")); return NAAM; }
+		if (u == L'∪' ) { yylval = a(strcpy(token, "unie")); return NAAM; }
+		if (u == L'∩') { yylval = a(strcpy(token, "intersectie")); return NAAM; }
+		if (u == L'∅') { yylval = a(strcpy(token, "niets")); return NAAM; }
+		if (u == L'∧') { yylval = a(strcpy(token, "/\\")); return EN; }
+		if (u == L'∨') { yylval = a(strcpy(token, "\\/")); return OF; }
+		if (u == L'√') { yylval = a(strcpy(token, "wortel")); return NAAM; }
+		if (u == L'∐') { yylval = a(strcpy(token, "co")); return NAAM; }
+		if (u == L'∏') { yylval = a(strcpy(token, "dis")); return NAAM; }
+		if (u == L'¬') { yylval = a(strcpy(token, "!")); return NIET; }
+		if (u == L'·') { yylval = a(strcpy(token, "*")); return '*'; }
+		if (u == L'★') { yylval = a(strcpy(token, "_")); return NAAM; }
+		if (u == L'☆') { yylval = a(strcpy(token, "__")); return NAAM; }
 		
 		printf("ONGELDIG UNICODE TEKEN ((%x))\n", u);
 	}
