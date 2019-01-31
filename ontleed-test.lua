@@ -28,5 +28,10 @@ if test then
 
 	local a = toexp(ontleed0('f = ★ + ☆'))
 	assert(tostring(a) == '=(f +(_ __))', tostring(a))
-	
+
+	local a = toexp(ontleed0('[b₀, b₁]'))
+	assert(tostring(a) == '[](b(0) b(1))', tostring(a))
+
+	local a = toexp(ontleed0('f⁻¹'))
+	assert(tostring(a) == '^(f -1)', tostring(a))
 end

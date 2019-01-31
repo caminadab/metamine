@@ -1,6 +1,7 @@
 require 'verenig'
 
 function oplos(exp)
+	-- sets van vergelijkingen
 	if exp.fn == [[=]] or exp.fn == [[/\]] then
 		local eqs
 		if exp.fn == [[=]] then

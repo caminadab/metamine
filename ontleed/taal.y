@@ -36,6 +36,7 @@
 %token TEKST
 %token DAN "=>"
 %token TO "->"
+%token MAPLET "-->"
 %token ASS ":="
 %token ISN "!="
 %token INC "+="
@@ -65,7 +66,7 @@
 %left ":=" "+=" "-=" "|=" "&="
 %left '@'
 %left ':'
-%left "->" 
+%left "->" "-->"
 %left ','
 %left '<' '>' "<=" ">="
 %left '&' '|'
@@ -79,7 +80,7 @@
 %right '^' '_'
 %left OUD
 %left '.'
-%nonassoc '%' M0 M1 M2 M3 M4 I0 I1 I2 I3 I4
+%nonassoc '%' INV M0 M1 M2 M3 M4 I0 I1 I2 I3 I4
 %left NAAM TEKST
 
 %%
@@ -114,8 +115,16 @@ single:
 	NAAM 
 | TEKST								{ $$ = tekst($1); }
 | single '%'					{ $$ = _exp2(a("%"), $1); }
+| single I0						{ $$ = _exp2($1, a("0")); }
+| single I1						{ $$ = _exp2($1, a("1")); }
+| single I2						{ $$ = _exp2($1, a("2")); }
+| single I3						{ $$ = _exp2($1, a("3")); }
+| single INV					{ $$ = exp3(a("^"), $1, a("-1")); }
+| single M0						{ $$ = exp3(a("^"), $1, a("0")); }
+| single M1						{ $$ = exp3(a("^"), $1, a("1")); }
 | single M2						{ $$ = exp3(a("^"), $1, a("2")); }
 | single M3						{ $$ = exp3(a("^"), $1, a("3")); }
+| single M4						{ $$ = exp3(a("^"), $1, a("4")); }
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }

@@ -69,6 +69,8 @@ int yylex() {
 			u |= (c & 0x3F) << 0;
 		}
 
+		// + 2 om de ¹ te skippen
+		if (u == L'⁻') { in += 2; yylval = a(strcpy(token, "^-1")); return INV; }
 		if (u == L'⁰') { yylval = a(strcpy(token, "^0")); return M0; }
 		if (u == L'¹') { yylval = a(strcpy(token, "^1")); return M1; }
 		if (u == L'²') { yylval = a(strcpy(token, "^2")); return M2; }
@@ -82,6 +84,7 @@ int yylex() {
 
 		if (u == L'×') { yylval = a(strcpy(token, "xx")); return CART; }
 		if (u == L'→') { yylval = a(strcpy(token, "->")); return TO; }
+		if (u == L'↦') { yylval = a(strcpy(token, "-->")); return MAPLET; }
 		if (u == L'⇒') { yylval = a(strcpy(token, "=>")); return DAN; }
 		if (u == L'≈') { yylval = a(strcpy(token, "~=")); return ISB; }
 		if (u == L'≥') { yylval = a(strcpy(token, ">=")); return GDGA; }
@@ -90,6 +93,7 @@ int yylex() {
 		if (u == L'∘') { yylval = a(strcpy(token, "@")); return '@'; }
 		if (u == L'∆') { yylval = a(strcpy(token, "delta")); return NAAM; }
 		if (u == L'τ') { yylval = a(strcpy(token, "tau")); return NAAM; }
+		if (u == L'∞') { yylval = a(strcpy(token, "oneindig")); return NAAM; }
 		if (u == L'∑' ) { yylval = a(strcpy(token, "som")); return NAAM; }
 		if (u == L'∪' ) { yylval = a(strcpy(token, "unie")); return NAAM; }
 		if (u == L'∩') { yylval = a(strcpy(token, "intersectie")); return NAAM; }
@@ -98,11 +102,14 @@ int yylex() {
 		if (u == L'∨') { yylval = a(strcpy(token, "\\/")); return OF; }
 		if (u == L'√') { yylval = a(strcpy(token, "wortel")); return NAAM; }
 		if (u == L'∐') { yylval = a(strcpy(token, "co")); return NAAM; }
-		if (u == L'∏') { yylval = a(strcpy(token, "dis")); return NAAM; }
+		if (u == L'∏') { yylval = a(strcpy(token, "prod")); return NAAM; }
 		if (u == L'¬') { yylval = a(strcpy(token, "!")); return NIET; }
 		if (u == L'·') { yylval = a(strcpy(token, "*")); return '*'; }
 		if (u == L'★') { yylval = a(strcpy(token, "_")); return NAAM; }
 		if (u == L'☆') { yylval = a(strcpy(token, "__")); return NAAM; }
+		if (u == L'ℝ') { yylval = a(strcpy(token, "getal")); return NAAM; }
+		if (u == L'ℕ') { yylval = a(strcpy(token, "nat")); return NAAM; }
+		if (u == L'ℤ') { yylval = a(strcpy(token, "int")); return NAAM; }
 		
 		printf("ONGELDIG UNICODE TEKEN ((%x))\n", u);
 	}
