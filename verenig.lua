@@ -8,9 +8,9 @@ local print = function() end
 -- eqs: (a:exp,b:exp){}
 -- ass: naam → term
 -- verenig: eqs → ass
-function verenig(eqs,isconstant)
+function verenig(eqs,isinvoer)
 	if A then print = _G.print end
-	local isconstant = isconstant or tonumber
+	local isinvoer = isinvoer or tonumber
 	print()
 	local beter = true
 	local uit = {}
@@ -43,7 +43,7 @@ function verenig(eqs,isconstant)
 			end
 
 			-- verwissel
-			if (isfn(L) or isconstant(L)) and isatoom(R) and not isconstant(R) then
+			if (isfn(L) or isinvoer(L)) and isatoom(R) and not isinvoer(R) then
 				print('verwissel',eq)
 				eq[2],eq[1] = eq[1],eq[2]
 				beter = true
@@ -51,23 +51,21 @@ function verenig(eqs,isconstant)
 			end
 
 			-- conflict
-			if isfn(eq[1]) and (L.fn ~= R.fn
-					or #eq[1] ~= #eq[2]) then
+			if isfn(eq[1]) and (L.fn ~= R.fn or L ~= R) then
 				print('conflict',eq)
-				return false
+				return false, tostring(toexp(L))..' ≠ '..tostring(toexp(R))
 			end
-			if isconstant(L) and isconstant(R) and R ~= L then
+			if isinvoer(L) and isinvoer(R) and R ~= L then
 				print('conflict',eq)
-				return false
+				return false, L..' ≠ '..R
 			end
 
 			-- verifieer
 			if isatoom(L) then
 				local x,t = L,R
-				local v = vars(t,tonumber)
-				if v[x] then
-					print('verifeer',x..' in vars( '..tostring(t)..' )')
-					return false
+				if bevat(t,x) then
+					print('verifeer',tostring(t)..' bevat '..tostring(x))
+					return false, tostring(t)..' bevat '..tostring(x)
 				end
 			end
 				
@@ -77,14 +75,25 @@ function verenig(eqs,isconstant)
 				local x,t = L,R
 				uit[x] = t
 				print('  uit',tostring(x)..' -> '..tostring(t))
+
+				-- substitueer vergelijkingen
 				local vers = set()
 				for eq in pairs(eqs) do
 					local eq0 = substitueer(eq,x,t)
 					print('  substitueer',eq,tostring(x)..' := '..tostring(t),eq0)
-					local eq = eq0
-					vers[eq] = true
+					vers[eq0] = true
 				end
 				eqs = vers
+
+				-- substitueer waarderingen
+				local vers_uit = set()
+				for naam,term in pairs(uit) do
+					local term0 = substitueer(term,x,t)
+					print('  substitueer',term,tostring(x)..' := '..tostring(t),term0)
+					vers_uit[naam] = term0
+				end
+				uit = vers_uit
+
 				beter = true
 				break
 			end
@@ -126,12 +135,16 @@ if test then
 	local a = maakeq('x', '2')
 	local b = maakeq('x', '3')
 	local s = set(a,b)
-	assert(verenig(s) == false)
+	local v,f = verenig(s)
+	assert(not verenig(s))
+	assert(f)
 
 	-- fout 2
 	local a = maakeq('x', '3')
 	local b = maakeq('2', 'x')
 	local s = set(a,b)
-	assert(verenig(s) == false)
+	local v,f = verenig(s)
+	assert(not verenig(s))
+	assert(f)
 
 end

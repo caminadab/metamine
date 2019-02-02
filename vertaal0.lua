@@ -1,7 +1,7 @@
+require 'func'
 require 'ontleed'
-require 'deduceer'
 require 'oplos'
-require 'delta'
+require 'doe0'
 
 --[[
 code
@@ -23,7 +23,8 @@ bereken-strekking
 Berekenbaarheid onderscheidt waarden van kennis
 ]]
 
-vertaal = componeer(ontleed, --[[deduceer,]] oplos, delta)
+--vertaal = componeer(ontleed, [deduceer, oplos, delta)
+vertaal = componeer(ontleed, oplos, doe0)
 
 if test then
 end

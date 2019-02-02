@@ -1,9 +1,18 @@
+; compileert
+f = ★/2 ∘ sin
+a = f⁻¹(2)
+
+a= (sin⁻¹ ∘ ★·2) 2
+
 een substititutie : { x:var → t:term }
 verenig : i ↦ i*2
 
 a = 3
 (a = b) ⇒ 3
 
+; dubbelzinnig:
+★² ; macht of dubbele compositie?
+x → x²
 
 a > 0  ⇒  a ↦ ( (a>0) ⇒ a' )
 a = 1  ⇒  a ↦ 1
@@ -23,6 +32,10 @@ f: ℝ² → ℝ
 f: RR -> R
 a ⇒ b
 
+			 ⎧ x > 3 ⇒ 0
+f(x) = ⎨
+			 ⎩ 
+
 ℝ RR
 → ->
 · *
@@ -31,7 +44,6 @@ a ⇒ b
 a · b = c
 a x b ≥ c
 a * b ≠ c
-
 
 f(★) = 3
 f(*) = 3

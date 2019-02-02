@@ -9,7 +9,10 @@ function oplos(exp)
 		else
 			eqs = set(table.unpack(exp))
 		end
-		return verenig(eqs)
+		local function isinvoer(val)
+			return tonumber(val) or val == '_'
+		end
+		return verenig(eqs, isinvoer)
 	end
 	return exp
 end
@@ -35,5 +38,26 @@ if test then
 	assert(v)
 	assert(tostring(v.b) == '2',
 		'v.b = '..tostring(v.b)..' ≠ 2')
-	
+
+	local v = oplos(toexp(ontleed0('f = g⁻¹ ∧ g = ★ - 3')))
+	print(toexp(ontleed0('f = g⁻¹ ∧ g = ★ - 3')))
+	assert(v)
+	assert(tostring(v.f) == 'inverteer(-(_ 3))', tostring(v.f))
+
+	local s = [[
+f = ★/2 ∘ sin
+a = f⁻¹(2)
+	]]
+	local c = oplos(toexp(ontleed0(s)))
+
+	for i=1,10 do
+		local s = [[
+standaarduitvoer = "a = " || tekst(a) || [10]
+a = f(3)
+f = sin ∘ cos
+		]]
+		local m = oplos(toexp(ontleed0(s)))
+		assert(m.standaarduitvoer)
+	end
+
 end

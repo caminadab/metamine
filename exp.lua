@@ -1,12 +1,29 @@
+function isfn(exp)
+	return type(exp) == 'table' and exp.fn
+end
+function isatoom(exp)
+	return type(exp) == 'string'
+end
+
 expmt = {}
 
 function expmt:__tostring()
 	local params = {}
 	for k,param in pairs(self) do
+		if type(param) == 'function' then
+			param = 'FUNC'
+		end
 		params[k] = tostring(param)
 	end
 	-- =(a,b)
-	return tostring(params.fn)..'('..table.concat(params,' ')..')'
+
+	local fn
+	if isfn(self.fn) then
+		fn = '('..tostring(params.fn)..')'
+	else
+		fn = tostring(params.fn)
+	end
+	return fn..'('..table.concat(params,' ')..')'
 end
 
 function expmt:__eq(ander)
@@ -23,15 +40,19 @@ function expmt:__eq(ander)
 	return true
 end
 
-function isfn(exp)
-	return type(exp) == 'table' and exp.fn
-end
-function isatoom(exp)
-	return type(exp) == 'string'
+function bevat(exp, naam)
+	if isatoom(exp) then
+		return exp == naam
+	else
+		for i,v in pairs(exp) do
+			if bevat(v,naam) then return true end
+		end
+		return false
+	end
 end
 
 function toexp(exp)
-	if type(exp) == 'string' then return exp end
+	if type(exp) ~= 'table' then return exp end
 	-- a()
 	-- 2 ((+) ∘ (*)) 3
 	-- (∘(+ *))(3,2)
@@ -64,4 +85,10 @@ function maakeq(l,r)
 		__eq = expmt.__eq;
 	})
 	return eq
+end
+
+
+if test then
+	local a = toexp {fn = '+', 'a', '2'}
+	assert(bevat(a, 'a'))
 end

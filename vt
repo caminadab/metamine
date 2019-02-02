@@ -5,7 +5,7 @@ require 'getopt'
 require 'lisp'
 
 require 'vertaal0'
-require 'doe'
+require 'doe0'
 require 'rapport'
 
 local opt,bronnen = getopt({...}, "u")
@@ -44,7 +44,8 @@ if opt.s or opt.syntaxis then
 	verboos = true
 end
 
-local code = file(bronnen[1])
+local ok,code = pcall(file, bronnen[1])
+if not ok then print('bestand '..bronnen[1]..' niet gevonden') ; return end
 
 -- rapporteer proces
 if opt.r or opt.rapport then
@@ -53,19 +54,25 @@ if opt.r or opt.rapport then
 end
 
 
-local plan = vertaal(code, 'in', 'uit')
+--local plan = vertaal(code, 'in', 'uit')
+local asb = toexp(ontleed0(code))
+assert(asb, 'syntaxfout')
+local map,fout = oplos(asb)
+assert(map, 'logicafout: '..tostring(fout))
+local plan = map.standaarduitvoer
+
 local uit
-		
 if opt.d or opt.doe then
-	uit = doe(plan)
+	uit = string.char(table.unpack(doe0(plan)))
 else
-	uit = bouw(plan)
+	--uit = bouw(plan)
+	uit = tostring(toexp(plan))..'\n'
 end
-uit = unlisp(uit)
+--uit = unlisp(uit)
 
 local u = opt.u or opt.uitvoer
 if u then
 	file(u, uit)
 else
-	print(unlisp(uit))
+	io.write(uit)
 end

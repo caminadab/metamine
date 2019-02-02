@@ -1,5 +1,4 @@
-require 'ontleed'
-require 'exp'
+require 'ontleed' require 'exp'
 
 if test then
 	local a = ontleed0('a = 10')
@@ -33,5 +32,25 @@ if test then
 	assert(tostring(a) == '[](b(0) b(1))', tostring(a))
 
 	local a = toexp(ontleed0('f⁻¹'))
-	assert(tostring(a) == '^(f -1)', tostring(a))
+	assert(tostring(a) == 'inverteer(f)', tostring(a))
+
+	local c = [[
+f = ★/2 ∘ sin
+a = f⁻¹(2)
+	]]
+	local s = tostring(toexp(ontleed0(c)))
+	assert(s == [[/\(=(f @(/(_ 2) sin)) =(a (inverteer(f))(2)))]], s)
+
+	-- lol
+	-- 	f = ★/2 ∘ sin
+	--	a = f⁻¹(2)
+	-- =>
+	--	a = (sin⁻¹ ∘ ★·2)  ; a = x → sin⁻¹(x)·2
+
+
+	local s = tostring(toexp(ontleed0('standaarduitvoer = "hoi" || [10]')))
+	assert(s == [[=(standaarduitvoer ||([](104 111 105) [](10)))]], s)
+
+	local s = tostring(toexp(ontleed0('a = (f^1000) (3)')))
+	assert(s == [[=(a (^(f 1000))(3))]], s)
 end

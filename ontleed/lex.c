@@ -76,6 +76,7 @@ int yylex() {
 		if (u == L'²') { yylval = a(strcpy(token, "^2")); return M2; }
 		if (u == L'³') { yylval = a(strcpy(token, "^3")); return M3; }
 		if (u == L'⁴') { yylval = a(strcpy(token, "^4")); return M4; }
+		if (u == L'ⁿ') { yylval = a(strcpy(token, "^n")); return MN; }
 		if (u == L'₀') { yylval = a(strcpy(token, "_0")); return I0; }
 		if (u == L'₁') { yylval = a(strcpy(token, "_1")); return I1; }
 		if (u == L'₂') { yylval = a(strcpy(token, "_2")); return I2; }
