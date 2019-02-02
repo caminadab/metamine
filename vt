@@ -4,8 +4,8 @@ package.path = package.path .. ";../?.lua"
 require 'getopt'
 require 'lisp'
 
-require 'vertaal0'
-require 'doe0'
+require 'vertaal'
+require 'doe'
 require 'rapport'
 
 local opt,bronnen = getopt({...}, "u")

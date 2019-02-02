@@ -1,7 +1,7 @@
 require 'func'
 require 'ontleed'
 require 'oplos'
-require 'doe0'
+require 'doe'
 
 --[[
 code

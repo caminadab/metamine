@@ -3,3 +3,6 @@ a = fib 20
 fib = n → (fⁿ[0,1]) 0
 f = m → [m₁, m₀ + m₁]
 
+; fib(0) = 0
+; fib(1) = 1
+; fib(ℕ+2) = fib(ℕ) + fib(ℕ+1)
