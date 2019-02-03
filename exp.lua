@@ -24,7 +24,7 @@ function expmt:__tostring()
 		fn = tostring(params.fn)
 	end
 	local sep,lsep = ' ',''
-	if #params > 3 then sep,lsep = '\n\t','\n' end
+	if #params > 3 then sep,lsep = '\n  ','\n' end
 	return fn..'('..sep..table.concat(params,sep)..lsep..')'
 end
 
