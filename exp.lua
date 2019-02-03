@@ -25,7 +25,7 @@ function expmt:__tostring()
 	end
 	local sep,lsep = ' ',''
 	if #params > 3 then sep,lsep = '\n\t','\n' end
-	return fn..'('..sep..table.concat(params,sep)..lsep..')'
+	return fn..'('..lsep..table.concat(params,sep)..lsep..')'
 end
 
 function expmt:__eq(ander)
