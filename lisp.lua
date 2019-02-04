@@ -17,6 +17,7 @@ function unparse_len(sexp)
   if atom(sexp) then
     len = #unparse_atom(sexp)
   else
+		if sexp.fn then len = unparse_len(sexp.fn) + 2 end
     len = 2 + #sexp-1 -- (A B C)
     for i,sub in ipairs(sexp) do
       len = len + unparse_len(sub)
@@ -48,7 +49,22 @@ function unparse_work(sexpr, maxlen, tabs, res)
     insert(res, unparse_atom(sexpr))
   else
     local split = unparse_len(sexpr) > maxlen
-    insert(res, '(')
+		if sexpr.fn then
+			if isfn(sexpr.fn) then
+				insert(res, color[(tabs%#color)+1])
+				insert(res, '(')
+				insert(res, color.white)
+			end
+			unparse_work(sexpr.fn, maxlen, tabs+1, res)
+			if isfn(sexpr.fn) then
+				insert(res, color[(tabs%#color)+1])
+				insert(res, ')')
+				insert(res, color.white)
+			end
+		end
+		insert(res, color[(tabs%#color)+1])
+		insert(res, '(')
+		insert(res, color.white)
     for i,sub in ipairs(sexpr) do
 			if type(sub) == 'boolean' then
 				sub = tostring(sub)
@@ -73,14 +89,16 @@ function unparse_work(sexpr, maxlen, tabs, res)
       insert(res, '\n')
       insert(res, string.rep('  ', tabs))
     end
-    insert(res, ')')
+		insert(res, color[(tabs%#color)+1])
+		insert(res, ')')
+		insert(res, color.white)
   end
   return res
 end
 
 function unparseSexp(sexpr)
   if not sexpr then return 'niets' end
-  return concat(unparse_work(sexpr, 40))
+  return concat(unparse_work(sexpr, 20))
 end
 unlisp = unparseSexp
 

@@ -1,3 +1,5 @@
+require 'lisp'
+
 function isfn(exp)
 	return type(exp) == 'table' and exp.fn
 end
@@ -7,25 +9,32 @@ end
 
 expmt = {}
 
-function expmt:__tostring()
+function expmt:__tostring(tabs)
+	do return unlisp(self) end
+	if type(self) == 'string' then return self end
+	local tabs = (tabs or '') .. '  '
 	local params = {}
+	local len = 2 -- '(' & ')'
 	for k,param in pairs(self) do
 		if type(param) == 'function' then
 			param = 'FUNC'
 		end
-		params[k] = tostring(param)
+		params[k] = tostring(param,tabs..'  ')
+		len = len + #params[k] + 1 -- ' '
 	end
 	-- =(a,b)
 
 	local fn
 	if isfn(self.fn) then
-		fn = '('..tostring(params.fn)..')'
+		fn = '('..expmt.__tostring(params.fn,tabs..'  ')..')'
 	else
 		fn = tostring(params.fn)
 	end
-	local sep,lsep = ' ',''
-	if #params > 3 then sep,lsep = '\n\t','\n' end
-	return fn..'('..lsep..table.concat(params,sep)..lsep..')'
+	if len > 30 then
+		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
+	else
+		return fn..'('..table.concat(params,sep)..')'
+	end
 end
 
 function expmt:__eq(ander)
