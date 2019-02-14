@@ -1,12 +1,17 @@
 standaarduitvoer = kop || data
 
 ; kop
-kop = status || host || length || re
-status = regel "200 HTTP/1.0 OK"
-host = regel "Host: localhost"
-length = regel ("Content-Length: " || tekst(#data))
-regel = text → text || re
-re = [10,13]
+;kop = cat [
+;	regel  "HTTP/1.0 200 OK"
+;	regel  "Host: localhost"
+;	regel  "Server: Taal 0.1.0"
+;	regel ("Content-Length: " || tekst(#data))
+;]
+kop = cat [ regel  "HTTP/1.0 200 OK", regel  "Host: localhost", regel  "Server: Taal 0.1.0", regel ("Content-Length: " || tekst(#data)) ]
+	
+regel = text → text || [13,10] ; regeleinde
 
-; data
-data = "hoi"
+; vertaal
+code = standaardinvoer
+waardeer = ontleed ∘ oplos ∘ (★ "uit") ∘ doe
+data = tekst(waardeer(code))

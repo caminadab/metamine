@@ -28,6 +28,13 @@ bieb = {
 		end
 		return s
 	end,
+	['ontleed'] = function(a)
+		local code = string.char(table.unpack(a))
+		local data = ontleed(code)
+	end;
+
+	['_'] = function(...)
+		return function(a) return a
 
 	['@'] = function(a,b)
 		assert(type(a) == 'function')
