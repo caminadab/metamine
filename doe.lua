@@ -2,6 +2,7 @@ require 'doe-bieb'
 require 'exp'
 require 'symbool'
 require 'isoleer'
+require 'func'
 
 -- werkt op expressies
 function inverteer(exp)
@@ -22,8 +23,10 @@ function inverteer(exp)
 	return substitueer(term,'A','_')
 end
 
+local stdin
 function doe0(exp)
 	-- bieb / symbool
+--	print('DOE', toexp(exp))
 	if exp == '[]' then return exp end
 	if isatoom(exp) then return bieb[exp] or exp end
 
