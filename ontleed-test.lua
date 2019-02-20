@@ -1,6 +1,6 @@
 require 'ontleed' require 'exp'
 
-if test then
+if false and test then
 	local a = ontleed0('a = 10')
 	assert(a.fn == '=')
 	assert(a[1] == 'a')

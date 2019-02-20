@@ -24,28 +24,53 @@ local function tekst(graaf)
 	return table.concat(p, '\n')
 end
 
+-- van: set | functie
 local function sorteer(hgraaf, van, naar)
 	if _G.verboos then print = _G.print end
 	if isatoom(van) then van = {[van] = true} end
+	if type(van) == 'table' then
+		local van0 = van
+		van = function(a) return not not van0[a] end
+	end
 	local stroom = stroom()
 	local nieuw = {}
 	local bekend = {}
 	local nuttig = {} -- gebruikte punten
 
 	-- verzamel begin
-	for punt in pairs(van) do
-		print('TEST BEGIN',punt)
-		for pijl in hgraaf:van(punt) do
-			nieuw[pijl] = true
-			print('BEGIN',pijl2tekst(pijl))
+	for punt in pairs(hgraaf.punten) do
+		print('BEGIN?', toexp(punt), van(punt))
+		-- lege ingang
+		local leeg = false
+		for pijl in hgraaf:naar(punt) do
+			if not next(pijl.van) then
+				leeg = true
+				print('  LEEG')
+				break
+			end
+		end
+
+		if leeg then
+			for pijl in hgraaf:naar(punt) do
+				nieuw[pijl] = true
+			end
+		end
+
+		if van(punt) then
+			for pijl in hgraaf:van(punt) do
+				print('  Nieuw!')
+				nieuw[pijl] = true
+			end
 		end
 	end
+	
 	if not next(nieuw) then
 		_G.print('GEEN BEGIN GEVONDEN!')
 		_G.print(hgraaf:tekst())
 		_G.print()
 		return false,'geen begin gevonden'
 	end
+	print('BEGIN:', pijl2tekst(next(nieuw)))
 
 	while next(nieuw) do
 		local pijl = next(nieuw)
@@ -55,7 +80,7 @@ local function sorteer(hgraaf, van, naar)
 		-- alle bronnen bekend?
 		local ok = true
 		for bron in pairs(pijl.van) do
-			if not bekend[bron] and not van[bron] then
+			if not bekend[bron] and not van(bron) then
 				ok = false
 				print('  NEE: '.. bron..' is onbekend', type(bron))
 			end
@@ -96,8 +121,10 @@ local function sorteer(hgraaf, van, naar)
 		for punt in pairs(verschil(nuttig,bekend)) do
 			t[#t+1] = '    '..tostring(punt)
 		end
+		print('FAAL', stroom:tekst())
 		return nil,color.red..table.concat(t,'\n')..color.white, stroom
 	end
+	print('KLAAR', stroom:tekst())
 
 	return stroom
 end
@@ -110,6 +137,7 @@ function vhgraaf()
 
 		-- maak een hyperpijl
 		link = function (h,pijl_of_van,naar)
+			-- ARGS
 			local van, pijl
 			if naar then
 				van = pijl_of_van
@@ -218,7 +246,7 @@ if test then
 
 end
 
-if true then
+if test then
 	local graaf = vhgraaf()
 	--   / b \
 	--  a     d

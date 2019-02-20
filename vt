@@ -57,9 +57,9 @@ end
 --local plan = vertaal(code, 'in', 'uit')
 local asb = toexp(ontleed0(code))
 assert(asb, 'syntaxfout')
-local map,fout = oplos(asb)
-assert(map, 'logicafout: '..tostring(fout))
-local plan = map.standaarduitvoer
+local stduit,fout = oplos(asb, 'standaarduitvoer')
+assert(map, 'oplosfout: '..tostring(fout))
+local plan = stduit
 
 local uit
 if opt.d or opt.doe then

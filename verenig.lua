@@ -53,51 +53,65 @@ function verenig(eqs,isinvoer)
 			-- conflict
 			if isfn(eq[1]) and (L.fn ~= R.fn or L ~= R) then
 				print('conflict',eq)
-				return false, tostring(toexp(L))..' ≠ '..tostring(toexp(R))
+				local L = tostring(toexp(L))
+				local R = tostring(toexp(R))
+				return false, 'verenigingsconflict voor '..eq.fn..': '..L..' ≠ '..R
 			end
 			if isinvoer(L) and isinvoer(R) and R ~= L then
 				print('conflict',eq)
-				return false, L..' ≠ '..R
+				return false, 'verenigingsconflict voor '..fn..': '..L..' ≠ '..R
 			end
 
 			-- verifieer
 			if isatoom(L) then
 				local x,t = L,R
 				if bevat(t,x) then
-					print('verifeer',tostring(t)..' bevat '..tostring(x))
-					return false, tostring(t)..' bevat '..tostring(x)
+					-- niets aan de hand
+					--print('verifeer',tostring(t)..' bevat '..tostring(x))
+					--return false, tostring(t)..' bevat '..tostring(x)
 				end
 			end
 				
 			-- elimineer
 			if isatoom(L) then
-				print('elimineer',eq)
-				local x,t = L,R
-				uit[x] = t
-				print('  uit',tostring(x)..' -> '..tostring(t))
-
-				-- substitueer vergelijkingen
-				local vers = set()
-				for eq in pairs(eqs) do
-					local eq0 = substitueer(eq,x,t)
-					print('  substitueer',eq,tostring(x)..' := '..tostring(t),eq0)
-					vers[eq0] = true
+				local kan = true
+				for naam in pairs(var(R)) do
+					if naam == L then
+						if not uit[naam] then
+							kan = false
+						end
+					end
 				end
-				eqs = vers
 
-				-- substitueer waarderingen
-				local vers_uit = set()
-				for naam,term in pairs(uit) do
-					local term0 = substitueer(term,x,t)
-					print('  substitueer',term,tostring(x)..' := '..tostring(t),term0)
-					vers_uit[naam] = term0
+				if kan then
+					print('elimineer',eq)
+					local x,t = L,R
+					uit[x] = t
+					print('  uit',tostring(x)..' -> '..tostring(t))
+
+					-- substitueer vergelijkingen
+					local vers = set()
+					for eq in pairs(eqs) do
+						local eq0 = substitueer(eq,x,t)
+						print('  substitueer',eq,tostring(x)..' := '..tostring(t),eq0)
+						vers[eq0] = true
+					end
+					eqs = vers
+
+					-- substitueer waarderingen
+					local vers_uit = set()
+					for naam,term in pairs(uit) do
+						local term0 = substitueer(term,x,t)
+						print('  substitueer',term,tostring(x)..' := '..tostring(t),term0)
+						vers_uit[naam] = term0
+					end
+					uit = vers_uit
+
+					beter = true
+					break
 				end
-				uit = vers_uit
 
-				beter = true
-				break
 			end
-
 		end
 	until not beter
 	print()
@@ -127,7 +141,7 @@ if test then
 	local fn = maakfn('sin', 'x')
 	local s = set(maakeq('x',fn))
 	print(s)
-	assert(verenig(s) == false)
+	assert(verenig(s) == false, tostring(toexp(verenig(s))))
 
 	-- a > 0:  a := (_ > 0) ⇒ a
 

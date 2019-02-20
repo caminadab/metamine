@@ -24,6 +24,7 @@ end
 
 function doe0(exp)
 	-- bieb / symbool
+	if verboos then print('DOE' , toexp(exp)) end
 	if exp == '[]' then return exp end
 	if isatoom(exp) then return bieb[exp] or exp end
 

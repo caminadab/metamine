@@ -51,6 +51,7 @@ function isoleer0(eq,name)
 				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
 				if out == 0 then eq0 = {fn=':=', a, {{fn='inverteer', f}, x}} end -- a = (f^-1) x
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
+				return false -- HIER
 			end
 		end
 		if isfn(l) and l.fn == '[]' then
@@ -96,7 +97,7 @@ function isoleer0(eq,name)
 				--if out == 2 then eq0 = {'=', x, {'/', a, b}} end -- x = a / b
 			elseif f == '^' then
 				-- x = a ^ b
-				if out == 0 then eq0 = {fn=':=', a, {fn='^', x, {'/', '1', b}}} end -- a = x ^ (1 / a)
+				if out == 0 then eq0 = {fn=':=', a, {fn='^', x, {fn='/', '1', b}}} end -- a = x ^ (1 / a)
 				if out == 1 then eq0 = {fn=':=', b, {fn='_', a, x}} end -- b = a _ x
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			elseif f == '||' then

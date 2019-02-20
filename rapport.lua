@@ -96,7 +96,7 @@ function graaf2js(graaf, id, layout, map)
 		if haspseudo then
 			-- pseudo punt
 			pseudo = rid()
-			local exp = unparseInfix(map[pijl])
+			local exp = '' --unparseInfix(map[pijl])
 			d[#d+1] = "{ data: {id: '"..pseudo.."', exp: '"..exp.."'}, classes: 'hyper' },"
 		else
 			pseudo = next(pijl.van)
@@ -172,8 +172,9 @@ function graaf2js(graaf, id, layout, map)
 	]]
 end
 
-require 'noem'
-function rapport(code)
+-- vt: (code, kennisgraaf, infostroom)
+function rapport(vt)
+	--[[
 	local feiten = ontleed(code)
 	--local dfeiten = ontrafel(feiten)
 	local dfeiten = deduceer(feiten)
@@ -182,9 +183,6 @@ function rapport(code)
 	local infostroom, fout, half = afh:sorteer('in', 'uit')
 	infostroom = infostroom or half
 	if not infostroom then _G.print('OEPS'); infostroom = stroom() end
-
-	local deel = tag('div', nil, {class='deel'})
-
 	-- types
 	local types = typeer(dfeiten)
 	local tt = {}
@@ -195,6 +193,10 @@ function rapport(code)
 		}
 	end
 	local typetabel = tabel(tt)
+
+	]]
+
+	local deel = tag('div', nil, {class='deel'})
 
 	return html {
 		head {
@@ -221,15 +223,15 @@ function rapport(code)
 			jslib 'http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js',
 		},
 		body {
-			deel { pre(code) },
+			deel { pre(vt.code) },
 			deel { pre(unlisp(feiten)) },
 			deel { pre(unlisp(dfeiten)) },
 			div('afh', {class='deel'}),
 			div('infostroom', {class='deel'}),
-			deel { typetabel },
+			--deel { typetabel },
 			div('afh', {class='deel'}),
-			js (graaf2js(afh, 'afh', nil, map)),
-			js (graaf2js(infostroom, 'infostroom', 'dagre', map)),
+			js (graaf2js(vt.kennisgraaf, 'afh', nil, map)),
+			js (graaf2js(vt.infostroom, 'infostroom', 'dagre', map)),
 			js [[
 				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

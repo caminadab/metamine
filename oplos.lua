@@ -1,6 +1,17 @@
 require 'verenig'
+require 'exp'
+require 'isoleer'
+require 'symbool'
+require 'vhgraaf'
+require 'doe-bieb'
+require 'rapport'
 
-function oplos(exp)
+local print = function (...)
+	local print0 = print
+	if verboos then print(...) end
+end
+
+function oplos(exp,voor)
 	-- sets van vergelijkingen
 	if exp.fn == [[=]] or exp.fn == [[/\]] then
 		local eqs
@@ -9,10 +20,100 @@ function oplos(exp)
 		else
 			eqs = set(table.unpack(exp))
 		end
-		local function isinvoer(val)
-			return tonumber(val) or val == '_'
+
+		-- invoer ??
+		local function invoer(val)
+			if val.fn == '->' then return true end
+			if type(val) == 'table' then return false end
+			return tonumber(val)
+				or string.upper(val)==val
+				or val == 'standaardinvoer' -- kuch...
+				or bieb[val] -- KUCH KUCH
 		end
-		return verenig(eqs, isinvoer)
+
+		-- los vergelijkingen op
+		-- -> multimap = lijst(:=(A,B))
+		local subst = {}
+		for eq in pairs(eqs) do
+			if eq.fn == [[=]] then
+				for naam in pairs(var(eq,invoer)) do
+					--if naam ~= eq[1] and naam ~= eq[2] then
+						local waarde = isoleer0(eq,naam)
+						if waarde then
+							local eq = {fn=':=', naam, waarde}
+							subst[eq] = true
+						end
+					--end
+				end
+			end
+		end
+
+		-- maak graaf
+		local kennisgraaf = vhgraaf()
+		local pijl2subst = {}
+		for subst in pairs(subst) do
+			local naam,waarde = subst[1],subst[2]
+			local bron
+			if isexp(waarde) and waarde.fn == '->' then
+				bron = {}
+			else
+				bron = var(waarde,invoer)
+			end
+			local pijl = kennisgraaf:link(bron, naam)
+			pijl2subst[pijl] = subst
+		end
+		print('Heb nu\n', kennisgraaf:tekst())
+
+		local stroom = kennisgraaf:sorteer(invoer,voor)
+		local vt = {
+			code = "ABC",
+			kennisgraaf = kennisgraaf,
+			infostroom = stroom or kennisgraaf,
+		}
+		if not stroom then
+			if verboos then file('fout.html', rapport(vt)) end
+			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst()
+		end
+		local substs = stroom:topologisch()
+		if not substs then
+			return false, 'kon niet topologisch sorteren'
+		end
+		-- lijst(subst)
+
+		-- op te lossen waarde, staat die niet altijd laatste (;
+		local val = voor
+		print()
+		print('Begin substitutie', val)
+		for i=#substs,1,-1 do
+			local sub = pijl2subst[substs[i]]
+			local naam,exp = sub[1],sub[2]
+			local val0 = val
+			val = substitueer(val0, naam, exp)
+			print('Stapje', toexp(val0), toexp(naam), toexp(exp), toexp(val))
+		end
+
+		print('Klaar', toexp(val))
+		return val
+
+		-- functie ontleding
+		--[=[
+		for eq in pairs(eqs) do
+			if eq.fn == [[=]] then
+				local fx,val = eq[1],eq[2]
+				-- (...) = f
+				if isexp(fx) then
+					-- (f x) = g
+					if not isinvoer(fx.fn) and not isinvoer(fx[1]) and bevat(val, fx[1]) then
+						eq[1] = fx.fn
+						eq[2] = toexp {fn='->', fx[1], val}
+					end
+				end
+			end
+		end
+		]=]
+
+		--return verenig(eqs, isinvoer)
+
 	end
 	return exp
 end

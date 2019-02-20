@@ -1,12 +1,78 @@
-standaarduitvoer = kop || data
+standaarduitvoer = html
 
-; kop
-kop = status || host || length || re
-status = regel "200 HTTP/1.0 OK"
-host = regel "Host: localhost"
-length = regel ("Content-Length: " || tekst(#data))
-regel = text → text || re
-re = [10,13]
+; webpagina
+html = "
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Zwoele Code</title>
+		<meta charset='utf-8' />
+		<style>
+			html { background: #222; }
+			canvas { background: black; margin: 5mm; }
+		</style>
+	</head>
+	<body>
+		<canvas
+			id='canvas'
+			width='" || tekst scherm-breedte || "'
+			height='" || tekst scherm-hoogte || "'
+		>
+		</canvas>
+		<script> " || code || " </script>
+	</body>
+</html>
+"
 
-; data
-data = "hoi"
+; cirkel(px, py)
+; js-arc(x,y,
+; canvas-commando = boog | cirkel
+; canvas-tekening = (canvas-commando, tijdstip)
+; html-element |= canvas
+; webpagina = html-doctype || html-element[]
+; canvas = (canvas-tekeningen)
+
+; venster
+scherm-breedte = 854
+scherm-hoogte = 480
+
+; spel
+breedte = 20
+breedte / hoogte = scherm-breedte / scherm-hoogte
+
+; 20 cm breed
+net-hoogte = 2
+net-breedte = 0.2
+
+; cirkel = [x, y, radius]
+canvas-cirkel = cirkel → "
+	dd.beginPath();
+	dd.fillStyle = 'green';
+	dd.arc(
+		" || tekst(cirkel 0) || ",
+		" || tekst(cirkel 1) || ",
+		" || tekst(cirkel 2) || ",
+		0, 2 * Math.PI
+	);
+	dd.fill();
+"
+
+speler-links = canvas-cirkel [100,100,10]
+speler-rechts = canvas-cirkel [200,200,10]
+
+code = "
+var canvas = document.getElementById('canvas');
+var dd = canvas.getContext('2d');
+
+function draw() {
+	dd.clearRect(0, 0, canvas.width, canvas.height);
+	" || speler-links || "
+	" || speler-rechts || "
+}
+
+//document.addEventListener('keydown', ev => {
+	//if (ev.key == 'w'a
+
+window.setInterval(draw, 1000/60);
+"
+

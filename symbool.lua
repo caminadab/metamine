@@ -11,6 +11,8 @@ function isvar(name)
 end
 
 function var(exp,t)
+	vars = var
+	local f = var
 	local t = t or {}
 	if atom(exp) then
 		if isvar(exp) then
@@ -22,13 +24,14 @@ function var(exp,t)
 			return t
 		end
 		for i,s in ipairs(exp) do
-			var(s,t)
+			f(s,t)
 		end
 	end
 	return t
 end
 
 function var(exp,c,t)
+	if not c then c = tonumber end
 	local t = t or {}
 	if not isfn(exp) then
 		if not c(exp) then t[exp] = true end
