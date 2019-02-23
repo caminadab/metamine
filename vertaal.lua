@@ -24,7 +24,7 @@ Berekenbaarheid onderscheidt waarden van kennis
 ]]
 
 --vertaal = componeer(ontleed, [deduceer, oplos, delta)
-vertaal = componeer(ontleed, oplos, doe0)
+vertaal = componeer(ontleed, oplos, doe)
 
 if test then
 end

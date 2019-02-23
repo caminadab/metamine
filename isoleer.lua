@@ -49,9 +49,8 @@ function isoleer0(eq,name)
 			else
 				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
-				if out == 0 then eq0 = {fn=':=', a, {{fn='inverteer', f}, x}} end -- a = (f^-1) x
+				if out == 0 then eq0 = {fn=':=', a, {fn={fn='inverteer', f}, x}} end -- a = (f^-1) x
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
-				return false -- HIER
 			end
 		end
 		if isfn(l) and l.fn == '[]' then

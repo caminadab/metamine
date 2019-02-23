@@ -22,13 +22,17 @@ function oplos(exp,voor)
 		end
 
 		-- invoer ??
+		local args = {}
 		local function invoer(val)
-			if val.fn == '->' then return true end
+			-- functie argumenten
+			if args[val] then return true end
+			if val.fn == '->' then args[val[1]] = true end
+
 			if type(val) == 'table' then return false end
 			return tonumber(val)
 				or string.upper(val)==val
 				or val == 'standaardinvoer' -- kuch...
-				or bieb[val] -- KUCH KUCH
+				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
 		-- los vergelijkingen op
@@ -38,10 +42,12 @@ function oplos(exp,voor)
 			if eq.fn == [[=]] then
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
+						if verboos then print('Probeer', naam, toexp(eq)) end
 						local waarde = isoleer0(eq,naam)
 						if waarde then
 							local eq = {fn=':=', naam, waarde}
 							subst[eq] = true
+							if verboos then print('ISOLEER', toexp(eq)) end
 						end
 					--end
 				end
@@ -70,6 +76,7 @@ function oplos(exp,voor)
 			kennisgraaf = kennisgraaf,
 			infostroom = stroom or kennisgraaf,
 		}
+		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
 			if verboos then file('fout.html', rapport(vt)) end
 			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst()
@@ -122,7 +129,7 @@ if test then
 	require 'util'
 	require 'ontleed'
 
-	assert(oplos(ontleed0('a = 2')).a == '2')
+	assert(oplos(ontleed0('a = 2', 'a')) == '2')
 
 	-- b = 2 + 2
 	local v = oplos(ontleed0('a = 2\na + 2 = b'))

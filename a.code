@@ -44,6 +44,8 @@ breedte / hoogte = scherm-breedte / scherm-hoogte
 net-hoogte = 2
 net-breedte = 0.2
 
+;speler-links = 
+
 ; cirkel = [x, y, radius]
 canvas-cirkel = cirkel → "
 	dd.beginPath();

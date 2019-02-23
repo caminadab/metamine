@@ -1,5 +1,40 @@
-standaarduitvoer = (tekst a) || [10, 13]
-a² + b² = c²
-b = 3
-c = 5
-; hmm wat zou a zijn...
+;standaarduitvoer = i | t | m | l
+standaarduitvoer = in || " -bdecode-> " || tekst(bwaarde)
+
+;in = "3:hoi"
+;in = "i30e"
+in = "d1:a1:be"
+
+bwaarde = b-int | b-tekst | b-kaart
+
+;| b-map
+; tekst
+b-tot = in vind ":"
+b-len-tekst = in deel [0, b-tot]
+b-len = int b-len-tekst
+b-tekst = in deel [b-tot + 1, b-tot + 1 + b-len]
+
+; integer
+b-int-tot = ((in₀ = "i"₀) ⇒ (in vind "e"))
+b-int-t = in deel [1, b-int-tot]
+b-int = int (b-int-t)
+
+; kaart
+b-kaart = ((in₀ = "d"₀) ⇒ "kaart")
+
+;t = (( cijfer in₀ ) ⇒ "tekst: " || b-tekst)
+;i = (( in₀ = "i"₀ ) ⇒ "int: " || (tekst b-int))
+;m = (( in₀ = "d"₀ ) ⇒ "map")
+;l = (( in₀ = "l"₀ ) ⇒ "lijst")
+
+; [1,2,3]
+;benc =
+;v:tekst ↦ tekst(#v) || ":" || v
+;v:int ↦ "i" || tekst(v) || "e"
+;v:lijst ↦ "l" || cat(v map benc) || "e"
+
+;benc = (v:tekst ↦ tekst(v) || ":" || v) ∏ (v:int ↦ "i" || tekst(v) || "e")
+
+;standaarduitvoer = benc 3
+
+;in = "3:hoi"

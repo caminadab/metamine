@@ -1,6 +1,28 @@
 #!/usr/bin/lua
 package.path = package.path .. ";../?.lua"
 
+function boompairs(exp)
+	local t = {}
+	function r(exp)
+		if isatoom(exp) then
+			t[exp] = true
+		else
+			for i,v in ipairs(exp) do
+				r(v)
+			end
+		end
+	end
+	r(exp)
+	
+	local k = nil
+	return function()
+		if next(t,k) then
+			k = next(t,k)
+			return k
+		end
+	end
+end
+
 require 'getopt'
 require 'lisp'
 
@@ -56,6 +78,17 @@ end
 
 --local plan = vertaal(code, 'in', 'uit')
 local asb = toexp(ontleed0(code))
+if verboos then
+	print('ASB')
+	print(asb)
+	print()
+end
+for exp in boompairs(asb) do
+	if exp == 'fout' then
+		print('syntaxfout')
+		print(asb)
+	end
+end
 assert(asb, 'syntaxfout')
 local stduit,fout = oplos(asb, 'standaarduitvoer')
 assert(map, 'oplosfout: '..tostring(fout))
@@ -63,7 +96,11 @@ local plan = stduit
 
 local uit
 if opt.d or opt.doe then
-	uit = string.char(table.unpack(doe0(plan)))
+	local v = doe(plan)
+	if type(v) ~= 'table' then uit = '<ongeldig type>'
+	else
+		uit = string.char(table.unpack(v))
+	end
 else
 	--uit = bouw(plan)
 	uit = tostring(toexp(plan))..'\n'

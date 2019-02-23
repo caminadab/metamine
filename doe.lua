@@ -10,6 +10,8 @@ function inverteer(exp)
 		return inverteer_def[exp] or exp
 	end
 
+	-- TODO exp logica zodat alles inverteren
+
 	-- compositie
 	if exp.fn == '@' then
 		return {fn='@', inverteer(exp[2]), inverteer(exp[1])}
@@ -22,23 +24,87 @@ function inverteer(exp)
 	return substitueer(term,'A','_')
 end
 
+-- PROXY
+--[[
+function doe(exp)
+	local v = doe0(exp)
+	if verboos and not isatoom(exp) then
+		local a,b = toexp(exp), toexp(v)
+		if a ~= b then
+			print('DOE', a, b)
+		end
+	end
+	return v
+end
+]]
+
+require 'plet'
+function doe(exp)
+	local _,t,naam = plet(exp)
+	local map = {}
+	local laatste
+	for i,w in ipairs(t) do
+		local naam = naam(i)
+		if verboos then io.write(naam, '\t', tostring(toexp(w)), '\t\t') end
+
+		-- indirectie
+		local waarde = {}
+		for i,naam in pairs(w) do
+			if map[naam] ~= nil then
+				waarde[i] = map[naam]
+			elseif bieb[naam] ~= nil then
+				waarde[i] = bieb[naam]
+			else
+				waarde[i] = naam
+			end
+		end
+
+		local r 
+		if type(waarde.fn) == 'table' then
+			r = waarde.fn[table.unpack(waarde) + 1]
+		else
+			--r = waarde.fn(table.unpack(waarde))
+			local ok
+			ok,r = pcall(waarde.fn, table.unpack(waarde))
+			if not ok then r = false end
+		end
+		map[naam] = r
+		laatste = r
+		if verboos then io.write('= ', tostring(toexp(r)), '\n') end
+	end
+	--return map[naam(#map)]
+	--print("L", toexp(laatste))
+	return laatste 
+end
+
 function doe0(exp)
+	local doe = doe0
 	-- bieb / symbool
-	if verboos then print('DOE' , toexp(exp)) end
 	if exp == '[]' then return exp end
-	if isatoom(exp) then return bieb[exp] or exp end
+	if isatoom(exp) then
+		if bieb[exp] ~= nil then
+			return bieb[exp]
+		else
+			return exp
+		end
+	end
 
 	-- functie
 	if exp.fn == '->' then
 		return function(a)
 			local x,t = exp[1],exp[2]
 			local f = substitueer(t, x, a)
-			return doe0(f)
+			return doe(f)
 		end
 	end
 
 	-- infecteer
-	local exp = map(exp, doe0)
+	local exp = map(exp, doe)
+
+	-- inverteer
+	if exp.fn == 'inverteer' then
+		return inverteer(exp[1])
+	end
 
 	-- functioneel
 	if isfn(exp.fn) then
@@ -63,6 +129,7 @@ function doe0(exp)
 	end
 
 	-- zelf
+	-- x -> x + 1
 	if type(exp.fn) == 'function' then
 		return exp.fn(table.unpack(exp))
 	end
@@ -73,13 +140,13 @@ end
 if test then
 	require 'ontleed'
 
-	--local a = toexp(doe0(ontleed0('inverteer(sin ★)')))
+	--local a = toexp(doe(ontleed0('inverteer(sin ★)')))
 	--assert(a == 'asin', a)
 
-	--local a = toexp(doe0(ontleed0('inverteer(sin)')))
+	--local a = toexp(doe(ontleed0('inverteer(sin)')))
 	--assert(a == 'asin', a)
 
-	--local a = toexp(doe0(ontleed0('inverteer(sin ∘ cos ∘ tan)')))
+	--local a = toexp(doe(ontleed0('inverteer(sin ∘ cos ∘ tan)')))
 	--assert(tostring(a) == '@(atan @(acos asin))', tostring(a))
 
 	local code = [[
