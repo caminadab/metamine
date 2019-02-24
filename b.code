@@ -1,5 +1,5 @@
 ;standaarduitvoer = i | t | m | l
-standaarduitvoer = in || " -bdecode-> " || tekst(bwaarde)
+standaarduitvoer = in || " --[bdecode]--> " || tekst(bwaarde) || [10]
 
 ;in = "3:hoi"
 ;in = "i30e"
