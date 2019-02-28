@@ -1,66 +1,16 @@
-;standaarduitvoer = in || " --[bdecode]--> " || tekst(uit) || [10]
-in = "i3e"
+in = "li2ei3ee"
 uit = bdecode in
 standaarduitvoer = uit
 
-;-
-	f = a → b
-	b = a + 1
-⇒
-	A   ★
-	B   a + 1
-	F		
-	f = subst(★ + 1, a, ★)
--;
+blijst = ( (data₀='l') ⇒ bdecode(data deel [1, 4] ) )
+
+bdecode = data → bint | blijst
+bint = ( (data₀='i') ⇒ wint )
+ieind = data vind "e"
+wint = data deel [1, ieind]
 
 ;-
-;benc = "3:hoi"
-benc = "i2e"
-;benc = "d1:a1:be"
+f^n						herhaal n keer
+herhaal f			herhaal zolang nieuwe elementen
+boomherhaal	f	herhaal zolang boom?
 
-; | b-tekst | b-kaart
-;waarde = w-int | w-tekst | w-kaart
-; A = B | C  ⇒  B = (¬C ⇒ A)
-;benc = b-tekst | b-int
-benc = b-tekst
-benc = b-int
-waarde = w-tekst | w-int
-
-; tekst
-b-tekst-len-tot = b-tekst vind ":"
-b-tekst-len = int( b-tekst deel [0, b-tekst-len-tot] )
-w-tekst = b-tekst deel [b-tekst-len-tot + 1, b-tekst-len-tot + 1 + b-tekst-len]
-
-; integer
-b-int-tot = ((b-int₀ = "i"₀) ⇒ (b-int vind "e"))
-w-int = int( b-int deel [1, b-int-tot] )
--;
-
-; b = l | i | 
-; l ⇒ bⁿ
-; ℤ ⇒ byteⁿ
-; d ⇒ lijst[byte]
-
-; kaart
-;b-kaart = ((in₀ = "d"₀) ⇒ "kaart")
-
-; bieb
-;begint = (a,b) → (deel
-
-
-;t = (( cijfer in₀ ) ⇒ "tekst: " || b-tekst)
-;i = (( in₀ = "i"₀ ) ⇒ "int: " || (tekst b-int))
-;m = (( in₀ = "d"₀ ) ⇒ "map")
-;l = (( in₀ = "l"₀ ) ⇒ "lijst")
-
-; [1,2,3]
-;benc =
-;v:tekst ↦ tekst(#v) || ":" || v
-;v:int ↦ "i" || tekst(v) || "e"
-;v:lijst ↦ "l" || cat(v map benc) || "e"
-
-;benc = (v:tekst ↦ tekst(v) || ":" || v) ∏ (v:int ↦ "i" || tekst(v) || "e")
-
-;standaarduitvoer = benc 3
-
-;in = "3:hoi"
