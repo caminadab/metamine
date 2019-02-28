@@ -11,6 +11,30 @@ local print = function (...)
 	if verboos then print(...) end
 end
 
+local function pakpunten(exp,r)
+	local r = r or {}
+	r[#r+1] = exp
+	if isexp(exp) then
+		for k,v in pairs(exp) do
+			pakpunten(v,r)
+		end
+	end
+	return r
+end
+
+function punten(exp)
+	local r = pakpunten(exp)
+	
+	local i = 1
+	return function ()
+		if r[i] then
+			local v = r[i]
+			i = i + 1
+			return v
+		end
+	end
+end
+
 function oplos(exp,voor)
 	-- sets van vergelijkingen
 	if exp.fn == [[=]] or exp.fn == [[/\]] then
@@ -35,6 +59,36 @@ function oplos(exp,voor)
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
+		-- functies
+		local aantal = 0
+		local nieuw = {}
+		local afval = {}
+		for eq in punten(eqs) do
+			if isexp(eq) and eq.fn == '->' then
+				local inn,uit = eq[1],eq[2]
+				local params
+				if isexp(inn) and inn.fn == ',' then
+					params = inn
+				else
+					params = {inn}
+				end
+
+				-- complexe parameters
+				for i,param in ipairs(params) do
+					if not isatoom(param) then
+						local naam = varnaam(aantal)
+						params[i] = naam
+						local paramhulp = {fn=':=', naam, param}
+						eqs[paramhulp] = true -- HIER!
+						-- pas vergelijking aan
+						for i,v in ipairs(eq) do eq[i] = nil end
+						for k,v in pairs(uit) do eq[k] = v end
+						aantal = aantal + 1
+					end
+				end
+			end
+		end
+
 		-- los vergelijkingen op
 		-- -> multimap = lijst(:=(A,B))
 		local subst = {}
@@ -42,7 +96,7 @@ function oplos(exp,voor)
 			if eq.fn == [[=]] then
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
-						if verboos then print('Probeer', naam, toexp(eq)) end
+						--if verboos then print('Probeer', naam, toexp(eq)) end
 						local waarde = isoleer0(eq,naam)
 						if waarde then
 							local eq = {fn=':=', naam, waarde}

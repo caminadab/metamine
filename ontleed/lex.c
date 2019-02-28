@@ -11,6 +11,25 @@ extern char token[0x1000];
 extern char buf[0x10000];
 extern const char* in;
 
+char* itoa(int value, char* str, int base) {
+	const char* cijfers = "0123456789abcdefghijklmnopqrstuvwxyz";
+	char buf[65];
+	int len = 0;
+	while (value) {
+		buf[len++] = cijfers[value % base];
+		value /= 10;
+	}
+
+	// nu keer om
+	for (int i = 0; i < len; i++) {
+		str[i] = buf[len-i-1];
+	}
+
+	str[len] = '\0';
+
+	return str;
+}
+
 int yylex() {
 	yylval = a("fout");
 	unsigned char c;
@@ -20,9 +39,19 @@ int yylex() {
 		while ((c = *in++) == ' ' || c == '\t')
 			continue;
 		while (c == ';') {
-			while ((c = *in++) != '\n')
-				continue;
-			c = *in++;
+			// lang
+			if (*in == '-') {
+				while (*in && !(*in == '-' && *(in+1) == ';'))
+					in ++;
+				in ++;
+				c = *in++;
+			}
+			// kort
+			else {
+				while ((c = *in++) != '\n')
+					continue;
+				c = *in++;
+			}
 		}
 		if (c != ' ' && c != '\t' && c != ';')
 			break;
@@ -113,6 +142,17 @@ int yylex() {
 		if (u == L'ℤ') { yylval = a(strcpy(token, "int")); return NAAM; }
 		
 		printf("ONGELDIG UNICODE TEKEN ((%x))\n", u);
+	}
+
+	// fuck it, karakter
+	if (c == '\'') {
+		c = *in++; // karakter
+		// geen unicode!
+		itoa(c, token, 10);
+		yylval = a(token);
+		printf("TOKEN %d %s\n", c, token);
+		c = *in++; // sluithaak
+		return NAAM;
 	}
 
 	// tekst

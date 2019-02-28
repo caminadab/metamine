@@ -43,6 +43,8 @@ function doe(exp)
 	local _,t,naam = plet(exp)
 	local map = {}
 	local laatste
+	local stapel = {}
+
 	for i,w in ipairs(t) do
 		local naam = naam(i)
 		if verboos then io.write(naam, '\t', tostring(toexp(w)), '\t\t') end
@@ -59,14 +61,39 @@ function doe(exp)
 			end
 		end
 
+		-- functioneel
+		if w == '_' then
+			local slot = #stapel
+			stapel[slot] = 'onbekend'
+			return {
+			return function ()
+				return stapel[slot]
+			end
+		end
+
+		-- is func?
+		--[[local isfunc
+		for i,arg in ipairs(w) do
+			if type(arg) == 'function' then
+				isfunc = true
+			end
+		end
+		if isfunc then
+			return function(a)
+				for i,arg in pairs(w) do
+					if 
+				return w
+		]]
+
 		local r 
+		-- voer functie uit
 		if type(waarde.fn) == 'table' then
 			r = waarde.fn[table.unpack(waarde) + 1]
 		else
 			--r = waarde.fn(table.unpack(waarde))
 			local ok
 			ok,r = pcall(waarde.fn, table.unpack(waarde))
-			if not ok then r = false end
+			if not ok then r = false --[[waarde]] end
 		end
 		map[naam] = r
 		laatste = r
