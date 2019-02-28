@@ -150,7 +150,6 @@ int yylex() {
 		// geen unicode!
 		itoa(c, token, 10);
 		yylval = a(token);
-		printf("TOKEN %d %s\n", c, token);
 		c = *in++; // sluithaak
 		return NAAM;
 	}

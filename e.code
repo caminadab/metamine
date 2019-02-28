@@ -1,0 +1,18 @@
+standaarduitvoer = (bdecode ∘ tekst) "i3e"
+
+bdecode = data → intb
+intb = ((data₀='i') ⇒ int)
+int = getal(data(1..eind))
+eind = data vind "e"
+
+;-
+bdecode = _ → intb
+	bdecode = (_₀='i' ⇒ int)
+_ = data
+intb = ((data₀='i') ⇒ int)
+int = getal(data(1..eind))
+eind = data vind "e"
+-;
+
+
+

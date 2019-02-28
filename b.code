@@ -13,11 +13,6 @@ standaarduitvoer = uit
 	f = subst(★ + 1, a, ★)
 -;
 
-bdecode = data → intb
-	intb = (data₀='i') ⇒ int
-		int = getal(data(1..eind))
-		eind = data vind "e"
-
 ;-
 ;benc = "3:hoi"
 benc = "i2e"

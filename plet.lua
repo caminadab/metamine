@@ -8,14 +8,18 @@ B  *(2 A)
 -- "plet" je expressie naar een lijst van waarden (autoindexed met "varnaam")
 function plet(exp,t)
 	local t = t or {}
-	if isatoom(exp) then
+	if isatoom(exp) then --or exp.fn == '->' then
 		return exp
 		--t[#t+1] = exp
 	end
 
 	local waarde = {}
 	for k,v in pairs(exp) do
-		waarde[k] = plet(v, t)
+		if exp.fn ~= '->' then
+			waarde[k] = plet(v, t)
+		else
+			waarde = exp
+		end
 	end
 	t[#t+1] = waarde
 	return varnaam(#t),t,varnaam

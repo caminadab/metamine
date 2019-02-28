@@ -61,6 +61,12 @@ bieb = {
 		return a or b
 	end;
 
+	['->'] = function(param, f)
+		return function(a)
+			return doe(substitueer(f, param, a))
+		end
+	end;
+
 	['coproduct'] = function(f,g)
 		return function(...)
 			return f(...) or g(...)

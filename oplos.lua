@@ -49,8 +49,11 @@ function oplos(exp,voor)
 		local args = {}
 		local function invoer(val)
 			-- functie argumenten
-			if args[val] then return true end
-			if val.fn == '->' then args[val[1]] = true end
+			--if args[val] then return true end
+			--if val.fn == '->' then args[val[1]] = true end
+			if type(val) == 'string' and val:sub(1,1) == '_' then
+				return true
+			end
 
 			if type(val) == 'table' then return false end
 			return tonumber(val)
@@ -63,31 +66,37 @@ function oplos(exp,voor)
 		local aantal = 0
 		local nieuw = {}
 		local afval = {}
-		for eq in punten(eqs) do
-			if isexp(eq) and eq.fn == '->' then
-				local inn,uit = eq[1],eq[2]
-				local params
-				if isexp(inn) and inn.fn == ',' then
-					params = inn
-				else
-					params = {inn}
-				end
+		for eq in pairs(eqs) do
+			for lam in punten(eq) do
+				if isexp(lam) and lam.fn == '->' then
+					local inn,uit = lam[1],lam[2]
+					local params
+					if isexp(inn) and inn.fn == ',' then
+						params = inn
+					else
+						params = {inn}
+					end
 
-				-- complexe parameters
-				for i,param in ipairs(params) do
-					if not isatoom(param) then
-						local naam = varnaam(aantal)
-						params[i] = naam
-						local paramhulp = {fn=':=', naam, param}
-						eqs[paramhulp] = true -- HIER!
-						-- pas vergelijking aan
-						for i,v in ipairs(eq) do eq[i] = nil end
-						for k,v in pairs(uit) do eq[k] = v end
-						aantal = aantal + 1
+					-- complexe parameters
+					for i,param in ipairs(params) do
+						if not isatoom(param) or true then
+							local naam = '_'..varnaam(aantal)
+							params[i] = naam
+							local paramhulp = {fn='=', naam, param}
+							nieuw[paramhulp] = true -- HIER!
+
+							-- pas vergelijking aan
+							lam[1] = naam
+							--for i,v in ipairs(lam) do lam[i] = nil end
+							--for k,v in pairs(uit) do lam[k] = v end
+
+							aantal = aantal + 1
+						end
 					end
 				end
 			end
 		end
+		for eq in pairs(nieuw) do eqs[eq] = true end
 
 		-- los vergelijkingen op
 		-- -> multimap = lijst(:=(A,B))
@@ -114,7 +123,7 @@ function oplos(exp,voor)
 		for subst in pairs(subst) do
 			local naam,waarde = subst[1],subst[2]
 			local bron
-			if isexp(waarde) and waarde.fn == '->' then
+			if false and isexp(waarde) and waarde.fn == '->' then
 				bron = {}
 			else
 				bron = var(waarde,invoer)
