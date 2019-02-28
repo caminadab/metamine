@@ -57,12 +57,11 @@ function isoleer0(eq,name)
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
-					eq0 = {':=', el, {fn=r, i-1-1}}
+					eq0 = {fn=':=', el, {fn=r, tostring(i-1)}}
 					break
 				end
 			end
-		end
-		if isfn(l) and #l == 2 then
+		elseif isfn(l) and #l == 2 then
 			local x,f,a,b = r,l.fn,l[1],l[2]
 			local out
 			local n = 0
