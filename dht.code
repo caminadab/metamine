@@ -1,6 +1,0 @@
-id = chaos 0..2^160
-uit = hex(id)
-
-; hex = ...
-; id xof id = a,b → id(0..20) xof id(0..20)
-; 2^160 : byte^20

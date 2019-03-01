@@ -70,7 +70,7 @@ function doe(exp)
 		end
 		map[naam] = r
 		laatste = r
-		if verboos then io.write('= ', tostring(toexp(r)), '\n') end
+		if verboos then io.write(tostring(toexp(r)), '\n') end
 	end
 	--return map[naam(#map)]
 	--print("L", toexp(laatste))
