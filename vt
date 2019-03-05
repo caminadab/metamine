@@ -90,14 +90,15 @@ for exp in boompairs(asb) do
 	end
 end
 assert(asb, 'syntaxfout')
-local stduit,fout = oplos(asb, 'standaarduitvoer')
+local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
+exp2naam = exp2naam0 -- TODO
 assert(map, 'oplosfout: '..tostring(fout))
 local plan = stduit
 
 local uit
 if opt.d or opt.doe then
 	local v = doe(plan)
-	if type(v) ~= 'table' then uit = '<ongeldig type>'
+	if type(v) ~= 'table' then uit = tostring(toexp(v)) --'<ongeldig type>'
 	else
 		uit = string.char(table.unpack(v))
 	end

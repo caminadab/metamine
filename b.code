@@ -1,17 +1,17 @@
-in = "li2ei3ee"
+;in = "li2ei3ee"
+in = "llei20ee"
 ;in = "i3e"
 uit = bdecodeA in
-standaarduitvoer = uit
+standaarduitvoer = tekst(uit)
 
 iteratie = [objecten,stroom] → [objecten || [object], substroom]
 object = bdecodeB(stroom)
-substroom = stroom deel [3, #stroom]
+substroom = object → stroom deel [iendB, #stroom]
 ; temp
 
 ; makkelijke B
-bdecodeB = dataB → bintB
-;| blijstB
-;blijstB = ( (dataB₀='l') ⇒ "<lijst>" )
+bdecodeB = dataB → bintB | blijstB
+blijstB = ( (dataB₀='l') ⇒ [])
 bintB = ( (dataB₀='i') ⇒ wintB )
 ieindB = dataB vind "e"
 wintB = dataB deel [1, ieindB]

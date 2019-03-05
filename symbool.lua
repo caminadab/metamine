@@ -1,3 +1,5 @@
+require 'exp'
+
 function isvar(name)
 	if not isatoom(name) then
 		return false
