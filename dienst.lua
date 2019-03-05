@@ -34,7 +34,7 @@ function serveer(sock)
 
 	-- vertaal
 	local function vt()
-		return doe0(oplos(ontleed0(inn), 'uit')) or 'fout'
+		return doe(oplos(ontleed0(inn), 'uit')) or 'fout'
 	end
 	local ok,uit = pcall(vt, inn)
 	if type(uit) ~= 'table' then
