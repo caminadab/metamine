@@ -130,7 +130,12 @@ local function topologisch(hgraaf)
 	local van = {}
 	local nietbegin = {}
 	for pijl in pairs(hgraaf.pijlen) do
-		nietbegin[pijl.naar] = true
+		-- geen lege pijl?
+		if next(pijl.van) then
+			nietbegin[pijl.naar] = true
+		else
+			nieuw[pijl] = true
+		end
 	end
 	for punt in pairs(hgraaf.punten) do
 		if not nietbegin[punt] then
@@ -187,13 +192,16 @@ local function topologisch(hgraaf)
 		else al[naam] = true end
 	end
 
+	-- lui...
+	--[[
 	local i = 1
 	return function ()
 		i = i + 1
 		return volgorde[i-1]
 	end
+	]]
 
-	--return volgorde
+	return volgorde
 end
 
 -- hyperpijlen naar doel
@@ -356,7 +364,6 @@ if test or true then
 
 	-- topologisch
 	local topo = graaf:topologisch()
-	local topo = graaf:topologisch()
-	assert(topo().naar == 'b')
-	assert(topo().naar == 'c')
+	assert(topo[1].naar == 'b')
+	assert(topo[2].naar == 'c')
 end

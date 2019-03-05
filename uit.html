@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Zwoele Code</title>
+		<meta charset='utf-8' />
+		<style>
+			html { background: #222; }
+			canvas { background: black; margin: 5mm; }
+		</style>
+	</head>
+	<body>
+		<canvas
+			id='canvas'
+			width='854'
+			height='480'
+		>
+		</canvas>
+		<script> 
+var canvas = document.getElementById('canvas');
+var dd = canvas.getContext('2d');
+
+function draw() {
+	dd.clearRect(0, 0, canvas.width, canvas.height);
+	
+	dd.beginPath();
+	dd.fillStyle = 'green';
+	dd.arc(
+		100,
+		100,
+		10,
+		0, 2 * Math.PI
+	);
+	dd.fill();
+
+	
+	dd.beginPath();
+	dd.fillStyle = 'green';
+	dd.arc(
+		200,
+		200,
+		10,
+		0, 2 * Math.PI
+	);
+	dd.fill();
+
+}
+
+//document.addEventListener('keydown', ev => {
+	//if (ev.key == 'w'a
+
+window.setInterval(draw, 1000/60);
+ </script>
+	</body>
+</html>

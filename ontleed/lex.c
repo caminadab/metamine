@@ -104,7 +104,7 @@ int yylex() {
 		if (u == L'√') { yylval = a(strcpy(token, "wortel")); return NAAM; }
 		if (u == L'∐') { yylval = a(strcpy(token, "co")); return NAAM; }
 		if (u == L'∏') { yylval = a(strcpy(token, "prod")); return NAAM; }
-		if (u == L'¬') { yylval = a(strcpy(token, "!")); return NIET; }
+		if (u == L'¬') { yylval = a(strcpy(token, "niet")); return NIET; }
 		if (u == L'·') { yylval = a(strcpy(token, "*")); return '*'; }
 		if (u == L'★') { yylval = a(strcpy(token, "_")); return NAAM; }
 		if (u == L'☆') { yylval = a(strcpy(token, "__")); return NAAM; }

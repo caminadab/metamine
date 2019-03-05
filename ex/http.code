@@ -1,0 +1,12 @@
+standaarduitvoer = kop || data
+
+; kop
+kop = status || host || length || re
+status = regel "200 HTTP/1.0 OK"
+host = regel "Host: localhost"
+length = regel ("Content-Length: " || tekst(#data))
+regel = text → text || re
+re = [10,13]
+
+; data
+data = "hoi"

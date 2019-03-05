@@ -1,0 +1,4 @@
+standaarduitvoer = "fib(20) = " || tekst(a) || [10]
+a = fib 20
+fib = n → (fⁿ[0,1]) 0
+f = m → [m₁, m₀ + m₁]
