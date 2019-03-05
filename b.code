@@ -1,5 +1,33 @@
-standaarduitvoer = (tekst a) || [10, 13]
-a² + b² = c²
-b = 3
-c = 5
-; hmm wat zou a zijn...
+in = "li2ei3ee"
+;in = "i3e"
+uit = bdecodeA in
+standaarduitvoer = uit
+
+iteratie = [objecten,stroom] → [objecten || [object], substroom]
+object = bdecodeB(stroom)
+substroom = stroom deel [3, #stroom]
+; temp
+
+; makkelijke B
+bdecodeB = dataB → bintB
+;| blijstB
+;blijstB = ( (dataB₀='l') ⇒ "<lijst>" )
+bintB = ( (dataB₀='i') ⇒ wintB )
+ieindB = dataB vind "e"
+wintB = dataB deel [1, ieindB]
+
+; bdecode : data → bwaarde
+; bencode : bwaarde → data
+
+; diepe A
+bdecodeA = dataA → bintA | blijstA
+blijstA = ( (dataA₀='l') ⇒ ((iteratie^2) [[], dataA deel [1, #dataA]] )₀ )
+bintA = ( (dataA₀='i') ⇒ wintA )
+ieindA = dataA vind "e"
+wintA = dataA deel [1, ieindA]
+
+;-
+f^n						herhaal n keer
+herhaal f			herhaal zolang nieuwe elementen
+boomherhaal	f	herhaal zolang boom?
+-;

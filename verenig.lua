@@ -119,7 +119,7 @@ function verenig(eqs,isinvoer)
 	return uit
 end
 
-if test then
+if false and test then
 
 	-- mapping
 	local a = maakeq('x', '2')

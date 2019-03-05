@@ -1,7 +1,11 @@
 require 'exp'
 
 bieb = {
+	['inverteer'] = true; -- sure
 	['tau'] = 2 * math.pi;
+	['ja'] = true; 
+	['nee'] = false; 
+
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
 	['*'] = function(a,b) return a * b end;
@@ -58,7 +62,8 @@ bieb = {
 	['|'] = function(a,b)
 		local fa = type(a) == 'function'
 		local fb = type(b) == 'function'
-		if fa ~= fb then return 'fout' end
+		--if fa ~= fb then return 'fout' end
+		--[[
 		if fa and fb then
 			return function(...)
 				local ta = a(...)
@@ -69,8 +74,17 @@ bieb = {
 				return ta or tb
 			end
 		end
+		]]
+		if a and b then return false end
 		return a or b
 	end;
+
+	['->'] = function(param, f)
+		return function(a)
+			return doe(substitueer(f, param, a))
+		end
+	end;
+
 	['coproduct'] = function(f,g)
 		return function(...)
 			return f(...) or g(...)
@@ -99,8 +113,8 @@ bieb = {
 	['||'] = function(a,b)
 		local j = 1
 		local t = {}
-		if isatoom(a) then a = {a} end
-		if isatoom(b) then b = {b} end
+		--if isatoom(a) then a = {a} end
+		--if isatoom(b) then b = {b} end
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
 		for i,v in ipairs(b) do t[j] = v; j=j+1 end
 		return t
@@ -152,14 +166,30 @@ bieb = {
 	end;
 
 	['tekst'] = function(a)
+		if a == true then return 'ja' end 
+		if a == false then return 'nee' end 
 		if type(a) == 'table' then
-			a = tostring(toexp(a))
+			-- tekst! zolang een onderscheid tekst <=> lijst(getal)
+			a = string.char(table.unpack(a))
+			-- a = tostring(toexp(a))
 		end
 		return table.pack(string.byte(tostring(a),1,#tostring(a)))
 	end;
 
 	['getal'] = function(a)
 		return tonumber(string.char(table.unpack(a)))
+	end;
+
+	['int'] = function(a)
+		local getal = tonumber(string.char(table.unpack(a)))
+		if not getal then return false end
+		return math.floor(getal)
+	end;
+
+	['cijfer'] = function(a)
+		--return not not (tonumber(a) and #tostring(a) == 1)
+		a = tonumber(a)
+		return 48 <= a and a <= 57
 	end;
 
 	['split'] = function(a,b)
@@ -212,7 +242,7 @@ bieb = {
 	end;
 	['=>'] = function(a,b)
 		if a then return b
-		else return nil end
+		else return false end
 	end;
 	-- delta componeer
 	-- 2@∆3 = 5
@@ -228,5 +258,31 @@ bieb = {
 		else
 			print('??', val, delta)
 		end
+	end;
+
+	-- tekst
+	['vind'] = function(a,b)
+		for i=1,#a-#b+1 do
+			local gevonden = true
+			for j=i,i+#b-1 do
+				if a[j] ~= b[j-i+1] then
+					gevonden = false
+					break
+				end
+			end
+			if gevonden then
+				return i-1
+			end
+		end
+		return false
+	end;
+
+	['deel'] = function(a,b)
+		local van,tot = b[1],b[2]
+		local t = {fn='[]'}
+		for i=van+1,tot do
+			t[#t+1] = a[i]
+		end
+		return t
 	end;
 }

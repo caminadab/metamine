@@ -11,6 +11,30 @@ local print = function (...)
 	if verboos then print(...) end
 end
 
+local function pakpunten(exp,r)
+	local r = r or {}
+	r[#r+1] = exp
+	if isexp(exp) then
+		for k,v in pairs(exp) do
+			pakpunten(v,r)
+		end
+	end
+	return r
+end
+
+function punten(exp)
+	local r = pakpunten(exp)
+	
+	local i = 1
+	return function ()
+		if r[i] then
+			local v = r[i]
+			i = i + 1
+			return v
+		end
+	end
+end
+
 function oplos(exp,voor)
 	-- sets van vergelijkingen
 	if exp.fn == [[=]] or exp.fn == [[/\]] then
@@ -22,14 +46,57 @@ function oplos(exp,voor)
 		end
 
 		-- invoer ??
+		local args = {}
 		local function invoer(val)
-			if val.fn == '->' then return true end
+			-- functie argumenten
+			--if args[val] then return true end
+			--if val.fn == '->' then args[val[1]] = true end
+			if type(val) == 'string' and val:sub(1,1) == '_' then
+				return true
+			end
+
 			if type(val) == 'table' then return false end
 			return tonumber(val)
 				or string.upper(val)==val
 				or val == 'standaardinvoer' -- kuch...
-				or bieb[val] -- KUCH KUCH
+				or bieb[val] ~= nil -- KUCH KUCH
 		end
+
+		-- functies
+		local aantal = 0
+		local nieuw = {}
+		local afval = {}
+		for eq in pairs(eqs) do
+			for lam in punten(eq) do
+				if isexp(lam) and lam.fn == '->' then
+					local inn,uit = lam[1],lam[2]
+					local params
+					if isexp(inn) and inn.fn == ',' then
+						params = inn
+					else
+						params = {inn}
+					end
+
+					-- complexe parameters
+					for i,param in ipairs(params) do
+						if not isatoom(param) or true then
+							local naam = '_'..varnaam(aantal)
+							params[i] = naam
+							local paramhulp = {fn='=', naam, param}
+							nieuw[paramhulp] = true -- HIER!
+
+							-- pas vergelijking aan
+							lam[1] = naam
+							--for i,v in ipairs(lam) do lam[i] = nil end
+							--for k,v in pairs(uit) do lam[k] = v end
+
+							aantal = aantal + 1
+						end
+					end
+				end
+			end
+		end
+		for eq in pairs(nieuw) do eqs[eq] = true end
 
 		-- los vergelijkingen op
 		-- -> multimap = lijst(:=(A,B))
@@ -38,10 +105,12 @@ function oplos(exp,voor)
 			if eq.fn == [[=]] then
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
+						--if verboos then print('Probeer', naam, toexp(eq)) end
 						local waarde = isoleer0(eq,naam)
 						if waarde then
 							local eq = {fn=':=', naam, waarde}
 							subst[eq] = true
+							if verboos then print('ISOLEER', toexp(eq)) end
 						end
 					--end
 				end
@@ -54,7 +123,7 @@ function oplos(exp,voor)
 		for subst in pairs(subst) do
 			local naam,waarde = subst[1],subst[2]
 			local bron
-			if isexp(waarde) and waarde.fn == '->' then
+			if false and isexp(waarde) and waarde.fn == '->' then
 				bron = {}
 			else
 				bron = var(waarde,invoer)
@@ -70,6 +139,7 @@ function oplos(exp,voor)
 			kennisgraaf = kennisgraaf,
 			infostroom = stroom or kennisgraaf,
 		}
+		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
 			if verboos then file('fout.html', rapport(vt)) end
 			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst()
@@ -122,7 +192,7 @@ if test then
 	require 'util'
 	require 'ontleed'
 
-	assert(oplos(ontleed0('a = 2')).a == '2')
+	assert(oplos(ontleed0('a = 2', 'a')) == '2')
 
 	-- b = 2 + 2
 	local v = oplos(ontleed0('a = 2\na + 2 = b'))

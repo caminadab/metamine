@@ -8,6 +8,8 @@ local predef = {
 	acos = "cos",
 	atan = "tan",
 	wortel = {fn="^", "_", "2"},
+	tekst = "getal",
+	getal = "tekst",
 }
 
 inverteer_def = predef
@@ -45,25 +47,23 @@ function isoleer0(eq,name)
 				if out == 0 then eq0 = {fn=':=', a, {fn='-', x}} end -- a = - x
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			elseif predef[f] then
-				if out == 0 then eq0 = {fn=':=', a, predef[f]} end
+				if out == 0 then eq0 = {fn=':=', a, {fn=predef[f], x}} end
 			else
 				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
-				if out == 0 then eq0 = {fn=':=', a, {{fn='inverteer', f}, x}} end -- a = (f^-1) x
+				if out == 0 then eq0 = {fn=':=', a, {fn={fn='inverteer', f}, x}} end -- a = (f^-1) x
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
-				return false -- HIER
 			end
 		end
 		if isfn(l) and l.fn == '[]' then
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
-					eq0 = {':=', el, {fn=r, i-1-1}}
+					eq0 = {fn=':=', el, {fn=r, tostring(i-1)}}
 					break
 				end
 			end
-		end
-		if isfn(l) and #l == 2 then
+		elseif isfn(l) and #l == 2 then
 			local x,f,a,b = r,l.fn,l[1],l[2]
 			local out
 			local n = 0
@@ -100,12 +100,20 @@ function isoleer0(eq,name)
 				if out == 0 then eq0 = {fn=':=', a, {fn='^', x, {fn='/', '1', b}}} end -- a = x ^ (1 / a)
 				if out == 1 then eq0 = {fn=':=', b, {fn='_', a, x}} end -- b = a _ x
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
+			elseif f == '|' then
+				-- x = a | b
+				if out == 0 then eq0 = {fn=':=', a, {fn='=>', {fn='!', b}, x}} end -- a = (¬b ⇒ x)
+				if out == 1 then eq0 = {fn=':=', b, {fn='=>', {fn='!', a}, x}} end -- b = (¬a ⇒ x)
+				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			elseif f == '||' then
 				-- x = a || b
 				-- a = x (0..(#x-#b))
-				if out == 0 then eq0 = {fn=':=', a, {fn=x, {fn='..', '0', {fn='-', {fn='#', x}, {fn='#',b}}}}} end
-				if out == 1 then eq0 = {fn=':=', b, {fn=x, {fn='..', {fn='#', a}, {fn='#', x}}}} end -- b = x (#a..#x)
-				--if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
+				if out == 0 then eq0 = {fn=':=', a, {fn='deel', x, {fn='[]', '0', {fn='-', {fn='#', x}, {fn='#',b}}}}} end
+				 -- b = x (#a..#x)
+				if out == 1 then eq0 = {fn=':=', b, {fn='deel', x, {fn='[]', {fn='#', a}, {fn='#', x}}}} end
+				--??? if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
+				--VROEGER if out == 0 then eq0 = {fn=':=', a, {fn=x, {fn='..', '0', {fn='-', {fn='#', x}, {fn='#',b}}}}} end
+				--VROEGER if out == 1 then eq0 = {fn=':=', b, {fn=x, {fn='..', {fn='#', a}, {fn='#', x}}}} end -- b = x (#a..#x)
 			else
 				if print_niet_isoleerbaar then
 					log('weet niet hoe te isoleren '..f)

@@ -1,3 +1,3 @@
-fib = n → (fⁿ([0,1]))(0)
-f = a → [a₁, a₀+a₁]
-standaarduitvoer = "fib(10) = " || tekst(fib 10)
+standaarduitvoer = tekst((f^2) 3)
+f = y → x + 1
+y = x

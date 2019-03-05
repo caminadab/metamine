@@ -12,7 +12,7 @@ function unparse_atom(atom)
 end
 
 function unparse_len(sexp)
-	if type(sexp) == 'number' or type(sexp) == 'boolean' then sexp = tostring(sexp) end
+	if type(sexp) == 'number' or type(sexp) == 'boolean' or type(sexp) == 'function' then sexp = tostring(sexp) end
   local len
   if atom(sexp) then
     len = #unparse_atom(sexp)
