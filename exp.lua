@@ -4,7 +4,7 @@ function isfn(exp)
 	return type(exp) == 'table' and exp.fn
 end
 function isatoom(exp)
-	return type(exp) == 'string'
+	return type(exp) ~= 'table'
 end
 
 expmt = {}

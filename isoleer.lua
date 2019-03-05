@@ -48,6 +48,10 @@ function isoleer0(eq,name)
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			elseif predef[f] then
 				if out == 0 then eq0 = {fn=':=', a, {fn=predef[f], x}} end
+			elseif f == '%' then
+				-- x = a%
+				if out == 0 then eq0 = {fn=':=', a, {fn='*', x, 100}} end -- a = x * 100
+				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			else
 				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
@@ -98,7 +102,7 @@ function isoleer0(eq,name)
 			elseif f == '^' then
 				-- x = a ^ b
 				if out == 0 then eq0 = {fn=':=', a, {fn='^', x, {fn='/', '1', b}}} end -- a = x ^ (1 / a)
-				if out == 1 then eq0 = {fn=':=', b, {fn='_', a, x}} end -- b = a _ x
+				if out == 1 then eq0 = {fn=':=', b, {fn='log', a, x}} end -- b = a _ x
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			elseif f == '|' then
 				-- x = a | b

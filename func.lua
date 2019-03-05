@@ -7,7 +7,6 @@ function componeer(...)
 	return function (...)
 		local r = {...}
 		for i,fn in ipairs(fns) do
-			print('@', i-1, unlisp(r))
 			r = table.pack(fn(table.unpack(r)))
 			if r[1] == nil then return nil end
 		end

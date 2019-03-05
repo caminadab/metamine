@@ -1,4 +1,4 @@
-require 'doe-bieb'
+require 'bieb'
 require 'exp'
 require 'symbool'
 require 'isoleer'
@@ -40,7 +40,10 @@ function doe(exp)
 end
 ]]
 
+local invoer = set('[]', '{}', '->')
+
 require 'plet'
+
 function doe(exp)
 	local _,t,naam = plet(exp)
 	local map = {}
@@ -49,7 +52,7 @@ function doe(exp)
 
 	for i,w in ipairs(t) do
 		local naam = naam(i)
-		if verboos then io.write(naam, '\t', tostring(toexp(w)), '\t\t') end
+		if verboos then io.write(naam, ':\t', tostring(toexp(w)), '\t\t') end
 
 		-- indirectie
 		local waarde = {}
@@ -58,21 +61,37 @@ function doe(exp)
 				waarde[i] = map[naam]
 			elseif bieb[naam] ~= nil then
 				waarde[i] = bieb[naam]
+			elseif tonumber(naam) then
+				waarde[i] = naam
+			elseif isexp(naam) then
+				waarde[i] = naam
 			else
+				--assert(false, 'waarde '..naam..' onbekend! '..tostring(toexp(w)))
 				waarde[i] = naam
 			end
 		end
 
+		-- aanroep! of indexeren
 		if type(waarde.fn) == 'table' then
 			r = waarde.fn[waarde[1]+1]
 		else
 			local ok
 			ok,r = pcall(waarde.fn, table.unpack(waarde))
 			if not ok then r = false end
+			if not ok and verboos then print(r) end
 		end
 		map[naam] = r
 		laatste = r
-		if verboos then io.write(tostring(toexp(r)), '\n') end
+		if verboos then
+			local a = ''
+			if type(r) == 'table' then
+				local ok,b = pcall(componeer(table.unpack, string.char), r)
+				if ok then
+					a = '\t"'..(b or '')..'"'
+				end
+			end
+			io.write('= ', tostring(toexp(r)), a, '\n')
+		end
 	end
 	--return map[naam(#map)]
 	--print("L", toexp(laatste))
@@ -96,7 +115,8 @@ function doesnel(exp)
 		return function(a)
 			local x,t = exp[1],exp[2]
 			local f = substitueer(t, x, a)
-			return doe(f)
+			local ok,res = pcall(doe, f)
+			return ok and res
 		end
 	end
 

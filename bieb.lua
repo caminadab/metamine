@@ -111,8 +111,9 @@ bieb = {
 	end;
 
 	['||'] = function(a,b)
+		if a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
 		local j = 1
-		local t = {}
+		local t = {fn='[]'}
 		--if isatoom(a) then a = {a} end
 		--if isatoom(b) then b = {b} end
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
@@ -122,7 +123,7 @@ bieb = {
 
 	-- lib
 	['cat'] = function(a,b)
-		local r = {}
+		local r = {fn='[]'}
 		for i,v in ipairs(a) do
 			for i,v in ipairs(v) do
 				r[#r+1] = v
@@ -133,6 +134,17 @@ bieb = {
 		end
 		return r
 	end;
+
+	['map'] = function(a,b)
+		local r = {fn='[]'}
+		for i,v in ipairs(a) do
+			--print('B', v, b(v))
+			r[i] = b(v)
+		end
+		return r
+	end;
+
+	['log'] = math.log;
 
 	-- trig
 	['sin'] = math.sin;
@@ -166,14 +178,16 @@ bieb = {
 	end;
 
 	['tekst'] = function(a)
-		if a == true then return 'ja' end 
-		if a == false then return 'nee' end 
+		local t
+		if a == true then t = 'ja' end 
+		if a == false then t = 'nee' end 
+		if tonumber(a) then t = tostring(a) end
 		if type(a) == 'table' then
-			-- tekst! zolang een onderscheid tekst <=> lijst(getal)
-			a = string.char(table.unpack(a))
-			-- a = tostring(toexp(a))
+			t = tostring(toexp(a))
 		end
-		return table.pack(string.byte(tostring(a),1,#tostring(a)))
+		local t = table.pack(string.byte(tostring(t),1,#tostring(t)))
+		t.fn = '[]'
+		return t
 	end;
 
 	['getal'] = function(a)
@@ -217,6 +231,18 @@ bieb = {
 		local s = {}
 		for k,v in pairs(a) do if not b[k] then s[k] = v end end
 		return s
+	end;
+
+	['lijst'] = 'lijst',
+
+	[':'] = function(a,b)
+		if b == bieb.int then
+			return tonumber(a) and tonumber(a)%1==0 or type(a) == 'number'
+		elseif b == bieb.lijst then
+			return type(a) == 'table'
+		else
+			return false
+		end
 	end;
 
 	-- aux

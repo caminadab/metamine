@@ -3,7 +3,7 @@ require 'exp'
 require 'isoleer'
 require 'symbool'
 require 'vhgraaf'
-require 'doe-bieb'
+require 'bieb'
 require 'rapport'
 
 local print = function (...)
@@ -63,7 +63,7 @@ function oplos(exp,voor)
 		end
 
 		-- functies
-		local aantal = 0
+		local aantal = 1
 		local nieuw = {}
 		local afval = {}
 		for eq in pairs(eqs) do
@@ -152,6 +152,8 @@ function oplos(exp,voor)
 
 		-- op te lossen waarde, staat die niet altijd laatste (;
 		local val = voor
+		local exp2naam = {}
+
 		print()
 		print('Begin substitutie', val)
 		for i=#substs,1,-1 do
@@ -159,11 +161,14 @@ function oplos(exp,voor)
 			local naam,exp = sub[1],sub[2]
 			local val0 = val
 			val = substitueer(val0, naam, exp)
+			exp2naam[val0] = naam
 			print('Stapje', toexp(val0), toexp(naam), toexp(exp), toexp(val))
 		end
 
 		print('Klaar', toexp(val))
-		return val
+		print()
+
+		return val,nil,exp2naam
 
 		-- functie ontleding
 		--[=[
@@ -185,7 +190,8 @@ function oplos(exp,voor)
 		--return verenig(eqs, isinvoer)
 
 	end
-	return exp
+
+	return exp,nil,exp2naam
 end
 
 if test then

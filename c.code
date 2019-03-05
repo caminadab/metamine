@@ -1,3 +1,17 @@
-standaarduitvoer = tekst((f^2) 3)
-f = y → x + 1
-y = x
+; HIER IS HIJ DAN
+standaarduitvoer = bencode [[80], 1, 2, 3]
+
+; gen 1
+bencode = waarde → intdata | lijstdata
+intdata = (waarde:int ⇒ "i" || tekst(waarde) || "e")
+lijstdata = (waarde:lijst ⇒ "l" || cat(waarde map bencodeA) || "e")
+
+; gen 2
+bencodeA = waardeA → intdataA | lijstdataA
+intdataA = (waardeA:int ⇒ "i" || tekst(waardeA) || "e")
+lijstdataA = (waardeA:lijst ⇒ "l" || cat(waardeA map bencodeB) || "e")
+
+; gen 3
+bencodeB = waardeB → intdataB | lijstdataB
+intdataB = (waardeB:int ⇒ "i" || tekst(waardeB) || "e")
+lijstdataB = (waardeB:lijst ⇒ "le")

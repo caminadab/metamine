@@ -45,319 +45,165 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'bdecodeA'}, classes: 'waarde' },{ data: {id: 'bdecodeB'}, classes: 'waarde' },{ data: {id: 'bintA'}, classes: 'waarde' },{ data: {id: 'bintB'}, classes: 'waarde' },{ data: {id: 'blijstA'}, classes: 'waarde' },{ data: {id: 'dataA'}, classes: 'waarde' },{ data: {id: 'dataB'}, classes: 'waarde' },{ data: {id: 'ieindA'}, classes: 'waarde' },{ data: {id: 'ieindB'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'iteratie'}, classes: 'waarde' },{ data: {id: 'object'}, classes: 'waarde' },{ data: {id: 'objecten'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'stroom'}, classes: 'waarde' },{ data: {id: 'substroom'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'wintA'}, classes: 'waarde' },{ data: {id: 'wintB'}, classes: 'waarde' },			{
+				{ data: {id: 'bencode'}, classes: 'waarde' },{ data: {id: 'bencodeA'}, classes: 'waarde' },{ data: {id: 'bencodeB'}, classes: 'waarde' },{ data: {id: 'intdata'}, classes: 'waarde' },{ data: {id: 'intdataA'}, classes: 'waarde' },{ data: {id: 'intdataB'}, classes: 'waarde' },{ data: {id: 'lijstdata'}, classes: 'waarde' },{ data: {id: 'lijstdataA'}, classes: 'waarde' },{ data: {id: 'lijstdataB'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'waarde'}, classes: 'waarde' },{ data: {id: 'waardeA'}, classes: 'waarde' },{ data: {id: 'waardeB'}, classes: 'waarde' },			{
 				data: {
 					id: 'x0.84018771715471',
-					source: 'dataA',
-					target: 'ieindA',
+					source: 'bencode',
+					target: 'standaarduitvoer',
 				}
 			},
 		{ data: {id: 'x0.39438292681909', exp: ''}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.78309922375861',
 					source: 'x0.39438292681909',
-					target: 'bdecodeA',
+					target: 'bencode',
 				}
 			},
 							{
 						data: {
 							id: 'x0.79844003347607',
-							source: 'bintA',
+							source: 'intdata',
 							target: 'x0.39438292681909',
 						}
 					},
 									{
 						data: {
 							id: 'x0.91164735793678',
-							source: 'blijstA',
+							source: 'lijstdata',
 							target: 'x0.39438292681909',
 						}
 					},
-				{ data: {id: 'x0.19755136929338', exp: ''}, classes: 'hyper' },			{
+							{
 				data: {
-					id: 'x0.33522275571489',
-					source: 'x0.19755136929338',
-					target: 'bintA',
+					id: 'x0.19755136929338',
+					source: 'waardeA',
+					target: 'intdataA',
+				}
+			},
+		{ data: {id: 'x0.33522275571489', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.7682295948119',
+					source: 'x0.33522275571489',
+					target: 'lijstdataA',
 				}
 			},
 							{
-						data: {
-							id: 'x0.7682295948119',
-							source: 'dataA',
-							target: 'x0.19755136929338',
-						}
-					},
-									{
 						data: {
 							id: 'x0.27777471080319',
-							source: 'wintA',
-							target: 'x0.19755136929338',
+							source: 'bencodeB',
+							target: 'x0.33522275571489',
 						}
 					},
-				{ data: {id: 'x0.55396995579543', exp: ''}, classes: 'hyper' },			{
+									{
+						data: {
+							id: 'x0.55396995579543',
+							source: 'waardeA',
+							target: 'x0.33522275571489',
+						}
+					},
+							{
 				data: {
 					id: 'x0.47739705186216',
-					source: 'x0.55396995579543',
-					target: 'blijstA',
+					source: 'waarde',
+					target: 'intdata',
+				}
+			},
+		{ data: {id: 'x0.62887092476192', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.36478447279184',
+					source: 'x0.62887092476192',
+					target: 'lijstdata',
 				}
 			},
 							{
 						data: {
-							id: 'x0.62887092476192',
-							source: 'dataA',
-							target: 'x0.55396995579543',
+							id: 'x0.51340091019562',
+							source: 'bencodeA',
+							target: 'x0.62887092476192',
 						}
 					},
 									{
 						data: {
-							id: 'x0.36478447279184',
-							source: 'iteratie',
-							target: 'x0.55396995579543',
+							id: 'x0.95222972517471',
+							source: 'waarde',
+							target: 'x0.62887092476192',
 						}
 					},
-				{ data: {id: 'x0.51340091019562', exp: ''}, classes: 'hyper' },			{
+				{ data: {id: 'x0.9161950680037', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.95222972517471',
-					source: 'x0.51340091019562',
-					target: 'wintB',
+					id: 'x0.6357117279599',
+					source: 'x0.9161950680037',
+					target: 'waardeA',
 				}
 			},
-							{
-						data: {
-							id: 'x0.9161950680037',
-							source: 'dataB',
-							target: 'x0.51340091019562',
-						}
-					},
-									{
-						data: {
-							id: 'x0.6357117279599',
-							source: 'ieindB',
-							target: 'x0.51340091019562',
-						}
-					},
-							{
+		{ data: {id: 'x0.71729692943268', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.71729692943268',
-					source: 'bintB',
-					target: 'bdecodeB',
+					id: 'x0.1416025553558',
+					source: 'x0.71729692943268',
+					target: 'waarde',
 				}
 			},
-		{ data: {id: 'x0.1416025553558', exp: ''}, classes: 'hyper' },			{
+					{
 				data: {
 					id: 'x0.60696887625706',
-					source: 'x0.1416025553558',
-					target: 'object',
+					source: 'waardeB',
+					target: 'lijstdataB',
+				}
+			},
+		{ data: {id: 'x0.01630057162433', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.24288677062974',
+					source: 'x0.01630057162433',
+					target: 'bencodeA',
 				}
 			},
 							{
 						data: {
-							id: 'x0.01630057162433',
-							source: 'bdecodeB',
-							target: 'x0.1416025553558',
+							id: 'x0.13723157678602',
+							source: 'intdataA',
+							target: 'x0.01630057162433',
 						}
 					},
 									{
 						data: {
-							id: 'x0.24288677062974',
-							source: 'stroom',
-							target: 'x0.1416025553558',
+							id: 'x0.80417675422699',
+							source: 'lijstdataA',
+							target: 'x0.01630057162433',
 						}
 					},
-				{ data: {id: 'x0.13723157678602', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.80417675422699',
-					source: 'x0.13723157678602',
-					target: 'dataB',
-				}
-			},
-		{ data: {id: 'x0.15667908925408', exp: ''}, classes: 'hyper' },			{
+				{ data: {id: 'x0.15667908925408', exp: ''}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.40094439424618',
 					source: 'x0.15667908925408',
-					target: 'uit',
+					target: 'waardeB',
 				}
 			},
-							{
-						data: {
-							id: 'x0.12979044678146',
-							source: 'bdecodeA',
-							target: 'x0.15667908925408',
-						}
-					},
-									{
-						data: {
-							id: 'x0.10880880202577',
-							source: 'in',
-							target: 'x0.15667908925408',
-						}
-					},
-							{
+					{
+				data: {
+					id: 'x0.12979044678146',
+					source: 'waardeB',
+					target: 'intdataB',
+				}
+			},
+		{ data: {id: 'x0.10880880202577', exp: ''}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.99892451800356',
-					source: 'dataB',
-					target: 'ieindB',
-				}
-			},
-		{ data: {id: 'x0.21825690531091', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.5129323944044',
-					source: 'x0.21825690531091',
-					target: 'dataA',
-				}
-			},
-		{ data: {id: 'x0.83911223469261', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.61263983259566',
-					source: 'x0.83911223469261',
-					target: 'in',
+					source: 'x0.10880880202577',
+					target: 'bencodeB',
 				}
 			},
 							{
 						data: {
-							id: 'x0.29603161769734',
-							source: 'bdecodeA',
-							target: 'x0.83911223469261',
+							id: 'x0.21825690531091',
+							source: 'intdataB',
+							target: 'x0.10880880202577',
 						}
 					},
 									{
 						data: {
-							id: 'x0.63755226770302',
-							source: 'uit',
-							target: 'x0.83911223469261',
-						}
-					},
-				{ data: {id: 'x0.52428719006678', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.49358298699073',
-					source: 'x0.52428719006678',
-					target: 'stroom',
-				}
-			},
-		{ data: {id: 'x0.97277502388357', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.29251678441303',
-					source: 'x0.97277502388357',
-					target: 'bintB',
-				}
-			},
-							{
-						data: {
-							id: 'x0.77135769779391',
-							source: 'dataB',
-							target: 'x0.97277502388357',
-						}
-					},
-									{
-						data: {
-							id: 'x0.52674497921334',
-							source: 'wintB',
-							target: 'x0.97277502388357',
-						}
-					},
-				{ data: {id: 'x0.76991383627519', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.40022862209018',
-					source: 'x0.76991383627519',
-					target: 'wintA',
-				}
-			},
-							{
-						data: {
-							id: 'x0.89152945200518',
-							source: 'dataA',
-							target: 'x0.76991383627519',
-						}
-					},
-									{
-						data: {
-							id: 'x0.28331474600514',
-							source: 'ieindA',
-							target: 'x0.76991383627519',
-						}
-					},
-							{
-				data: {
-					id: 'x0.35245834726489',
-					source: 'standaarduitvoer',
-					target: 'uit',
-				}
-			},
-		{ data: {id: 'x0.80772452000888', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.91902647396504',
-					source: 'x0.80772452000888',
-					target: 'in',
-				}
-			},
-		{ data: {id: 'x0.069755276231913', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.94932707536469',
-					source: 'x0.069755276231913',
-					target: 'objecten',
-				}
-			},
-					{
-				data: {
-					id: 'x0.5259953502221',
-					source: 'stroom',
-					target: 'substroom',
-				}
-			},
-					{
-				data: {
-					id: 'x0.086055847856242',
-					source: 'uit',
-					target: 'standaarduitvoer',
-				}
-			},
-		{ data: {id: 'x0.19221384599442', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.66322692700812',
-					source: 'x0.19221384599442',
-					target: 'stroom',
-				}
-			},
-							{
-						data: {
-							id: 'x0.89023260254889',
-							source: 'bdecodeB',
-							target: 'x0.19221384599442',
-						}
-					},
-									{
-						data: {
-							id: 'x0.34889293524851',
-							source: 'object',
-							target: 'x0.19221384599442',
-						}
-					},
-				{ data: {id: 'x0.064171320788642', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.020023048864688',
-					source: 'x0.064171320788642',
-					target: 'iteratie',
-				}
-			},
-							{
-						data: {
-							id: 'x0.45770173727428',
-							source: 'object',
-							target: 'x0.064171320788642',
-						}
-					},
-									{
-						data: {
-							id: 'x0.06309583832654',
-							source: 'objecten',
-							target: 'x0.064171320788642',
-						}
-					},
-									{
-						data: {
-							id: 'x0.2382799541756',
-							source: 'substroom',
-							target: 'x0.064171320788642',
+							id: 'x0.5129323944044',
+							source: 'lijstdataB',
+							target: 'x0.10880880202577',
 						}
 					},
 							]
@@ -397,270 +243,165 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'bdecodeA'}, classes: 'waarde' },{ data: {id: 'bdecodeB'}, classes: 'waarde' },{ data: {id: 'bintA'}, classes: 'waarde' },{ data: {id: 'bintB'}, classes: 'waarde' },{ data: {id: 'blijstA'}, classes: 'waarde' },{ data: {id: 'dataA'}, classes: 'waarde' },{ data: {id: 'dataB'}, classes: 'waarde' },{ data: {id: 'ieindA'}, classes: 'waarde' },{ data: {id: 'ieindB'}, classes: 'waarde' },{ data: {id: 'in'}, classes: 'waarde' },{ data: {id: 'iteratie'}, classes: 'waarde' },{ data: {id: 'object'}, classes: 'waarde' },{ data: {id: 'objecten'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'stroom'}, classes: 'waarde' },{ data: {id: 'substroom'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'wintA'}, classes: 'waarde' },{ data: {id: 'wintB'}, classes: 'waarde' },			{
+				{ data: {id: 'bencode'}, classes: 'waarde' },{ data: {id: 'bencodeA'}, classes: 'waarde' },{ data: {id: 'bencodeB'}, classes: 'waarde' },{ data: {id: 'intdata'}, classes: 'waarde' },{ data: {id: 'intdataA'}, classes: 'waarde' },{ data: {id: 'intdataB'}, classes: 'waarde' },{ data: {id: 'lijstdata'}, classes: 'waarde' },{ data: {id: 'lijstdataA'}, classes: 'waarde' },{ data: {id: 'lijstdataB'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'waarde'}, classes: 'waarde' },{ data: {id: 'waardeA'}, classes: 'waarde' },{ data: {id: 'waardeB'}, classes: 'waarde' },			{
 				data: {
-					id: 'x0.97063413167868',
-					source: 'dataA',
-					target: 'ieindA',
-				}
-			},
-		{ data: {id: 'x0.90220807348481', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.85091978677126',
-					source: 'x0.90220807348481',
-					target: 'bdecodeA',
-				}
-			},
-							{
-						data: {
-							id: 'x0.26666574937602',
-							source: 'bintA',
-							target: 'x0.90220807348481',
-						}
-					},
-									{
-						data: {
-							id: 'x0.53976034072217',
-							source: 'blijstA',
-							target: 'x0.90220807348481',
-						}
-					},
-				{ data: {id: 'x0.37520697637238', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.76024873636675',
-					source: 'x0.37520697637238',
-					target: 'bintA',
-				}
-			},
-							{
-						data: {
-							id: 'x0.51253536414007',
-							source: 'dataA',
-							target: 'x0.37520697637238',
-						}
-					},
-									{
-						data: {
-							id: 'x0.66772376078541',
-							source: 'wintA',
-							target: 'x0.37520697637238',
-						}
-					},
-				{ data: {id: 'x0.53160643416066', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.039280343353413',
-					source: 'x0.53160643416066',
-					target: 'blijstA',
-				}
-			},
-							{
-						data: {
-							id: 'x0.43763759659493',
-							source: 'dataA',
-							target: 'x0.53160643416066',
-						}
-					},
-									{
-						data: {
-							id: 'x0.93183505625084',
-							source: 'iteratie',
-							target: 'x0.53160643416066',
-						}
-					},
-				{ data: {id: 'x0.9308097953586', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.72095234306574',
-					source: 'x0.9308097953586',
-					target: 'wintB',
-				}
-			},
-							{
-						data: {
-							id: 'x0.28429340305007',
-							source: 'dataB',
-							target: 'x0.9308097953586',
-						}
-					},
-									{
-						data: {
-							id: 'x0.73853431490182',
-							source: 'ieindB',
-							target: 'x0.9308097953586',
-						}
-					},
-							{
-				data: {
-					id: 'x0.63997881656512',
-					source: 'bintB',
-					target: 'bdecodeB',
-				}
-			},
-		{ data: {id: 'x0.35404867974764', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.6878613902665',
-					source: 'x0.35404867974764',
-					target: 'object',
-				}
-			},
-							{
-						data: {
-							id: 'x0.16597416632156',
-							source: 'bdecodeB',
-							target: 'x0.35404867974764',
-						}
-					},
-									{
-						data: {
-							id: 'x0.44010452760388',
-							source: 'stroom',
-							target: 'x0.35404867974764',
-						}
-					},
-				{ data: {id: 'x0.88007523626093', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.82920109332968',
-					source: 'x0.88007523626093',
-					target: 'dataB',
-				}
-			},
-		{ data: {id: 'x0.33033712968712', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.22896817104377',
-					source: 'x0.33033712968712',
-					target: 'uit',
-				}
-			},
-							{
-						data: {
-							id: 'x0.89337241458398',
-							source: 'bdecodeA',
-							target: 'x0.33033712968712',
-						}
-					},
-									{
-						data: {
-							id: 'x0.3503601785518',
-							source: 'in',
-							target: 'x0.33033712968712',
-						}
-					},
-							{
-				data: {
-					id: 'x0.68666990831805',
-					source: 'dataB',
-					target: 'ieindB',
-				}
-			},
-		{ data: {id: 'x0.95646825291052', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.58864013319306',
-					source: 'x0.95646825291052',
-					target: 'dataA',
-				}
-			},
-		{ data: {id: 'x0.65730403953106', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.85867632592967',
-					source: 'x0.65730403953106',
-					target: 'stroom',
-				}
-			},
-		{ data: {id: 'x0.43955991949866', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.92396978890708',
-					source: 'x0.43955991949866',
-					target: 'bintB',
-				}
-			},
-							{
-						data: {
-							id: 'x0.39843666665183',
-							source: 'dataB',
-							target: 'x0.43955991949866',
-						}
-					},
-									{
-						data: {
-							id: 'x0.8147668963367',
-							source: 'wintB',
-							target: 'x0.43955991949866',
-						}
-					},
-				{ data: {id: 'x0.68421852527383', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.91097203079191',
-					source: 'x0.68421852527383',
-					target: 'wintA',
-				}
-			},
-							{
-						data: {
-							id: 'x0.48249065665644',
-							source: 'dataA',
-							target: 'x0.68421852527383',
-						}
-					},
-									{
-						data: {
-							id: 'x0.21582495896883',
-							source: 'ieindA',
-							target: 'x0.68421852527383',
-						}
-					},
-				{ data: {id: 'x0.95025237414532', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.92012825371704',
-					source: 'x0.95025237414532',
-					target: 'in',
-				}
-			},
-		{ data: {id: 'x0.147660014754', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.88106216950392',
-					source: 'x0.147660014754',
-					target: 'objecten',
-				}
-			},
-					{
-				data: {
-					id: 'x0.64108059631711',
-					source: 'stroom',
-					target: 'substroom',
-				}
-			},
-					{
-				data: {
-					id: 'x0.43195341826973',
-					source: 'uit',
+					id: 'x0.83911223469261',
+					source: 'bencode',
 					target: 'standaarduitvoer',
 				}
 			},
-		{ data: {id: 'x0.61959648394007', exp: ''}, classes: 'hyper' },			{
+		{ data: {id: 'x0.61263983259566', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.28105941241656',
-					source: 'x0.61959648394007',
-					target: 'iteratie',
+					id: 'x0.29603161769734',
+					source: 'x0.61263983259566',
+					target: 'bencode',
 				}
 			},
 							{
 						data: {
-							id: 'x0.78600209801737',
-							source: 'object',
-							target: 'x0.61959648394007',
+							id: 'x0.63755226770302',
+							source: 'intdata',
+							target: 'x0.61263983259566',
 						}
 					},
 									{
 						data: {
-							id: 'x0.30745787374091',
-							source: 'objecten',
-							target: 'x0.61959648394007',
+							id: 'x0.52428719006678',
+							source: 'lijstdata',
+							target: 'x0.61263983259566',
+						}
+					},
+							{
+				data: {
+					id: 'x0.49358298699073',
+					source: 'waardeA',
+					target: 'intdataA',
+				}
+			},
+		{ data: {id: 'x0.97277502388357', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.29251678441303',
+					source: 'x0.97277502388357',
+					target: 'lijstdataA',
+				}
+			},
+							{
+						data: {
+							id: 'x0.77135769779391',
+							source: 'bencodeB',
+							target: 'x0.97277502388357',
 						}
 					},
 									{
 						data: {
-							id: 'x0.44703357920378',
-							source: 'substroom',
-							target: 'x0.61959648394007',
+							id: 'x0.52674497921334',
+							source: 'waardeA',
+							target: 'x0.97277502388357',
+						}
+					},
+							{
+				data: {
+					id: 'x0.76991383627519',
+					source: 'waarde',
+					target: 'intdata',
+				}
+			},
+		{ data: {id: 'x0.40022862209018', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.89152945200518',
+					source: 'x0.40022862209018',
+					target: 'lijstdata',
+				}
+			},
+							{
+						data: {
+							id: 'x0.28331474600514',
+							source: 'bencodeA',
+							target: 'x0.40022862209018',
+						}
+					},
+									{
+						data: {
+							id: 'x0.35245834726489',
+							source: 'waarde',
+							target: 'x0.40022862209018',
+						}
+					},
+				{ data: {id: 'x0.80772452000888', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.91902647396504',
+					source: 'x0.80772452000888',
+					target: 'waardeA',
+				}
+			},
+		{ data: {id: 'x0.069755276231913', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.94932707536469',
+					source: 'x0.069755276231913',
+					target: 'waarde',
+				}
+			},
+					{
+				data: {
+					id: 'x0.5259953502221',
+					source: 'waardeB',
+					target: 'lijstdataB',
+				}
+			},
+		{ data: {id: 'x0.086055847856242', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.19221384599442',
+					source: 'x0.086055847856242',
+					target: 'bencodeA',
+				}
+			},
+							{
+						data: {
+							id: 'x0.66322692700812',
+							source: 'intdataA',
+							target: 'x0.086055847856242',
+						}
+					},
+									{
+						data: {
+							id: 'x0.89023260254889',
+							source: 'lijstdataA',
+							target: 'x0.086055847856242',
+						}
+					},
+				{ data: {id: 'x0.34889293524851', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.064171320788642',
+					source: 'x0.34889293524851',
+					target: 'waardeB',
+				}
+			},
+					{
+				data: {
+					id: 'x0.020023048864688',
+					source: 'waardeB',
+					target: 'intdataB',
+				}
+			},
+		{ data: {id: 'x0.45770173727428', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.06309583832654',
+					source: 'x0.45770173727428',
+					target: 'bencodeB',
+				}
+			},
+							{
+						data: {
+							id: 'x0.2382799541756',
+							source: 'intdataB',
+							target: 'x0.45770173727428',
+						}
+					},
+									{
+						data: {
+							id: 'x0.97063413167868',
+							source: 'lijstdataB',
+							target: 'x0.45770173727428',
 						}
 					},
 							]
