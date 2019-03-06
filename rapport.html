@@ -45,95 +45,417 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'jint'}, classes: 'waarde' },{ data: {id: 'jlijst'}, classes: 'waarde' },{ data: {id: 'json'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'w'}, classes: 'waarde' },{ data: {id: 'waarde'}, classes: 'waarde' },			{
+				{ data: {id: 'breedte'}, classes: 'waarde' },{ data: {id: 'cel'}, classes: 'waarde' },{ data: {id: 'f'}, classes: 'waarde' },{ data: {id: 'g'}, classes: 'waarde' },{ data: {id: 'h'}, classes: 'waarde' },{ data: {id: 'hoogte'}, classes: 'waarde' },{ data: {id: 'horiz'}, classes: 'waarde' },{ data: {id: 'm'}, classes: 'waarde' },{ data: {id: 'mat'}, classes: 'waarde' },{ data: {id: 'punten'}, classes: 'waarde' },{ data: {id: 'puzzel'}, classes: 'waarde' },{ data: {id: 'r'}, classes: 'waarde' },{ data: {id: 'rij'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'verti'}, classes: 'waarde' },{ data: {id: 'vul-matrix'}, classes: 'waarde' },{ data: {id: 'w'}, classes: 'waarde' },			{
 				data: {
 					id: 'x0.84018771715471',
-					source: 'w',
-					target: 'jlijst',
+					source: 'mat',
+					target: 'vul-matrix',
 				}
 			},
 		{ data: {id: 'x0.39438292681909', exp: ''}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.78309922375861',
 					source: 'x0.39438292681909',
-					target: 'standaarduitvoer',
+					target: 'r',
+				}
+			},
+		{ data: {id: 'x0.79844003347607', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.91164735793678',
+					source: 'x0.79844003347607',
+					target: 'verti',
 				}
 			},
 							{
 						data: {
-							id: 'x0.79844003347607',
-							source: 'json',
-							target: 'x0.39438292681909',
+							id: 'x0.19755136929338',
+							source: 'breedte',
+							target: 'x0.79844003347607',
 						}
 					},
 									{
 						data: {
-							id: 'x0.91164735793678',
-							source: 'waarde',
-							target: 'x0.39438292681909',
+							id: 'x0.33522275571489',
+							source: 'hoogte',
+							target: 'x0.79844003347607',
 						}
 					},
-				{ data: {id: 'x0.19755136929338', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.33522275571489',
-					source: 'x0.19755136929338',
-					target: 'json',
-				}
-			},
-							{
+									{
 						data: {
 							id: 'x0.7682295948119',
-							source: 'jint',
-							target: 'x0.19755136929338',
+							source: 'vul-matrix',
+							target: 'x0.79844003347607',
+						}
+					},
+				{ data: {id: 'x0.27777471080319', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.55396995579543',
+					source: 'x0.27777471080319',
+					target: 'g',
+				}
+			},
+							{
+						data: {
+							id: 'x0.47739705186216',
+							source: 'm',
+							target: 'x0.27777471080319',
 						}
 					},
 									{
 						data: {
-							id: 'x0.27777471080319',
-							source: 'jlijst',
-							target: 'x0.19755136929338',
+							id: 'x0.62887092476192',
+							source: 'rij',
+							target: 'x0.27777471080319',
 						}
 					},
-				{ data: {id: 'x0.55396995579543', exp: ''}, classes: 'hyper' },			{
+				{ data: {id: 'x0.36478447279184', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.47739705186216',
-					source: 'x0.55396995579543',
-					target: 'waarde',
+					id: 'x0.51340091019562',
+					source: 'x0.36478447279184',
+					target: 'mat',
 				}
 			},
-		{ data: {id: 'x0.62887092476192', exp: ''}, classes: 'hyper' },			{
+							{
+						data: {
+							id: 'x0.95222972517471',
+							source: 'g',
+							target: 'x0.36478447279184',
+						}
+					},
+									{
+						data: {
+							id: 'x0.9161950680037',
+							source: 'h',
+							target: 'x0.36478447279184',
+						}
+					},
+							{
 				data: {
-					id: 'x0.36478447279184',
-					source: 'x0.62887092476192',
-					target: 'w',
+					id: 'x0.6357117279599',
+					source: 'puzzel',
+					target: 'punten',
+				}
+			},
+		{ data: {id: 'x0.71729692943268', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.1416025553558',
+					source: 'x0.71729692943268',
+					target: 'm',
+				}
+			},
+		{ data: {id: 'x0.60696887625706', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.01630057162433',
+					source: 'x0.60696887625706',
+					target: 'horiz',
+				}
+			},
+							{
+						data: {
+							id: 'x0.24288677062974',
+							source: 'breedte',
+							target: 'x0.60696887625706',
+						}
+					},
+									{
+						data: {
+							id: 'x0.13723157678602',
+							source: 'hoogte',
+							target: 'x0.60696887625706',
+						}
+					},
+									{
+						data: {
+							id: 'x0.80417675422699',
+							source: 'vul-matrix',
+							target: 'x0.60696887625706',
+						}
+					},
+							{
+				data: {
+					id: 'x0.15667908925408',
+					source: 'puzzel',
+					target: 'horiz',
+				}
+			},
+		{ data: {id: 'x0.40094439424618', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.12979044678146',
+					source: 'x0.40094439424618',
+					target: 'rij',
+				}
+			},
+							{
+						data: {
+							id: 'x0.10880880202577',
+							source: 'f',
+							target: 'x0.40094439424618',
+						}
+					},
+									{
+						data: {
+							id: 'x0.99892451800356',
+							source: 'w',
+							target: 'x0.40094439424618',
+						}
+					},
+				{ data: {id: 'x0.21825690531091', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.5129323944044',
+					source: 'x0.21825690531091',
+					target: 'breedte',
+				}
+			},
+		{ data: {id: 'x0.83911223469261', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.61263983259566',
+					source: 'x0.83911223469261',
+					target: 'h',
 				}
 			},
 					{
 				data: {
-					id: 'x0.51340091019562',
-					source: 'w',
-					target: 'jint',
+					id: 'x0.29603161769734',
+					source: 'puzzel',
+					target: 'standaarduitvoer',
 				}
 			},
-		{ data: {id: 'x0.95222972517471', exp: ''}, classes: 'hyper' },			{
+		{ data: {id: 'x0.63755226770302', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.9161950680037',
-					source: 'x0.95222972517471',
-					target: 'waarde',
+					id: 'x0.52428719006678',
+					source: 'x0.63755226770302',
+					target: 'breedte',
 				}
 			},
 							{
 						data: {
-							id: 'x0.6357117279599',
-							source: 'json',
-							target: 'x0.95222972517471',
+							id: 'x0.49358298699073',
+							source: 'verti',
+							target: 'x0.63755226770302',
 						}
 					},
 									{
 						data: {
-							id: 'x0.71729692943268',
-							source: 'standaarduitvoer',
-							target: 'x0.95222972517471',
+							id: 'x0.97277502388357',
+							source: 'vul-matrix',
+							target: 'x0.63755226770302',
+						}
+					},
+				{ data: {id: 'x0.29251678441303', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.77135769779391',
+					source: 'x0.29251678441303',
+					target: 'f',
+				}
+			},
+							{
+						data: {
+							id: 'x0.52674497921334',
+							source: 'cel',
+							target: 'x0.29251678441303',
+						}
+					},
+									{
+						data: {
+							id: 'x0.76991383627519',
+							source: 'r',
+							target: 'x0.29251678441303',
+						}
+					},
+				{ data: {id: 'x0.40022862209018', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.89152945200518',
+					source: 'x0.40022862209018',
+					target: 'punten',
+				}
+			},
+							{
+						data: {
+							id: 'x0.28331474600514',
+							source: 'breedte',
+							target: 'x0.40022862209018',
+						}
+					},
+									{
+						data: {
+							id: 'x0.35245834726489',
+							source: 'hoogte',
+							target: 'x0.40022862209018',
+						}
+					},
+									{
+						data: {
+							id: 'x0.80772452000888',
+							source: 'vul-matrix',
+							target: 'x0.40022862209018',
+						}
+					},
+				{ data: {id: 'x0.91902647396504', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.069755276231913',
+					source: 'x0.91902647396504',
+					target: 'w',
+				}
+			},
+		{ data: {id: 'x0.94932707536469', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.5259953502221',
+					source: 'x0.94932707536469',
+					target: 'cel',
+				}
+			},
+					{
+				data: {
+					id: 'x0.086055847856242',
+					source: 'standaarduitvoer',
+					target: 'puzzel',
+				}
+			},
+		{ data: {id: 'x0.19221384599442', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.66322692700812',
+					source: 'x0.19221384599442',
+					target: 'hoogte',
+				}
+			},
+							{
+						data: {
+							id: 'x0.89023260254889',
+							source: 'verti',
+							target: 'x0.19221384599442',
+						}
+					},
+									{
+						data: {
+							id: 'x0.34889293524851',
+							source: 'vul-matrix',
+							target: 'x0.19221384599442',
+						}
+					},
+				{ data: {id: 'x0.064171320788642', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.020023048864688',
+					source: 'x0.064171320788642',
+					target: 'hoogte',
+				}
+			},
+		{ data: {id: 'x0.45770173727428', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.06309583832654',
+					source: 'x0.45770173727428',
+					target: 'hoogte',
+				}
+			},
+							{
+						data: {
+							id: 'x0.2382799541756',
+							source: 'horiz',
+							target: 'x0.45770173727428',
+						}
+					},
+									{
+						data: {
+							id: 'x0.97063413167868',
+							source: 'vul-matrix',
+							target: 'x0.45770173727428',
+						}
+					},
+				{ data: {id: 'x0.90220807348481', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.85091978677126',
+					source: 'x0.90220807348481',
+					target: 'breedte',
+				}
+			},
+							{
+						data: {
+							id: 'x0.26666574937602',
+							source: 'horiz',
+							target: 'x0.90220807348481',
+						}
+					},
+									{
+						data: {
+							id: 'x0.53976034072217',
+							source: 'vul-matrix',
+							target: 'x0.90220807348481',
+						}
+					},
+				{ data: {id: 'x0.37520697637238', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.76024873636675',
+					source: 'x0.37520697637238',
+					target: 'hoogte',
+				}
+			},
+							{
+						data: {
+							id: 'x0.51253536414007',
+							source: 'punten',
+							target: 'x0.37520697637238',
+						}
+					},
+									{
+						data: {
+							id: 'x0.66772376078541',
+							source: 'vul-matrix',
+							target: 'x0.37520697637238',
+						}
+					},
+				{ data: {id: 'x0.53160643416066', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.039280343353413',
+					source: 'x0.53160643416066',
+					target: 'puzzel',
+				}
+			},
+							{
+						data: {
+							id: 'x0.43763759659493',
+							source: 'horiz',
+							target: 'x0.53160643416066',
+						}
+					},
+									{
+						data: {
+							id: 'x0.93183505625084',
+							source: 'punten',
+							target: 'x0.53160643416066',
+						}
+					},
+									{
+						data: {
+							id: 'x0.9308097953586',
+							source: 'verti',
+							target: 'x0.53160643416066',
+						}
+					},
+							{
+				data: {
+					id: 'x0.72095234306574',
+					source: 'puzzel',
+					target: 'verti',
+				}
+			},
+		{ data: {id: 'x0.28429340305007', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.73853431490182',
+					source: 'x0.28429340305007',
+					target: 'breedte',
+				}
+			},
+							{
+						data: {
+							id: 'x0.63997881656512',
+							source: 'punten',
+							target: 'x0.28429340305007',
+						}
+					},
+									{
+						data: {
+							id: 'x0.35404867974764',
+							source: 'vul-matrix',
+							target: 'x0.28429340305007',
 						}
 					},
 							]
@@ -173,77 +495,266 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'jint'}, classes: 'waarde' },{ data: {id: 'jlijst'}, classes: 'waarde' },{ data: {id: 'json'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'w'}, classes: 'waarde' },{ data: {id: 'waarde'}, classes: 'waarde' },			{
+				{ data: {id: 'breedte'}, classes: 'waarde' },{ data: {id: 'cel'}, classes: 'waarde' },{ data: {id: 'f'}, classes: 'waarde' },{ data: {id: 'g'}, classes: 'waarde' },{ data: {id: 'h'}, classes: 'waarde' },{ data: {id: 'hoogte'}, classes: 'waarde' },{ data: {id: 'horiz'}, classes: 'waarde' },{ data: {id: 'm'}, classes: 'waarde' },{ data: {id: 'mat'}, classes: 'waarde' },{ data: {id: 'punten'}, classes: 'waarde' },{ data: {id: 'puzzel'}, classes: 'waarde' },{ data: {id: 'r'}, classes: 'waarde' },{ data: {id: 'rij'}, classes: 'waarde' },{ data: {id: 'standaarduitvoer'}, classes: 'waarde' },{ data: {id: 'verti'}, classes: 'waarde' },{ data: {id: 'vul-matrix'}, classes: 'waarde' },{ data: {id: 'w'}, classes: 'waarde' },			{
 				data: {
-					id: 'x0.1416025553558',
-					source: 'w',
-					target: 'jlijst',
+					id: 'x0.6878613902665',
+					source: 'mat',
+					target: 'vul-matrix',
 				}
 			},
-		{ data: {id: 'x0.60696887625706', exp: ''}, classes: 'hyper' },			{
+		{ data: {id: 'x0.16597416632156', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.01630057162433',
-					source: 'x0.60696887625706',
-					target: 'standaarduitvoer',
+					id: 'x0.44010452760388',
+					source: 'x0.16597416632156',
+					target: 'r',
 				}
 			},
-							{
-						data: {
-							id: 'x0.24288677062974',
-							source: 'json',
-							target: 'x0.60696887625706',
-						}
-					},
-									{
-						data: {
-							id: 'x0.13723157678602',
-							source: 'waarde',
-							target: 'x0.60696887625706',
-						}
-					},
-				{ data: {id: 'x0.80417675422699', exp: ''}, classes: 'hyper' },			{
+		{ data: {id: 'x0.88007523626093', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.15667908925408',
-					source: 'x0.80417675422699',
-					target: 'json',
+					id: 'x0.82920109332968',
+					source: 'x0.88007523626093',
+					target: 'verti',
 				}
 			},
 							{
 						data: {
-							id: 'x0.40094439424618',
-							source: 'jint',
-							target: 'x0.80417675422699',
+							id: 'x0.33033712968712',
+							source: 'breedte',
+							target: 'x0.88007523626093',
 						}
 					},
 									{
 						data: {
-							id: 'x0.12979044678146',
-							source: 'jlijst',
-							target: 'x0.80417675422699',
+							id: 'x0.22896817104377',
+							source: 'hoogte',
+							target: 'x0.88007523626093',
 						}
 					},
-				{ data: {id: 'x0.10880880202577', exp: ''}, classes: 'hyper' },			{
+									{
+						data: {
+							id: 'x0.89337241458398',
+							source: 'vul-matrix',
+							target: 'x0.88007523626093',
+						}
+					},
+				{ data: {id: 'x0.3503601785518', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.99892451800356',
-					source: 'x0.10880880202577',
-					target: 'waarde',
+					id: 'x0.68666990831805',
+					source: 'x0.3503601785518',
+					target: 'g',
 				}
 			},
-		{ data: {id: 'x0.21825690531091', exp: ''}, classes: 'hyper' },			{
+							{
+						data: {
+							id: 'x0.95646825291052',
+							source: 'm',
+							target: 'x0.3503601785518',
+						}
+					},
+									{
+						data: {
+							id: 'x0.58864013319306',
+							source: 'rij',
+							target: 'x0.3503601785518',
+						}
+					},
+				{ data: {id: 'x0.65730403953106', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.5129323944044',
-					source: 'x0.21825690531091',
-					target: 'w',
+					id: 'x0.85867632592967',
+					source: 'x0.65730403953106',
+					target: 'mat',
+				}
+			},
+							{
+						data: {
+							id: 'x0.43955991949866',
+							source: 'g',
+							target: 'x0.65730403953106',
+						}
+					},
+									{
+						data: {
+							id: 'x0.92396978890708',
+							source: 'h',
+							target: 'x0.65730403953106',
+						}
+					},
+				{ data: {id: 'x0.39843666665183', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.8147668963367',
+					source: 'x0.39843666665183',
+					target: 'm',
+				}
+			},
+		{ data: {id: 'x0.68421852527383', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.91097203079191',
+					source: 'x0.68421852527383',
+					target: 'horiz',
+				}
+			},
+							{
+						data: {
+							id: 'x0.48249065665644',
+							source: 'breedte',
+							target: 'x0.68421852527383',
+						}
+					},
+									{
+						data: {
+							id: 'x0.21582495896883',
+							source: 'hoogte',
+							target: 'x0.68421852527383',
+						}
+					},
+									{
+						data: {
+							id: 'x0.95025237414532',
+							source: 'vul-matrix',
+							target: 'x0.68421852527383',
+						}
+					},
+				{ data: {id: 'x0.92012825371704', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.147660014754',
+					source: 'x0.92012825371704',
+					target: 'rij',
+				}
+			},
+							{
+						data: {
+							id: 'x0.88106216950392',
+							source: 'f',
+							target: 'x0.92012825371704',
+						}
+					},
+									{
+						data: {
+							id: 'x0.64108059631711',
+							source: 'w',
+							target: 'x0.92012825371704',
+						}
+					},
+				{ data: {id: 'x0.43195341826973', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.61959648394007',
+					source: 'x0.43195341826973',
+					target: 'breedte',
+				}
+			},
+		{ data: {id: 'x0.28105941241656', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.78600209801737',
+					source: 'x0.28105941241656',
+					target: 'h',
 				}
 			},
 					{
 				data: {
-					id: 'x0.83911223469261',
-					source: 'w',
-					target: 'jint',
+					id: 'x0.30745787374091',
+					source: 'puzzel',
+					target: 'standaarduitvoer',
 				}
 			},
-					]
+		{ data: {id: 'x0.44703357920378', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.2261066251556',
+					source: 'x0.44703357920378',
+					target: 'f',
+				}
+			},
+							{
+						data: {
+							id: 'x0.18753310953618',
+							source: 'cel',
+							target: 'x0.44703357920378',
+						}
+					},
+									{
+						data: {
+							id: 'x0.2762346720678',
+							source: 'r',
+							target: 'x0.44703357920378',
+						}
+					},
+				{ data: {id: 'x0.55644375530837', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.41650128057995',
+					source: 'x0.55644375530837',
+					target: 'punten',
+				}
+			},
+							{
+						data: {
+							id: 'x0.16960708618611',
+							source: 'breedte',
+							target: 'x0.55644375530837',
+						}
+					},
+									{
+						data: {
+							id: 'x0.90680393386018',
+							source: 'hoogte',
+							target: 'x0.55644375530837',
+						}
+					},
+									{
+						data: {
+							id: 'x0.10317118843234',
+							source: 'vul-matrix',
+							target: 'x0.55644375530837',
+						}
+					},
+				{ data: {id: 'x0.12607533909663', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.49544406658758',
+					source: 'x0.12607533909663',
+					target: 'w',
+				}
+			},
+		{ data: {id: 'x0.76047522842906', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.9847516650263',
+					source: 'x0.76047522842906',
+					target: 'cel',
+				}
+			},
+		{ data: {id: 'x0.93500398655189', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.68444501687048',
+					source: 'x0.93500398655189',
+					target: 'hoogte',
+				}
+			},
+		{ data: {id: 'x0.38318833121247', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.74977088242293',
+					source: 'x0.38318833121247',
+					target: 'puzzel',
+				}
+			},
+							{
+						data: {
+							id: 'x0.36866354167865',
+							source: 'horiz',
+							target: 'x0.38318833121247',
+						}
+					},
+									{
+						data: {
+							id: 'x0.29416036200438',
+							source: 'punten',
+							target: 'x0.38318833121247',
+						}
+					},
+									{
+						data: {
+							id: 'x0.23226153861371',
+							source: 'verti',
+							target: 'x0.38318833121247',
+						}
+					},
+							]
 		});
 	</script><script>				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

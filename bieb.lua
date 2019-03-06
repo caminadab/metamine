@@ -75,7 +75,7 @@ bieb = {
 			end
 		end
 		]]
-		if a and b then return false end
+		if a and b then return 'fout' end
 		return a or b
 	end;
 
@@ -128,8 +128,10 @@ bieb = {
 			for i,v in ipairs(v) do
 				r[#r+1] = v
 			end
-			if b then
-				r[#r+1] = b
+			if b and i ~= #a then
+				for i,b in ipairs(b) do
+					r[#r+1] = b
+				end
 			end
 		end
 		return r
@@ -310,5 +312,9 @@ bieb = {
 			t[#t+1] = a[i]
 		end
 		return t
+	end;
+
+	['kies-int'] = function(t)
+		return math.random(t[1], t[2]-1)
 	end;
 }
