@@ -2,6 +2,7 @@ require 'bieb'
 require 'exp'
 require 'symbool'
 require 'isoleer'
+require 'func'
 
 -- werkt op expressies
 function inverteer(exp)
@@ -24,6 +25,7 @@ function inverteer(exp)
 	return substitueer(term,'A','_')
 end
 
+local stdin
 -- PROXY
 --[[
 function doe(exp)

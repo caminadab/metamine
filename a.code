@@ -77,4 +77,3 @@ function draw() {
 
 window.setInterval(draw, 1000/60);
 "
-

@@ -33,9 +33,27 @@ bieb = {
 		return s
 	end,
 
+	['ontleed'] = function(a)
+		--local code = string.char(table.unpack(a))
+		local code = a
+		local data = ontleed0(code)
+		return data
+	end;
+
+	['oplos'] = function(exp)
+		local obj = oplos(exp)
+		return function(k)
+			return obj[string.char(table.unpack(k))]
+		end
+	end;
+
+	['doe'] = function(exp)
+		return doe0(exp)
+	end;
+
 	['@'] = function(a,b)
-		assert(type(a) == 'function')
-		assert(type(b) == 'function')
+		assert(type(a) == 'function', a)
+		assert(type(b) == 'function', b)
 		return function(...)
 			return b(a(...))
 		end

@@ -54,7 +54,7 @@
 %token TAB '\t'
 %token EN "/\\"
 %token OF "\\/"
-%token NIET "!"
+%token NIET "niet"
 %token JOKER "_"
 %token EXOF "exof"
 %token NOCH "noch"
@@ -186,7 +186,6 @@ single:
 
 exp:
 	single
-| single single %prec CALL{ $$ = _exp2($1, $2); }
 | exp '^' exp       	{ $$ = exp3(a("^"), $1, $3); }
 | exp '_' exp       	{ $$ = exp3(a("_"), $1, $3); }
 | exp '*' exp       	{ $$ = exp3(a("*"), $1, $3); }
@@ -223,7 +222,7 @@ exp:
 | exp "\\/" exp				{ $$ = exp3(a("\\/"), $1, $3); }
 | exp "exof" exp			{ $$ = exp3(a("xof"), $1, $3); }
 | exp "noch" exp			{ $$ = exp3(a("noch"), $1, $3); }
-| "!" exp					{ $$ = _exp2(a("!"), $2); }
+| "niet" exp					{ $$ = _exp2(a("!"), $2); }
 
 | exp '.' exp       	{ $$ = exp3(a("."), $1, $3); }
 | exp '@' exp       	{ $$ = exp3(a("@"), $1, $3); }
@@ -232,8 +231,9 @@ exp:
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
 /*| exp '\'' %prec OUD	{ printf("HOI"); $$ = _exp2(a("'"), $1); }*/
 
-| single single single single %prec CALL	{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
-| single single single %prec CALL	{ $$ = exp3($2, $1, $3); }
+| single single %prec CALL { $$ = _exp2($1, $2); }
+| single single single %prec CALL { $$ = exp3($2, $1, $3); }
+| single single single single %prec CALL { $$ = a("fout"); yyerrok; }
 |	'[' error ']'				
 ;
 

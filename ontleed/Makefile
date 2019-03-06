@@ -5,6 +5,7 @@ linux: main.c taal.c node.c lua.c test.c lex.c
 test: main.c taal.c node.c test.c lex.c
 	mkdir -p bin
 	gcc -g -o bin/test -std=c11 -fPIC main.c taal.c node.c lex.c test.c -lm
+	bin/test
 
 windows: main.c taal.c node.c lua.c
 	mkdir -p bin
