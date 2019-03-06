@@ -1,0 +1,6 @@
+waarde = 2
+standaarduitvoer = json waarde
+
+json = w → jint | jlijst
+jint = (w:int ⇒ tekst(w))
+jlijst = (w:lijst ⇒ "[" || cat(w, ",") || "]")
