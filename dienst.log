@@ -114,3 +114,71 @@ f -> uit
 i -> f
 
 Tue Mar  5 14:18:23 2019	"f = i + 1 -> i - 1\\nuit = f 3\\n"	"./doe.lua:50: bad argument #1 to 'ipairs' (table expected, got nil)"
+Tue Mar  5 14:20:23 2019	"uit = \"a: \" || tekst(a)\\na² + b² = c²\\nb · 2 = 8\\n10 / c = d + d\\nd = 1\\n"	"a: 3"
+GEEN BEGIN GEVONDEN!
+f -> uit
+i -> f
+
+Tue Mar  5 14:20:31 2019	"f = i + 1 -> i - 1\\nuit = f 3 \\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+GEEN BEGIN GEVONDEN!
+f -> uit
+i -> f
+
+Tue Mar  5 14:21:15 2019	"f = i + 1 -> i - 1\\nuit = f 3 \\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+GEEN BEGIN GEVONDEN!
+f -> uit
+i -> f
+
+Tue Mar  5 14:21:26 2019	"f = i + 1 -> i - 1\\nuit = f 3 \\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+GEEN BEGIN GEVONDEN!
+f -> uit
+i -> f
+
+Tue Mar  5 14:21:56 2019	"f = i + 1 -> i - 1\\nuit = f 3 \\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+GEEN BEGIN GEVONDEN!
+f -> uit
+i -> f
+
+Tue Mar  5 14:32:08 2019	"f = i + 1 -> i - 1\\nuit = f 3\\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+Wed Mar  6 13:43:33 2019	"uit = \"a: \" || tekst(a)\\na² + b² = c²\\nb · 2 = 8\\n10 / c = d + d\\nd = 1\\n"	"a: 3"
+Wed Mar  6 13:43:44 2019	"f = x -> x + 1\\nuit = f(3) \\n"	"4"
+Wed Mar  6 13:43:49 2019	"f = x - 1 -> x + 1\\nuit = f(3) \\n"	"5"
+Wed Mar  6 13:50:21 2019	"f = [a,b] -> [1,2]\\nuit = f[2,3] \\n"	"\1\2"
+Wed Mar  6 13:50:31 2019	"f = [a,b] -> [80,81]\\nuit = f[2,3] \\n"	"PQ"
+Wed Mar  6 13:50:41 2019	"f = [a,b] -> [b,a]\\nuit = f[2,3] \\n"	"\3\2"
+Wed Mar  6 13:50:53 2019	"f = [a,b] -> [b,a]\\nuit = f[109,110] \\n"	"nm"
+Wed Mar  6 14:22:28 2019	"f = [a,b] -> [b,a]\\nuit = f \"Ru\" \\n"	"uR"
+Wed Mar  6 14:22:46 2019	"f = [a+1,b+1] -> [b,a]\\nuit = f \"Ru\" \\n"	"tQ"
+Wed Mar  6 14:23:14 2019	"uit = \"a: \" || tekst(a)\\na² + b² = c²\\nb · 2 = 8\\n10 / c = d + d\\nd = 1\\n"	"a: 3"
+Wed Mar  6 14:23:54 2019	"a = 3\\nb = (a:int -> \"int\")\\nc = (a:data -> \"data\")\\nuit = b | c \\n"	"fout"
+Wed Mar  6 14:23:58 2019	"a = 3\\nb = (a:int -> \"int\")\\nc = (a:lijst -> \"data\")\\nuit = b | c \\n"	"fout"
+a	true
+Wed Mar  6 14:24:06 2019	"a = 3\\nb = (a:int -> \"int\")\\nc = (!(a:int) -> \"data\")\\nuit = b | c \\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+Wed Mar  6 14:24:13 2019	"a = 3\\nb = (a:int -> \"int\")\\nc = (a:lijst -> \"data\")\\nuit = b | c \\n"	"fout"
+Wed Mar  6 14:24:20 2019	"a = 3\\nb = (a:int -> \"int\")\\nc = nee\\nuit = b | c \\n"	"fout"
+Wed Mar  6 14:24:21 2019	"a = 3\\nb = (a:int -> \"int\")\\nc = nee\\nuit = b | c \\n"	"fout"
+Wed Mar  6 14:24:27 2019	"a = 3\\nb = ((a:int) -> \"int\")\\nc = nee\\nuit = b | c \\n"	"function: 0x197e280"
+Wed Mar  6 14:24:40 2019	"a = 3\\nb = (a:int => \"int\")\\nc = (a:lijst => \"data\")\\nuit = b | c \\n"	"int"
+Wed Mar  6 14:24:44 2019	"a = [2,3]\\nb = (a:int => \"int\")\\nc = (a:lijst => \"data\")\\nuit = b | c \\n"	"data"
+a	true
+Wed Mar  6 14:24:48 2019	"a = [2,3]\\nb = (a:int => \"int\")\\nc = (a:data => \"data\")\\nuit = b | c \\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+Wed Mar  6 14:24:54 2019	"a = [2,3]\\nb = (a:int => \"int\")\\nc = (a:lijst => \"lijst\")\\nuit = b | c \\n"	"lijst"
+Wed Mar  6 14:25:04 2019	"a = [2,3]\\nb = (a:int => \"int\")\\nc = (a:lijst => \"lijst\")\\nuit = b | c \\n"	"lijst"
+Wed Mar  6 14:25:07 2019	"a = 2\\nb = (a:int => \"int\")\\nc = (a:lijst => \"lijst\")\\nuit = b | c \\n"	"int"
+a	true
+Wed Mar  6 14:25:41 2019	"a = 2\\nb = (a:int => \"int\")\\nc = (a:lijst => \"lijst\")\\nuit = type || \": \" || (b | c)\\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+Wed Mar  6 14:25:50 2019	"a = 2\\nb = (a:int => \"int\")\\nc = (a:lijst => \"lijst\")\\nuit = \"type: \" || (b | c)\\n"	"type: int"
+n	true
+a	true
+b	true
+f	true
+Wed Mar  6 14:26:24 2019	"f = [a,b] -> [b,a+b]\\nfib = n -> (f^n)[0,1](0)\\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+n	true
+a	true
+b	true
+f	true
+Wed Mar  6 14:26:32 2019	"f = [a,b] -> [b,a+b]\\nfib = n -> ((f^n)[0,1])(0)\\n"	"./doe.lua:53: bad argument #1 to 'ipairs' (table expected, got nil)"
+Wed Mar  6 14:26:47 2019	"f = [a,b] -> [b,a+b]\\nfib = n -> ((f^n)[0,1]) 0\\nuit = fib(10)\\n"	"55"
+Wed Mar  6 14:27:06 2019	"f = [a,b] -> [b,a+b]\\nfib = n -> ((f^n)[0,1]) 0\\nuit = fib(10)\\n"	"55"
+Wed Mar  6 14:27:10 2019	"f = [a,b] -> [b,a+b]\\nfib = n -> ((f^n)[0,1]) 0\\nuit = fib(100)\\n"	"3.5422484817926e+20"
+Wed Mar  6 14:27:37 2019	"f = [a,b] -> [b,a+b]\\nfib = n -> ((f^n)[0,1]) 0\\nuit = fib(20)\\n"	"6765"

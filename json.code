@@ -1,6 +1,7 @@
-waarde = 2
+waarde = [1,2]
 standaarduitvoer = json waarde
 
+; json encode
 json = w → jint | jlijst
 jint = (w:int ⇒ tekst(w))
-jlijst = (w:lijst ⇒ "[" || cat(w, ",") || "]")
+jlijst = (w:lijst ⇒ "[" || ((w map tekst) cat ",") || "]")
