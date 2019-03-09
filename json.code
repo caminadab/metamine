@@ -2,6 +2,10 @@ waarde = [1,2,[3]]
 standaarduitvoer = json waarde
 
 ; json encode
-json = w → jint | jlijst
+json-it = [zelf,w] → jint | jlijst
 jint = (w:int ⇒ tekst(w))
-jlijst = (w:lijst ⇒ "[" || ((w map json) cat ",") || "]")
+jlijst = (w:lijst ⇒ "[" || ((w map zelf) cat ",") || "]")
+
+json = recursief json-it
+
+; recursief = json-it(zelf,w) → json(w)

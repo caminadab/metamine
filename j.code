@@ -1,0 +1,21 @@
+p = [zelf,i+1] → einde | stap
+stap = (i > 0 ⇒ "hoi" || zelf [zelf, i] )
+einde = (i = 0 ⇒ "einde")
+
+standaarduitvoer = p recursief 3
+
+; brokken = data[i · brokgrootte · (0 .. 1)]
+;-
+int(1..10)
+data[1..10]
+data(1..10)
+
+a + b ⇒ c + d
+
+A  a + b
+B  ¬a
+C  B skip
+C  c + d ; mag niet!
+C  A ⇒ B
+
+-;

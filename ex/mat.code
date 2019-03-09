@@ -1,7 +1,7 @@
 breedte = 5
 hoogte = 5
 puzzel = [punten, horiz, verti]
-punten = vul-matrix [ kies-int[0,3], [breedte,hoogte] ]
+punten = vul-matrix [ kies-int[0,3], [breedte, hoogte] ]
 horiz = vul-matrix [ kies-int[0,3], [breedte - 1, hoogte] ]
 verti = vul-matrix [ kies-int[0,3], [breedte, hoogte - 1] ]
 

@@ -317,4 +317,12 @@ bieb = {
 	['kies-int'] = function(t)
 		return math.random(t[1], t[2]-1)
 	end;
+
+	-- recursief = (iteratie(zelf,waarde) → waarde) → functie(waarde)
+	['recursief'] = function(iteratie,waarde)
+		-- iteratie: [zelf,w] → jint | jlijst
+		print('REC', toexp(iteratie{iteratie,waarde}))
+		local args = {fn='[]', iteratie, waarde}
+		return iteratie(args)
+	end;
 }

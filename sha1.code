@@ -1,0 +1,209 @@
+package com.semisafe.cryptopals
+
+/*
+ * Implementation of SHA-1 in pure Scala
+ * 
+ * This was implemented as part of the Matasano Crypto Challenges
+ * http://www.matasano.com/articles/crypto-challenges/
+ * 
+ * Having a native implementation of SHA-1 is required for the 
+ * fourth set of challenges, building your own isn't, so feel 
+ * free to make use of this, but expect to get your hands dirty
+ * later.
+ * 
+ * !!! WARNING !!! -- This is a toy implementation, please for 
+ * the love of god and all that is holy do not deploy this to
+ * any production environment. If you do, you will bring great
+ * shame on your family and possibly cause space and time to 
+ * collide, then everyone will die, and it will be your fault.
+ * 
+ * *** CAVEAT *** -- I'm at this point a very novice Scala
+ * developer. If you see things that don't make sense, or 
+ * could be clearer, please fork this and fix it, or just
+ * let me know. I'd love to know more about how to improve this. 
+ * 
+ * Author: Cameron Hotchkies <handsomecam@semisafe.com>
+ * 
+ */
+
+import java.nio.ByteBuffer
+import scala.language.implicitConversions
+import scala.collection.mutable.ArrayBuffer
+
+object Sha1Digest {
+
+	// preprocess ∘ per(64) ∘ hash(seed ∘ 
+  def hashMessage(message: Bytes): List[Byte] = {
+    val initialSeed = List(0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0)
+
+    val preprocessed = preprocessMessage(message)
+
+    // Process the message in successive 512-bit chunks:
+    // break message into 512-bit chunks
+    val chunked = preprocessed.grouped(64).toList
+
+    val hashed = chunked.foldLeft(initialSeed)((current, chunk) => {
+
+      // break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
+      val wPre = chunk.grouped(4).toArray
+
+      // Extend the sixteen 32-bit words into eighty 32-bit words:
+      val ab = new ArrayBuffer[Bytes]
+      ab.appendAll(chunk.grouped(4).map(new Bytes(_)))
+      val w = extendChunkedArray(ab)
+
+      val result = mainHashGenerator(current, w.toList)
+
+      (current, result).zipped map (_ + _)
+    })
+
+    // Produce the final hash value (big-endian):
+    val hashBuffer = ByteBuffer.allocate(20)
+    hashed.foreach(hashBuffer.putInt(_))
+    val hash = hashBuffer.array
+
+    hash.toList
+  }
+
+  private[this] def preprocessMessage(message: Bytes): Bytes = {
+    val result = message ++ generatePadding(message)
+    val resultLen = result.length
+
+    result
+  }
+
+  /*
+   *  Pre-processing:
+   *  append the bit '1' to the message
+   *  append 0 ≤ k < 512 bits '0', so that the resulting message length (in bits)
+   *  is congruent to 448 (mod 512)
+   *  append length of message (before pre-processing), in bits, as 64-bit big-endian integer
+   */
+  private[this] def generatePadding(message: Bytes): Bytes = {
+    val initialBitLength = message.length * 8
+
+    // Leaving this in as an exercise for the reader
+    val bitLength = initialBitLength
+
+    // Need to append one 1-bit then 7 0-bits
+    // before even bothering to check the modulus
+    val append: Byte = 128.toByte
+
+    val appendedLength = (message.length + 1) * 8.toLong
+
+    val appendedBitLengthMod = (appendedLength % 512).toInt
+
+    val addedBitlength = 448 - appendedBitLengthMod
+
+    val finalPad = List.fill(addedBitlength / 8)(0.toByte)
+
+    val bb = ByteBuffer.allocate(8)
+    bb.putLong(bitLength)
+    val b = bb.array().toList
+
+    val result = append :: finalPad ++ b
+
+    result
+  }
+
+  // for i from 16 to 79
+  // w[i] = (w[i-3] xor w[i-8] xor w[i-14] xor w[i-16]) leftrotate 1
+  private[this] def extendChunkedArray(buffer: ArrayBuffer[Bytes]): Array[Bytes] = {
+    if (buffer.length == 80) buffer.toArray
+    else {
+      val bufferLen = buffer.length
+
+      // The variable names coincide with the pseudo-code
+      // that was available on wikipedia. eg. w[j-3] -> wj3
+      val wj3 = buffer(bufferLen - 3)
+      val wj8 = buffer(bufferLen - 8)
+      val wj14 = buffer(bufferLen - 14)
+      val wj16 = buffer(bufferLen - 16)
+
+      val newWordArray = (wj3 ^ wj8 ^ wj14 ^ wj16).toArray
+      val newWord = ByteBuffer.wrap(newWordArray).getInt
+      val r = Integer.rotateLeft(newWord, 1)
+
+      val bb = ByteBuffer.allocate(4)
+      bb.putInt(r)
+      val b = bb.array().toList
+      buffer += b
+      extendChunkedArray(buffer)
+    }
+  }
+
+  private[this] def mainHashGenerator(currentHash: List[Int], remainingBytes: List[Bytes]): List[Int] = {
+
+    (remainingBytes, currentHash) match {
+      case (Nil, _) => currentHash
+      case (bytes, a :: b :: c :: d :: e :: Nil) => {
+        val currentBytes = bytes.head
+        val index = 80 - bytes.length
+
+        val (f: Int, k: Int) = generateFandK(b, c, d, index)
+
+        val currentInt = ByteBuffer.wrap(currentBytes.toArray).getInt
+
+        val temp = Integer.rotateLeft(a, 5) + f + e + k + currentInt
+
+        val newHash = List(temp, a, Integer.rotateLeft(b, 30), c, d)
+
+        mainHashGenerator(newHash, bytes.tail)
+      }
+      case _ => ??? // I can be lazy, but this shouldn't occur
+    }
+  }
+
+  private[this] def generateFandK(b: Int, c: Int, d: Int, index: Int): (Int, Int) = {
+    if (0 <= index && index <= 19) {
+      ((b & c).toInt | ((~b) & d), 0x5A827999)
+    } else if (index <= 39) {
+      ((b ^ c ^ d).toInt, 0x6ED9EBA1)
+    } else if (index <= 59) {
+      (((b & c) | (b & d) | (c & d)).toInt, 0x8F1BBCDC)
+    } else if (index <= 79) {
+      ((b ^ c ^ d).toInt, 0xCA62C1D6)
+    } else (0, 0) // Probably better to throw an exception. index too high
+  }
+
+  /*
+   * The Bytes class is something I've been using just 
+   * as a minor convenience. In all honesty, it may be 
+   * more useful as a vector, but I can't explain that
+   * thought so I'll leave it alone
+   */
+  implicit def listToByte(self: List[Byte]): Bytes = new Bytes(self)
+  implicit def byteToList(self: Bytes): List[Byte] = self.target
+
+  class Bytes(val target: List[Byte]) extends {
+
+    // This should be mixed into the List somehow
+    def xor(that: Bytes): Bytes = {
+      (this.target, that.target).zipped map ((x, y) => (x ^ y).toByte)
+    }
+
+    def ^(that: Bytes): Bytes = xor(that)
+
+    def toList = target
+
+    def asIntList: List[Int] = {
+      val bb = ByteBuffer.wrap(target.toArray)
+      val ib = bb.asIntBuffer
+      val arr = new Array[Int](target.length / 4)
+      ib.get(arr, 0, target.length / 4)
+      arr.toList
+    }
+
+    override def toString = {
+      val bits = target.foldLeft("")((x, y) => x + "%02X".format(y))
+      bits.grouped(4).map(_.mkString("")).mkString(" ")
+    }
+
+    override def equals(that: Any): Boolean = that match {
+      case bytes: Bytes => target == bytes.target
+      case byteList: AnyRef => target == byteList
+      case _ => false
+    }
+
+  }
+}
