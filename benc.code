@@ -1,0 +1,14 @@
+json = f → g
+
+g = w → a | b
+a = (w:lijst ⇒ "l" || cat(w map f) || "e")
+b = (w:int ⇒ "i" || tekst w || "e")
+
+n = wa → na | nb
+na = (wa:lijst ⇒ "le")
+nb = (wa:int ⇒ "i" || tekst wa || "e")
+
+j = (json^5) (x → "")
+uit = j [1,[2,[3]]]
+
+bestand-in

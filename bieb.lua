@@ -5,6 +5,7 @@ bieb = {
 	['tau'] = 2 * math.pi;
 	['ja'] = true; 
 	['nee'] = false; 
+	['min'] = function(a,b) return math.min(a,b) end;
 
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
@@ -318,11 +319,14 @@ bieb = {
 		return math.random(t[1], t[2]-1)
 	end;
 
-	-- recursief = (iteratie(zelf,waarde) → waarde) → functie(waarde)
-	['recursief'] = function(iteratie,waarde)
-		-- iteratie: [zelf,w] → jint | jlijst
-		print('REC', toexp(iteratie{iteratie,waarde}))
-		local args = {fn='[]', iteratie, waarde}
-		return iteratie(args)
+	['recursief'] = function(rec)
+		-- rec: zelf → (w → zelf(w))
+
+		-- recf: volledig recursieve functie
+		local recf = rec(rec)
+		return recf
+
+		--return function(waarde)
+			--return doe(substitueer(rec, param, a))
 	end;
 }

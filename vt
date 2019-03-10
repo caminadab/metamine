@@ -90,7 +90,8 @@ for exp in boompairs(asb) do
 	end
 end
 assert(asb, 'syntaxfout')
-local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
+--local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
+local stduit,fout,exp2naam0 = oplos(asb, 'uit')
 exp2naam = exp2naam0 -- TODO
 assert(map, 'oplosfout: '..tostring(fout))
 local plan = stduit

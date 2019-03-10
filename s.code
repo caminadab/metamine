@@ -1,0 +1,9 @@
+djson = djsonA → djsonB
+
+djsonB = w → a | b
+a = (w₀ = 'l' ⇒ "lijst")
+b = (w₀ = 'i' ⇒ int(w deel [1, w vind "e"]))
+
+
+j = (djson^10) (x → [])
+uit = j "li2ee"

@@ -1,0 +1,12 @@
+json = f → g
+
+g = w → a | b
+a = (w:lijst ⇒ "[" || (w map f) cat "," || "]")
+b = (w:int ⇒ tekst w)
+
+n = wa → na | nb
+na = (wa:lijst ⇒ "[]")
+nb = (wa:int ⇒ tekst wa)
+
+j = (json^3) n
+uit = j [[[[[[2]]]]]]
