@@ -1,4 +1,15 @@
-standaarduitvoer = html
+uit = html
+fps = 60
+fps · dt = 1
+
+stap = [linksA,rechtsA,balA] → [linksB,rechtsB,balB]
+
+linksB = linksA
+rechtsB = rechtsA
+balB = [balA₀ + 1, balA₁, balA₂]
+
+;+ dt/1000
+;balB = [balA₀ + dt, 0]
 
 ; webpagina
 html = "
@@ -66,14 +77,32 @@ code = "
 var canvas = document.getElementById('canvas');
 var dd = canvas.getContext('2d');
 
-function draw() {
-	dd.clearRect(0, 0, canvas.width, canvas.height);
-	" || speler-links || "
-	" || speler-rechts || "
+// [links, rechts, bal]
+var spel = [ [200, 200, 10], [300, 300, 15], [100, 100, 50] ];
+var stap = " || (javascript stap) || ";
+
+function cirkel(c) {
+	dd.beginPath();
+	dd.fillStyle = 'green';
+	dd.arc(
+		c[0], c[1], c[2],
+		0, 2 * Math.PI
+	);
+	dd.fill();
+}
+	
+function bijwerk() {
+	spel = stap(spel);
+	draw();
 }
 
-//document.addEventListener('keydown', ev => {
-	//if (ev.key == 'w'a
+function draw() {
+	dd.clearRect(0, 0, canvas.width, canvas.height);
 
-window.setInterval(draw, 1000/60);
+	cirkel(spel[0]);
+	cirkel(spel[1]);
+	cirkel(spel[2]);
+}
+
+window.setInterval(bijwerk, 1000/60);
 "

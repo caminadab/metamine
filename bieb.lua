@@ -1,4 +1,40 @@
 require 'exp'
+require 'util'
+
+local infix = set('+','-','/','^')
+
+function jsexp(exp)
+	if isfn(exp) and #exp == 2 and infix[exp.fn] then
+		return '('..jsexp(exp[1])..' '..exp.fn..' '..jsexp(exp[2])..')'
+	elseif isfn(exp) and exp.fn == '[]' then
+		local sub = map(exp, jsexp)
+		return '['..table.concat(sub, ", ")..']'
+	elseif isatoom(exp) then
+		return tostring(exp or "undefined")
+	elseif exp.fn == '->' then
+		return string.format('function(%s) { return %s; }', exp[1], jsexp(exp[2]))
+	else
+		-- call!
+		return string.format([[ 
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)(%s,%s,%s) ]],
+			jsexp(exp.fn),
+			jsexp(exp[1]),
+			jsexp(exp[2]) or "undefined"
+		)
+	end
+end
+
+function javascript(f)
+	return jsexp(f)
+	--local naam,waarde = f[1],f[2]
+	--return 'function('..naam..') {return '..jsexp(waarde)..';}'
+end
 
 bieb = {
 	['inverteer'] = true; -- sure
@@ -6,6 +42,12 @@ bieb = {
 	['ja'] = true; 
 	['nee'] = false; 
 	['min'] = function(a,b) return math.min(a,b) end;
+	['javascript'] = function(fn) 
+		local code = javascript(fn)
+		local a = table.pack(string.byte(code, 1, #code))
+		a.fn = '[]'
+		return a
+	end;
 
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;

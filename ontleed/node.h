@@ -3,7 +3,7 @@ typedef struct node node;
 struct node {
 	// kids?
 	int exp;
-	char data[0x100];
+	char data[0x1000]; // max tekst data!
 	node* root;
 	node* first;
 	node* last;
@@ -15,7 +15,7 @@ struct node {
 };
 
 extern int numnodes;
-extern node nodes[0x1000];
+extern node nodes[0x10000];
 
 node* node_new();
 int write_node(node* n, char* out, int left);

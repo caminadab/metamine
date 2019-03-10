@@ -70,6 +70,9 @@ function doe(exp)
 				waarde[i] = naam
 			end
 		end
+		if isfn(w) and w.fn == 'javascript' then
+			waarde = {fn=bieb.javascript, w[1]}
+		end
 
 		-- aanroep! of indexeren
 		if type(waarde.fn) == 'table' then
@@ -80,6 +83,7 @@ function doe(exp)
 			if not ok then r = false end
 			if not ok and verboos then print(r) end
 		end
+
 		map[naam] = r
 		laatste = r
 		if verboos then

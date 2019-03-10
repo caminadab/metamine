@@ -1,0 +1,28 @@
+;in = "li1ee"
+in = "li3ee"
+uit = "bdec('" || in || "') = " || (bdec in)
+diepte  = 2
+breedte = 1
+
+; bdecodeer
+bdecB = data → bint | blijst
+data₀ = 'l'  ⇒  blijst =  "l" || cat(inhoud) || "e"
+data₀ = 'i'  ⇒  bint   =  data tot eind
+	eind = 1 + data vind "e"
+
+; blijst
+lijstdata = data vanaf 1
+inhoud = (leesMeerdere [lijstdata, []]) 1
+
+; meerdere lezen
+leesEen = [subdataA, objsA] → (obj ⇒ [subdataB, objsB])
+leesMeerdere = leesEen ^ breedte
+obj = bdecA subdataA
+objsB = objsA || [ obj ]
+subdataB = subdataA vanaf (#obj)
+
+; iteratief verdiepen
+verdiep = bdecA → bdecB
+bdec = (verdiep^diepte) bdecI
+bdecI = (x → [])
+

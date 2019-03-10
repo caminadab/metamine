@@ -7,8 +7,8 @@
 #include "node.h"
 #include "taal.h"
 
-extern char token[0x1000];
-extern char buf[0x10000];
+extern char token[0x10000];
+extern char buf[0x100000];
 extern const char* in;
 
 char* itoa(int value, char* str, int base) {
@@ -169,6 +169,7 @@ int yylex() {
 		// sluiter
 		token[i++] = 0;
 		yylval = a(token);
+		printf(yylval);
 		return TEKST;
 	}
 
@@ -204,7 +205,7 @@ int yylex() {
 	// naam
 	else if (isalnum(c)) {
 		int i;
-		for (i = 0; i < 0x1000 && (isalnum(c) || c == '-'); i++) {
+		for (i = 0; i < 0x10000 && (isalnum(c) || c == '-'); i++) {
 			token[i] = c;
 			c = *in++;
 		}

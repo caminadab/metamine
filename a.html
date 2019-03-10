@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Zwoele Code</title>
+		<meta charset='utf-8' />
+		<style>
+			html { background: #222; }
+			canvas { background: black; margin: 5mm; }
+		</style>
+	</head>
+	<body>
+		<canvas
+			id='canvas'
+			width='854'
+			height='480'
+		>
+		</canvas>
+		<script> 
+var canvas = document.getElementById('canvas');
+var dd = canvas.getContext('2d');
+
+// [links, rechts, bal]
+var spel = [ [200, 200, 10], [300, 300, 15], [100, 100, 50] ];
+var stap = function(_B) { return [ 
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)(_B,0,undefined) ,  
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)(_B,1,undefined) , [( 
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)( 
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)(_B,2,undefined) ,0,undefined)  + 1),  
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)( 
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)(_B,2,undefined) ,1,undefined) ,  
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)( 
+		(function(a,b,c) {
+			if (typeof a === "function")
+				return a(b,c);
+			else
+				return a[b];
+			}
+		)(_B,2,undefined) ,2,undefined) ]]; };
+
+function cirkel(c) {
+	dd.beginPath();
+	dd.fillStyle = 'green';
+	dd.arc(
+		c[0], c[1], c[2],
+		0, 2 * Math.PI
+	);
+	dd.fill();
+}
+	
+function bijwerk() {
+	spel = stap(spel);
+	draw();
+}
+
+function draw() {
+	dd.clearRect(0, 0, canvas.width, canvas.height);
+
+	cirkel(spel[0]);
+	cirkel(spel[1]);
+	cirkel(spel[2]);
+}
+
+window.setInterval(bijwerk, 1000/60);
+ </script>
+	</body>
+</html>

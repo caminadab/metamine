@@ -4,7 +4,7 @@
 #include "node.h"
 
 int numnodes;
-node nodes[0x1000];
+node nodes[0x10000];
 
 node* node_new() {
 	node* new = &nodes[numnodes++];

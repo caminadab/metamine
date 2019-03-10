@@ -11,7 +11,7 @@ extern node* yylval;
 
 struct fout fouten[0x10];
 
-char token[0x1000];
+char token[0x10000];
 char buf[0x10000];
 const char* in;
 
@@ -38,7 +38,7 @@ char* ontleed(char* code) {
 		strcpy(buf, "fout");
 		return buf;
 	}
-	int len = write_node(wortel, buf, 0x1000);
+	int len = write_node(wortel, buf, 0x10000);
 	return buf;
 }
 
