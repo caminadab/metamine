@@ -1,9 +1,27 @@
-djson = djsonA → djsonB
+verdiep = bdecA → bdecB
 
-djsonB = w → a | b
-a = (w₀ = 'l' ⇒ "lijst")
-b = (w₀ = 'i' ⇒ int(w deel [1, w vind "e"]))
+bdecB = data → bint | blijst
+bdecI = (x → [])
 
+; data → json
+;bint   = (data₀ = 'i' ⇒ data tot ((data vind "e") + 1))
+data₀ = 'i'  ⇒  bint = data tot eind
+eind = data vind "e"
+blijst = (data₀ = 'l' ⇒ "l" || cat(inhoud) || "e")
 
-j = (djson^10) (x → [])
-uit = j "li2ee"
+inhoud = ((bdecIt^breedte) [[], (data vanaf 1)]) 0
+bdecIt = [subs, subdata] → volgende | einde
+
+sub = bdecA subdata
+ sub ⇒  volgende = [subs || [sub], subdata vanaf (#sub)]
+¬sub ⇒  einde =    [subs,          [                  ]]
+
+; json → jwaarde
+wint = int(bint deel [1, #json-int - 1])
+
+bdec = (verdiep^diepte) (x → [])
+
+in = "li1ee"
+uit = "bdec('" || in || "') = " || (bdec in)
+diepte = 2
+breedte = 1

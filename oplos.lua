@@ -36,7 +36,6 @@ function punten(exp)
 end
 
 function oplos(exp,voor)
-	-- sets van vergelijkingen
 	if exp.fn == [[=]] or exp.fn == [[/\]] then
 		local eqs
 		if exp.fn == [[=]] then
@@ -60,6 +59,17 @@ function oplos(exp,voor)
 				or string.upper(val)==val
 				or val == 'standaardinvoer' -- kuch...
 				or bieb[val] ~= nil -- KUCH KUCH
+		end
+
+		-- herschrijf (b ⇒ (a = c)) → (a = (b ⇒ c))
+		for eq in pairs(eqs) do
+			local a = (eq.fn == '=>') 
+			local b = isexp(eq[2]) 
+			local c = (eq[2].fn == '=')
+			if eq.fn == '=>' and isexp(eq[2]) and eq[2].fn == '=' then
+				eq.fn = '='
+				eq[1],eq[2] = eq[2][1], {fn='=>', eq[1], eq[2][2]}
+			end
 		end
 
 		-- functies

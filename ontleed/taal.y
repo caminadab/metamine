@@ -76,7 +76,7 @@
 %left '+' '-'
 %nonassoc CALL
 %left '*' '/'
-%left NEG
+%left NEG '#'
 %right '^' '_'
 %left OUD
 %left '.'

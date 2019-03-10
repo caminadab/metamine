@@ -306,6 +306,22 @@ bieb = {
 		return false
 	end;
 
+	['vanaf'] = function(a,van)
+		local t = {fn='[]'}
+		for i=van+1,#a do
+			t[#t+1] = a[i]
+		end
+		return t
+	end;
+
+	['tot'] = function(a,tot)
+		local t = {fn='[]'}
+		for i=1,tot do
+			t[#t+1] = a[i]
+		end
+		return t
+	end;
+
 	['deel'] = function(a,b)
 		local van,tot = b[1],b[2]
 		local t = {fn='[]'}
