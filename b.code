@@ -1,10 +1,10 @@
 f = [dataA, objsA] → [dataB, objsB]
 #dataA ≠ 0  ⇒  obj = dataA deel [ 1, 1 + dataA₀ ]
-objsB = (obj ⇒ objsA || [ obj ]) | (¬obj ⇒ objsA)
-dataB = dataA vanaf (1 + dataA₀)
+objsB = (obj ⇒ objsA || [obj]) | (¬obj ⇒ objsA)
+dataB = (obj ⇒ dataA vanaf (1 + dataA₀)) | (¬obj ⇒ [])
 
-decodeer = i → ((f^9) [i, []])₁
+decodeer = i → ((f^99999) [i, []])₁
 encodeer = bers → cat(bers map (b → [#b] || b))
 
-berichten = ["hoi", "hoe", "is", "het", "ruben"]
+berichten = ["hoi", "hoe", "is", "het", "geert"]
 uit = ((encodeer ∘ decodeer) berichten) cat ", "
