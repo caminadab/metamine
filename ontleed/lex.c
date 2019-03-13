@@ -188,11 +188,6 @@ int yylex() {
 	else if (!memcmp(cc, "=>", 2))	{ strcpy(token, "=>"); in++; id = DAN; }
 	else if (!memcmp(cc, ":=", 2))	{ strcpy(token, ":="); in++; id = ASS; }
 	else if (!memcmp(cc, "+=", 2))	{ strcpy(token, "+="); in++; id = INC; }
-	else if (!memcmp(cc, "en", 2))	{ strcpy(token, "en"); in++; id = EN; }
-	else if (!memcmp(cc, "of", 2))	{ strcpy(token, "of"); in++; id = OF; }
-	else if (!memcmp(cc, "niet", 4))	{ strcpy(token, "niet"); in+=3; id = NIET; }
-	else if (!memcmp(cc, "exof", 4))	{ strcpy(token, "exof"); in+=3; id = EXOF; }
-	else if (!memcmp(cc, "noch", 4))	{ strcpy(token, "noch"); in+=3; id = NOCH; }
 	else if (!isalnum(c)) {
 		token[0] = c;
 		token[1] = 0;

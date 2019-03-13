@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Date: Wed, 13 Mar 2019 13:49:50 GMT
+Server: Apache/2.4.37 (Ubuntu)
+Upgrade: h2,h2c
+Connection: Upgrade
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Set-Cookie: PHPSESSID=vtm25bf7ihke55gkc4v4qo5nkj; path=/
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Vary: Accept-Encoding
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=UTF-8
+

@@ -24,6 +24,12 @@ function map(v, fn)
 	return r
 end
 
+function imap(v, fn)
+	local r = {}
+	for k,v in ipairs(v) do r[k] = fn(v) end
+	return r
+end
+
 function filter(t,fn)
 	local r = {}
 	for i,v in ipairs(t) do

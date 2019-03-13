@@ -1,8 +1,8 @@
 ;in = "li1ee"
-in = "li3ee"
+in = "llei3ei4ee"
 uit = "bdec('" || in || "') = " || (bdec in)
 diepte  = 2
-breedte = 1
+breedte = 3
 
 ; bdecodeer
 bdecB = data → bint | blijst

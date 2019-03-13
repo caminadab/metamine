@@ -41,6 +41,7 @@ bieb = {
 	['tau'] = 2 * math.pi;
 	['ja'] = true; 
 	['nee'] = false; 
+	['niets'] = false; 
 	['min'] = function(a,b) return math.min(a,b) end;
 	['javascript'] = function(fn) 
 		local code = javascript(fn)
@@ -205,6 +206,7 @@ bieb = {
 
 	['of'] = function(a,b) return a or b end;
 	['en'] = function(a,b) return a and b end;
+	['!'] = function(a) return not a end;
 
 	['som'] = function(a)
 		local r = 0

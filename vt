@@ -28,6 +28,7 @@ require 'lisp'
 
 require 'vertaal'
 require 'doe'
+require 'naarlua'
 require 'rapport'
 
 local opt,bronnen = getopt({...}, "u")
@@ -50,6 +51,7 @@ Opties:
     -h, --help        print deze hulp
     -d, --doe         voer meteen uit
     -s, --syntax 	  	print syntax
+    -L, --lua         genereer lua
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
     -v, --verboos     spraakzaam zijn
@@ -105,7 +107,11 @@ if opt.d or opt.doe then
 	end
 else
 	--uit = bouw(plan)
-	uit = tostring(toexp(plan))..'\n'
+	if opt.l or opt.lua then
+		uit = naarlua(plan)
+	else
+		uit = tostring(toexp(plan))..'\n'
+	end
 end
 --uit = unlisp(uit)
 
