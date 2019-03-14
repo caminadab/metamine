@@ -1,14 +1,10 @@
-json = f → g
+bencB = w → d
+w:lijst ⇒  d = "l" || cat(w map bencA) || "e"
+w:int   ⇒  d = "i" || tekst w || "e"
 
-g = w → a | b
-a = (w:lijst ⇒ "l" || cat(w map f) || "e")
-b = (w:int ⇒ "i" || tekst w || "e")
+; iteratief verdiepen
+verdiep = bencA → bencB
+benc = (verdiep^1000) (x → [])
 
-n = wa → na | nb
-na = (wa:lijst ⇒ "le")
-nb = (wa:int ⇒ "i" || tekst wa || "e")
-
-j = (json^5) (x → "")
-uit = j [1,[2,[3]]]
-
-bestand-in
+in = [1,[2],3,[],[[[]],4]]
+uit = benc in

@@ -3,8 +3,8 @@ f = [dataA, objsA] → [dataB, objsB]
 objsB = (obj ⇒ objsA || [obj]) | (¬obj ⇒ objsA)
 dataB = (obj ⇒ dataA vanaf (1 + dataA₀)) | (¬obj ⇒ [])
 
-decodeer = i → ((f^99999) [i, []])₁
+decodeer = i → ((f^999) [i, []])₁
 encodeer = bers → cat(bers map (b → [#b] || b))
 
-berichten = ["hoi", "hoe", "is", "het", "geert"]
+berichten = ["hoi", "hoe", "is", "het", "dan"]
 uit = ((encodeer ∘ decodeer) berichten) cat ", "

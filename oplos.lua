@@ -61,15 +61,37 @@ function oplos(exp,voor)
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
-		-- herschrijf (b ⇒ (a = c)) → (a = (b ⇒ c))
+		-- herschrijf (b ⇒ (a = c)) → (a |= (b ⇒ c))
 		for eq in pairs(eqs) do
 			local a = (eq.fn == '=>') 
 			local b = isexp(eq[2]) 
 			local c = (eq[2].fn == '=')
 			if eq.fn == '=>' and isexp(eq[2]) and eq[2].fn == '=' then
-				eq.fn = '='
+				eq.fn = '|='
 				eq[1],eq[2] = eq[2][1], {fn='=>', eq[1], eq[2][2]}
 			end
+		end
+
+		-- verzamel |=
+		local map = {} -- k → [v]
+		local oud = {}
+		for eq in pairs(eqs) do
+			-- a |= b
+			if eq.fn == '|=' then
+				local a,b = eq[1],eq[2]
+				map[a] = map[a] or {}
+				local v = map[a]
+				v[#v+1] = b
+				oud[eq] = true
+			end
+		end
+		for eq in pairs(oud) do
+			eqs[eq] = false
+		end
+		for k,v in pairs(map) do
+			v.fn = '|'
+			local eq = {fn='=', k, v}
+			eqs[eq] = true
 		end
 
 		-- functies

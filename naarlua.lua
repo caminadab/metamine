@@ -25,12 +25,12 @@ function maakvars()
 	end
 end
 
-local infix = set('+', '-', '*', '/', '!=') 
+local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/') 
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow'}
+local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype' }
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
-		return exp
+		return exp,t
 	end
 
 	local fn,a,b = exp.fn, exp[1], exp[2]
@@ -39,6 +39,8 @@ local function naarluaR(exp,t,tabs,maakvar)
 	if infix[fn] then
 		if fn == '=' then fn = '==' end
 		if fn == '!=' then fn = '~=' end
+		if fn == '/\\' then fn = 'and' end
+		if fn == '\\/' then fn = 'or' end
 		local A = naarluaR(a,t,tabs,maakvar)
 		local B = naarluaR(b,t,tabs,maakvar)
 		t[#t+1] = string.format('%slocal %s = %s %s %s\n', tabs, var, A, fn, B)
@@ -107,6 +109,10 @@ local function naarluaR(exp,t,tabs,maakvar)
 end
 
 local biebbron = [[
+local tau = math.pi * 2
+local ja = true
+local nee = false
+local pack = pack or table.pack
 local unpack = unpack or table.unpack
 local _pow = function(a,b)
 	if type(a) == 'number' then
@@ -119,6 +125,15 @@ local _pow = function(a,b)
 			return c
 		end
 	end
+end
+local lijst = 'lijst'
+local int = 'int'
+local getal = 'getal'
+local _istype = function(a,b)
+	if b == getal then return type(a) == 'number' end
+	if b == int then return type(a) == 'number' and a%1 == 0 end
+	if b == lijst then return type(a) == 'table' end
+	return false
 end
 local _comp = function(a,b)
 	return function(...)
@@ -180,6 +195,39 @@ local cat = function(a,b)
 	end
 	return r
 end
+
+local vind = function(a,b)
+	for i=1,#a-#b+1 do
+		local gevonden = true
+		for j=i,i+#b-1 do
+			if a[j] ~= b[j-i+1] then
+				gevonden = false
+				break
+			end
+		end
+		if gevonden then
+			return i-1
+		end
+	end
+	return false
+end
+
+local tekst = function (a)
+	local t = tostring(a)
+	return {string.byte(t,1,#t)}
+end
+
+local herhaal = function(f)
+	return function(a)
+		local r = a
+		while a do
+			r = a
+			a = f(a)
+		end
+		return r
+	end
+end
+
 ]]
 local biebbron = biebbron:gsub('\t', tab)
 

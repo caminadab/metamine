@@ -216,12 +216,16 @@ bieb = {
 		return r
 	end;
 
-	['herhaal'] = function(a,n) -- 10
-		local r = {}
-		for i=1,n do
-			r[i] = a
+	-- herhaal functie totdat geen resultaat
+	['herhaal'] = function(f)
+		return function(a)
+			local r = a
+			while a do
+				r = a
+				a = f(a)
+			end
+			return r
 		end
-		return r
 	end;
 
 	['tekst'] = function(a)

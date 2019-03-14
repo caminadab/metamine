@@ -1,0 +1,22 @@
+; kanaal encodeer
+kenc = w → d
+	d = cat(w map (b → [#b] || b))
+
+; kanaal decodeer
+kdec = data → ((herhaal kdecEen) [data, []])₁
+	kdecEen = [dataA, berichtenA] → (#dataA > 0 ⇒ [dataB, berichtenB])
+		bericht = dataA deel [1, 1 + dataA₀]
+		dataB = dataA vanaf (1 + dataA₀)
+		berichtenB = berichtenA || [bericht]
+
+; b encodeer
+bencB = w → d
+	w:lijst ⇒  d = "l" || cat(w map bencA) || "e"
+	w:int   ⇒  d = "i" || tekst w || "e"
+
+; iteratief verdiepen
+verdiep = bencA → bencB
+benc = (verdiep^1000) (x → [])
+
+; kdec, kenc, bdec, benc
+uit = 

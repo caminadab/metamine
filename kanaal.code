@@ -1,0 +1,16 @@
+berichten = ["hoi", "hoe", "is", "het", "dan"]
+
+; encodeer
+kenc = w → d
+d = cat(w map (b → [#b] || b))
+
+; decodeer
+kdecEen = [dataA, berichtenA] → (#dataA > 0 ⇒ [dataB, berichtenB])
+bericht = dataA deel [1, 1 + dataA₀]
+dataB = dataA vanaf (1 + dataA₀)
+berichtenB = berichtenA || [bericht]
+
+kdec = data → ((herhaal kdecEen) [data, []])₁
+
+check = (kenc ∘ kdec) berichten
+uit = check cat ","
