@@ -3,11 +3,16 @@
 #include <string.h>
 
 #include "node.h"
-#include "taal.h"
+#include "taal.yy.h"
+#include "lex.yy.h"
 #include "global.h"
 
 extern void rapporteer(int t, char* str);
 extern void yyreset();
+
+int yyerror(YYLTYPE loc, char* lexer, char* msg) {
+	printf("%d:%d-%d:%d: %s\n", loc.first_line, loc.first_column, loc.first_line, loc.first_column, msg);
+}
 
 void lua_pushlisp(lua_State* L, node* node) {
 	if (node->exp) {
@@ -42,6 +47,7 @@ void lua_pushexp(lua_State* L, node* node) {
 	}
 }
 
+/*
 void lua_pushfout(lua_State* L, fout fout) {
 	lua_createtable(L, 0, 2);
 	lua_pushinteger(L, fout.lijn + 1);
@@ -49,62 +55,30 @@ void lua_pushfout(lua_State* L, fout fout) {
 	lua_pushstring(L, fout.bericht);
 	lua_setfield(L, -2, "bericht");
 }
+*/
+node* ontleed(char* code) {
+	//node* wortel = yyparse(code);
+	//return wortel;
+	return 0;
+}
 
-int lua_ontleed0(lua_State* L) {
-	// reset
-	yyreset();
-	//const char* str = luaL_checkstring(L, 1);
-	luaL_checkstring(L, 1);
-	lua_pushliteral(L, "\n");
-	lua_concat(L, 2);
+
+int lua_ontleed(lua_State* L) {
 	const char* str = luaL_checkstring(L, 1);
-	in = str;
-	yyparse();
+
+	yyscan_t scanner;
+	yylex_init(&scanner);
+	yy_scan_string(str, scanner);
+	node* wortel;
+
+	int ok = yyparse(&wortel, scanner);
+	yylex_destroy(scanner);
+
 	if (wortel)
 		lua_pushexp(L, wortel);
 	else
 		lua_pushliteral(L, "fout");
 	return 1;
-}
-
-// niet threadsafe lol
-int lua_ontleed(lua_State* L) {
-	// reset
-	yyreset();
-	const char* str = luaL_checkstring(L, 1);
-	strcpy(buf, str);
-	in = buf;
-
-	// doe het!
-	yyparse();
-
-	// TEMP ERROR FIX
-	if (!wortel && foutlen == 0)
-		rapporteer(-2, "kon er niets van maken");
-
-	if (wortel) {
-		lua_pushlisp(L, wortel);
-	}
-	else {
-		lua_createtable(L, 0, 1);
-		lua_pushliteral(L, "fout");
-		lua_pushinteger(L, 1);
-		lua_settable(L, -3);
-		//lua_pushnil(L);
-	}
-
-	// fouten
-	if (!foutlen)
-		return 1;
-	else {
-		lua_createtable(L, foutlen, 0);
-		for (int i = 0; i < foutlen; i++) {
-			lua_pushinteger(L, i+1);
-			lua_pushfout(L, fouten[i]);
-			lua_settable(L, -3);
-		}
-		return 2;
-	}
 }
 
 #ifdef _WIN32 //defined(_MSC_VER)
@@ -122,8 +96,6 @@ int lua_ontleed(lua_State* L) {
 EXPORT int luaopen_ontleed(lua_State* L) {
 	lua_pushcfunction(L, lua_ontleed);
 	lua_setglobal(L, "ontleed");
-	lua_pushcfunction(L, lua_ontleed0);
-	lua_setglobal(L, "ontleed0");
 	return 1;
 }
 

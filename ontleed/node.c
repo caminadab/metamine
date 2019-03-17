@@ -63,11 +63,11 @@ node* node_copy(node* orig) {
 	return copy;
 }
 
-void print_node(node* n) {
+void print_node_sub(node* n) {
 	if (n->exp) {
 		printf("(");
 		for (node* kid = n->first; kid; kid = kid->next) {
-			print_node(kid);
+			print_node_sub(kid);
 			if (kid->next)
 				putchar(' ');
 		}
@@ -76,6 +76,11 @@ void print_node(node* n) {
 	else {
 		printf("%s", n->data);
 	}
+}
+
+void print_node(node* n) {
+	print_node_sub(n);
+	printf("\n");
 }
 
 node* append(node* exp, node* atom) {
@@ -96,7 +101,7 @@ node* append(node* exp, node* atom) {
 node* tekst(node* str0) {
 	char* str = str0->data;
 	node* t = exp1(a("[]"));
-	for (int i = 1; str[i] != '"' && str[i]; i++) {
+	for (int i = 1; str[i+1]; i++) {
 		char ch[16];
 		//itoa(str[i], 
 		sprintf(ch, "%d", str[i]);

@@ -79,7 +79,7 @@ end
 
 
 --local plan = vertaal(code, 'in', 'uit')
-local asb = toexp(ontleed0(code))
+local asb = toexp(ontleed(code))
 if verboos then
 	print('ASB')
 	print(asb)

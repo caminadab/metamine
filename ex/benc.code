@@ -1,8 +1,11 @@
-json = jsonA → jsonB
+bencB = w → d
+w:lijst ⇒  d = "l" || cat(w map bencA) || "e"
+w:int   ⇒  d = "i" || tekst w || "e"
 
-jsonB = w → a | b
-a = (w:lijst ⇒ "l" || cat(w map jsonA) || "e")
-b = (w:int ⇒ "i" || tekst w || "e")
+; iteratief verdiepen
+;benc = ((bencA → bencB)^999) (x → [])
+;benc = kortsluit (bencA → bencB)
+benc = ((bencA → bencB)^99) bencB
 
-j = (json^10) (x → [])
-uit = j [1,[2],3]
+in = [1,[2],3,[],[[[]],4]]
+uit = benc in

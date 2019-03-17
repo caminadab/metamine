@@ -1,3 +1,14 @@
+%define parse.error verbose
+%define api.pure true
+%locations
+%token-table
+%glr-parser
+%define api.value.type {struct node*}
+%lex-param {void* scanner}
+
+%parse-param {void** root}
+%parse-param {void* scanner}
+
 %{
   #include <math.h>
 	#include <stdbool.h>
@@ -6,32 +17,20 @@
 
 	#include "node.h"
 
-  int yylex (void);
-  void yyerror (char const *);
+	typedef struct node* YYSTYPE;
 
-	node* wortel;
+	#define YYLTYPE_IS_DECLARED
+	typedef struct YYLTYPE  
+	{  
+		int first_line;  
+		int first_column;  
+		int last_line;  
+		int last_column;  
+	} YYLTYPE;
 
-	// fouten
-	struct fout {
-		int lijn;
-		char bericht[0x1000];
-	};
-
-	int lijn;
-	int foutlen = 0;
-	struct fout fouten[0x10];
-
-	void rapporteer(int lijn, char* bericht) {
-		struct fout fout;
-		fout.lijn = lijn;
-		strcpy(fout.bericht, bericht);
-		fouten[foutlen++] = fout;
-	}
+	#include "lex.yy.h"
 %}
 
-/* Bison declarations.  */
-%define api.value.type {node*}
-%glr-parser
 %token NAAM
 %token TEKST
 %token DAN "=>"
@@ -43,10 +42,8 @@
 %token CAT "||"
 %token TIL ".."
 %token CART "xx"
-/* %token COMP '@' */
 %token END 0 "invoereinde"
 %token NEG '-'
-%token IS '='
 %token GDGA ">="
 %token ISB "~="
 %token KDGA "<="
@@ -86,9 +83,9 @@
 %%
 
 input:
-	exp sep { $$ = wortel = $1; }
-|	block { $$ = wortel = $1; }
-|	error { $$ = wortel = a("fout"); yyerror; }
+	exp sep { *root = $$ = $1; YYACCEPT; }
+|	block { *root = $$ = $1; YYACCEPT; }
+|	error { *root = $$ = a("fout"); yyerrok; YYACCEPT; }
 ;
 
 block:
@@ -113,7 +110,7 @@ sep: '\n' | sep '\n' ;
 
 single:
 	NAAM 
-| TEKST								{ $$ = tekst($1); }
+| TEKST								{ $$ = $1; }
 | single '%'					{ $$ = _exp2(a("%"), $1); }
 | single '\''					{ $$ = _exp2(a("'"), $1); }
 | single I0						{ $$ = _exp2($1, a("0")); }
@@ -180,9 +177,9 @@ single:
 | '(' ">>" ')'       	{ $$ = a(">>"); }
 | '(' "<<" ')'       	{ $$ = a("<<"); }
 
-|	'(' error ')'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
-|	'[' error ']'				{ $$ = a("fout"); rapporteer(lijn, "?"); yyerrok; }
-|	'{' error '}'				{ $$ = _exp2(a("{}"), a("fout")); rapporteer(lijn, "?"); yyerrok; }
+|	'(' error ')'				{ $$ = a("fout"); yyerrok; }
+|	'[' error ']'				{ $$ = a("fout"); yyerrok; }
+|	'{' error '}'				{ $$ = _exp2(a("{}"), a("fout")); yyerrok; }
 ;
 
 exp:
