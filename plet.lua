@@ -15,7 +15,7 @@ function plet(exp,t)
 
 	local waarde = {}
 	for k,v in pairs(exp) do
-		if exp.fn ~= '->' and exp.fn ~= 'javascript' then
+		if exp.fn ~= '->' and exp.fn ~= 'javascript' and exp.fn ~= 'lua' then
 			waarde[k] = plet(v, t)
 		else
 			waarde = exp

@@ -1,0 +1,13 @@
+hexcijfers = "0123456789ABCDEF"
+
+hex = n → h
+	b =  int(n · 255)
+	cijferB =  int(b  /  16)
+	cijferA =  int(b mod 16)
+	h = [hexcijfers(cijferB), hexcijfers(cijferA)]
+
+kleurcode = rgb → code
+	code = "#" || cat(rgb map hex)
+
+kleur = [100%, 50%, 0%]
+uit = kleurcode(kleur)

@@ -117,57 +117,33 @@ local herhaal = function(f)
     end
 end
 
-local D = tabel{104,111,105}
-local E = tabel{104,111,101}
-local F = tabel{105,115}
-local G = tabel{104,101,116}
-local H = tabel{100,97,110}
-local C = tabel{D,E,F,G,H}
-local J = function (_C)
-    local L = tabel{}
-    local M = function (_D)
-        local P = #(_D)
-        local O = tabel{P}
-        local N = cat{O, _D}
-        return N
-    end
-    for i=1,#_C do
-        L[i] = M(_C[i])
-    end
-    local K = cat(L)
-    return K
+local B = function (_A)
+    local C = tabel{}
+    return C
 end
-local R = function (_A)
-    local S = tabel{}
-    return S
-end
-local U = function (_B)
-    local V = function (_E)
-        local Z = #(_E)
-        local Y = Z > 0
-        local X = false
-        if Y then
-            local FB = _E(0)
-            local EB = 1 + FB
-            local DB = tabel{1,EB}
-            local CB = deel(_E,DB)
-            local BB = tabel{CB}
-            local JB = _E(0)
-            local IB = 1 + JB
-            local HB = vanaf(_E,IB)
-            local GB = _B(HB)
-            local AB = cat{BB, GB}
-            X = AB
+local E = function (_B)
+    local F = function (_C)
+        local J = #(_C)
+        local I = J > 0
+        local H = false
+        if I then
+            local P = _C(0)
+            local O = 1 + P
+            local N = tabel{1,O}
+            local M = deel(_C,N)
+            local L = tabel{M}
+            local T = _C(0)
+            local S = 1 + T
+            local R = vanaf(_C,S)
+            local Q = _B(R)
+            local K = cat{L, Q}
+            H = K
         end
-        local W = _kies(X)
-        return W
+        local G = _kies(H)
+        return G
     end
-    return V
+    return F
 end
-local T = _pow(U,999)
-local Q = T(R)
-local I = _comp(J,Q)
-local B = I(C)
-local KB = tabel{44}
-local A = cat(B,KB)
+local D = _pow(E,999)
+local A = D(B)
 print(string.char(unpack(A)))

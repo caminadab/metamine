@@ -3,8 +3,9 @@ w:lijst ⇒  d = "l" || cat(w map bencA) || "e"
 w:int   ⇒  d = "i" || tekst w || "e"
 
 ; iteratief verdiepen
-verdiep = bencA → bencB
-benc = (verdiep^1000) (x → [])
+;benc = ((bencA → bencB)^999) (x → [])
+;benc = kortsluit (bencA → bencB)
+benc = ((bencA → bencB)^99) bencB
 
 in = [1,[2],3,[],[[[]],4]]
 uit = benc in

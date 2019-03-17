@@ -80,7 +80,7 @@
 %right '^' '_'
 %left OUD
 %left '.'
-%nonassoc '%' INV M0 M1 M2 M3 M4 MN I0 I1 I2 I3 I4
+%nonassoc '%' '\'' INV M0 M1 M2 M3 M4 MN I0 I1 I2 I3 I4
 %left NAAM TEKST
 
 %%
@@ -115,6 +115,7 @@ single:
 	NAAM 
 | TEKST								{ $$ = tekst($1); }
 | single '%'					{ $$ = _exp2(a("%"), $1); }
+| single '\''					{ $$ = _exp2(a("'"), $1); }
 | single I0						{ $$ = _exp2($1, a("0")); }
 | single I1						{ $$ = _exp2($1, a("1")); }
 | single I2						{ $$ = _exp2($1, a("2")); }

@@ -16,18 +16,35 @@ local _pow = function(a,b)
     end
 end
 local lijst = 'lijst'
-local int = 'int'
-local getal = 'getal'
+local getal = function(a)
+    return tonumber(string.char(table.unpack(a)))
+end
+local int = function(a)
+    local getal
+    if type(a) == 'number' then
+        getal = a
+    else
+        getal = tonumber(string.char(table.unpack(a)))
+    end
+    if not getal then return false end
+    return math.floor(getal)
+end;
 local _istype = function(a,b)
     if b == getal then return type(a) == 'number' end
     if b == int then return type(a) == 'number' and a%1 == 0 end
     if b == lijst then return type(a) == 'table' end
     return false
 end
+local _procent = function(n) return n / 100 end
 local _comp = function(a,b)
     return function(...)
         return b(a(...))
     end
+end
+local javascript = function(broncode)
+    -- ^_^
+    require 'bieb'
+    return bieb.javascript(broncode)
 end
 local tabel = function(t)
     local t = t or {}
@@ -117,57 +134,35 @@ local herhaal = function(f)
     end
 end
 
-local D = tabel{104,111,105}
-local E = tabel{104,111,101}
-local F = tabel{105,115}
-local G = tabel{104,101,116}
-local H = tabel{100,97,110}
-local C = tabel{D,E,F,G,H}
-local J = function (_C)
-    local L = tabel{}
-    local M = function (_D)
-        local P = #(_D)
-        local O = tabel{P}
-        local N = cat{O, _D}
-        return N
+local C = _procent(100)
+local D = _procent(50)
+local E = _procent(0)
+local B = tabel{C,D,E}
+local F = function (_B)
+    local H = tabel{35}
+    local J = tabel{}
+    local K = function (_A)
+        local Q = _A * 255
+        local P = int(Q)
+        local O = P / 16
+        local N = int(O)
+        local R = tabel{48,49,50,51,52,53,54,55,56,57,65,66,67,68,69,70}
+        local M = R(N)
+        local W = _A * 255
+        local V = int(W)
+        local U = V % 16
+        local T = int(U)
+        local X = tabel{48,49,50,51,52,53,54,55,56,57,65,66,67,68,69,70}
+        local S = X(T)
+        local L = tabel{M,S}
+        return L
     end
-    for i=1,#_C do
-        L[i] = M(_C[i])
+    for i=1,#_B do
+        J[i] = K(_B[i])
     end
-    local K = cat(L)
-    return K
+    local I = cat(J)
+    local G = cat{H, I}
+    return G
 end
-local R = function (_A)
-    local S = tabel{}
-    return S
-end
-local U = function (_B)
-    local V = function (_E)
-        local Z = #(_E)
-        local Y = Z > 0
-        local X = false
-        if Y then
-            local FB = _E(0)
-            local EB = 1 + FB
-            local DB = tabel{1,EB}
-            local CB = deel(_E,DB)
-            local BB = tabel{CB}
-            local JB = _E(0)
-            local IB = 1 + JB
-            local HB = vanaf(_E,IB)
-            local GB = _B(HB)
-            local AB = cat{BB, GB}
-            X = AB
-        end
-        local W = _kies(X)
-        return W
-    end
-    return V
-end
-local T = _pow(U,999)
-local Q = T(R)
-local I = _comp(J,Q)
-local B = I(C)
-local KB = tabel{44}
-local A = cat(B,KB)
+local A = F(B)
 print(string.char(unpack(A)))

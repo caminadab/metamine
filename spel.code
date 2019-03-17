@@ -1,0 +1,11 @@
+; simpel spel
+begin = []
+
+stap = [spelA, dt, invoer] → spelB
+	spelB = spelA
+
+teken = spel → [ [cirkeltype,0,0,1/4,oranje] ]
+
+
+cirkeltype = 0
+

@@ -1,40 +1,10 @@
 require 'exp'
 require 'util'
+require 'naarlua'
+require 'naarjavascript'
 
-local infix = set('+','-','/','^')
-
-function jsexp(exp)
-	if isfn(exp) and #exp == 2 and infix[exp.fn] then
-		return '('..jsexp(exp[1])..' '..exp.fn..' '..jsexp(exp[2])..')'
-	elseif isfn(exp) and exp.fn == '[]' then
-		local sub = map(exp, jsexp)
-		return '['..table.concat(sub, ", ")..']'
-	elseif isatoom(exp) then
-		return tostring(exp or "undefined")
-	elseif exp.fn == '->' then
-		return string.format('function(%s) { return %s; }', exp[1], jsexp(exp[2]))
-	else
-		-- call!
-		return string.format([[ 
-		(function(a,b,c) {
-			if (typeof a === "function")
-				return a(b,c);
-			else
-				return a[b];
-			}
-		)(%s,%s,%s) ]],
-			jsexp(exp.fn),
-			jsexp(exp[1]),
-			jsexp(exp[2]) or "undefined"
-		)
-	end
-end
-
-function javascript(f)
-	return jsexp(f)
-	--local naam,waarde = f[1],f[2]
-	--return 'function('..naam..') {return '..jsexp(waarde)..';}'
-end
+local jslibtaal = table.pack(string.byte(jslib,1,#jslib))
+jslibtaal.fn = '[]'
 
 bieb = {
 	['inverteer'] = true; -- sure
@@ -43,11 +13,27 @@ bieb = {
 	['nee'] = false; 
 	['niets'] = false; 
 	['min'] = function(a,b) return math.min(a,b) end;
+	['mod'] = function(a,b) return math.modf(a,b) end;
+
+	['jslib'] = jslibtaal,
 	['javascript'] = function(fn) 
-		local code = javascript(fn)
+		local code,err = naarjavascript(fn)
+		if not code and verboos then print('GEEN JAVASCRIPT: '..err) end
 		local a = table.pack(string.byte(code, 1, #code))
 		a.fn = '[]'
 		return a
+	end;
+
+	['lua'] = function(func)
+		local code = naarlua(func)
+		local a = table.pack(string.byte(code, 1, #code))
+		a.fn = '[]'
+		return a
+	end;
+
+	['kortsluit'] = function(a,b)
+		-- a = origineel
+		-- b = verbeterd
 	end;
 
 	['+'] = function(a,b) return a + b end;
@@ -155,7 +141,7 @@ bieb = {
 	end;
 
 	['||'] = function(a,b)
-		if a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
+		if isatoom(a) or isatoom(b) or a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
 		local j = 1
 		local t = {fn='[]'}
 		--if isatoom(a) then a = {a} end

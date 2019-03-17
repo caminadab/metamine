@@ -52,7 +52,7 @@ function doe(exp)
 
 	for i,w in ipairs(t) do
 		local naam = naam(i)
-		if verboos then io.write(naam, ':\t', tostring(toexp(w)), '\t\t') end
+		if verboos then io.write(naam, ':\t', unlisp(w,999):sub(1,40), '\t\t') end
 
 		-- indirectie
 		local waarde = {}
@@ -78,10 +78,10 @@ function doe(exp)
 		if type(waarde.fn) == 'table' then
 			r = waarde.fn[waarde[1]+1]
 		else
-			local ok
-			ok,r = pcall(waarde.fn, table.unpack(waarde))
-			if not ok then r = false end
-			if not ok and verboos then print(r) end
+			local ok,err
+			ok,r = xpcall(waarde.fn, debug.traceback, table.unpack(waarde))
+			if not ok then err,r = r,false end
+			if not ok and verboos then print(err) end
 		end
 
 		map[naam] = r
@@ -94,11 +94,15 @@ function doe(exp)
 					a = '\t"'..(b or '')..'"'
 				end
 			end
-			io.write('= ', tostring(toexp(r)), a, '\n')
+			io.write('= ', unlisp(r,999):sub(1,40), string.format('%q', a:sub(1,40)):gsub('\n','n'), '\n')
 		end
 	end
 	--return map[naam(#map)]
 	--print("L", toexp(laatste))
+	if verboos then
+		print('KLAAR')
+		print()
+	end
 	return laatste 
 end
 

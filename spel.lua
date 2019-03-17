@@ -24,10 +24,16 @@ local _istype = function(a,b)
     if b == lijst then return type(a) == 'table' end
     return false
 end
+local _procent = function(n) return n / 100 end
 local _comp = function(a,b)
     return function(...)
         return b(a(...))
     end
+end
+local javascript = function(broncode)
+    -- ^_^
+    require 'bieb'
+    return bieb.javascript(broncode)
 end
 local tabel = function(t)
     local t = t or {}
@@ -117,57 +123,37 @@ local herhaal = function(f)
     end
 end
 
-local D = tabel{104,111,105}
-local E = tabel{104,111,101}
-local F = tabel{105,115}
-local G = tabel{104,101,116}
-local H = tabel{100,97,110}
-local C = tabel{D,E,F,G,H}
-local J = function (_C)
-    local L = tabel{}
-    local M = function (_D)
-        local P = #(_D)
-        local O = tabel{P}
-        local N = cat{O, _D}
-        return N
-    end
-    for i=1,#_C do
-        L[i] = M(_C[i])
-    end
-    local K = cat(L)
-    return K
+local C = tabel{}
+local D = function (_A)
+    local E = _A(0)
+    return E
 end
-local R = function (_A)
-    local S = tabel{}
-    return S
+local F = function (_C)
+    local J = _procent(100)
+    local K = _procent(50)
+    local L = _procent(0)
+    local I = tabel{J,K,L}
+    local H = tabel{0,100,100,10,I}
+    local G = tabel{H}
+    return G
 end
-local U = function (_B)
-    local V = function (_E)
-        local Z = #(_E)
-        local Y = Z > 0
-        local X = false
-        if Y then
-            local FB = _E(0)
-            local EB = 1 + FB
-            local DB = tabel{1,EB}
-            local CB = deel(_E,DB)
-            local BB = tabel{CB}
-            local JB = _E(0)
-            local IB = 1 + JB
-            local HB = vanaf(_E,IB)
-            local GB = _B(HB)
-            local AB = cat{BB, GB}
-            X = AB
-        end
-        local W = _kies(X)
-        return W
+local B = tabel{C,D,F}
+local M = function (_B)
+    local P = tabel{10,60,104,116,109,108,62,10,60,99,97,110,118,97,115,32,119,105,100,116,104,61,39,52,50,56,39,32,104,101,105,103,104,116,61,39,50,52,48,39,62,10,60,47,99,97,110,118,97,115,62,10,60,115,99,114,105,112,116,62,10,9,118,97,114,32,116,101,107,101,110,32,61,32,102,117,110,99,116,105,111,110,40,41,32,123,10,9}
+    local R = function (_C)
+        local V = _procent(100)
+        local W = _procent(50)
+        local X = _procent(0)
+        local U = tabel{V,W,X}
+        local T = tabel{0,100,100,10,U}
+        local S = tabel{T}
+        return S
     end
-    return V
+    local Q = javascript(R)
+    local O = cat{P, Q}
+    local Y = tabel{10,9,125,59,10,10,9,47,47,118,97,114,32,99,10,9,47,47,118,97,114,32,98,32,61,32,32,10,9,47,47,118,97,114,32,116,101,107,101,110,10,9,47,47,100,100,46,99,108,101,97,114,82,101,99,116,40,48,44,32,48,44,32,99,97,110,118,97,115,46,119,105,100,116,104,44,32,99,97,110,118,97,115,46,104,101,105,103,104,116,41,59,10,60,47,115,99,114,105,112,116,62,10,60,47,104,116,109,108,62,10}
+    local N = cat{O, Y}
+    return N
 end
-local T = _pow(U,999)
-local Q = T(R)
-local I = _comp(J,Q)
-local B = I(C)
-local KB = tabel{44}
-local A = cat(B,KB)
+local A = M(B)
 print(string.char(unpack(A)))

@@ -98,6 +98,33 @@ function maakeq(l,r)
 	return eq
 end
 
+function T(tabs)
+	do return unlisp(self) end
+	if type(self) == 'string' then return self end
+	local tabs = (tabs or '') .. '  '
+	local params = {}
+	local len = 2 -- '(' & ')'
+	for k,param in pairs(self) do
+		if type(param) == 'function' then
+			param = 'FUNC'
+		end
+		params[k] = tostring(param,tabs..'  ')
+		len = len + #params[k] + 1 -- ' '
+	end
+	-- =(a,b)
+
+	local fn
+	if isfn(self.fn) then
+		fn = '('..expmt.__tostring(params.fn,tabs..'  ')..')'
+	else
+		fn = tostring(params.fn)
+	end
+	if len > 30 then
+		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
+	else
+		return fn..'('..table.concat(params,sep)..')'
+	end
+end
 
 if test then
 	local a = toexp {fn = '+', 'a', '2'}

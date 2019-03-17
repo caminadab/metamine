@@ -1,0 +1,64 @@
+;-
+teken: spel → tekeningen
+	spel: iets
+	tekeningen: tekening[]
+	tekening: [type] || args
+	cirkel: [0, x, y, r, kleur?]
+	boog: [1, x, y, r, kleur?]
+bijwerk: [spel, dt, invoer] → spel'
+	spel: iets
+	invoer: toets → bit
+	dt: 0.016
+spel: [begin, bijwerk, teken]
+-;
+uit = canvas[begin,stap,teken]
+
+; bieb
+cirkeltype = 0
+oranje = [100%, 50%, 0%]
+
+canvas = [b,s,t] → html
+html = "
+<html>
+<canvas id='lol' width='428' height='240'>
+</canvas>
+<script>
+var canvas = document.getElementById('lol'); 
+var dd = canvas.getContext('2d');
+
+" || jslib || "
+
+function tekenachtergrond() {
+	dd.fillStyle = 'black';
+	dd.fillRect(0, 0, canvas.width, canvas.height);
+}
+var w = 428;
+var h = 240;
+var begin = " || (javascript begin) || ";
+var stap = " || (javascript stap) || ";
+var teken = " || (javascript teken) || ";
+
+var spel = begin;
+
+setInterval(function() {
+	spel = stap([spel,1/60,0]);
+	var tekenbaar = teken(spel);
+
+	// teken
+	tekenachtergrond();
+	for (var i = 0; i < tekenbaar.length; i++) {
+		var vorm = tekenbaar[i];
+		if (vorm[0] == 0) {
+			dd.beginPath();
+			dd.arc(vorm[1]*h,vorm[2]*h,vorm[3]*h,0,2*Math.PI);
+			dd.closePath();
+			dd.fillStyle = 'green';
+			dd.fill();
+		}
+	}
+
+}, 16);
+
+</script>
+</html>
+"

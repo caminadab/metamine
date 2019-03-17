@@ -145,7 +145,7 @@ int yylex() {
 	}
 
 	// fuck it, karakter
-	if (c == '\'') {
+	if (c == '\'' && in[1] == '\'') {
 		c = *in++; // karakter
 		// geen unicode!
 		itoa(c, token, 10);

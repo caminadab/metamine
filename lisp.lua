@@ -96,11 +96,10 @@ function unparse_work(sexpr, maxlen, tabs, res)
   return res
 end
 
-function unparseSexp(sexpr)
+function unlisp(sexpr, len)
   if not sexpr then return 'niets' end
-  return concat(unparse_work(sexpr, 20))
+  return concat(unparse_work(sexpr, len or 20))
 end
-unlisp = unparseSexp
 
 function lispNeq(self,other)
 	if atom(self) ~= atom(other) then return false end

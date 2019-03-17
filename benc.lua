@@ -117,57 +117,71 @@ local herhaal = function(f)
     end
 end
 
-local D = tabel{104,111,105}
-local E = tabel{104,111,101}
-local F = tabel{105,115}
-local G = tabel{104,101,116}
-local H = tabel{100,97,110}
-local C = tabel{D,E,F,G,H}
-local J = function (_C)
-    local L = tabel{}
-    local M = function (_D)
-        local P = #(_D)
-        local O = tabel{P}
-        local N = cat{O, _D}
-        return N
+local C = tabel{2}
+local D = tabel{}
+local G = tabel{}
+local F = tabel{G}
+local E = tabel{F,4}
+local B = tabel{1,C,3,D,E}
+local I = function (_A)
+    local L = _istype(_A,int)
+    local K = false
+    if L then
+        local O = tabel{105}
+        local P = tekst(_A)
+        local N = cat{O, P}
+        local Q = tabel{101}
+        local M = cat{N, Q}
+        K = M
     end
-    for i=1,#_C do
-        L[i] = M(_C[i])
-    end
-    local K = cat(L)
-    return K
-end
-local R = function (_A)
-    local S = tabel{}
-    return S
-end
-local U = function (_B)
-    local V = function (_E)
-        local Z = #(_E)
-        local Y = Z > 0
-        local X = false
-        if Y then
-            local FB = _E(0)
-            local EB = 1 + FB
-            local DB = tabel{1,EB}
-            local CB = deel(_E,DB)
-            local BB = tabel{CB}
-            local JB = _E(0)
-            local IB = 1 + JB
-            local HB = vanaf(_E,IB)
-            local GB = _B(HB)
-            local AB = cat{BB, GB}
-            X = AB
+    local S = _istype(_A,lijst)
+    local R = false
+    if S then
+        local V = tabel{108}
+        local X = tabel{}
+        for i=1,#_A do
+            X[i] = _B(_A[i])
         end
-        local W = _kies(X)
-        return W
+        local W = cat(X)
+        local U = cat{V, W}
+        local Y = tabel{101}
+        local T = cat{U, Y}
+        R = T
     end
-    return V
+    local J = _kies(K,R)
+    return J
 end
-local T = _pow(U,999)
-local Q = T(R)
-local I = _comp(J,Q)
-local B = I(C)
-local KB = tabel{44}
-local A = cat(B,KB)
+local Z = function (_B)
+    local AB = function (_A)
+        local DB = _istype(_A,int)
+        local CB = false
+        if DB then
+            local GB = tabel{105}
+            local HB = tekst(_A)
+            local FB = cat{GB, HB}
+            local IB = tabel{101}
+            local EB = cat{FB, IB}
+            CB = EB
+        end
+        local KB = _istype(_A,lijst)
+        local JB = false
+        if KB then
+            local NB = tabel{108}
+            local PB = tabel{}
+            for i=1,#_A do
+                PB[i] = _B(_A[i])
+            end
+            local OB = cat(PB)
+            local MB = cat{NB, OB}
+            local QB = tabel{101}
+            local LB = cat{MB, QB}
+            JB = LB
+        end
+        local BB = _kies(CB,JB)
+        return BB
+    end
+    return AB
+end
+local H = Z(I)
+local A = H(B)
 print(string.char(unpack(A)))

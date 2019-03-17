@@ -25,9 +25,9 @@ function maakvars()
 	end
 end
 
-local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/') 
+local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod') 
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype' }
+local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', }
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
 		return exp,t
@@ -41,6 +41,7 @@ local function naarluaR(exp,t,tabs,maakvar)
 		if fn == '!=' then fn = '~=' end
 		if fn == '/\\' then fn = 'and' end
 		if fn == '\\/' then fn = 'or' end
+		if fn == 'mod' then fn = '%' end
 		local A = naarluaR(a,t,tabs,maakvar)
 		local B = naarluaR(b,t,tabs,maakvar)
 		t[#t+1] = string.format('%slocal %s = %s %s %s\n', tabs, var, A, fn, B)
@@ -127,18 +128,35 @@ local _pow = function(a,b)
 	end
 end
 local lijst = 'lijst'
-local int = 'int'
-local getal = 'getal'
+local getal = function(a)
+	return tonumber(string.char(table.unpack(a)))
+end
+local int = function(a)
+	local getal
+	if type(a) == 'number' then
+		getal = a
+	else
+		getal = tonumber(string.char(table.unpack(a)))
+	end
+	if not getal then return false end
+	return math.floor(getal)
+end;
 local _istype = function(a,b)
 	if b == getal then return type(a) == 'number' end
 	if b == int then return type(a) == 'number' and a%1 == 0 end
 	if b == lijst then return type(a) == 'table' end
 	return false
 end
+local _procent = function(n) return n / 100 end
 local _comp = function(a,b)
 	return function(...)
 		return b(a(...))
 	end
+end
+local javascript = function(broncode)
+	-- ^_^
+	require 'bieb'
+	return bieb.javascript(broncode)
 end
 local tabel = function(t)
 	local t = t or {}
