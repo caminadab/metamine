@@ -24,6 +24,14 @@ bieb = {
 		return a
 	end;
 
+	['!'] = function(n)
+		local a = 1
+		for i=1,n do
+			a = a * n
+		end
+		return a
+	end;
+
 	['lua'] = function(func)
 		local code = naarlua(func)
 		local a = table.pack(string.byte(code, 1, #code))

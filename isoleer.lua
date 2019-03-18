@@ -51,7 +51,7 @@ function isoleer0(eq,name)
 			elseif f == '%' then
 				-- x = a%
 				if out == 0 then eq0 = {fn=':=', a, {fn='*', x, 100}} end -- a = x * 100
-				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
+				if out == 1 then eq0 = {fn=':=', x, {fn='/', a, 100}} end -- x = a / 100  (gewoon procent)
 			else
 				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
@@ -109,6 +109,14 @@ function isoleer0(eq,name)
 				if out == 0 then eq0 = {fn=':=', a, {fn='=>', {fn='!', b}, x}} end -- a = (¬b ⇒ x)
 				if out == 1 then eq0 = {fn=':=', b, {fn='=>', {fn='!', a}, x}} end -- b = (¬a ⇒ x)
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
+			elseif f == '::' then
+				-- x = a :: b
+				-- a = x₀
+				if out == 0 then eq0 = {fn=':=', a, {fn=x, '0'}} end
+				 -- b = x vanaf 1
+				if out == 1 then eq0 = {fn=':=', b, {fn='vanaf', x, '1'}} end
+				 -- x = [a] || b
+				if out == 2 then eq0 = {fn=':=', x, {fn='||', {fn='[]', a}, b}} end
 			elseif f == '||' then
 				-- x = a || b
 				-- a = x (0..(#x-#b))

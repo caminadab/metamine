@@ -19,11 +19,24 @@
 %{
 	#include "node.h"
 
-	#define YY_USER_ACTION {yylloc->first_line = yylineno; \
+	#define YY_USER_ACTION2 {yylloc->first_line = yylineno; \
         yylloc->first_column = yycolumn;                 \
         yycolumn=yycolumn+yyleng;                         \
         yylloc->last_column = yycolumn;                    \
         yylloc->last_line = yylineno;}
+
+	#define YY_USER_ACTION \
+    yylloc->first_line = yylloc->last_line; \
+    yylloc->first_column = yylloc->last_column; \
+    for(int i = 0; yytext[i] != '\0'; i++) { \
+        if(yytext[i] == '\n') { \
+            yylloc->last_line++; \
+            yylloc->last_column = 0; \
+        } \
+        else { \
+            yylloc->last_column++; \
+        } \
+    }
 
 	typedef struct YYLTYPE YYLTYPE;
 	#include "taal.yy.h"
@@ -83,12 +96,14 @@
 "/"					{ return '/'; }
 "^"					{ return '^'; }
 "%"					{ return '%'; }
+"!"					{ return '!'; }
 "|"					{ return '|'; }
 "&"					{ return '&'; }
 "#"					{ return '#'; }
 "@"					{ return '@'; }
 ","					{ return ','; }
 ":"					{ return ':'; }
+"'"					{ return '\''; }
 
 "("					{ return '('; }
 ")"					{ return ')'; }
@@ -101,21 +116,25 @@
 "||"					{ return CAT; }
 ".."					{ return TIL; }
 "xx"					{ return CART; }
+"::"					{ return ICAT; }
 ">="					{ return GDGA; }
 "=<"					{ return KDGA; }
 "<="					{ return DAN; } // OEPS
 "=>"					{ return DAN; }
 "!="					{ return ISN; }
 
+'					{ return OUD; }
+
+'.'					{ *yylval = karakter(yytext[1]); return TEKST; }
 \"([^"]|\"\")*\"					{ *yylval = tekst(a(yytext)); return TEKST; }
 \n					{ return '\n'; }
-;[^\n]*\n		{ return '\n'; }
-;-.*-;			// negeer commentaar
-[+-]?((\d+)|(\.\d+))(e\d*)? { *yylval = a(yytext); return NAAM; }
--?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*\.[0-9]*			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*			{ *yylval = a(yytext); return NAAM; }
+;-[^$]*-;			// negeer commentaar
+;[^-][^\n]*\n		{ return '\n'; }
+((\d+)|(\.\d+))(e\d*)? { *yylval = a(yytext); return NAAM; }
+[0-9]*\.[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
+[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
+[0-9]*\.[0-9]*			{ *yylval = a(yytext); return NAAM; }
+[0-9]*			{ *yylval = a(yytext); return NAAM; }
 [a-zA-Z\-]+	{ *yylval = a(yytext); return NAAM; }
 .						{ printf("bad input character '%s' at line %d\n", yytext, yylineno); return NAAM; }
 <<EOF>>			{ return 0; }

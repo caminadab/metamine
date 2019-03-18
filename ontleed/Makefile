@@ -2,7 +2,7 @@ linux: main.c taal.yy.c node.c lua.c test.c lex.yy.c
 	mkdir -p bin
 	gcc -std=c11 -shared -I/usr/include/lua5.2 -o bin/ontleed.so -fPIC node.c lua.c taal.yy.c lex.yy.c test.c -Wno-multichar
 
-test: main.c node.c test.c lex.yy.c taal.yy.c 
+test: main.c node.c test.c taal.yy.h taal.yy.c lex.yy.h lex.yy.c
 	mkdir -p bin
 	gcc -g -o bin/test -std=c11 -fPIC main.c taal.yy.c node.c lex.yy.c test.c -lm
 	bin/test
@@ -32,3 +32,4 @@ clean:
 
 demo: main2.c taal.yy.h lex.yy.h node.c
 	gcc -ggdb -o demo main2.c node.c taal.yy.c lex.yy.c
+	./demo

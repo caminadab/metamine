@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.2.4.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Skeleton interface for Bison GLR parsers in C
 
-   Copyright (C) 2002-2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 2002-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -55,33 +55,34 @@ extern int yydebug;
     ISN = 264,
     INC = 265,
     CAT = 266,
-    TIL = 267,
-    CART = 268,
-    NEG = 269,
-    GDGA = 270,
-    ISB = 271,
-    KDGA = 272,
-    OUD = 273,
-    TAB = 274,
-    EN = 275,
-    OF = 276,
-    NIET = 277,
-    JOKER = 278,
-    EXOF = 279,
-    NOCH = 280,
-    CALL = 284,
-    INV = 285,
-    M0 = 286,
-    M1 = 287,
-    M2 = 288,
-    M3 = 289,
-    M4 = 290,
-    MN = 291,
-    I0 = 292,
-    I1 = 293,
-    I2 = 294,
-    I3 = 295,
-    I4 = 296
+    ICAT = 267,
+    TIL = 268,
+    CART = 269,
+    NEG = 270,
+    GDGA = 271,
+    ISB = 272,
+    KDGA = 273,
+    OUD = 274,
+    TAB = 275,
+    EN = 276,
+    OF = 277,
+    NIET = 278,
+    JOKER = 279,
+    EXOF = 280,
+    NOCH = 281,
+    CALL = 285,
+    INV = 286,
+    M0 = 287,
+    M1 = 288,
+    M2 = 289,
+    M3 = 290,
+    M4 = 291,
+    MN = 292,
+    I0 = 293,
+    I1 = 294,
+    I2 = 295,
+    I3 = 296,
+    I4 = 297
   };
 #endif
 

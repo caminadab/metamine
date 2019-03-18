@@ -40,6 +40,7 @@
 %token ISN "!="
 %token INC "+="
 %token CAT "||"
+%token ICAT "::"
 %token TIL ".."
 %token CART "xx"
 %token END 0 "invoereinde"
@@ -67,7 +68,7 @@
 %left ','
 %left '<' '>' "<=" ">="
 %left '&' '|'
-%left "||"
+%left "||" "::"
 %left ".."
 %left "xx"
 %left '+' '-'
@@ -112,6 +113,7 @@ single:
 	NAAM 
 | TEKST								{ $$ = $1; }
 | single '%'					{ $$ = _exp2(a("%"), $1); }
+| single '!'					{ $$ = _exp2(a("faculteit"), $1); }
 | single '\''					{ $$ = _exp2(a("'"), $1); }
 | single I0						{ $$ = _exp2($1, a("0")); }
 | single I1						{ $$ = _exp2($1, a("1")); }
@@ -127,7 +129,6 @@ single:
 |	'(' exp ')'					{ $$ = $2; }
 | '[' list ']'				{ $$ = $2; }
 | '{' set '}'					{ $$ = $2; }
-| single '\'' %prec OUD	{ $$ = _exp2(a("\'"), $1); }
 
 /*| '(' op ')'					{ $$ = $2; }*/
 
@@ -143,6 +144,7 @@ single:
 
 | '(' "->" ')'				{ $$ = a("->"); }
 | '(' "||" ')'				{ $$ = a("||"); }
+| '(' "::" ')'				{ $$ = a("::"); }
 | '(' ".." ')'				{ $$ = a(".."); }
 | '(' "xx" ')'				{ $$ = a("xx"); }
 | '(' "=>" ')'				{ $$ = a("=>"); }
@@ -194,6 +196,7 @@ exp:
 | exp "->" exp			{ $$ = exp3(a("->"), $1, $3); }
 /*| params "->" exp			{ $$ = exp3(a("->"), $1, $3); }*/
 | exp "||" exp				{ $$ = exp3(a("||"), $1, $3); }
+| exp "::" exp				{ $$ = exp3(a("::"), $1, $3); }
 | exp ".." exp				{ $$ = exp3(a(".."), $1, $3); }
 | exp "xx" exp				{ $$ = exp3(a("xx"), $1, $3); }
 | exp "=>" exp				{ $$ = exp3(a("=>"), $1, $3); }
@@ -227,7 +230,6 @@ exp:
 | exp ':' exp       	{ $$ = exp3(a(":"), $1, $3); }
 
 | NEG exp  %prec NEG	{ $$ = _exp2(a("-"), $2); }
-/*| exp '\'' %prec OUD	{ printf("HOI"); $$ = _exp2(a("'"), $1); }*/
 
 | single single %prec CALL { $$ = _exp2($1, $2); }
 | single single single %prec CALL { $$ = exp3($2, $1, $3); }

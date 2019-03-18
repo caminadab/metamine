@@ -65,6 +65,7 @@ function oplos(exp,voor)
 		for eq in pairs(eqs) do
 			local a = (eq.fn == '=>') 
 			local b = isexp(eq[2]) 
+			print('AAAA', toexp(eq))
 			local c = (eq[2].fn == '=')
 			if eq.fn == '=>' and isexp(eq[2]) and eq[2].fn == '=' then
 				eq.fn = '|='

@@ -10,8 +10,8 @@
 extern void rapporteer(int t, char* str);
 extern void yyreset();
 
-int yyerror(YYLTYPE loc, char* lexer, char* msg) {
-	printf("%d:%d-%d:%d: %s\n", loc.first_line, loc.first_column, loc.first_line, loc.first_column, msg);
+int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
+	printf("%d:%d-%d:%d: %s\n", loc->first_line + 1, loc->first_column + 1, loc->first_line + 1, loc->first_column + 1, yymsg);
 }
 
 void lua_pushlisp(lua_State* L, node* node) {

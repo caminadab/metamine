@@ -98,6 +98,12 @@ node* append(node* exp, node* atom) {
 	return exp;
 }
 
+node* karakter(int ch) {
+	char buf[16];
+	sprintf(buf, "%d", ch);
+	return a(buf);
+}
+
 node* tekst(node* str0) {
 	char* str = str0->data;
 	node* t = exp1(a("[]"));

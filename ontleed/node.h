@@ -17,6 +17,7 @@ struct node {
 extern int numnodes;
 extern node nodes[0x10000];
 
+node* karakter(int ch);
 node* node_new();
 int write_node(node* n, char* out, int left);
 node* a(char* t);
