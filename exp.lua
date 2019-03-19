@@ -1,15 +1,8 @@
 require 'lisp'
 
-function isfn(exp)
-	return type(exp) == 'table' and exp.fn
-end
-function isatoom(exp)
-	return type(exp) ~= 'table'
-end
-
 expmt = {}
 
-function expmt:__tostring(tabs)
+function printexp(self,tabs)
 	do return unlisp(self) end
 	if type(self) == 'string' then return self end
 	local tabs = (tabs or '') .. '  '
@@ -36,6 +29,8 @@ function expmt:__tostring(tabs)
 		return fn..'('..table.concat(params,sep)..')'
 	end
 end
+
+expmt.__tostring = printexp
 
 function expmt:__eq(ander)
 	local zelf = self

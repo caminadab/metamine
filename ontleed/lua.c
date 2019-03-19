@@ -11,21 +11,48 @@ extern void rapporteer(int t, char* str);
 extern void yyreset();
 
 int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
-	printf("%d:%d-%d:%d: %s\n", loc->first_line + 1, loc->first_column + 1, loc->first_line + 1, loc->first_column + 1, yymsg);
+	print_loc(*loc);
+	printf(": %s\n", loc->first_line + 1, loc->first_column + 1, loc->first_line + 1, loc->first_column + 1, yymsg);
+}
+
+void lua_pushloc(lua_State* L, YYLTYPE loc) {
+	lua_createtable(L, 4, 0);
+	lua_pushinteger(L, loc.first_line);
+	lua_rawseti(L, -2, 1);
+	lua_pushinteger(L, loc.first_column);
+	lua_rawseti(L, -2, 2);
+	lua_pushinteger(L, loc.last_line);
+	lua_rawseti(L, -2, 3);
+	lua_pushinteger(L, loc.last_column);
+	lua_rawseti(L, -2, 4);
 }
 
 void lua_pushlisp(lua_State* L, node* node) {
+	// waarde
+	lua_newtable(L);
+
+	// locatie
+	lua_pushliteral(L, "loc");
+	lua_pushloc(L, node->loc);
+	lua_settable(L, -3);
+
 	if (node->exp) {
-		lua_newtable(L);
+		// velden
 		int i = 0;
 		for (struct node* n = node->first; n; n = n->next) {
-			lua_pushinteger(L, i + 1);
+			if (i == 0)
+				lua_pushliteral(L, "fn");
+			else
+				lua_pushinteger(L, i);
 			lua_pushlisp(L, n);
 			lua_settable(L, -3);
 			i++;
 		}
 	} else {
+		// data
+		lua_pushliteral(L, "fn");
 		lua_pushstring(L, node->data);
+		lua_settable(L, -3);
 	}
 }
 
@@ -75,9 +102,9 @@ int lua_ontleed(lua_State* L) {
 	yylex_destroy(scanner);
 
 	if (wortel)
-		lua_pushexp(L, wortel);
+		lua_pushlisp(L, wortel);
 	else
-		lua_pushliteral(L, "fout");
+		lua_pushnil(L); // !!??
 	return 1;
 }
 

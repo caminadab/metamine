@@ -77,9 +77,30 @@ if opt.r or opt.rapport then
 	file('rapport.html', html)
 end
 
-
 --local plan = vertaal(code, 'in', 'uit')
+
+local expmeta = {}
+function expmeta:__index(k)
+	return self.val[k]
+end
+function expmeta:__newindex(k,v)
+	self.val[k] = v
+end
+function expmeta:__len()
+	return #self.val
+end
+function expmeta:__eq(b)
+	if type(b) == 'string' then
+		return self.val == b
+	else
+		return self.val == b.val
+	end
+end
+
 local asb = toexp(ontleed(code))
+
+print('OK')
+
 if verboos then
 	print('ASB')
 	print(asb)

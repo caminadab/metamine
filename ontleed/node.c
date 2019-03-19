@@ -5,6 +5,8 @@
 
 int numnodes;
 node nodes[0x10000];
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
 
 node* node_new() {
 	node* new = &nodes[numnodes++];
@@ -12,13 +14,27 @@ node* node_new() {
 	return new;
 }
 
+void print_loc(YYLTYPE loc) {
+	if (loc.first_line == loc.last_line && loc.first_column == loc.last_column)
+		printf("%d:%d", loc.first_line+1, loc.first_column+1);
+	else if (loc.first_line == loc.last_line)
+		printf("%d:%d-%d", loc.first_line+1, loc.first_column+1, loc.last_column+1);
+	else
+		printf("%d:%d-%d:%d", loc.first_line+1, loc.first_column+1, loc.last_line+1, loc.last_column+1);
+}
+
 int write_node(node* n, char* out, int left) {
 	char* out0 = out;
 	if (n->exp) {
-		*out++ = '(';
+		int a = 1;
 		for (node* kid = n->first; kid; kid = kid->next) {
 			out += write_node(kid, out, left);
-			if (kid->next)
+			if (a) {
+				*out++ = '(';
+				a = 0;
+			}
+				
+			if (kid->next && kid->prev)
 				*out++ = ' ';
 		}
 		*out++ = ')';
@@ -38,6 +54,12 @@ node* a(char* t) {
 	return n;
 }
 
+node* aloc(char* t, YYLTYPE yylloc) {
+	node* n = a(t);
+	n->loc = yylloc;
+	return n;
+}
+
 void node_assign(node* new, node* old) {
 	/*if (old->prev) old->prev->next = new;
 	if (old->next) old->next->prev = new;
@@ -50,6 +72,7 @@ void node_assign(node* new, node* old) {
 	new->first = old->first;
 	new->last = old->last;
 	new->exp = old->exp;
+	new->loc = old->loc;
 	strcpy(new->data, old->data);
 
 	// fix parents
@@ -65,10 +88,15 @@ node* node_copy(node* orig) {
 
 void print_node_sub(node* n) {
 	if (n->exp) {
-		printf("(");
+		int a = 1;
 		for (node* kid = n->first; kid; kid = kid->next) {
 			print_node_sub(kid);
-			if (kid->next)
+			if (a) {
+				a = 0;
+				printf("(");
+			}
+
+			if (kid->next && kid->prev)
 				putchar(' ');
 		}
 		printf(")");
@@ -76,6 +104,9 @@ void print_node_sub(node* n) {
 	else {
 		printf("%s", n->data);
 	}
+	printf(" [");
+	print_loc(n->loc);
+	printf("]");
 }
 
 void print_node(node* n) {
@@ -164,4 +195,84 @@ node* exp4(node* a, node* b, node* c, node* d) {
 	c->next = d; d->prev = c;
 	a->root = b->root = c->root = d->root = n;
 	return n;
+}
+
+//YYLTYPE lmin(YYLTYPE a, YYLTYPE b) {
+YYLTYPE mix(YYLTYPE a, YYLTYPE b) {
+	YYLTYPE c;
+
+	// lijn
+	c.first_line = min(a.first_line, b.first_line);
+	c.last_line = max(a.last_line, b.last_line);
+
+	// kolombegin
+	if (a.first_line < b.first_line)
+		c.first_column = a.first_column;
+	else if (a.first_line > b.first_line)
+		c.first_column = b.first_column;
+	else if (a.first_line == b.first_line)
+		c.first_column = min(a.first_column, b.first_column);
+
+	// kolomeinde
+	if (a.last_line > b.last_line)
+		c.last_column = a.last_column;
+	else if (a.last_line < b.last_line)
+		c.last_column = b.last_column;
+	else if (a.last_line == b.last_line)
+		c.last_column = max(a.last_column, b.last_column);
+
+	return c;
+}
+
+YYLTYPE mix3(YYLTYPE a, YYLTYPE b, YYLTYPE c) {
+	return mix(mix(a,b),c);
+}
+YYLTYPE mix4(YYLTYPE a, YYLTYPE b, YYLTYPE c, YYLTYPE d) {
+	return mix(mix(mix(a,b),c),d);
+}
+
+node* appendloc(node* exp, node* atom, YYLTYPE yylloc) {
+	node* n = append(exp,atom);
+	n->loc = mix(exp->loc, atom->loc);
+	//n->loc.first_line = exp->loc.first_line;
+	//n->loc.first_column = exp->loc.first_column;
+	//n->loc.last_line = atom->loc.last_line;
+	//n->loc.last_column = atom->loc.last_column;
+	return n;
+}
+node* fn0loc(YYLTYPE yylloc) {
+	node* a = exp0();
+	a->loc = yylloc;
+}
+node* fn1loc(node* a, YYLTYPE yylloc) {
+	node* n = exp1(a);
+	n->loc = yylloc;
+	return n;
+}
+node* fn2loc(node* a, node* b, YYLTYPE yylloc) {
+	node* n = _exp2(a,b);
+	n->loc = mix(a->loc, b->loc);
+	return n;
+}
+node* fn3loc(node* a, node* b, node* c, YYLTYPE yylloc) {
+	node* n = exp3(a, b, c);
+	n->loc = mix3(a->loc, b->loc, c->loc);
+	return n;
+}
+node* fn4loc(node* a, node* b, node* c, node* d, YYLTYPE yylloc) {
+	node* n = exp4(a,b,c,d);
+	n->loc = mix4(a->loc, b->loc, c->loc, d->loc);
+	return n;
+}
+node* metloc(node* n, YYLTYPE yylloc) {
+	n->loc = yylloc;
+	return n;
+}
+
+//void node_assign(node* new, node* old);
+//node* node_copy(node* orig);
+node* tekstloc(node* str, YYLTYPE yylloc) {
+	node* a = tekst(str);
+	a->loc = yylloc;
+	return a;
 }

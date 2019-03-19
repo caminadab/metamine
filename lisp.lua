@@ -1,6 +1,14 @@
 require 'lex'
 require 'util'
 
+function isatoom(exp)
+	return exp.fn and not exp[1]
+end
+
+function isfn(exp)
+	return not isatoom(exp)
+end
+
 local insert = table.insert
 local concat = table.concat
 
@@ -11,40 +19,34 @@ function unparse_atom(atom)
   return atom
 end
 
-function unparse_len(sexp)
-	if type(sexp) == 'number' or type(sexp) == 'boolean' or type(sexp) == 'function' then sexp = tostring(sexp) end
+function unparse_len(exp)
   local len
-  if atom(sexp) then
-    len = #unparse_atom(sexp)
+  if isatoom(exp) then
+		if not exp.fn then error(tostring(exp)) end
+    len = #exp.fn
   else
-		if sexp.fn then len = unparse_len(sexp.fn) + 2 end
-    len = 2 + #sexp-1 -- (A B C)
-    for i,sub in ipairs(sexp) do
+		if exp.fn then len = unparse_len(exp.fn) + 2 end
+    len = 2 + #exp-1 -- (A B C)
+    for i,sub in ipairs(exp) do
       len = len + unparse_len(sub)
     end
   end
   return len
 end
 
-function atom(sexp)
-	return type(sexp) ~= 'table'
-end
-function exp(sexp)
-	return type(sexp) == 'table'
-end
-isexp = exp
-
 function unparse_work(sexpr, maxlen, tabs, res)
+	--[[
 	if type(sexpr) == 'boolean' then
 		if sexpr then sexpr = color.cyan .. 'ja' .. color.white
 		else sepxr = color.cyan .. 'nee' .. color.white end
 	end
 	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
 	if type(sexpr) == 'function' then sexpr = color.cyan..tostring('fn')..color.white end
+	]]
 
   tabs = tabs or 0
   res = res or {}
-  if atom(sexpr) then
+  if isatoom(sexpr) then
     len = #sexpr
     insert(res, unparse_atom(sexpr))
   else
@@ -79,7 +81,7 @@ function unparse_work(sexpr, maxlen, tabs, res)
       end
 			if split then
 				-- commentaar
-				if isexp(sub) and sub[';'] then
+				if isfn(sub) and sub[';'] then
 					res[#res+1] = '\t; '
 					res[#res+1] = sub[';']
 				end
