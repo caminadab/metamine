@@ -11,6 +11,47 @@ local print = function (...)
 	if verboos then print(...) end
 end
 
+local function leedR(exp,t)
+	print(exp.fn and exp.fn.v, 'OK')
+	if isatoom(exp) then
+		t[#t+1] = exp.v
+
+	elseif exp.fn.v == '[]' then
+		t[#t+1] = '['
+		for i,v in ipairs(exp) do
+			leedR(v, t)
+			if exp[i+1] then
+				t[#t+1] = ','
+			end
+		end
+		t[#t+1] = '['
+
+	else
+		-- fn
+		if isfn(exp.fn) then t[#t+1] = '(' end
+		leedR(exp.fn, t)
+		if isfn(exp.fn) then t[#t+1] = ')' end
+
+		-- args
+		t[#t+1] = '('
+		for i,v in ipairs(exp) do
+			leedR(v, t)
+			if exp[i+1] then
+				t[#t+1] = ','
+			end
+		end
+		t[#t+1] = ')'
+	
+	end
+		
+	return t
+end
+
+function leed(exp)
+	return table.concat(leedR(exp,{}))
+end
+
+
 function T(exp)
 	local r = {}
 	local function t(exp)
@@ -228,7 +269,7 @@ function oplos(exp,voor)
 			local val0 = val
 			val = substitueer(val0, naam, exp)
 			--exp2naam[val0] = naam
-			exp2naam[naam.v] = T(exp)
+			exp2naam[naam.v] = leed(exp)
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
 			print('SUBST', naam.v)
 

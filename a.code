@@ -1,5 +1,5 @@
 uit = t || tekst(a)
-a = sin 30
+a = sin 30 + d 
+c = 3
 t = "hoi"
-b = a · c
 d = 8 - 7

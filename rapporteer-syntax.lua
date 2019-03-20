@@ -73,22 +73,35 @@ end
 function locvind(code, x, y)
 	local pos = 1
 	for i=1,y-1 do
-		pos = code:find('\n', pos) + 1
+		pos = code:find('\n', pos)
 		if not pos then return false end
+		pos = pos + 1
 	end
 	pos = pos + x - 1
+	if pos > #code then
+		return false
+	end
 	return pos
 end
 
 function locsub(code, loc)
 	local apos = locvind(code, loc.x1, loc.y1)
 	local bpos = locvind(code, loc.x2, loc.y2)
-	return string.sub(code, apos, bpos-1)
+	if not apos or not bpos then return false end
+	return string.sub(code, apos, bpos)
 end
 
+assert(locvind("a", 1, 1) == 1)
+assert(locvind("a\n", 2, 1) == 2)
+assert(locvind("a\n", 1, 2) == false)
+assert(locvind("a\nb", 1, 2) == 3)
 assert(locvind("a = 3\nb = 1 + 2\n", 5, 2) == 11)
-print(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=5,y2=3}))
-assert(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=6,y2=2}) == "b = 1")
+
+assert(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=5,y2=2}) == "b = 1")
+
+assert(locsub("a\nb", {x1=1,y1=2,x2=1,y2=2}) == "b")
+print(locsub("a\nb\n", {x1=1,y1=2,x2=1,y2=2}))
+assert(locsub("a\nb\n", {x1=1,y1=2,x2=2,y2=2}) == "b\n")
 
 function printloc(loc)
 	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
@@ -101,11 +114,11 @@ function printloc(loc)
 	print()
 end
 
-function rapporteer_syntax(code,elementen,stijl)
+function rapporteer_syntax(code,labels,stijl)
 	local gesorteerd = {}
-	for element,tooltip in pairs(elementen) do
-		if isatoom(element) then
-			gesorteerd[#gesorteerd+1] = element
+	for exp,label in pairs(labels) do
+		if isatoom(exp) then
+			gesorteerd[#gesorteerd+1] = exp
 		end
 	end
 	table.sort(gesorteerd, function(a,b) return loclt(a.loc, b.loc) end)
@@ -123,7 +136,7 @@ function rapporteer_syntax(code,elementen,stijl)
 
 		local tooltip = string.format(htmltoken, "vuller",  vuller, "")
 		tooltips[#tooltips+1] = tooltip
-		local tooltip = string.format(htmltoken, stijl[token] or "", token0, elementen[token])
+		local tooltip = string.format(htmltoken, stijl[token] or "", token0, labels[token])
 		tooltips[#tooltips+1] = tooltip
 		vorige = loc
 	end

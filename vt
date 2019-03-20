@@ -2,6 +2,7 @@
 package.path = package.path .. ";../?.lua"
 require 'exp'
 require 'rapporteer-syntax'
+require 'bieb'
 
 function boompairs(exp)
 	local t = {}
@@ -114,7 +115,9 @@ local plan = stduit
 
 -- syntaxrapport
 if verboos then
+	-- converteer van atoom naar string
 	for k,v in pairs(bekend) do if isatoom(k) and k.v then bekend[k.v] = true end end
+	for k,v in pairs(bieb) do bekend[k] = true end
 	local label = {}
 	local klasse = {}
 	for t in boompairs(asb) do
