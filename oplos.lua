@@ -11,11 +11,33 @@ local print = function (...)
 	if verboos then print(...) end
 end
 
+function T(exp)
+	local r = {}
+	local function t(exp)
+		if isatoom(exp) then
+			r[#r+1] = exp.v
+		else
+			t(exp.fn)
+			r[#r+1] = '('
+			for i,v in ipairs(exp) do
+				t(v)
+				if exp[i+1] then
+					r[#r+1] = ' '
+				end
+			end
+			r[#r+1] = ')'
+		end
+	end
+	t(exp)
+	return table.concat(r)
+end
+
 local function pakpunten(exp,r)
 	local r = r or {}
 	r[#r+1] = exp
 	if isexp(exp) then
-		for k,v in pairs(exp) do
+		pakpunten(exp.fn,r)
+		for i,v in ipairs(exp) do
 			pakpunten(v,r)
 		end
 	end
@@ -36,9 +58,9 @@ function punten(exp)
 end
 
 function oplos(exp,voor)
-	if exp.fn == [[=]] or exp.fn == [[/\]] then
+	if exp.fn.v == [[=]] or exp.fn.v == [[/\]] then
 		local eqs
-		if exp.fn == [[=]] then
+		if exp.fn.v == [[=]] then
 			eqs = set(exp)
 		else
 			eqs = set(table.unpack(exp))
@@ -47,6 +69,8 @@ function oplos(exp,voor)
 		-- invoer ??
 		local args = {}
 		local function invoer(val)
+			if isfn(val) then return false end
+			val = val.v
 			-- functie argumenten
 			--if args[val] then return true end
 			--if val.fn == '->' then args[val[1]] = true end
@@ -56,19 +80,19 @@ function oplos(exp,voor)
 
 			if type(val) == 'table' then return false end
 			return tonumber(val)
-				or string.upper(val)==val
+				or string.upper(val or '???')==val
 				or val == 'standaardinvoer' -- kuch...
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
 		-- herschrijf (b ⇒ (a = c)) → (a |= (b ⇒ c))
 		for eq in pairs(eqs) do
-			local a = (eq.fn == '=>') 
+			local a = (eq.fn.v == '=>') 
 			local b = isexp(eq[2]) 
-			local c = (eq[2].fn == '=')
-			if eq.fn == '=>' and isexp(eq[2]) and eq[2].fn == '=' then
-				eq.fn = '|='
-				eq[1],eq[2] = eq[2][1], {fn='=>', eq[1], eq[2][2]}
+			local c = b and (eq[2].fn.v == '=')
+			if eq.fn.v == '=>' and isexp(eq[2]) and eq[2].fn.v == '=' then
+				eq.fn.v = '|='
+				eq[1],eq[2] = eq[2][1], X('=>', eq[1], eq[2][2])
 			end
 		end
 
@@ -77,7 +101,7 @@ function oplos(exp,voor)
 		local oud = {}
 		for eq in pairs(eqs) do
 			-- a |= b
-			if eq.fn == '|=' then
+			if eq.fn.v == '|=' then
 				local a,b = eq[1],eq[2]
 				map[a] = map[a] or {}
 				local v = map[a]
@@ -90,7 +114,7 @@ function oplos(exp,voor)
 		end
 		for k,v in pairs(map) do
 			v.fn = '|'
-			local eq = {fn='=', k, v}
+			local eq = X('=', k, v)
 			eqs[eq] = true
 		end
 
@@ -100,10 +124,10 @@ function oplos(exp,voor)
 		local afval = {}
 		for eq in pairs(eqs) do
 			for lam in punten(eq) do
-				if isexp(lam) and lam.fn == '->' then
+				if isexp(lam) and lam.fn.v == '->' then
 					local inn,uit = lam[1],lam[2]
 					local params
-					if isexp(inn) and inn.fn == ',' then
+					if isexp(inn) and inn.fn.v == ',' then
 						params = inn
 					else
 						params = {inn}
@@ -114,7 +138,7 @@ function oplos(exp,voor)
 						if not isatoom(param) or true then
 							local naam = '_'..varnaam(aantal)
 							params[i] = naam
-							local paramhulp = {fn='=', naam, param}
+							local paramhulp = X('=', naam, param)
 							nieuw[paramhulp] = true -- HIER!
 
 							-- pas vergelijking aan
@@ -134,15 +158,15 @@ function oplos(exp,voor)
 		-- -> multimap = lijst(:=(A,B))
 		local subst = {}
 		for eq in pairs(eqs) do
-			if eq.fn == [[=]] then
+			if eq.fn.v == [[=]] then
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
 						--if verboos then print('Probeer', naam, toexp(eq)) end
 						local waarde = isoleer0(eq,naam)
 						if waarde then
-							local eq = {fn=':=', naam, waarde}
+							local eq = X(':=', naam, waarde)
 							subst[eq] = true
-							if verboos then print('ISOLEER', toexp(eq)) end
+							if verboos then print('ISOLEER', exp2string(eq)) end
 						end
 					--end
 				end
@@ -153,19 +177,23 @@ function oplos(exp,voor)
 		local kennisgraaf = vhgraaf()
 		local pijl2subst = {}
 		for subst in pairs(subst) do
-			local naam,waarde = subst[1],subst[2]
-			local bron
-			if false and isexp(waarde) and waarde.fn == '->' then
-				bron = {}
-			else
-				bron = var(waarde,invoer)
+			local _,naam,waarde = ':=',subst[1],subst[2]
+			local bron0 = var(waarde,invoer)
+			local bron = {}
+			for k in pairs(bron0) do -- alleen naam is nodig
+				assert(type(k.v) == 'string')
+				bron[k.v] = true
 			end
-			local pijl = kennisgraaf:link(bron, naam)
+			see(bron)
+			local pijl = kennisgraaf:link(bron, naam.v)
 			pijl2subst[pijl] = subst
 		end
-		print('Heb nu\n', kennisgraaf:tekst())
+		print()
+		print('# Kennisgraaf')
+		print(kennisgraaf:tekst())
+		print()
 
-		local stroom = kennisgraaf:sorteer(invoer,voor)
+		local stroom,bekend = kennisgraaf:sorteer(invoer,voor)
 		local vt = {
 			code = "ABC",
 			kennisgraaf = kennisgraaf,
@@ -173,34 +201,55 @@ function oplos(exp,voor)
 		}
 		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
-			if verboos then file('fout.html', rapport(vt)) end
-			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst()
+			file('fout.html', rapport(vt))
+			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend
 		end
+		print()
+		print('Stroom verkregen')
+		print(stroom:tekst())
+		print()
 		local substs = stroom:topologisch()
 		if not substs then
-			return false, 'kon niet topologisch sorteren'
+			return false, 'kon niet topologisch sorteren', bekend
 		end
 		-- lijst(subst)
 
 		-- op te lossen waarde, staat die niet altijd laatste (;
-		local val = voor
+		--TODOlocal val = voor
+		local val = X'uit'
 		local exp2naam = {}
 
 		print()
-		print('Begin substitutie', val)
+		print('Begin substitutie', exp2string(val))
+		local exp2naam = {}
 		for i=#substs,1,-1 do
 			local sub = pijl2subst[substs[i]]
 			local naam,exp = sub[1],sub[2]
 			local val0 = val
 			val = substitueer(val0, naam, exp)
-			exp2naam[val0] = naam
-			print('Stapje', toexp(val0), toexp(naam), toexp(exp), toexp(val))
-		end
+			--exp2naam[val0] = naam
+			exp2naam[naam.v] = T(exp)
+			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
+			print('SUBST', naam.v)
 
-		print('Klaar', toexp(val))
+			exp2naam[naam.v] = exp
+			local n2e = {}
+			for k,v in pairs(exp2naam) do
+				n2e[k] = substitueer(v, naam, exp)
+				print('N2E', exp2string(n2e[k]))
+			end
+			exp2naam = n2e
+		end
+		local n2e = {}
+		for k,v in pairs(exp2naam) do
+			n2e[k] = T(v)
+		end
+		exp2naam = n2e
+
+		print('Klaar', exp2string(val))
 		print()
 
-		return val,nil,exp2naam
+		return val,nil,bekend,exp2naam
 
 		-- functie ontleding
 		--[=[

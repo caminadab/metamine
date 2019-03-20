@@ -9,7 +9,7 @@ local function pijl2tekst(pijl)
 		r[#r+1] = tostring(bron)
 	end
 	table.sort(r)
-	return table.concat(r, ' ') .. ' -> ' .. pijl.naar
+	return table.concat(r, ' ') .. ' -> ' .. tostring(pijl.naar)
 end
 
 local function tekst(graaf)
@@ -24,10 +24,11 @@ local function tekst(graaf)
 	return table.concat(p, '\n')
 end
 
--- van: set | functie
+-- van: functie
+-- naar: functie
 local function sorteer(hgraaf, van, naar)
 	if _G.verboos then print = _G.print end
-	if isatoom(van) then van = {[van] = true} end
+	if type(van) == 'string' then van = function(a) return a == van end end
 	if type(van) == 'table' then
 		local van0 = van
 		van = function(a) return not not van0[a] end
@@ -39,7 +40,7 @@ local function sorteer(hgraaf, van, naar)
 
 	-- verzamel begin
 	for punt in pairs(hgraaf.punten) do
-		print('BEGIN?', toexp(punt), van(punt))
+		print('BEGIN?', punt, van(punt))
 		-- lege ingang
 		local leeg = false
 		for pijl in hgraaf:naar(punt) do
@@ -82,19 +83,21 @@ local function sorteer(hgraaf, van, naar)
 		for bron in pairs(pijl.van) do
 			if not bekend[bron] and not van(bron) then
 				ok = false
-				print('  NEE: '.. bron..' is onbekend', type(bron))
+				print('  NEE: '.. tostring(bron)..' is onbekend', type(bron))
 			end
 		end
 		print('  DOEL?', pijl.naar)
 
 		-- mag linken
 		if ok --[[and not bekend[pijl] ]] and stroom:link(pijl) then
-			print('  JA', type(pijl.naar))
+			print('  JA')--, tostring(pijl.naar))
 			for bron in pairs(pijl.van) do
 				nuttig[bron] = true
 			end
 			bekend[pijl.naar] = true
+				print('NIEUW?', pijl.naar, type(pijl.naar))
 			for pijl in hgraaf:van(pijl.naar) do
+				print('NIEUW')
 				if true or not bekend[pijl.naar] then
 					nieuw[pijl] = true
 				else
@@ -106,27 +109,29 @@ local function sorteer(hgraaf, van, naar)
 
 	end
 
-	-- snoei!
-	for pijl in pairs(stroom.pijlen) do
-		if not nuttig[pijl.naar] and pijl.naar ~= naar then
-			stroom:ontlink(pijl)
-			stroom.punten[pijl.naar] = nil
+	if true then
+		-- snoei!
+		for pijl in pairs(stroom.pijlen) do
+			if not nuttig[pijl.naar] and pijl.naar ~= naar then
+				stroom:ontlink(pijl)
+				stroom.punten[pijl.naar] = nil
+			end
+		end
+	end
+
+	local b = {}
+	for pijl in pairs(bekend) do
+		if pijl.naar then
+			b[pijl.naar] = true
 		end
 	end
 
 	if not bekend[naar] then
-		local t = {}
-		t[#t+1] = 'doel "'..naar..'" niet bereikt'
-		t[#t+1] = '  liep vast op:'
-		for punt in pairs(verschil(nuttig,bekend)) do
-			t[#t+1] = '    '..tostring(punt)
-		end
-		print('FAAL', stroom:tekst())
-		return nil,color.red..table.concat(t,'\n')..color.white, stroom
+		return false, b
 	end
 	print('KLAAR', stroom:tekst())
 
-	return stroom
+	return stroom, b
 end
 
 -- een voorwaartse hypergraaf is een hypergraaf waarbij elke hoek een specifiek punt als doel heefft
@@ -147,9 +152,9 @@ function vhgraaf()
 				van = pijl.van
 				naar = pijl.naar 
 			end
-			if type(van) ~= 'table' then van = {[van]=true} end
 
 			for bron in pairs(van) do
+				print('PUNT', bron)
 				h.punten[bron] = true
 			end
 			h.punten[naar] = true
@@ -157,7 +162,7 @@ function vhgraaf()
 			return pijl
 		end,
 
-		-- hyperpijlen van bron
+		-- hyperpijlen vanaf bron
 		van = function (self,bron)
 			local pijl = nil
 			return function()

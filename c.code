@@ -1,0 +1,4 @@
+somA =  a :: rest  →  a + somB(rest)
+som = ((somA → somB)^4) (x → 0)
+
+uit = tekst(som[1,2,3,4])

@@ -52,7 +52,7 @@ function pijl2tekst(pijl)
 		r[#r+1] = '()'
 	end
 	table.sort(r)
-	return table.concat(r, ' ') .. ' -> ' .. pijl.naar
+	return table.concat(r, ' ') .. ' -> ' .. tostring(pijl.naar)
 end
 
 local function tekst(graaf)

@@ -7,7 +7,7 @@ local predef = {
 	asin = "sin",
 	acos = "cos",
 	atan = "tan",
-	wortel = {fn="^", "_", "2"},
+	wortel = X("^", "_", "2"),
 	tekst = "getal",
 	getal = "tekst",
 }
@@ -16,7 +16,7 @@ inverteer_def = predef
 
 -- rewrite (a + b = c, a) -> c - b
 function isoleer0(eq,name)
-	if eq.fn ~= '=' then return false end
+	if eq.fn.v ~= '=' then return false end
 	local flip = false
 	while true do
 		local eq0
@@ -28,47 +28,47 @@ function isoleer0(eq,name)
 			r,l = eq[1],eq[2]
 			flip = false
 		end
-		if name == l then return r end
-		if name == r then return l end
+		if name.v == l.v then return r end
+		if name.v == r.v then return l end
 
 		if isfn(l) and #l == 1 then
-			local f,a,x = l.fn,l[1],r
+			local fn,f,a,x = l.fn, l.fn.v, l[1], r
 			local out
 			local n = 0
 			if bevat(a,name) then out = 0; n = n + 1 end
 			if bevat(x,name) then out = 1; n = n + 1 end
-			if bevat(f,name) then out = 2; n = n + 1 end
+			if bevat(fn,name) then out = 2; n = n + 1 end
 			if n ~= 1 then
 				return false -- onoplosbaar
 			end
 
 			if f == '-' then
 				-- x = - a
-				if out == 0 then eq0 = {fn=':=', a, {fn='-', x}} end -- a = - x
+				if out == 0 then eq0 = X(':=', a, X('-', x)) end -- a = - x
 				--if out == 1 then eq0 = {'=', x, {'-', a}} end -- x = - a
 			elseif predef[f] then
-				if out == 0 then eq0 = {fn=':=', a, {fn=predef[f], x}} end
+				if out == 0 then eq0 = X(':=', a, X(predef[f], x)) end
 			elseif f == '%' then
 				-- x = a%
-				if out == 0 then eq0 = {fn=':=', a, {fn='*', x, 100}} end -- a = x * 100
-				if out == 1 then eq0 = {fn=':=', x, {fn='/', a, 100}} end -- x = a / 100  (gewoon procent)
+				if out == 0 then eq0 = X(':=', a, X('*', x, 100)) end -- a = x * 100
+				if out == 1 then eq0 = X(':=', x, X('/', a, 100)) end -- x = a / 100  (gewoon procent)
 			else
 				-- x = f(a)
 				--if out == 0 then eq0 = {'=', a, {{'^', f, '-1'}, x}} end -- a = (f^-1) x
-				if out == 0 then eq0 = {fn=':=', a, {fn={fn='inverteer', f}, x}} end -- a = (f^-1) x
+				if out == 0 then eq0 = X(':=', a, X(X('inverteer', f), x)) end -- a = (f^-1) x
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
-		if isfn(l) and l.fn == '[]' then
+		if isfn(l) and l.fn.v == '[]' then
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
-					eq0 = {fn=':=', el, {fn=r, tostring(i-1)}}
+					eq0 = X(':=', el, X(r, tostring(i-1)))
 					break
 				end
 			end
 		elseif isfn(l) and #l == 2 then
-			local x,f,a,b = r,l.fn,l[1],l[2]
+			local x,f,a,b = r,l.fn.v,l[1],l[2]
 			local out
 			local n = 0
 			if bevat(a,name) then out = 0; n = n + 1 end
@@ -81,51 +81,51 @@ function isoleer0(eq,name)
 
 			if f == '+' then
 				-- x = a + b
-				if out == 0 then eq0 = {fn=':=', a, {fn='-', x, b}} end -- a = x - b
-				if out == 1 then eq0 = {fn=':=', b, {fn='-', x, a}} end -- b = x - a
-				--if out == 2 then eq0 = {'=', x, {'+', a, b}} end -- x = a + b
+				if out == 0 then eq0 = X(':=', a, X('-', x, b)) end -- a = x - b
+				if out == 1 then eq0 = X(':=', b, X('-', x, a)) end -- b = x - a
+				--if out == 2 then eq0 = {'=', x, {'+', a, b)) end -- x = a + b
 			elseif f == '-' then
 				-- x = a - b
-				if out == 0 then eq0 = {fn=':=', a, {fn='+', x, b}} end -- a = x - b
-				if out == 1 then eq0 = {fn=':=', b, {fn='-', x, a}} end -- b = x + a
+				if out == 0 then eq0 = X(':=', a, X('+', x, b)) end -- a = x - b
+				if out == 1 then eq0 = X(':=', b, X('-', x, a)) end -- b = x + a
 				--if out == 2 then eq0 = {'=', x, {'-', a, b}} end -- x = a - b
 			elseif f == '*' then
 				-- x = a * b
-				if out == 0 then eq0 = {fn=':=', a, {fn='/', x, b}} end -- a = x / b
-				if out == 1 then eq0 = {fn=':=', b, {fn='/', x, a}} end -- b = x / a
+				if out == 0 then eq0 = X(':=', a, X('/', x, b)) end -- a = x / b
+				if out == 1 then eq0 = X(':=', b, X('/', x, a)) end -- b = x / a
 				--if out == 2 then eq0 = {'=', x, {'*', a, b}} end -- x = a * b
 			elseif f == '/' then
 				-- x = a / b
-				if out == 0 then eq0 = {fn=':=', a, {fn='*', x, b}} end -- a = x * b
-				if out == 1 then eq0 = {fn=':=', b, {fn='/', a, x}} end -- b = a / x
+				if out == 0 then eq0 = X(':=', a, X('*', x, b)) end -- a = x * b
+				if out == 1 then eq0 = X(':=', b, X('/', a, x)) end -- b = a / x
 				--if out == 2 then eq0 = {'=', x, {'/', a, b}} end -- x = a / b
 			elseif f == '^' then
 				-- x = a ^ b
-				if out == 0 then eq0 = {fn=':=', a, {fn='^', x, {fn='/', '1', b}}} end -- a = x ^ (1 / a)
-				if out == 1 then eq0 = {fn=':=', b, {fn='log', a, x}} end -- b = a _ x
+				if out == 0 then eq0 = X(':=', a, X('^', x, X('/', '1', b))) end -- a = x ^ (1 / a)
+				if out == 1 then eq0 = X(':=', b, X('log', a, x)) end -- b = a _ x
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			elseif f == '|' then
 				-- x = a | b
-				if out == 0 then eq0 = {fn=':=', a, {fn='=>', {fn='!', b}, x}} end -- a = (¬b ⇒ x)
-				if out == 1 then eq0 = {fn=':=', b, {fn='=>', {fn='!', a}, x}} end -- b = (¬a ⇒ x)
-				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
+				if out == 0 then eq0 = X(':=', a, X('=>', X('!', b), x)) end -- a = (¬b ⇒ x)
+				if out == 1 then eq0 = X(':=', b, X('=>', X('!', a), x)) end -- b = (¬a ⇒ x)
+				--if out == 2 then eq0 = {'=', x, {'^', a, b)} end -- x = a ^ b
 			elseif f == '::' then
 				-- x = a :: b
 				-- a = x₀
-				if out == 0 then eq0 = {fn=':=', a, {fn=x, '0'}} end
+				if out == 0 then eq0 = X(':=', a, X(x, '0')) end
 				 -- b = x vanaf 1
-				if out == 1 then eq0 = {fn=':=', b, {fn='vanaf', x, '1'}} end
+				if out == 1 then eq0 = X(':=', b, X('vanaf', x, '1')) end
 				 -- x = [a] || b
-				if out == 2 then eq0 = {fn=':=', x, {fn='||', {fn='[]', a}, b}} end
+				if out == 2 then eq0 = X(':=', x, X('||', X('[]', a), b)) end
 			elseif f == '||' then
 				-- x = a || b
 				-- a = x (0..(#x-#b))
-				if out == 0 then eq0 = {fn=':=', a, {fn='deel', x, {fn='[]', '0', {fn='-', {fn='#', x}, {fn='#',b}}}}} end
+				if out == 0 then eq0 = X(':=', a, X('deel', x, X('[]', '0', X('-', X('#', x), X('#',b))))) end
 				 -- b = x (#a..#x)
-				if out == 1 then eq0 = {fn=':=', b, {fn='deel', x, {fn='[]', {fn='#', a}, {fn='#', x}}}} end
+				if out == 1 then eq0 = X(':=', b, X('deel', x, X('[]', X('#', a), X('#', x)))) end
 				--??? if out == 2 then eq0 = {'=', x, {'||', a, b}} end -- x = a || b
-				--VROEGER if out == 0 then eq0 = {fn=':=', a, {fn=x, {fn='..', '0', {fn='-', {fn='#', x}, {fn='#',b}}}}} end
-				--VROEGER if out == 1 then eq0 = {fn=':=', b, {fn=x, {fn='..', {fn='#', a}, {fn='#', x}}}} end -- b = x (#a..#x)
+				--VROEGER if out == 0 then eq0 = X(':=', a, X(x, X('..', '0', X('-', X('#', x}, X('#',b}}}}} end
+				--VROEGER if out == 1 then eq0 = X(':=', b, X(x, X('..', X('#', a}, X('#', x}}}} end -- b = x (#a..#x)
 			else
 				if print_niet_isoleerbaar then
 					log('weet niet hoe te isoleren '..f)
@@ -136,7 +136,7 @@ function isoleer0(eq,name)
 
 		if not eq0 and not flip then break end
 		if eq0 then
-			if verboos then print(tostring(toexp(eq)) .. ' -> '..tostring(toexp(eq))) end 
+			if verboos then print(exp2string(eq) .. ' -> '..exp2string(eq0)) end 
 			eq = eq0
 			flip = false
 		end

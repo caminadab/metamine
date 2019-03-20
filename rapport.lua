@@ -86,7 +86,7 @@ function graaf2js(graaf, id, layout, map)
 	-- punten
 	local d = {}
 	for punt in spairs(graaf.punten) do
-		d[#d+1] = "{ data: {id: '"..punt.."'}, classes: 'waarde' },"
+		d[#d+1] = "{ data: {id: '"..tostring(punt).."'}, classes: 'waarde' },"
 	end
 
 	-- pijlen
@@ -99,7 +99,7 @@ function graaf2js(graaf, id, layout, map)
 			local exp = '' --unparseInfix(map[pijl])
 			d[#d+1] = "{ data: {id: '"..pseudo.."', exp: '"..exp.."'}, classes: 'hyper' },"
 		else
-			pseudo = next(pijl.van)
+			pseudo = next(pijl.van).v
 		end
 
 		-- pijl (pseudo -> naar)
@@ -107,8 +107,8 @@ function graaf2js(graaf, id, layout, map)
 			{
 				data: {
 					id: ']]..rid()..[[',
-					source: ']] .. pseudo .. [[',
-					target: ']] .. pijl.naar .. [[',
+					source: ']] .. tostring(pseudo) .. [[',
+					target: ']] .. tostring(pijl.naar) .. [[',
 				}
 			},
 		]]
@@ -120,8 +120,8 @@ function graaf2js(graaf, id, layout, map)
 					{
 						data: {
 							id: ']]..id..[[',
-							source: ']] .. van .. [[',
-							target: ']] .. pseudo .. [[',
+							source: ']] .. tostring(van) .. [[',
+							target: ']] .. tostring(pseudo) .. [[',
 						}
 					},
 				]]

@@ -1,5 +1,7 @@
 #!/usr/bin/lua
 package.path = package.path .. ";../?.lua"
+require 'exp'
+require 'rapporteer-syntax'
 
 function boompairs(exp)
 	local t = {}
@@ -7,6 +9,8 @@ function boompairs(exp)
 		if isatoom(exp) then
 			t[exp] = true
 		else
+			t[exp] = true
+			r(exp.fn)
 			for i,v in ipairs(exp) do
 				r(v)
 			end
@@ -79,31 +83,20 @@ end
 
 --local plan = vertaal(code, 'in', 'uit')
 
-local expmeta = {}
-function expmeta:__index(k)
-	return self.val[k]
-end
-function expmeta:__newindex(k,v)
-	self.val[k] = v
-end
-function expmeta:__len()
-	return #self.val
-end
-function expmeta:__eq(b)
-	if type(b) == 'string' then
-		return self.val == b
-	else
-		return self.val == b.val
-	end
-end
+local asb = ontleed(code)
 
-local asb = toexp(ontleed(code))
-
-print('OK')
+-- annoteer ^_^
+local i = 1
+for t in boompairs(asb) do
+	t.i = i
+	i = i + 1
+	--io.write(t.i..': '..exp2string(t), ' ')
+	printloc(t.loc)
+end
 
 if verboos then
 	print('ASB')
-	print(asb)
+	print(exp2string(asb))
 	print()
 end
 for exp in boompairs(asb) do
@@ -114,10 +107,26 @@ for exp in boompairs(asb) do
 end
 assert(asb, 'syntaxfout')
 --local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
-local stduit,fout,exp2naam0 = oplos(asb, 'uit')
-exp2naam = exp2naam0 -- TODO
-assert(map, 'oplosfout: '..tostring(fout))
+
+local stduit,fout,bekend,exp2naam = oplos(asb, 'uit')
+if not stduit then io.stderr:write('oplosfout: '..tostring(fout)) end
 local plan = stduit
+
+-- syntaxrapport
+if verboos then
+	for k,v in pairs(bekend) do if isatoom(k) and k.v then bekend[k.v] = true end end
+	local label = {}
+	local klasse = {}
+	for t in boompairs(asb) do
+		label[t] = exp2naam[t.v] or exp2string(t)
+		if not bekend[t.v] and isvar(t) then klasse[t] = 'fout' end
+		if bekend[t.v] then klasse[t] = 'goed' end
+	end
+	see(klasse)
+	local html = rapporteer_syntax(code,label,klasse)
+	file('syntax.html', html)
+	print('syntaxrapport weggeschreven naar syntax.html')
+end
 
 local uit
 if opt.d or opt.doe then
@@ -131,7 +140,7 @@ else
 	if opt.l or opt.lua then
 		uit = naarlua(plan)
 	else
-		uit = tostring(toexp(plan))..'\n'
+		uit = tostring(exp2string(plan or X'?'))..'\n'
 	end
 end
 --uit = unlisp(uit)

@@ -2,12 +2,16 @@ require 'lex'
 require 'util'
 
 function isatoom(exp)
-	return exp.fn and not exp[1]
+	return not exp[1]
+end
+
+function code(exp)
 end
 
 function isfn(exp)
-	return not isatoom(exp)
+	return exp.fn ~= nil
 end
+isexp = isfn
 
 local insert = table.insert
 local concat = table.concat
@@ -16,14 +20,51 @@ function unparse_atom(atom)
   --atom = string.format('%q', atom)
   --atom = string.gsub(atom, '\n', '\\n')
   --atom = atom:sub(2,-2)
-  return atom
+  return atom.v
 end
 
+-- X('a', 3, 10)
+
+function X(fn,...)
+	local t = {...}
+	local r
+	if #t == 0 then
+		r = {v=fn}
+	else
+		r = {fn={v=fn}}
+		for i,s in ipairs(t) do
+			if type(s) == 'string' then
+				r[i] = {v=s}
+			else
+				r[i] = s
+			end
+		end
+	end
+	return r
+end
+
+-- {fn='a'}
 function unparse_len(exp)
+	if exp == nil then return 0 end
+	if type(exp) == 'string' then return #exp end
+	if exp.v then return #exp.v end
+	local len = 0
+
+	if isatoom(exp) then return #(exp.v or '???') end
+
+	len = len + unparse_len(exp.fn)
+	for i,v in ipairs(exp) do
+		len = len + unparse_len(v)
+	end
+	len = len + #exp - 1 + 2
+	return len
+end
+
+function unparse_len0(exp)
   local len
   if isatoom(exp) then
-		if not exp.fn then error(tostring(exp)) end
-    len = #exp.fn
+		if not exp.v then error(tostring(exp)) end
+    len = #exp.v
   else
 		if exp.fn then len = unparse_len(exp.fn) + 2 end
     len = 2 + #exp-1 -- (A B C)
@@ -47,8 +88,7 @@ function unparse_work(sexpr, maxlen, tabs, res)
   tabs = tabs or 0
   res = res or {}
   if isatoom(sexpr) then
-    len = #sexpr
-    insert(res, unparse_atom(sexpr))
+    insert(res, sexpr.v)
   else
     local split = unparse_len(sexpr) > maxlen
 		if sexpr.fn then
@@ -66,6 +106,7 @@ function unparse_work(sexpr, maxlen, tabs, res)
 		end
 		insert(res, color[(tabs%#color)+1])
 		insert(res, '(')
+		insert(res, sexpr.i)
 		insert(res, color.white)
     for i,sub in ipairs(sexpr) do
 			if type(sub) == 'boolean' then

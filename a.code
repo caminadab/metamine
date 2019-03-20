@@ -1,3 +1,5 @@
-a = 109
-uit = [a]
-
+uit = t || tekst(a)
+a = sin 30
+t = "hoi"
+b = a · c
+d = 8 - 7

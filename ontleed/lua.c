@@ -16,15 +16,15 @@ int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
 }
 
 void lua_pushloc(lua_State* L, YYLTYPE loc) {
-	lua_createtable(L, 4, 0);
-	lua_pushinteger(L, loc.first_line);
-	lua_rawseti(L, -2, 1);
-	lua_pushinteger(L, loc.first_column);
-	lua_rawseti(L, -2, 2);
-	lua_pushinteger(L, loc.last_line);
-	lua_rawseti(L, -2, 3);
-	lua_pushinteger(L, loc.last_column);
-	lua_rawseti(L, -2, 4);
+	lua_createtable(L, 0, 4);
+	lua_pushinteger(L, loc.first_line + 1);
+	lua_setfield(L, -2, "y1");
+	lua_pushinteger(L, loc.first_column + 1);
+	lua_setfield(L, -2, "x1");
+	lua_pushinteger(L, loc.last_line + 1);
+	lua_setfield(L, -2, "y2");
+	lua_pushinteger(L, loc.last_column + 1);
+	lua_setfield(L, -2, "x2");
 }
 
 void lua_pushlisp(lua_State* L, node* node) {
@@ -50,7 +50,7 @@ void lua_pushlisp(lua_State* L, node* node) {
 		}
 	} else {
 		// data
-		lua_pushliteral(L, "fn");
+		lua_pushliteral(L, "v");
 		lua_pushstring(L, node->data);
 		lua_settable(L, -3);
 	}
@@ -89,6 +89,9 @@ node* ontleed(char* code) {
 	return 0;
 }
 
+int lua_code(lua_State* L) {
+	return 1;
+}
 
 int lua_ontleed(lua_State* L) {
 	const char* str = luaL_checkstring(L, 1);
@@ -123,6 +126,8 @@ int lua_ontleed(lua_State* L) {
 EXPORT int luaopen_ontleed(lua_State* L) {
 	lua_pushcfunction(L, lua_ontleed);
 	lua_setglobal(L, "ontleed");
+	//lua_pushcfunction(L, lua_code);
+	//lua_setglobal(L, "ontleed");
 	return 1;
 }
 

@@ -12,7 +12,9 @@ end
 
 function see(t)
 	if type(t) == 'table' then
-		for k,v in pairs(t) do print(k,v) end
+		print('{')
+		for k,v in pairs(t) do print('  '..tostring(k),v) end
+		print('}')
 	else
 		print(t)
 	end

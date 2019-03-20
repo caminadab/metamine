@@ -2,7 +2,10 @@ require 'lisp'
 
 expmt = {}
 
-function printexp(self,tabs)
+function exp2string(self,tabs)
+	if type(self) ~= 'table' then return '???' end --error('is geen expressie') end
+	if not self.v and not self.fn then error('is geen expressie') end
+
 	do return unlisp(self) end
 	if type(self) == 'string' then return self end
 	local tabs = (tabs or '') .. '  '
@@ -18,7 +21,7 @@ function printexp(self,tabs)
 	-- =(a,b)
 
 	local fn
-	if isfn(self.fn) then
+	if isfn(self) then
 		fn = '('..expmt.__tostring(params.fn,tabs..'  ')..')'
 	else
 		fn = tostring(params.fn)
@@ -47,27 +50,17 @@ function expmt:__eq(ander)
 end
 
 function bevat(exp, naam)
-	if isatoom(exp) then
-		return exp == naam
+	if not exp then return false end
+	if exp.v then
+		return exp.v == naam.v
 	else
-		for i,v in pairs(exp) do
-			if bevat(v,naam) then return true end
+		print('BEVAT', exp2string(exp))
+		if bevat(exp.fn, naam) then return true end
+		for i,v in ipairs(exp) do
+			if bevat(v, naam) then return true end
 		end
 		return false
 	end
-end
-
-function toexp(exp)
-	if type(exp) ~= 'table' then return exp end
-	-- a()
-	-- 2 ((+) ∘ (*)) 3
-	-- (∘(+ *))(3,2)
-	-- f(3)
-	-- (3 * 2) + ((3))
-	local exp2 = {}
-	setmetatable(exp2,expmt)
-	for k,v in pairs(exp) do exp2[k] = toexp(v) end
-	return exp2
 end
 
 function maakfn(naam,...)
@@ -122,6 +115,6 @@ function T(tabs)
 end
 
 if test then
-	local a = toexp {fn = '+', 'a', '2'}
+	local a = printexp {fn = '+', 'a', '2'}
 	assert(bevat(a, 'a'))
 end
