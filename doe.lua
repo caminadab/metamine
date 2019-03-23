@@ -170,13 +170,13 @@ end
 if test then
 	require 'ontleed'
 
-	--local a = toexp(doe(ontleed0('inverteer(sin ★)')))
+	--local a = toexp(doe(ontleed('inverteer(sin ★)')))
 	--assert(a == 'asin', a)
 
-	--local a = toexp(doe(ontleed0('inverteer(sin)')))
+	--local a = toexp(doe(ontleed('inverteer(sin)')))
 	--assert(a == 'asin', a)
 
-	--local a = toexp(doe(ontleed0('inverteer(sin ∘ cos ∘ tan)')))
+	--local a = toexp(doe(ontleed('inverteer(sin ∘ cos ∘ tan)')))
 	--assert(tostring(a) == '@(atan @(acos asin))', tostring(a))
 
 	local code = [[

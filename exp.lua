@@ -33,7 +33,7 @@ function exp2string(self,tabs)
 	end
 end
 
-expmt.__tostring = printexp
+expmt.__tostring = exp2string
 
 function expmt:__eq(ander)
 	local zelf = self
@@ -50,11 +50,13 @@ function expmt:__eq(ander)
 end
 
 function bevat(exp, naam)
-	if not exp then return false end
+	if not exp then error('geen exp') end
+	if not exp.v and not exp.fn then error('geen exp') end
+	if not naam.v then error('naam is geen exp') end
+
 	if exp.v then
 		return exp.v == naam.v
 	else
-		print('BEVAT', exp2string(exp))
 		if bevat(exp.fn, naam) then return true end
 		for i,v in ipairs(exp) do
 			if bevat(v, naam) then return true end
@@ -115,6 +117,7 @@ function T(tabs)
 end
 
 if test then
-	local a = printexp {fn = '+', 'a', '2'}
-	assert(bevat(a, 'a'))
+	-- bevat
+	local a = X('+', 'a', '2')
+	assert(bevat(a, X'a'), exp2string(a))
 end

@@ -12,7 +12,7 @@ extern void yyreset();
 
 int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
 	print_loc(*loc);
-	printf(": %s\n", loc->first_line + 1, loc->first_column + 1, loc->first_line + 1, loc->first_column + 1, yymsg);
+	printf(": %s\n", yymsg);
 }
 
 void lua_pushloc(lua_State* L, YYLTYPE loc) {
@@ -23,7 +23,7 @@ void lua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_setfield(L, -2, "x1");
 	lua_pushinteger(L, loc.last_line + 1);
 	lua_setfield(L, -2, "y2");
-	lua_pushinteger(L, loc.last_column);
+	lua_pushinteger(L, loc.last_column + 1);
 	lua_setfield(L, -2, "x2");
 }
 
@@ -95,13 +95,15 @@ int lua_code(lua_State* L) {
 
 int lua_ontleed(lua_State* L) {
 	const char* str = luaL_checkstring(L, 1);
+	lua_pushliteral(L, "\n");
+	lua_concat(L, 2);
 
 	yyscan_t scanner;
 	yylex_init(&scanner);
 	yy_scan_string(str, scanner);
 	node* wortel;
 
-	int ok = yyparse(&wortel, scanner);
+	int ok = yyparse((void**)&wortel, scanner);
 	yylex_destroy(scanner);
 
 	if (wortel)

@@ -2,8 +2,15 @@
 package.path = package.path .. ';bin/?.lua'
 test = true
 
+require0 = require
+require = function(n)
+	print('REQ', n)
+	return require0(n)
+end
+
 local bestanden = io.popen('ls *.lua')
 for bestand in bestanden:lines() do
 	local kort = bestand:sub(1,-5)
+	print('TEST', kort)
 	require(kort)
 end

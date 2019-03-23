@@ -15,7 +15,8 @@ local predef = {
 inverteer_def = predef
 
 -- rewrite (a + b = c, a) -> c - b
-function isoleer0(eq,name)
+function isoleer(eq,name)
+	if not name.v then error('naam is geen atoom') end
 	if eq.fn.v ~= '=' then return false end
 	local flip = false
 	while true do
@@ -146,8 +147,8 @@ end
 if test then
 	verboos = true
 	require 'ontleed'
-	assert(isoleer0(ontleed0('a = b'), 'b') == 'a')
-	assert(isoleer0(ontleed0('a = b'), 'a') == 'b')
+	assert(isoleer(ontleed('a = b'), 'b') == 'a')
+	assert(isoleer(ontleed('a = b'), 'a') == 'b')
 	verboos = false
 end
 

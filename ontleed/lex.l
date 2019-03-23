@@ -1,4 +1,5 @@
 /*
+is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 %option reentrant
 %option bison-bridge
 %option bison-locations
@@ -90,6 +91,8 @@
 [ ]					// negeer spaties
 [\t]				// negeer tabs voor nu
 "="					{ return '='; }
+">"					{ return '>'; }
+"<"					{ return '<'; }
 "+"					{ return '+'; }
 "-"					{ return '-'; }
 "*"					{ return '*'; }

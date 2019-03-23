@@ -30,6 +30,8 @@
 
 	#include "lex.yy.h"
 
+	int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg);
+
 	//#define fn3loc(a,b,c,l) exp3(a, b, c)
 %}
 
@@ -236,7 +238,7 @@ exp:
 | exp '@' exp       	{ $$ = fn3loc(aloc("@",yylloc), $1, $3, yylloc); }
 | exp ':' exp       	{ $$ = fn3loc(aloc(":",yylloc), $1, $3, yylloc); }
 
-| NEG exp  %prec NEG	{ $$ = fn2loc(aloc("-",yylloc), $2, yylloc); }
+| '-' exp  %prec NEG	{ $$ = fn2loc(aloc("-",yylloc), $2, yylloc); }
 
 | single single %prec CALL { $$ = fn2loc($1, $2, yylloc); }
 | single single single %prec CALL { $$ = fn3loc($2, $1, $3, yylloc); }

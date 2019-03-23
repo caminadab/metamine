@@ -121,7 +121,15 @@ if verboos then
 	local label = {}
 	local klasse = {}
 	for t in boompairs(asb) do
-		label[t] = exp2naam[t.v] or exp2string(t)
+
+		-- label
+		if exp2naam[t] then print('JA', exp2naam[t]) end
+
+		if isatoom(t) and exp2naam[t.v] then
+			print('NAAM', exp2naam[t.v], type(exp2naam[t.v]))
+			label[t] = leed(exp2naam[t.v])
+		end
+		
 		if not bekend[t.v] and isvar(t) then klasse[t] = 'fout' end
 		if bekend[t.v] then klasse[t] = 'goed' end
 	end

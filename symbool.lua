@@ -14,7 +14,7 @@ function isvar(name)
 	return false
 end
 
-function var(exp,t)
+function var0(exp,t)
 	vars = var
 	local f = var
 	local t = t or {}

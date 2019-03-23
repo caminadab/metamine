@@ -74,7 +74,7 @@ bieb = {
 	['ontleed'] = function(a)
 		--local code = string.char(table.unpack(a))
 		local code = a
-		local data = ontleed0(code)
+		local data = ontleed(code)
 		return data
 	end;
 

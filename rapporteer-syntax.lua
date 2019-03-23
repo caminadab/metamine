@@ -78,7 +78,7 @@ function locvind(code, x, y)
 		pos = pos + 1
 	end
 	pos = pos + x - 1
-	if pos > #code then
+	if pos > #code+1 then
 		return false
 	end
 	return pos
@@ -88,20 +88,21 @@ function locsub(code, loc)
 	local apos = locvind(code, loc.x1, loc.y1)
 	local bpos = locvind(code, loc.x2, loc.y2)
 	if not apos or not bpos then return false end
-	return string.sub(code, apos, bpos)
+	return string.sub(code, apos, bpos-1)
 end
 
 assert(locvind("a", 1, 1) == 1)
 assert(locvind("a\n", 2, 1) == 2)
-assert(locvind("a\n", 1, 2) == false)
+assert(locvind("a\n", 1, 3) == false)
 assert(locvind("a\nb", 1, 2) == 3)
 assert(locvind("a = 3\nb = 1 + 2\n", 5, 2) == 11)
 
-assert(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=5,y2=2}) == "b = 1")
+assert(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=6,y2=2}) == "b = 1")
 
-assert(locsub("a\nb", {x1=1,y1=2,x2=1,y2=2}) == "b")
-print(locsub("a\nb\n", {x1=1,y1=2,x2=1,y2=2}))
-assert(locsub("a\nb\n", {x1=1,y1=2,x2=2,y2=2}) == "b\n")
+print(locsub("a\nb", {x1=1,y1=2,x2=2,y2=2}))
+assert(locsub("a\nb", {x1=1,y1=2,x2=2,y2=2}) == "b")
+print(locsub("a\nb\n", {x1=1,y1=2,x2=2,y2=2}))
+assert(locsub("a\nb\n", {x1=1,y1=2,x2=3,y2=2}) == "b\n")
 
 function printloc(loc)
 	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
@@ -141,6 +142,11 @@ function rapporteer_syntax(code,labels,stijl)
 		tooltips[#tooltips+1] = tooltip
 		vorige = loc
 	end
+
+	-- laatste vuller
+	local vuller = code:sub(locvind(code, vorige.x2, vorige.y2))
+	local tooltip = string.format(htmltoken, "vuller",  vuller, "")
+	tooltips[#tooltips+1] = tooltip
 
 	-- [(tip, 
 	local function r(tak)

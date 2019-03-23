@@ -12,7 +12,6 @@ local print = function (...)
 end
 
 local function leedR(exp,t)
-	print(exp.fn and exp.fn.v, 'OK')
 	if isatoom(exp) then
 		t[#t+1] = exp.v
 
@@ -24,7 +23,21 @@ local function leedR(exp,t)
 				t[#t+1] = ','
 			end
 		end
-		t[#t+1] = '['
+		t[#t+1] = ']'
+
+	elseif #exp == 2 then
+		-- A
+		leedR(exp[1], t)
+		t[#t+1] = ' '
+
+		-- fn
+		if isfn(exp.fn) then t[#t+1] = '(' end
+		leedR(exp.fn, t)
+		if isfn(exp.fn) then t[#t+1] = ')' end
+
+		-- B
+		t[#t+1] = ' '
+		leedR(exp[2], t)
 
 	else
 		-- fn
@@ -133,7 +146,7 @@ function oplos(exp,voor)
 			local c = b and (eq[2].fn.v == '=')
 			if eq.fn.v == '=>' and isexp(eq[2]) and eq[2].fn.v == '=' then
 				eq.fn.v = '|='
-				eq[1],eq[2] = eq[2][1], X('=>', eq[1], eq[2][2])
+				eq[1],eq[2] = eq[2][1], {fn=X'=>', eq[1], eq[2][2]}
 			end
 		end
 
@@ -154,8 +167,8 @@ function oplos(exp,voor)
 			eqs[eq] = false
 		end
 		for k,v in pairs(map) do
-			v.fn = '|'
-			local eq = X('=', k, v)
+			v.fn = X'|'
+			local eq = {fn=X'=', k, v}
 			eqs[eq] = true
 		end
 
@@ -177,9 +190,10 @@ function oplos(exp,voor)
 					-- complexe parameters
 					for i,param in ipairs(params) do
 						if not isatoom(param) or true then
-							local naam = '_'..varnaam(aantal)
+							local naam = X('_'..varnaam(aantal))
 							params[i] = naam
-							local paramhulp = X('=', naam, param)
+							local paramhulp = {fn=X'=', naam, param}
+							_G.print('PARAMHULP', see(paramhulp))
 							nieuw[paramhulp] = true -- HIER!
 
 							-- pas vergelijking aan
@@ -203,9 +217,12 @@ function oplos(exp,voor)
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
 						--if verboos then print('Probeer', naam, toexp(eq)) end
-						local waarde = isoleer0(eq,naam)
+						_G.print('NAAM', naam)
+						see(naam)
+						see(naam.fn)
+						local waarde = isoleer(eq,naam)
 						if waarde then
-							local eq = X(':=', naam, waarde)
+							local eq = {fn=X':=', naam, waarde}
 							subst[eq] = true
 							if verboos then print('ISOLEER', exp2string(eq)) end
 						end
@@ -222,9 +239,9 @@ function oplos(exp,voor)
 			local bron0 = var(waarde,invoer)
 			local bron = {}
 			for k in pairs(bron0) do -- alleen naam is nodig
-				print('Bron')
+				_G.print('Bron')
 				see(k)
-				assert(type(k.v) == 'string')
+				assert(type(k.v) == 'string', see(k.v))
 				bron[k.v] = true
 			end
 			see(bron)
@@ -271,9 +288,10 @@ function oplos(exp,voor)
 			local val0 = val
 			val = substitueer(val0, naam, exp)
 			--exp2naam[val0] = naam
-			exp2naam[naam.v] = leed(exp)
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
 			print('SUBST', naam.v)
+
+			print('ONTKEVER', exp2string(exp))
 
 			exp2naam[naam.v] = exp
 			local n2e = {}
@@ -283,11 +301,6 @@ function oplos(exp,voor)
 			end
 			exp2naam = n2e
 		end
-		local n2e = {}
-		for k,v in pairs(exp2naam) do
-			n2e[k] = T(v)
-		end
-		exp2naam = n2e
 
 		print('Klaar', exp2string(val))
 		print()
@@ -322,26 +335,26 @@ if test then
 	require 'util'
 	require 'ontleed'
 
-	assert(oplos(ontleed0('a = 2', 'a')) == '2')
+	assert(oplos(ontleed('a = 2', 'a')) == '2')
 
 	-- b = 2 + 2
-	local v = oplos(ontleed0('a = 2\na + 2 = b'))
+	local v = oplos(ontleed('a = 2\na + 2 = b'))
 	assert(v)
 	assert(tostring(v.b) == '+(2 2)',
 		'v.b = '..tostring(v.b)..' ≠ +(2 2)')
 
-	local v = oplos(ontleed0('f(a) = f(b)\na = 2'))
+	local v = oplos(ontleed('f(a) = f(b)\na = 2'))
 	assert(v)
 	assert(tostring(v.b) == '2',
 		'v.b = '..tostring(v.b)..' ≠ 2')
 
-	local v = oplos(toexp(ontleed0('f(a + 1) = f(b + 1)\na = 2')))
+	local v = oplos(toexp(ontleed('f(a + 1) = f(b + 1)\na = 2')))
 	assert(v)
 	assert(tostring(v.b) == '2',
 		'v.b = '..tostring(v.b)..' ≠ 2')
 
-	local v = oplos(toexp(ontleed0('f = g⁻¹ ∧ g = ★ - 3')))
-	print(toexp(ontleed0('f = g⁻¹ ∧ g = ★ - 3')))
+	local v = oplos(toexp(ontleed('f = g⁻¹ ∧ g = ★ - 3')))
+	print(toexp(ontleed('f = g⁻¹ ∧ g = ★ - 3')))
 	assert(v)
 	assert(tostring(v.f) == 'inverteer(-(_ 3))', tostring(v.f))
 
@@ -349,7 +362,7 @@ if test then
 f = ★/2 ∘ sin
 a = f⁻¹(2)
 	]]
-	local c = oplos(toexp(ontleed0(s)))
+	local c = oplos(toexp(ontleed(s)))
 
 	for i=1,10 do
 		local s = [[
@@ -357,7 +370,7 @@ standaarduitvoer = "a = " || tekst(a) || [10]
 a = f(3)
 f = sin ∘ cos
 		]]
-		local m = oplos(toexp(ontleed0(s)))
+		local m = oplos(toexp(ontleed(s)))
 		assert(m.standaarduitvoer)
 	end
 

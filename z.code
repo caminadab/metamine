@@ -1,3 +1,2 @@
-uit = tekst(a + b)
-a = 0.7
-b = -3e9
+uit = tekst(f(2))
+f = a → a + 1

@@ -8,8 +8,10 @@
 #include "lex.yy.h"
 #include "global.h"
 
-void yyerror (char const * s) {
-	//fprintf(stderr, "%s\n", s);
+int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
+	printf("TEST ERROR\n");
+	print_loc(*loc);
+	printf(": %s\n", yymsg);
 }
 
 char* ontleed(char* code) {
@@ -19,7 +21,7 @@ char* ontleed(char* code) {
 
 	node* wortel;
 
-	int ok = yyparse(&wortel, scanner);
+	int ok = yyparse((void**)&wortel, scanner);
 	yylex_destroy(scanner);
 
 	char* buf = malloc(1024 * 1024);

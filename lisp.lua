@@ -2,10 +2,7 @@ require 'lex'
 require 'util'
 
 function isatoom(exp)
-	return not exp[1]
-end
-
-function code(exp)
+	return exp.v ~= nil
 end
 
 function isfn(exp)
@@ -36,6 +33,7 @@ function X(fn,...)
 			if type(s) == 'string' then
 				r[i] = {v=s}
 			else
+				--error('nesting niet ondersteund')
 				r[i] = s
 			end
 		end
@@ -106,7 +104,6 @@ function unparse_work(sexpr, maxlen, tabs, res)
 		end
 		insert(res, color[(tabs%#color)+1])
 		insert(res, '(')
-		insert(res, sexpr.i)
 		insert(res, color.white)
     for i,sub in ipairs(sexpr) do
 			if type(sub) == 'boolean' then

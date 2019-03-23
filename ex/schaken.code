@@ -16,6 +16,7 @@ type(letter) =
 	l = 't' ⇒ toren
 	l = 'd' ⇒ dame
 	l = 'k' ⇒ koning
+	l = '.' ⇒ niets
 
 stuk(letter) = kleur(letter) & type(letter)
 
@@ -37,7 +38,6 @@ lees = tekst → stelling
 	letters = tekst filter (¬ is-teken-witruimte)
 	stukken = letters map stuk
 
-is-teken-witruimte = x → x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 is-teken-witruimte = x → x ≤ 32
 
 startpos = lees "
