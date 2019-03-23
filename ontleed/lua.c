@@ -23,7 +23,7 @@ void lua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_setfield(L, -2, "x1");
 	lua_pushinteger(L, loc.last_line + 1);
 	lua_setfield(L, -2, "y2");
-	lua_pushinteger(L, loc.last_column + 1);
+	lua_pushinteger(L, loc.last_column);
 	lua_setfield(L, -2, "x2");
 }
 

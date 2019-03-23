@@ -1,0 +1,52 @@
+schrijf = pos → tekst
+	tekst = "hoi"
+
+bordA = "ok"
+uit = bordtekst bordA
+
+kleur(letter) =
+	letter:hoofdletter ⇒ zwart
+	letter:kleine-letter ⇒ wit
+
+type(letter) =
+	l = kleine-letter(letter)
+	l = 'i' ⇒ pion
+	l = 'p' ⇒ paard
+	l = 'l' ⇒ loper
+	l = 't' ⇒ toren
+	l = 'd' ⇒ dame
+	l = 'k' ⇒ koning
+
+stuk(letter) = kleur(letter) & type(letter)
+
+type = pion | paard | loper | toren | dame | koning
+kleur = wit | zwart
+stuk = kleur & type
+wit-stuk = wit & type
+zwart-stuk = zwart & type
+
+; twee alternatieve representaties
+stelling = (bord | stukken) & mag-rokeren^kleur & en-passant kolom)
+bord = stuk^(8×8)
+stukken = (stuk&pos)^int
+pos = (0..8) × (0..8) ; kwadraat??
+;stukken = 2^((stuk & kleur)^16)
+;zet = delta stelling
+
+lees = tekst → stelling
+	letters = tekst filter (¬ is-teken-witruimte)
+	stukken = letters map stuk
+
+is-teken-witruimte = x → x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
+is-teken-witruimte = x → x ≤ 32
+
+startpos = lees "
+t p l v k l p t
+i i i i i i i i
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+I I I I I I I I
+T P L V K L P T
+"

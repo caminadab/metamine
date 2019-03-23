@@ -222,6 +222,8 @@ function oplos(exp,voor)
 			local bron0 = var(waarde,invoer)
 			local bron = {}
 			for k in pairs(bron0) do -- alleen naam is nodig
+				print('Bron')
+				see(k)
 				assert(type(k.v) == 'string')
 				bron[k.v] = true
 			end
