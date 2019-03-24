@@ -64,7 +64,7 @@ function isoleer(eq,name)
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
-					eq0 = X(':=', el, X(r, tostring(i-1)))
+					eq0 = X(':=', el, X(r.v, tostring(i-1)))
 					break
 				end
 			end

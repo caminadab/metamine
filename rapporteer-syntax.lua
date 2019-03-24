@@ -122,6 +122,9 @@ function rapporteer_syntax(code,labels,stijl)
 			gesorteerd[#gesorteerd+1] = exp
 		end
 	end
+	if #gesorteerd == 0 then
+		gesorteerd = { {v=X'niets', loc={x1=1,y1=1,x2=1,y2=1}} }
+	end
 	table.sort(gesorteerd, function(a,b) return loclt(a.loc, b.loc) end)
 
 	local tooltips = {}

@@ -1,22 +1,31 @@
-schrijf = pos → tekst
-	tekst = "hoi"
+uit = schrijf(bordA)
+bordA = "hoi"
+schrijf = x → x
 
-bordA = "ok"
-uit = bordtekst bordA
+p:stuk = wit & pion
 
+; IDENTITEITSGENERATIE: enum
+
+;-
 kleur(letter) =
 	letter:hoofdletter ⇒ zwart
 	letter:kleine-letter ⇒ wit
 
-type(letter) =
-	l = kleine-letter(letter)
-	l = 'i' ⇒ pion
-	l = 'p' ⇒ paard
-	l = 'l' ⇒ loper
-	l = 't' ⇒ toren
-	l = 'd' ⇒ dame
-	l = 'k' ⇒ koning
-	l = '.' ⇒ niets
+; bestaande scopeing!
+type(kleine-letter) =
+	'i' ↦ pion
+	'p' ↦ paard
+	'l' ↦ loper
+	't' ↦ toren
+	'd' ↦ dame
+	'k' ↦ koning
+	'.' ↦ niets
+
+kleine-letter(letter) =
+	(letter x →
+
+uit = 
+-;
 
 stuk(letter) = kleur(letter) & type(letter)
 
@@ -25,14 +34,18 @@ kleur = wit | zwart
 stuk = kleur & type
 wit-stuk = wit & type
 zwart-stuk = zwart & type
+wit = niet zwart
 
 ; twee alternatieve representaties
-stelling = (bord | stukken) & mag-rokeren^kleur & en-passant kolom)
+stelling = (bord | stukken) & mag-rokeren^kleur & (en-passant kolom)
 bord = stuk^(8×8)
 stukken = (stuk&pos)^int
 pos = (0..8) × (0..8) ; kwadraat??
 ;stukken = 2^((stuk & kleur)^16)
 ;zet = delta stelling
+
+; lees
+lees-stuk(letter) = type(letter)
 
 lees = tekst → stelling
 	letters = tekst filter (¬ is-teken-witruimte)

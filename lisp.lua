@@ -86,8 +86,8 @@ function unparse_work(sexpr, maxlen, tabs, res)
   tabs = tabs or 0
   res = res or {}
   if isatoom(sexpr) then
-    insert(res, sexpr.v)
-  else
+    insert(res, tostring(sexpr.v))
+	elseif isfn(sexpr) then
     local split = unparse_len(sexpr) > maxlen
 		if sexpr.fn then
 			if isfn(sexpr.fn) then
@@ -138,6 +138,8 @@ end
 
 function unlisp(sexpr, len)
   if not sexpr then return 'niets' end
+	local t = unparse_work(sexpr, len or 20)
+	see(t)
   return concat(unparse_work(sexpr, len or 20))
 end
 

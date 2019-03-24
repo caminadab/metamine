@@ -92,7 +92,6 @@ for t in boompairs(asb) do
 	t.i = i
 	i = i + 1
 	--io.write(t.i..': '..exp2string(t), ' ')
-	printloc(t.loc)
 end
 
 if verboos then
@@ -122,18 +121,13 @@ if verboos then
 	local klasse = {}
 	for t in boompairs(asb) do
 
-		-- label
-		if exp2naam[t] then print('JA', exp2naam[t]) end
-
-		if isatoom(t) and exp2naam[t.v] then
-			print('NAAM', exp2naam[t.v], type(exp2naam[t.v]))
+		if isatoom(t) and exp2naam and exp2naam[t.v] then
 			label[t] = leed(exp2naam[t.v])
 		end
 		
 		if not bekend[t.v] and isvar(t) then klasse[t] = 'fout' end
 		if bekend[t.v] then klasse[t] = 'goed' end
 	end
-	see(klasse)
 	local html = rapporteer_syntax(code,label,klasse)
 	file('syntax.html', html)
 	print('syntaxrapport weggeschreven naar syntax.html')

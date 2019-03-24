@@ -13,7 +13,7 @@ end
 
 local function leedR(exp,t)
 	if isatoom(exp) then
-		t[#t+1] = exp.v
+		t[#t+1] = tostring(exp.v)
 
 	elseif exp.fn.v == '[]' then
 		t[#t+1] = '['
@@ -193,7 +193,6 @@ function oplos(exp,voor)
 							local naam = X('_'..varnaam(aantal))
 							params[i] = naam
 							local paramhulp = {fn=X'=', naam, param}
-							_G.print('PARAMHULP', see(paramhulp))
 							nieuw[paramhulp] = true -- HIER!
 
 							-- pas vergelijking aan
@@ -217,9 +216,6 @@ function oplos(exp,voor)
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
 						--if verboos then print('Probeer', naam, toexp(eq)) end
-						_G.print('NAAM', naam)
-						see(naam)
-						see(naam.fn)
 						local waarde = isoleer(eq,naam)
 						if waarde then
 							local eq = {fn=X':=', naam, waarde}
@@ -241,7 +237,7 @@ function oplos(exp,voor)
 			for k in pairs(bron0) do -- alleen naam is nodig
 				_G.print('Bron')
 				see(k)
-				assert(type(k.v) == 'string', see(k.v))
+				--assert(type(k.v) == 'string', see(k.v))
 				bron[k.v] = true
 			end
 			see(bron)

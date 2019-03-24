@@ -9,7 +9,7 @@ local function bereikbaar_disj(graaf, van, naar)
 	print('# start')
 	print(graaf:tekst())
 
-	print(van..' ?-> '..naar)
+	print(tostring(van)..' ?-> '..tostring(naar))
 
 	if type(van) ~= 'table' then
 		van = {[van] = true}
@@ -26,7 +26,7 @@ local function bereikbaar_disj(graaf, van, naar)
 		for pijl in graaf:naar(punt) do
 			for bron0 in pairs(pijl.van) do
 				-- route van "naar" naar "van" gevonden!
-				print('gevonden',bron0..' -> '..naar, van, bron0 == van)
+				print('gevonden',tostring(bron0)..' -> '..tostring(naar), van, bron0 == van)
 				if bereikbaar[bron0] or van[bron0] or bron0 == van then
 					print('BEREIKBAAR')
 					return true
