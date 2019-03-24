@@ -1,4 +1,3 @@
-; bdecodeer
 bdecB = d → w
 d₀ = 'l'  ⇒  w = "l" || cat(inhoud) || "e"
 d₀ = 'i'  ⇒  w = d tot (1 + d vind "e")

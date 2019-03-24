@@ -20,6 +20,18 @@ function see(t)
 	end
 end
 
+function seerec(t,tabs)
+	local tabs = tabs or ''
+	if type(t) == 'table' then
+		print()
+		print(tabs..'{')
+		for k,v in pairs(t) do io.write(tabs..'  ', k, '\t') ; seerec(v, tabs..'  ') end
+		print(tabs..'}')
+	else
+		print(tabs..t)
+	end
+end
+
 function file(name, data)
 	if not data then
 		local f = io.open(name, 'r')

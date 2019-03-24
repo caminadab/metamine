@@ -1,31 +1,8 @@
-uit = schrijf(bordA)
-bordA = "hoi"
-schrijf = x → x
+uit = tekst startpos
 
 p:stuk = wit & pion
 
 ; IDENTITEITSGENERATIE: enum
-
-;-
-kleur(letter) =
-	letter:hoofdletter ⇒ zwart
-	letter:kleine-letter ⇒ wit
-
-; bestaande scopeing!
-type(kleine-letter) =
-	'i' ↦ pion
-	'p' ↦ paard
-	'l' ↦ loper
-	't' ↦ toren
-	'd' ↦ dame
-	'k' ↦ koning
-	'.' ↦ niets
-
-kleine-letter(letter) =
-	(letter x →
-
-uit = 
--;
 
 stuk(letter) = kleur(letter) & type(letter)
 
@@ -63,3 +40,24 @@ i i i i i i i i
 I I I I I I I I
 T P L V K L P T
 "
+;-
+kleur(letter) =
+	letter:hoofdletter ⇒ zwart
+	letter:kleine-letter ⇒ wit
+
+; bestaande scopeing!
+type(kleine-letter) =
+	'i' ↦ pion
+	'p' ↦ paard
+	'l' ↦ loper
+	't' ↦ toren
+	'd' ↦ dame
+	'k' ↦ koning
+	'.' ↦ niets
+
+kleine-letter(letter) =
+	(letter x →
+
+uit = 
+-;
+

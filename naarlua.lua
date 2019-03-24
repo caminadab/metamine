@@ -4,6 +4,7 @@ require 'exp'
 -- 1-gebaseerd
 -- 1 t/m 26 zijn A t/m Z
 -- daarna AA t/m ZZ
+-- daarna AAA t/m ZZZ
 function varnaam(i)
 	local r = ''
 	i = i - 1
@@ -30,10 +31,10 @@ local tab = '    '
 local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', }
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
-		return exp,t
+		return exp.v,t
 	end
 
-	local fn,a,b = exp.fn, exp[1], exp[2]
+	local fn,a,b = exp.fn.v, exp[1], exp[2]
 	local var = maakvar()
 
 	if infix[fn] then
@@ -86,7 +87,7 @@ local function naarluaR(exp,t,tabs,maakvar)
 		t[#t+1] = tabs..'end\n'
 
 	elseif fn == '->' then
-		t[#t+1] = string.format('%slocal %s = function (%s)\n', tabs, var, a)
+		t[#t+1] = string.format('%slocal %s = function (%s)\n', tabs, var, a.v)
 		local res = naarluaR(b, t, tabs..tab, maakvar)
 		t[#t+1] = string.format('%sreturn %s\n', tabs..tab, res)
 		t[#t+1] = string.format('%send\n', tabs)

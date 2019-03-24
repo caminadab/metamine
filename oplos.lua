@@ -112,6 +112,7 @@ function punten(exp)
 end
 
 function oplos(exp,voor)
+	if isatoom(exp) then return exp end
 	if exp.fn.v == [[=]] or exp.fn.v == [[/\]] then
 		local eqs
 		if exp.fn.v == [[=]] then
@@ -157,8 +158,8 @@ function oplos(exp,voor)
 			-- a |= b
 			if eq.fn.v == '|=' then
 				local a,b = eq[1],eq[2]
-				map[a] = map[a] or {}
-				local v = map[a]
+				map[a.v] = map[a.v] or {}
+				local v = map[a.v]
 				v[#v+1] = b
 				oud[eq] = true
 			end
@@ -166,9 +167,9 @@ function oplos(exp,voor)
 		for eq in pairs(oud) do
 			eqs[eq] = false
 		end
-		for k,v in pairs(map) do
-			v.fn = X'|'
-			local eq = {fn=X'=', k, v}
+		for naam,alts in pairs(map) do
+			alts.fn = X'|'
+			local eq = {fn=X'=', X(naam), alts}
 			eqs[eq] = true
 		end
 
@@ -235,12 +236,9 @@ function oplos(exp,voor)
 			local bron0 = var(waarde,invoer)
 			local bron = {}
 			for k in pairs(bron0) do -- alleen naam is nodig
-				_G.print('Bron')
-				see(k)
 				--assert(type(k.v) == 'string', see(k.v))
 				bron[k.v] = true
 			end
-			see(bron)
 			local pijl = kennisgraaf:link(bron, naam.v)
 			pijl2subst[pijl] = subst
 		end

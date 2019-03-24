@@ -139,7 +139,6 @@ end
 function unlisp(sexpr, len)
   if not sexpr then return 'niets' end
 	local t = unparse_work(sexpr, len or 20)
-	see(t)
   return concat(unparse_work(sexpr, len or 20))
 end
 

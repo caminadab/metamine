@@ -99,9 +99,7 @@ assert(locvind("a = 3\nb = 1 + 2\n", 5, 2) == 11)
 
 assert(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=6,y2=2}) == "b = 1")
 
-print(locsub("a\nb", {x1=1,y1=2,x2=2,y2=2}))
 assert(locsub("a\nb", {x1=1,y1=2,x2=2,y2=2}) == "b")
-print(locsub("a\nb\n", {x1=1,y1=2,x2=2,y2=2}))
 assert(locsub("a\nb\n", {x1=1,y1=2,x2=3,y2=2}) == "b\n")
 
 function printloc(loc)
