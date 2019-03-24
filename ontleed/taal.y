@@ -37,6 +37,7 @@
 
 %token NAAM
 %token TEKST
+%token NIN "!:"
 %token DAN "=>"
 %token TO "->"
 %token MAPLET "-->"
@@ -67,7 +68,7 @@
 %left '=' "!=" "~="
 %left ":=" "+=" "-=" "|=" "&="
 %left '@'
-%left ':'
+%left ':' "!:"
 %left "->" "-->"
 %left ','
 %left '<' '>' "<=" ">="
@@ -110,7 +111,7 @@ sep: '\n' | sep '\n' ;
 | '|' | '&' | '#'
 | ":=" | "+=" | "-=" | "|=" | "&="
 | "en" | "of" | "exof" | "noch" | "niet"
-| '.' | '@' | ':' | ">>" | "<<"
+| '.' | '@' | ':' | '!:' | ">>" | "<<"
 ;*/
 /*
 /a("alocf)i,yylloc
@@ -185,6 +186,7 @@ single:
 | '(' '.' ')'       	{ $$ = aloc(".",yylloc); }
 | '(' '@' ')'       	{ $$ = aloc("@",yylloc); }
 | '(' ':' ')'       	{ $$ = aloc(":",yylloc); }
+| '(' '!:' ')'       	{ $$ = aloc("!:",yylloc); }
 | '(' ">>" ')'       	{ $$ = aloc(">>",yylloc); }
 | '(' "<<" ')'       	{ $$ = aloc("<<",yylloc); }
 
@@ -237,6 +239,7 @@ exp:
 | exp '.' exp       	{ $$ = fn3loc(aloc(".",yylloc), $1, $3, yylloc); }
 | exp '@' exp       	{ $$ = fn3loc(aloc("@",yylloc), $1, $3, yylloc); }
 | exp ':' exp       	{ $$ = fn3loc(aloc(":",yylloc), $1, $3, yylloc); }
+| exp "!:" exp       	{ $$ = fn2loc(aloc("!",yylloc), fn3loc(aloc(":",yylloc), $1, $3, yylloc), yylloc); } // !(:(a b))
 
 | '-' exp  %prec NEG	{ $$ = fn2loc(aloc("-",yylloc), $2, yylloc); }
 

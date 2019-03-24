@@ -11,59 +11,7 @@ local print = function (...)
 	if verboos then print(...) end
 end
 
-local function leedR(exp,t)
-	if isatoom(exp) then
-		t[#t+1] = tostring(exp.v)
-
-	elseif exp.fn.v == '[]' then
-		t[#t+1] = '['
-		for i,v in ipairs(exp) do
-			leedR(v, t)
-			if exp[i+1] then
-				t[#t+1] = ','
-			end
-		end
-		t[#t+1] = ']'
-
-	elseif #exp == 2 then
-		-- A
-		leedR(exp[1], t)
-		t[#t+1] = ' '
-
-		-- fn
-		if isfn(exp.fn) then t[#t+1] = '(' end
-		leedR(exp.fn, t)
-		if isfn(exp.fn) then t[#t+1] = ')' end
-
-		-- B
-		t[#t+1] = ' '
-		leedR(exp[2], t)
-
-	else
-		-- fn
-		if isfn(exp.fn) then t[#t+1] = '(' end
-		leedR(exp.fn, t)
-		if isfn(exp.fn) then t[#t+1] = ')' end
-
-		-- args
-		t[#t+1] = '('
-		for i,v in ipairs(exp) do
-			leedR(v, t)
-			if exp[i+1] then
-				t[#t+1] = ','
-			end
-		end
-		t[#t+1] = ')'
-	
-	end
-		
-	return t
-end
-
-function leed(exp)
-	return table.concat(leedR(exp,{}))
-end
-
+leed = combineer
 
 function T(exp)
 	local r = {}
@@ -111,8 +59,9 @@ function punten(exp)
 	end
 end
 
+-- it,fout,bekend,exp2naam
 function oplos(exp,voor)
-	if isatoom(exp) then return exp end
+	if isatoom(exp) then return exp,nil,{},{} end
 	if exp.fn.v == [[=]] or exp.fn.v == [[/\]] then
 		local eqs
 		if exp.fn.v == [[=]] then
@@ -169,6 +118,9 @@ function oplos(exp,voor)
 		end
 		for naam,alts in pairs(map) do
 			alts.fn = X'|'
+			if #alts == 1 then
+				alts = alts[1]
+			end
 			local eq = {fn=X'=', X(naam), alts}
 			eqs[eq] = true
 		end
@@ -247,7 +199,7 @@ function oplos(exp,voor)
 		print(kennisgraaf:tekst())
 		print()
 
-		local stroom,bekend = kennisgraaf:sorteer(invoer,voor)
+		local stroom,fout,bekend = kennisgraaf:sorteer(invoer,voor)
 		local vt = {
 			code = "ABC",
 			kennisgraaf = kennisgraaf,
@@ -256,7 +208,7 @@ function oplos(exp,voor)
 		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
 			file('fout.html', rapport(vt))
-			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend
+			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}
 		end
 		print()
 		print('Stroom verkregen')
@@ -264,7 +216,7 @@ function oplos(exp,voor)
 		print()
 		local substs = stroom:topologisch()
 		if not substs then
-			return false, 'kon niet topologisch sorteren', bekend
+			return false, 'kon niet topologisch sorteren', bekend, {}
 		end
 		-- lijst(subst)
 
@@ -322,7 +274,7 @@ function oplos(exp,voor)
 
 	end
 
-	return exp,nil,exp2naam
+	return exp,nil,bekend,exp2naam
 end
 
 if test then

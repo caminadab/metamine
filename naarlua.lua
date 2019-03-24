@@ -68,6 +68,14 @@ local function naarluaR(exp,t,tabs,maakvar)
 		inhoud = table.concat(vars, ',')
 		t[#t+1] = string.format('%slocal %s = tabel{%s}\n', tabs, var, inhoud)
 
+	elseif fn == '{}' then
+		local vars = {}
+		for i,v in ipairs(exp) do
+			vars[i] = '['..naarluaR(v,t,tabs,maakvar)..'] = true'
+		end
+		inhoud = table.concat(vars, ',')
+		t[#t+1] = string.format('%slocal %s = {%s}\n', tabs, var, inhoud)
+
 	elseif fn == 'map' then
 		-- nieuw
 		local nieuw = var
@@ -146,7 +154,9 @@ local _istype = function(a,b)
 	if b == getal then return type(a) == 'number' end
 	if b == int then return type(a) == 'number' and a%1 == 0 end
 	if b == lijst then return type(a) == 'table' end
-	return false
+	-- set dan maar
+	return not not b[a]
+	--return false
 end
 local _procent = function(n) return n / 100 end
 local _comp = function(a,b)

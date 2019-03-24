@@ -285,6 +285,9 @@ bieb = {
 			return tonumber(a) and tonumber(a)%1==0 or type(a) == 'number'
 		elseif b == bieb.lijst then
 			return type(a) == 'table'
+		-- set
+		elseif a[b] == true then
+			return true
 		else
 			return false
 		end

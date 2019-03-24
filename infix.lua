@@ -5,7 +5,7 @@ require 'func'
 local insert = table.insert
 
 function name(token)
-	return token and atom(token) and string.match(token,'%a[%w%-]*$')
+	return token and isatoom(token) and string.match(token,'%a[%w%-]*$')
 end
 
 local openBrackets = {
@@ -108,9 +108,9 @@ for op,name in pairs(unopNames) do
 end
 
 local function fix(a)
-	if atom(a) then
-		if unopSymbols[a] then
-			return unopSymbols[a]
+	if isatoom(a) then
+		if unopSymbols[a.v] then
+			return unopSymbols[a.v]
 		else
 			return a
 		end
@@ -198,7 +198,7 @@ function infix(tokens)
 	local function apre(i)
 		-- sin[
 		if name(stack[i]) then return 999 end
-		if not stack[i] or atom(stack[i]) then
+		if not stack[i] or isatoom(stack[i]) then
 			return 0
 		end
 		return binop[stack[i][1]]
@@ -282,44 +282,44 @@ parseInfix = curry(infix, tokenize)
 local insert = table.insert
 
 local function unparseInfix_work(sexp, tt)
-	if atom(sexp) then
-		insert(tt, sexp)
+	if isatoom(sexp) then
+		insert(tt, sexp.v)
 	else
-		local op = sexp[1]
+		local op = sexp.fn.v
 
 		-- lijst/set
-		if sexp[1] == '[]' or sexp[1] == '{}' then
-			insert(tt, sexp[1]:sub(1,1))
-			for i=2,#sexp do
+		if op == '[]' or op == '{}' then
+			insert(tt, op:sub(1,1))
+			for i=1,#sexp do
 				unparseInfix_work(sexp[i], tt)
 				if i ~= #sexp then
 					insert(tt, ', ')
 				end
 			end
-			insert(tt, sexp[1]:sub(2,2))
+			insert(tt, op:sub(2,2))
 
-		-- procent
-		elseif sexp[1] == '%' then
-			unparseInfix_work(sexp[2], tt)
-			insert(tt, '%')
+		-- navoegsel
+		elseif op == '%' or op == "'" then
+			unparseInfix_work(sexp[1], tt)
+			insert(tt, op)
 
 		-- unop
-		elseif #sexp == 2 then
+		elseif #sexp == 1 then
 			insert(tt, op)
-			if atom(sexp[2]) then
+			if isatoom(sexp[1]) then
 				insert(tt, ' ')
-				insert(tt, sexp[2])
+				insert(tt, sexp[1].v)
 			else
 				insert(tt, ' (')
-				unparseInfix_work(sexp[2], tt)
+				unparseInfix_work(sexp[1], tt)
 				insert(tt, ')')
 			end
 
 		-- binop
 		else
-			for i=2,#sexp do
+			for i=1,#sexp do
 				local v = sexp[i]
-				local br = exp(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
+				local br = isfn(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
 
 				if br then insert(tt, '(') end
 
@@ -349,7 +349,7 @@ local function unparseInfix_work(sexp, tt)
 	return tt
 end
 
-function unparseInfix(sexp)
+function combineer(sexp)
 	if not sexp then
 		return '<niets>'
 		--error('ongeldige s-exp')

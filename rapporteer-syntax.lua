@@ -133,7 +133,6 @@ function rapporteer_syntax(code,labels,stijl)
 		local vullerloc = {x1=vorige.x2,y1=vorige.y2,x2=loc.x1,y2=loc.y1}
 		local vuller = locsub(code, vullerloc)
 		local token0 = locsub(code, loc)
-		print('TOKEN0('..token0..')EIND')
 		--io.write('vuller ', vuller, ' '); printloc(vullerloc)
 		--io.write('token ', token0, ' '); printloc(loc)
 

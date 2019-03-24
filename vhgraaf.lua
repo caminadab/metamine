@@ -21,11 +21,13 @@ local function tekst(graaf)
 		p[#p+1] = pijl2tekst(pijl)
 	end
 	table.sort(p)
+	p[#p+1] = '' -- trigger laatste nieuwregel
 	return table.concat(p, '\n')
 end
 
 -- van: functie
 -- naar: functie
+-- → (stroom, foutmelding, bekend)
 local function sorteer(hgraaf, van, naar)
 	if _G.verboos then print = _G.print end
 	if type(van) == 'string' then van = function(a) return a == van end end
@@ -69,7 +71,7 @@ local function sorteer(hgraaf, van, naar)
 		_G.print('GEEN BEGIN GEVONDEN!')
 		_G.print(hgraaf:tekst())
 		_G.print()
-		return false,'geen begin gevonden'
+		return false,'geen begin gevonden',{}
 	end
 	print('BEGIN:', pijl2tekst(next(nieuw)))
 
@@ -127,11 +129,11 @@ local function sorteer(hgraaf, van, naar)
 	end
 
 	if not bekend[naar] then
-		return false, b
+		return false, "doel onbekend", b
 	end
 	print('KLAAR', stroom:tekst())
 
-	return stroom, b
+	return stroom, nil, b
 end
 
 -- een voorwaartse hypergraaf is een hypergraaf waarbij elke hoek een specifiek punt als doel heefft

@@ -1,2 +1,8 @@
-uit = tekst(f(2))
-f = a → a + 1
+zwart = 0
+wit = 1
+kleur = {zwart, wit}
+
+zwart ∈ kleur  ⇒  p = [zwart]
+zwart ∉ kleur  ⇒  p = [wit]
+
+uit = tekst p₀

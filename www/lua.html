@@ -1,0 +1,75 @@
+<h2>Lua</h2>
+<p>
+	Voor handigheid, een Javascript interpreter.
+</p>
+
+<textarea id='js-code'>
+var url = '/index.html';
+var request = new XMLHttpRequest();
+request.onreadystatechange = function () {
+	if (this.readyState === 4){
+		cb(this.responseText);
+	}
+};
+request.open('GET', url, true);
+request.send(null);
+</textarea>
+<button id='js-run'>Run</button>
+
+<p>
+	Lua is een kleine en mooi programmeer taal. Zo klein en mooi dat hij hier beschikbaar is!
+<p>
+<textarea id='lua-code'>
+-- ayy lmao
+</textarea>
+<button id='lua-run'>Run</button>
+
+<script src="/lib/codemirror.js"></script>
+<script src="/lib/lua.js"></script>
+<script src="/lib/addon/selection/active-line.js"></script>
+<style src="/lib/slang.css"></style>
+<style src="/lib/codemirror.css"></style>
+
+<script>
+// javascript
+var js = CodeMirror.fromTextArea(document.getElementById('js-code'), {
+	lineNumbers: true,
+	theme: "slang",
+	indentWithTabs: true,
+	tabSize: 4,
+	mode: "javascript",
+	indentUnit: 4,
+	lineWrapping: true,
+	styleActiveLine: true,
+	viewportMargin: Infinity,
+});
+document.getElementById('js-run').addEventListener('click' , function() {
+	try {
+		eval(js.getValue());
+	} catch(e) {
+		alert(e);
+	}
+});
+
+// load code editor
+var c = CodeMirror.fromTextArea(document.getElementById('lua-code'), {
+		lineNumbers: true,
+		theme: "slang",
+		indentWithTabs: true,
+		tabSize: 4,
+		mode: "lua",
+		indentUnit: 4,
+		lineWrapping: true,
+		styleActiveLine: true,
+		viewportMargin: Infinity,
+	});
+	c.setSize("auto", "auto");
+
+// add lua runner
+document.getElementById('lua-run').addEventListener('click' , function() {
+L.execute(c.getValue())});
+
+// load code
+</script>
+
+<script src="/lib/lua.vm.js"></script>

@@ -60,7 +60,18 @@ function isoleer(eq,name)
 				--if out == 2 then eq0 = {'=', f, {'->', a, x}} end -- f = a -> x
 			end
 		end
-		if isfn(l) and l.fn.v == '[]' then
+		-- set
+		if isfn(l) and l.fn.v == '{}' then
+			-- a = [x,b]
+			for i,el in ipairs(l) do
+				if bevat(el,name) then
+					eq0 = X(':=', el, {fn=r, X(tostring(i-1))}) -- functioneel
+					--eq0 = X(':=', el, X(tostring(i-1))) -- definieerened
+					break
+				end
+			end
+		-- lijst
+		elseif isfn(l) and l.fn.v == '[]' then
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
