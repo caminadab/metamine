@@ -88,17 +88,18 @@ function serveer(sock)
 		-- type.html, syntax.html, resultaat.html
 		local exp,rapport = oplosPlus(inn, ontleed(inn..'\n'))
 		local ok,resultaat = pcall(doe,exp)
+		--local resultaat = doe(exp)
 
-		if type(uit) ~= 'table' then
+		if type(resultaat) ~= 'table' then
 			resultaat = tostring(resultaat)
 		else
 			resultaat = tostring(string.char(table.unpack(resultaat)))
 		end
 
-		return rapport,rapport,resultaat
+		return rapport,rapport,resultaat or "<DSF"
 	end
 
-	local ok,a,b,c = pcall(vt, inn)
+	local a,b,c = vt(inn)
 	local uit = a..c
 	local inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
 	local uitL = string.format('%q', uit):gsub('\n', '\\n')

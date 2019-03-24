@@ -1,8 +1,6 @@
 local rapport = [[
-<html>
-	<meta charset="utf-8">
 	<style>
-		html { background: black; color: white; }
+		pre { background: black; color: white; }
 		pre {}
 		.code {
 			font-size: 20px;
@@ -47,8 +45,6 @@ local rapport = [[
 		}
 	</style>
 	<pre class='code'>%s</pre>
-</pre>
-</html>
 ]]
 
 -- .format(tekst,tooltip)
