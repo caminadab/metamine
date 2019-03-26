@@ -158,5 +158,6 @@ function rapporteer_syntax(code,labels,stijl)
 	end
 	--r(boom)
 	local html = string.format(rapport, table.concat(tooltips))
+	local html = html:gsub('\t', '  ')
 	return html
 end
