@@ -7,7 +7,7 @@ int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
 	printf(": %s\n", yymsg);
 }
 
-char BRON[] = "a = 10\nuit = [a, b]\ngraag + 1 = 3\n"; 
+char BRON[] = "s =    Σ  ( (1 .. 1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )\n uit = tekst s\n";
 
 int main() {
 	yyscan_t scanner;
@@ -21,7 +21,6 @@ int main() {
 	node* uit;
 	int a = yyparse(&uit, scanner);
 
-	printf("%s\n", BRON);
 	print_node(uit);
 
 	yylex_destroy(scanner);
