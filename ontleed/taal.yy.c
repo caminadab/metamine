@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.2.4.  */
 
 /* Skeleton implementation for Bison GLR parsers in C
 
-   Copyright (C) 2002-2015 Free Software Foundation, Inc.
+   Copyright (C) 2002-2015, 2018 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,11 +32,14 @@
 
 /* C GLR parser skeleton written by Paul Hilfinger.  */
 
+/* Undocumented macros, especially those whose name start with YY_,
+   are private implementation details.  Do not rely on them.  */
+
 /* Identify Bison output.  */
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.4"
+#define YYBISON_VERSION "3.2.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "glr.c"
@@ -49,8 +52,8 @@
 
 
 
-/* First part of user declarations.  */
-#line 12 "taal.y" /* glr.c:240  */
+/* First part of user prologue.  */
+#line 12 "taal.y" /* glr.c:238  */
 
   #include <math.h>
 	#include <stdbool.h>
@@ -76,13 +79,17 @@
 
 	//#define fn3loc(a,b,c,l) exp3(a, b, c)
 
-#line 80 "taal.yy.c" /* glr.c:240  */
+#line 83 "taal.yy.c" /* glr.c:238  */
 
 # ifndef YY_NULLPTR
-#  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULLPTR nullptr
+#  if defined __cplusplus
+#   if 201103L <= __cplusplus
+#    define YY_NULLPTR nullptr
+#   else
+#    define YY_NULLPTR 0
+#   endif
 #  else
-#   define YY_NULLPTR 0
+#   define YY_NULLPTR ((void*)0)
 #  endif
 # endif
 
@@ -107,9 +114,7 @@ static YYLTYPE yyloc_default
 # endif
 ;
 
-/* Copy the second part of user declarations.  */
 
-#line 113 "taal.yy.c" /* glr.c:263  */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -140,19 +145,26 @@ static YYLTYPE yyloc_default
 #define YYSIZEMAX ((size_t) -1)
 
 #ifdef __cplusplus
-   typedef bool yybool;
+  typedef bool yybool;
+# define yytrue true
+# define yyfalse false
 #else
-   typedef unsigned char yybool;
+  /* When we move to stdbool, get rid of the various casts to yybool.  */
+  typedef unsigned char yybool;
+# define yytrue 1
+# define yyfalse 0
 #endif
-#define yytrue 1
-#define yyfalse 0
 
 #ifndef YYSETJMP
 # include <setjmp.h>
 # define YYJMP_BUF jmp_buf
 # define YYSETJMP(Env) setjmp (Env)
-/* Pacify clang.  */
-# define YYLONGJMP(Env, Val) (longjmp (Env, Val), YYASSERT (0))
+/* Pacify Clang and ICC.  */
+# define YYLONGJMP(Env, Val)                    \
+ do {                                           \
+   longjmp (Env, Val);                          \
+   YYASSERT (0);                                \
+ } while (yyfalse)
 #endif
 
 #ifndef YY_ATTRIBUTE
@@ -173,12 +185,19 @@ static YYLTYPE yyloc_default
 # define YY_ATTRIBUTE_UNUSED YY_ATTRIBUTE ((__unused__))
 #endif
 
-#if !defined _Noreturn \
-     && (!defined __STDC_VERSION__ || __STDC_VERSION__ < 201112)
-# if defined _MSC_VER && 1200 <= _MSC_VER
-#  define _Noreturn __declspec (noreturn)
-# else
-#  define _Noreturn YY_ATTRIBUTE ((__noreturn__))
+/* The _Noreturn keyword of C11.  */
+#if ! defined _Noreturn
+# if defined __cplusplus && 201103L <= __cplusplus
+#  define _Noreturn [[noreturn]]
+# elif !(defined __STDC_VERSION__ && 201112 <= __STDC_VERSION__)
+#  if (3 <= __GNUC__ || (__GNUC__ == 2 && 8 <= __GNUC_MINOR__) \
+       || 0x5110 <= __SUNPRO_C)
+#   define _Noreturn __attribute__ ((__noreturn__))
+#  elif defined _MSC_VER && 1200 <= _MSC_VER
+#   define _Noreturn __declspec (noreturn)
+#  else
+#   define _Noreturn
+#  endif
 # endif
 #endif
 
@@ -189,7 +208,7 @@ static YYLTYPE yyloc_default
 # define YYUSE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
+#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
 # define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
     _Pragma ("GCC diagnostic push") \
@@ -237,7 +256,7 @@ static YYLTYPE yyloc_default
 #define YYMAXUTOK   302
 
 #define YYTRANSLATE(YYX)                                                \
-  ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
+  ((unsigned) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 /* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
 static const unsigned char yytranslate[] =
@@ -277,7 +296,7 @@ static const unsigned char yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const unsigned short int yyrline[] =
+static const unsigned short yyrline[] =
 {
        0,    92,    92,    93,    94,    98,    99,   100,   104,   104,
      126,   127,   128,   129,   130,   131,   132,   133,   134,   135,
@@ -319,7 +338,7 @@ static const char *const yytname[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const short int yypact[] =
+static const short yypact[] =
 {
      273,   -67,   -67,   -67,   351,   351,   351,   141,   217,    11,
        8,   192,   251,   527,   -31,   664,   -31,   -56,   -53,   -43,
@@ -389,7 +408,7 @@ static const signed char yydefgoto[] =
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const short int yytable[] =
+static const short yytable[] =
 {
       13,    85,   170,   171,    14,    15,    16,    58,    67,    64,
      122,    69,    63,   123,     2,     3,   117,   118,   119,    92,
@@ -481,7 +500,7 @@ static const short int yytable[] =
        0,   117,   118,   119
 };
 
-static const short int yycheck[] =
+static const short yycheck[] =
 {
        0,    12,    68,    69,     4,     5,     6,     7,     0,     9,
       66,    11,     1,    66,     3,     4,    47,    48,    49,    12,
@@ -791,7 +810,7 @@ static const unsigned char yyconflp[] =
 
 /* YYCONFL[I] -- lists of conflicting rule numbers, each terminated by
    0, pointed into by YYCONFLP.  */
-static const short int yyconfl[] =
+static const short yyconfl[] =
 {
        0,   114,     0,   116,     0,   113,     0,   113,     0,   113,
        0,   113,     0,   113,     0,   113,     0,   113,     0,   113,
@@ -875,10 +894,10 @@ typedef enum { yyok, yyaccept, yyabort, yyerr } YYRESULTTAG;
 /* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
 
 YY_ATTRIBUTE_UNUSED
-static unsigned
+static int
 yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
 {
-  unsigned res = 0;
+  int res = 0;
   int end_col = 0 != yylocp->last_column ? yylocp->last_column - 1 : 0;
   if (0 <= yylocp->first_line)
     {
@@ -916,15 +935,15 @@ yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
   } while (0)
 
 
-/*----------------------------------------.
-| Print this symbol's value on YYOUTPUT.  |
-`----------------------------------------*/
+/*-----------------------------------.
+| Print this symbol's value on YYO.  |
+`-----------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, void** root, void* scanner)
+yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, void** root, void* scanner)
 {
-  FILE *yyo = yyoutput;
-  YYUSE (yyo);
+  FILE *yyoutput = yyo;
+  YYUSE (yyoutput);
   YYUSE (yylocationp);
   YYUSE (root);
   YYUSE (scanner);
@@ -934,20 +953,20 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 }
 
 
-/*--------------------------------.
-| Print this symbol on YYOUTPUT.  |
-`--------------------------------*/
+/*---------------------------.
+| Print this symbol on YYO.  |
+`---------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, void** root, void* scanner)
+yy_symbol_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, void** root, void* scanner)
 {
-  YYFPRINTF (yyoutput, "%s %s (",
+  YYFPRINTF (yyo, "%s %s (",
              yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
 
-  YY_LOCATION_PRINT (yyoutput, *yylocationp);
-  YYFPRINTF (yyoutput, ": ");
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, root, scanner);
-  YYFPRINTF (yyoutput, ")");
+  YY_LOCATION_PRINT (yyo, *yylocationp);
+  YYFPRINTF (yyo, ": ");
+  yy_symbol_value_print (yyo, yytype, yyvaluep, yylocationp, root, scanner);
+  YYFPRINTF (yyo, ")");
 }
 
 # define YY_SYMBOL_PRINT(Title, Type, Value, Location)                  \
@@ -1085,7 +1104,7 @@ yytnamerr (char *yyres, const char *yystr)
   if (! yyres)
     return strlen (yystr);
 
-  return yystpcpy (yyres, yystr) - yyres;
+  return (size_t) (yystpcpy (yyres, yystr) - yyres);
 }
 # endif
 
@@ -1101,7 +1120,7 @@ typedef int yyRuleNum;
 typedef int yySymbol;
 
 /** Item references, as in LALR(1) machine */
-typedef short int yyItemNum;
+typedef short yyItemNum;
 
 typedef struct yyGLRState yyGLRState;
 typedef struct yyGLRStateSet yyGLRStateSet;
@@ -1189,7 +1208,7 @@ struct yyGLRStack {
 static void yyexpandGLRStack (yyGLRStack* yystackp);
 #endif
 
-static _Noreturn void
+_Noreturn static void
 yyFail (yyGLRStack* yystackp, YYLTYPE *yylocp, void** root, void* scanner, const char* yymsg)
 {
   if (yymsg != YY_NULLPTR)
@@ -1197,7 +1216,7 @@ yyFail (yyGLRStack* yystackp, YYLTYPE *yylocp, void** root, void* scanner, const
   YYLONGJMP (yystackp->yyexception_buffer, 1);
 }
 
-static _Noreturn void
+_Noreturn static void
 yyMemoryExhausted (yyGLRStack* yystackp)
 {
   YYLONGJMP (yystackp->yyexception_buffer, 2);
@@ -1263,11 +1282,11 @@ yyfill (yyGLRStackItem *yyvsp, int *yylow, int yylow1, yybool yynormal)
  *  (@$).  Returns yyok for normal return, yyaccept for YYACCEPT,
  *  yyerr for YYERROR, yyabort for YYABORT.  */
 static YYRESULTTAG
-yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
+yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
               yyGLRStack* yystackp,
               YYSTYPE* yyvalp, YYLTYPE *yylocp, void** root, void* scanner)
 {
-  yybool yynormal YY_ATTRIBUTE_UNUSED = (yystackp->yysplitPoint == YY_NULLPTR);
+  yybool yynormal YY_ATTRIBUTE_UNUSED = (yybool) (yystackp->yysplitPoint == YY_NULLPTR);
   int yylow;
   YYUSE (yyvalp);
   YYUSE (yylocp);
@@ -1287,7 +1306,7 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
 # undef yyclearin
 # define yyclearin (yychar = YYEMPTY)
 # undef YYFILL
-# define YYFILL(N) yyfill (yyvsp, &yylow, N, yynormal)
+# define YYFILL(N) yyfill (yyvsp, &yylow, (N), yynormal)
 # undef YYBACKUP
 # define YYBACKUP(Token, Value)                                              \
   return yyerror (yylocp, root, scanner, YY_("syntax error: cannot back up")),     \
@@ -1298,697 +1317,698 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
     *yyvalp = yyval_default;
   else
     *yyvalp = yyvsp[YYFILL (1-yyrhslen)].yystate.yysemantics.yysval;
+  /* Default location. */
   YYLLOC_DEFAULT ((*yylocp), (yyvsp - yyrhslen), yyrhslen);
   yystackp->yyerror_range[1].yystate.yyloc = *yylocp;
 
   switch (yyn)
     {
-        case 2:
-#line 92 "taal.y" /* glr.c:816  */
+  case 2:
+#line 92 "taal.y" /* glr.c:821  */
     { *root = ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval); YYACCEPT; }
-#line 1310 "taal.yy.c" /* glr.c:816  */
+#line 1330 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 3:
-#line 93 "taal.y" /* glr.c:816  */
+#line 93 "taal.y" /* glr.c:821  */
     { *root = ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval); YYACCEPT; }
-#line 1316 "taal.yy.c" /* glr.c:816  */
+#line 1336 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 4:
-#line 94 "taal.y" /* glr.c:816  */
+#line 94 "taal.y" /* glr.c:821  */
     { *root = ((*yyvalp)) = aloc("fout",yylloc); yyerrok; YYACCEPT; }
-#line 1322 "taal.yy.c" /* glr.c:816  */
+#line 1342 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 5:
-#line 98 "taal.y" /* glr.c:816  */
+#line 98 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("/\\",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1328 "taal.yy.c" /* glr.c:816  */
+#line 1348 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 6:
-#line 99 "taal.y" /* glr.c:816  */
+#line 99 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = appendloc((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1334 "taal.yy.c" /* glr.c:816  */
+#line 1354 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 7:
-#line 100 "taal.y" /* glr.c:816  */
+#line 100 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = appendloc((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), aloc("fout", yylloc), yylloc); yyerrok; }
-#line 1340 "taal.yy.c" /* glr.c:816  */
+#line 1360 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 10:
-#line 126 "taal.y" /* glr.c:816  */
+#line 126 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = metloc((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1346 "taal.yy.c" /* glr.c:816  */
+#line 1366 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 11:
-#line 127 "taal.y" /* glr.c:816  */
+#line 127 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = metloc((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1352 "taal.yy.c" /* glr.c:816  */
+#line 1372 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 12:
-#line 128 "taal.y" /* glr.c:816  */
+#line 128 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("%",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1358 "taal.yy.c" /* glr.c:816  */
+#line 1378 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 13:
-#line 129 "taal.y" /* glr.c:816  */
+#line 129 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("faculteit",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1364 "taal.yy.c" /* glr.c:816  */
+#line 1384 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 14:
-#line 130 "taal.y" /* glr.c:816  */
+#line 130 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("'",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1370 "taal.yy.c" /* glr.c:816  */
+#line 1390 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 15:
-#line 131 "taal.y" /* glr.c:816  */
+#line 131 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("0",yylloc), yylloc); }
-#line 1376 "taal.yy.c" /* glr.c:816  */
+#line 1396 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 16:
-#line 132 "taal.y" /* glr.c:816  */
+#line 132 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("1",yylloc), yylloc); }
-#line 1382 "taal.yy.c" /* glr.c:816  */
+#line 1402 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 17:
-#line 133 "taal.y" /* glr.c:816  */
+#line 133 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("2",yylloc), yylloc); }
-#line 1388 "taal.yy.c" /* glr.c:816  */
+#line 1408 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 18:
-#line 134 "taal.y" /* glr.c:816  */
+#line 134 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("3",yylloc), yylloc); }
-#line 1394 "taal.yy.c" /* glr.c:816  */
+#line 1414 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 19:
-#line 135 "taal.y" /* glr.c:816  */
+#line 135 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("inverteer",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1400 "taal.yy.c" /* glr.c:816  */
+#line 1420 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 20:
-#line 136 "taal.y" /* glr.c:816  */
+#line 136 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("^",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("0",yylloc), yylloc); }
-#line 1406 "taal.yy.c" /* glr.c:816  */
+#line 1426 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 21:
-#line 137 "taal.y" /* glr.c:816  */
+#line 137 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("^",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("1",yylloc), yylloc); }
-#line 1412 "taal.yy.c" /* glr.c:816  */
+#line 1432 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 22:
-#line 138 "taal.y" /* glr.c:816  */
+#line 138 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("^",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("2",yylloc), yylloc); }
-#line 1418 "taal.yy.c" /* glr.c:816  */
+#line 1438 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 23:
-#line 139 "taal.y" /* glr.c:816  */
+#line 139 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("^",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("3",yylloc), yylloc); }
-#line 1424 "taal.yy.c" /* glr.c:816  */
+#line 1444 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 24:
-#line 140 "taal.y" /* glr.c:816  */
+#line 140 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("^",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("4",yylloc), yylloc); }
-#line 1430 "taal.yy.c" /* glr.c:816  */
+#line 1450 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 25:
-#line 141 "taal.y" /* glr.c:816  */
+#line 141 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("^",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), aloc("n",yylloc), yylloc); }
-#line 1436 "taal.yy.c" /* glr.c:816  */
+#line 1456 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 26:
-#line 142 "taal.y" /* glr.c:816  */
+#line 142 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = metloc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1442 "taal.yy.c" /* glr.c:816  */
+#line 1462 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 27:
-#line 143 "taal.y" /* glr.c:816  */
+#line 143 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = metloc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1448 "taal.yy.c" /* glr.c:816  */
+#line 1468 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 28:
-#line 144 "taal.y" /* glr.c:816  */
+#line 144 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = metloc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), yylloc); }
-#line 1454 "taal.yy.c" /* glr.c:816  */
+#line 1474 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 29:
-#line 148 "taal.y" /* glr.c:816  */
+#line 148 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("^",yylloc); }
-#line 1460 "taal.yy.c" /* glr.c:816  */
+#line 1480 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 30:
-#line 149 "taal.y" /* glr.c:816  */
+#line 149 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("_",yylloc); }
-#line 1466 "taal.yy.c" /* glr.c:816  */
+#line 1486 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 31:
-#line 150 "taal.y" /* glr.c:816  */
+#line 150 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("*",yylloc); }
-#line 1472 "taal.yy.c" /* glr.c:816  */
+#line 1492 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 32:
-#line 151 "taal.y" /* glr.c:816  */
+#line 151 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("/",yylloc); }
-#line 1478 "taal.yy.c" /* glr.c:816  */
+#line 1498 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 33:
-#line 152 "taal.y" /* glr.c:816  */
+#line 152 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("+",yylloc); }
-#line 1484 "taal.yy.c" /* glr.c:816  */
+#line 1504 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 34:
-#line 153 "taal.y" /* glr.c:816  */
+#line 153 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("-",yylloc); }
-#line 1490 "taal.yy.c" /* glr.c:816  */
+#line 1510 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 35:
-#line 155 "taal.y" /* glr.c:816  */
+#line 155 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("[]",yylloc); }
-#line 1496 "taal.yy.c" /* glr.c:816  */
+#line 1516 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 36:
-#line 156 "taal.y" /* glr.c:816  */
+#line 156 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("{}",yylloc); }
-#line 1502 "taal.yy.c" /* glr.c:816  */
+#line 1522 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 37:
-#line 158 "taal.y" /* glr.c:816  */
+#line 158 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("->",yylloc); }
-#line 1508 "taal.yy.c" /* glr.c:816  */
+#line 1528 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 38:
-#line 159 "taal.y" /* glr.c:816  */
+#line 159 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("||",yylloc); }
-#line 1514 "taal.yy.c" /* glr.c:816  */
+#line 1534 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 39:
-#line 160 "taal.y" /* glr.c:816  */
+#line 160 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("::",yylloc); }
-#line 1520 "taal.yy.c" /* glr.c:816  */
+#line 1540 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 40:
-#line 161 "taal.y" /* glr.c:816  */
+#line 161 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("..",yylloc); }
-#line 1526 "taal.yy.c" /* glr.c:816  */
+#line 1546 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 41:
-#line 162 "taal.y" /* glr.c:816  */
+#line 162 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("xx",yylloc); }
-#line 1532 "taal.yy.c" /* glr.c:816  */
+#line 1552 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 42:
-#line 163 "taal.y" /* glr.c:816  */
+#line 163 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("=>",yylloc); }
-#line 1538 "taal.yy.c" /* glr.c:816  */
+#line 1558 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 43:
-#line 165 "taal.y" /* glr.c:816  */
+#line 165 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("=",yylloc); }
-#line 1544 "taal.yy.c" /* glr.c:816  */
+#line 1564 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 44:
-#line 166 "taal.y" /* glr.c:816  */
+#line 166 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("!=",yylloc); }
-#line 1550 "taal.yy.c" /* glr.c:816  */
+#line 1570 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 45:
-#line 167 "taal.y" /* glr.c:816  */
+#line 167 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("~=",yylloc); }
-#line 1556 "taal.yy.c" /* glr.c:816  */
+#line 1576 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 46:
-#line 168 "taal.y" /* glr.c:816  */
+#line 168 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc(">",yylloc); }
-#line 1562 "taal.yy.c" /* glr.c:816  */
+#line 1582 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 47:
-#line 169 "taal.y" /* glr.c:816  */
+#line 169 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("<",yylloc); }
-#line 1568 "taal.yy.c" /* glr.c:816  */
+#line 1588 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 48:
-#line 170 "taal.y" /* glr.c:816  */
+#line 170 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc(">=",yylloc); }
-#line 1574 "taal.yy.c" /* glr.c:816  */
+#line 1594 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 49:
-#line 171 "taal.y" /* glr.c:816  */
+#line 171 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("<=",yylloc); }
-#line 1580 "taal.yy.c" /* glr.c:816  */
+#line 1600 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 50:
-#line 173 "taal.y" /* glr.c:816  */
+#line 173 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("|",yylloc); }
-#line 1586 "taal.yy.c" /* glr.c:816  */
+#line 1606 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 51:
-#line 174 "taal.y" /* glr.c:816  */
+#line 174 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("&",yylloc); }
-#line 1592 "taal.yy.c" /* glr.c:816  */
+#line 1612 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 52:
-#line 175 "taal.y" /* glr.c:816  */
+#line 175 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("#",yylloc); }
-#line 1598 "taal.yy.c" /* glr.c:816  */
+#line 1618 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 53:
-#line 177 "taal.y" /* glr.c:816  */
+#line 177 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc(":=",yylloc); }
-#line 1604 "taal.yy.c" /* glr.c:816  */
+#line 1624 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 54:
-#line 178 "taal.y" /* glr.c:816  */
+#line 178 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("+=",yylloc); }
-#line 1610 "taal.yy.c" /* glr.c:816  */
+#line 1630 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 55:
-#line 179 "taal.y" /* glr.c:816  */
+#line 179 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("-=",yylloc); }
-#line 1616 "taal.yy.c" /* glr.c:816  */
+#line 1636 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 56:
-#line 180 "taal.y" /* glr.c:816  */
+#line 180 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("|=",yylloc); }
-#line 1622 "taal.yy.c" /* glr.c:816  */
+#line 1642 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 57:
-#line 181 "taal.y" /* glr.c:816  */
+#line 181 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("&=",yylloc); }
-#line 1628 "taal.yy.c" /* glr.c:816  */
+#line 1648 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 58:
-#line 183 "taal.y" /* glr.c:816  */
+#line 183 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("en",yylloc); }
-#line 1634 "taal.yy.c" /* glr.c:816  */
+#line 1654 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 59:
-#line 184 "taal.y" /* glr.c:816  */
+#line 184 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("of",yylloc); }
-#line 1640 "taal.yy.c" /* glr.c:816  */
+#line 1660 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 60:
-#line 185 "taal.y" /* glr.c:816  */
+#line 185 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("exof",yylloc); }
-#line 1646 "taal.yy.c" /* glr.c:816  */
+#line 1666 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 61:
-#line 186 "taal.y" /* glr.c:816  */
+#line 186 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("noch",yylloc); }
-#line 1652 "taal.yy.c" /* glr.c:816  */
+#line 1672 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 62:
-#line 187 "taal.y" /* glr.c:816  */
+#line 187 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("niet",yylloc); }
-#line 1658 "taal.yy.c" /* glr.c:816  */
+#line 1678 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 63:
-#line 189 "taal.y" /* glr.c:816  */
+#line 189 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc(".",yylloc); }
-#line 1664 "taal.yy.c" /* glr.c:816  */
+#line 1684 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 64:
-#line 190 "taal.y" /* glr.c:816  */
+#line 190 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("@",yylloc); }
-#line 1670 "taal.yy.c" /* glr.c:816  */
+#line 1690 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 65:
-#line 191 "taal.y" /* glr.c:816  */
+#line 191 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc(":",yylloc); }
-#line 1676 "taal.yy.c" /* glr.c:816  */
+#line 1696 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 66:
-#line 192 "taal.y" /* glr.c:816  */
+#line 192 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("!:",yylloc); }
-#line 1682 "taal.yy.c" /* glr.c:816  */
+#line 1702 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 67:
-#line 193 "taal.y" /* glr.c:816  */
+#line 193 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc(">>",yylloc); }
-#line 1688 "taal.yy.c" /* glr.c:816  */
+#line 1708 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 68:
-#line 194 "taal.y" /* glr.c:816  */
+#line 194 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("<<",yylloc); }
-#line 1694 "taal.yy.c" /* glr.c:816  */
+#line 1714 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 69:
-#line 196 "taal.y" /* glr.c:816  */
+#line 196 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("fout",yylloc); yyerrok; }
-#line 1700 "taal.yy.c" /* glr.c:816  */
+#line 1720 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 70:
-#line 197 "taal.y" /* glr.c:816  */
+#line 197 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("fout",yylloc); yyerrok; }
-#line 1706 "taal.yy.c" /* glr.c:816  */
+#line 1726 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 71:
-#line 198 "taal.y" /* glr.c:816  */
+#line 198 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("{}",yylloc), aloc("fout",yylloc), yylloc); yyerrok; }
-#line 1712 "taal.yy.c" /* glr.c:816  */
+#line 1732 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 73:
-#line 203 "taal.y" /* glr.c:816  */
+#line 203 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("^",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1718 "taal.yy.c" /* glr.c:816  */
+#line 1738 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 74:
-#line 204 "taal.y" /* glr.c:816  */
+#line 204 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("_",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1724 "taal.yy.c" /* glr.c:816  */
+#line 1744 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 75:
-#line 205 "taal.y" /* glr.c:816  */
+#line 205 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("*",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1730 "taal.yy.c" /* glr.c:816  */
+#line 1750 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 76:
-#line 206 "taal.y" /* glr.c:816  */
+#line 206 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("/",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1736 "taal.yy.c" /* glr.c:816  */
+#line 1756 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 77:
-#line 207 "taal.y" /* glr.c:816  */
+#line 207 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("+",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1742 "taal.yy.c" /* glr.c:816  */
+#line 1762 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 78:
-#line 208 "taal.y" /* glr.c:816  */
+#line 208 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("-",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1748 "taal.yy.c" /* glr.c:816  */
+#line 1768 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 79:
-#line 210 "taal.y" /* glr.c:816  */
+#line 210 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("->",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1754 "taal.yy.c" /* glr.c:816  */
+#line 1774 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 80:
-#line 212 "taal.y" /* glr.c:816  */
+#line 212 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("||",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1760 "taal.yy.c" /* glr.c:816  */
+#line 1780 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 81:
-#line 213 "taal.y" /* glr.c:816  */
+#line 213 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("::",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1766 "taal.yy.c" /* glr.c:816  */
+#line 1786 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 82:
-#line 214 "taal.y" /* glr.c:816  */
+#line 214 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("..",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1772 "taal.yy.c" /* glr.c:816  */
+#line 1792 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 83:
-#line 215 "taal.y" /* glr.c:816  */
+#line 215 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("xx",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1778 "taal.yy.c" /* glr.c:816  */
+#line 1798 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 84:
-#line 216 "taal.y" /* glr.c:816  */
+#line 216 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("=>",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1784 "taal.yy.c" /* glr.c:816  */
+#line 1804 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 85:
-#line 218 "taal.y" /* glr.c:816  */
+#line 218 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1790 "taal.yy.c" /* glr.c:816  */
+#line 1810 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 86:
-#line 219 "taal.y" /* glr.c:816  */
+#line 219 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("!=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1796 "taal.yy.c" /* glr.c:816  */
+#line 1816 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 87:
-#line 220 "taal.y" /* glr.c:816  */
+#line 220 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("~=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1802 "taal.yy.c" /* glr.c:816  */
+#line 1822 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 88:
-#line 221 "taal.y" /* glr.c:816  */
+#line 221 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc(">",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1808 "taal.yy.c" /* glr.c:816  */
+#line 1828 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 89:
-#line 222 "taal.y" /* glr.c:816  */
+#line 222 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("<",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1814 "taal.yy.c" /* glr.c:816  */
+#line 1834 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 90:
-#line 223 "taal.y" /* glr.c:816  */
+#line 223 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc(">=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1820 "taal.yy.c" /* glr.c:816  */
+#line 1840 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 91:
-#line 224 "taal.y" /* glr.c:816  */
+#line 224 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("<=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1826 "taal.yy.c" /* glr.c:816  */
+#line 1846 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 92:
-#line 226 "taal.y" /* glr.c:816  */
+#line 226 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("#",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1832 "taal.yy.c" /* glr.c:816  */
+#line 1852 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 93:
-#line 227 "taal.y" /* glr.c:816  */
+#line 227 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("|",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1838 "taal.yy.c" /* glr.c:816  */
+#line 1858 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 94:
-#line 228 "taal.y" /* glr.c:816  */
+#line 228 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("&",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1844 "taal.yy.c" /* glr.c:816  */
+#line 1864 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 95:
-#line 230 "taal.y" /* glr.c:816  */
+#line 230 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc(":=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1850 "taal.yy.c" /* glr.c:816  */
+#line 1870 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 96:
-#line 231 "taal.y" /* glr.c:816  */
+#line 231 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("+=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1856 "taal.yy.c" /* glr.c:816  */
+#line 1876 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 97:
-#line 232 "taal.y" /* glr.c:816  */
+#line 232 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("-=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1862 "taal.yy.c" /* glr.c:816  */
+#line 1882 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 98:
-#line 233 "taal.y" /* glr.c:816  */
+#line 233 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("|=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1868 "taal.yy.c" /* glr.c:816  */
+#line 1888 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 99:
-#line 234 "taal.y" /* glr.c:816  */
+#line 234 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("&=",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1874 "taal.yy.c" /* glr.c:816  */
+#line 1894 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 100:
-#line 236 "taal.y" /* glr.c:816  */
+#line 236 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("/\\",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1880 "taal.yy.c" /* glr.c:816  */
+#line 1900 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 101:
-#line 237 "taal.y" /* glr.c:816  */
+#line 237 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("\\/",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1886 "taal.yy.c" /* glr.c:816  */
+#line 1906 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 102:
-#line 238 "taal.y" /* glr.c:816  */
+#line 238 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("xof",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1892 "taal.yy.c" /* glr.c:816  */
+#line 1912 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 103:
-#line 239 "taal.y" /* glr.c:816  */
+#line 239 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("noch",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1898 "taal.yy.c" /* glr.c:816  */
+#line 1918 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 104:
-#line 240 "taal.y" /* glr.c:816  */
+#line 240 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("!",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1904 "taal.yy.c" /* glr.c:816  */
+#line 1924 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 105:
-#line 242 "taal.y" /* glr.c:816  */
+#line 242 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc(".",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1910 "taal.yy.c" /* glr.c:816  */
+#line 1930 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 106:
-#line 243 "taal.y" /* glr.c:816  */
+#line 243 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc("@",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1916 "taal.yy.c" /* glr.c:816  */
+#line 1936 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 107:
-#line 244 "taal.y" /* glr.c:816  */
+#line 244 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc(aloc(":",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1922 "taal.yy.c" /* glr.c:816  */
+#line 1942 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 108:
-#line 245 "taal.y" /* glr.c:816  */
+#line 245 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("!",yylloc), fn3loc(aloc(":",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc), yylloc); }
-#line 1928 "taal.yy.c" /* glr.c:816  */
+#line 1948 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 109:
-#line 247 "taal.y" /* glr.c:816  */
+#line 247 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("-",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1934 "taal.yy.c" /* glr.c:816  */
+#line 1954 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 110:
-#line 249 "taal.y" /* glr.c:816  */
+#line 249 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1940 "taal.yy.c" /* glr.c:816  */
+#line 1960 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 111:
-#line 250 "taal.y" /* glr.c:816  */
+#line 250 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn3loc((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1946 "taal.yy.c" /* glr.c:816  */
+#line 1966 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 112:
-#line 251 "taal.y" /* glr.c:816  */
+#line 251 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = aloc("fout",yylloc); yyerrok; }
-#line 1952 "taal.yy.c" /* glr.c:816  */
+#line 1972 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 114:
-#line 256 "taal.y" /* glr.c:816  */
+#line 256 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = exp1(aloc("[]",yylloc)); }
-#line 1958 "taal.yy.c" /* glr.c:816  */
+#line 1978 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 116:
-#line 261 "taal.y" /* glr.c:816  */
+#line 261 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = exp1(aloc("{}",yylloc)); }
-#line 1964 "taal.yy.c" /* glr.c:816  */
+#line 1984 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 118:
-#line 266 "taal.y" /* glr.c:816  */
+#line 266 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("{}",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1970 "taal.yy.c" /* glr.c:816  */
+#line 1990 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 119:
-#line 267 "taal.y" /* glr.c:816  */
+#line 267 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = appendloc((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1976 "taal.yy.c" /* glr.c:816  */
+#line 1996 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 120:
-#line 271 "taal.y" /* glr.c:816  */
+#line 271 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = fn2loc(aloc("[]",yylloc), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1982 "taal.yy.c" /* glr.c:816  */
+#line 2002 "taal.yy.c" /* glr.c:821  */
     break;
 
   case 121:
-#line 272 "taal.y" /* glr.c:816  */
+#line 272 "taal.y" /* glr.c:821  */
     { ((*yyvalp)) = appendloc((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), yylloc); }
-#line 1988 "taal.yy.c" /* glr.c:816  */
+#line 2008 "taal.yy.c" /* glr.c:821  */
     break;
 
 
-#line 1992 "taal.yy.c" /* glr.c:816  */
+#line 2012 "taal.yy.c" /* glr.c:821  */
       default: break;
     }
 
@@ -2092,7 +2112,7 @@ yylhsNonterm (yyRuleNum yyrule)
 static inline yybool
 yyisDefaultedState (yyStateNum yystate)
 {
-  return yypact_value_is_default (yypact[yystate]);
+  return (yybool) yypact_value_is_default (yypact[yystate]);
 }
 
 /** The default reduction for YYSTATE, assuming it has one.  */
@@ -2115,10 +2135,10 @@ yydefaultAction (yyStateNum yystate)
  */
 static inline void
 yygetLRActions (yyStateNum yystate, int yytoken,
-                int* yyaction, const short int** yyconflicts)
+                int* yyaction, const short** yyconflicts)
 {
   int yyindex = yypact[yystate] + yytoken;
-  if (yypact_value_is_default (yypact[yystate])
+  if (yyisDefaultedState (yystate)
       || yyindex < 0 || YYLAST < yyindex || yycheck[yyindex] != yytoken)
     {
       *yyaction = -yydefact[yystate];
@@ -2153,13 +2173,13 @@ yyLRgotoState (yyStateNum yystate, yySymbol yysym)
 static inline yybool
 yyisShiftAction (int yyaction)
 {
-  return 0 < yyaction;
+  return (yybool) (0 < yyaction);
 }
 
 static inline yybool
 yyisErrorAction (int yyaction)
 {
-  return yyaction == 0;
+  return (yybool) (yyaction == 0);
 }
 
                                 /* GLRStates */
@@ -2269,7 +2289,7 @@ yyexpandGLRStack (yyGLRStack* yystackp)
   yyGLRStackItem* yyp0, *yyp1;
   size_t yynewSize;
   size_t yyn;
-  size_t yysize = yystackp->yynextFree - yystackp->yyitems;
+  size_t yysize = (size_t) (yystackp->yynextFree - yystackp->yyitems);
   if (YYMAXDEPTH - YYHEADROOM < yysize)
     yyMemoryExhausted (yystackp);
   yynewSize = 2*yysize;
@@ -2388,7 +2408,7 @@ yyremoveDeletes (yyGLRStack* yystackp)
           if (yyj != yyi)
             {
               YYDPRINTF ((stderr, "Rename stack %lu -> %lu.\n",
-                          (unsigned long int) yyi, (unsigned long int) yyj));
+                          (unsigned long) yyi, (unsigned long) yyj));
             }
           yyj += 1;
         }
@@ -2452,15 +2472,15 @@ do {                                    \
 `----------------------------------------------------------------------*/
 
 static inline void
-yy_reduce_print (int yynormal, yyGLRStackItem* yyvsp, size_t yyk,
+yy_reduce_print (yybool yynormal, yyGLRStackItem* yyvsp, size_t yyk,
                  yyRuleNum yyrule, void** root, void* scanner)
 {
   int yynrhs = yyrhsLength (yyrule);
   int yylow = 1;
   int yyi;
   YYFPRINTF (stderr, "Reducing stack %lu by rule %d (line %lu):\n",
-             (unsigned long int) yyk, yyrule - 1,
-             (unsigned long int) yyrline[yyrule]);
+             (unsigned long) yyk, yyrule - 1,
+             (unsigned long) yyrline[yyrule]);
   if (! yynormal)
     yyfillin (yyvsp, 1, -yynrhs);
   /* The symbols being reduced.  */
@@ -2469,8 +2489,8 @@ yy_reduce_print (int yynormal, yyGLRStackItem* yyvsp, size_t yyk,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
                        yystos[yyvsp[yyi - yynrhs + 1].yystate.yylrState],
-                       &yyvsp[yyi - yynrhs + 1].yystate.yysemantics.yysval
-                       , &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yyloc)                       , root, scanner);
+                       &yyvsp[yyi - yynrhs + 1].yystate.yysemantics.yysval,
+                       &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yyloc)                       , root, scanner);
       if (!yyvsp[yyi - yynrhs + 1].yystate.yyresolved)
         YYFPRINTF (stderr, " (unresolved)");
       YYFPRINTF (stderr, "\n");
@@ -2496,9 +2516,9 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yyGLRStackItem* yyrhs = (yyGLRStackItem*) yystackp->yytops.yystates[yyk];
       YYASSERT (yyk == 0);
       yystackp->yynextFree -= yynrhs;
-      yystackp->yyspaceLeft += yynrhs;
+      yystackp->yyspaceLeft += (size_t) yynrhs;
       yystackp->yytops.yystates[0] = & yystackp->yynextFree[-1].yystate;
-      YY_REDUCE_PRINT ((1, yyrhs, yyk, yyrule, root, scanner));
+      YY_REDUCE_PRINT ((yytrue, yyrhs, yyk, yyrule, root, scanner));
       return yyuserAction (yyrule, yynrhs, yyrhs, yystackp,
                            yyvalp, yylocp, root, scanner);
     }
@@ -2519,7 +2539,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
         }
       yyupdateSplit (yystackp, yys);
       yystackp->yytops.yystates[yyk] = yys;
-      YY_REDUCE_PRINT ((0, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1, yyk, yyrule, root, scanner));
+      YY_REDUCE_PRINT ((yyfalse, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1, yyk, yyrule, root, scanner));
       return yyuserAction (yyrule, yynrhs, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
                            yystackp, yyvalp, yylocp, root, scanner);
     }
@@ -2551,7 +2571,7 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       if (yyflag == yyerr && yystackp->yysplitPoint != YY_NULLPTR)
         {
           YYDPRINTF ((stderr, "Parse on stack %lu rejected by rule #%d.\n",
-                     (unsigned long int) yyk, yyrule - 1));
+                     (unsigned long) yyk, yyrule - 1));
         }
       if (yyflag != yyok)
         return yyflag;
@@ -2579,7 +2599,7 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       YYDPRINTF ((stderr,
                   "Reduced stack %lu by rule #%d; action deferred.  "
                   "Now in state %d.\n",
-                  (unsigned long int) yyk, yyrule - 1, yynewLRState));
+                  (unsigned long) yyk, yyrule - 1, yynewLRState));
       for (yyi = 0; yyi < yystackp->yytops.yysize; yyi += 1)
         if (yyi != yyk && yystackp->yytops.yystates[yyi] != YY_NULLPTR)
           {
@@ -2592,8 +2612,8 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
                     yyaddDeferredAction (yystackp, yyk, yyp, yys0, yyrule);
                     yymarkStackDeleted (yystackp, yyk);
                     YYDPRINTF ((stderr, "Merging stack %lu into stack %lu.\n",
-                                (unsigned long int) yyk,
-                                (unsigned long int) yyi));
+                                (unsigned long) yyk,
+                                (unsigned long) yyi));
                     return yyok;
                   }
                 yyp = yyp->yypred;
@@ -2615,10 +2635,8 @@ yysplitStack (yyGLRStack* yystackp, size_t yyk)
     }
   if (yystackp->yytops.yysize >= yystackp->yytops.yycapacity)
     {
-      yyGLRState** yynewStates;
+      yyGLRState** yynewStates = YY_NULLPTR;
       yybool* yynewLookaheadNeeds;
-
-      yynewStates = YY_NULLPTR;
 
       if (yystackp->yytops.yycapacity
           > (YYSIZEMAX / (2 * sizeof yynewStates[0])))
@@ -2839,8 +2857,8 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
   else
     YYFPRINTF (stderr, "%*s%s -> <Rule %d, tokens %lu .. %lu>\n",
                yyindent, "", yytokenName (yylhsNonterm (yyx->yyrule)),
-               yyx->yyrule - 1, (unsigned long int) (yys->yyposn + 1),
-               (unsigned long int) yyx->yystate->yyposn);
+               yyx->yyrule - 1, (unsigned long) (yys->yyposn + 1),
+               (unsigned long) yyx->yystate->yyposn);
   for (yyi = 1; yyi <= yynrhs; yyi += 1)
     {
       if (yystates[yyi]->yyresolved)
@@ -2851,8 +2869,8 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
           else
             YYFPRINTF (stderr, "%*s%s <tokens %lu .. %lu>\n", yyindent+2, "",
                        yytokenName (yystos[yystates[yyi]->yylrState]),
-                       (unsigned long int) (yystates[yyi-1]->yyposn + 1),
-                       (unsigned long int) yystates[yyi]->yyposn);
+                       (unsigned long) (yystates[yyi-1]->yyposn + 1),
+                       (unsigned long) yystates[yyi]->yyposn);
         }
       else
         yyreportTree (yystates[yyi]->yysemantics.yyfirstVal, yyindent+2);
@@ -2884,7 +2902,7 @@ yyreportAmbiguity (yySemanticOption* yyx0,
  *  ending at YYS1.  Has no effect on previously resolved states.
  *  The first semantic option of a state is always chosen.  */
 static void
-yyresolveLocations (yyGLRState* yys1, int yyn1,
+yyresolveLocations (yyGLRState *yys1, int yyn1,
                     yyGLRStack *yystackp, void** root, void* scanner)
 {
   if (0 < yyn1)
@@ -2895,9 +2913,9 @@ yyresolveLocations (yyGLRState* yys1, int yyn1,
           yyGLRStackItem yyrhsloc[1 + YYMAXRHS];
           int yynrhs;
           yySemanticOption *yyoption = yys1->yysemantics.yyfirstVal;
-          YYASSERT (yyoption != YY_NULLPTR);
+          YYASSERT (yyoption);
           yynrhs = yyrhsLength (yyoption->yyrule);
-          if (yynrhs > 0)
+          if (0 < yynrhs)
             {
               yyGLRState *yys;
               int yyn;
@@ -2920,18 +2938,7 @@ yyresolveLocations (yyGLRState* yys1, int yyn1,
               yyGLRState *yyprevious = yyoption->yystate;
               yyrhsloc[0].yystate.yyloc = yyprevious->yyloc;
             }
-          {
-            int yychar_current = yychar;
-            YYSTYPE yylval_current = yylval;
-            YYLTYPE yylloc_current = yylloc;
-            yychar = yyoption->yyrawchar;
-            yylval = yyoption->yyval;
-            yylloc = yyoption->yyloc;
-            YYLLOC_DEFAULT ((yys1->yyloc), yyrhsloc, yynrhs);
-            yychar = yychar_current;
-            yylval = yylval_current;
-            yylloc = yylloc_current;
-          }
+          YYLLOC_DEFAULT ((yys1->yyloc), yyrhsloc, yynrhs);
         }
     }
 }
@@ -3058,9 +3065,9 @@ yycompressStack (yyGLRStack* yystackp)
        yyr = yyp, yyp = yyq, yyq = yyp->yypred)
     yyp->yypred = yyr;
 
-  yystackp->yyspaceLeft += yystackp->yynextFree - yystackp->yyitems;
+  yystackp->yyspaceLeft += (size_t) (yystackp->yynextFree - yystackp->yyitems);
   yystackp->yynextFree = ((yyGLRStackItem*) yystackp->yysplitPoint) + 1;
-  yystackp->yyspaceLeft -= yystackp->yynextFree - yystackp->yyitems;
+  yystackp->yyspaceLeft -= (size_t) (yystackp->yynextFree - yystackp->yyitems);
   yystackp->yysplitPoint = YY_NULLPTR;
   yystackp->yylastDeleted = YY_NULLPTR;
 
@@ -3083,7 +3090,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
     {
       yyStateNum yystate = yystackp->yytops.yystates[yyk]->yylrState;
       YYDPRINTF ((stderr, "Stack %lu Entering state %d\n",
-                  (unsigned long int) yyk, yystate));
+                  (unsigned long) yyk, yystate));
 
       YYASSERT (yystate != YYFINAL);
 
@@ -3094,7 +3101,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
           if (yyrule == 0)
             {
               YYDPRINTF ((stderr, "Stack %lu dies.\n",
-                          (unsigned long int) yyk));
+                          (unsigned long) yyk));
               yymarkStackDeleted (yystackp, yyk);
               return yyok;
             }
@@ -3104,7 +3111,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
               YYDPRINTF ((stderr,
                           "Stack %lu dies "
                           "(predicate failure or explicit user error).\n",
-                          (unsigned long int) yyk));
+                          (unsigned long) yyk));
               yymarkStackDeleted (yystackp, yyk);
               return yyok;
             }
@@ -3115,7 +3122,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
         {
           yySymbol yytoken;
           int yyaction;
-          const short int* yyconflicts;
+          const short* yyconflicts;
 
           yystackp->yytops.yylookaheadNeeds[yyk] = yytrue;
           if (yychar == YYEMPTY)
@@ -3142,8 +3149,8 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
               YYRESULTTAG yyflag;
               size_t yynewStack = yysplitStack (yystackp, yyk);
               YYDPRINTF ((stderr, "Splitting off stack %lu from %lu.\n",
-                          (unsigned long int) yynewStack,
-                          (unsigned long int) yyk));
+                          (unsigned long) yynewStack,
+                          (unsigned long) yyk));
               yyflag = yyglrReduce (yystackp, yynewStack,
                                     *yyconflicts,
                                     yyimmediate[*yyconflicts], root, scanner);
@@ -3153,7 +3160,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
               else if (yyflag == yyerr)
                 {
                   YYDPRINTF ((stderr, "Stack %lu dies.\n",
-                              (unsigned long int) yynewStack));
+                              (unsigned long) yynewStack));
                   yymarkStackDeleted (yystackp, yynewStack);
                 }
               else
@@ -3166,7 +3173,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
           else if (yyisErrorAction (yyaction))
             {
               YYDPRINTF ((stderr, "Stack %lu dies.\n",
-                          (unsigned long int) yyk));
+                          (unsigned long) yyk));
               yymarkStackDeleted (yystackp, yyk);
               break;
             }
@@ -3179,7 +3186,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
                   YYDPRINTF ((stderr,
                               "Stack %lu dies "
                               "(predicate failure or explicit user error).\n",
-                              (unsigned long int) yyk));
+                              (unsigned long) yyk));
                   yymarkStackDeleted (yystackp, yyk);
                   break;
                 }
@@ -3264,7 +3271,8 @@ yyreportSyntaxError (yyGLRStack* yystackp, void** root, void* scanner)
                 yyarg[yycount++] = yytokenName (yyx);
                 {
                   size_t yysz = yysize + yytnamerr (YY_NULLPTR, yytokenName (yyx));
-                  yysize_overflow |= yysz < yysize;
+                  if (yysz < yysize)
+                    yysize_overflow = yytrue;
                   yysize = yysz;
                 }
               }
@@ -3277,6 +3285,7 @@ yyreportSyntaxError (yyGLRStack* yystackp, void** root, void* scanner)
       case N:                           \
         yyformat = S;                   \
       break
+    default: /* Avoid compiler warnings. */
       YYCASE_(0, YY_("syntax error"));
       YYCASE_(1, YY_("syntax error, unexpected %s"));
       YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
@@ -3288,7 +3297,8 @@ yyreportSyntaxError (yyGLRStack* yystackp, void** root, void* scanner)
 
   {
     size_t yysz = yysize + strlen (yyformat);
-    yysize_overflow |= yysz < yysize;
+    if (yysz < yysize)
+      yysize_overflow = yytrue;
     yysize = yysz;
   }
 
@@ -3483,7 +3493,7 @@ yyparse (void** root, void* scanner)
         {
           yyRuleNum yyrule;
           int yyaction;
-          const short int* yyconflicts;
+          const short* yyconflicts;
 
           yyStateNum yystate = yystack.yytops.yystates[0]->yylrState;
           YYDPRINTF ((stderr, "Entering state %d\n", yystate));
@@ -3494,7 +3504,7 @@ yyparse (void** root, void* scanner)
               yyrule = yydefaultAction (yystate);
               if (yyrule == 0)
                 {
-               yystack.yyerror_range[1].yystate.yyloc = yylloc;
+                  yystack.yyerror_range[1].yystate.yyloc = yylloc;
                   yyreportSyntaxError (&yystack, root, scanner);
                   goto yyuser_error;
                 }
@@ -3534,7 +3544,7 @@ yyparse (void** root, void* scanner)
                 }
               else if (yyisErrorAction (yyaction))
                 {
-               yystack.yyerror_range[1].yystate.yyloc = yylloc;
+                  yystack.yyerror_range[1].yystate.yyloc = yylloc;
                   yyreportSyntaxError (&yystack, root, scanner);
                   goto yyuser_error;
                 }
@@ -3549,7 +3559,7 @@ yyparse (void** root, void* scanner)
           size_t yys;
 
           for (yys = 0; yys < yystack.yytops.yysize; yys += 1)
-            yystackp->yytops.yylookaheadNeeds[yys] = yychar != YYEMPTY;
+            yystackp->yytops.yylookaheadNeeds[yys] = (yybool) (yychar != YYEMPTY);
 
           /* yyprocessOneStack returns one of three things:
 
@@ -3580,7 +3590,7 @@ yyparse (void** root, void* scanner)
                 yyFail (&yystack, &yylloc, root, scanner, YY_("syntax error"));
               YYCHK1 (yyresolveStack (&yystack, root, scanner));
               YYDPRINTF ((stderr, "Returning to deterministic operation.\n"));
-           yystack.yyerror_range[1].yystate.yyloc = yylloc;
+              yystack.yyerror_range[1].yystate.yyloc = yylloc;
               yyreportSyntaxError (&yystack, root, scanner);
               goto yyuser_error;
             }
@@ -3596,17 +3606,17 @@ yyparse (void** root, void* scanner)
           for (yys = 0; yys < yystack.yytops.yysize; yys += 1)
             {
               int yyaction;
-              const short int* yyconflicts;
+              const short* yyconflicts;
               yyStateNum yystate = yystack.yytops.yystates[yys]->yylrState;
               yygetLRActions (yystate, yytoken_to_shift, &yyaction,
                               &yyconflicts);
               /* Note that yyconflicts were handled by yyprocessOneStack.  */
-              YYDPRINTF ((stderr, "On stack %lu, ", (unsigned long int) yys));
+              YYDPRINTF ((stderr, "On stack %lu, ", (unsigned long) yys));
               YY_SYMBOL_PRINT ("shifting", yytoken_to_shift, &yylval, &yylloc);
               yyglrShift (&yystack, yys, yyaction, yyposn,
                           &yylval, &yylloc);
               YYDPRINTF ((stderr, "Stack %lu now in state #%d\n",
-                          (unsigned long int) yys,
+                          (unsigned long) yys,
                           yystack.yytops.yystates[yys]->yylrState));
             }
 
@@ -3662,8 +3672,8 @@ yyparse (void** root, void* scanner)
                 while (yystates[yyk])
                   {
                     yyGLRState *yys = yystates[yyk];
-                 yystack.yyerror_range[1].yystate.yyloc = yys->yyloc;
-                  if (yys->yypred != YY_NULLPTR)
+                    yystack.yyerror_range[1].yystate.yyloc = yys->yyloc;
+                    if (yys->yypred != YY_NULLPTR)
                       yydestroyGLRState ("Cleanup: popping", yys, root, scanner);
                     yystates[yyk] = yys->yypred;
                     yystack.yynextFree -= 1;
@@ -3689,7 +3699,7 @@ yy_yypstack (yyGLRState* yys)
       YYFPRINTF (stderr, " -> ");
     }
   YYFPRINTF (stderr, "%d@%lu", yys->yylrState,
-             (unsigned long int) yys->yyposn);
+             (unsigned long) yys->yyposn);
 }
 
 static void
@@ -3720,18 +3730,18 @@ yypdumpstack (yyGLRStack* yystackp)
   for (yyp = yystackp->yyitems; yyp < yystackp->yynextFree; yyp += 1)
     {
       YYFPRINTF (stderr, "%3lu. ",
-                 (unsigned long int) (yyp - yystackp->yyitems));
+                 (unsigned long) (yyp - yystackp->yyitems));
       if (*(yybool *) yyp)
         {
           YYASSERT (yyp->yystate.yyisState);
           YYASSERT (yyp->yyoption.yyisState);
           YYFPRINTF (stderr, "Res: %d, LR State: %d, posn: %lu, pred: %ld",
                      yyp->yystate.yyresolved, yyp->yystate.yylrState,
-                     (unsigned long int) yyp->yystate.yyposn,
-                     (long int) YYINDEX (yyp->yystate.yypred));
+                     (unsigned long) yyp->yystate.yyposn,
+                     (long) YYINDEX (yyp->yystate.yypred));
           if (! yyp->yystate.yyresolved)
             YYFPRINTF (stderr, ", firstVal: %ld",
-                       (long int) YYINDEX (yyp->yystate
+                       (long) YYINDEX (yyp->yystate
                                              .yysemantics.yyfirstVal));
         }
       else
@@ -3740,15 +3750,15 @@ yypdumpstack (yyGLRStack* yystackp)
           YYASSERT (!yyp->yyoption.yyisState);
           YYFPRINTF (stderr, "Option. rule: %d, state: %ld, next: %ld",
                      yyp->yyoption.yyrule - 1,
-                     (long int) YYINDEX (yyp->yyoption.yystate),
-                     (long int) YYINDEX (yyp->yyoption.yynext));
+                     (long) YYINDEX (yyp->yyoption.yystate),
+                     (long) YYINDEX (yyp->yyoption.yynext));
         }
       YYFPRINTF (stderr, "\n");
     }
   YYFPRINTF (stderr, "Tops:");
   for (yyi = 0; yyi < yystackp->yytops.yysize; yyi += 1)
-    YYFPRINTF (stderr, "%lu: %ld; ", (unsigned long int) yyi,
-               (long int) YYINDEX (yystackp->yytops.yystates[yyi]));
+    YYFPRINTF (stderr, "%lu: %ld; ", (unsigned long) yyi,
+               (long) YYINDEX (yystackp->yytops.yystates[yyi]));
   YYFPRINTF (stderr, "\n");
 }
 #endif
