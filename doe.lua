@@ -75,7 +75,7 @@ function doe(exp)
 		end
 
 		-- aanroep! of indexeren
-		if type(waarde.fn) == 'table' then
+		if isfn(waarde.fn) then
 			r = waarde.fn[waarde[1]+1]
 		else
 			local ok,err

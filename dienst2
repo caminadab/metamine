@@ -1,0 +1,146 @@
+#!/usr/bin/lua
+require 'ontleed'
+require 'oplos'
+require 'doe'
+require 'infix'
+require 'rapporteer-syntax'
+
+local socket = require 'socket'
+local server = socket.bind('127.0.0.1','1236')
+assert(server)
+local sockets = {server}
+local coros = {}
+
+function boompairs(exp)
+	local t = {}
+	function r(exp)
+		if isatoom(exp) then
+			t[exp] = true
+		else
+			t[exp] = true
+			r(exp.fn)
+			for i,v in ipairs(exp) do
+				r(v)
+			end
+		end
+	end
+	r(exp)
+	
+	local k = nil
+	return function()
+		if next(t,k) then
+			k = next(t,k)
+			return k
+		end
+	end
+end
+
+
+function serveer(sock)
+	local len
+	-- header
+	while true do
+		coroutine.yield()
+		local line = sock:receive('*l')
+		if line == '' then
+			break
+		end
+		
+		local len0 = line:match('Content%-Length: (%d+)')
+		if len0 then
+			len = tonumber(len0)
+		end
+	end
+
+	-- content
+	local inn
+	local uit
+	if len then
+		coroutine.yield()
+		inn = sock:receive(len)
+	end
+
+	function oplosPlus(code,asb)
+		local uit,fout,bekend,exp2naam = oplos(asb, 'uit')
+		if not uit then io.stderr:write('oplosfout: '..tostring(fout)) end
+
+		-- syntaxrapport
+		for k,v in pairs(bekend) do if isatoom(k) and k.v then print('BEKEND IS', k.v); bekend[k.v] = true end end
+		for k,v in pairs(bieb) do bekend[k] = true end
+		local label = {}
+		local klasse = {}
+		for t in boompairs(asb) do
+
+			if isatoom(t) and exp2naam and exp2naam[t.v] then
+				label[t] = combineer(exp2naam[t.v])
+			end
+			
+			klasse[t] = 'fout'
+			if not bekend[t.v] then klasse[t] = 'fout' end
+			if bekend[t.v] then klasse[t] = 'goed' end
+		end
+		local html = rapporteer_syntax(code,label,klasse)
+		return uit,html
+	end
+
+	-- vertaal
+	local function vt()
+		-- type.html, syntax.html, resultaat.html
+		local exp,rapport = oplosPlus(inn, ontleed(inn..'\n'))
+		local ok,resultaat = pcall(doe,exp)
+		--local resultaat = doe(exp)
+
+		if type(resultaat) ~= 'table' then
+			resultaat = tostring(resultaat)
+		else
+			resultaat = tostring(string.char(table.unpack(resultaat)))
+		end
+
+		return rapport,rapport,resultaat or "<DSF"
+	end
+
+	local a,b,c = vt(inn)
+	local uit = a..c
+	local inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
+	local uitL = string.format('%q', uit):gsub('\n', '\\n')
+
+	print(os.date(), inL, '...[afgeknot]')
+
+	-- header
+	sock:send("HTTP/1.0 200 OK\r\n")
+	sock:send("Host: localhost\r\n")
+	sock:send("Server: Lua 5.2\r\n")
+	sock:send("Content-Length: "..#uit.."\r\n")
+	sock:send("\r\n")
+
+	sock:send(uit)
+
+	sock:close()
+end
+
+while true do
+	local rs = socket.select(sockets)
+
+	-- connect
+	if rs[1] == server then
+		local client = server:accept()
+		sockets[client] = #sockets+1
+		sockets[#sockets+1] = client
+		coros[client] = coroutine.create(serveer, client)
+		coroutine.resume(coros[client], client)
+		table.remove(rs, 1)
+	end
+
+	-- data
+	for i=#rs,1,-1 do
+		local client = rs[i]
+		local unfinished,err = coroutine.resume(coros[client])
+		if err then print('ERR', err) end
+		if not unfinished then
+			table.remove(sockets, sockets[client]) --client)
+			sockets[client] = nil
+			coros[client] = nil
+		end
+	end
+
+end

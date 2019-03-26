@@ -1,8 +1,6 @@
 local rapport = [[
-<html>
-	<meta charset="utf-8">
 	<style>
-		html { background: black; color: white; }
+		pre { background: black; color: white; }
 		pre {}
 		.code {
 			font-size: 20px;
@@ -47,8 +45,6 @@ local rapport = [[
 		}
 	</style>
 	<pre class='code'>%s</pre>
-</pre>
-</html>
 ]]
 
 -- .format(tekst,tooltip)
@@ -99,9 +95,7 @@ assert(locvind("a = 3\nb = 1 + 2\n", 5, 2) == 11)
 
 assert(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=6,y2=2}) == "b = 1")
 
-print(locsub("a\nb", {x1=1,y1=2,x2=2,y2=2}))
 assert(locsub("a\nb", {x1=1,y1=2,x2=2,y2=2}) == "b")
-print(locsub("a\nb\n", {x1=1,y1=2,x2=2,y2=2}))
 assert(locsub("a\nb\n", {x1=1,y1=2,x2=3,y2=2}) == "b\n")
 
 function printloc(loc)
@@ -135,7 +129,6 @@ function rapporteer_syntax(code,labels,stijl)
 		local vullerloc = {x1=vorige.x2,y1=vorige.y2,x2=loc.x1,y2=loc.y1}
 		local vuller = locsub(code, vullerloc)
 		local token0 = locsub(code, loc)
-		print('TOKEN0('..token0..')EIND')
 		--io.write('vuller ', vuller, ' '); printloc(vullerloc)
 		--io.write('token ', token0, ' '); printloc(loc)
 

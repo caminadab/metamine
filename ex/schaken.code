@@ -1,40 +1,17 @@
-uit = schrijf(bordA)
-bordA = "hoi"
-schrijf = x → x
+uit = 
 
-p:stuk = wit & pion
+p = stuk
 
 ; IDENTITEITSGENERATIE: enum
 
-;-
-kleur(letter) =
-	letter:hoofdletter ⇒ zwart
-	letter:kleine-letter ⇒ wit
 
-; bestaande scopeing!
-type(kleine-letter) =
-	'i' ↦ pion
-	'p' ↦ paard
-	'l' ↦ loper
-	't' ↦ toren
-	'd' ↦ dame
-	'k' ↦ koning
-	'.' ↦ niets
+;stuk(letter) = kleur(letter) & type(letter)
 
-kleine-letter(letter) =
-	(letter x →
-
-uit = 
--;
-
-stuk(letter) = kleur(letter) & type(letter)
-
-type = pion | paard | loper | toren | dame | koning
-kleur = wit | zwart
-stuk = kleur & type
-wit-stuk = wit & type
-zwart-stuk = zwart & type
-wit = niet zwart
+stuk = kleur × type
+	type = {pion, paard, loper, toren, dame, koning}
+	kleur = {wit, zwart}
+wit-stuk = wit × type
+zwart-stuk = zwart × type
 
 ; twee alternatieve representaties
 stelling = (bord | stukken) & mag-rokeren^kleur & (en-passant kolom)
@@ -63,3 +40,35 @@ i i i i i i i i
 I I I I I I I I
 T P L V K L P T
 "
+
+wit = 10
+zwart = 20
+
+pion = 0
+paard = 1
+loper = 2
+toren = 3
+dame = 4
+koning = 5
+
+;-
+kleur(letter) =
+	letter:hoofdletter ⇒ zwart
+	letter:kleine-letter ⇒ wit
+
+; bestaande scopeing!
+type(kleine-letter) =
+	'i' ↦ pion
+	'p' ↦ paard
+	'l' ↦ loper
+	't' ↦ toren
+	'd' ↦ dame
+	'k' ↦ koning
+	'.' ↦ niets
+
+kleine-letter(letter) =
+	(letter x →
+
+uit = 
+-;
+

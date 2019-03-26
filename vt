@@ -82,8 +82,6 @@ if opt.r or opt.rapport then
 	file('rapport.html', html)
 end
 
---local plan = vertaal(code, 'in', 'uit')
-
 local asb = ontleed(code)
 
 -- annoteer ^_^
@@ -108,24 +106,24 @@ end
 assert(asb, 'syntaxfout')
 --local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
 
-local stduit,fout,bekend,exp2naam = oplos(asb, 'uit')
-if not stduit then io.stderr:write('oplosfout: '..tostring(fout)) end
-local plan = stduit
+local uit,fout,bekend,exp2naam = oplos(asb, 'uit')
+if not uit then io.stderr:write('oplosfout: '..tostring(fout)) end
 
 -- syntaxrapport
 if verboos then
 	-- converteer van atoom naar string
-	for k,v in pairs(bekend) do if isatoom(k) and k.v then bekend[k.v] = true end end
+	for k,v in pairs(bekend) do if isatoom(k) and k.v then print('BEKEND IS', k.v); bekend[k.v] = true end end
 	for k,v in pairs(bieb) do bekend[k] = true end
 	local label = {}
 	local klasse = {}
 	for t in boompairs(asb) do
 
 		if isatoom(t) and exp2naam and exp2naam[t.v] then
-			label[t] = leed(exp2naam[t.v])
+			label[t] = combineer(exp2naam[t.v])
 		end
 		
-		if not bekend[t.v] and isvar(t) then klasse[t] = 'fout' end
+		klasse[t] = 'fout'
+		if not bekend[t.v] then klasse[t] = 'fout' end
 		if bekend[t.v] then klasse[t] = 'goed' end
 	end
 	local html = rapporteer_syntax(code,label,klasse)
@@ -133,9 +131,8 @@ if verboos then
 	print('syntaxrapport weggeschreven naar syntax.html')
 end
 
-local uit
 if opt.d or opt.doe then
-	local v = doe(plan)
+	local v = doe(uit)
 	if type(v) ~= 'table' then uit = tostring(toexp(v)) --'<ongeldig type>'
 	else
 		uit = string.char(table.unpack(v))
@@ -143,9 +140,9 @@ if opt.d or opt.doe then
 else
 	--uit = bouw(plan)
 	if opt.l or opt.lua then
-		uit = naarlua(plan)
+		uit = naarlua(uit)
 	else
-		uit = tostring(exp2string(plan or X'?'))..'\n'
+		uit = tostring(exp2string(uit or X'?'))..'\n'
 	end
 end
 --uit = unlisp(uit)

@@ -45,7 +45,8 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 
 
 %%
-
+"∈"					{ *yylval = a(":"); return ':'; }
+"∉"					{ *yylval = a("!:"); return NIN; }
 "⁻¹"				{ *yylval = a("^-1"); return INV; }
 "⁰"					{ *yylval = a("^0"); return M0; }
 "¹"					{ *yylval = a("^1"); return M1; }
