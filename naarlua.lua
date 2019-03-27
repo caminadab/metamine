@@ -26,9 +26,9 @@ function maakvars()
 	end
 end
 
-local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod') 
+local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '<=', '>=', '/\\', '\\/', 'mod') 
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', }
+local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', }
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
 		return exp.v,t

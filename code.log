@@ -47,7 +47,7 @@ local waarvoor = function(l,fn)
 end
 
 local som = function(t)
-    local som = {}
+    local som = 0
     for i,v in ipairs(t) do
         som = som + v
     end
@@ -160,16 +160,42 @@ local herhaal = function(f)
     end
 end
 
-local D = _iinterval(1,1000)
-local E = function (_A)
-    local H = _A % 3
-    local G = H == 0
-    local J = _A % 5
-    local I = J == 0
-    local F = G and I
-    return F
+local D = tabel{0,1,1}
+local F = function (_A)
+    local I = _A(2)
+    local H = <=(I,4e6)
+    local G = false
+    if H then
+        local O = _A(2)
+        local N = O % 2
+        local M = N == 0
+        local L = false
+        if M then
+            local Q = _A(0)
+            local R = _A(2)
+            local P = Q + R
+            L = P
+        end
+        local V = _A(2)
+        local U = V % 2
+        local T = U ~= 0
+        local S = false
+        if T then
+            local W = _A(0)
+            S = W
+        end
+        local K = _kies(L,S)
+        local X = _A(2)
+        local Z = _A(1)
+        local AA = _A(2)
+        local Y = Z + AA
+        local J = tabel{K,X,Y}
+        G = J
+    end
+    return G
 end
-local C = waarvoor(D,E)
-local B = som(C)
+local E = herhaal(F)
+local C = E(D)
+local B = C(0)
 local A = tekst(B)
 return A
