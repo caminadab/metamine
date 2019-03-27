@@ -175,6 +175,7 @@ bieb = {
 		return r
 	end;
 
+	-- linq
 	['map'] = function(a,b)
 		local r = {fn='[]'}
 		for i,v in ipairs(a) do
@@ -182,6 +183,15 @@ bieb = {
 			r[i] = b(v)
 		end
 		return r
+	end;
+
+	['filter'] = function(l,fn)
+		local r = {fn='[]'}
+		for i,v in ipairs(l) do
+			if fn(v) then
+				r[#r+1] = v
+			end
+		end
 	end;
 
 	['log'] = math.log;

@@ -106,7 +106,7 @@ function serveer(sock)
 	end
 
 	local a,b,c = vt(inn)
-	local c2 = '<div style="font-size: 24pt;">= '..c..'</div>'
+	local c2 = '<div style="font-size: 24pt;"> '..c..'</div>'
 	local uit = c2..a
 	local inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
 	local uitL = string.format('%q', uit):gsub('\n', '\\n')
