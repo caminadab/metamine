@@ -28,7 +28,7 @@ end
 
 local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod') 
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', }
+local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', }
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
 		return exp.v,t
@@ -152,6 +152,30 @@ local int = function(a)
 	end
 	if not getal then return false end
 	return math.floor(getal)
+end;
+local _iinterval = function(a,b)
+	local t = {}
+	for i = 1,b-1 do
+		t[#t+1] = i
+	end
+	return t
+end;
+local waarvoor = function(l,fn)
+	local r = {}
+	for i,v in ipairs(l) do
+		if fn(v) then
+			r[#r+1] = v
+		end
+	end
+	return r
+end
+
+local som = function(t)
+	local som = 0
+	for i,v in ipairs(t) do
+		som = som + v
+	end
+	return som
 end;
 local _istype = function(a,b)
 	if b == getal then return type(a) == 'number' end

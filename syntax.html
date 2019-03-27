@@ -1,0 +1,51 @@
+  <style>
+    pre { background: black; color: white; }
+    pre {}
+    .code {
+      font-size: 20px;
+      font-family: Courier;
+      font-weight: bold;
+    }
+
+    .goed { color: green; }
+    .fout { color: red; }
+
+    .tooltip .infobox {
+      visibility: hidden;
+      position: absolute;
+      z-index: 1;
+      color: yellow;
+      left: 50%;
+      margin-top: 20px;
+      margin-left: 0px;
+      width: 200px;
+      text-align: center;
+    }
+    .tooltip .infobox .info {
+      background: #330;
+    }
+
+    .vuller {
+      color: #888;
+    }
+
+    .tooltip:hover .infobox:hover {
+      visibility: hidden;
+      opacity: 1;
+    }
+
+    .tooltip:hover .infobox {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip {
+      position: relative;
+    }
+  </style>
+  <pre class='code'><span class='tooltip vuller'><span class='infobox'><span class='info'></span></span></span><span class='tooltip goed'>goed<span class='infobox'><span class='info'>_A -> _A mod 3 = 0 /\ _A mod 5 = 0</span></span></span><span class='tooltip vuller'> = i → ((<span class='infobox'><span class='info'></span></span></span><span class='tooltip goed'>i<span class='infobox'><span class='info'>_A</span></span></span><span class='tooltip vuller'> mod 3=0) ∧ (<span class='infobox'><span class='info'></span></span></span><span class='tooltip goed'>i<span class='infobox'><span class='info'>_A</span></span></span><span class='tooltip vuller'> mod 5=0))
+<span class='infobox'><span class='info'></span></span></span><span class='tooltip goed'>s<span class='infobox'><span class='info'>som (1 .. 1000 filter _A -> _A mod 3 = 0 /\ _A mod 5 = 0)</span></span></span><span class='tooltip vuller'> = Σ ((1 .. 1000) filter <span class='infobox'><span class='info'></span></span></span><span class='tooltip goed'>goed<span class='infobox'><span class='info'>_A -> _A mod 3 = 0 /\ _A mod 5 = 0</span></span></span><span class='tooltip vuller'>)
+<span class='infobox'><span class='info'></span></span></span><span class='tooltip goed'>uit<span class='infobox'><span class='info'>tekst (som (1 .. 1000 filter _A -> _A mod 3 = 0 /\ _A mod 5 = 0))</span></span></span><span class='tooltip vuller'> = tekst <span class='infobox'><span class='info'></span></span></span><span class='tooltip goed'>s<span class='infobox'><span class='info'>som (1 .. 1000 filter _A -> _A mod 3 = 0 /\ _A mod 5 = 0)</span></span></span><span class='tooltip vuller'>
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+<span class='infobox'><span class='info'></span></span></span></pre>

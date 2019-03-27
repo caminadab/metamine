@@ -185,13 +185,14 @@ bieb = {
 		return r
 	end;
 
-	['filter'] = function(l,fn)
+	['waarvoor'] = function(l,fn)
 		local r = {fn='[]'}
 		for i,v in ipairs(l) do
 			if fn(v) then
 				r[#r+1] = v
 			end
 		end
+		return r
 	end;
 
 	['log'] = math.log;
