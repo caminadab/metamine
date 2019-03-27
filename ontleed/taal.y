@@ -38,6 +38,7 @@
 %token NAAM
 %token TEKST
 %token NIN "!:"
+%token SOM
 %token DAN "=>"
 %token TO "->"
 %token MAPLET "-->"
@@ -64,6 +65,7 @@
 
 /* %precedence NAAM TEKST */
 %left "=>"
+%left SOM
 %left EN OF EXOF NOCH NIET
 %left '=' "!=" "~="
 %left ":=" "+=" "-=" "|=" "&="
@@ -204,7 +206,8 @@ exp:
 | exp '+' exp       	{ $$ = fn3loc(aloc("+",yylloc), $1, $3, yylloc); }
 | exp '-' exp       	{ $$ = fn3loc(aloc("-",yylloc), $1, $3, yylloc); }
 
-| exp "->" exp			{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }
+| SOM exp			       	{ $$ = fn2loc(aloc("som",yylloc), $2, yylloc); }
+| exp "->" exp				{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }
 /*| params "->" exp			{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }*/
 | exp "||" exp				{ $$ = fn3loc(aloc("||",yylloc), $1, $3, yylloc); }
 | exp "::" exp				{ $$ = fn3loc(aloc("::",yylloc), $1, $3, yylloc); }
