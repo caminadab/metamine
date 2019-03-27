@@ -124,6 +124,9 @@ local ja = true
 local nee = false
 local pack = pack or table.pack
 local unpack = unpack or table.unpack
+local sin = math.sin
+local cos = math.cos
+local tan = math.tan
 local _pow = function(a,b)
 	if type(a) == 'number' then
 		return a ^ b

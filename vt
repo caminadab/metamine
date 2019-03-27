@@ -133,7 +133,7 @@ end
 
 if opt.d or opt.doe then
 	local v = doe(uit)
-	if type(v) ~= 'table' then uit = tostring(toexp(v)) --'<ongeldig type>'
+	if type(v) ~= 'table' then uit = tostring(exp2string(v)) --'<ongeldig type>'
 	else
 		uit = string.char(table.unpack(v))
 	end
