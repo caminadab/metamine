@@ -94,9 +94,10 @@ int lua_code(lua_State* L) {
 }
 
 int lua_ontleed(lua_State* L) {
-	const char* str = luaL_checkstring(L, 1);
-	lua_pushliteral(L, "\n");
+	luaL_checkstring(L, 1);
+	lua_pushliteral(L, "\n\0");
 	lua_concat(L, 2);
+	const char* str = lua_tostring(L, 1);
 
 	yyscan_t scanner;
 	yylex_init(&scanner);

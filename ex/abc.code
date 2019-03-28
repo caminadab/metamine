@@ -1,0 +1,10 @@
+; bereken de lengte van a, gegeven b en c
+; a /\ c
+;  /__\
+;    b
+
+a² + b² = c²
+  b = 4
+  c = 5
+uit = "a = " || tekst(a)
+

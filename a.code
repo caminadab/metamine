@@ -1,5 +1,5 @@
 uit = t || tekst(a)
 a = sin 30 + d 
 c / 2 = 50
-t = "hoi" || c ; mag niet!
+t = "hoi" || [10]
 d · 2 = 8 - 7

@@ -1,0 +1,270 @@
+1:1-2:1: syntax error, unexpected '\n'
+Wed Mar 27 00:24:14 2019	"; bereken de lengte van a, gegeven b en c\\n; a /\\ c\\n;  /__\\\\n;    b\\n\\na² + b² = c²\\n\9b = 4\\n\9c = 5\\nuit = \"a = \" || tekst(a)\\n\9"	nil
+Wed Mar 27 00:24:38 2019	"a² + b² = c²\\n\9b = 4\\n\9c = 5\\nuit = \"a = \" || tekst(a)\\n\\n; bereken de lengte van a, gegeven b en c\\n; a /\\ c\\n;  /__\\\\n;    b\\n\9"	a = 3
+som = Σ ((1..1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+
+Wed Mar 27 00:48:09 2019	"som = Σ ((1..1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000.\\n"	nil
+
+som = Σ ((1..1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+
+1:1-2:1: syntax error, unexpected '\n'
+Wed Mar 27 00:48:24 2019	"\\nsom = Σ ((1..1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000.\\n"	nil
+uit = 3
+som = Σ ((1..1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+
+Wed Mar 27 00:48:30 2019	"uit = 3\\nsom = Σ ((1..1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000.\\n"	nil
+uit = 3
+som = Σ ((1..1000) waarvoor (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+lijst filter (x mod 2 = 0)
+lijst waarvoor L mod
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+ERR	./oplos.lua:94: attempt to index field 'fn' (a nil value)
+uit = 3
+som = Σ ((1..1000) waarvoor (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+lijst filter (x mod 2 = 0)
+lijst waarvoor L mod
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+ERR	./oplos.lua:94: attempt to index field 'fn' (a nil value)
+uit = 3
+som = Σ ((1..1000) waarvoor (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+lijst filter (x mod 2 = 0)
+lijst waarvoor L mod
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+ERR	./oplos.lua:94: attempt to index field 'fn' (a nil value)
+uit = 3
+som = Σ ((1..1000) waarvoor (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+lijst filter (x mod 2 = 0)
+lijst waarvoor L mod
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+ERR	./oplos.lua:94: attempt to index field 'fn' (a nil value)
+uit = 3
+som = Σ ((1..1000) waarvoor (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+lijst filter (x mod 2 = 0)
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:55:20 2019	"uit = 3\\nsom = Σ ((1..1000) waarvoor (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\nlijst filter (x mod 2 = 0)\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+uit = 3
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:55:40 2019	"uit = 3\\nsom = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	3
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:55:44 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:11 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:12 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:19 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:19 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:19 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:20 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:20 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+a = 3
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:56:23 2019	"som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\na = 3\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+; a
+som = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+1:1-2:1: syntax error, unexpected '\n'
+Wed Mar 27 00:56:30 2019	"; a\\nsom = Σ ((1..1000) filter (i → i mod 3=0 ∧ i mod 5=0) )\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+goed = (i → i mod 3=0 ∧ i mod 5=0) )
+som = Σ ((1..1000) filter goed)
+uit = tekst som
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+1:40-41: syntax error, unexpected ')'
+Wed Mar 27 00:57:26 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0) )\\nsom = Σ ((1..1000) filter goed)\\nuit = tekst som\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+goed = (i → i mod 3=0 ∧ i mod 5=0) )
+som = Σ ((1..1000) filter goed)
+uit = goed 4
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+1:40-41: syntax error, unexpected ')'
+Wed Mar 27 00:57:33 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0) )\\nsom = Σ ((1..1000) filter goed)\\nuit = goed 4\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+goed = (i → i mod 3=0 ∧ i mod 5=0) )
+som = Σ ((1..1000) filter goed)
+uit = a
+a = 1..10
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+1:40-41: syntax error, unexpected ')'
+Wed Mar 27 00:57:58 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0) )\\nsom = Σ ((1..1000) filter goed)\\nuit = a\\na = 1..10\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+goed = (i → i mod 3=0 ∧ i mod 5=0) )
+som = Σ ((1..1000) filter goed)
+uit = a
+a = 1 .. 10
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+1:40-41: syntax error, unexpected ')'
+Wed Mar 27 00:58:04 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0) )\\nsom = Σ ((1..1000) filter goed)\\nuit = a\\na = 1 .. 10\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1..1000) filter goed)
+uit = a
+a = 1 .. 10
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:58:41 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1..1000) filter goed)\\nuit = a\\na = 1 .. 10\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	./dienst2:11: attempt to call local 'func' (a nil value)
+;ok
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1..1000) filter goed)
+uit = a
+a = 1 .. 10
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+1:1-2:1: syntax error, unexpected '\n'
+Wed Mar 27 00:58:53 2019	";ok\\ngoed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1..1000) filter goed)\\nuit = a\\na = 1 .. 10\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+;ok
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1..1000) filter goed)
+uit = a
+a = 1 .. 10
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+1:1-2:1: syntax error, unexpected '\n'
+Wed Mar 27 00:58:55 2019	";ok\\ngoed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1..1000) filter goed)\\nuit = a\\na = 1 .. 10\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1..1000) filter goed)
+uit = a
+a = 1 .. 10
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:58:59 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1..1000) filter goed)\\nuit = a\\na = 1 .. 10\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	./dienst2:11: attempt to call local 'func' (a nil value)
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1..1000) filter goed)
+uit = goed 4
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:59:15 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1..1000) filter goed)\\nuit = goed 4\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	[string "local tau = math.pi * 2..."]:144: attempt to perform arithmetic on global '_A' (a nil value)
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1..1000) filter goed)
+uit = goed(10)
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 00:59:42 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1..1000) filter goed)\\nuit = goed(10)\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	[string "local tau = math.pi * 2..."]:144: attempt to perform arithmetic on global '_A' (a nil value)
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1 .. 1000) filter goed)
+uit = tekst(som)
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 01:00:12 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1 .. 1000) filter goed)\\nuit = tekst(som)\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	nil
+goed = (i → i mod 3=0 ∧ i mod 5=0)
+som = Σ ((1 .. 1000) filter goed)
+uit = goed(10)
+; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+; Find the sum of all the multiples of 3 or 5 below 1000.
+
+
+Wed Mar 27 01:00:37 2019	"goed = (i → i mod 3=0 ∧ i mod 5=0)\\nsom = Σ ((1 .. 1000) filter goed)\\nuit = goed(10)\\n; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\\n; Find the sum of all the multiples of 3 or 5 below 1000."	[string "local tau = math.pi * 2..."]:144: attempt to perform arithmetic on global '_A' (a nil value)

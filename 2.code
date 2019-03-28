@@ -1,0 +1,7 @@
+f = [somA, i, j] → (x ⇒ [somB, j, i + j])
+	j mod 2 = 0  ⇒ somB = somA + j
+	j mod 2 ≠ 0  ⇒ somB = somA
+	x = j ≤ 4e6
+
+a = ((herhaal f) [0, 1, 1])₀
+uit = tekst(a)

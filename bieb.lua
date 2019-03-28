@@ -175,11 +175,22 @@ bieb = {
 		return r
 	end;
 
+	-- linq
 	['map'] = function(a,b)
 		local r = {fn='[]'}
 		for i,v in ipairs(a) do
 			--print('B', v, b(v))
 			r[i] = b(v)
+		end
+		return r
+	end;
+
+	['waarvoor'] = function(l,fn)
+		local r = {fn='[]'}
+		for i,v in ipairs(l) do
+			if fn(v) then
+				r[#r+1] = v
+			end
 		end
 		return r
 	end;

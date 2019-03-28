@@ -132,8 +132,25 @@ if verboos then
 end
 
 if opt.d or opt.doe then
-	local v = doe(uit)
-	if type(v) ~= 'table' then uit = tostring(exp2string(v)) --'<ongeldig type>'
+	--local v = doe(uit)
+	local luacode = naarlua(uit)
+	local fn,fout = load(luacode)
+	if not fn then
+		print(fout)
+		file('code.log', luacode)
+		print('luacode weggeschreven naar code.log')
+		return
+	end
+	local ok,fout = xpcall(fn, debug.traceback)
+	if not ok then
+		print(fout)
+		file('code.log', luacode)
+		print('luacode weggeschreven naar code.log')
+		return
+	end
+	v = fout -- niet
+	if type(v) ~= 'table' then
+		uit = tostring(toexp(v)) --'<ongeldig type>'
 	else
 		uit = string.char(table.unpack(v))
 	end

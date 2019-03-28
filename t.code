@@ -1,0 +1,5 @@
+uit = a || b
+	a = "hoi"
+	b = tekst c
+		(c · d)² = 16
+		d = 2

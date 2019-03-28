@@ -1,9 +1,15 @@
 #!/usr/bin/lua
 require 'ontleed'
 require 'oplos'
-require 'doe'
+require 'naarlua'
 require 'infix'
 require 'rapporteer-syntax'
+
+local function doe(exp)
+	local luacode = naarlua(exp)
+	local func = load(luacode)
+	return func()
+end
 
 local socket = require 'socket'
 local server = socket.bind('127.0.0.1','1236')
@@ -100,11 +106,12 @@ function serveer(sock)
 	end
 
 	local a,b,c = vt(inn)
-	local uit = a..c
+	local c2 = '<div style="font-size: 24pt;"> '..c..'</div>'
+	local uit = c2..a
 	local inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
 	local uitL = string.format('%q', uit):gsub('\n', '\\n')
 
-	print(os.date(), inL, '...[afgeknot]')
+	print(os.date(), inL, c)
 
 	-- header
 	sock:send("HTTP/1.0 200 OK\r\n")

@@ -26,13 +26,15 @@ function maakvars()
 	end
 end
 
-local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod') 
+local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '<=', '>=', '/\\', '\\/', 'mod') 
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', }
+local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', }
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
 		return exp.v,t
 	end
+	-- HACK
+	if type(exp) ~= 'table' then return tostring(exp) end
 
 	local fn,a,b = exp.fn.v, exp[1], exp[2]
 	local var = maakvar()
@@ -103,9 +105,10 @@ local function naarluaR(exp,t,tabs,maakvar)
 	elseif true then
 		-- normale functie aanroep
 		local vars = {}
-		for k,v in pairs(exp) do
+		for k,v in ipairs(exp) do
 			vars[k] = naarluaR(v,t,tabs,maakvar)
 		end
+		vars.fn = naarluaR(exp.fn,t,tabs,maakvar)
 		if bieb[fn] then vars.fn = bieb[fn] end
 		inhoud = table.concat(vars, ',')
 		t[#t+1] = string.format('%slocal %s = %s(%s)\n', tabs, var, vars.fn, inhoud)
@@ -152,6 +155,30 @@ local int = function(a)
 	end
 	if not getal then return false end
 	return math.floor(getal)
+end;
+local _iinterval = function(a,b)
+	local t = {}
+	for i = 1,b-1 do
+		t[#t+1] = i
+	end
+	return t
+end;
+local waarvoor = function(l,fn)
+	local r = {}
+	for i,v in ipairs(l) do
+		if fn(v) then
+			r[#r+1] = v
+		end
+	end
+	return r
+end
+
+local som = function(t)
+	local som = 0
+	for i,v in ipairs(t) do
+		som = som + v
+	end
+	return som
 end;
 local _istype = function(a,b)
 	if b == getal then return type(a) == 'number' end
@@ -266,7 +293,9 @@ local biebbron = biebbron:gsub('\t', tab)
 function naarlua(exp)
 	local t = {biebbron}
 	local var,t = naarluaR(exp,t,'',maakvars())
-	t[#t+1] = 'print(string.char(unpack('..var..')))\n'
+	--t[#t+1] = 'print(string.char(unpack('..var..')))\n'
+	t[#t+1] = 'return '
+	t[#t+1] = var
 	local lua = table.concat(t)
 	return lua
 end
