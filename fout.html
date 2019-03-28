@@ -45,14 +45,175 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'tekening'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'bdata'}, classes: 'waarde' },{ data: {id: 'bdec'}, classes: 'waarde' },{ data: {id: 'begin'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'restA'}, classes: 'waarde' },{ data: {id: 'restB'}, classes: 'waarde' },{ data: {id: 'stap'}, classes: 'waarde' },{ data: {id: 'stapelA'}, classes: 'waarde' },{ data: {id: 'stapelB'}, classes: 'waarde' },{ data: {id: 'table: 0x55ea1168c6f0'}, classes: 'waarde' },{ data: {id: 'table: 0x55ea116b3180'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x0.51253536414007', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.84018771715471',
-					source: 'nil',
+					id: 'x0.66772376078541',
+					source: 'x0.51253536414007',
 					target: 'uit',
 				}
 			},
-					]
+							{
+						data: {
+							id: 'x0.53160643416066',
+							source: 'bdata',
+							target: 'x0.51253536414007',
+						}
+					},
+									{
+						data: {
+							id: 'x0.039280343353413',
+							source: 'bdec',
+							target: 'x0.51253536414007',
+						}
+					},
+				{ data: {id: 'x0.43763759659493', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.93183505625084',
+					source: 'x0.43763759659493',
+					target: 'bdec',
+				}
+			},
+							{
+						data: {
+							id: 'x0.9308097953586',
+							source: 'data',
+							target: 'x0.43763759659493',
+						}
+					},
+									{
+						data: {
+							id: 'x0.72095234306574',
+							source: 'stap',
+							target: 'x0.43763759659493',
+						}
+					},
+							{
+				data: {
+					id: 'x0.28429340305007',
+					source: 'restB',
+					target: 'begin',
+				}
+			},
+					{
+				data: {
+					id: 'x0.73853431490182',
+					source: 'nil',
+					target: 'restA',
+				}
+			},
+		{ data: {id: 'x0.63997881656512', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.35404867974764',
+					source: 'x0.63997881656512',
+					target: 'data',
+				}
+			},
+		{ data: {id: 'x0.6878613902665', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.16597416632156',
+					source: 'x0.6878613902665',
+					target: 'bdata',
+				}
+			},
+		{ data: {id: 'x0.44010452760388', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.88007523626093',
+					source: 'x0.44010452760388',
+					target: 'bdata',
+				}
+			},
+							{
+						data: {
+							id: 'x0.82920109332968',
+							source: 'table: 0x55ea1168c6f0',
+							target: 'x0.44010452760388',
+						}
+					},
+									{
+						data: {
+							id: 'x0.33033712968712',
+							source: 'uit',
+							target: 'x0.44010452760388',
+						}
+					},
+				{ data: {id: 'x0.22896817104377', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.89337241458398',
+					source: 'x0.22896817104377',
+					target: 'restB',
+				}
+			},
+							{
+						data: {
+							id: 'x0.3503601785518',
+							source: 'begin',
+							target: 'x0.22896817104377',
+						}
+					},
+									{
+						data: {
+							id: 'x0.68666990831805',
+							source: 'restA',
+							target: 'x0.22896817104377',
+						}
+					},
+				{ data: {id: 'x0.95646825291052', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.58864013319306',
+					source: 'x0.95646825291052',
+					target: 'restA',
+				}
+			},
+		{ data: {id: 'x0.65730403953106', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.85867632592967',
+					source: 'x0.65730403953106',
+					target: 'stapelA',
+				}
+			},
+		{ data: {id: 'x0.43955991949866', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.92396978890708',
+					source: 'x0.43955991949866',
+					target: 'stapelB',
+				}
+			},
+							{
+						data: {
+							id: 'x0.39843666665183',
+							source: 'begin',
+							target: 'x0.43955991949866',
+						}
+					},
+									{
+						data: {
+							id: 'x0.8147668963367',
+							source: 'stapelA',
+							target: 'x0.43955991949866',
+						}
+					},
+				{ data: {id: 'x0.68421852527383', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.91097203079191',
+					source: 'x0.68421852527383',
+					target: 'stap',
+				}
+			},
+							{
+						data: {
+							id: 'x0.48249065665644',
+							source: 'restB',
+							target: 'x0.68421852527383',
+						}
+					},
+									{
+						data: {
+							id: 'x0.21582495896883',
+							source: 'stapelB',
+							target: 'x0.68421852527383',
+						}
+					},
+							]
 		});
 	</script><script>infostroom = cytoscape({
 			container: document.getElementById('infostroom'),
@@ -89,14 +250,175 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'tekening'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'bdata'}, classes: 'waarde' },{ data: {id: 'bdec'}, classes: 'waarde' },{ data: {id: 'begin'}, classes: 'waarde' },{ data: {id: 'data'}, classes: 'waarde' },{ data: {id: 'restA'}, classes: 'waarde' },{ data: {id: 'restB'}, classes: 'waarde' },{ data: {id: 'stap'}, classes: 'waarde' },{ data: {id: 'stapelA'}, classes: 'waarde' },{ data: {id: 'stapelB'}, classes: 'waarde' },{ data: {id: 'table: 0x55ea1168c6f0'}, classes: 'waarde' },{ data: {id: 'table: 0x55ea116b3180'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x0.95025237414532', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.39438292681909',
-					source: 'nil',
+					id: 'x0.92012825371704',
+					source: 'x0.95025237414532',
 					target: 'uit',
 				}
 			},
-					]
+							{
+						data: {
+							id: 'x0.147660014754',
+							source: 'bdata',
+							target: 'x0.95025237414532',
+						}
+					},
+									{
+						data: {
+							id: 'x0.88106216950392',
+							source: 'bdec',
+							target: 'x0.95025237414532',
+						}
+					},
+				{ data: {id: 'x0.64108059631711', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.43195341826973',
+					source: 'x0.64108059631711',
+					target: 'bdec',
+				}
+			},
+							{
+						data: {
+							id: 'x0.61959648394007',
+							source: 'data',
+							target: 'x0.64108059631711',
+						}
+					},
+									{
+						data: {
+							id: 'x0.28105941241656',
+							source: 'stap',
+							target: 'x0.64108059631711',
+						}
+					},
+							{
+				data: {
+					id: 'x0.78600209801737',
+					source: 'restB',
+					target: 'begin',
+				}
+			},
+					{
+				data: {
+					id: 'x0.30745787374091',
+					source: 'nil',
+					target: 'restA',
+				}
+			},
+		{ data: {id: 'x0.44703357920378', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.2261066251556',
+					source: 'x0.44703357920378',
+					target: 'data',
+				}
+			},
+		{ data: {id: 'x0.18753310953618', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.2762346720678',
+					source: 'x0.18753310953618',
+					target: 'bdata',
+				}
+			},
+		{ data: {id: 'x0.55644375530837', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.41650128057995',
+					source: 'x0.55644375530837',
+					target: 'bdata',
+				}
+			},
+							{
+						data: {
+							id: 'x0.16960708618611',
+							source: 'table: 0x55ea1168c6f0',
+							target: 'x0.55644375530837',
+						}
+					},
+									{
+						data: {
+							id: 'x0.90680393386018',
+							source: 'uit',
+							target: 'x0.55644375530837',
+						}
+					},
+				{ data: {id: 'x0.10317118843234', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.12607533909663',
+					source: 'x0.10317118843234',
+					target: 'restB',
+				}
+			},
+							{
+						data: {
+							id: 'x0.49544406658758',
+							source: 'begin',
+							target: 'x0.10317118843234',
+						}
+					},
+									{
+						data: {
+							id: 'x0.76047522842906',
+							source: 'restA',
+							target: 'x0.10317118843234',
+						}
+					},
+				{ data: {id: 'x0.9847516650263', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.93500398655189',
+					source: 'x0.9847516650263',
+					target: 'restA',
+				}
+			},
+		{ data: {id: 'x0.68444501687048', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.38318833121247',
+					source: 'x0.68444501687048',
+					target: 'stapelA',
+				}
+			},
+		{ data: {id: 'x0.74977088242293', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.36866354167865',
+					source: 'x0.74977088242293',
+					target: 'stapelB',
+				}
+			},
+							{
+						data: {
+							id: 'x0.29416036200438',
+							source: 'begin',
+							target: 'x0.74977088242293',
+						}
+					},
+									{
+						data: {
+							id: 'x0.23226153861371',
+							source: 'stapelA',
+							target: 'x0.74977088242293',
+						}
+					},
+				{ data: {id: 'x0.58448850064747', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.24441273568404',
+					source: 'x0.58448850064747',
+					target: 'stap',
+				}
+			},
+							{
+						data: {
+							id: 'x0.15238979186508',
+							source: 'restB',
+							target: 'x0.58448850064747',
+						}
+					},
+									{
+						data: {
+							id: 'x0.73214851586714',
+							source: 'stapelB',
+							target: 'x0.58448850064747',
+						}
+					},
+							]
 		});
 	</script><script>				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

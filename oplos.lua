@@ -199,7 +199,7 @@ function oplos(exp,voor)
 		print(kennisgraaf:tekst())
 		print()
 
-		local stroom,fout,bekend = kennisgraaf:sorteer(invoer,voor)
+		local stroom,fout,bekend,halvestroom = kennisgraaf:sorteer(invoer,voor)
 		local vt = {
 			code = "ABC",
 			kennisgraaf = kennisgraaf,
@@ -208,7 +208,7 @@ function oplos(exp,voor)
 		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
 			file('fout.html', rapport(vt))
-			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}
+			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}, halvestroom
 		end
 		print()
 		print('Stroom verkregen')

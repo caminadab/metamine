@@ -1,0 +1,10 @@
+bdata = "le"
+
+bdec = data → ((stap²) (data, []))₁
+	stap = (restA, stapelA) → (restB, stapelB)
+		begin :: restA = restB
+			begin = 'l'  ⇒  stapelB = 3 :: stapelA ; push
+			begin = 'e'  ⇒  stapelB = 2 :: stapelA ; pop
+
+uit = "hoi " || tekst(bdec bdata)
+

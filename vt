@@ -106,7 +106,7 @@ end
 assert(asb, 'syntaxfout')
 --local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
 
-local uit,fout,bekend,exp2naam = oplos(asb, 'uit')
+local uit,fout,bekend,exp2naam,halvestroom = oplos(asb, 'uit')
 if not uit then io.stderr:write('oplosfout: '..tostring(fout)) end
 
 -- syntaxrapport

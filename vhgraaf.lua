@@ -92,7 +92,7 @@ local function sorteer(hgraaf, van, naar)
 
 		-- mag linken
 		if ok --[[and not bekend[pijl] ]] and stroom:link(pijl) then
-			print('  JA')--, tostring(pijl.naar))
+			print('  JA')
 			for bron in pairs(pijl.van) do
 				nuttig[bron] = true
 			end
@@ -124,12 +124,14 @@ local function sorteer(hgraaf, van, naar)
 	local b = {}
 	for pijl in pairs(bekend) do
 		if pijl.naar then
+			print('NAAR BEKEND', pijl.naar)
 			b[pijl.naar] = true
 		end
 	end
 
 	if not bekend[naar] then
-		return false, "doel onbekend", b
+		print('naar', naar)
+		return false, "doel onbekend", b, stroom
 	end
 	print('KLAAR', stroom:tekst())
 
