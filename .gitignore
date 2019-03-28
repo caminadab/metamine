@@ -1,8 +1,7 @@
 .*
 
 # autogen
-ontleed/taal.c
-ontleed/taal.h
+*.yy.*
 
 bin/
 troep/

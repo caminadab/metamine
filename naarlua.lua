@@ -28,7 +28,7 @@ end
 
 local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '<=', '>=', '/\\', '\\/', 'mod') 
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', }
+local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', ['#'] = '_len'}
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
 		return exp.v,t
@@ -70,13 +70,21 @@ local function naarluaR(exp,t,tabs,maakvar)
 		inhoud = table.concat(vars, ',')
 		t[#t+1] = string.format('%slocal %s = tabel{%s}\n', tabs, var, inhoud)
 
+	elseif fn == ',' then
+		local vars = {}
+		for i,v in ipairs(exp) do
+			vars[i] = naarluaR(v,t,tabs,maakvar)
+		end
+		inhoud = table.concat(vars, ',')
+		t[#t+1] = string.format('%slocal %s = tabel{%s}\n', tabs, var, inhoud)
+
 	elseif fn == '{}' then
 		local vars = {}
 		for i,v in ipairs(exp) do
 			vars[i] = '['..naarluaR(v,t,tabs,maakvar)..'] = true'
 		end
 		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%slocal %s = {%s}\n', tabs, var, inhoud)
+		t[#t+1] = string.format('%slocal %s = {is={set=true},set={%s}}\n', tabs, var, inhoud)
 
 	elseif fn == 'map' then
 		-- nieuw
@@ -200,7 +208,7 @@ local javascript = function(broncode)
 	return bieb.javascript(broncode)
 end
 local tabel = function(t)
-	local t = t or {}
+	local t = t or {is={lijst=true}}
 	local mt = {}
 	function mt:__call(i)
 		return t[i+1]
@@ -271,9 +279,76 @@ local vind = function(a,b)
 	return false
 end
 
-local tekst = function (a)
-	local t = tostring(a)
+local function tekstR(a,t)
+	if type(a) == 'table' then
+		if a.is and a.is.tupel then t[#t+1] = '('
+		elseif a.is and a.is.lijst then t[#t+1] = '['
+		elseif a.is and a.is.set then t[#t+1] = '{'
+		end
+
+		if a.is and a.is.set then
+			for k in pairs(a.set) do
+				tekstR(k,t)
+				if next(a.set,k) then
+					t[#t+1] = ','
+				end
+			end
+		else
+			for i,v in ipairs(a) do
+				tekstR(v,t)
+				if i < #a then
+					t[#t+1] = ','
+				end
+			end
+		end
+
+		if a.is and a.is.tupel then t[#t+1] = ')'
+		elseif a.is and a.is.lijst then t[#t+1] = ']'
+		elseif a.is and a.is.set then t[#t+1] = '}'
+		end
+	else
+		t[#t+1] = tostring(a)
+	end
+			
+end
+
+local function tekst(a)
+	local t = {}
+	tekstR(a, t)
+	local t = table.concat(t)
 	return {string.byte(t,1,#t)}
+end
+
+local xx = function(a,b)
+	if type(a) == 'table' and a.is and a.is.set then
+		if type(b) == 'table' and b.is and b.is.set then
+			local res = {is={set=true},set={}}
+			for sa in pairs(a.set) do
+				for sb in pairs(b.set) do
+					res.set[{is={tupel=true}, sa, sb}] = true
+				end
+			end
+			return res
+		end
+	end
+			
+	if type(a) == 'table' and a.is and a.is.tupel then
+		if type(b) == 'table' and b.is and b.is.tupel then
+			for i=1,#b do
+				a[#a+1] = b[i]
+			end
+		else
+			a[#a+1] = b
+		end
+	else
+		if type(b) == 'table' and b.is and b.is.tuple then
+			table.insert(b, 1, a)
+			a = b
+		else
+			a = {is={tupel=true}, a, b}
+		end
+	end
+	return a
 end
 
 local herhaal = function(f)
@@ -287,6 +362,16 @@ local herhaal = function(f)
 	end
 end
 
+local function _len(t)
+	if type(t) == 'table' and t.is and t.is.set then
+		local len = 0
+		for _ in pairs(t.set) do len = len + 1 end
+		return len
+	end
+	if type(t) == 'table' and t.is and (t.is.tupel or t.is.lijst) then
+		return #t
+	end
+end
 ]]
 local biebbron = biebbron:gsub('\t', tab)
 

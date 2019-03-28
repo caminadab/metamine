@@ -38,6 +38,7 @@
 %token NAAM
 %token TEKST
 %token NIN "!:"
+%token SOM
 %token DAN "=>"
 %token TO "->"
 %token MAPLET "-->"
@@ -64,6 +65,7 @@
 
 /* %precedence NAAM TEKST */
 %left "=>"
+%left SOM
 %left EN OF EXOF NOCH NIET
 %left '=' "!=" "~="
 %left ":=" "+=" "-=" "|=" "&="
@@ -90,12 +92,14 @@
 
 input:
 	exp sep { *root = $$ = $1; YYACCEPT; }
+| sep exp sep { *root = $$ = $2; YYACCEPT; }
 |	block { *root = $$ = $1; YYACCEPT; }
 |	error { *root = $$ = aloc("fout",yylloc); yyerrok; YYACCEPT; }
 ;
 
 block:
 	exp sep exp sep { $$ = fn3loc(aloc("/\\",yylloc), $1, $3, yylloc); }
+|	sep exp sep exp sep { $$ = fn3loc(aloc("/\\",yylloc), $2, $4, yylloc); }
 |	block exp sep { $$ = appendloc($1, $2, yylloc); }
 |	block error sep { $$ = appendloc($1, aloc("fout", yylloc), yylloc); yyerrok; }
 ;
@@ -137,6 +141,8 @@ single:
 | single M4						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("4",yylloc), yylloc); }
 | single MN						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("n",yylloc), yylloc); }
 |	'(' exp ')'					{ $$ = metloc($2, yylloc); }
+| '(' exp ',' exp ')'	{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }
+| '(' exp ',' exp ',' exp ')'	{ $$ = fn4loc(aloc(",",yylloc), $2, $4, $6, yylloc); }
 | '[' list ']'				{ $$ = metloc($2, yylloc); }
 | '{' set '}'					{ $$ = metloc($2, yylloc); }
 
@@ -204,7 +210,8 @@ exp:
 | exp '+' exp       	{ $$ = fn3loc(aloc("+",yylloc), $1, $3, yylloc); }
 | exp '-' exp       	{ $$ = fn3loc(aloc("-",yylloc), $1, $3, yylloc); }
 
-| exp "->" exp			{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }
+| SOM exp			       	{ $$ = fn2loc(aloc("som",yylloc), $2, yylloc); }
+| exp "->" exp				{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }
 /*| params "->" exp			{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }*/
 | exp "||" exp				{ $$ = fn3loc(aloc("||",yylloc), $1, $3, yylloc); }
 | exp "::" exp				{ $$ = fn3loc(aloc("::",yylloc), $1, $3, yylloc); }
@@ -268,6 +275,13 @@ items:
 	exp									{ $$ = fn2loc(aloc("[]",yylloc), $1, yylloc); }
 | items ',' exp				{ $$ = appendloc($1, $3, yylloc); }
 ;
+
+tupel:
+	'(' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }
+	'(' exp ',' exp ',' exp ')'		{ $$ = fn4loc(aloc(",",yylloc), $2, $4, $6, yylloc); }
+	/*'(' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }
+	'(' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }
+	'(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }*/
 
 params:
 	'(' exp ',' exp  ')'				{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }

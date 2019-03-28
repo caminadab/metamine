@@ -32,6 +32,24 @@ bieb = {
 		return a
 	end;
 
+	-- linksassociatief
+	['xx'] = function(a,b)
+		--if type(a) == 'number' and type(b) == 'number' then
+			--return {
+			
+		if a.is.tupel and b.is.tupel then
+			for i=1,#b.val do
+				a.val[#a.val+1] = b.val[i]
+			end
+			return a
+		else
+			if a.is.tupel then
+				a.type.lang = a.type.lang + 1
+				a.val[#a.val+1] = b.val
+			end
+		end
+	end;
+			
 	['lua'] = function(func)
 		local code = naarlua(func)
 		local a = table.pack(string.byte(code, 1, #code))
@@ -64,9 +82,9 @@ bieb = {
 	['[]'] = function(...) return {fn='[]',...} end;
 	['{}'] = function(...)
 		local t = {...}
-		local s = {is_set=true}
+		local s = {is={set=true},set={}}
 		for _,v in pairs(t) do
-			s[v] = true
+			s.set[v] = true
 		end
 		return s
 	end,
