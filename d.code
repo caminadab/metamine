@@ -1,0 +1,11 @@
+uit = javascript(tekening)
+;tekening: vorm^int
+;pos = (x, y)
+;vierkant: (pos, straal)
+;veldgrootte = 900 × 500
+
+cirkel = x → x
+
+tekening = [bal]
+	bal = cirkel(pos, 5%)
+		pos = (10%, 20%)

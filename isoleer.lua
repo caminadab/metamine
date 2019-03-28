@@ -71,7 +71,7 @@ function isoleer(eq,name)
 				end
 			end
 		-- lijst
-		elseif isfn(l) and l.fn.v == '[]' then
+		elseif isfn(l) and (l.fn.v == '[]' or l.fn.v == ',') then
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
