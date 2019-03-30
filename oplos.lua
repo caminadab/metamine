@@ -134,7 +134,7 @@ function oplos(exp,voor)
 				if isexp(lam) and lam.fn.v == '->' then
 					local inn,uit = lam[1],lam[2]
 					local params
-					if isexp(inn) and inn.fn.v == ',' then
+					if isexp(inn) and inn.fn.v == ',' and false then
 						params = inn
 					else
 						params = {inn}
