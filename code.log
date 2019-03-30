@@ -3,6 +3,9 @@ local ja = true
 local nee = false
 local pack = pack or table.pack
 local unpack = unpack or table.unpack
+local max = math.max
+local min = math.min
+local abs = math.abs
 local sin = math.sin
 local cos = math.cos
 local tan = math.tan
@@ -134,10 +137,8 @@ local cat = function(a,b)
     return r
 end
 
-local function nu()
-    local socket = require 'socket'
-    return socket.gettime()
-end
+local socket = require 'socket'
+nu = socket.gettime()
 
 local vind = function(a,b)
     for i=1,#a-#b+1 do
@@ -248,19 +249,33 @@ local function _len(t)
         return #t
     end
 end
-local D = nu > 0
-local C = false
-if D then
-    local E = tabel{114,117,105,107}
-    C = E
+local B = tabel{}
+local C = _iinterval(0,40)
+local D = function (_A)
+    local J = nu * 40
+    local I = J % 40
+    local H = int(I)
+    local G = _A == H
+    local F = false
+    if G then
+        local K = tabel{79}
+        F = K
+    end
+    local P = nu * 40
+    local O = P % 40
+    local N = int(O)
+    local M = _A ~= N
+    local L = false
+    if M then
+        local Q = tabel{95}
+        L = Q
+    end
+    local E = _kies(F,L)
+    return E
 end
-local F = tabel{45}
-local B = cat{C, F}
-local H = nu > 1
-local G = false
-if H then
-    local I = tabel{107,108,97,97,114}
-    G = I
+for i=1,#C do
+    B[i] = D(C[i])
 end
-local A = cat{B, G}
+local R = tabel{32}
+local A = cat(B,R)
 return A

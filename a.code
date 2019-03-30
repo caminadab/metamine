@@ -1,13 +1,24 @@
 tekening = [ speler ]
-speler = ((x, y), r, blauw)
+	speler = (pos, straal, blauw)
+		pos = (x, y)
 
+startpos = (50%,50%)
+
+; speler
 blauw = (9%,8%,70%)
-r := 3%
-x := 50%
-y := 50%
+straal := 3%
+pos := startpos
 
-toets-links   ⇒  x = x' - 1 
-toets-rechts  ⇒  x = x' + 1
+; x = (x → x-1)^(toets-links)(50%)
+;a := 1
+;toets-links ⇒ a := 2
 
-toets-omhoog  ⇒  y = y' - 1
-toets-omlaag  ⇒  y = y' + 1
+a = (x → (b ⇒ 2))^b (1)
+
+toets-links   ⇒  x := x' - 1 
+toets-rechts  ⇒  x := x' + 1
+
+toets-omhoog  ⇒  y := y' - 1
+toets-omlaag  ⇒  y := y' + 1
+
+toets-spatie  ⇒  pos := startpos

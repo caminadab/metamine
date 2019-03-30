@@ -3,14 +3,20 @@ require 'util'
 require 'naarlua'
 require 'naarjavascript'
 
-local jslibtaal = table.pack(string.byte(jslib,1,#jslib))
+local jslibtaal = {string.byte(jslib,1,#jslib)}
 jslibtaal.fn = '[]'
 
 bieb = {
-	['nu'] = function()
+	-- wiskunde
+	max = math.max,
+	min = math.min,
+	int = math.floor,
+	abs = math.abs,
+	plafond = math.ceil,
+	['nu'] = (function()
 		local socket = require 'socket'
 		return socket.gettime()
-	end,
+	end) (10),
 	os.time(),
 	['inverteer'] = true; -- sure
 	['tau'] = 2 * math.pi;
@@ -274,6 +280,9 @@ bieb = {
 	end;
 
 	['int'] = function(a)
+		if tonumber(a) then
+			return math.floor(a)
+		end
 		local getal = tonumber(string.char(table.unpack(a)))
 		if not getal then return false end
 		return math.floor(getal)

@@ -97,7 +97,7 @@ local function naarluaR(exp,t,tabs,maakvar)
 		t[#t+1] = string.format('%slocal %s = %s(%s)\n', tabs, var, vars.fn, inhoud)
 
 	else
-		print('???', toexp(exp))
+		print('kan niet', toexp(exp))
 
 	end
 
@@ -110,6 +110,9 @@ local ja = true
 local nee = false
 local pack = pack or table.pack
 local unpack = unpack or table.unpack
+local max = math.max
+local min = math.min
+local abs = math.abs
 local sin = math.sin
 local cos = math.cos
 local tan = math.tan
@@ -241,10 +244,8 @@ local cat = function(a,b)
 	return r
 end
 
-local function nu()
-	local socket = require 'socket'
-	return socket.gettime()
-end
+local socket = require 'socket'
+nu = socket.gettime()
 
 local vind = function(a,b)
 	for i=1,#a-#b+1 do

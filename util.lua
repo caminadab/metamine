@@ -1,3 +1,7 @@
+require 'set'
+
+if not table.unpack then table.unpack = unpack end
+
 function log(...)
 	local t = {...}
 	local r = {}
@@ -169,30 +173,6 @@ function hton(num, len)
 		num = math.floor(num / 0x100)
 	end
 	return string.char(table.unpack(n))
-end
-
-function set(...)
-	local list = {...}
-	local s= {}
-	for i,v in ipairs(list) do
-		s[v] = true
-	end
-	setmetatable(s, {
-		__call = function(s,x) return s[x] end;
-		__tostring = function(s)
-			local t = { '{' }
-			for val in spairs(s) do
-				t[#t+1] = tostring(val)
-				t[#t+1] = ','
-			end
-			if t[#t] == ',' then
-				t[#t] = nil
-			end
-			t[#t+1] = '}'
-			return table.concat(t)
-		end;
-	})
-	return s
 end
 
 color = {

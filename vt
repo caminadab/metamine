@@ -11,7 +11,7 @@ require 'vertaal'
 require 'doe'
 require 'naarlua'
 require 'rapport'
-require 'typeer'
+require 'delta'
 
 local opt,bronnen = getopt({...}, "u")
 
@@ -108,9 +108,6 @@ if verboos then
 	print('syntaxrapport weggeschreven naar syntax.html')
 end
 
-typeer(uit)
-
-
 --- ACTIE GEDEELTE
 
 if opt.d or opt.doe then
@@ -123,19 +120,28 @@ if opt.d or opt.doe then
 		print('luacode weggeschreven naar code.log')
 		return
 	end
-	local ok,fout = xpcall(fn, debug.traceback)
-	if not ok then
-		print(fout)
-		file('code.log', luacode)
-		print('luacode weggeschreven naar code.log')
-		return
+
+	local socket = require 'socket'
+	while true do
+		socket.sleep(0.001)
+		local ok,fout = xpcall(fn, debug.traceback)
+		if not ok then
+			print(fout)
+			file('code.log', luacode)
+			print('luacode weggeschreven naar code.log')
+			return
+		end
+
+		v = fout -- niet
+		if type(v) ~= 'table' then
+			see(v)
+			uit = tostring(exp2string(v)) --'<ongeldig type>'
+		else
+			uit = string.char(table.unpack(v))
+		end
+		io.write('\x1B[F', '\x1B[G', uit, '\x1B[K', '\n')
 	end
-	v = fout -- niet
-	if type(v) ~= 'table' then
-		uit = tostring(toexp(v)) --'<ongeldig type>'
-	else
-		uit = string.char(table.unpack(v))
-	end
+
 else
 	--uit = bouw(plan)
 	if opt.l or opt.lua then

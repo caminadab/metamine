@@ -92,6 +92,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 
 [ ]					// negeer spaties
 [\t]				// negeer tabs voor nu
+":="					{ return ASS; }
 "="					{ return '='; }
 ">"					{ return '>'; }
 "<"					{ return '<'; }

@@ -1,18 +1,6 @@
 require 'exp'
 
-function isconstant(exp)
-	if exp.v == 'in'
-end
-	--if isatoom(exp) then
-	--	if tonumber(exp.v) == true
-
 --[[
-exp:
-	val = 3
-	is:
-		set
-
-
 teken^int ⊂ (int → teken)
 tekst = teken^int
 ]]
