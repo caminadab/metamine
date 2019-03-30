@@ -260,6 +260,7 @@ if test then
 	--   / b \
 	--  a     d
 	--   \ c / 
+	graaf:link(set(), 'a') -- a is een bron
 	graaf:link(set'a', 'b')
 	graaf:link(set'a', 'c')
 	graaf:link(set'b', 'd')
@@ -268,6 +269,7 @@ if test then
 	print(graaf:tekst())
 
 	local stroom,fout = graaf:sorteer('a', 'd')
+	assert(stroom, "oplosfout: "..tostring(fout))
 	-- a -> b moet erin zitten
 	assert(stroom:naar('b')() and stroom:naar('b')().van.a, stroom:tekst())
 	assert(stroom:naar('c')() and stroom:naar('c')().van.a, stroom:tekst())

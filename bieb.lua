@@ -7,6 +7,11 @@ local jslibtaal = table.pack(string.byte(jslib,1,#jslib))
 jslibtaal.fn = '[]'
 
 bieb = {
+	['nu'] = function()
+		local socket = require 'socket'
+		return socket.gettime()
+	end,
+	os.time(),
 	['inverteer'] = true; -- sure
 	['tau'] = 2 * math.pi;
 	['ja'] = true; 

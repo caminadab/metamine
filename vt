@@ -4,30 +4,6 @@ require 'exp'
 require 'rapporteer-syntax'
 require 'bieb'
 
-function boompairs(exp)
-	local t = {}
-	function r(exp)
-		if isatoom(exp) then
-			t[exp] = true
-		else
-			t[exp] = true
-			r(exp.fn)
-			for i,v in ipairs(exp) do
-				r(v)
-			end
-		end
-	end
-	r(exp)
-	
-	local k = nil
-	return function()
-		if next(t,k) then
-			k = next(t,k)
-			return k
-		end
-	end
-end
-
 require 'getopt'
 require 'lisp'
 
@@ -35,6 +11,7 @@ require 'vertaal'
 require 'doe'
 require 'naarlua'
 require 'rapport'
+require 'typeer'
 
 local opt,bronnen = getopt({...}, "u")
 
@@ -107,7 +84,7 @@ assert(asb, 'syntaxfout')
 --local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
 
 local uit,fout,bekend,exp2naam,halvestroom = oplos(asb, 'uit')
-if not uit then io.stderr:write('oplosfout: '..tostring(fout)) end
+if not uit then io.stderr:write('oplosfout: '..tostring(fout)) ; return end
 
 -- syntaxrapport
 if verboos then
@@ -130,6 +107,11 @@ if verboos then
 	file('syntax.html', html)
 	print('syntaxrapport weggeschreven naar syntax.html')
 end
+
+typeer(uit)
+
+
+--- ACTIE GEDEELTE
 
 if opt.d or opt.doe then
 	--local v = doe(uit)

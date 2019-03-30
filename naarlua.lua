@@ -1,31 +1,6 @@
 require 'util'
 require 'exp'
 
--- 1-gebaseerd
--- 1 t/m 26 zijn A t/m Z
--- daarna AA t/m ZZ
--- daarna AAA t/m ZZZ
-function varnaam(i)
-	local r = ''
-	i = i - 1
-	repeat
-		local c = i % 26
-		i = math.floor(i / 26)
-		local l = string.char(string.byte('A') + c)
-		r = r .. l
-	until i == 0
-	return r
-end
-
-function maakvars()
-	local i = 1
-	return function ()
-		local var = varnaam(i)
-		i = i + 1
-		return var
-	end
-end
-
 local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '<=', '>=', '/\\', '\\/', 'mod') 
 local tab = '    '
 local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', ['#'] = '_len'}
@@ -189,6 +164,9 @@ local som = function(t)
 	return som
 end;
 local _istype = function(a,b)
+	if type(b) == 'table' and b.is and b.is.set then
+		return b.set[a]
+	end
 	if b == getal then return type(a) == 'number' end
 	if b == int then return type(a) == 'number' and a%1 == 0 end
 	if b == lijst then return type(a) == 'table' end
@@ -261,6 +239,11 @@ local cat = function(a,b)
 		end
 	end
 	return r
+end
+
+local function nu()
+	local socket = require 'socket'
+	return socket.gettime()
 end
 
 local vind = function(a,b)

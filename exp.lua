@@ -1,6 +1,60 @@
+--[[
+exp = { fn, 1, 2 } | { v }
+exp |= { loc, val }
+]]
 require 'lisp'
 
 expmt = {}
+
+-- 1-gebaseerd
+-- 1 t/m 26 zijn A t/m Z
+-- daarna AA t/m ZZ
+-- daarna AAA t/m ZZZ
+function varnaam(i)
+	local r = ''
+	i = i - 1
+	repeat
+		local c = i % 26
+		i = math.floor(i / 26)
+		local l = string.char(string.byte('A') + c)
+		r = r .. l
+	until i == 0
+	return r
+end
+
+function maakvars()
+	local i = 1
+	return function ()
+		local var = varnaam(i)
+		i = i + 1
+		return var
+	end
+end
+
+function boompairs(exp)
+	local t = {}
+	function r(exp)
+		if isatoom(exp) then
+			t[exp] = true
+		else
+			t[exp] = true
+			r(exp.fn)
+			for i,v in ipairs(exp) do
+				r(v)
+			end
+		end
+	end
+	r(exp)
+	
+	local k = nil
+	return function()
+		if next(t,k) then
+			k = next(t,k)
+			return k
+		end
+	end
+end
+
 
 function exp2string(self,tabs)
 	if type(self) ~= 'table' then return '???' end --error('is geen expressie') end

@@ -158,8 +158,8 @@ end
 if test then
 	verboos = true
 	require 'ontleed'
-	assert(isoleer(ontleed('a = b'), 'b') == 'a')
-	assert(isoleer(ontleed('a = b'), 'a') == 'b')
+	assert(isoleer(ontleed('a = b'), X'b').v == 'a')
+	assert(isoleer(ontleed('a = b'), X'a').v == 'b')
 	verboos = false
 end
 

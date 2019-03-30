@@ -41,6 +41,6 @@ end
 
 if test then
 	require 'exp'
-	local w,t = plet{fn='*', {fn='+', '1', '2'}, '3'}
-	for i,w in ipairs(t) do print(toexp(w)) end
+	local w,t = plet{fn=X'*', {fn=X'+', X'1', X'2'}, X'3'}
+	for i,w in ipairs(t) do print(exp2string(w)) end
 end

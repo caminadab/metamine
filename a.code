@@ -1,5 +1,13 @@
-uit = t || tekst(a)
-a = sin 30 + d 
-c / 2 = 50
-t = "hoi" || [10]
-d · 2 = 8 - 7
+tekening = [ speler ]
+speler = ((x, y), r, blauw)
+
+blauw = (9%,8%,70%)
+r := 3%
+x := 50%
+y := 50%
+
+toets-links   ⇒  x = x' - 1 
+toets-rechts  ⇒  x = x' + 1
+
+toets-omhoog  ⇒  y = y' - 1
+toets-omlaag  ⇒  y = y' + 1

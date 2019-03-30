@@ -3,6 +3,9 @@ local ja = true
 local nee = false
 local pack = pack or table.pack
 local unpack = unpack or table.unpack
+local sin = math.sin
+local cos = math.cos
+local tan = math.tan
 local _pow = function(a,b)
     if type(a) == 'number' then
         return a ^ b
@@ -54,6 +57,9 @@ local som = function(t)
     return som
 end;
 local _istype = function(a,b)
+    if type(b) == 'table' and b.is and b.is.set then
+        return b.set[a]
+    end
     if b == getal then return type(a) == 'number' end
     if b == int then return type(a) == 'number' and a%1 == 0 end
     if b == lijst then return type(a) == 'table' end
@@ -126,6 +132,11 @@ local cat = function(a,b)
         end
     end
     return r
+end
+
+local function nu()
+    local socket = require 'socket'
+    return socket.gettime()
 end
 
 local vind = function(a,b)
@@ -237,10 +248,19 @@ local function _len(t)
         return #t
     end
 end
-local B = tabel{2,3}
-local C = function (_B)
-    local D = _A + _B
-    return D
+local D = nu > 0
+local C = false
+if D then
+    local E = tabel{114,117,105,107}
+    C = E
 end
-local A = C(B)
+local F = tabel{45}
+local B = cat{C, F}
+local H = nu > 1
+local G = false
+if H then
+    local I = tabel{107,108,97,97,114}
+    G = I
+end
+local A = cat{B, G}
 return A
