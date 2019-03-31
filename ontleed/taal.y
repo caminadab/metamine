@@ -155,7 +155,7 @@ single:
 | '(' '+' ')'       	{ $$ = aloc("+",yylloc); }
 | '(' '-' ')'       	{ $$ = aloc("-",yylloc); }
 
-| '(' '[' ']' ')'     { $$ = aloc("[]",yylloc); }
+| '(' '[' ')'     { $$ = aloc("[]",yylloc); }
 | '(' '{' '}' ')'     { $$ = aloc("{}",yylloc); }
 
 | '(' "->" ')'				{ $$ = aloc("->",yylloc); }
@@ -183,6 +183,8 @@ single:
 | '(' "|=" ')'				{ $$ = aloc("|=",yylloc); }
 | '(' "&=" ')'				{ $$ = aloc("&=",yylloc); }
 
+| '(' "/\\" ')'				{ $$ = aloc("/\\",yylloc); }
+
 | '(' "en" ')'				{ $$ = aloc("en",yylloc); }
 | '(' "of" ')'				{ $$ = aloc("of",yylloc); }
 | '(' "exof" ')'			{ $$ = aloc("exof",yylloc); }
@@ -202,7 +204,7 @@ single:
 ;
 
 exp:
-	single
+	single							{ $$ = metloc($1, yylloc); }
 | exp '^' exp       	{ $$ = fn3loc(aloc("^",yylloc), $1, $3, yylloc); }
 | exp '_' exp       	{ $$ = fn3loc(aloc("_",yylloc), $1, $3, yylloc); }
 | exp '*' exp       	{ $$ = fn3loc(aloc("*",yylloc), $1, $3, yylloc); }

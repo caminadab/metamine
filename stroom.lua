@@ -256,7 +256,22 @@ function maglink(vahgraaf, pijl_of_van, naar)
 		end
 	end
 
+	-- zit hij er al in?
+	for alpijl in pairs(vahgraaf.pijlen) do
+		-- TODO kijk ook naar andere bronnen
+		if next(alpijl.van) == next(pijl.van) and pijl.naar == alpijl.naar then
+			return false
+		end
+	end
+
+	-- ff zorgen dat de punten er zijn
+	vahgraaf.punten[van] = true
+	vahgraaf.punten[naar] = true
+
 	return true
+end
+
+function isstroomafwaarts(stroom, a, b)
 end
 
 function link(vahgraaf, pijl_of_van, naar)

@@ -78,6 +78,8 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "∩"					{ *yylval = a("intersectie"); return NAAM; }
 "∅"					{ *yylval = a("niets"); return NAAM; }
 "∧"					{ *yylval = a("/\\"); return EN; }
+"/\\"					{ *yylval = a("/\\"); return EN; }
+"\//"					{ *yylval = a("\\/"); return OF; }
 "∨"					{ *yylval = a("\\/"); return OF; }
 "√"					{ *yylval = a("wortel"); return NAAM; }
 "∐"					{ *yylval = a("co"); return NAAM; }

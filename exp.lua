@@ -6,6 +6,37 @@ require 'lisp'
 
 expmt = {}
 
+function loctekst(loc)
+	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
+		return string.format("%d:%d", loc.y1, loc.x1)
+	elseif loc.y1 == loc.y2 then
+		return string.format("%d:%d-%d", loc.y1, loc.x1, loc.x2)
+	else
+		return string.format("%d:%d-%d:%d", loc.y1, loc.x1, loc.y2, loc.x2)
+	end
+end
+
+function exphashR(exp, t)
+	if isatoom(exp) then t[#t+1] = exp.v
+	else
+		if not isatoom(exp.fn) then t[#t+1] = '(' end
+		exphashR(exp.fn, t)
+		if not isatoom(exp.fn) then t[#t+1] = ')' end
+		t[#t+1] = '('
+		for i, v in ipairs(exp) do
+			exphashR(v, t)
+			if i ~= #exp then t[#t+1] = ' ' end
+		end
+		t[#t+1] = ')'
+	end
+end
+
+function exphash(exp)
+	local t = {}
+	exphashR(exp, t)
+	return table.concat(t)
+end
+
 -- 1-gebaseerd
 -- 1 t/m 26 zijn A t/m Z
 -- daarna AA t/m ZZ
@@ -61,11 +92,11 @@ function boompairsdfs(exp)
 		if isatoom(exp) then
 			t[#t+1] = exp
 		else
-			t[#t+1] = exp
 			r(exp.fn)
 			for i,v in ipairs(exp) do
 				r(v)
 			end
+			t[#t+1] = exp
 		end
 	end
 	r(exp)

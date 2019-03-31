@@ -1,1 +1,6 @@
-uit = (100,100,100)
+b = (herhaal verbeter) 3
+uit = tekst b
+
+verbeter = n → m
+n < 10  ⇒  m = n + 1
+n ≥ 10  ⇒  m = nee

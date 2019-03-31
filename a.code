@@ -13,8 +13,6 @@ pos := startpos
 ;a := 1
 ;toets-links ⇒ a := 2
 
-a = (x → (b ⇒ 2))^b (1)
-
 toets-links   ⇒  x := x' - 1 
 toets-rechts  ⇒  x := x' + 1
 

@@ -276,101 +276,103 @@ local D = tabel{E,F}
 local H = function (_A)
     local N = _A(0)
     local M = N(0)
-    local L = M == 100
+    local L = cijfer(M)
     local K = false
     if L then
         local P = _A(0)
-        local O = vanaf(P,1)
+        local S = _A(0)
+        local T = tabel{58}
+        local R = vind(S,T)
+        local Q = R + 1
+        local O = vanaf(P,Q)
         K = O
     end
-    local T = _A(0)
-    local S = T(0)
-    local R = S == 108
-    local Q = false
-    if R then
-        local V = _A(0)
-        local U = vanaf(V,1)
-        Q = U
+    local X = _A(0)
+    local W = X(0)
+    local V = W == 100
+    local U = false
+    if V then
+        local Z = _A(0)
+        local Y = vanaf(Z,1)
+        U = Y
     end
-    local Z = _A(0)
-    local Y = Z(0)
-    local X = Y == 105
-    local W = false
-    if X then
-        local AB = _A(0)
-        local AE = _A(0)
-        local AD = vind(AE,101)
-        local AC = AD + 1
-        local AA = vanaf(AB,AC)
-        W = AA
+    local AD = _A(0)
+    local AC = AD(0)
+    local AB = AC == 108
+    local AA = false
+    if AB then
+        local AF = _A(0)
+        local AE = vanaf(AF,1)
+        AA = AE
     end
-    local AI = _A(0)
-    local AH = AI(0)
-    local AG = cijfer(AH)
-    local AF = false
-    if AG then
-        local AK = _A(0)
-        local AN = _A(0)
-        local AM = vind(AN,58)
-        local AL = AM + 1
-        local AJ = vanaf(AK,AL)
-        AF = AJ
+    local AJ = _A(0)
+    local AI = AJ(0)
+    local AH = AI == 105
+    local AG = false
+    if AH then
+        local AL = _A(0)
+        local AO = _A(0)
+        local AP = tabel{101}
+        local AN = vind(AO,AP)
+        local AM = AN + 1
+        local AK = vanaf(AL,AM)
+        AG = AK
     end
-    local J = _kies(K,Q,W,AF)
-    local AS = _A(0)
-    local AR = AS(0)
-    local AQ = AR == 100
-    local AP = false
-    if AQ then
-        local AU = _A(1)
-        local AV = tabel{4}
-        local AT = cat{AU, AV}
-        AP = AT
+    local J = _kies(K,U,AA,AG)
+    local AU = _A(0)
+    local AT = AU(0)
+    local AS = AT == 101
+    local AR = false
+    if AS then
+        local AW = _A(1)
+        local AZ = _A(1)
+        local AY = _len(AZ)
+        local AX = AY - 1
+        local AV = tot(AW,AX)
+        AR = AV
     end
-    local AZ = _A(0)
-    local AY = AZ(0)
-    local AX = AY == 101
-    local AW = false
-    if AX then
-        local BB = _A(1)
-        local BE = _A(1)
-        local BD = _len(BE)
-        local BC = BD - 1
-        local BA = tot(BB,BC)
-        AW = BA
+    local BD = _A(0)
+    local BC = BD(0)
+    local BB = BC == 108
+    local BA = false
+    if BB then
+        local BF = _A(1)
+        local BG = tabel{3}
+        local BE = cat{BF, BG}
+        BA = BE
     end
-    local BI = _A(0)
-    local BH = BI(0)
-    local BG = BH == 108
-    local BF = false
-    if BG then
-        local BK = _A(1)
-        local BL = tabel{3}
-        local BJ = cat{BK, BL}
-        BF = BJ
+    local BK = _A(0)
+    local BJ = BK(0)
+    local BI = BJ == 105
+    local BH = false
+    if BI then
+        local BM = _A(1)
+        local BN = tabel{2}
+        local BL = cat{BM, BN}
+        BH = BL
     end
-    local BP = _A(0)
-    local BO = BP(0)
-    local BN = cijfer(BO)
-    local BM = false
-    if BN then
-        local BR = _A(1)
-        local BS = tabel{1}
-        local BQ = cat{BR, BS}
-        BM = BQ
+    local BR = _A(0)
+    local BQ = BR(0)
+    local BP = BQ == 100
+    local BO = false
+    if BP then
+        local BT = _A(1)
+        local BU = tabel{4}
+        local BS = cat{BT, BU}
+        BO = BS
     end
-    local BW = _A(0)
-    local BV = BW(0)
-    local BU = BV == 105
-    local BT = false
-    if BU then
-        local BY = _A(1)
-        local BZ = tabel{2}
-        local BX = cat{BY, BZ}
-        BT = BX
+    local BY = _A(0)
+    local BX = BY(0)
+    local BW = cijfer(BX)
+    local BV = false
+    if BW then
+        local CA = _A(1)
+        local CB = tabel{1}
+        local BZ = cat{CA, CB}
+        BV = BZ
     end
-    local AO = _kies(AP,AW,BF,BM,BT)
-    local I = tabel{J,AO}
+    local AQ = _kies(AR,BA,BH,BO,BV)
+    local I = tabel{J,AQ}
     return I
 end
 local G = _pow(H,1)

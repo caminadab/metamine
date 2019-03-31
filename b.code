@@ -1,8 +1,9 @@
 ;tor = bestand "spiderman.torrent"
 uit = tekst(w)
 
-tor = "i1234e"
-w = ((bdec^1)(tor, []))₁
+w = bdec tor
+tor = "li3ee"
+bdec = d → ((herhaal bdecz)(d, []))₁
 
 ttekst = 1
 tint = 2
@@ -10,16 +11,16 @@ tlijst = 3
 tmap = 4
 tmapW = 4
 
-vlees = data deel [1, (data vind 'e') ]
+vlees = data deel [1, (data vind "e") ]
 
-bdec = (data, stapel) → (rest, stapelB)
+bdecz = (data, stapel) → (rest, stapelB)
 	cijfer data₀ ⇒  stapelB = stapel || [ ttekst ]
 	data₀ = 'i'  ⇒  stapelB = stapel || [ tint ]
 	data₀ = 'l'  ⇒	stapelB = stapel || [ tlijst ]
 	data₀ = 'd'  ⇒  stapelB = stapel || [ tmap ]
 	data₀ = 'e'  ⇒  stapelB = stapel tot (#stapel - 1)
 
-	cijfer data₀ ⇒  rest = data vanaf (data vind ':' + 1)
-	data₀ = 'i'  ⇒  rest = data vanaf (data vind 'e' + 1)
+	cijfer data₀ ⇒  rest = data vanaf (data vind ":" + 1)
+	data₀ = 'i'  ⇒  rest = data vanaf (data vind "e" + 1)
 	data₀ = 'l'  ⇒  rest = data vanaf 1
 	data₀ = 'd'  ⇒  rest = data vanaf 1

@@ -1,1 +1,3 @@
-uit = tekst(3 (+) nu)
+f = x → x + 1
+x : int
+uit = tekst(f 2.4)

@@ -61,6 +61,7 @@ if opt.r or opt.rapport then
 end
 
 local asb = ontleed(code)
+asb.bron = bronnen[1]
 
 -- annoteer ^_^
 local i = 1
@@ -85,7 +86,7 @@ assert(asb, 'syntaxfout')
 --local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
 
 -- typeer!
-local types = typeer(asb)
+local types,ok,msg = typeer(asb)
 
 local uit,fout,bekend,exp2naam,halvestroom = oplos(asb, 'uit')
 if not uit then io.stderr:write('oplosfout: '..tostring(fout)) ; return end
@@ -99,8 +100,14 @@ if verboos then
 	local klasse = {}
 	for t in boompairs(asb) do
 
-		if isatoom(t) and exp2naam and exp2naam[t.v] then
+		-- opgelost
+		if false and isatoom(t) and exp2naam and exp2naam[t.v] then
 			label[t] = combineer(exp2naam[t.v])
+		end
+		
+		-- type
+		if types[t] then
+			label[t] = combineer(types[t])
 		end
 		
 		klasse[t] = 'fout'

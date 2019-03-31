@@ -71,6 +71,7 @@ local binopNames = {
 	['<=>'] = 'deduce',
 	['=>' ] = 'deduce-to',
 	['<=' ] = 'deduce-from',
+	['->' ] = 'map',
 	['\n' ] = 'newline',
 }
 

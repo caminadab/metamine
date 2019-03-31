@@ -1,4 +1,5 @@
 local rapport = [[
+	<meta charset="utf-8" >
 	<style>
 		pre { background: black; color: white; }
 		pre {}
@@ -98,17 +99,6 @@ assert(locsub("a = 3\nb = 1 + 2\n", {x1=1,y1=2,x2=6,y2=2}) == "b = 1")
 assert(locsub("a\nb", {x1=1,y1=2,x2=2,y2=2}) == "b")
 assert(locsub("a\nb\n", {x1=1,y1=2,x2=3,y2=2}) == "b\n")
 
-function printloc(loc)
-	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
-		io.write(string.format("%d:%d", loc.y1, loc.x1))
-	elseif loc.y1 == loc.y2 then
-		io.write(string.format("%d:%d-%d", loc.y1, loc.x1, loc.x2))
-	else
-		io.write(string.format("%d:%d-%d:%d", loc.y1, loc.x1, loc.y2, loc.x2))
-	end
-	print()
-end
-
 function rapporteer_syntax(code,labels,stijl)
 	local gesorteerd = {}
 	for exp,label in pairs(labels) do
@@ -122,7 +112,7 @@ function rapporteer_syntax(code,labels,stijl)
 	table.sort(gesorteerd, function(a,b) return loclt(a.loc, b.loc) end)
 
 	local tooltips = {}
-	local vorige = gesorteerd[1].loc
+	local vorige = {x1=1,y1=1,x2=1,y2=1}
 	for i,token in ipairs(gesorteerd) do
 		local loc = token.loc
 
@@ -140,7 +130,7 @@ function rapporteer_syntax(code,labels,stijl)
 	end
 
 	-- laatste vuller
-	local vuller = code:sub(locvind(code, vorige.x2, vorige.y2))
+	local vuller = code:sub(locvind(code, vorige.x2, vorige.y2) or 1)
 	local tooltip = string.format(htmltoken, "vuller",  vuller, "")
 	tooltips[#tooltips+1] = tooltip
 
