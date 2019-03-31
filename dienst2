@@ -67,8 +67,10 @@ function serveer(sock)
 	end
 
 	function oplosPlus(code,asb)
-		local uit,fout,bekend,exp2naam = oplos(asb, 'uit')
+		local uit,fout,bekend,exp2naam = oplos(asb, 'tekening')
 		if not uit then io.stderr:write('oplosfout: '..tostring(fout)) end
+		require 'naarweb'
+		uit = naarweb(uit)
 
 		-- syntaxrapport
 		for k,v in pairs(bekend) do if isatoom(k) and k.v then print('BEKEND IS', k.v); bekend[k.v] = true end end

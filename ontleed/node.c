@@ -197,6 +197,19 @@ node* exp4(node* a, node* b, node* c, node* d) {
 	return n;
 }
 
+node* exp5(node* a, node* b, node* c, node* d, node* e) {
+	node* n = node_new();
+	n->exp = true;
+	n->first = a;
+	n->last = e;
+	a->next = b; b->prev = a;
+	b->next = c; c->prev = b;
+	c->next = d; d->prev = c;
+	d->next = e; e->prev = d;
+	a->root = b->root = c->root = d->root = e->root = n;
+	return n;
+}
+
 //YYLTYPE lmin(YYLTYPE a, YYLTYPE b) {
 YYLTYPE mix(YYLTYPE a, YYLTYPE b) {
 	YYLTYPE c;
@@ -230,6 +243,9 @@ YYLTYPE mix3(YYLTYPE a, YYLTYPE b, YYLTYPE c) {
 YYLTYPE mix4(YYLTYPE a, YYLTYPE b, YYLTYPE c, YYLTYPE d) {
 	return mix(mix(mix(a,b),c),d);
 }
+YYLTYPE mix5(YYLTYPE a, YYLTYPE b, YYLTYPE c, YYLTYPE d, YYLTYPE e) {
+	return mix(mix(mix(mix(a,b),c),d),e);
+}
 
 node* appendloc(node* exp, node* atom, YYLTYPE yylloc) {
 	node* n = append(exp,atom);
@@ -262,6 +278,11 @@ node* fn3loc(node* a, node* b, node* c, YYLTYPE yylloc) {
 node* fn4loc(node* a, node* b, node* c, node* d, YYLTYPE yylloc) {
 	node* n = exp4(a,b,c,d);
 	n->loc = mix4(a->loc, b->loc, c->loc, d->loc);
+	return n;
+}
+node* fn5loc(node* a, node* b, node* c, node* d, node* e, YYLTYPE yylloc) {
+	node* n = exp5(a,b,c,d,e);
+	n->loc = mix5(a->loc, b->loc, c->loc, d->loc, e->loc);
 	return n;
 }
 node* metloc(node* n, YYLTYPE yylloc) {

@@ -1,16 +1,26 @@
-tekening = [ speler, bal ]
-speler = (cirkel, pos, straal)
+tekening = [ bal, achtergrond, speler, bal ]
+
+speler = cirkel(pos, straal, geel)
 pos = (0.5 + 0.5 * sin(looptijd), 0.5 + 0.5 * cos(looptijd))
 straal = 0.2 ;sin(looptijd)
 
+;spelerkleur = interpoleer(geel, rood, (sin(tijd)+1)/2)
 
-bal = (cirkel, (sin(looptijd·10), 0.5), 0.2)
+achtergrond = rechthoek((0,0), (16/9,1), (0,0,sin looptijd))
+
+
+interpoleer = (a, b, n) → (a₀·n+b₀·(1- n), a₁·n+b₁·(1- n), a₂·n+b₂·(1- n))
+
+bal = cirkel((sin(looptijd·2), 0.5), 0.2, zwart)
 
 
 ; lib
-cirkel = 0
+cirkel = c → (0, c₀, c₁, c₂)
+rechthoek = v → (1, v₀, v₁, v₂)
 zwart = (0,0,0)
-groen = (0,4/5,0)
+groen = (0,1,0)
+geel = (1,1,0)
+rood = (1,0,0)
 
 ;cirkel = (pos, straal) → (0, pos, straal)
 ;vierkant = (posA, posB) → (1, posA, posB)

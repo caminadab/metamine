@@ -146,31 +146,100 @@ function stap() {
 	var tekening = (function() {
     nu = new Date().getTime() / 1000;
 looptijd = nu - start;
-    var F = _I(sin, looptijd);
-    var E = 0.5 * F;
-    var D = 0.5 + E;
-    var I = _I(cos, looptijd);
-    var H = 0.5 * I;
-    var G = 0.5 + H;
-    var C = [D,G];
-    var B = [0,C,0.2];
-    var M = looptijd * 10;
-    var L = _I(sin, M);
-    var K = [L,0.5];
-    var J = [0,K,0.2];
-    var A = [B,J];
+    var F = looptijd * 2;
+    var E = _I(sin, F);
+    var D = [E,0.5];
+    var G = [0,0,0];
+    var C = [D,0.2,G];
+    var H = function (_A) {
+        var J = _I(_A, 0);
+        var K = _I(_A, 1);
+        var L = _I(_A, 2);
+        var I = [0,J,K,L];
+        return I;
+    }
+    var B = _I(H, C);
+    var O = [0,0];
+    var Q = 16 / 9;
+    var P = [Q,1];
+    var S = _I(sin, looptijd);
+    var R = [0,0,S];
+    var N = [O,P,R];
+    var T = function (_C) {
+        var V = _I(_C, 0);
+        var W = _I(_C, 1);
+        var X = _I(_C, 2);
+        var U = [1,V,W,X];
+        return U;
+    }
+    var M = _I(T, N);
+    var AD = _I(sin, looptijd);
+    var AC = 0.5 * AD;
+    var AB = 0.5 + AC;
+    var AG = _I(cos, looptijd);
+    var AF = 0.5 * AG;
+    var AE = 0.5 + AF;
+    var AA = [AB,AE];
+    var AH = [1,1,0];
+    var Z = [AA,0.2,AH];
+    var AI = function (_A) {
+        var AK = _I(_A, 0);
+        var AL = _I(_A, 1);
+        var AM = _I(_A, 2);
+        var AJ = [0,AK,AL,AM];
+        return AJ;
+    }
+    var Y = _I(AI, Z);
+    var AR = looptijd * 2;
+    var AQ = _I(sin, AR);
+    var AP = [AQ,0.5];
+    var AS = [0,0,0];
+    var AO = [AP,0.2,AS];
+    var AT = function (_A) {
+        var AV = _I(_A, 0);
+        var AW = _I(_A, 1);
+        var AX = _I(_A, 2);
+        var AU = [0,AV,AW,AX];
+        return AU;
+    }
+    var AN = _I(AT, AO);
+    var A = [B,M,Y,AN];
 
     return A;
 })()
 ; //doe();
 	for (var i = 0; i < tekening.length; i++) {
 		var figuur = tekening[i];
-		if (figuur[0] == 0) { // cirkel
+
+		 // cirkel
+		if (figuur[0] == 0) {
 			var x = figuur[1][0] * 500;
 			var y = figuur[1][1] * 500;
 			var r = figuur[2] * 500;
+			if (figuur[3]) {
+				var R = figuur[3][0];
+				var G = figuur[3][1];
+				var B = figuur[3][2];
+				ctx.fillStyle = 'rgb('+R*255+','+G*255+','+B*255+')'
+			}
 			ctx.beginPath();
 			ctx.arc(x, y, r, 0, 2 * Math.PI);
+			ctx.fill(); 
+		}
+
+		// vierkant
+		if (figuur[0] == 1) {
+			var x1 = figuur[1][0] * 500;
+			var y1 = figuur[1][1] * 500;
+			var x2 = figuur[2][0] * 500;
+			var y2 = figuur[2][1] * 500;
+			if (figuur[3]) {
+				var R = figuur[3][0];
+				var G = figuur[3][1];
+				var B = figuur[3][2];
+				ctx.fillStyle = 'rgb('+R*255+','+G*255+','+B*255+')'
+			}
+			ctx.rect(x1, y1, x2, y2);
 			ctx.fill(); 
 		}
 	}

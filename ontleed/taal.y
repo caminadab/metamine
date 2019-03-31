@@ -143,6 +143,7 @@ single:
 |	'(' exp ')'					{ $$ = metloc($2, yylloc); }
 | '(' exp ',' exp ')'	{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }
 | '(' exp ',' exp ',' exp ')'	{ $$ = fn4loc(aloc(",",yylloc), $2, $4, $6, yylloc); }
+| '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(aloc(",",yylloc), $2, $4, $6, $8, yylloc); }
 | '[' list ']'				{ $$ = metloc($2, yylloc); }
 | '{' set '}'					{ $$ = metloc($2, yylloc); }
 
@@ -281,7 +282,7 @@ items:
 tupel:
 	'(' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }
 	'(' exp ',' exp ',' exp ')'		{ $$ = fn4loc(aloc(",",yylloc), $2, $4, $6, yylloc); }
-	/*'(' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }
+	/*'(' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn5loc(aloc(",",yylloc), $2, $4, $6, $8, yylloc); }
 	'(' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }
 	'(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }*/
 

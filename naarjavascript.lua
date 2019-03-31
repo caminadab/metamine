@@ -29,9 +29,11 @@ local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod')
 local tab = '    '
 local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent'};
 local function naarjavascriptR(exp,t,tabs,maakvar)
+	if tonumber(exp) then return tostring(exp) end
 	if isatoom(exp) then
 		return exp.v,t
 	end
+	if not exp.fn then return '0' end
 
 	local fn,a,b = exp.fn.v, exp[1], exp[2]
 	local var = maakvar()
