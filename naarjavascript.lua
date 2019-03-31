@@ -25,7 +25,7 @@ function maakvars()
 	end
 end
 
-local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/') 
+local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod')
 local tab = '    '
 local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent'};
 local function naarjavascriptR(exp,t,tabs,maakvar)
@@ -41,6 +41,7 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 		if fn == '!=' then fn = '!==' end
 		if fn == '/\\' then fn = '&&' end
 		if fn == '\\/' then fn = '||' end
+		if fn == 'mod' then fn = '%' end
 		local A = naarjavascriptR(a,t,tabs,maakvar)
 		local B = naarjavascriptR(b,t,tabs,maakvar)
 		t[#t+1] = string.format('%svar %s = %s %s %s;\n', tabs, var, A, fn, B)
@@ -109,7 +110,9 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 end
 
 javascriptbieb = [[
-var tau = Math.PI * 2;
+tau = Math.PI * 2;
+start = new Date().getTime() / 1000;
+
 /*
 local ja = true
 local nee = false
@@ -143,14 +146,15 @@ var _comp = function(a,b) {
 	};
 };
 
-function _I(a,i) {
+function _I(a,i,...args) {
 	if (Array.isArray(a))
 		return a[i];
 	else {
-		var args = [];
-		for (var i = 1; i < arguments.length; i++)
-			args.push( arguments[i] );
-		a.apply(args);
+		//var args = [];
+		//for (var i = 1; i < arguments.length; i++)
+			//args.push( arguments[i] );
+		//return a.apply(a, args);
+		return a(i,...args);
 	}
 }
 
@@ -233,13 +237,19 @@ end
 
 var _procent = function(a) { return a / 100; }
 
+var sin = Math.sin;
+var cos = Math.cos;
+var tan = Math.tan;
+var int = Math.floor;
+var abs = Math.abs;
+
 ]]
 javascriptbieb = javascriptbieb:gsub('\t', tab)
 
 -- biebbron zit in de weg, "javascript X" functie zit in de weg (global scope in expressie?)
 function naarjavascript(exp)
 	local t = {}
-	t[#t+1] = "(function() {\n"
+	t[#t+1] = "(function() {\n"..tab.."nu = new Date().getTime() / 1000;\nlooptijd = nu - start;\n"
 	local var,t = naarjavascriptR(exp,t,tab,maakvars())
 	t[#t+1] = "\n"
 	t[#t+1] = tab.."return " .. var .. ";\n"

@@ -2,7 +2,9 @@
 </canvas>
 <script>
 // jslib
-var tau = Math.PI * 2;
+tau = Math.PI * 2;
+start = new Date().getTime() / 1000;
+
 /*
 local ja = true
 local nee = false
@@ -36,14 +38,15 @@ var _comp = function(a,b) {
     };
 };
 
-function _I(a,i) {
+function _I(a,i,...args) {
     if (Array.isArray(a))
         return a[i];
     else {
-        var args = [];
-        for (var i = 1; i < arguments.length; i++)
-            args.push( arguments[i] );
-        a.apply(args);
+        //var args = [];
+        //for (var i = 1; i < arguments.length; i++)
+            //args.push( arguments[i] );
+        //return a.apply(a, args);
+        return a(i,...args);
     }
 }
 
@@ -126,50 +129,46 @@ end
 
 var _procent = function(a) { return a / 100; }
 
+var sin = Math.sin;
+var cos = Math.cos;
+var tan = Math.tan;
+var int = Math.floor;
+var abs = Math.abs;
+
 
 
 // waarde
-var doe = 0; //s;
-
 var canvas = document.getElementById('teke-ning');
 var ctx = canvas.getContext('2d');
 
 function stap() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	var tekening = (function() {
-    var E = [0.5,0.5];
-    var D = [E,0.2];
-    var F = function (_A) {
-        var G = [0,_A];
-        return G;
-    }
-    var C = _I(F, D);
-    var I = 4 / 5;
-    var H = [0,I,0];
-    var B = [C,H];
-    var M = [0,0];
-    var N = [1,1];
-    var L = [M,N];
-    var O = function (_B) {
-        var P = [1,_B];
-        return P;
-    }
-    var K = _I(O, L);
-    var Q = [0,0,0];
-    var J = [K,Q];
+    nu = new Date().getTime() / 1000;
+looptijd = nu - start;
+    var F = _I(sin, looptijd);
+    var E = 0.5 * F;
+    var D = 0.5 + E;
+    var I = _I(cos, looptijd);
+    var H = 0.5 * I;
+    var G = 0.5 + H;
+    var C = [D,G];
+    var B = [0,C,0.2];
+    var M = looptijd * 10;
+    var L = _I(sin, M);
+    var K = [L,0.5];
+    var J = [0,K,0.2];
     var A = [B,J];
 
     return A;
 })()
 ; //doe();
-	alert(JSON.stringify(tekening));
 	for (var i = 0; i < tekening.length; i++) {
 		var figuur = tekening[i];
-		var vorm = figuur[0];
-		var kleur = figuur[1];
-		if (vorm[0] == 0) { // cirkel
-			var x = vorm[1][0][0] * 500;
-			var y = vorm[1][0][1] * 500;
-			var r = vorm[1][1] * 500;
+		if (figuur[0] == 0) { // cirkel
+			var x = figuur[1][0] * 500;
+			var y = figuur[1][1] * 500;
+			var r = figuur[2] * 500;
 			ctx.beginPath();
 			ctx.arc(x, y, r, 0, 2 * Math.PI);
 			ctx.fill(); 

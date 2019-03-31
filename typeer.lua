@@ -87,10 +87,6 @@ som : (int → getal) → getal
 waarvoor : ((int → iets), (iets → bit)) → (int → iets)
 mod : (getal, getal) → getal
 
-tekening : (pos, vorm, kleur)
-straal : getal
-cirkel : vorm
-cirkel : straal
 genormaliseerd : getal ;tussen 0 en 1
 kleur : genormaliseerd³
 rood : kleur

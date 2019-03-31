@@ -1,20 +1,16 @@
-tekening = [ speler, achtergrond ]
-; vorm =
-; speler = (a, 10) → 
-; cirkel : vorm
-; cirkel = (pos, radius)
-; 
-achtergrond = (vierkant((0,0),(1,1)), zwart)
-speler = (cirkel(pos,straal), groen)
-;speler = ((0,((0.5,0.5),0.5)),groen)
-;speler = (a,groen)
-pos = (0.5, 0.5)
-straal = 0.2
+tekening = [ speler, bal ]
+speler = (cirkel, pos, straal)
+pos = (0.5 + 0.5 * sin(looptijd), 0.5 + 0.5 * cos(looptijd))
+straal = 0.2 ;sin(looptijd)
+
+
+bal = (cirkel, (sin(looptijd·10), 0.5), 0.2)
 
 
 ; lib
+cirkel = 0
 zwart = (0,0,0)
 groen = (0,4/5,0)
 
-cirkel = x → [0, x]
-vierkant = y → [1, y]
+;cirkel = (pos, straal) → (0, pos, straal)
+;vierkant = (posA, posB) → (1, posA, posB)

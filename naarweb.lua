@@ -8,22 +8,18 @@ local html = [[
 %s
 
 // waarde
-var doe = 0; //s;
-
 var canvas = document.getElementById('teke-ning');
 var ctx = canvas.getContext('2d');
 
 function stap() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	var tekening = %s; //doe();
-	alert(JSON.stringify(tekening));
 	for (var i = 0; i < tekening.length; i++) {
 		var figuur = tekening[i];
-		var vorm = figuur[0];
-		var kleur = figuur[1];
-		if (vorm[0] == 0) { // cirkel
-			var x = vorm[1][0][0] * 500;
-			var y = vorm[1][0][1] * 500;
-			var r = vorm[1][1] * 500;
+		if (figuur[0] == 0) { // cirkel
+			var x = figuur[1][0] * 500;
+			var y = figuur[1][1] * 500;
+			var r = figuur[2] * 500;
 			ctx.beginPath();
 			ctx.arc(x, y, r, 0, 2 * Math.PI);
 			ctx.fill(); 
