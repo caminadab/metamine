@@ -10,6 +10,7 @@ require 'lisp'
 require 'vertaal'
 require 'doe'
 require 'naarlua'
+require 'naarweb'
 require 'rapport'
 require 'delta'
 require 'typeer'
@@ -34,7 +35,9 @@ Opties:
     -h, --help        print deze hulp
     -d, --doe         voer meteen uit
     -s, --syntax 	  	print syntax
-    -L, --lua         genereer lua
+    -l, --lua         genereer lua
+		-w, --web					genereer webcomponent
+    -t, --tekening		uitvoer is tekening
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
     -v, --verboos     spraakzaam zijn
@@ -45,6 +48,10 @@ end
 
 if opt.v or opt.verboos then
 	verboos = true
+end
+
+if opt.t or opt.tekening then
+	tekening = true
 end
 
 if opt.s or opt.syntaxis then
@@ -88,7 +95,10 @@ assert(asb, 'syntaxfout')
 -- typeer!
 local types,ok,msg = typeer(asb)
 
-local uit,fout,bekend,exp2naam,halvestroom = oplos(asb, 'uit')
+local doel = "uit"
+if tekening then doel = "tekening" end
+
+local uit,fout,bekend,exp2naam,halvestroom = oplos(asb, doel)
 if not uit then io.stderr:write('oplosfout: '..tostring(fout)) ; return end
 
 -- syntaxrapport
@@ -120,6 +130,22 @@ if verboos then
 end
 
 --- ACTIE GEDEELTE
+
+if opt.w or opt.web then
+	print('Web')
+	uit = naarweb(uit)
+
+	if opt.d or opt.doe then
+		local html = opt.u or opt.uit or 'a.html'
+		file(html, uit)
+		os.execute("firefox "..html)
+	else
+		print(uit)
+	end
+		
+
+	return
+end
 
 if opt.d or opt.doe then
 	--local v = doe(uit)

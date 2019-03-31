@@ -3,7 +3,7 @@ require 'util'
 require 'naarlua'
 require 'naarjavascript'
 
-local jslibtaal = {string.byte(jslib,1,#jslib)}
+local jslibtaal = {string.byte(javascriptbieb,1,#javascriptbieb)}
 jslibtaal.fn = '[]'
 
 bieb = {

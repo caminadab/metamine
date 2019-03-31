@@ -45,39 +45,207 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'goed'}, classes: 'waarde' },{ data: {id: 'i'}, classes: 'waarde' },{ data: {id: 's'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'achtergrond'}, classes: 'waarde' },{ data: {id: 'cirkel'}, classes: 'waarde' },{ data: {id: 'groen'}, classes: 'waarde' },{ data: {id: 'pos'}, classes: 'waarde' },{ data: {id: 'speler'}, classes: 'waarde' },{ data: {id: 'straal'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b307af50'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b30f4340'}, classes: 'waarde' },{ data: {id: 'tekening'}, classes: 'waarde' },{ data: {id: 'vierkant'}, classes: 'waarde' },{ data: {id: 'x'}, classes: 'waarde' },{ data: {id: 'zwart'}, classes: 'waarde' },			{
 				data: {
 					id: 'x0.84018771715471',
 					source: 'nil',
-					target: 'goed',
+					target: 'zwart',
 				}
 			},
-					{
-				data: {
-					id: 'x0.39438292681909',
-					source: 'nil',
-					target: 's',
-				}
-			},
-					{
+		{ data: {id: 'x0.39438292681909', exp: ''}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.78309922375861',
-					source: 'nil',
-					target: 's',
+					source: 'x0.39438292681909',
+					target: 'tekening',
 				}
 			},
-		{ data: {id: 'x0.79844003347607', exp: ''}, classes: 'hyper' },			{
+							{
+						data: {
+							id: 'x0.79844003347607',
+							source: 'achtergrond',
+							target: 'x0.39438292681909',
+						}
+					},
+									{
+						data: {
+							id: 'x0.91164735793678',
+							source: 'speler',
+							target: 'x0.39438292681909',
+						}
+					},
+				{ data: {id: 'x0.19755136929338', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.91164735793678',
-					source: 'x0.79844003347607',
-					target: 'i',
+					id: 'x0.33522275571489',
+					source: 'x0.19755136929338',
+					target: 'achtergrond',
+				}
+			},
+							{
+						data: {
+							id: 'x0.7682295948119',
+							source: 'vierkant',
+							target: 'x0.19755136929338',
+						}
+					},
+									{
+						data: {
+							id: 'x0.27777471080319',
+							source: 'zwart',
+							target: 'x0.19755136929338',
+						}
+					},
+							{
+				data: {
+					id: 'x0.55396995579543',
+					source: 'nil',
+					target: 'vierkant',
+				}
+			},
+		{ data: {id: 'x0.47739705186216', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.62887092476192',
+					source: 'x0.47739705186216',
+					target: 'pos',
+				}
+			},
+		{ data: {id: 'x0.36478447279184', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.51340091019562',
+					source: 'x0.36478447279184',
+					target: 'pos',
+				}
+			},
+							{
+						data: {
+							id: 'x0.95222972517471',
+							source: 'speler',
+							target: 'x0.36478447279184',
+						}
+					},
+									{
+						data: {
+							id: 'x0.9161950680037',
+							source: 'table: 0x5641b307af50',
+							target: 'x0.36478447279184',
+						}
+					},
+							{
+				data: {
+					id: 'x0.6357117279599',
+					source: 'nil',
+					target: 'speler',
 				}
 			},
 					{
 				data: {
-					id: 'x0.19755136929338',
+					id: 'x0.71729692943268',
 					source: 'nil',
-					target: 'uit',
+					target: 'cirkel',
+				}
+			},
+					{
+				data: {
+					id: 'x0.1416025553558',
+					source: 'nil',
+					target: 'achtergrond',
+				}
+			},
+		{ data: {id: 'x0.60696887625706', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.01630057162433',
+					source: 'x0.60696887625706',
+					target: 'x',
+				}
+			},
+		{ data: {id: 'x0.24288677062974', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.13723157678602',
+					source: 'x0.24288677062974',
+					target: 'speler',
+				}
+			},
+							{
+						data: {
+							id: 'x0.80417675422699',
+							source: 'cirkel',
+							target: 'x0.24288677062974',
+						}
+					},
+									{
+						data: {
+							id: 'x0.15667908925408',
+							source: 'groen',
+							target: 'x0.24288677062974',
+						}
+					},
+									{
+						data: {
+							id: 'x0.40094439424618',
+							source: 'pos',
+							target: 'x0.24288677062974',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12979044678146',
+							source: 'straal',
+							target: 'x0.24288677062974',
+						}
+					},
+				{ data: {id: 'x0.10880880202577', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.99892451800356',
+					source: 'x0.10880880202577',
+					target: 'x',
+				}
+			},
+		{ data: {id: 'x0.21825690531091', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.5129323944044',
+					source: 'x0.21825690531091',
+					target: 'groen',
+				}
+			},
+		{ data: {id: 'x0.83911223469261', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.61263983259566',
+					source: 'x0.83911223469261',
+					target: 'straal',
+				}
+			},
+							{
+						data: {
+							id: 'x0.29603161769734',
+							source: 'speler',
+							target: 'x0.83911223469261',
+						}
+					},
+									{
+						data: {
+							id: 'x0.63755226770302',
+							source: 'table: 0x5641b30f4340',
+							target: 'x0.83911223469261',
+						}
+					},
+				{ data: {id: 'x0.52428719006678', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.49358298699073',
+					source: 'x0.52428719006678',
+					target: 'straal',
+				}
+			},
+					{
+				data: {
+					id: 'x0.97277502388357',
+					source: 'nil',
+					target: 'groen',
+				}
+			},
+		{ data: {id: 'x0.29251678441303', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.77135769779391',
+					source: 'x0.29251678441303',
+					target: 'zwart',
 				}
 			},
 					]
@@ -117,32 +285,130 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'goed'}, classes: 'waarde' },{ data: {id: 'i'}, classes: 'waarde' },{ data: {id: 's'}, classes: 'waarde' },{ data: {id: 'table: 0x562e763ffde0'}, classes: 'waarde' },{ data: {id: 'table: 0x562e76400280'}, classes: 'waarde' },{ data: {id: 'table: 0x562e76400500'}, classes: 'waarde' },{ data: {id: 'table: 0x562e764005f0'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'achtergrond'}, classes: 'waarde' },{ data: {id: 'cirkel'}, classes: 'waarde' },{ data: {id: 'groen'}, classes: 'waarde' },{ data: {id: 'pos'}, classes: 'waarde' },{ data: {id: 'speler'}, classes: 'waarde' },{ data: {id: 'straal'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311baf0'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311bc70'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311bde0'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311bf60'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311c3d0'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311c870'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311d1f0'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311d310'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311d640'}, classes: 'waarde' },{ data: {id: 'table: 0x5641b311d8b0'}, classes: 'waarde' },{ data: {id: 'tekening'}, classes: 'waarde' },{ data: {id: 'vierkant'}, classes: 'waarde' },{ data: {id: 'x'}, classes: 'waarde' },{ data: {id: 'zwart'}, classes: 'waarde' },{ data: {id: 'x0.52674497921334', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.33522275571489',
+					id: 'x0.76991383627519',
+					source: 'x0.52674497921334',
+					target: 'tekening',
+				}
+			},
+							{
+						data: {
+							id: 'x0.40022862209018',
+							source: 'achtergrond',
+							target: 'x0.52674497921334',
+						}
+					},
+									{
+						data: {
+							id: 'x0.89152945200518',
+							source: 'speler',
+							target: 'x0.52674497921334',
+						}
+					},
+				{ data: {id: 'x0.28331474600514', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.35245834726489',
+					source: 'x0.28331474600514',
+					target: 'achtergrond',
+				}
+			},
+							{
+						data: {
+							id: 'x0.80772452000888',
+							source: 'vierkant',
+							target: 'x0.28331474600514',
+						}
+					},
+									{
+						data: {
+							id: 'x0.91902647396504',
+							source: 'zwart',
+							target: 'x0.28331474600514',
+						}
+					},
+							{
+				data: {
+					id: 'x0.069755276231913',
 					source: 'nil',
-					target: 'goed',
+					target: 'vierkant',
+				}
+			},
+		{ data: {id: 'x0.94932707536469', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.5259953502221',
+					source: 'x0.94932707536469',
+					target: 'pos',
 				}
 			},
 					{
 				data: {
-					id: 'x0.7682295948119',
+					id: 'x0.086055847856242',
 					source: 'nil',
-					target: 's',
+					target: 'cirkel',
 				}
 			},
-		{ data: {id: 'x0.27777471080319', exp: ''}, classes: 'hyper' },			{
+		{ data: {id: 'x0.19221384599442', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.55396995579543',
-					source: 'x0.27777471080319',
-					target: 'i',
+					id: 'x0.66322692700812',
+					source: 'x0.19221384599442',
+					target: 'speler',
 				}
 			},
-					{
+							{
+						data: {
+							id: 'x0.89023260254889',
+							source: 'cirkel',
+							target: 'x0.19221384599442',
+						}
+					},
+									{
+						data: {
+							id: 'x0.34889293524851',
+							source: 'groen',
+							target: 'x0.19221384599442',
+						}
+					},
+									{
+						data: {
+							id: 'x0.064171320788642',
+							source: 'pos',
+							target: 'x0.19221384599442',
+						}
+					},
+									{
+						data: {
+							id: 'x0.020023048864688',
+							source: 'straal',
+							target: 'x0.19221384599442',
+						}
+					},
+				{ data: {id: 'x0.45770173727428', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.47739705186216',
-					source: 'nil',
-					target: 'uit',
+					id: 'x0.06309583832654',
+					source: 'x0.45770173727428',
+					target: 'x',
+				}
+			},
+		{ data: {id: 'x0.2382799541756', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.97063413167868',
+					source: 'x0.2382799541756',
+					target: 'groen',
+				}
+			},
+		{ data: {id: 'x0.90220807348481', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.85091978677126',
+					source: 'x0.90220807348481',
+					target: 'straal',
+				}
+			},
+		{ data: {id: 'x0.26666574937602', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.53976034072217',
+					source: 'x0.26666574937602',
+					target: 'zwart',
 				}
 			},
 					]

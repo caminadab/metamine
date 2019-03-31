@@ -30,10 +30,10 @@ local tab = '    '
 local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent'};
 local function naarjavascriptR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
-		return exp,t
+		return exp.v,t
 	end
 
-	local fn,a,b = exp.fn, exp[1], exp[2]
+	local fn,a,b = exp.fn.v, exp[1], exp[2]
 	local var = maakvar()
 
 	if infix[fn] then
@@ -58,7 +58,7 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 		t[#t+1] = string.format('%s%s = %s;\n', tabs..tab, var, B)
 		t[#t+1] = string.format('%s}\n', tabs)
 
-	elseif fn == '[]' then
+	elseif fn == '[]' or fn == ',' then
 		local vars = {}
 		for i,v in ipairs(exp) do
 			vars[i] = naarjavascriptR(v,t,tabs,maakvar)
@@ -85,7 +85,7 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 		t[#t+1] = tabs..'end\n'
 
 	elseif fn == '->' then
-		t[#t+1] = string.format('%svar %s = function (%s) {\n', tabs, var, a)
+		t[#t+1] = string.format('%svar %s = function (%s) {\n', tabs, var, a.v)
 		local res = naarjavascriptR(b, t, tabs..tab, maakvar)
 		t[#t+1] = string.format('%sreturn %s;\n', tabs..tab, res)
 		t[#t+1] = string.format('%s}\n', tabs)
@@ -98,7 +98,7 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 		end
 		if bieb[fn] then vars.fn = bieb[fn] end
 		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%svar %s = I(%s, %s);\n', tabs, var, vars.fn, inhoud)
+		t[#t+1] = string.format('%svar %s = _I(%s, %s);\n', tabs, var, vars.fn, inhoud)
 
 	else
 		print('???', toexp(exp))
@@ -108,7 +108,7 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 	return var,t
 end
 
-jslib = [[
+javascriptbieb = [[
 var tau = Math.PI * 2;
 /*
 local ja = true
@@ -143,7 +143,7 @@ var _comp = function(a,b) {
 	};
 };
 
-function I(a,i) {
+function _I(a,i) {
 	if (Array.isArray(a))
 		return a[i];
 	else {
@@ -234,7 +234,7 @@ end
 var _procent = function(a) { return a / 100; }
 
 ]]
-jslib = jslib:gsub('\t', tab)
+javascriptbieb = javascriptbieb:gsub('\t', tab)
 
 -- biebbron zit in de weg, "javascript X" functie zit in de weg (global scope in expressie?)
 function naarjavascript(exp)
