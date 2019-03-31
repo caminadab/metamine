@@ -1,0 +1,8 @@
+uit = hoi
+a = int((nu·40) mod 40)
+
+n = 40
+
+hoi = hois cat " "
+hois = (0 .. 40) map (x → ((x = a)⇒"O") | ((x ≠ a)⇒"_"))
+

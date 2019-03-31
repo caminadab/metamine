@@ -17,6 +17,10 @@ bieb = {
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
+	['start'] = (function()
+		local socket = require 'socket'
+		return socket.gettime()
+	end) (10),
 	os.time(),
 	['inverteer'] = true; -- sure
 	['tau'] = 2 * math.pi;
@@ -347,6 +351,9 @@ bieb = {
 		local bestand = io.open(naam, 'r')
 		_G.print('OPEN '..naam)
 		return {fd = bestand, buf = false}
+	end;
+	['bestand'] = function(naam)
+		return file(naam)
 	end;
 	['kan-lezen'] = function(b)
 		if not b.buf then b.buf = b.fd:read(1024) end

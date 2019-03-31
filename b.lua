@@ -270,53 +270,53 @@ local function _len(t)
         return #t
     end
 end
-local E = tabel{105,49,50,51,52,101}
+local E = tabel{108,108}
 local F = tabel{}
 local D = tabel{E,F}
 local H = function (_A)
     local N = _A(0)
     local M = N(0)
-    local L = M == 100
+    local L = cijfer(M)
     local K = false
     if L then
         local P = _A(0)
-        local O = vanaf(P,1)
+        local S = _A(0)
+        local R = vind(S,58)
+        local Q = R + 1
+        local O = vanaf(P,Q)
         K = O
     end
-    local T = _A(0)
-    local S = T(0)
-    local R = S == 108
-    local Q = false
-    if R then
-        local V = _A(0)
-        local U = vanaf(V,1)
-        Q = U
+    local W = _A(0)
+    local V = W(0)
+    local U = V == 100
+    local T = false
+    if U then
+        local Y = _A(0)
+        local X = vanaf(Y,1)
+        T = X
     end
-    local Z = _A(0)
-    local Y = Z(0)
-    local X = Y == 105
-    local W = false
-    if X then
-        local AB = _A(0)
+    local AC = _A(0)
+    local AB = AC(0)
+    local AA = AB == 108
+    local Z = false
+    if AA then
         local AE = _A(0)
-        local AD = vind(AE,101)
-        local AC = AD + 1
-        local AA = vanaf(AB,AC)
-        W = AA
+        local AD = vanaf(AE,1)
+        Z = AD
     end
     local AI = _A(0)
     local AH = AI(0)
-    local AG = cijfer(AH)
+    local AG = AH == 105
     local AF = false
     if AG then
         local AK = _A(0)
         local AN = _A(0)
-        local AM = vind(AN,58)
+        local AM = vind(AN,101)
         local AL = AM + 1
         local AJ = vanaf(AK,AL)
         AF = AJ
     end
-    local J = _kies(K,Q,W,AF)
+    local J = _kies(K,T,Z,AF)
     local AS = _A(0)
     local AR = AS(0)
     local AQ = AR == 100
@@ -329,51 +329,39 @@ local H = function (_A)
     end
     local AZ = _A(0)
     local AY = AZ(0)
-    local AX = AY == 101
+    local AX = cijfer(AY)
     local AW = false
     if AX then
         local BB = _A(1)
-        local BE = _A(1)
-        local BD = _len(BE)
-        local BC = BD - 1
-        local BA = tot(BB,BC)
+        local BC = tabel{1}
+        local BA = cat{BB, BC}
         AW = BA
     end
-    local BI = _A(0)
-    local BH = BI(0)
-    local BG = BH == 108
-    local BF = false
-    if BG then
-        local BK = _A(1)
-        local BL = tabel{3}
-        local BJ = cat{BK, BL}
-        BF = BJ
+    local BG = _A(0)
+    local BF = BG(0)
+    local BE = BF == 108
+    local BD = false
+    if BE then
+        local BI = _A(1)
+        local BJ = tabel{3}
+        local BH = cat{BI, BJ}
+        BD = BH
     end
-    local BP = _A(0)
-    local BO = BP(0)
-    local BN = cijfer(BO)
-    local BM = false
-    if BN then
-        local BR = _A(1)
-        local BS = tabel{1}
-        local BQ = cat{BR, BS}
-        BM = BQ
+    local BN = _A(0)
+    local BM = BN(0)
+    local BL = BM == 105
+    local BK = false
+    if BL then
+        local BP = _A(1)
+        local BQ = tabel{2}
+        local BO = cat{BP, BQ}
+        BK = BO
     end
-    local BW = _A(0)
-    local BV = BW(0)
-    local BU = BV == 105
-    local BT = false
-    if BU then
-        local BY = _A(1)
-        local BZ = tabel{2}
-        local BX = cat{BY, BZ}
-        BT = BX
-    end
-    local AO = _kies(AP,AW,BF,BM,BT)
+    local AO = _kies(AP,AW,BD,BK)
     local I = tabel{J,AO}
     return I
 end
-local G = _pow(H,1)
+local G = _pow(H,2)
 local C = G(D)
 local B = C(1)
 local A = tekst(B)

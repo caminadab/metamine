@@ -12,6 +12,7 @@ require 'doe'
 require 'naarlua'
 require 'rapport'
 require 'delta'
+require 'typeer'
 
 local opt,bronnen = getopt({...}, "u")
 
@@ -83,6 +84,9 @@ end
 assert(asb, 'syntaxfout')
 --local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
 
+-- typeer!
+local types = typeer(asb)
+
 local uit,fout,bekend,exp2naam,halvestroom = oplos(asb, 'uit')
 if not uit then io.stderr:write('oplosfout: '..tostring(fout)) ; return end
 
@@ -123,7 +127,7 @@ if opt.d or opt.doe then
 
 	local socket = require 'socket'
 	while true do
-		socket.sleep(0.001)
+		socket.sleep(0.01)
 		local ok,fout = xpcall(fn, debug.traceback)
 		if not ok then
 			print(fout)
@@ -135,7 +139,7 @@ if opt.d or opt.doe then
 		v = fout -- niet
 		if type(v) ~= 'table' then
 			see(v)
-			uit = tostring(exp2string(v)) --'<ongeldig type>'
+			uit = tostring(combineer(v)) --'<ongeldig type>'
 		else
 			uit = string.char(table.unpack(v))
 		end

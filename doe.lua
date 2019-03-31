@@ -45,6 +45,11 @@ local invoer = set('[]', '{}', '->')
 require 'plet'
 
 function doe(exp)
+	if isatoom(exp) then
+		if tonumber(exp.v) then return tonumber(exp.v) end
+		if bieb[exp.v] then return bieb[exp.v] end
+	end
+		
 	local _,t,naam = plet(exp)
 	local map = {}
 	local laatste

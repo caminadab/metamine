@@ -119,6 +119,23 @@ local function topologisch2(graaf)
 	end
 end
 
+local function kopieer(hgraaf)
+	local kopie = {punten = {}, pijlen = {}}
+	for k,v in pairs(hgraaf) do
+		if k ~= 'punten' and k ~= 'pijlen' then
+			kopie[k] = v
+		end
+	end
+		
+	for punt in pairs(hgraaf.punten) do
+		kopie.punten[punt] = true
+	end
+	for pijl in pairs(hgraaf.pijlen) do
+		kopie.pijlen[pijl] = true
+	end
+	return kopie
+end
+
 local function topologisch(hgraaf)
 	--local print = function () end
 	--TODO if isatoom(van) then van = {[van] = true} end
@@ -297,6 +314,7 @@ function stroom()
 		tekst = tekst,
 		topologisch = topologisch,
 		topo = topologisch,
+		kopieer = kopieer,
 
 		-- hyperpijlen van bron
 		van = function (self,bron)

@@ -1,9 +1,25 @@
-uit = hoi
-a = int(abs(sin(nu) · 10)) + 4
-;a = int((nu·40) mod 40)
+;tor = bestand "spiderman.torrent"
+uit = tekst(w)
 
-n = 40
+tor = "i1234e"
+w = ((bdec^1)(tor, []))₁
 
-hoi = hois cat " "
-hois = (0 .. 40) map (x → ((x mod a = 3)⇒"O") | ((x mod a ≠ 3)⇒"_"))
+ttekst = 1
+tint = 2
+tlijst = 3
+tmap = 4
+tmapW = 4
 
+vlees = data deel [1, (data vind 'e') ]
+
+bdec = (data, stapel) → (rest, stapelB)
+	cijfer data₀ ⇒  stapelB = stapel || [ ttekst ]
+	data₀ = 'i'  ⇒  stapelB = stapel || [ tint ]
+	data₀ = 'l'  ⇒	stapelB = stapel || [ tlijst ]
+	data₀ = 'd'  ⇒  stapelB = stapel || [ tmap ]
+	data₀ = 'e'  ⇒  stapelB = stapel tot (#stapel - 1)
+
+	cijfer data₀ ⇒  rest = data vanaf (data vind ':' + 1)
+	data₀ = 'i'  ⇒  rest = data vanaf (data vind 'e' + 1)
+	data₀ = 'l'  ⇒  rest = data vanaf 1
+	data₀ = 'd'  ⇒  rest = data vanaf 1

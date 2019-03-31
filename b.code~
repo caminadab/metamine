@@ -1,0 +1,11 @@
+tor = bestand "spiderman.torrent"
+uit = tekst(#tor)
+
+w = ((bdec^1)(tor, []))₁
+
+bdec = (data, stapel) → (dataB, stapelB)
+	data₀ = 'l'  ⇒  stapelB = "lijst"
+	data₀ = 'd'  ⇒  stapelB = "dict"
+	data₀ = 'i'  ⇒  stapelB = "int"
+;	cijfer data₀ ⇒  stapelB = "tekst"
+	dataB = data

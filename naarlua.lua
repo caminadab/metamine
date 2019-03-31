@@ -116,6 +116,9 @@ local abs = math.abs
 local sin = math.sin
 local cos = math.cos
 local tan = math.tan
+local function cijfer(a)
+	return string.byte('0', 1) <= a and a <= string.byte('9', 1)
+end
 local _pow = function(a,b)
 	if type(a) == 'number' then
 		return a ^ b
@@ -229,6 +232,23 @@ local _kies = function(a,b)
 	return a or b
 end
 
+cache = cache or {}
+local function bestand(naam)
+	local naam = string.char(table.unpack(naam))
+	if cache[naam] then return cache[naam] end
+	local f = io.open(naam)
+	local data = f:read('*a')
+	f:close()
+	local data,err = table.pack(string.byte(data, 1, #data))
+	setmetatable(data, getmetatable(tabel()))
+	local t = tabel{}
+	for i=1,#data do
+		t[i] = data[i]
+	end
+	cache[naam] = t
+	return t
+end
+
 local cat = function(a,b)
 	local r = tabel{}
 	for i,v in ipairs(a) do
@@ -245,6 +265,7 @@ local cat = function(a,b)
 end
 
 local socket = require 'socket'
+start = start or socket.gettime()
 nu = socket.gettime()
 
 local vind = function(a,b)
