@@ -48,6 +48,24 @@ function stap() {
 			ctx.rect(x1, y1, x2, y2);
 			ctx.fill(); 
 		}
+
+		// tekst
+		if (figuur[0] == 2) {
+			var x1 = figuur[1][0] * 500;
+			var y1 = figuur[1][1] * 500 + 48;
+			var a = figuur[2];
+			var t = "";
+			for (var i = 0; i < a.length; i++)
+				t += String.fromCharCode(a[i]);
+			if (figuur[3]) {
+				var R = figuur[3][0];
+				var G = figuur[3][1];
+				var B = figuur[3][2];
+				ctx.fillStyle = 'rgb('+R*255+','+G*255+','+B*255+')'
+			}
+			ctx.font = "48px Arial";
+			ctx.fillText(t, x1, y1);
+		}
 	}
 }
 

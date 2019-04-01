@@ -5,14 +5,8 @@ require 'naarlua'
 require 'infix'
 require 'rapporteer-syntax'
 
-local function doe(exp)
-	local luacode = naarlua(exp)
-	local func = load(luacode)
-	return func()
-end
-
 local socket = require 'socket'
-local server = socket.bind('127.0.0.1','1236')
+local server = socket.bind('127.0.0.1','1237')
 assert(server)
 local sockets = {server}
 local coros = {}
@@ -67,7 +61,7 @@ function serveer(sock)
 	end
 
 	function oplosPlus(code,asb)
-		local uit,fout,bekend,exp2naam = oplos(asb, 'uit')
+		local uit,fout,bekend,exp2naam = oplos(asb, 'tekening')
 		if not uit then io.stderr:write('oplosfout: '..tostring(fout)) end
 
 		-- syntaxrapport
@@ -93,21 +87,13 @@ function serveer(sock)
 	local function vt()
 		-- type.html, syntax.html, resultaat.html
 		local exp,rapport = oplosPlus(inn, ontleed(inn..'\n'))
-		local ok,resultaat = pcall(doe,exp)
-		--local resultaat = doe(exp)
-
-		if type(resultaat) ~= 'table' then
-			resultaat = tostring(resultaat)
-		else
-			resultaat = tostring(string.char(table.unpack(resultaat)))
-		end
-
-		return rapport,rapport,resultaat or "<DSF"
+		require 'naarweb'
+		local resultaat = naarweb(exp)
+		return rapport,resultaat
 	end
 
-	local a,b,c = vt(inn)
-	local c2 = '<div style="font-size: 24pt;"> '..c..'</div>'
-	local uit = c2..a
+	local ok,a,b = pcall(vt, inn)
+	local uit = b..a
 	local inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
 	local uitL = string.format('%q', uit):gsub('\n', '\\n')
 
