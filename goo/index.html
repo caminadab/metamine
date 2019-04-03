@@ -269,7 +269,7 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	var tekstknop = document.getElementById("tekst");
 	tekstknop.style.display = 'none'; // jaja
 	tekstknop.addEventListener("click", function() {
-		fetch('localhost:1236', {method: "POST", body: editor.getValue()} )
+		fetch('http://localhost:1237/vt', {method: "POST", body: editor.getValue()} )
 			.then(x => x.text())
 			.then(x => resultaat.innerHTML = x);
 	});
@@ -294,7 +294,7 @@ uit = "Nee"
 `;
 
 	speelknop.addEventListener("click", function() {
-		fetch('localhost:1236', {method: "POST", body: editor.getValue() + cheatz} )
+		fetch('http://localhost:1237/vt', {method: "POST", body: editor.getValue() + cheatz} )
 			.then(x => x.text())
 			.then(x => {
 				resultaat.innerHTML = x;
