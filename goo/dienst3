@@ -36,14 +36,28 @@ function boompairs(exp)
 	end
 end
 
+local statusberichten = {
+	[200] = "OK",
+	[404] = "Niet Gevonden",
+}
+
+function sendblocking(sock, data)
+	local i = 1
+	while i < #data do
+		local len,err = sock:send(data, i, #data)
+		if not len then return nil,err end
+		i = i + len + 1 -- laatst verzonden byte
+	end
+	return #data
+end
 
 function serveer(sock)
 	local len
-	local pad,methode
 
 	-- header
+  coroutine.yield()
 	local line = sock:receive('*l')
-	local methode,pad = line:match("([^ ]*) ([^ ]*) [^ ]*)")
+	local methode,pad = line:match("([^ ]*) ([^ ]*) ([^ ]*)")
 
 	while true do
 		coroutine.yield()
@@ -104,24 +118,30 @@ function serveer(sock)
 		status = 200
 		uit = b..a
 		inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
-	elseif pad == '/' then
-		uit = file('index.html')
-		status = 200
 	else
-		uit = 'pagina niet gevonden'
-		code = 404
+    pad = pad:gsub('%.%.', '%.')
+    pad = pad:sub(2, #pad)
+		if pad == '' then pad = 'index.html' end
+		uit = file(pad)
+		status = 200
+		if not uit then
+			uit = 'pagina niet gevonden'
+			status = 404
+		end
 	end
 
 	print(os.date(), status, pad, inL)
 
 	-- header
-	sock:send("HTTP/1.0 200 OK\r\n")
-	sock:send("Host: localhost\r\n")
-	sock:send("Server: Lua 5.2\r\n")
-	sock:send("Content-Length: "..#uit.."\r\n")
-	sock:send("\r\n")
-
-	sock:send(uit)
+	local h = string.format('HTTP/1.0 %d %s\r\n', status, statusberichten[status])
+	local t = {}
+	t[#t+1] = h
+	t[#t+1] = "Host: localhost\r\n"
+	t[#t+1] = "Server: Lua 5.2\r\n"
+	t[#t+1] = "Content-Length: "..#uit.."\r\n"
+	t[#t+1] = "\r\n"
+	t[#t+1] = uit
+	sendblocking(sock, table.concat(t))
 
 	sock:close()
 end
@@ -142,12 +162,19 @@ while true do
 	-- data
 	for i=#rs,1,-1 do
 		local client = rs[i]
-		local unfinished,err = coroutine.resume(coros[client])
-		if err then print('ERR', err) end
-		if not unfinished then
+		local coro = coros[client]
+		if not coro or coroutine.status(coro) ~= 'suspended' then
 			table.remove(sockets, sockets[client]) --client)
 			sockets[client] = nil
 			coros[client] = nil
+		else
+			local unfinished,err = coroutine.resume(coros[client])
+			if err then print('ERR', err) end
+			if not unfinished then
+				table.remove(sockets, sockets[client]) --client)
+				sockets[client] = nil
+				coros[client] = nil
+			end
 		end
 	end
 

@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html>
 <meta charset="utf-8">
 <h2>Taal 0.1.1</h2>
 <i>nu met ontkevering</i>
@@ -23,7 +25,11 @@
 
 <style>
 
-#speel {
+.syntaxfout { background: #800; color: #A80; }
+.oplosfout { background: #049; color: #AFF; }
+.typefout { background: #805; color: #FBF; }
+
+#speel0 {
 	margin-top: 0.5cm;
 	margin-bottom: 0.5cm;
 	cursor: pointer;
@@ -32,11 +38,9 @@
 	padding: 10px;
 	border: 10px solid black;
 	transition-property: border;
-
-
 }
 
-#speel:hover {
+#speel0:hover {
 	border: 10px solid white;
 	animation: Knipper 0.05s linear infinite !important;
 }
@@ -72,21 +76,16 @@
 	c1.addEventListener("click", function () {
 		speelknop.style.display = 'none';
 		tekstknop.style.display = 'inline';
-		editor.setValue(`a² + b² = c²
-	b = 4
-	c = 5
-uit = "a = " || tekst(a)
-
-; bereken de lengte van a, gegeven b en c
-; a /\\ c
-;  /__\\
-;    b
+		editor.setValue(
+`a = 1 + []
+uit = tekst a
 `);});
 	var c2 = document.getElementById('c2');
 	c2.addEventListener("click", function () {
 		speelknop.style.display = 'none';
 		tekstknop.style.display = 'inline';
-		editor.setValue(`fib = n → (fⁿ[0,1])₀
+		editor.setValue(
+`fib = n → (fⁿ[0,1])₀
 f = [a,b] → [b,a+b]
 uit = fib 30
 `); }
@@ -172,15 +171,30 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	editor.setValue(cirkelcode);
 	editor.setSize(null, '500px');
 
-	var widget = document.createElement("div");
-	widget.innerHTML = "dit klopt niet";
-	var widget2 = document.createElement("div");
-	widget2.style.backgroundColor = 'red';
-	widget2.style.color = 'white';
-	widget2.innerHTML = "a is <i>int</i> maar moet zijn <i>tekst</i>";
+	var oldErrors = [];
 
-	editor.addWidget({line: 2, ch: 13}, widget);
-	editor.addLineWidget(4, widget2);
+	// jaja!
+	function setErrors(errors) {
+		var widget = document.createElement("div");
+		widget.classList.add("typefout");
+		widget.innerHTML = '<b>{}</b> (van type <u>int</u>) wordt gebruikt als <u>iets^int</u>'
+		editor.addLineWidget(1, widget);
+	}
+
+	setErrors();
+	alert("OK!");
+
+	if (false ) {
+		var widget = document.createElement("div");
+		widget.innerHTML = "dit klopt niet";
+		var widget2 = document.createElement("div");
+		widget2.style.backgroundColor = 'red';
+		widget2.style.color = 'white';
+		widget2.innerHTML = "a is <i>int</i> maar moet zijn <i>tekst</i>";
+
+		editor.addWidget({line: 2, ch: 13}, widget);
+		editor.addLineWidget(4, widget2);
+	}
 
 	// magische symbolen
 	var magisch = {
@@ -292,3 +306,4 @@ uit = "Nee"
 			});
 	});
 </script>
+</html>
