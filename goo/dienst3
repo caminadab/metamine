@@ -1,10 +1,13 @@
 #!/usr/bin/lua
 package.path = package.path..';../?.lua'
-require 'ontleed'
-require 'oplos'
+
 require 'naarlua'
 require 'infix'
 require 'rapporteer-syntax'
+
+require 'ontleed'
+require 'typeer'
+require 'oplos'
 
 local socket = require 'socket'
 local server = socket.bind('127.0.0.1','1237')
@@ -12,37 +15,40 @@ assert(server)
 local sockets = {server}
 local coros = {}
 
-function boompairs(exp)
-	local t = {}
-	function r(exp)
-		if isatoom(exp) then
-			t[exp] = true
-		else
-			t[exp] = true
-			r(exp.fn)
-			for i,v in ipairs(exp) do
-				r(v)
-			end
-		end
+os.execute("chromium localhost:1237 &")
+
+-- DE webfunctie
+-- vt: code → exp?, fouten?
+--   fouten: [ fout... ]
+--   fout: syntaxfout | typefout | oplosfout
+--     syntaxfout: { type="syntax", loc, bericht }
+--     typefout: { type="typeer", ? }
+--     oplosfout: { type="oplos", ? }
+-- 
+-- de "fout" als los interpretabel object
+function vt(code)
+	local exp,syntaxfouten = ontleed(code)
+	local types,typeerfouten = typeer(exp)
+	local waarde,oplosfouten
+
+	if not typefouten then
+		waarde,oplosfouten = oplos(exp)
 	end
-	r(exp)
-	
-	local k = nil
-	return function()
-		if next(t,k) then
-			k = next(t,k)
-			return k
-		end
+
+	-- foutje kan gebeuren
+	local fouten
+	if syntaxfouten or typefouten or oplosfouten then
+		fouten = cat(syntaxfouten or {}, typefouten or {}, oplosfouten or {})
 	end
+
+	return waarde, fouten
 end
 
--- DE api functie
-function vt(code)
-	local asb,fouten = ontleed(code)
-
 local statusberichten = {
-	[200] = "OK",
+	[200] = "Okee",
+	[302] = "Permanente Omleiding",
 	[404] = "Niet Gevonden",
+	[500] = "Interne Fout",
 }
 
 function sendblocking(sock, data)
@@ -84,44 +90,28 @@ function serveer(sock)
 		inn = sock:receive(len)
 	end
 
-	function oplosPlus(code,asb)
-		local uit,fout,bekend,exp2naam = oplos(asb, 'tekening')
-		if not uit then io.stderr:write('oplosfout: '..tostring(fout)) end
-
-		-- syntaxrapport
-		for k,v in pairs(bekend) do if isatoom(k) and k.v then print('BEKEND IS', k.v); bekend[k.v] = true end end
-		for k,v in pairs(bieb) do bekend[k] = true end
-		local label = {}
-		local klasse = {}
-		for t in boompairs(asb) do
-
-			if isatoom(t) and exp2naam and exp2naam[t.v] then
-				label[t] = combineer(exp2naam[t.v])
-			end
-			
-			klasse[t] = 'fout'
-			if not bekend[t.v] then klasse[t] = 'fout' end
-			if bekend[t.v] then klasse[t] = 'goed' end
-		end
-		local html = rapporteer_syntax(code,label,klasse)
-		return uit,html
-	end
-
-	-- vertaal
-	local function vt()
-		-- type.html, syntax.html, resultaat.html
-		local exp,rapport = oplosPlus(inn, ontleed(inn..'\n'))
-		require 'naarweb'
-		local resultaat = naarweb(exp)
-		return rapport,resultaat
-	end
-
+	-- uitvoer, log (in), http statuscode
 	local uit, inL, status
-	if pad == '/vt' then
-		local ok,a,b = pcall(vt, inn)
-		status = 200
-		uit = b..a
+
+	if inn then
 		inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
+	end
+
+	-- VERTAAL!
+	if pad == '/vt' then
+		local internefout
+		local ok,exp,fouten = xpcall(vt, debug.traceback, inn)
+		if not ok then internefout = exp end
+
+		if not ok then
+			status = 500
+			uit = "INTERNE FOUT!\n"..internefout
+		else
+			status = 200
+			uit = naarweb(exp)
+		end
+
+	-- LEES!
 	else
     pad = pad:gsub('%.%.', '%.')
     pad = pad:sub(2, #pad)

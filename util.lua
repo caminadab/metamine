@@ -32,14 +32,14 @@ function seerec(t,tabs)
 		for k,v in pairs(t) do io.write(tabs..'  ', k, '\t') ; seerec(v, tabs..'  ') end
 		print(tabs..'}')
 	else
-		print(tabs..t)
+		print(tabs..tostring(t))
 	end
 end
 
 function file(name, data)
 	if not data then
 		local f = io.open(name, 'r')
-		if not f then error('file-not-found ' .. name) end
+		if not f then return false, 'bestand niet gevonden: '..name  end --error('file-not-found ' .. name) end
 		data = f:read("*a")
 		f:close()
 		return data

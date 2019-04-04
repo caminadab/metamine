@@ -35,7 +35,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "bruin", "geel", "cyaan",
 		"cirkel", "rechthoek", "schrijf", "taart", "polygoon", "sin", "cos", "tan", "abs"
   ]);
-  var keywords = wordRE(["als","dan","herhaal" ]);
+  var keywords = wordRE(["als","dan","herhaal","fout" ]);
 
   var indentTokens = wordRE(["function", "if","repeat","do", "\\(", "{", "\\["]);
   var dedentTokens = wordRE(["end", "until", "\\)", "}"]);
