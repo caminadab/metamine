@@ -289,6 +289,10 @@ node* metloc(node* n, YYLTYPE yylloc) {
 	n->loc = yylloc;
 	return n;
 }
+node* metfout(node* n, char* fout) {
+	strncpy(&n->fout, fout, sizeof(n->fout));
+	return n;
+}
 
 //void node_assign(node* new, node* old);
 //node* node_copy(node* orig);

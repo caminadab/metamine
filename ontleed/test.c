@@ -11,6 +11,8 @@ a = 1  → &( =(a 1) =(b 2) )
 
 int test() {
 	char* tests[][2] = {
+		// fouten
+		{"a ==", "a"},
 
 		// operatoren
 		{"a = (+)", "=(a +)"},

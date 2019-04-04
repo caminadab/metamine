@@ -12,8 +12,8 @@ struct node {
 	node* next;
 	node* prev;
 
-	// hehehe
-	int off, len;
+	// foutbericht
+	char fout[0x1000];
 
 	YYLTYPE loc;
 };
@@ -56,3 +56,4 @@ node* fn5loc(node* a, node* b, node* c, node* d, node* e, YYLTYPE yylloc);
 node* tekstloc(node* str, YYLTYPE yylloc);
 node* aloc(char* t, YYLTYPE yylloc);
 node* metloc(node* n, YYLTYPE yylloc);
+node* metfout(node* n, char* fout);

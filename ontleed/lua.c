@@ -5,26 +5,22 @@
 #include "node.h"
 #include "taal.yy.h"
 #include "lex.yy.h"
-#include "global.h"
-
-extern void rapporteer(int t, char* str);
-extern void yyreset();
 
 int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
 	print_loc(*loc);
 	printf(": %s\n", yymsg);
+	node* node = (struct node* )*root;
+
+	//strcpy(&node->fout, yymsg);
+	return 0;
 }
 
 void lua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_createtable(L, 0, 4);
-	lua_pushinteger(L, loc.first_line + 1);
-	lua_setfield(L, -2, "y1");
-	lua_pushinteger(L, loc.first_column + 1);
-	lua_setfield(L, -2, "x1");
-	lua_pushinteger(L, loc.last_line + 1);
-	lua_setfield(L, -2, "y2");
-	lua_pushinteger(L, loc.last_column + 1);
-	lua_setfield(L, -2, "x2");
+	lua_pushinteger(L, loc.first_line + 1); lua_setfield(L, -2, "y1");
+	lua_pushinteger(L, loc.first_column + 1); lua_setfield(L, -2, "x1");
+	lua_pushinteger(L, loc.last_line + 1); lua_setfield(L, -2, "y2");
+	lua_pushinteger(L, loc.last_column + 1); lua_setfield(L, -2, "x2");
 }
 
 void lua_pushlisp(lua_State* L, node* node) {
@@ -35,6 +31,13 @@ void lua_pushlisp(lua_State* L, node* node) {
 	lua_pushliteral(L, "loc");
 	lua_pushloc(L, node->loc);
 	lua_settable(L, -3);
+
+	// fout
+	if (*node->fout) {
+		lua_pushliteral(L, "fout");
+		lua_pushstring(L, node->fout);
+		lua_settable(L, -3);
+	}
 
 	if (node->exp) {
 		// velden
@@ -95,13 +98,14 @@ int lua_code(lua_State* L) {
 
 int lua_ontleed(lua_State* L) {
 	luaL_checkstring(L, 1);
-	lua_pushliteral(L, "\n\0");
+	lua_pushliteral(L, "\n");
 	lua_concat(L, 2);
-	const char* str = lua_tostring(L, 1);
+	const char* str = lua_tostring(L, -1);
 
 	yyscan_t scanner;
 	yylex_init(&scanner);
 	yy_scan_string(str, scanner);
+
 	node* wortel;
 
 	int ok = yyparse((void**)&wortel, scanner);

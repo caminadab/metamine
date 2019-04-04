@@ -91,10 +91,11 @@
 %%
 
 input:
-	exp sep { *root = $$ = $1; YYACCEPT; }
+|	exp sep { *root = $$ = $1; YYACCEPT; }
+|	error sep { *root = $$ = metfout(aloc("fout", yylloc), "onzinregel"); YYACCEPT; }
 | sep exp sep { *root = $$ = $2; YYACCEPT; }
 |	block { *root = $$ = $1; YYACCEPT; }
-|	error { *root = $$ = aloc("fout",yylloc); yyerrok; YYACCEPT; }
+|	error { *root = $$ = metfout(aloc("fout",yylloc), "onzincode"); yyerrok; YYACCEPT; }
 ;
 
 block:
@@ -222,6 +223,7 @@ exp:
 | exp "xx" exp				{ $$ = fn3loc(aloc("xx",yylloc), $1, $3, yylloc); }
 | exp "=>" exp				{ $$ = fn3loc(aloc("=>",yylloc), $1, $3, yylloc); }
 
+| exp '=' error '\n'				{ $$ = fn3loc(aloc("=",yylloc), $1, metfout(aloc("fout", yylloc), "rechterkant van vergelijking mist"), yylloc); yyerrok; }
 | exp '='	exp					{ $$ = fn3loc(aloc("=",yylloc), $1, $3, yylloc); }
 | exp "!=" exp				{ $$ = fn3loc(aloc("!=",yylloc), $1, $3, yylloc); }
 | exp "~=" exp				{ $$ = fn3loc(aloc("~=",yylloc), $1, $3, yylloc); }

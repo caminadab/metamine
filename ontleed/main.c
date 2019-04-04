@@ -6,12 +6,14 @@
 #include "node.h"
 #include "taal.yy.h"
 #include "lex.yy.h"
-#include "global.h"
 
 int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
 	printf("TEST ERROR\n");
 	print_loc(*loc);
 	printf(": %s\n", yymsg);
+	node* node = (struct node* )*root;
+	strcpy(&node->fout, yymsg);
+	return 0;
 }
 
 char* ontleed(char* code) {
