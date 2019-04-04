@@ -36,6 +36,10 @@ function boompairs(exp)
 	end
 end
 
+-- DE api functie
+function vt(code)
+	local asb,fouten = ontleed(code)
+
 local statusberichten = {
 	[200] = "OK",
 	[404] = "Niet Gevonden",
