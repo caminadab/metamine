@@ -191,7 +191,7 @@ function typeer(exp, t)
 	-- makkelijke types
 	for exp in boompairsdfs(exp, t) do
 		local T
-		if tonumber(exp.v) and math.abs(math.modf(tonumber(exp.v), 1)) < 1e-9  then T = X'int'
+		if tonumber(exp.v) and  exp.v % 1 == 0 then T = X'int'
 		elseif tonumber(exp.v) then T = X'kommagetal'
 		elseif biebtypes[exphash(exp)] then
 			T = biebtypes[exphash(exp)] -- voorgedefinieerd is makkelijk
