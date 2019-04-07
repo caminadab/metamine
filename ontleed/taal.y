@@ -32,7 +32,13 @@
 
 	int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg);
 
-	//#define fn3loc(a,b,c,l) exp3(a, b, c)
+	#define A(a) aloc(a,yylloc)
+	#define APPEND(a,b) appendloc(a,b,yylloc)
+	#define FN1(a) metloc(a,yylloc)
+	#define FN2(a,b) fn2loc(a,b,yylloc)
+	#define FN3(a,b,c) fn3loc(a,b,c,yylloc)
+	
+
 %}
 
 %token NAAM
@@ -91,18 +97,18 @@
 %%
 
 input:
-|	exp sep { *root = $$ = $1; YYACCEPT; }
-|	error sep { *root = $$ = metfout(aloc("fout", yylloc), "onzinregel"); YYACCEPT; }
+	exp sep { *root = $$ = $1; YYACCEPT; }
+|	error sep { *root = $$ = metfout(A("fout"), "onzinregel"); YYACCEPT; }
 | sep exp sep { *root = $$ = $2; YYACCEPT; }
 |	block { *root = $$ = $1; YYACCEPT; }
-|	error { *root = $$ = metfout(aloc("fout",yylloc), "onzincode"); yyerrok; YYACCEPT; }
+|	error { *root = $$ = metfout(A("fout"), "onzincode"); yyerrok; YYACCEPT; }
 ;
 
 block:
-	exp sep exp sep { $$ = fn3loc(aloc("/\\",yylloc), $1, $3, yylloc); }
-|	sep exp sep exp sep { $$ = fn3loc(aloc("/\\",yylloc), $2, $4, yylloc); }
-|	block exp sep { $$ = appendloc($1, $2, yylloc); }
-|	block error sep { $$ = appendloc($1, aloc("fout", yylloc), yylloc); yyerrok; }
+	exp sep exp sep { $$ = FN3(A("/\\"), $1, $3); }
+|	sep exp sep exp sep { $$ = FN3(A("/\\"), $2, $4); }
+|	block exp sep { $$ = APPEND($1, $2); }
+|	block error sep { $$ = APPEND($1, A("fout")); yyerrok; }
 ;
 
 /* Een of meer regeleinden */
@@ -119,178 +125,172 @@ sep: '\n' | sep '\n' ;
 | '.' | '@' | ':' | '!:' | ">>" | "<<"
 ;*/
 /*
-/a("alocf)i,yylloc
-/fn3loc(f(ilocf)i,yylloc
+/a("Af)i,yylloc
+/FN3(f(ilocf)i,yylloc
 /exp3(f(ilocl%i,yy€kb€kb yylloc
 */
 
+/* /FN2ceFN2l%F,dt) */
+
 single:
-	NAAM 								{ $$ = metloc($1, yylloc); }
-| TEKST								{ $$ = metloc($1, yylloc); }
-| single '%'					{ $$ = fn2loc(aloc("%",yylloc), $1, yylloc); }
-| single '!'					{ $$ = fn2loc(aloc("faculteit",yylloc), $1, yylloc); }
-| single '\''					{ $$ = fn2loc(aloc("'",yylloc), $1, yylloc); }
-| single I0						{ $$ = fn2loc($1, aloc("0",yylloc), yylloc); }
-| single I1						{ $$ = fn2loc($1, aloc("1",yylloc), yylloc); }
-| single I2						{ $$ = fn2loc($1, aloc("2",yylloc), yylloc); }
-| single I3						{ $$ = fn2loc($1, aloc("3",yylloc), yylloc); }
-| single INV					{ $$ = fn2loc(aloc("inverteer",yylloc), $1, yylloc); }
-| single M0						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("0",yylloc), yylloc); }
-| single M1						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("1",yylloc), yylloc); }
-| single M2						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("2",yylloc), yylloc); }
-| single M3						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("3",yylloc), yylloc); }
-| single M4						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("4",yylloc), yylloc); }
-| single MN						{ $$ = fn3loc(aloc("^",yylloc), $1, aloc("n",yylloc), yylloc); }
-|	'(' exp ')'					{ $$ = metloc($2, yylloc); }
-| '(' exp ',' exp ')'	{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }
-| '(' exp ',' exp ',' exp ')'	{ $$ = fn4loc(aloc(",",yylloc), $2, $4, $6, yylloc); }
-| '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(aloc(",",yylloc), $2, $4, $6, $8, yylloc); }
-| '[' list ']'				{ $$ = metloc($2, yylloc); }
-| '{' set '}'					{ $$ = metloc($2, yylloc); }
+	NAAM 								{ $$ = FN1($1); }
+| TEKST								{ $$ = FN1($1); }
+| single '%'					{ $$ = FN2(A("%"), $1); }
+| single '!'					{ $$ = FN2(A("faculteit"), $1); }
+| single '\''					{ $$ = FN2(A("'"), $1); }
+| single I0						{ $$ = FN2($1, A("0")); }
+| single I1						{ $$ = FN2($1, A("1")); }
+| single I2						{ $$ = FN2($1, A("2")); }
+| single I3						{ $$ = FN2($1, A("3")); }
+| single INV					{ $$ = FN2(A("inverteer"), $1); }
+| single M0						{ $$ = FN3(A("^"), $1, A("0")); }
+| single M1						{ $$ = FN3(A("^"), $1, A("1")); }
+| single M2						{ $$ = FN3(A("^"), $1, A("2")); }
+| single M3						{ $$ = FN3(A("^"), $1, A("3")); }
+| single M4						{ $$ = FN3(A("^"), $1, A("4")); }
+| single MN						{ $$ = FN3(A("^"), $1, A("n")); }
+|	'(' exp ')'					{ $$ = FN1($2); }
+| '(' exp ',' exp ')'	{ $$ = FN3(A(","), $2, $4); }
+| '(' exp ',' exp ',' exp ')'	{ $$ = fn4loc(A(","), $2, $4, $6, yylloc); }
+| '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(A(","), $2, $4, $6, $8, yylloc); }
+| '[' list ']'				{ $$ = FN1($2); }
+| '{' set '}'					{ $$ = FN1($2); }
 
 /*| '(' op ')'					{ $$ = $2; }*/
 
-| '(' '^' ')'       	{ $$ = aloc("^",yylloc); }
-| '(' '_' ')'       	{ $$ = aloc("_",yylloc); }
-| '(' '*' ')'       	{ $$ = aloc("*",yylloc); }
-| '(' '/' ')'       	{ $$ = aloc("/",yylloc); }
-| '(' '+' ')'       	{ $$ = aloc("+",yylloc); }
-| '(' '-' ')'       	{ $$ = aloc("-",yylloc); }
+| '(' '^' ')'       	{ $$ = A("^"); }
+| '(' '_' ')'       	{ $$ = A("_"); }
+| '(' '*' ')'       	{ $$ = A("*"); }
+| '(' '/' ')'       	{ $$ = A("/"); }
+| '(' '+' ')'       	{ $$ = A("+"); }
+| '(' '-' ')'       	{ $$ = A("-"); }
 
-| '(' '[' ')'     { $$ = aloc("[]",yylloc); }
-| '(' '{' '}' ')'     { $$ = aloc("{}",yylloc); }
+| '(' '[' ')'     { $$ = A("[]"); }
+| '(' '{' '}' ')'     { $$ = A("{}"); }
 
-| '(' "->" ')'				{ $$ = aloc("->",yylloc); }
-| '(' "||" ')'				{ $$ = aloc("||",yylloc); }
-| '(' "::" ')'				{ $$ = aloc("::",yylloc); }
-| '(' ".." ')'				{ $$ = aloc("..",yylloc); }
-| '(' "xx" ')'				{ $$ = aloc("xx",yylloc); }
-| '(' "=>" ')'				{ $$ = aloc("=>",yylloc); }
+| '(' "->" ')'				{ $$ = A("->"); }
+| '(' "||" ')'				{ $$ = A("||"); }
+| '(' "::" ')'				{ $$ = A("::"); }
+| '(' ".." ')'				{ $$ = A(".."); }
+| '(' "xx" ')'				{ $$ = A("xx"); }
+| '(' "=>" ')'				{ $$ = A("=>"); }
 
-| '(' '='	')'					{ $$ = aloc("=",yylloc); }
-| '(' "!=" ')'				{ $$ = aloc("!=",yylloc); }
-| '(' "~=" ')'				{ $$ = aloc("~=",yylloc); }
-| '(' '>' ')'					{ $$ = aloc(">",yylloc); }
-| '(' '<' ')'					{ $$ = aloc("<",yylloc); }
-| '(' ">=" ')'				{ $$ = aloc(">=",yylloc); }
-| '(' "<=" ')'				{ $$ = aloc("<=",yylloc); }
+| '(' '='	')'					{ $$ = A("="); }
+| '(' "!=" ')'				{ $$ = A("!="); }
+| '(' "~=" ')'				{ $$ = A("~="); }
+| '(' '>' ')'					{ $$ = A(">"); }
+| '(' '<' ')'					{ $$ = A("<"); }
+| '(' ">=" ')'				{ $$ = A(">="); }
+| '(' "<=" ')'				{ $$ = A("<="); }
 
-| '(' '&' ')'				{ $$ = aloc("|",yylloc); }
-| '(' '|' ')'				{ $$ = aloc("&",yylloc); }
-| '(' '#' ')'       	{ $$ = aloc("#",yylloc); }
+| '(' '&' ')'				{ $$ = A("|"); }
+| '(' '|' ')'				{ $$ = A("&"); }
+| '(' '#' ')'       	{ $$ = A("#"); }
 
-| '(' ":=" ')'				{ $$ = aloc(":=",yylloc); }
-| '(' "+=" ')'				{ $$ = aloc("+=",yylloc); }
-| '(' "-=" ')'				{ $$ = aloc("-=",yylloc); }
-| '(' "|=" ')'				{ $$ = aloc("|=",yylloc); }
-| '(' "&=" ')'				{ $$ = aloc("&=",yylloc); }
+| '(' ":=" ')'				{ $$ = A(":="); }
+| '(' "+=" ')'				{ $$ = A("+="); }
+| '(' "-=" ')'				{ $$ = A("-="); }
+| '(' "|=" ')'				{ $$ = A("|="); }
+| '(' "&=" ')'				{ $$ = A("&="); }
 
-| '(' "/\\" ')'				{ $$ = aloc("/\\",yylloc); }
+| '(' "/\\" ')'				{ $$ = A("/\\"); }
 
-| '(' "en" ')'				{ $$ = aloc("en",yylloc); }
-| '(' "of" ')'				{ $$ = aloc("of",yylloc); }
-| '(' "exof" ')'			{ $$ = aloc("exof",yylloc); }
-| '(' "noch" ')'			{ $$ = aloc("noch",yylloc); }
-| '(' "niet" ')'			{ $$ = aloc("niet",yylloc); }
+| '(' "en" ')'				{ $$ = A("en"); }
+| '(' "of" ')'				{ $$ = A("of"); }
+| '(' "exof" ')'			{ $$ = A("exof"); }
+| '(' "noch" ')'			{ $$ = A("noch"); }
+| '(' "niet" ')'			{ $$ = A("niet"); }
 
-| '(' '.' ')'       	{ $$ = aloc(".",yylloc); }
-| '(' '@' ')'       	{ $$ = aloc("@",yylloc); }
-| '(' ':' ')'       	{ $$ = aloc(":",yylloc); }
-| '(' '!:' ')'       	{ $$ = aloc("!:",yylloc); }
-| '(' ">>" ')'       	{ $$ = aloc(">>",yylloc); }
-| '(' "<<" ')'       	{ $$ = aloc("<<",yylloc); }
+| '(' '.' ')'       	{ $$ = A("."); }
+| '(' '@' ')'       	{ $$ = A("@"); }
+| '(' ':' ')'       	{ $$ = A(":"); }
+| '(' '!:' ')'       	{ $$ = A("!:"); }
+| '(' ">>" ')'       	{ $$ = A(">>"); }
+| '(' "<<" ')'       	{ $$ = A("<<"); }
 
-|	'(' error ')'				{ $$ = aloc("fout",yylloc); yyerrok; }
-|	'[' error ']'				{ $$ = aloc("fout",yylloc); yyerrok; }
-|	'{' error '}'				{ $$ = fn2loc(aloc("{}",yylloc), aloc("fout",yylloc), yylloc); yyerrok; }
+|	'(' error ')'				{ $$ = A("fout"); yyerrok; }
+|	'[' error ']'				{ $$ = A("fout"); yyerrok; }
+|	'{' error '}'				{ $$ = FN2(A("{}"), A("fout")); yyerrok; }
 ;
 
 exp:
-	single							{ $$ = metloc($1, yylloc); }
-| exp '^' exp       	{ $$ = fn3loc(aloc("^",yylloc), $1, $3, yylloc); }
-| exp '_' exp       	{ $$ = fn3loc(aloc("_",yylloc), $1, $3, yylloc); }
-| exp '*' exp       	{ $$ = fn3loc(aloc("*",yylloc), $1, $3, yylloc); }
-| exp '/' exp       	{ $$ = fn3loc(aloc("/",yylloc), $1, $3, yylloc); }
-| exp '+' exp       	{ $$ = fn3loc(aloc("+",yylloc), $1, $3, yylloc); }
-| exp '-' exp       	{ $$ = fn3loc(aloc("-",yylloc), $1, $3, yylloc); }
+	single							{ $$ = FN1($1); }
+| exp '^' exp       	{ $$ = FN3(A("^"), $1, $3); }
+| exp '_' exp       	{ $$ = FN3(A("_"), $1, $3); }
+| exp '*' exp       	{ $$ = FN3(A("*"), $1, $3); }
+| exp '/' exp       	{ $$ = FN3(A("/"), $1, $3); }
+| exp '+' exp       	{ $$ = FN3(A("+"), $1, $3); }
+| exp '-' exp       	{ $$ = FN3(A("-"), $1, $3); }
 
-| SOM exp			       	{ $$ = fn2loc(aloc("som",yylloc), $2, yylloc); }
-| exp "->" exp				{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }
-/*| params "->" exp			{ $$ = fn3loc(aloc("->",yylloc), $1, $3, yylloc); }*/
-| exp "||" exp				{ $$ = fn3loc(aloc("||",yylloc), $1, $3, yylloc); }
-| exp "::" exp				{ $$ = fn3loc(aloc("::",yylloc), $1, $3, yylloc); }
-| exp ".." exp				{ $$ = fn3loc(aloc("..",yylloc), $1, $3, yylloc); }
-| exp "xx" exp				{ $$ = fn3loc(aloc("xx",yylloc), $1, $3, yylloc); }
-| exp "=>" exp				{ $$ = fn3loc(aloc("=>",yylloc), $1, $3, yylloc); }
+| SOM exp			       	{ $$ = FN2(A("som"), $2); }
+| exp "->" exp				{ $$ = FN3(A("->"), $1, $3); }
+| exp "||" exp				{ $$ = FN3(A("||"), $1, $3); }
+| exp "::" exp				{ $$ = FN3(A("::"), $1, $3); }
+| exp ".." exp				{ $$ = FN3(A(".."), $1, $3); }
+| exp "xx" exp				{ $$ = FN3(A("xx"), $1, $3); }
+| exp "=>" exp				{ $$ = FN3(A("=>"), $1, $3); }
 
-| exp '=' error '\n'				{ $$ = fn3loc(aloc("=",yylloc), $1, metfout(aloc("fout", yylloc), "rechterkant van vergelijking mist"), yylloc); yyerrok; }
-| exp '='	exp					{ $$ = fn3loc(aloc("=",yylloc), $1, $3, yylloc); }
-| exp "!=" exp				{ $$ = fn3loc(aloc("!=",yylloc), $1, $3, yylloc); }
-| exp "~=" exp				{ $$ = fn3loc(aloc("~=",yylloc), $1, $3, yylloc); }
-| exp '>' exp					{ $$ = fn3loc(aloc(">",yylloc), $1, $3, yylloc); }
-| exp '<' exp					{ $$ = fn3loc(aloc("<",yylloc), $1, $3, yylloc); }
-| exp ">=" exp				{ $$ = fn3loc(aloc(">=",yylloc), $1, $3, yylloc); }
-| exp "<=" exp				{ $$ = fn3loc(aloc("<=",yylloc), $1, $3, yylloc); }
+| exp '=' error '\n'				{ $$ = FN3(A("="), $1, metfout(A("fout"), "rechterkant van vergelijking mist")); yyerrok; }
+| exp '='	exp					{ $$ = FN3(A("="), $1, $3); }
+| exp "!=" exp				{ $$ = FN3(A("!="), $1, $3); }
+| exp "~=" exp				{ $$ = FN3(A("~="), $1, $3); }
+| exp '>' exp					{ $$ = FN3(A(">"), $1, $3); }
+| exp '<' exp					{ $$ = FN3(A("<"), $1, $3); }
+| exp ">=" exp				{ $$ = FN3(A(">="), $1, $3); }
+| exp "<=" exp				{ $$ = FN3(A("<="), $1, $3); }
 
-| '#' exp							{ $$ = fn2loc(aloc("#",yylloc), $2, yylloc); }
-| exp '|' exp				{ $$ = fn3loc(aloc("|",yylloc), $1, $3, yylloc); }
-| exp '&' exp				{ $$ = fn3loc(aloc("&",yylloc), $1, $3, yylloc); }
+| '#' exp							{ $$ = FN2(A("#"), $2); }
+| exp '|' exp				{ $$ = FN3(A("|"), $1, $3); }
+| exp '&' exp				{ $$ = FN3(A("&"), $1, $3); }
 
-| exp ":=" exp				{ $$ = fn3loc(aloc(":=",yylloc), $1, $3, yylloc); }
-| exp "+=" exp				{ $$ = fn3loc(aloc("+=",yylloc), $1, $3, yylloc); }
-| exp "-=" exp				{ $$ = fn3loc(aloc("-=",yylloc), $1, $3, yylloc); }
-| exp "|=" exp				{ $$ = fn3loc(aloc("|=",yylloc), $1, $3, yylloc); }
-| exp "&=" exp				{ $$ = fn3loc(aloc("&=",yylloc), $1, $3, yylloc); }
+| exp ":=" exp				{ $$ = FN3(A(":="), $1, $3); }
+| exp "+=" exp				{ $$ = FN3(A("+="), $1, $3); }
+| exp "-=" exp				{ $$ = FN3(A("-="), $1, $3); }
+| exp "|=" exp				{ $$ = FN3(A("|="), $1, $3); }
+| exp "&=" exp				{ $$ = FN3(A("&="), $1, $3); }
 
-| exp "/\\" exp				{ $$ = fn3loc(aloc("/\\",yylloc), $1, $3, yylloc); }
-| exp "\\/" exp				{ $$ = fn3loc(aloc("\\/",yylloc), $1, $3, yylloc); }
-| exp "exof" exp			{ $$ = fn3loc(aloc("xof",yylloc), $1, $3, yylloc); }
-| exp "noch" exp			{ $$ = fn3loc(aloc("noch",yylloc), $1, $3, yylloc); }
-| "niet" exp					{ $$ = fn2loc(aloc("!",yylloc), $2, yylloc); }
+| exp "/\\" exp				{ $$ = FN3(A("/\\"), $1, $3); }
+| exp "\\/" exp				{ $$ = FN3(A("\\/"), $1, $3); }
+| exp "exof" exp			{ $$ = FN3(A("xof"), $1, $3); }
+| exp "noch" exp			{ $$ = FN3(A("noch"), $1, $3); }
+| "niet" exp					{ $$ = FN2(A("!"), $2); }
 
-| exp '.' exp       	{ $$ = fn3loc(aloc(".",yylloc), $1, $3, yylloc); }
-| exp '@' exp       	{ $$ = fn3loc(aloc("@",yylloc), $1, $3, yylloc); }
-| exp ':' exp       	{ $$ = fn3loc(aloc(":",yylloc), $1, $3, yylloc); }
-| exp "!:" exp       	{ $$ = fn2loc(aloc("!",yylloc), fn3loc(aloc(":",yylloc), $1, $3, yylloc), yylloc); } // !(:(a b))
+| exp '.' exp       	{ $$ = FN3(A("."), $1, $3); }
+| exp '@' exp       	{ $$ = FN3(A("@"), $1, $3); }
+| exp ':' exp       	{ $$ = FN3(A(":"), $1, $3); }
+| exp "!:" exp       	{ $$ = FN2(A("!"), FN3(A(":"), $1, $3)); } // !(:(a b))
 
-| '-' exp  %prec NEG	{ $$ = fn2loc(aloc("-",yylloc), $2, yylloc); }
+| '-' exp  %prec NEG	{ $$ = FN2(A("-"), $2); }
 
-| single single %prec CALL { $$ = fn2loc($1, $2, yylloc); }
-| single single single %prec CALL { $$ = fn3loc($2, $1, $3, yylloc); }
-| single single single single %prec CALL { $$ = aloc("fout",yylloc); yyerrok; }
+| single single %prec CALL { $$ = FN2($1, $2); }
+| single single single %prec CALL { $$ = FN3($2, $1, $3); }
+| single single single single %prec CALL { $$ = A("fout"); yyerrok; }
 |	'[' error ']'				
 ;
 
 list:
-	%empty							{ $$ = exp1(aloc("[]",yylloc)); }
+	%empty							{ $$ = exp1(A("[]")); }
 |	items
 ;
 
 set:
-	%empty							{ $$ = exp1(aloc("{}",yylloc)); }
+	%empty							{ $$ = exp1(A("{}")); }
 |	setitems
 ;
 
 setitems:
-	exp									{ $$ = fn2loc(aloc("{}",yylloc), $1, yylloc); }
-| setitems ',' exp			{ $$ = appendloc($1, $3, yylloc); }
+	exp									{ $$ = FN2(A("{}"), $1); }
+| setitems ',' exp			{ $$ = APPEND($1, $3); }
 ;
 
 items:
-	exp									{ $$ = fn2loc(aloc("[]",yylloc), $1, yylloc); }
-| items ',' exp				{ $$ = appendloc($1, $3, yylloc); }
+	exp									{ $$ = FN2(A("[]"), $1); }
+| items ',' exp				{ $$ = APPEND($1, $3); }
 ;
 
 tupel:
-	'(' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }
-	'(' exp ',' exp ',' exp ')'		{ $$ = fn4loc(aloc(",",yylloc), $2, $4, $6, yylloc); }
-	/*'(' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn5loc(aloc(",",yylloc), $2, $4, $6, $8, yylloc); }
-	'(' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }
-	'(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn3loc(aloc(",",yylloc), $1, $2, yylloc); }*/
-
-params:
-	'(' exp ',' exp  ')'				{ $$ = fn3loc(aloc(",",yylloc), $2, $4, yylloc); }
-|	exp ',' exp 			 					{ $$ = fn3loc(aloc(",",yylloc), $1, $3, yylloc); }
-|	single											{ $$ = metloc($1, yylloc); }
-/*|	params ',' NAAM			{ $$ = appendloc($1, $3, yylloc); } */
-;
+	'(' exp ',' exp ')'		{ $$ = FN3(A(","), $2, $4); }
+	'(' exp ',' exp ',' exp ')'		{ $$ = fn4loc(A(","), $2, $4, $6, yylloc); }
+	/*'(' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn5loc(A(","), $2, $4, $6, $8, yylloc); }
+	'(' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = FN3(A(","), $1, $2); }
+	'(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = FN3(A(","), $1, $2); }*/
