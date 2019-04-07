@@ -192,7 +192,9 @@ local javascript = function(broncode)
 	return bieb.javascript(broncode)
 end
 local tabel = function(t)
-	local t = t or {is={lijst=true}}
+	local t = t or {}
+	t.is = t.is or {}
+	t.is.lijst = true
 	local mt = {}
 	function mt:__call(i)
 		return t[i+1]

@@ -32,6 +32,7 @@ void print_node(node* n);
 
 // maak ze
 node* append(node* exp, node* atom);
+node* prepend(node* exp, node* atom);
 node* exp0();
 node* exp1(node* a);
 node* _exp2(node* a, node* b);
@@ -45,6 +46,7 @@ node* a(char* t);
 
 // met locatie
 node* appendloc(node* exp, node* atom, YYLTYPE yylloc);
+node* prependloc(node* atom, node* exp, YYLTYPE yylloc);
 node* fn0loc(YYLTYPE yylloc);
 node* fn1loc(node* a, YYLTYPE yylloc);
 node* fn2loc(node* a, node* b, YYLTYPE yylloc);

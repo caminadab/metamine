@@ -34,6 +34,7 @@
 
 	#define A(a) aloc(a,yylloc)
 	#define APPEND(a,b) appendloc(a,b,yylloc)
+	#define PREPEND(a,b) prependloc(a,b,yylloc)
 	#define FN1(a) metloc(a,yylloc)
 	#define FN2(a,b) fn2loc(a,b,yylloc)
 	#define FN3(a,b,c) fn3loc(a,b,c,yylloc)
@@ -96,23 +97,14 @@
 
 %%
 
+/* ALTERNATIEF */
 input:
-	exp sep { *root = $$ = $1; YYACCEPT; }
-|	error sep { *root = $$ = metfout(A("fout"), "onzinregel"); YYACCEPT; }
-| sep exp sep { *root = $$ = $2; YYACCEPT; }
-|	block { *root = $$ = $1; YYACCEPT; }
-|	error { *root = $$ = metfout(A("fout"), "onzincode"); yyerrok; YYACCEPT; }
+	%empty						{ *root = $$ = A("en"); }
+|	input exp '\n' 		{ $$ = APPEND($1, $2);  } /* lees regeltje */
+|	input error '\n' 	{ $$ = APPEND($1, metfout(A("?"), "onleesbaar")); yyerrok; } /* lees regeltje */
+|	error  						{ $$ = metfout(A("?"), "onleesbaar"); yyerrok; }
+|	input '\n' 				/* negeer wit */
 ;
-
-block:
-	exp sep exp sep { $$ = FN3(A("/\\"), $1, $3); }
-|	sep exp sep exp sep { $$ = FN3(A("/\\"), $2, $4); }
-|	block exp sep { $$ = APPEND($1, $2); }
-|	block error sep { $$ = APPEND($1, A("fout")); yyerrok; }
-;
-
-/* Een of meer regeleinden */
-sep: '\n' | sep '\n' ;
 
 /*op:
 	'^' | '_' | '*' | '/' | '+' | '-'
@@ -125,12 +117,7 @@ sep: '\n' | sep '\n' ;
 | '.' | '@' | ':' | '!:' | ">>" | "<<"
 ;*/
 /*
-/a("Af)i,yylloc
-/FN3(f(ilocf)i,yylloc
-/exp3(f(ilocl%i,yy€kb€kb yylloc
 */
-
-/* /FN2ceFN2l%F,dt) */
 
 single:
 	NAAM 								{ $$ = FN1($1); }
@@ -204,13 +191,13 @@ single:
 | '(' '.' ')'       	{ $$ = A("."); }
 | '(' '@' ')'       	{ $$ = A("@"); }
 | '(' ':' ')'       	{ $$ = A(":"); }
-| '(' '!:' ')'       	{ $$ = A("!:"); }
+| '(' "!:" ')'       	{ $$ = A("!:"); }
 | '(' ">>" ')'       	{ $$ = A(">>"); }
 | '(' "<<" ')'       	{ $$ = A("<<"); }
 
-|	'(' error ')'				{ $$ = A("fout"); yyerrok; }
-|	'[' error ']'				{ $$ = A("fout"); yyerrok; }
-|	'{' error '}'				{ $$ = FN2(A("{}"), A("fout")); yyerrok; }
+|	'(' error ')'				{ $$ = metfout(A("?"), "onleesbaar"); yyerrok; }
+|	'[' error ']'				{ $$ = metfout(A("?"), "onleesbaar"); yyerrok; }
+|	'{' error '}'				{ $$ = metfout(FN2(A("{}"), A("?")), "onleesbaar"); yyerrok; }
 ;
 
 exp:
@@ -230,7 +217,6 @@ exp:
 | exp "xx" exp				{ $$ = FN3(A("xx"), $1, $3); }
 | exp "=>" exp				{ $$ = FN3(A("=>"), $1, $3); }
 
-| exp '=' error '\n'				{ $$ = FN3(A("="), $1, metfout(A("fout"), "rechterkant van vergelijking mist")); yyerrok; }
 | exp '='	exp					{ $$ = FN3(A("="), $1, $3); }
 | exp "!=" exp				{ $$ = FN3(A("!="), $1, $3); }
 | exp "~=" exp				{ $$ = FN3(A("~="), $1, $3); }
@@ -287,10 +273,3 @@ items:
 	exp									{ $$ = FN2(A("[]"), $1); }
 | items ',' exp				{ $$ = APPEND($1, $3); }
 ;
-
-tupel:
-	'(' exp ',' exp ')'		{ $$ = FN3(A(","), $2, $4); }
-	'(' exp ',' exp ',' exp ')'		{ $$ = fn4loc(A(","), $2, $4, $6, yylloc); }
-	/*'(' exp ',' exp ',' exp ',' exp ')'		{ $$ = fn5loc(A(","), $2, $4, $6, $8, yylloc); }
-	'(' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = FN3(A(","), $1, $2); }
-	'(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')'		{ $$ = FN3(A(","), $1, $2); }*/

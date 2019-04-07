@@ -11,6 +11,11 @@ a = 1  → &( =(a 1) =(b 2) )
 
 int test() {
 	char* tests[][2] = {
+		// integratie
+		{"\n", "en"},
+		{"\n\n", "en"},
+		{"a = 10", "en(=(a 10))"},
+
 		// fouten
 		{"a ==", "a"},
 
@@ -130,7 +135,9 @@ int test() {
 		strcat(t, "\n");
 		char* doel = tests[i][1];
 		char* lisp = ontleed(t);
-		if (strcmp(lisp, doel)) {
+		char doel2[0x400];
+		sprintf(doel2, "en(%s)", doel);
+		if (strcmp(lisp, doel) && strcmp(lisp, doel2)) {
 			puts("FOUT BIJ TEST");
 			puts(test);
 			printf("MOET ZIJN %s\n", doel);

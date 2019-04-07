@@ -90,7 +90,6 @@ for exp in boompairs(asb) do
 	end
 end
 assert(asb, 'syntaxfout')
---local stduit,fout,exp2naam0 = oplos(asb, 'standaarduitvoer')
 
 -- typeer!
 local types,ok,msg = typeer(asb)

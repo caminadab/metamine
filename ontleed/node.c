@@ -33,8 +33,7 @@ int write_node(node* n, char* out, int left) {
 				*out++ = '(';
 				a = 0;
 			}
-				
-			if (kid->next && kid->prev)
+			else if (kid->next)
 				*out++ = ' ';
 		}
 		*out++ = ')';
@@ -117,15 +116,51 @@ void print_node(node* n) {
 node* append(node* exp, node* atom) {
 	if (exp == atom)
 		puts("REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
+	// converteer naar fn
+	if (!exp->exp) {
+		node_assign(exp, fn1loc(aloc(exp->data, exp->loc), exp->loc));
+	}
+
 	atom->root = exp;
+
 	if (exp->last) {
-		exp->last->next = atom;
-		atom->prev = exp->last->next;
+		node* vorige_laatste = exp->last;
 		exp->last = atom;
+
+		vorige_laatste->next = atom;
+		atom->prev = exp->last->next;
+		atom->next = false;
+		
+	} else {
+		exp->first = atom;
+		exp->last = atom;
+		atom->prev = false;
+		atom->next = false;
+	}
+	return exp;
+}
+
+node* prepend(node* atom, node* exp) {
+	if (exp == atom)
+		puts("REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
+	// converteer naar fn
+	if (!exp->exp) {
+		exp = exp1(exp);
+	}
+
+	atom->root = exp;
+
+	if (exp->first) {
+		exp->first->prev = atom;
+		atom->next = exp->first;
+		exp->first = atom;
 	} else {
 		exp->first = atom;
 		exp->last = atom;
 	}
+	print_node(exp);
 	return exp;
 }
 
@@ -138,11 +173,16 @@ node* karakter(int ch) {
 node* tekst(node* str0) {
 	char* str = str0->data;
 	node* t = exp1(a("[]"));
+	t->loc = str0->loc;
 	for (int i = 1; str[i+1]; i++) {
 		char ch[16];
 		//itoa(str[i], 
 		sprintf(ch, "%d", str[i]);
-		t = append(t, a(ch));
+		node* tekennode = aloc(ch, t->loc);
+		tekennode->loc.first_column += i;
+		tekennode->loc.last_column = tekennode->loc.first_column + 1; // TODO unicode & regeleinden
+		t = append(t, tekennode);
+
 	}
 	return t;
 }
@@ -161,6 +201,8 @@ node* exp1(node* a) {
 	n->first = a;
 	n->last = a;
 	a->root = n;
+	a->prev = false;
+	a->next = false;
 	return n;
 }
 
@@ -256,6 +298,15 @@ node* appendloc(node* exp, node* atom, YYLTYPE yylloc) {
 	//n->loc.last_column = atom->loc.last_column;
 	return n;
 }
+node* prependloc(node* atom, node* exp, YYLTYPE yylloc) {
+	node* n = prepend(atom,exp);
+	n->loc = mix(exp->loc, atom->loc);
+	//n->loc.first_line = exp->loc.first_line;
+	//n->loc.first_column = exp->loc.first_column;
+	//n->loc.last_line = atom->loc.last_line;
+	//n->loc.last_column = atom->loc.last_column;
+	return n;
+}
 node* fn0loc(YYLTYPE yylloc) {
 	node* a = exp0();
 	a->loc = yylloc;
@@ -290,7 +341,7 @@ node* metloc(node* n, YYLTYPE yylloc) {
 	return n;
 }
 node* metfout(node* n, char* fout) {
-	strncpy(&n->fout, fout, sizeof(n->fout));
+	strcpy(&n->fout, fout);
 	return n;
 }
 

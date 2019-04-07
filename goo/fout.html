@@ -1,0 +1,1137 @@
+<!DOCTYPE html><head><meta charset="utf-8"><title>Rapport</title><style>				.deel {
+					width: calc(100% - 50px);
+					height: calc(100vh - 50px);
+					border-style: solid;
+					border-width: 4px;
+					border-color: black;
+					margin: 8px;
+					display: inline-block;
+					overflow: scroll;
+				}
+
+				pre { font-size: 20px; font-weight: bold; }
+			</style><script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.16/cytoscape.min.js"></script><script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script><script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script><script src="http://code.jquery.com/jquery-2.0.0.min.js"></script><script src="http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js"></script></head><body><div class="deel"><pre>ABC</pre></div><div class="deel"><pre>niets</pre></div><div class="deel"><pre>niets</pre></div><div id="afh" class="deel"></div><div id="infostroom" class="deel"></div><div id="afh" class="deel"></div><script>afh = cytoscape({
+			container: document.getElementById('afh'),
+			style: [
+				{
+					selector: '.waarde',
+					style: {
+							shape: 'hexagon',
+							'background-color': 'blue',
+							label: 'data(id)'
+					}
+				},
+				{
+					selector: 'edge',
+					style: {
+						'curve-style': 'bezier',
+						'target-arrow-shape': 'triangle',
+					}
+				},
+				{
+					selector: '.hyper',
+					style: {
+							label: 'data(exp)',
+							shape: 'none',
+							'background-color': 'black',
+							'font-size': '8px',
+							width: '10px',
+							height: '10px',
+					}
+				},
+			],
+			layout: {
+				name: 'cose',
+				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
+			},
+			elements: [
+				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'achtergrond'}, classes: 'waarde' },{ data: {id: 'achtergrondkleur'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'bal'}, classes: 'waarde' },{ data: {id: 'blauw'}, classes: 'waarde' },{ data: {id: 'c'}, classes: 'waarde' },{ data: {id: 'cirkel'}, classes: 'waarde' },{ data: {id: 'cyaan'}, classes: 'waarde' },{ data: {id: 'geel'}, classes: 'waarde' },{ data: {id: 'groen'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'groetpos'}, classes: 'waarde' },{ data: {id: 'interpoleer'}, classes: 'waarde' },{ data: {id: 'm'}, classes: 'waarde' },{ data: {id: 'n'}, classes: 'waarde' },{ data: {id: 'oranje'}, classes: 'waarde' },{ data: {id: 'paars'}, classes: 'waarde' },{ data: {id: 'pos'}, classes: 'waarde' },{ data: {id: 'rechthoek'}, classes: 'waarde' },{ data: {id: 'rood'}, classes: 'waarde' },{ data: {id: 'schrijf'}, classes: 'waarde' },{ data: {id: 'straal'}, classes: 'waarde' },{ data: {id: 't'}, classes: 'waarde' },{ data: {id: 'table: 0x559829faf5e0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a096fa0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a0994f0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a116e20'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a1675d0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a1fd590'}, classes: 'waarde' },{ data: {id: 'tekening'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'v'}, classes: 'waarde' },{ data: {id: 'wit'}, classes: 'waarde' },{ data: {id: 'x'}, classes: 'waarde' },{ data: {id: 'y'}, classes: 'waarde' },{ data: {id: 'zwart'}, classes: 'waarde' },{ data: {id: 'x0.70061996472097', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.31686713747534',
+					source: 'x0.70061996472097',
+					target: 'groen',
+				}
+			},
+					{
+				data: {
+					id: 'x0.32877704330197',
+					source: 'nil',
+					target: 'n',
+				}
+			},
+		{ data: {id: 'x0.23142795228931', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.074160969850682',
+					source: 'x0.23142795228931',
+					target: 'oranje',
+				}
+			},
+		{ data: {id: 'x0.63307219354113', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.22365641324951',
+					source: 'x0.63307219354113',
+					target: 'straal',
+				}
+			},
+							{
+						data: {
+							id: 'x0.65113208240416',
+							source: 'bal',
+							target: 'x0.63307219354113',
+						}
+					},
+									{
+						data: {
+							id: 'x0.51068597124456',
+							source: 'table: 0x559829faf5e0',
+							target: 'x0.63307219354113',
+						}
+					},
+				{ data: {id: 'x0.97146570960594', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.28004201328384',
+					source: 'x0.97146570960594',
+					target: 'pos',
+				}
+			},
+							{
+						data: {
+							id: 'x0.54610687799105',
+							source: 'bal',
+							target: 'x0.97146570960594',
+						}
+					},
+									{
+						data: {
+							id: 'x0.7192685761113',
+							source: 'table: 0x55982a116e20',
+							target: 'x0.97146570960594',
+						}
+					},
+				{ data: {id: 'x0.11328055482045', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.47148342918208',
+					source: 'x0.11328055482045',
+					target: 'n',
+				}
+			},
+		{ data: {id: 'x0.59253991888489', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.94431809612751',
+					source: 'x0.59253991888489',
+					target: 'groet',
+				}
+			},
+							{
+						data: {
+							id: 'x0.4509175580232',
+							source: 'groetpos',
+							target: 'x0.59253991888489',
+						}
+					},
+									{
+						data: {
+							id: 'x0.33635112565772',
+							source: 'schrijf',
+							target: 'x0.59253991888489',
+						}
+					},
+									{
+						data: {
+							id: 'x0.84768443594113',
+							source: 'wit',
+							target: 'x0.59253991888489',
+						}
+					},
+				{ data: {id: 'x0.43451329573733', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.0032314597644058',
+					source: 'x0.43451329573733',
+					target: 'achtergrond',
+				}
+			},
+							{
+						data: {
+							id: 'x0.34494295499518',
+							source: 'achtergrondkleur',
+							target: 'x0.43451329573733',
+						}
+					},
+									{
+						data: {
+							id: 'x0.59848129963432',
+							source: 'rechthoek',
+							target: 'x0.43451329573733',
+						}
+					},
+				{ data: {id: 'x0.83324329407571', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.23389170469432',
+					source: 'x0.83324329407571',
+					target: 'cyaan',
+				}
+			},
+		{ data: {id: 'x0.67547598046971', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.48295027971405',
+					source: 'x0.67547598046971',
+					target: 'blauw',
+				}
+			},
+					{
+				data: {
+					id: 'x0.481935823095',
+					source: 'nil',
+					target: 'rechthoek',
+				}
+			},
+					{
+				data: {
+					id: 'x0.30495568332493',
+					source: 'nil',
+					target: 'schrijf',
+				}
+			},
+		{ data: {id: 'x0.71208725995947', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.18255578735031',
+					source: 'x0.71208725995947',
+					target: 't',
+				}
+			},
+		{ data: {id: 'x0.62182282126594', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.040864302795783',
+					source: 'x0.62182282126594',
+					target: 'y',
+				}
+			},
+		{ data: {id: 'x0.41398373963962', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.69598379111662',
+					source: 'x0.41398373963962',
+					target: 'geel',
+				}
+			},
+							{
+						data: {
+							id: 'x0.67393649633691',
+							source: 'bal',
+							target: 'x0.41398373963962',
+						}
+					},
+									{
+						data: {
+							id: 'x0.63764015288914',
+							source: 'table: 0x55982a1fd590',
+							target: 'x0.41398373963962',
+						}
+					},
+				{ data: {id: 'x0.34711587305512', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.18462246758147',
+					source: 'x0.34711587305512',
+					target: 'x',
+				}
+			},
+		{ data: {id: 'x0.60910586202941', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.62715788633896',
+					source: 'x0.60910586202941',
+					target: 'geel',
+				}
+			},
+		{ data: {id: 'x0.73072934557252', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.32837443814072',
+					source: 'x0.73072934557252',
+					target: 'tekening',
+				}
+			},
+							{
+						data: {
+							id: 'x0.74043844115941',
+							source: 'achtergrond',
+							target: 'x0.73072934557252',
+						}
+					},
+									{
+						data: {
+							id: 'x0.20221277428894',
+							source: 'bal',
+							target: 'x0.73072934557252',
+						}
+					},
+									{
+						data: {
+							id: 'x0.9209143570256',
+							source: 'groet',
+							target: 'x0.73072934557252',
+						}
+					},
+				{ data: {id: 'x0.68475653682126', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.65313033231214',
+					source: 'x0.68475653682126',
+					target: 'groetpos',
+				}
+			},
+		{ data: {id: 'x0.25726548221766', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.53244097276239',
+					source: 'x0.25726548221766',
+					target: 'v',
+				}
+			},
+		{ data: {id: 'x0.087643628049476', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.26049694244773',
+					source: 'x0.087643628049476',
+					target: 'a',
+				}
+			},
+		{ data: {id: 'x0.87738392775756', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.68612492768379',
+					source: 'x0.87738392775756',
+					target: 'groetpos',
+				}
+			},
+							{
+						data: {
+							id: 'x0.093740236057779',
+							source: 'groet',
+							target: 'x0.87738392775756',
+						}
+					},
+									{
+						data: {
+							id: 'x0.11127563198622',
+							source: 'table: 0x55982a1675d0',
+							target: 'x0.87738392775756',
+						}
+					},
+				{ data: {id: 'x0.36160090768784', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.57669051577183',
+					source: 'x0.36160090768784',
+					target: 'achtergrondkleur',
+				}
+			},
+							{
+						data: {
+							id: 'x0.59321145508122',
+							source: 'achtergrond',
+							target: 'x0.36160090768784',
+						}
+					},
+									{
+						data: {
+							id: 'x0.66655659101277',
+							source: 'table: 0x55982a096fa0',
+							target: 'x0.36160090768784',
+						}
+					},
+							{
+				data: {
+					id: 'x0.28877777526564',
+					source: 'nil',
+					target: 'y',
+				}
+			},
+		{ data: {id: 'x0.77576724289719', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.28837941181305',
+					source: 'x0.77576724289719',
+					target: 'zwart',
+				}
+			},
+					{
+				data: {
+					id: 'x0.32964207852708',
+					source: 'nil',
+					target: 'm',
+				}
+			},
+		{ data: {id: 'x0.18975098207116', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.98436320292967',
+					source: 'x0.18975098207116',
+					target: 'bal',
+				}
+			},
+							{
+						data: {
+							id: 'x0.0035785743983363',
+							source: 'cirkel',
+							target: 'x0.18975098207116',
+						}
+					},
+									{
+						data: {
+							id: 'x0.82739113542595',
+							source: 'geel',
+							target: 'x0.18975098207116',
+						}
+					},
+									{
+						data: {
+							id: 'x0.33147907551913',
+							source: 'pos',
+							target: 'x0.18975098207116',
+						}
+					},
+									{
+						data: {
+							id: 'x0.18820104197981',
+							source: 'straal',
+							target: 'x0.18975098207116',
+						}
+					},
+							{
+				data: {
+					id: 'x0.43649699698971',
+					source: 'nil',
+					target: 'x',
+				}
+			},
+		{ data: {id: 'x0.95863696185808', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.91893038801799',
+					source: 'x0.95863696185808',
+					target: 'interpoleer',
+				}
+			},
+							{
+						data: {
+							id: 'x0.76487143513042',
+							source: 'a',
+							target: 'x0.95863696185808',
+						}
+					},
+									{
+						data: {
+							id: 'x0.69907540301749',
+							source: 'b',
+							target: 'x0.95863696185808',
+						}
+					},
+									{
+						data: {
+							id: 'x0.12114316184127',
+							source: 'c',
+							target: 'x0.95863696185808',
+						}
+					},
+									{
+						data: {
+							id: 'x0.68578579169036',
+							source: 'm',
+							target: 'x0.95863696185808',
+						}
+					},
+									{
+						data: {
+							id: 'x0.38383193937309',
+							source: 'n',
+							target: 'x0.95863696185808',
+						}
+					},
+				{ data: {id: 'x0.77427349461907', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.94305127437369',
+					source: 'x0.77427349461907',
+					target: 'wit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.91627291213547',
+							source: 'groet',
+							target: 'x0.77427349461907',
+						}
+					},
+									{
+						data: {
+							id: 'x0.86191712266855',
+							source: 'table: 0x55982a0994f0',
+							target: 'x0.77427349461907',
+						}
+					},
+				{ data: {id: 'x0.20354821635575', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.79365683942738',
+					source: 'x0.20354821635575',
+					target: 'achtergrondkleur',
+				}
+			},
+		{ data: {id: 'x0.54804204988668', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.29728845241353',
+					source: 'x0.54804204988668',
+					target: 'paars',
+				}
+			},
+					{
+				data: {
+					id: 'x0.9049324714136',
+					source: 'nil',
+					target: 'achtergrond',
+				}
+			},
+		{ data: {id: 'x0.90964295757452', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.87397896818536',
+					source: 'x0.90964295757452',
+					target: 'uit',
+				}
+			},
+		{ data: {id: 'x0.49814392649482', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.57619954812163',
+					source: 'x0.49814392649482',
+					target: 'pos',
+				}
+			},
+							{
+						data: {
+							id: 'x0.162756743451',
+							source: 'x',
+							target: 'x0.49814392649482',
+						}
+					},
+									{
+						data: {
+							id: 'x0.27391116892635',
+							source: 'y',
+							target: 'x0.49814392649482',
+						}
+					},
+							{
+				data: {
+					id: 'x0.86457896040034',
+					source: 'nil',
+					target: 'bal',
+				}
+			},
+		{ data: {id: 'x0.49239882197808', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.46366215099751',
+					source: 'x0.49239882197808',
+					target: 'b',
+				}
+			},
+		{ data: {id: 'x0.84894216286435', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.49597739637642',
+					source: 'x0.84894216286435',
+					target: 'rood',
+				}
+			},
+		{ data: {id: 'x0.2910532859578', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.18042123838347',
+					source: 'x0.2910532859578',
+					target: 'straal',
+				}
+			},
+					{
+				data: {
+					id: 'x0.68417843882189',
+					source: 'nil',
+					target: 'groet',
+				}
+			},
+		{ data: {id: 'x0.72755028341317', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.1390581997759',
+					source: 'x0.72755028341317',
+					target: 'wit',
+				}
+			},
+		{ data: {id: 'x0.60310882637422', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.49242171807793',
+					source: 'x0.60310882637422',
+					target: 'c',
+				}
+			},
+					{
+				data: {
+					id: 'x0.83813360279339',
+					source: 'nil',
+					target: 'cirkel',
+				}
+			},
+					]
+		});
+	</script><script>infostroom = cytoscape({
+			container: document.getElementById('infostroom'),
+			style: [
+				{
+					selector: '.waarde',
+					style: {
+							shape: 'hexagon',
+							'background-color': 'blue',
+							label: 'data(id)'
+					}
+				},
+				{
+					selector: 'edge',
+					style: {
+						'curve-style': 'bezier',
+						'target-arrow-shape': 'triangle',
+					}
+				},
+				{
+					selector: '.hyper',
+					style: {
+							label: 'data(exp)',
+							shape: 'none',
+							'background-color': 'black',
+							'font-size': '8px',
+							width: '10px',
+							height: '10px',
+					}
+				},
+			],
+			layout: {
+				name: 'dagre',
+				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
+			},
+			elements: [
+				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'achtergrond'}, classes: 'waarde' },{ data: {id: 'achtergrondkleur'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'bal'}, classes: 'waarde' },{ data: {id: 'blauw'}, classes: 'waarde' },{ data: {id: 'c'}, classes: 'waarde' },{ data: {id: 'cirkel'}, classes: 'waarde' },{ data: {id: 'cyaan'}, classes: 'waarde' },{ data: {id: 'geel'}, classes: 'waarde' },{ data: {id: 'groen'}, classes: 'waarde' },{ data: {id: 'groet'}, classes: 'waarde' },{ data: {id: 'groetpos'}, classes: 'waarde' },{ data: {id: 'interpoleer'}, classes: 'waarde' },{ data: {id: 'm'}, classes: 'waarde' },{ data: {id: 'n'}, classes: 'waarde' },{ data: {id: 'oranje'}, classes: 'waarde' },{ data: {id: 'paars'}, classes: 'waarde' },{ data: {id: 'pos'}, classes: 'waarde' },{ data: {id: 'rechthoek'}, classes: 'waarde' },{ data: {id: 'rood'}, classes: 'waarde' },{ data: {id: 'schrijf'}, classes: 'waarde' },{ data: {id: 'straal'}, classes: 'waarde' },{ data: {id: 't'}, classes: 'waarde' },{ data: {id: 'table: 0x559829faf5e0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a096fa0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a0994f0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a116e20'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a1675d0'}, classes: 'waarde' },{ data: {id: 'table: 0x55982a1fd590'}, classes: 'waarde' },{ data: {id: 'tekening'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'v'}, classes: 'waarde' },{ data: {id: 'wit'}, classes: 'waarde' },{ data: {id: 'x'}, classes: 'waarde' },{ data: {id: 'y'}, classes: 'waarde' },{ data: {id: 'zwart'}, classes: 'waarde' },{ data: {id: 'x0.72425198821549', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.17820750976829',
+					source: 'x0.72425198821549',
+					target: 'groen',
+				}
+			},
+					{
+				data: {
+					id: 'x0.22196554216648',
+					source: 'nil',
+					target: 'n',
+				}
+			},
+		{ data: {id: 'x0.4985254823689', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.12125878367632',
+					source: 'x0.4985254823689',
+					target: 'oranje',
+				}
+			},
+		{ data: {id: 'x0.13823845383629', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.36044260457179',
+					source: 'x0.13823845383629',
+					target: 'straal',
+				}
+			},
+							{
+						data: {
+							id: 'x0.32480700003207',
+							source: 'bal',
+							target: 'x0.13823845383629',
+						}
+					},
+									{
+						data: {
+							id: 'x0.93189529372933',
+							source: 'table: 0x559829faf5e0',
+							target: 'x0.13823845383629',
+						}
+					},
+				{ data: {id: 'x0.90848465445847', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.6220954524456',
+					source: 'x0.90848465445847',
+					target: 'pos',
+				}
+			},
+							{
+						data: {
+							id: 'x0.83682776467727',
+							source: 'bal',
+							target: 'x0.90848465445847',
+						}
+					},
+									{
+						data: {
+							id: 'x0.81812761156733',
+							source: 'table: 0x55982a116e20',
+							target: 'x0.90848465445847',
+						}
+					},
+				{ data: {id: 'x0.49607442016531', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.33497169070643',
+					source: 'x0.49607442016531',
+					target: 'n',
+				}
+			},
+		{ data: {id: 'x0.39432715968896', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.65883116361631',
+					source: 'x0.39432715968896',
+					target: 'groet',
+				}
+			},
+							{
+						data: {
+							id: 'x0.60888285963278',
+							source: 'groetpos',
+							target: 'x0.39432715968896',
+						}
+					},
+									{
+						data: {
+							id: 'x0.25890611962364',
+							source: 'schrijf',
+							target: 'x0.39432715968896',
+						}
+					},
+									{
+						data: {
+							id: 'x0.15122998512873',
+							source: 'wit',
+							target: 'x0.39432715968896',
+						}
+					},
+				{ data: {id: 'x0.072545010630295', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.10784828202233',
+					source: 'x0.072545010630295',
+					target: 'achtergrond',
+				}
+			},
+							{
+						data: {
+							id: 'x0.64720738197081',
+							source: 'achtergrondkleur',
+							target: 'x0.072545010630295',
+						}
+					},
+									{
+						data: {
+							id: 'x0.3635982965881',
+							source: 'rechthoek',
+							target: 'x0.072545010630295',
+						}
+					},
+				{ data: {id: 'x0.28826952040581', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.33138582032704',
+					source: 'x0.28826952040581',
+					target: 'cyaan',
+				}
+			},
+		{ data: {id: 'x0.091148579535609', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.42732772064736',
+					source: 'x0.091148579535609',
+					target: 'blauw',
+				}
+			},
+					{
+				data: {
+					id: 'x0.93449464670126',
+					source: 'nil',
+					target: 'rechthoek',
+				}
+			},
+					{
+				data: {
+					id: 'x0.5835702980792',
+					source: 'nil',
+					target: 'schrijf',
+				}
+			},
+		{ data: {id: 'x0.26546132297509', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.65874663445109',
+					source: 'x0.26546132297509',
+					target: 't',
+				}
+			},
+		{ data: {id: 'x0.76177780784749', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.48742686514157',
+					source: 'x0.76177780784749',
+					target: 'y',
+				}
+			},
+		{ data: {id: 'x0.15727211681999', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.88303659152381',
+					source: 'x0.15727211681999',
+					target: 'geel',
+				}
+			},
+							{
+						data: {
+							id: 'x0.62566531944352',
+							source: 'bal',
+							target: 'x0.15727211681999',
+						}
+					},
+									{
+						data: {
+							id: 'x0.51771472139178',
+							source: 'table: 0x55982a1fd590',
+							target: 'x0.15727211681999',
+						}
+					},
+				{ data: {id: 'x0.20784359109022', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.55756061270719',
+					source: 'x0.20784359109022',
+					target: 'x',
+				}
+			},
+		{ data: {id: 'x0.42619937585024', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.82993904353582',
+					source: 'x0.42619937585024',
+					target: 'geel',
+				}
+			},
+		{ data: {id: 'x0.3943883769188', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.24432698695191',
+					source: 'x0.3943883769188',
+					target: 'tekening',
+				}
+			},
+							{
+						data: {
+							id: 'x0.32601346323547',
+							source: 'achtergrond',
+							target: 'x0.3943883769188',
+						}
+					},
+									{
+						data: {
+							id: 'x0.72936006809089',
+							source: 'bal',
+							target: 'x0.3943883769188',
+						}
+					},
+									{
+						data: {
+							id: 'x0.63865414664087',
+							source: 'groet',
+							target: 'x0.3943883769188',
+						}
+					},
+				{ data: {id: 'x0.98484462731743', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.33824292725802',
+					source: 'x0.98484462731743',
+					target: 'groetpos',
+				}
+			},
+		{ data: {id: 'x0.89756026626451', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.1360746119805',
+					source: 'x0.89756026626451',
+					target: 'v',
+				}
+			},
+		{ data: {id: 'x0.41078793788831', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.0054085482868406',
+					source: 'x0.41078793788831',
+					target: 'a',
+				}
+			},
+		{ data: {id: 'x0.78328199395131', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.77438623494207',
+					source: 'x0.78328199395131',
+					target: 'groetpos',
+				}
+			},
+							{
+						data: {
+							id: 'x0.29367806869265',
+							source: 'groet',
+							target: 'x0.78328199395131',
+						}
+					},
+									{
+						data: {
+							id: 'x0.11466781381269',
+							source: 'table: 0x55982a1675d0',
+							target: 'x0.78328199395131',
+						}
+					},
+				{ data: {id: 'x0.86553481447768', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.72100578934001',
+					source: 'x0.86553481447768',
+					target: 'achtergrondkleur',
+				}
+			},
+							{
+						data: {
+							id: 'x0.049162460048293',
+							source: 'achtergrond',
+							target: 'x0.86553481447768',
+						}
+					},
+									{
+						data: {
+							id: 'x0.44910511209122',
+							source: 'table: 0x55982a096fa0',
+							target: 'x0.86553481447768',
+						}
+					},
+							{
+				data: {
+					id: 'x0.98646711278077',
+					source: 'nil',
+					target: 'y',
+				}
+			},
+		{ data: {id: 'x0.70790909496504', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.21088291947305',
+					source: 'x0.70790909496504',
+					target: 'zwart',
+				}
+			},
+					{
+				data: {
+					id: 'x0.47389397745668',
+					source: 'nil',
+					target: 'm',
+				}
+			},
+		{ data: {id: 'x0.86518121178503', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.093919510531202',
+					source: 'x0.86518121178503',
+					target: 'bal',
+				}
+			},
+							{
+						data: {
+							id: 'x0.09955929643454',
+							source: 'cirkel',
+							target: 'x0.86518121178503',
+						}
+					},
+									{
+						data: {
+							id: 'x0.38289593271115',
+							source: 'geel',
+							target: 'x0.86518121178503',
+						}
+					},
+									{
+						data: {
+							id: 'x0.30176310162142',
+							source: 'pos',
+							target: 'x0.86518121178503',
+						}
+					},
+									{
+						data: {
+							id: 'x0.65711990914173',
+							source: 'straal',
+							target: 'x0.86518121178503',
+						}
+					},
+							{
+				data: {
+					id: 'x0.80909530856139',
+					source: 'nil',
+					target: 'x',
+				}
+			},
+		{ data: {id: 'x0.13170214469158', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.051508286060536',
+					source: 'x0.13170214469158',
+					target: 'interpoleer',
+				}
+			},
+							{
+						data: {
+							id: 'x0.053422295513294',
+							source: 'a',
+							target: 'x0.13170214469158',
+						}
+					},
+									{
+						data: {
+							id: 'x0.45771560839271',
+							source: 'b',
+							target: 'x0.13170214469158',
+						}
+					},
+									{
+						data: {
+							id: 'x0.78086835415143',
+							source: 'c',
+							target: 'x0.13170214469158',
+						}
+					},
+									{
+						data: {
+							id: 'x0.69207644215416',
+							source: 'm',
+							target: 'x0.13170214469158',
+						}
+					},
+									{
+						data: {
+							id: 'x0.44256023524448',
+							source: 'n',
+							target: 'x0.13170214469158',
+						}
+					},
+				{ data: {id: 'x0.11911128094378', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.58963670841867',
+					source: 'x0.11911128094378',
+					target: 'wit',
+				}
+			},
+							{
+						data: {
+							id: 'x0.57863484722499',
+							source: 'groet',
+							target: 'x0.11911128094378',
+						}
+					},
+									{
+						data: {
+							id: 'x0.52989921929776',
+							source: 'table: 0x55982a0994f0',
+							target: 'x0.11911128094378',
+						}
+					},
+				{ data: {id: 'x0.59504525670551', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.3619168411763',
+					source: 'x0.59504525670551',
+					target: 'achtergrondkleur',
+				}
+			},
+		{ data: {id: 'x0.30428545377417', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.88872332539816',
+					source: 'x0.30428545377417',
+					target: 'paars',
+				}
+			},
+					{
+				data: {
+					id: 'x0.47658465498899',
+					source: 'nil',
+					target: 'achtergrond',
+				}
+			},
+		{ data: {id: 'x0.16982026778619', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.60972911473817',
+					source: 'x0.16982026778619',
+					target: 'uit',
+				}
+			},
+		{ data: {id: 'x0.52574711550295', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.61892538034307',
+					source: 'x0.52574711550295',
+					target: 'pos',
+				}
+			},
+							{
+						data: {
+							id: 'x0.59619622705327',
+							source: 'x',
+							target: 'x0.52574711550295',
+						}
+					},
+									{
+						data: {
+							id: 'x0.23365621000233',
+							source: 'y',
+							target: 'x0.52574711550295',
+						}
+					},
+							{
+				data: {
+					id: 'x0.82980829981612',
+					source: 'nil',
+					target: 'bal',
+				}
+			},
+		{ data: {id: 'x0.070090204044287', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.0988374213217',
+					source: 'x0.070090204044287',
+					target: 'b',
+				}
+			},
+		{ data: {id: 'x0.92372781081299', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.16964950094449',
+					source: 'x0.92372781081299',
+					target: 'rood',
+				}
+			},
+		{ data: {id: 'x0.48173335403285', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.22549091196875',
+					source: 'x0.48173335403285',
+					target: 'straal',
+				}
+			},
+					{
+				data: {
+					id: 'x0.82676941008622',
+					source: 'nil',
+					target: 'groet',
+				}
+			},
+		{ data: {id: 'x0.29082866259423', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.35719305712599',
+					source: 'x0.29082866259423',
+					target: 'wit',
+				}
+			},
+		{ data: {id: 'x0.87827769614676', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.34425095810753',
+					source: 'x0.87827769614676',
+					target: 'c',
+				}
+			},
+					{
+				data: {
+					id: 'x0.8149086655187',
+					source: 'nil',
+					target: 'cirkel',
+				}
+			},
+					]
+		});
+	</script><script>				infostroom.on('mouseover', 'node', function(event) {
+					var node = event.cyTarget || [];
+					$(this).each(function() {$(this).qtip({content:'hello'});});
+					$.qtip({
+					content: 'hello',
+						show: {
+							event: event.type,
+							//ready: true
+						},
+						hide: {
+							event: 'mouseout unfocus'
+						}
+					}, event);
+				});
+			</script></body>

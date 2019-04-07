@@ -1,6 +1,4 @@
-b = (herhaal verbeter) 3
-uit = tekst b
+a = 2
+e = 2 + 3 ·· 9
+uit = tekst "hoi"
 
-verbeter = n → m
-n < 10  ⇒  m = n + 1
-n ≥ 10  ⇒  m = nee

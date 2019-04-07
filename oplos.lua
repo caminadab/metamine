@@ -60,9 +60,10 @@ function punten(exp)
 end
 
 -- it,fout,bekend,exp2naam
+-- oplos: exp → waarde
 function oplos(exp,voor)
 	if isatoom(exp) then return exp,nil,{},{} end
-	if exp.fn.v == [[=]] or exp.fn.v == [[/\]] then
+	if exp.fn.v == [[=]] or exp.fn.v == [[en]] then
 		local eqs
 		if exp.fn.v == [[=]] then
 			eqs = set(exp)
@@ -91,12 +92,14 @@ function oplos(exp,voor)
 
 		-- herschrijf (b ⇒ (a = c)) → (a |= (b ⇒ c))
 		for eq in pairs(eqs) do
-			local a = (eq.fn.v == '=>') 
-			local b = isexp(eq[2]) 
-			local c = b and (eq[2].fn.v == '=')
-			if eq.fn.v == '=>' and isexp(eq[2]) and eq[2].fn.v == '=' then
-				eq.fn.v = '|='
-				eq[1],eq[2] = eq[2][1], {fn=X'=>', eq[1], eq[2][2]}
+			if isfn(eq) then
+				local a = (eq.fn.v == '=>') 
+				local b = isexp(eq[2]) 
+				local c = b and (eq[2].fn.v == '=')
+				if eq.fn.v == '=>' and isexp(eq[2]) and eq[2].fn.v == '=' then
+					eq.fn.v = '|='
+					eq[1],eq[2] = eq[2][1], {fn=X'=>', eq[1], eq[2][2]}
+				end
 			end
 		end
 
@@ -105,7 +108,7 @@ function oplos(exp,voor)
 		local oud = {}
 		for eq in pairs(eqs) do
 			-- a |= b
-			if eq.fn.v == '|=' then
+			if isfn(eq) and eq.fn.v == '|=' then
 				local a,b = eq[1],eq[2]
 				map[a.v] = map[a.v] or {}
 				local v = map[a.v]
@@ -165,7 +168,7 @@ function oplos(exp,voor)
 		-- -> multimap = lijst(:=(A,B))
 		local subst = {}
 		for eq in pairs(eqs) do
-			if eq.fn.v == [[=]] then
+			if isfn(eq) and eq.fn.v == [[=]] then
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
 						--if verboos then print('Probeer', naam, toexp(eq)) end
