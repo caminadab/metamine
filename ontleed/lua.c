@@ -6,12 +6,14 @@
 #include "taal.yy.h"
 #include "lex.yy.h"
 
-int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
+int yyerror(YYLTYPE* loc, void** root, char* waarom, void* scanner, const char* yymsg) {
 	print_loc(*loc);
 	printf(": %s\n", yymsg);
 	node* node = (struct node* )*root;
 
-	//strcpy(&node->fout, yymsg);
+	// lmao zedong
+	strcpy(waarom, yymsg);
+
 	return 0;
 }
 
@@ -108,7 +110,8 @@ int lua_ontleed(lua_State* L) {
 
 	node* wortel;
 
-	int ok = yyparse((void**)&wortel, scanner);
+	char waarom[0x400];
+	int ok = yyparse((void**)&wortel, &waarom, scanner);
 	yylex_destroy(scanner);
 
 	if (wortel)

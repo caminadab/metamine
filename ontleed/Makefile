@@ -22,7 +22,7 @@ lex.yy.h lex.yy.c: lex.l
 	flex --header-file=lex.yy.h lex.l
 
 taal.yy.h taal.yy.c: taal.y
-	bison -d -t --locations --defines=taal.yy.h --output=taal.yy.c taal.y
+	bison --report=all -d -t --locations --defines=taal.yy.h --output=taal.yy.c taal.y
 
 bin/ontleed: main.c taal.yy.c node.c
 	gcc -ggdb -o bin/ontleed main.c node.c taal.yy.c lex.yy.c -lm -llua

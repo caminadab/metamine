@@ -144,6 +144,6 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 [0-9]*\.[0-9]*			{ *yylval = a(yytext); return NAAM; }
 [0-9]*			{ *yylval = a(yytext); return NAAM; }
 [a-zA-Z\-]+	{ *yylval = a(yytext); return NAAM; }
-.						{ printf("bad input character '%s' at line %d\n", yytext, yylineno); return NAAM; }
+.						{ printf("bad input character '%s' at line %d\n", yytext, yylineno); *yylval = a("?"); return NAAM; }
 
 %%
