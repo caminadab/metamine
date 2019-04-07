@@ -57,6 +57,19 @@ function vt(code)
 	end
 
 	local types,typeerfouten = typeer(exp)
+	
+	for i=1,#typeerfouten do
+		local fout = typeerfouten[i]
+		typeerfouten[i] = {
+			type = "typeer",
+			pos = {
+				ch = fout.loc.x1 - 1,
+				line = fout.loc.y1 - 1,
+			},
+			waarom = fout.msg,
+		}
+	end
+
 	local waarde,oplosfouten
 
 	if not typeerfouten or true then
@@ -66,7 +79,7 @@ function vt(code)
 	-- foutje kan gebeuren
 	local fouten
 	if syntaxfouten or typefouten or oplosfouten then
-		fouten = syntaxfouten -- cat(syntaxfouten or {}, typefouten or {}, oplosfouten or {})
+		fouten = cat(syntaxfouten, typefouten) --, oplosfouten or {})
 	end
 
 	local html
@@ -179,7 +192,7 @@ end
 
 
 -- test!
-local j = vt("tekening = [a, 2, 3]\na = 68")
+local j = vt("tekening = [a, 2, 3]\na = 68 || []")
 
 print(json.encode(j))
 
