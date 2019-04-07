@@ -78,8 +78,8 @@ function vt(code)
 
 	-- foutje kan gebeuren
 	local fouten
-	if syntaxfouten or typefouten or oplosfouten then
-		fouten = cat(syntaxfouten, typefouten) --, oplosfouten or {})
+	if syntaxfouten or typeerfouten or oplosfouten then
+		fouten = cat(syntaxfouten, typeerfouten) --, oplosfouten or {})
 	end
 
 	local html
