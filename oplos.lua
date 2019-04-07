@@ -62,7 +62,7 @@ end
 -- it,fout,bekend,exp2naam
 -- oplos: exp → waarde
 function oplos(exp,voor)
-	if isatoom(exp) then return exp,nil,{},{} end
+	if isatoom(exp) then return X'fout',nil,{},{} end
 	if exp.fn.v == [[=]] or exp.fn.v == [[en]] then
 		local eqs
 		if exp.fn.v == [[=]] then

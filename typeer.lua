@@ -302,5 +302,5 @@ function typeer(exp, t)
 
 	print('TYPERING GESLAAGD - PROGRAMMA IS ZINVOL')
 
-	return types, true
+	return types, false
 end

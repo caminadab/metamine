@@ -3,6 +3,7 @@
 # autogen
 *.yy.*
 
+*.output
 bin/
 troep/
 *.so

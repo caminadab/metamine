@@ -7,6 +7,7 @@
 %lex-param {void* scanner}
 
 %parse-param {void** root}
+%parse-param {char* waarom}
 %parse-param {void* scanner}
 
 %{
@@ -30,7 +31,7 @@
 
 	#include "lex.yy.h"
 
-	int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg);
+	int yyerror(YYLTYPE* loc, void** root, char* waarom, void* scanner, const char* yymsg);
 
 	#define A(a) aloc(a,yylloc)
 	#define APPEND(a,b) appendloc(a,b,yylloc)
@@ -101,9 +102,9 @@
 input:
 	%empty						{ *root = $$ = A("en"); }
 |	input exp '\n' 		{ $$ = APPEND($1, $2);  } /* lees regeltje */
-|	input error '\n' 	{ $$ = APPEND($1, metfout(A("?"), "onleesbaar")); yyerrok; } /* lees regeltje */
-|	error  						{ $$ = metfout(A("?"), "onleesbaar"); yyerrok; }
-|	input '\n' 				/* negeer wit */
+|	input error '\n' 	{ $$ = APPEND($1, metfout(A("?"), waarom)); yyerrok; } /* lees regeltje */
+|	input '\n' 				/* negeer witregels */
+|	error  						{ $$ = metfout(A("?"), waarom); yyerrok; }
 ;
 
 /*op:
@@ -142,6 +143,9 @@ single:
 | '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(A(","), $2, $4, $6, $8, yylloc); }
 | '[' list ']'				{ $$ = FN1($2); }
 | '{' set '}'					{ $$ = FN1($2); }
+| '[' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
+| '(' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
+| '{' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
 
 /*| '(' op ')'					{ $$ = $2; }*/
 
@@ -195,9 +199,9 @@ single:
 | '(' ">>" ')'       	{ $$ = A(">>"); }
 | '(' "<<" ')'       	{ $$ = A("<<"); }
 
-|	'(' error ')'				{ $$ = metfout(A("?"), "onleesbaar"); yyerrok; }
-|	'[' error ']'				{ $$ = metfout(A("?"), "onleesbaar"); yyerrok; }
-|	'{' error '}'				{ $$ = metfout(FN2(A("{}"), A("?")), "onleesbaar"); yyerrok; }
+|	'(' error ')'				{ $$ = metfout(A("?"), waarom); yyerrok; }
+|	'[' error ']'				{ $$ = metfout(A("?"), waarom); yyerrok; }
+|	'{' error '}'				{ $$ = metfout(FN2(A("{}"), A("?")), waarom); yyerrok; }
 ;
 
 exp:
