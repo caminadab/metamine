@@ -2,8 +2,10 @@
 package.path = package.path..';../?.lua'
 
 require 'naarlua'
+require 'naarweb'
 require 'infix'
 require 'rapporteer-syntax'
+require 'json'
 
 require 'ontleed'
 require 'typeer'
@@ -15,33 +17,68 @@ assert(server)
 local sockets = {server}
 local coros = {}
 
-os.execute("chromium localhost:1237 &")
+local function cat(...)
+	local abc = {...}
+	local r = {}
+	for i,t in ipairs(abc) do
+		for i,v in ipairs(t) do	
+			r[#r+1] = v
+		end
+	end
+	return r
+end
 
 -- DE webfunctie
--- vt: code → exp?, fouten?
+-- vt: code → {html?, fouten?}
 --   fouten: [ fout... ]
 --   fout: syntaxfout | typefout | oplosfout
---     syntaxfout: { type="syntax", loc, bericht }
+--     syntaxfout: { type="syntax", loc, waarom, waarde }
+--       loc: codemirror-locatie
 --     typefout: { type="typeer", ? }
 --     oplosfout: { type="oplos", ? }
 -- 
 -- de "fout" als los interpretabel object
 function vt(code)
-	local exp,syntaxfouten = ontleed(code)
+	local exp = ontleed(code)
+	local syntaxfouten = {}
+	for exp in boompairs(exp) do
+		if exp.fout then -- TODO niet meer in boom
+			local syntaxfout = {
+				type = "syntax",
+				pos = {
+					ch = exp.loc.x1 - 1,
+					line = exp.loc.y1 - 1
+				},
+				waarom = exp.fout,
+				waarde = "?",
+			}
+			syntaxfouten[#syntaxfouten+1] = syntaxfout
+		end
+	end
+
 	local types,typeerfouten = typeer(exp)
 	local waarde,oplosfouten
 
-	if not typefouten then
-		waarde,oplosfouten = oplos(exp)
+	if not typeerfouten or true then
+		waarde,oplosfouten = oplos(exp, 'tekening')
 	end
 
 	-- foutje kan gebeuren
 	local fouten
 	if syntaxfouten or typefouten or oplosfouten then
-		fouten = cat(syntaxfouten or {}, typefouten or {}, oplosfouten or {})
+		fouten = syntaxfouten -- cat(syntaxfouten or {}, typefouten or {}, oplosfouten or {})
 	end
 
-	return waarde, fouten
+	local html
+
+	if waarde then
+		html = naarweb(waarde)
+	end
+
+	return {
+		html = html,
+		fouten = fouten,
+	}
 end
 
 local statusberichten = {
@@ -100,15 +137,15 @@ function serveer(sock)
 	-- VERTAAL!
 	if pad == '/vt' then
 		local internefout
-		local ok,exp,fouten = xpcall(vt, debug.traceback, inn)
+		local ok,j = xpcall(vt, debug.traceback, inn)
 		if not ok then internefout = exp end
 
 		if not ok then
 			status = 500
-			uit = "INTERNE FOUT!\n"..internefout
+			uit = '<pre>'.."INTERNE FOUT!\n"..internefout..'</pre>'
 		else
 			status = 200
-			uit = naarweb(exp)
+			uit = json.encode(j) -- json(html, fouten)
 		end
 
 	-- LEES!
@@ -139,6 +176,23 @@ function serveer(sock)
 
 	sock:close()
 end
+
+
+-- test!
+local j = vt("tekening = [a, 2, 3]\na = 68")
+
+print(json.encode(j))
+
+for i,fout in ipairs(j.fouten) do
+	print('fout', fout.waarom, fout.pos.line, fout.pos.ch)
+end
+
+-- stop als argumenten!
+local veto = ...
+if veto then return end
+
+os.execute("chromium http://localhost:1237 &")
+
 
 while true do
 	local rs = socket.select(sockets)

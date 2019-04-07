@@ -28,6 +28,7 @@
 .syntaxfout { background: #800; color: #A80; }
 .oplosfout { background: #049; color: #AFF; }
 .typefout { background: #805; color: #FBF; }
+.fouticoon { background: #800; color: #F88; }
 
 #speel0 {
 	margin-top: 0.5cm;
@@ -172,29 +173,38 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	editor.setValue(cirkelcode);
 	editor.setSize(null, '500px');
 
-	var oldErrors = [];
-
 	// jaja!
+	var oldWidgets = [];
+	var oldLineWidgets = [];
 	function setErrors(errors) {
-		var widget = document.createElement("div");
-		widget.classList.add("typefout");
-		widget.innerHTML = '<b>{}</b> (van type <u>int</u>) wordt gebruikt als <u>iets^int</u>'
-		editor.addLineWidget(1, widget);
-	}
+		editor.setValue(editor.getValue());
+		// verwijder oude
+		for (var i = 0; i < oldWidgets.length; i++)
+			oldWidgets[i].parentNode.removeChild(oldWidgets[i]);
+		oldWidgets = [];
 
-	setErrors();
-	alert("OK!");
-
-	if (false ) {
-		var widget = document.createElement("div");
-		widget.innerHTML = "dit klopt niet";
-		var widget2 = document.createElement("div");
-		widget2.style.backgroundColor = 'red';
-		widget2.style.color = 'white';
-		widget2.innerHTML = "a is <i>int</i> maar moet zijn <i>tekst</i>";
-
-		editor.addWidget({line: 2, ch: 13}, widget);
-		editor.addLineWidget(4, widget2);
+		for (var i = 0; i < oldLineWidgets.length; i++)
+			oldLineWidgets[i].clear();
+		oldLineWidgets = [];
+		
+		for (var i = 0; i < errors.length; i++) {
+			var error = errors[i];
+				var inline = document.createElement("div");
+					inline.innerHTML = '<b>⚠</b>';
+					inline.classList.add("fouticoon");
+					inline.style.fontFamily = 'Verdana';
+					inline.style.position = 'absolute';
+					inline.style.marginRight = '0px';
+					inline.style.marginTop = '-18px';
+					inline.style.zIndex	= '999';
+			oldWidgets.push(inline);
+			var a = editor.addWidget(error.pos, inline, {above: true});
+				var message = document.createElement("div");
+					message.classList.add("typefout");
+					message.innerHTML = error.waarom;
+			var b = editor.addLineWidget(error.pos.line, message);
+			oldLineWidgets.push(b);
+		}
 	}
 
 	// magische symbolen
@@ -296,9 +306,10 @@ uit = "Nee"
 
 	speelknop.addEventListener("click", function() {
 		fetch('http://localhost:1237/vt', {method: "POST", body: editor.getValue() + cheatz} )
-			.then(x => x.text())
-			.then(x => {
-				resultaat.innerHTML = x;
+			.then(x => x.json())
+			.then(j => {
+				resultaat.innerHTML = j.html;
+				setErrors(j.fouten);
 
 				var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
 				for (var i = 0; i < scripts.length; i++) {
