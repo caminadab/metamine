@@ -280,7 +280,7 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	var tekstknop = document.getElementById("tekst");
 	tekstknop.style.display = 'none'; // jaja
 	tekstknop.addEventListener("click", function() {
-		fetch('http://localhost:1237/vt', {method: "POST", body: editor.getValue()} )
+		fetch('/vt', {method: "POST", body: editor.getValue()} )
 			.then(x => x.text())
 			.then(x => resultaat.innerHTML = x);
 	});

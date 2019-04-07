@@ -204,7 +204,7 @@ end
 local veto = ...
 if veto then return end
 
-os.execute("chromium http://localhost:1237 &")
+-- os.execute("chromium http://localhost:1237 &")
 
 
 while true do

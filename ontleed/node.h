@@ -13,7 +13,7 @@ struct node {
 	node* prev;
 
 	// foutbericht
-	char fout[0x1000];
+	char fout[0x100];
 
 	YYLTYPE loc;
 };
