@@ -95,7 +95,7 @@ blauw : kleur
 geel : kleur
 paars : kleur
 ]]
-function typeer(exp)
+function typeer0(exp)
 	local t = {}
 	-- type = boom | set van types
 	--   gebruikt set van types
@@ -119,6 +119,9 @@ function typeer(exp, t)
 	local biebtypes = {} -- types: naam → type
 	local types = {} -- eigen types: exp → type
 	local naamtypes = {} -- hash → type
+	local fouten = {} -- fouten: [fout...]
+	-- collision
+	-- collisie: { bericht = "'a' moet zijn 'int', maar is 'tekst', exp = {bronpos, waarde}, fout = {bronpos, type}, moet = {bronpos, type} }
 
 	-- bieb
 	for i,v in ipairs(bieb) do
@@ -160,12 +163,17 @@ function typeer(exp, t)
 				local msg = string.format('%s@%s: "%s" is "%s" maar moet zijn "%s"',
 					bron, loctekst(exp.loc),
 					combineer(exp),
-					combineer(type), combineer(types[exp])
+					combineer(types[exp]),
+					combineer(type)
 				)
-				print(msg)
-				print('Typegraaf:')
-				print(typegraaf:tekst())
-				return types,false
+				if not fouten[msg] then
+					print(msg)
+					fouten[#fouten+1] = {loc = exp.loc, msg = msg}
+					fouten[msg] = true
+				end
+				--print('Typegraaf:')
+				--print(typegraaf:tekst())
+				return types,fouten
 			end
 		else
 			T = type
@@ -189,7 +197,7 @@ function typeer(exp, t)
 			T = biebtypes[exphash(exp)] -- voorgedefinieerd is makkelijk
 		end
 		if T then
-			print('MAKKELIJK', exphash(exp), exphash(T)) 
+			--print('MAKKELIJK', exphash(exp), exphash(T)) 
 			types[exp] = T
 			typegraaf:link(set('iets'), exphash(T))
 		end
@@ -279,11 +287,11 @@ function typeer(exp, t)
 		
 				if N(tfn) ~= math.huge then
 					for i = 1, N(tfn) do
-						print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
+						--print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
 						weestype(exp[i], A(tfn, i))
 					end
 				end
-				print('  RET', exphash(tfn[2]))
+				--print('  RET', exphash(tfn[2]))
 				weestype(exp, tfn[2])
 			end
 		end
@@ -302,5 +310,5 @@ function typeer(exp, t)
 
 	print('TYPERING GESLAAGD - PROGRAMMA IS ZINVOL')
 
-	return types, false
+	return types, fouten
 end

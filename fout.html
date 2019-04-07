@@ -45,7 +45,21 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-							]
+				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				data: {
+					id: 'x0.84018771715471',
+					source: 'nil',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.39438292681909',
+					source: 'nil',
+					target: 'a',
+				}
+			},
+					]
 		});
 	</script><script>infostroom = cytoscape({
 			container: document.getElementById('infostroom'),
@@ -82,7 +96,21 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-							]
+				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				data: {
+					id: 'x0.78309922375861',
+					source: 'nil',
+					target: 'uit',
+				}
+			},
+					{
+				data: {
+					id: 'x0.79844003347607',
+					source: 'nil',
+					target: 'a',
+				}
+			},
+					]
 		});
 	</script><script>				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

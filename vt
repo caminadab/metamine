@@ -92,7 +92,7 @@ end
 assert(asb, 'syntaxfout')
 
 -- typeer!
-local types,ok,msg = typeer(asb)
+local types,fouten = typeer(asb)
 
 local doel = "uit"
 if tekening then doel = "tekening" end
@@ -141,7 +141,6 @@ if opt.w or opt.web then
 	else
 		print(uit)
 	end
-		
 
 	return
 end
@@ -179,7 +178,6 @@ if opt.d or opt.doe then
 	end
 
 else
-	--uit = bouw(plan)
 	if opt.l or opt.lua then
 		uit = naarlua(uit)
 	else
