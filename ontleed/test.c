@@ -11,6 +11,13 @@ a = 1  → &( =(a 1) =(b 2) )
 
 int test() {
 	char* tests[][2] = {
+		// zieke blokken h3l
+		{"als a dan b", "=>(a b)"},
+		{"als a dan\n\tb", "=>(a b)"},
+		{"als a \n\tb", "=>(a b)"},
+		{"als\n\ta\n\tb\ndan\n\tc\n\td", "=>(/\\(a b) /\\(c d))"},
+		{0,0},
+
 		// integratie
 		{"\n", "en"},
 		{"\n\n", "en"},
