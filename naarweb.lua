@@ -69,7 +69,8 @@ function stap() {
 	}
 }
 
-setInterval(stap, 16);
+if (window.istap) clearInterval(window.istap);
+window.istap = setInterval(stap, 16);
 </script>
 ]]
 function naarweb(exp)
