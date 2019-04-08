@@ -193,12 +193,7 @@ end
 
 -- test!
 local j = vt("tekening = [a, 2, 3]\na = 68 || []")
-
 print(json.encode(j))
-
-for i,fout in ipairs(j.fouten) do
-	print('fout', fout.waarom, fout.pos.line, fout.pos.ch)
-end
 
 -- stop als argumenten!
 local veto = ...
@@ -208,7 +203,7 @@ if veto then return end
 
 
 while true do
-	local rs = socket.select(sockets)
+	local rs = socket.select(sockets, nil, 0.16) -- rapido
 
 	-- connect
 	if rs[1] == server then

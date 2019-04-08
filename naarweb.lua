@@ -12,6 +12,7 @@ var canvas = document.getElementById('teke-ning');
 var ctx = canvas.getContext('2d');
 
 function stap() {
+	
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	var tekening = %s; //doe();
 	for (var i = 0; i < tekening.length; i++) {
@@ -69,7 +70,18 @@ function stap() {
 	}
 }
 
-setInterval(stap, 16);
+var stap;
+
+function probeerstap() {
+	try {
+		stap();
+	}
+	catch (e) {
+		clearInterval(stap);
+	}
+}
+
+stap = setInterval(probeerstap, 16);
 </script>
 ]]
 function naarweb(exp)

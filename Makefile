@@ -2,7 +2,7 @@ linux:
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
-	ln -sf bin/ontleed.so goo/ontleed.so
+	ln -sf ../bin/ontleed.so goo/ontleed.so
 	ln -sf ../vt bin/vt
 	ln -sf ../doe bin/doe
 	
