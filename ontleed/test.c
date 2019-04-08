@@ -14,8 +14,10 @@ int test() {
 		// zieke blokken h3l
 		{"als a dan b", "=>(a b)"},
 		{"als a dan\n\tb", "=>(a b)"},
-		{"als a \n\tb", "=>(a b)"},
-		{"als\n\ta\n\tb\ndan\n\tc\n\td", "=>(/\\(a b) /\\(c d))"},
+		{"als\n\ta\ndan\n\tb", "=>(a b)"},
+		//{"als\n\ta\n\tb\ndan\n\tc\n\td", "=>(/\\(a b) /\\(c d))"},
+		//{"als a dan\n\tb = 10\nanders\n\tb = 20", "en(=>(a =(b 10)) =>(!(a) =(b 20)))"},
+		//{"als a \n\tb", "=>(a b)"},
 		{0,0},
 
 		// integratie
