@@ -27,7 +27,7 @@
 
 .syntaxfout { background: #800; color: #A80; }
 .oplosfout { background: #049; color: #AFF; }
-.typefout { background: #805; color: #FBF; }
+.typeerfout { background: #805; color: #FBF; }
 .fouticoon { background: #800; color: #F88; }
 
 #speel0 {
@@ -200,7 +200,7 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 			oldWidgets.push(inline);
 			var a = editor.addWidget(error.pos, inline, {above: true});
 				var message = document.createElement("div");
-					message.classList.add("typefout");
+					message.classList.add(error.type+"fout");
 					message.innerHTML = error.waarom;
 			var b = editor.addLineWidget(error.pos.line, message);
 			oldLineWidgets.push(b);
@@ -305,7 +305,7 @@ uit = "Nee"
 `;
 
 	speelknop.addEventListener("click", function() {
-		fetch('http://localhost:1237/vt', {method: "POST", body: editor.getValue() + cheatz} )
+		fetch('/vt', {method: "POST", body: editor.getValue() + cheatz} )
 			.then(x => x.json())
 			.then(j => {
 				resultaat.innerHTML = j.html;
