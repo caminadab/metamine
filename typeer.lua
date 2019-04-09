@@ -111,30 +111,30 @@ function typeer0(exp)
 end
 
 local bieb = ontleed(bieb)
+biebtypes = {} -- types: naam → type
+
+-- bieb
+local typegraaf = stroom()
+typegraaf:link({}, "iets")
+for i,v in ipairs(bieb) do
+	local symbool = exphash(v[1])
+	local type = v[2]
+	biebtypes[exphash(v[1])] = type
+	typegraaf:link(set(exphash(type)), symbool)
+	--print('BIEB', exphash(v[1]), exphash(type))
+end
 
 function typeer(exp, t)
 	local boom = exp
 	local bron = exp.bron or '?'
-	local typegraaf = stroom()
-	typegraaf:link({}, "iets")
 	local typegraaf = typegraaf:kopieer()
 
-	local biebtypes = {} -- types: naam → type
 	local types = {} -- eigen types: exp → type
 	local naamtypes = {} -- hash → type
 	local fouten = {} -- fouten: [fout...]
 	local oorzaakloc = {} -- exp → loc
 	-- collision
 	-- collisie: { bericht = "'a' moet zijn 'int', maar is 'tekst', exp = {bronpos, waarde}, fout = {bronpos, type}, moet = {bronpos, type} }
-
-	-- bieb
-	for i,v in ipairs(bieb) do
-		local symbool = exphash(v[1])
-		local type = v[2]
-		biebtypes[exphash(v[1])] = type
-		typegraaf:link(set(exphash(type)), symbool)
-		--print('BIEB', exphash(v[1]), exphash(type))
-	end
 
 	-- eigen :)
 	for exp in boompairsdfs(exp, t) do
@@ -197,7 +197,7 @@ function typeer(exp, t)
 			oorzaakloc[exp] = typeoorzaakloc or ol or exp.loc
 			typegraaf:link(set'iets', exphash(T))
 			if verboos then
-				print('TYPEER', exphash(exp)..': '..exphash(T))
+				print('TYPEER', exphash(exp)..': '..exphash(T)..'  vanwege '..loctekst(typeoorzaakloc or ol or exploc))
 			end
 		end
 	end
@@ -243,7 +243,7 @@ function typeer(exp, t)
 		return exp[1]
 	end
 
-	for i=1,4 do
+	for i=1,10 do
 
 	-- rest van de types
 	local T = {}
@@ -315,16 +315,22 @@ function typeer(exp, t)
 		
 				-- speciaal voor '→'
 				if f == '->' then -- (a → b) : (
+					-- argumenten
+					--if isfn(fn) and fn.fn.v = ',' then
+						--for 
+
+					-- functie
 					if naamtypes[exphash(a)] and types[b] then
-						weestype(a, naamtypes[exphash(a)]) ; oorzaakloc[a] = oorzaakloc[exphash(a)]
-						weestype(b, types[b]) ; oorzaakloc[b] = oorzaakloc[b] or fn.loc
-						weestype(exp, X('->', naamtypes[exphash(a)], types[b])) ; oorzaakloc[exp] = fn.loc
+						weestype(a, naamtypes[exphash(a)], oorzaakloc[exphash(a)])
+						weestype(b, types[b], oorzaakloc[b] or fn.loc)
+						weestype(exp, X('->', naamtypes[exphash(a)], types[b]), fn.loc)
 					elseif types[a] and types[b] then
 						weestype(exp, X('->', types[a], types[b])) ; oorzaakloc[exp] = exp.loc
 					elseif types[b] then
 						--weestype(exp, X('->', 'iets', types[b])) ; oorzaakloc[exp] = b.loc
 					end
 				end
+
 			end
 
 			if tfn and #tfn == 2 and tfn.fn.v == '->' then
@@ -340,10 +346,12 @@ function typeer(exp, t)
 					print(msg)
 					print(exphash(tfn))
 					print(exphash(exp))
-					os.exit()
 				end
 		
 				if N(tfn) ~= math.huge then
+					if tfn.loc ~= nil then
+						print('PER STUK', exphash(exp), loctekst(tfn.loc))
+					end
 					for i = 1, N(tfn) do
 						--print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
 						weestype(exp[i], A(tfn, i), exp.fn.loc) ; oorzaakloc[exp[i]] = exp[i].loc

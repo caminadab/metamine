@@ -119,8 +119,12 @@ if verboos then
 		end
 		
 		-- type
-		if types[t] then
-			label[t] = combineer(types[t])
+		if types[t] or biebtypes[t] then
+			if isatoom(t) then
+				local bt = biebtypes[exphash(t)]
+				label[t] = combineer(types[t] or bt)
+				print(loctekst(t.loc), label[t])
+			end
 		end
 		
 		klasse[t] = 'fout'
