@@ -1,1 +1,2 @@
-uit = a + "hoi"
+a = 3 + []
+uit = tekst a

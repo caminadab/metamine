@@ -50,7 +50,7 @@
 %token ANDERS "anders"
 %token NIN "!:"
 %token SOM
-%token DAN "=>"
+%token IMPLICEERT "=>"
 %token TO "->"
 %token MAPLET "-->"
 %token ASS ":="
@@ -209,12 +209,14 @@ single:
 ;
 
 exp:
-	single							{ $$ = FN1($1); }
+
+ single
 
 /* als ... dan ... */
-| ALS exp DAN exp			{ $$ = FN3(A("=>"), $2, $4); }
-| ALS exp DAN '\n' exp			{ $$ = FN3(A("=>"), $2, $5); }
-| ALS '\n' exp '\n' DAN '\n' exp { $$ = FN3(A("=>"), $3, $7); }
+| ALS exp DAN exp %prec ALS			{ $$ = FN3(A("=>"), $2, $4); }
+| ALS exp DAN '\n' exp %prec ALS			{ $$ = FN3(A("=>"), $2, $5); }
+| ALS exp '\n' exp %prec ALS			{ $$ = FN3(A("=>"), $2, $4); }
+| ALS '\n' exp '\n' DAN '\n' exp %prec ALS { $$ = FN3(A("=>"), $3, $7); }
 /*
 | ALS exp '\n' exp			{ $$ = FN3(A("=>"), $2, $4); }
 */
@@ -226,7 +228,7 @@ als exp
 anders
 	b = 3
 */
-| ALS exp DAN '\n' exp '\n' ANDERS '\n' exp { $$ = FN3(A("/\\"), FN3(A("=>"), $2, $5), FN3(A("=>"), FN2(A("!"), $2), $9)); }
+| ALS exp DAN '\n' exp '\n' ANDERS '\n' exp %prec ALS { $$ = FN3(A("/\\"), FN3(A("=>"), $2, $5), FN3(A("=>"), FN2(A("!"), $2), $9)); }
 
 | exp '^' exp       	{ $$ = FN3(A("^"), $1, $3); }
 | exp '_' exp       	{ $$ = FN3(A("_"), $1, $3); }

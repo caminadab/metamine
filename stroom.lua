@@ -326,6 +326,7 @@ function stroom()
 		maglink = maglink,
 		ontlink = ontlink,
 		bereikbaar_disj = bereikbaar_disj,
+		stroomopwaarts = bereikbaar_disj,
 		tekst = tekst,
 		topologisch = topologisch,
 		topo = topologisch,
