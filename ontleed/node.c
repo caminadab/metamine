@@ -170,6 +170,7 @@ node* karakter(int ch) {
 node* tekst(node* str0) {
 	char* str = str0->data;
 	node* t = exp1(a("[]"));
+	t->tekst = 1;
 	t->loc = str0->loc;
 	for (int i = 1; str[i+1]; i++) {
 		char ch[16];

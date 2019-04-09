@@ -63,13 +63,15 @@ nee : bit
 (iets → int) : iets
 iets^int : (iets → int)
 int^int : (int → int)
-lijst iets : int^int
+lijst iets : iets^int
+lijst iets : lijst
 
 data : int → byte
 teken : int
 lijst int : lijst iets
+uit : tekst
 tekst : lijst int
-uit : lijst iets
+
 tijdstip : getal
 int : getal
 nu : tijdstip
@@ -163,17 +165,21 @@ function typeer(exp, t)
 				T = type or error('geen type')
 			else
 				-- c.code@7:11-12: "a" is "int" maar moet zijn "bit"
+				local isloc = oorzaakloc[exp] or exp.loc
+				local moetloc = typeoorzaakloc or oorzaakloc[exphash(exp)]
 				local msg = string.format('%s@%s: Typefout: "%s" is "%s" (bron: %s) maar moet zijn "%s" (bron: %s)',
 					bron, loctekst(exp.loc), -- locatie
 					combineer(exp), -- exp
 					combineer(types[exp]), -- echte type
-					loctekst(oorzaakloc[exp] or exp.loc), -- echte type bron
+					loctekst(isloc), -- echte type bron
 					combineer(type), -- wordt verwacht als
-					typeoorzaakloc and loctekst(typeoorzaakloc) or loctekst(oorzaakloc[exphash(exp)]) -- "" "" bron
+					loctekst(moetloc) -- "" "" bron
 				)
+				-- kort: exp, istype, moettype
+				local kort = '"%s" is "%s" maar moet zijn "%s"'
 				if not fouten[msg] then
 					print(msg)
-					fouten[#fouten+1] = {loc = exp.loc, msg = msg}
+					fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort, isloc = isloc, moetloc = moetloc}
 					fouten[msg] = true
 				end
 				--print('Typegraaf:')
@@ -191,7 +197,7 @@ function typeer(exp, t)
 			oorzaakloc[exp] = typeoorzaakloc or ol or exp.loc
 			typegraaf:link(set'iets', exphash(T))
 			if verboos then
-				print('TYPEER', exphash(exp)..'['..loctekst(exp.loc)..'] : '..exphash(T))
+				print('TYPEER', exphash(exp)..': '..exphash(T))
 			end
 		end
 	end
@@ -201,6 +207,8 @@ function typeer(exp, t)
 		local T
 		if tonumber(exp.v) and exp.v % 1 == 0 then T = X'int'
 		elseif tonumber(exp.v) then T = X'kommagetal'
+		elseif exp.tekst then
+			T = X'tekst'
 		elseif isfn(exp) and exp.fn.v == '[]' then
 			T = X'lijst'
 		elseif biebtypes[exphash(exp)] then
@@ -287,6 +295,23 @@ function typeer(exp, t)
 					weestype(a, X'bit', exp.fn.loc)
 					if types[b] then weestype(exp, types[b], oorzaakloc[b]) ; oorzaakloc[exp] = b.loc end 
 				end
+
+				-- speciaal voor ',' (tupel)
+				-- ℝ × ℝ
+				if f == ',' then
+					T = {fn=X','}
+					for i,v in ipairs(exp) do
+						if types[v] then
+							T[i] = types[v]
+						else
+							T = nil
+							break
+						end
+					end
+					if T then
+						weestype(exp, T, exp.loc)
+					end
+				end
 		
 				-- speciaal voor '→'
 				if f == '->' then -- (a → b) : (
@@ -297,7 +322,7 @@ function typeer(exp, t)
 					elseif types[a] and types[b] then
 						weestype(exp, X('->', types[a], types[b])) ; oorzaakloc[exp] = exp.loc
 					elseif types[b] then
-						weestype(exp, X('->', 'iets', types[b])) ; oorzaakloc[exp] = b.loc
+						--weestype(exp, X('->', 'iets', types[b])) ; oorzaakloc[exp] = b.loc
 					end
 				end
 			end

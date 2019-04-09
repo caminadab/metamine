@@ -15,6 +15,10 @@ struct node {
 	// foutbericht
 	char fout[0x100];
 
+	// is dit tekst?
+	int tekst;
+
+	// locatie
 	YYLTYPE loc;
 };
 

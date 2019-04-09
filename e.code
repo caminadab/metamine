@@ -1,2 +1,3 @@
-a = 3 + []
-uit = tekst a
+f = (a, b) → a + b
+c = f(3, "hoi")
+uit = tekst c

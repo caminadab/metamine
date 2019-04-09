@@ -85,7 +85,9 @@ local javascript = function(broncode)
     return bieb.javascript(broncode)
 end
 local tabel = function(t)
-    local t = t or {is={lijst=true}}
+    local t = t or {}
+    t.is = t.is or {}
+    t.is.lijst = true
     local mt = {}
     function mt:__call(i)
         return t[i+1]
@@ -270,9 +272,14 @@ local function _len(t)
         return #t
     end
 end
-local B = a == 2
-local E = tabel{104,111,105}
-local D = tekst(E)
-local C = uit == D
-local A = en(B,?,C)
+local D = tabel{104,111,105}
+local C = tabel{3,D}
+local E = function (_A)
+    local G = _A(0)
+    local H = _A(1)
+    local F = G + H
+    return F
+end
+local B = E(C)
+local A = tekst(B)
 return A

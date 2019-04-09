@@ -43,13 +43,14 @@
 
 %}
 
-%token NAAM
-%token TEKST
+%token '\n' "regeleinde"
+%token NAAM "naam"
+%token TEKST "tekst"
 %token ALS "als"
 %token DAN "dan"
 %token ANDERS "anders"
 %token NIN "!:"
-%token SOM
+%token SOM "som"
 %token IMPLICEERT "=>"
 %token TO "->"
 %token MAPLET "-->"
