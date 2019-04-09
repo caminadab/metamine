@@ -45,21 +45,42 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'bal'}, classes: 'waarde' },{ data: {id: 'speler'}, classes: 'waarde' },{ data: {id: 'tekening'}, classes: 'waarde' },			{
 				data: {
 					id: 'x0.84018771715471',
 					source: 'nil',
-					target: 'uit',
+					target: 'bal',
 				}
 			},
 					{
 				data: {
 					id: 'x0.39438292681909',
 					source: 'nil',
-					target: 'a',
+					target: 'speler',
 				}
 			},
-					]
+		{ data: {id: 'x0.78309922375861', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.79844003347607',
+					source: 'x0.78309922375861',
+					target: 'tekening',
+				}
+			},
+							{
+						data: {
+							id: 'x0.91164735793678',
+							source: 'bal',
+							target: 'x0.78309922375861',
+						}
+					},
+									{
+						data: {
+							id: 'x0.19755136929338',
+							source: 'speler',
+							target: 'x0.78309922375861',
+						}
+					},
+							]
 		});
 	</script><script>infostroom = cytoscape({
 			container: document.getElementById('infostroom'),
@@ -96,21 +117,42 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
+				{ data: {id: 'bal'}, classes: 'waarde' },{ data: {id: 'speler'}, classes: 'waarde' },{ data: {id: 'tekening'}, classes: 'waarde' },			{
 				data: {
-					id: 'x0.78309922375861',
+					id: 'x0.33522275571489',
 					source: 'nil',
-					target: 'uit',
+					target: 'bal',
 				}
 			},
 					{
 				data: {
-					id: 'x0.79844003347607',
+					id: 'x0.7682295948119',
 					source: 'nil',
-					target: 'a',
+					target: 'speler',
 				}
 			},
-					]
+		{ data: {id: 'x0.27777471080319', exp: ''}, classes: 'hyper' },			{
+				data: {
+					id: 'x0.55396995579543',
+					source: 'x0.27777471080319',
+					target: 'tekening',
+				}
+			},
+							{
+						data: {
+							id: 'x0.47739705186216',
+							source: 'bal',
+							target: 'x0.27777471080319',
+						}
+					},
+									{
+						data: {
+							id: 'x0.62887092476192',
+							source: 'speler',
+							target: 'x0.27777471080319',
+						}
+					},
+							]
 		});
 	</script><script>				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

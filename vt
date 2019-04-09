@@ -94,6 +94,10 @@ assert(asb, 'syntaxfout')
 -- typeer!
 local types,fouten = typeer(asb)
 
+if #fouten > 0 then
+	os.exit()
+end
+
 local doel = "uit"
 if tekening then doel = "tekening" end
 

@@ -50,7 +50,7 @@ nee : bit
 (/) :  (getal, getal) → getal
 (^) :  (getal, getal) → getal
 (#) :  (iets^int) → int
-([) : iets → iets^int
+([) : (lijst int)
 (<=) :  (getal, getal) → bit
 (>=) :  (getal, getal) → bit
 (>) :  (getal, getal) → bit
@@ -58,17 +58,18 @@ nee : bit
 ;(=) :  (iets, iets) → bit 
 ;(⇒) :  (bit,iets) → iets 
 ;(→) :  iets → (iets → iets)
-(||) :  (iets^int, iets^int) → iets^int
+(||) :  (lijst iets, lijst iets) → lijst iets
 (iets → iets) : iets
 (iets → int) : iets
 iets^int : (iets → int)
 int^int : (int → int)
+lijst iets : int^int
 
 data : int → byte
 teken : int
-(int → teken) : (int → int)
-tekst : (iets → tekst)
-uit : tekst
+lijst int : lijst iets
+tekst : lijst int
+uit : lijst iets
 tijdstip : getal
 int : getal
 nu : tijdstip
@@ -120,6 +121,7 @@ function typeer(exp, t)
 	local types = {} -- eigen types: exp → type
 	local naamtypes = {} -- hash → type
 	local fouten = {} -- fouten: [fout...]
+	local oorzaakloc = {} -- exp → loc
 	-- collision
 	-- collisie: { bericht = "'a' moet zijn 'int', maar is 'tekst', exp = {bronpos, waarde}, fout = {bronpos, type}, moet = {bronpos, type} }
 
@@ -144,27 +146,30 @@ function typeer(exp, t)
 	end
 
 	-- verenigt types
-	local function weestype(exp, type)
-		local T
+	local function weestype(exp, type, typeoorzaakloc)
+		local T,ol
+		--print('wees type', exphash(exp) .. ' : '..exphash(type), typeoorzaakloc and loctekst(typeoorzaakloc))
 		if types[exp] and exphash(types[exp]) ~= exphash(type) then
 			local a = exphash(type)
 			local b = exphash(types[exp])
 
 			-- type ⊂ T(exp)
 			-- oftewel: type is specifieker
-			if typegraaf:bereikbaar_disj(a, b) then
+			if typegraaf:stroomopwaarts(a, b) then
 				T = types[exp] or error('geen type')
 			-- T(exp) ⊂ type
 			-- oftewel: T is specifieker
-			elseif typegraaf:bereikbaar_disj(b, a) then
+			elseif typegraaf:stroomopwaarts(b, a) then
 				T = type or error('geen type')
 			else
 				-- c.code@7:11-12: "a" is "int" maar moet zijn "bit"
-				local msg = string.format('%s@%s: "%s" is "%s" maar moet zijn "%s"',
-					bron, loctekst(exp.loc),
-					combineer(exp),
-					combineer(types[exp]),
-					combineer(type)
+				local msg = string.format('%s@%s: Typefout: "%s" is "%s" (bron: %s) maar moet zijn "%s" (bron: %s)',
+					bron, loctekst(exp.loc), -- locatie
+					combineer(exp), -- exp
+					combineer(types[exp]), -- echte type
+					loctekst(oorzaakloc[exp] or exp.loc), -- echte type bron
+					combineer(type), -- wordt verwacht als
+					typeoorzaakloc and loctekst(typeoorzaakloc) or loctekst(oorzaakloc[exphash(exp)]) -- "" "" bron
 				)
 				if not fouten[msg] then
 					print(msg)
@@ -176,11 +181,14 @@ function typeer(exp, t)
 				return types,fouten
 			end
 		else
-			T = type
+			T,ol = type,exp.loc
 		end
+		-- ECHT TYPEREN!
 		if T and not types[exp] or exphash(types[exp]) ~= exphash(T) then
 			types[exp] = T
 			naamtypes[exphash(exp)] = T
+			oorzaakloc[exphash(exp)] = typeoorzaakloc or ol or exp.loc
+			oorzaakloc[exp] = typeoorzaakloc or ol or exp.loc
 			typegraaf:link(set'iets', exphash(T))
 			if verboos then
 				print('TYPEER', exphash(exp)..'['..loctekst(exp.loc)..'] : '..exphash(T))
@@ -193,6 +201,8 @@ function typeer(exp, t)
 		local T
 		if tonumber(exp.v) and exp.v % 1 == 0 then T = X'int'
 		elseif tonumber(exp.v) then T = X'kommagetal'
+		elseif isfn(exp) and exp.fn.v == '[]' then
+			T = X'lijst'
 		elseif biebtypes[exphash(exp)] then
 			T = biebtypes[exphash(exp)] -- voorgedefinieerd is makkelijk
 		end
@@ -234,47 +244,70 @@ function typeer(exp, t)
 
 			local tfn = types[exp.fn]
 
+			-- deze exp heeft al een type
 			if naamtypes[exphash(exp)] then
 				local T = naamtypes[exphash(exp)] -- voorgedefinieerd is makkelijk
-				weestype(exp, T)
+				weestype(exp, T, oorzaakloc[exphash(exp)])
 
 			elseif isfn(exp) then
-				local f,a,b = exp.fn.v, exp[1], exp[2]
+				local fn,f,a,b = exp.fn, exp.fn.v, exp[1], exp[2]
 
 				-- speciaal voor '='
 				if f == '=' then
-					if types[a] then weestype(b, types[a])
-					elseif types[b] then weestype(a, types[b])
+					if types[a] and types[b] and exphash(types[a]) ~= exphash(types[b]) then
+						-- b : a
+						if typegraaf:stroomopwaarts(a, b) then
+							weestype(a, types[b], oorzaakloc[exp])
+						-- a : b
+						elseif typegraaf:stroomopwaarts(b, a) then
+							weestype(b, types[a], oorzaakloc[b])
+						else
+							fouten[#fouten+1] = {loc = exp.loc, msg = msg}
+							local msg = string.format('%s@%s: Typefout: links is "%s" (bron: %s), rechts is "%s" (bron: %s)',
+								bron, loctekst(exp.loc), -- locatie
+								combineer(types[a]), -- links
+								loctekst(oorzaakloc[a] or a.loc), -- links bron
+								combineer(types[b]), -- rechts
+								loctekst(oorzaakloc[b] or b.loc) -- rechts bron
+							)
+							if not fouten[msg] then
+								print(msg)
+								fouten[#fouten+1] = {loc = exp.loc, msg = msg}
+								fouten[msg] = true
+							end
+						end
+					elseif types[a] then weestype(b, types[a], exp.loc) ; oorzaakloc[b] = exp.loc
+					elseif types[b] then weestype(a, types[b], exp.loc) ; oorzaakloc[a] = exp.loc
 					end
-					weestype(exp, X'bit')
+					weestype(exp, X'bit') ; oorzaakloc[exp] = exp.fn.loc
 				end
 		
 				-- speciaal voor '⇒'
 				if f == '=>' then
-					weestype(exp[1], X'bit')
-					if types[b] then weestype(exp, types[b]) end 
+					weestype(a, X'bit', exp.fn.loc)
+					if types[b] then weestype(exp, types[b], oorzaakloc[b]) ; oorzaakloc[exp] = b.loc end 
 				end
 		
 				-- speciaal voor '→'
 				if f == '->' then -- (a → b) : (
 					if naamtypes[exphash(a)] and types[b] then
-						weestype(a, naamtypes[exphash(a)])
-						weestype(b, types[b])
-						weestype(exp, X('->', naamtypes[exphash(a)], types[b]))
+						weestype(a, naamtypes[exphash(a)]) ; oorzaakloc[a] = oorzaakloc[exphash(a)]
+						weestype(b, types[b]) ; oorzaakloc[b] = oorzaakloc[b] or fn.loc
+						weestype(exp, X('->', naamtypes[exphash(a)], types[b])) ; oorzaakloc[exp] = fn.loc
 					elseif types[a] and types[b] then
-						weestype(exp, X('->', types[a], types[b]))
+						weestype(exp, X('->', types[a], types[b])) ; oorzaakloc[exp] = exp.loc
 					elseif types[b] then
-						weestype(exp, X('->', 'iets', types[b]))
+						weestype(exp, X('->', 'iets', types[b])) ; oorzaakloc[exp] = b.loc
 					end
 				end
 			end
 
-			if tfn and #tfn == 2 then
+			if tfn and #tfn == 2 and tfn.fn.v == '->' then
 				assert(#tfn == 2, exphash(tfn))
 
 				-- niet het gewenste aantal argumenten
 				if N(tfn) ~= #exp and N(tfn) ~= math.huge then
-					local msg = string.format('%s@%s: "%s" heeft %d argumenten maar moet er %d hebben',
+					local msg = string.format('%s@%s: Typefout: "%s" heeft %d argumenten maar moet er %d hebben',
 						bron, loctekst(exp.loc),
 						combineer(exp),
 						#exp, N(tfn)
@@ -288,11 +321,11 @@ function typeer(exp, t)
 				if N(tfn) ~= math.huge then
 					for i = 1, N(tfn) do
 						--print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
-						weestype(exp[i], A(tfn, i))
+						weestype(exp[i], A(tfn, i), exp.fn.loc) ; oorzaakloc[exp[i]] = exp[i].loc
 					end
 				end
 				--print('  RET', exphash(tfn[2]))
-				weestype(exp, tfn[2])
+				weestype(exp, tfn[2], exp.fn.loc) ; oorzaakloc[exp] = exp.loc
 			end
 		end
 	end

@@ -63,7 +63,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "×"					{ *yylval = a("xx"); return CART; }
 "→"					{ *yylval = a("->"); return TO; }
 "↦"					{ *yylval = a("-->"); return MAPLET; }
-"⇒"					{ *yylval = a("=>"); return DAN; }
+"⇒"					{ *yylval = a("=>"); return IMPLICEERT; }
 "≈"					{ *yylval = a("~="); return ISB; }
 "≥"					{ *yylval = a(">="); return GDGA; }
 "≤"					{ *yylval = a("<="); return KDGA; }
@@ -127,8 +127,8 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "::"					{ return ICAT; }
 ">="					{ return GDGA; }
 "=<"					{ return KDGA; }
-"<="					{ return DAN; } // OEPS
-"=>"					{ return DAN; }
+"<="					{ return IMPLICEERT; } // OEPS
+"=>"					{ return IMPLICEERT; }
 "!="					{ return ISN; }
 
 "als"					{ return ALS; }

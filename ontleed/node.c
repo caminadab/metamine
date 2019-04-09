@@ -103,9 +103,6 @@ void print_node_sub(node* n) {
 	else {
 		printf("%s", n->data);
 	}
-	printf(" [");
-	print_loc(n->loc);
-	printf("]");
 }
 
 void print_node(node* n) {
@@ -221,8 +218,11 @@ node* exp3(node* a, node* b, node* c) {
 	n->exp = true;
 	n->first = a;
 	n->last = c;
+							 a->prev = 0;
 	a->next = b; b->prev = a;
 	b->next = c; c->prev = b;
+	c->next = 0;
+
 	a->root = b->root = c->root = n;
 	return n;
 }
@@ -323,17 +323,17 @@ node* fn2loc(node* a, node* b, YYLTYPE yylloc) {
 }
 node* fn3loc(node* a, node* b, node* c, YYLTYPE yylloc) {
 	node* n = exp3(a, b, c);
-	n->loc = mix3(a->loc, b->loc, c->loc);
+	n->loc = mix4(a->loc, b->loc, c->loc, yylloc);
 	return n;
 }
 node* fn4loc(node* a, node* b, node* c, node* d, YYLTYPE yylloc) {
 	node* n = exp4(a,b,c,d);
-	n->loc = mix4(a->loc, b->loc, c->loc, d->loc);
+	n->loc = mix5(a->loc, b->loc, c->loc, d->loc, yylloc);
 	return n;
 }
 node* fn5loc(node* a, node* b, node* c, node* d, node* e, YYLTYPE yylloc) {
 	node* n = exp5(a,b,c,d,e);
-	n->loc = mix5(a->loc, b->loc, c->loc, d->loc, e->loc);
+	n->loc = mix(yylloc, mix5(a->loc, b->loc, c->loc, d->loc, e->loc));
 	return n;
 }
 node* metloc(node* n, YYLTYPE yylloc) {
