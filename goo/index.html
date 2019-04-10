@@ -310,7 +310,6 @@ uit = "Nee"
 			.then(x => x.json())
 			.then(j => {
 				resultaat.innerHTML = j.html;
-				alert(j.html);
 				setErrors(j.fouten);
 
 				var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));

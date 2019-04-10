@@ -115,6 +115,20 @@ javascriptbieb = [[
 tau = Math.PI * 2;
 start = new Date().getTime() / 1000;
 
+function str2arr(s) {
+	var t = [];
+	for (var i = 0; i < s.length; i++)
+		t.push(s.charCodeAt(i));
+	return t;
+}
+
+function arr2str(a) {
+	var s = "";
+	for (var i = 0; i < a.length; i++)
+		s += String.fromCodePoint(a[i]);
+	return s;
+}
+
 /*
 local ja = true
 local nee = false
@@ -189,21 +203,6 @@ local _kies = function(a,b)
 	return a or b
 end
 
-local cat = function(a,b)
-	local r = tabel{}
-	for i,v in ipairs(a) do
-		for i,v in ipairs(v) do
-			r[#r+1] = v
-		end
-		if b and i ~= #a then
-			for i,b in ipairs(b) do
-				r[#r+1] = b
-			end
-		end
-	end
-	return r
-end
-
 local vind = function(a,b)
 	for i=1,#a-#b+1 do
 		local gevonden = true
@@ -220,11 +219,6 @@ local vind = function(a,b)
 	return false
 end
 
-local tekst = function (a)
-	local t = tostring(a)
-	return {string.byte(t,1,#t)}
-end
-
 local herhaal = function(f)
 	return function(a)
 		local r = a
@@ -236,6 +230,24 @@ local herhaal = function(f)
 	end
 end
 */
+
+function cat(a, b) {
+	var r = [];
+	for (var i = 0; i < a.length; i++) {
+		r = r.concat(a[i]);
+		if (b && i != a.length - 1) r = r.concat(b);
+	}
+	return r;
+}
+
+function tekst(a) {
+	var str;
+	if (Array.isArray(a))
+		str = arr2str(a);
+	else
+		str = "" + a;
+	return str2arr(str);
+}
 
 var _procent = function(a) { return a / 100; }
 
