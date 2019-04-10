@@ -59,7 +59,7 @@ if opt.s or opt.syntaxis then
 end
 
 local ok,code = pcall(file, bronnen[1])
-if not ok then print('bestand '..bronnen[1]..' niet gevonden') ; return end
+if not ok or not code then print('bestand '..bronnen[1]..' niet gevonden') ; return end
 
 -- rapporteer proces
 if opt.r or opt.rapport then

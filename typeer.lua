@@ -48,46 +48,49 @@ nee : bit
 (-) :  (getal, getal) → getal
 (*) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
-(^) :  (getal, getal) → getal
-(#) :  (iets^int) → int
-([) : (lijst int)
-(<=) :  (getal, getal) → bit
-(>=) :  (getal, getal) → bit
+;(^) :  (getal, getal) → getal
+(#) :  lijst → int
+([) : lijst
 (>) :  (getal, getal) → bit
+(≥) :  (getal, getal) → bit
+(≤) :  (getal, getal) → bit
 (<) :  (getal, getal) → bit
 ;(=) :  (iets, iets) → bit 
 ;(⇒) :  (bit,iets) → iets 
 ;(→) :  iets → (iets → iets)
-(||) :  (lijst iets, lijst iets) → lijst iets
+(||) :  (lijst, lijst) → lijst
+(en) : iets → bit
+
 (iets → iets) : iets
 (iets → int) : iets
 iets^int : (iets → int)
 int^int : (int → int)
-lijst iets : iets^int
-lijst iets : lijst
 
-data : int → byte
-teken : int
-lijst int : lijst iets
-uit : tekst
-tekst : lijst int
+lijst: iets^int
+lijst int: lijst
+lijst byte: lijst
+
+data: lijst byte
+teken: int
+uit: tekst
+tekst: lijst int
 
 tijdstip : getal
 int : getal
 nu : tijdstip
 cijfer : iets → bit
-vind : (iets^int, iets^int) → int
-tot : (iets^int, int) → iets^int
-vanaf : (iets^int, int) → iets^int
-deel : (iets^int, iets^int) → int
+vind : (lijst, lijst) → int
+tot : (lijst, int) → lijst
+vanaf : (lijst, int) → lijst
+deel : (lijst, (int, int)) → lijst
 (∧) : iets → bit
 
 (iets → getal) : (iets → iets)
 
 herhaal : ((iets → iets) → (iets → iets))
-som : (int → getal) → getal
-(..) : (int, int) → int^int
-waarvoor : ((int → iets), (iets → bit)) → (int → iets)
+som : (lijst getal) → getal ; TODO
+(..) : (int, int) → lijst int
+waarvoor : (lijst, (iets → bit)) → lijst
 mod : (getal, getal) → getal
 
 genormaliseerd : getal ;tussen 0 en 1
@@ -137,7 +140,7 @@ function typeer(exp, t)
 	end
 
 	-- eigen :)
-	for exp in boompairsdfs(exp, t) do
+	for i, exp in ipairs(exp) do -- boompairsdfs(exp, t) do
 		if isfn(exp) and isatoom(exp.fn) and exp.fn.v == ':' then
 			local v = exp
 			local symbool = exphash(v[1])
@@ -215,7 +218,7 @@ function typeer(exp, t)
 			T = biebtypes[exphash(exp)] -- voorgedefinieerd is makkelijk
 		end
 		if T then
-			--print('MAKKELIJK', exphash(exp), exphash(T)) 
+			if verboos then print('MAKKELIJK', exphash(exp), exphash(T))  end
 			types[exp] = T
 			typegraaf:link(set('iets'), exphash(T))
 		end
@@ -287,13 +290,15 @@ function typeer(exp, t)
 					elseif types[a] then weestype(b, types[a], exp.loc) ; oorzaakloc[b] = exp.loc
 					elseif types[b] then weestype(a, types[b], exp.loc) ; oorzaakloc[a] = exp.loc
 					end
-					weestype(exp, X'bit') ; oorzaakloc[exp] = exp.fn.loc
+					if types[a] and types[b] then
+						weestype(exp, X'bit') ; oorzaakloc[exp] = exp.fn.loc
+					end
 				end
 		
 				-- speciaal voor '⇒'
 				if f == '=>' then
 					weestype(a, X'bit', exp.fn.loc)
-					if types[b] then weestype(exp, types[b], oorzaakloc[b]) ; oorzaakloc[exp] = b.loc end 
+					if types[b] then weestype(exp, types[b], oorzaakloc[b]) end 
 				end
 
 				-- speciaal voor ',' (tupel)
@@ -331,11 +336,14 @@ function typeer(exp, t)
 				assert(#tfn == 2, exphash(tfn))
 
 				-- niet het gewenste aantal argumenten
-				if N(tfn) ~= #exp and N(tfn) ~= math.huge then
+				local nargs = #exp
+				-- local unpacking
+				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
+				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
 					local msg = string.format('%s@%s: Typefout: "%s" heeft %d argumenten maar moet er %d hebben',
 						bron, loctekst(exp.loc),
 						combineer(exp),
-						#exp, N(tfn)
+						nargs, N(tfn)
 					)
 					print(msg)
 					print(exphash(tfn))
@@ -346,11 +354,13 @@ function typeer(exp, t)
 				if N(tfn) ~= math.huge then
 					for i = 1, N(tfn) do
 						--print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
-						weestype(exp[i], A(tfn, i), exp.fn.loc) ; oorzaakloc[exp[i]] = exp[i].loc
+						local arg = exp[i]
+						if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
+						weestype(arg, A(tfn, i), exp.fn.loc)
 					end
 				end
 				--print('  RET', exphash(tfn[2]))
-				weestype(exp, tfn[2], exp.fn.loc) ; oorzaakloc[exp] = exp.loc
+				weestype(exp, tfn[2], exp.fn.loc)
 			end
 		end
 	end
