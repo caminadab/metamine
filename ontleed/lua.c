@@ -41,6 +41,13 @@ void lua_pushlisp(lua_State* L, node* node) {
 		lua_settable(L, -3);
 	}
 
+	// is tekst
+	if (node->tekst) {
+		lua_pushliteral(L, "tekst");
+		lua_pushboolean(L, 1);
+		lua_settable(L, -3);
+	}
+
 	if (node->exp) {
 		// velden
 		int i = 0;
