@@ -1,26 +1,32 @@
-tekening = [ bal, achtergrond, speler, bal ]
+; dit programma tekent door "tekening" te vullen met vormen
+; qua coordinaten: linksonder is (0,0) en rechtsboven is (16/9,1)
+; de code hoeft niet gesorteerd te staan
+tekening = [ achtergrond ] ;, bal, groet ]
 
-speler = cirkel(pos, straal, geel)
-pos = (0.5 + 0.5 * sin(looptijd), 0.5 + 0.5 * cos(looptijd))
-straal = 0.2 ;sin(looptijd)
-
-;spelerkleur = interpoleer(geel, rood, (sin(tijd)+1)/2)
-
-achtergrond = rechthoek((0,0), (16/9,1), (0,0,sin looptijd))
+; de tekst "Hoi" aan de linkerkant
+groet = schrijf(groetpos, "Hoi", wit)
+	groetpos = (0, (1 + sin looptijd) / 2)
 
 
-interpoleer = (a, b, n) → (a₀·n+b₀·(1- n), a₁·n+b₁·(1- n), a₂·n+b₂·(1- n))
+; een gele cirkel die om het centrum (0.9, 0.5) cirkelt
+bal = cirkel(pos, straal, geel)
+	pos = (x, y)
+		x = 0.9 + 0.5 · cos(looptijd)
+		y = 0.5 + 0.5 · sin(looptijd)
+	straal = 0.2
 
-bal = cirkel((sin(looptijd·2), 0.5), 0.2, zwart)
+interpoleer = (a,b,n) → (n·a₀+m·b₀, n·a₁+b₁·m₁, n·c₁+m·b₂)
+	n + m = 1
 
+; maak de achtergrond zwartblauw
+achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
+	achtergrondkleur = (0, 0, sin looptijd + 0.5)
 
 ; lib
 cirkel = c → (0, c₀, c₁, c₂)
 rechthoek = v → (1, v₀, v₁, v₂)
-zwart = (0,0,0)
-groen = (0,1,0)
-geel = (1,1,0)
-rood = (1,0,0)
-
-;cirkel = (pos, straal) → (0, pos, straal)
-;vierkant = (posA, posB) → (1, posA, posB)
+zwart = (0, 0, 0)
+groen = (0, 1, 0)
+geel = (1, 1, 0)
+rood = (1, 0, 0)
+wit = (1, 1, 1)

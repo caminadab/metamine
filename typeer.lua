@@ -93,13 +93,35 @@ som : (lijst getal) → getal ; TODO
 waarvoor : (lijst, (iets → bit)) → lijst
 mod : (getal, getal) → getal
 
+kleur : (getal, getal, getal)
+(int, int, int) : (getal, getal, getal) ; hulpje
 genormaliseerd : getal ;tussen 0 en 1
-kleur : genormaliseerd³
-rood : kleur
-groen : kleur
-blauw : kleur
-geel : kleur
-paars : kleur
+;kleur : (genormaliseerd, genormaliseerd, genormaliseerd)
+rood : (getal, getal, getal)
+groen : (getal, getal, getal)
+blauw : (getal, getal, getal)
+geel : (getal, getal, getal)
+paars : (getal, getal, getal)
+zwart: (getal, getal, getal)
+wit: (getal, getal, getal)
+
+; erg jammer dit
+(int, int, int) : (getal, getal, getal)
+(int, int, getal) : (getal, getal, getal)
+(int, getal, int) : (getal, getal, getal)
+(getal, int, int) : (getal, getal, getal)
+(getal, getal, int) : (getal, getal, getal)
+(getal, int, getal) : (getal, getal, getal)
+(int, getal, getal) : (getal, getal, getal)
+
+pos : (getal, getal)
+pos : (int, int)
+pos : (getal, int)
+pos : (int, getal)
+tekening : lijst
+straal : kommagetal
+cirkel : (pos,straal,(getal, getal, getal)) → (int, pos, straal, (getal, getal, getal))
+rechthoek : (pos,pos,(getal, getal, getal)) → (int, pos, pos, (getal, getal, getal))
 ]]
 function typeer0(exp)
 	local t = {}
@@ -113,7 +135,8 @@ function typeer0(exp)
 	end
 end
 
-local bieb = ontleed(bieb)
+local bieb,fouten = ontleed(bieb)
+if fouten then error('biebfouten') end
 
 function typeer(exp, t)
 	local boom = exp
@@ -265,12 +288,14 @@ function typeer(exp, t)
 
 				-- speciaal voor '='
 				if f == '=' then
-					if types[a] and types[b] and exphash(types[a]) ~= exphash(types[b]) then
+					local ta, tb = types[a], types[b]
+					local tah, tbh = ta and exphash(ta), tb and exphash(tb)
+					if ta and tb and tah ~= tbh then
 						-- b : a
-						if typegraaf:stroomopwaarts(a, b) then
+						if typegraaf:stroomopwaarts(tah, tbh) then
 							weestype(a, types[b], oorzaakloc[exp])
 						-- a : b
-						elseif typegraaf:stroomopwaarts(b, a) then
+						elseif typegraaf:stroomopwaarts(tbh, tah) then
 							weestype(b, types[a], oorzaakloc[b])
 						else
 							fouten[#fouten+1] = {loc = exp.loc, msg = msg}
@@ -345,10 +370,13 @@ function typeer(exp, t)
 						combineer(exp),
 						nargs, N(tfn)
 					)
-					print(msg)
-					print(exphash(tfn))
-					print(exphash(exp))
-					os.exit()
+					local kort = string.format('"%s" heeft %d argumenten maar moet er %d hebben',
+						combineer(exp), nargs, N(tfn))
+					if not fouten[msg] then
+						print(msg)
+						fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort}
+						fouten[msg] = true
+					end
 				end
 		
 				if N(tfn) ~= math.huge then

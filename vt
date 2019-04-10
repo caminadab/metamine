@@ -135,7 +135,6 @@ end
 --- ACTIE GEDEELTE
 
 if opt.w or opt.web then
-	print('Web')
 	uit = naarweb(uit)
 
 	if opt.d or opt.doe then
