@@ -387,7 +387,7 @@ function typeer(exp, t)
 		
 				if N(tfn) ~= math.huge then
 					if tfn.loc ~= nil then
-						print('PER STUK', exphash(exp), loctekst(tfn.loc))
+						--print('PER STUK', exphash(exp), loctekst(tfn.loc))
 					end
 					for i = 1, N(tfn) do
 						--print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))

@@ -25,6 +25,7 @@
 
 <style>
 
+canvas { background: #444; }
 .syntaxfout { background: #800; color: #A80; }
 .oplosfout { background: #049; color: #AFF; }
 .typeerfout { background: #805; color: #FBF; }
@@ -309,6 +310,7 @@ uit = "Nee"
 			.then(x => x.json())
 			.then(j => {
 				resultaat.innerHTML = j.html;
+				alert(j.html);
 				setErrors(j.fouten);
 
 				var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));

@@ -70,7 +70,7 @@ function stap() {
 	}
 }
 
-var stap;
+var istap;
 
 function probeerstap() {
 	try {
@@ -78,10 +78,11 @@ function probeerstap() {
 	}
 	catch (e) {
 		clearInterval(stap);
+		alert("Executiefout! " + e);
 	}
 }
 
-stap = setInterval(probeerstap, 16);
+istap = setInterval(probeerstap, 16);
 
 </script>
 ]]
