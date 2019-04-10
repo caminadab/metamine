@@ -11,7 +11,7 @@ tlijst = 3
 tmap = 4
 tmapW = 4
 
-vlees = data deel [1, (data vind "e") ]
+vlees = data deel (1, data vind "e")
 
 bdecz = (data, stapel) → (rest, stapelB)
 	cijfer data₀ ⇒  stapelB = stapel || [ ttekst ]

@@ -1,3 +1,7 @@
-f = (a, b) → a + b
-c = f(3, "hoi")
-uit = tekst c
+a : int
+a = 2.4
+
+b : (int, int)
+b = (2, 3, 4)
+
+uit = tekst a

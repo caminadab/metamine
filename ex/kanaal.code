@@ -6,9 +6,11 @@ kenc = w → d
 kdecA =  data → Berichten
 	len = 1 + data₀
 	#data > 0  ⇒  Berichten = [ bericht ] || kdecB (data vanaf len)
-		bericht = data deel [1, len]
+		bericht = data deel (1, len)
 
 kdec = ((kdecB → kdecA)^999) (x → [])
+
+; (||) : (a:lijst(ta), b:lijst(tb)) → c:lijst(ta ∪  tb)
 
 uit =  check cat ","
 	check =  (kenc ∘ kdec) berichten
