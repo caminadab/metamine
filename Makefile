@@ -13,6 +13,11 @@ windows:
 	ln -sf ../vt bin/vt
 	ln -sf ../doe bin/doe
 
+deploy:
+	scp -r goo/www/* pi:/var/www/blog/taal-0.1.1
+
+#scp -r goo/* pi:/var/www/blog/taal-0.1.1
+
 all:
 	mkdir -p bin	
 	cd ontleed; make

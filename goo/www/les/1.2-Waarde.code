@@ -1,0 +1,5 @@
+; Extra waarden definieer je met vergelijkingen:
+a = "hoi"
+b = a
+c = a
+uit = a

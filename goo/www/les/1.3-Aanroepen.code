@@ -1,0 +1,8 @@
+; De standaard functies +, -, ·, / zijn aan te roepen met infixnotatie:
+vijf = - 1 + 4 · 3 / 2
+
+; Net als normale functies:
+oi = "hoi" vanaf 1
+
+; Ook reguliere notatie wordt ondersteund.
+uit = vanaf(tekst(30), 1)
