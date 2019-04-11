@@ -103,6 +103,21 @@ function oplos(exp,voor)
 			end
 		end
 
+		-- herschrijf  f(a) = a + 1
+		-- naar        f ∐= a → a + 1
+		for eq in pairs(eqs) do
+			if isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
+				local vrij = var(eq[1])
+				for naam in pairs(vrij) do
+					if bevat(eq[2], naam) then
+						eq[1],eq[2] = eq[1].fn, {fn=X'->', eq[1][1], eq[2]}
+						print(exp2string(eq))
+						break
+					end
+				end
+			end
+		end
+
 		-- verzamel |=
 		local map = {} -- k → [v]
 		local oud = {}

@@ -7,10 +7,22 @@ char* ontleed(char* code);
 a = 1  → +(1 2)
 
 a = 1  → &( =(a 1) =(b 2) )
+
+a =
+	3
+
+f =
+	0 → 1
+	1 → 2
 */
 
 int test() {
 	char* tests[][2] = {
+		{"a =\n\t3", "=(a co(3))"},
+		{"a =\n\t0 → 1\n\t1 → 2", "=(a co(->(0 1) ->(1 2)))"},
+		{"a =\n\t3\nb = 1", "en(=(a co(3)) =(b 1))"},
+		{"a =\n\t3\n\nb = 1", "en(=(a co(3)) =(b 1))"},
+
 		// zieke blokken h3l
 		{"als a dan b", "=>(a b)"},
 		{"als a dan\n\tb", "=>(a b)"},

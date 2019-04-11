@@ -269,7 +269,7 @@ function typeer(exp, t)
 		return exp[1]
 	end
 
-	for i=1,4 do
+	for i=1,5 do
 
 	-- rest van de types
 	local T = {}
@@ -342,7 +342,17 @@ function typeer(exp, t)
 						weestype(exp, T, exp.loc)
 					end
 				end
-		
+
+				if false then
+					-- typeer de functie zelf
+					-- f(2) = 3 → f = getal → getal
+					if not types[exp.fn] then
+						print('jAAAAA')
+						weestype(exp.fn, {fn=X'->', types[exp], types[exp[1]]})
+					end
+				end
+
+
 				-- speciaal voor '→'
 				if f == '->' then -- (a → b) : (
 					if naamtypes[exphash(a)] and types[b] then
@@ -378,17 +388,18 @@ function typeer(exp, t)
 						fouten[msg] = true
 					end
 				end
-		
+
 				if N(tfn) ~= math.huge then
 					for i = 1, N(tfn) do
-						--print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
 						local arg = exp[i]
 						if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
 						weestype(arg, A(tfn, i), exp.fn.loc)
+						print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
 					end
 				end
-				--print('  RET', exphash(tfn[2]))
 				weestype(exp, tfn[2], exp.fn.loc)
+				print('  RET', exphash(tfn[2]))
+
 			end
 		end
 	end

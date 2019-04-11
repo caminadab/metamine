@@ -172,11 +172,11 @@ if opt.d or opt.doe then
 
 		v = fout -- niet
 		if type(v) ~= 'table' then
-			see(v)
 			uit = tostring(combineer(v)) --'<ongeldig type>'
 		else
 			uit = string.char(table.unpack(v))
 		end
+		break
 		io.write('\x1B[F', '\x1B[G', uit, '\x1B[K', '\n')
 	end
 

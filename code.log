@@ -95,6 +95,12 @@ local tabel = function(t)
     setmetatable(t, mt)
     return t
 end
+
+local _mapmt = {}
+function _mapmt:__call(naam)
+    return self[naam]
+end
+    
 local vanaf = function(a,van)
     local t = tabel{}
     for i=van+1,#a do
@@ -272,117 +278,31 @@ local function _len(t)
         return #t
     end
 end
-local C = tabel{108,105,51,101,101}
-local D = function (_A)
-    local H = tabel{}
-    local G = tabel{_A,H}
-    local J = function (_B)
-        local P = _B(0)
-        local O = P(0)
-        local N = O == 108
-        local M = false
-        if N then
-            local R = _B(0)
-            local Q = vanaf(R,1)
-            M = Q
-        end
-        local V = _B(0)
-        local U = V(0)
-        local T = U == 100
-        local S = false
-        if T then
-            local X = _B(0)
-            local W = vanaf(X,1)
-            S = W
-        end
-        local AB = _B(0)
-        local AA = AB(0)
-        local Z = AA == 105
-        local Y = false
-        if Z then
-            local AD = _B(0)
-            local AG = _B(0)
-            local AH = tabel{101}
-            local AF = vind(AG,AH)
-            local AE = AF + 1
-            local AC = vanaf(AD,AE)
-            Y = AC
-        end
-        local AL = _B(0)
-        local AK = AL(0)
-        local AJ = cijfer(AK)
-        local AI = false
-        if AJ then
-            local AN = _B(0)
-            local AQ = _B(0)
-            local AR = tabel{58}
-            local AP = vind(AQ,AR)
-            local AO = AP + 1
-            local AM = vanaf(AN,AO)
-            AI = AM
-        end
-        local L = _kies(M,S,Y,AI)
-        local AW = _B(0)
-        local AV = AW(0)
-        local AU = cijfer(AV)
-        local AT = false
-        if AU then
-            local AY = _B(1)
-            local AZ = tabel{1}
-            local AX = cat{AY, AZ}
-            AT = AX
-        end
-        local BD = _B(0)
-        local BC = BD(0)
-        local BB = BC == 100
-        local BA = false
-        if BB then
-            local BF = _B(1)
-            local BG = tabel{4}
-            local BE = cat{BF, BG}
-            BA = BE
-        end
-        local BK = _B(0)
-        local BJ = BK(0)
-        local BI = BJ == 101
-        local BH = false
-        if BI then
-            local BM = _B(1)
-            local BP = _B(1)
-            local BO = _len(BP)
-            local BN = BO - 1
-            local BL = tot(BM,BN)
-            BH = BL
-        end
-        local BT = _B(0)
-        local BS = BT(0)
-        local BR = BS == 108
-        local BQ = false
-        if BR then
-            local BV = _B(1)
-            local BW = tabel{3}
-            local BU = cat{BV, BW}
-            BQ = BU
-        end
-        local CA = _B(0)
-        local BZ = CA(0)
-        local BY = BZ == 105
-        local BX = false
-        if BY then
-            local CC = _B(1)
-            local CD = tabel{2}
-            local CB = cat{CC, CD}
-            BX = CB
-        end
-        local AS = _kies(AT,BA,BH,BQ,BX)
-        local K = tabel{L,AS}
-        return K
-    end
-    local I = herhaal(J)
-    local F = I(G)
-    local E = F(1)
-    return E
+
+local function _maplet(a, b)
+    return {type="maplet", a, b}
 end
-local B = D(C)
+
+local function co(...)
+    local map = {}
+    for i,maplet in ipairs{...} do
+        -- sleutel ↦ waarde
+        assert(maplet.type == 'maplet', 'kan alleen maplets samenvoegen')
+        local s,w = maplet[1],maplet[2]
+        map[s] = w
+    end
+    setmetatable(map, _mapmt)
+    return map
+end
+
+local D = tabel{}
+local C = tabel{D,4}
+local E = function (_A)
+    local G = _A(0)
+    local H = _A(1)
+    local F = G + H
+    return F
+end
+local B = E(C)
 local A = tekst(B)
 return A

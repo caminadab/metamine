@@ -9,6 +9,7 @@ jslibtaal.fn = '[]'
 bieb = {
 	-- wiskunde
 	looptijd = 3,
+	co = 3,
 	max = math.max,
 	min = math.min,
 	int = math.floor,

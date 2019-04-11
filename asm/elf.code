@@ -1,0 +1,5 @@
+elf = bestand "asm/hoi"
+uit = tekst(elf deel (0, 16))
+
+elf-kop = [127,69,76,70,2,1,1,0,0,0,0,0,0,0,0,0]
+

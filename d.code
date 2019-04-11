@@ -1,0 +1,4 @@
+; hoort typefout te geven!!!
+f(x, y) = x + y
+a = f(2, 3)
+uit = "b"

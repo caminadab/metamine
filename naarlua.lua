@@ -3,7 +3,11 @@ require 'exp'
 
 local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '<=', '>=', '/\\', '\\/', 'mod') 
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval', ['#'] = '_len'}
+local bieb = {
+	['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt',
+	['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval',
+	['#'] = '_len', ['-->'] = '_maplet',
+}
 local function naarluaR(exp,t,tabs,maakvar)
 	if isatoom(exp) then
 		return exp.v,t
@@ -202,6 +206,12 @@ local tabel = function(t)
 	setmetatable(t, mt)
 	return t
 end
+
+local _mapmt = {}
+function _mapmt:__call(naam)
+	return self[naam]
+end
+	
 local vanaf = function(a,van)
 	local t = tabel{}
 	for i=van+1,#a do
@@ -379,6 +389,23 @@ local function _len(t)
 		return #t
 	end
 end
+
+local function _maplet(a, b)
+	return {type="maplet", a, b}
+end
+
+local function co(...)
+	local map = {}
+	for i,maplet in ipairs{...} do
+		-- sleutel ↦ waarde
+		assert(maplet.type == 'maplet', 'kan alleen maplets samenvoegen')
+		local s,w = maplet[1],maplet[2]
+		map[s] = w
+	end
+	setmetatable(map, _mapmt)
+	return map
+end
+
 ]]
 local biebbron = biebbron:gsub('\t', tab)
 

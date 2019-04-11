@@ -43,7 +43,7 @@
 
 %}
 
-%token '\n' "regeleinde"
+%token '\n' RE "regeleinde"
 %token NAAM "naam"
 %token TEKST "tekst"
 %token ALS "als"
@@ -67,7 +67,7 @@
 %token ISB "~="
 %token KDGA "<="
 %token OUD '\''
-%token TAB '\t'
+%token TAB '\t' "tab"
 %token EN "/\\"
 %token OF "\\/"
 %token NIET "niet"
@@ -107,6 +107,7 @@
 input:
 	%empty						{ *root = $$ = A("en"); }
 |	input exp '\n' 		{ $$ = APPEND($1, $2);  } /* lees regeltje */
+|	input exp '=' block '\n' 		{ $$ = APPEND($1, FN3(A("="), $2, $4));  } /* lees regeltje */
 |	input error '\n' 	{ $$ = APPEND($1, metfout(A("?"), waarom)); yyerrok; } /* lees regeltje */
 |	input '\n' 				/* negeer witregels */
 |	error  						{ $$ = metfout(A("?"), waarom); yyerrok; }
@@ -165,6 +166,7 @@ single:
 | '(' '{' '}' ')'     { $$ = A("{}"); }
 
 | '(' "->" ')'				{ $$ = A("->"); }
+| '(' "-->" ')'				{ $$ = A("-->"); }
 | '(' "||" ')'				{ $$ = A("||"); }
 | '(' "::" ')'				{ $$ = A("::"); }
 | '(' ".." ')'				{ $$ = A(".."); }
@@ -209,15 +211,21 @@ single:
 |	'{' error '}'				{ $$ = metfout(FN2(A("{}"), A("?")), waarom); yyerrok; }
 ;
 
+blockline: '\n' TAB exp { $$ = $3; }
+block:
+	blockline						{ $$ = FN2(A("co"), $1); }
+| block blockline			{ $$ = APPEND($1, $2); }
+;
+
 exp:
 
  single
 
 /* als ... dan ... */
-| ALS exp DAN exp %prec ALS			{ $$ = FN3(A("=>"), $2, $4); }
-| ALS exp DAN '\n' exp %prec ALS			{ $$ = FN3(A("=>"), $2, $5); }
-| ALS exp '\n' exp %prec ALS			{ $$ = FN3(A("=>"), $2, $4); }
-| ALS '\n' exp '\n' DAN '\n' exp %prec ALS { $$ = FN3(A("=>"), $3, $7); }
+| ALS exp DAN exp %prec ALS													{ $$ = FN3(A("=>"), $2, $4); }
+| ALS exp DAN '\n' TAB exp %prec ALS								{ $$ = FN3(A("=>"), $2, $6); }
+| ALS exp '\n' TAB exp %prec ALS										{ $$ = FN3(A("=>"), $2, $5); }
+| ALS '\n' TAB exp '\n' DAN '\n' TAB exp %prec ALS	{ $$ = FN3(A("=>"), $4, $9); }
 /*
 | ALS exp '\n' exp			{ $$ = FN3(A("=>"), $2, $4); }
 */
@@ -240,6 +248,7 @@ anders
 
 | SOM exp			       	{ $$ = FN2(A("som"), $2); }
 | exp "->" exp				{ $$ = FN3(A("->"), $1, $3); }
+| exp "-->" exp				{ $$ = FN3(A("-->"), $1, $3); }
 | exp "||" exp				{ $$ = FN3(A("||"), $1, $3); }
 | exp "::" exp				{ $$ = FN3(A("::"), $1, $3); }
 | exp ".." exp				{ $$ = FN3(A(".."), $1, $3); }

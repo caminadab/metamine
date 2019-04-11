@@ -93,8 +93,8 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "·"					{ *yylval = a("*"); return '*'; }
 
 [ ]					// negeer spaties
-[\t]				// negeer tabs voor nu
-":="					{ return ASS; }
+[\t]				{ return TAB; } // negeer tabs voor nu
+":="				{ return ASS; }
 "="					{ return '='; }
 ">"					{ return '>'; }
 "<"					{ return '<'; }
