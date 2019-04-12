@@ -1,4 +1,4 @@
 ; hoort typefout te geven!!!
-f(x, y) = x + y
-a = f(2, 3)
-uit = "b"
+f(x, y, z) = (z ⇒ x + y)
+a = f(1, 2, ja)
+uit = tekst a

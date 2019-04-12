@@ -6,6 +6,9 @@ require 'infix'
 teken^int ⊂ (int → teken)
 tekst = teken^int
 
+bug:
+f(x: int) : int zorgt niet voor f = int → int
+
 ]]
 
 function isconstant(v)
@@ -278,6 +281,15 @@ function typeer(exp, t)
 
 			local tfn = types[exp.fn]
 
+				if #exp == 1 and isvar(exp.fn) and not types[exp.fn] and types[exp[1]] and types[exp] then
+					-- typeer de functie zelf
+					-- f(2) = 3 → f = getal → getal
+					local functype = {fn=X'->', types[exp[1]], types[exp]}
+					weestype(exp.fn, functype)
+				end
+
+
+
 			-- deze exp heeft al een type
 			if naamtypes[exphash(exp)] then
 				local T = naamtypes[exphash(exp)] -- voorgedefinieerd is makkelijk
@@ -318,17 +330,15 @@ function typeer(exp, t)
 					if types[a] and types[b] then
 						weestype(exp, X'bit') ; oorzaakloc[exp] = exp.fn.loc
 					end
-				end
 		
 				-- speciaal voor '⇒'
-				if f == '=>' then
+				elseif f == '=>' then
 					weestype(a, X'bit', exp.fn.loc)
 					if types[b] then weestype(exp, types[b], oorzaakloc[b]) end 
-				end
 
 				-- speciaal voor ',' (tupel)
 				-- ℝ × ℝ
-				if f == ',' then
+				elseif f == ',' then
 					T = {fn=X','}
 					for i,v in ipairs(exp) do
 						if types[v] then
@@ -341,17 +351,8 @@ function typeer(exp, t)
 					if T then
 						weestype(exp, T, exp.loc)
 					end
-				end
 
-				if false then
-					-- typeer de functie zelf
-					-- f(2) = 3 → f = getal → getal
-					if not types[exp.fn] then
-						print('jAAAAA')
-						weestype(exp.fn, {fn=X'->', types[exp], types[exp[1]]})
-					end
 				end
-
 
 				-- speciaal voor '→'
 				if f == '->' then -- (a → b) : (
@@ -368,7 +369,6 @@ function typeer(exp, t)
 			end
 
 			if tfn and #tfn == 2 and tfn.fn.v == '->' then
-				assert(#tfn == 2, exphash(tfn))
 
 				-- niet het gewenste aantal argumenten
 				local nargs = #exp
@@ -394,11 +394,11 @@ function typeer(exp, t)
 						local arg = exp[i]
 						if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
 						weestype(arg, A(tfn, i), exp.fn.loc)
-						print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
+						--print('  ARG', exphash(exp[i]), exphash(A(tfn, i)), loctekst(exp[i].loc))
 					end
 				end
 				weestype(exp, tfn[2], exp.fn.loc)
-				print('  RET', exphash(tfn[2]))
+				--print('  RET', exphash(tfn[2]))
 
 			end
 		end
