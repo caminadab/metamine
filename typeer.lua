@@ -197,7 +197,7 @@ function typeer(exp)
 				-- c.code@7:11-12: "a" is "int" maar moet zijn "bit"
 				local isloc = oorzaakloc[exp] or exp.loc
 				local moetloc = typeoorzaakloc or oorzaakloc[exphash(exp)]
-				local msg = string.format('%s@%s: %s: %s is %s (%s) maar moet %s zijn (%s)',
+				local msg = string.format('%s@%s \t%s: %s is %s (%s) maar moet %s zijn (%s)',
 					bron, loctekst(exp.loc), -- locatie
 					color.red .. 'Typefout' .. color.white,
 					color.brightyellow .. locsub(code, exp.loc) .. color.white, -- exp

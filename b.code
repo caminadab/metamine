@@ -14,13 +14,13 @@ tmapW = 4
 vlees = data deel (1, data vind "e")
 
 bdecz = (data, stapel) → (rest, stapelB)
-	cijfer data₀ ⇒  stapelB = stapel || [ ttekst ]
-	data₀ = 'i'  ⇒  stapelB = stapel || [ tint ]
-	data₀ = 'l'  ⇒	stapelB = stapel || [ tlijst ]
-	data₀ = 'd'  ⇒  stapelB = stapel || [ tmap ]
-	data₀ = 'e'  ⇒  stapelB = stapel tot (#stapel - 1)
+cijfer data₀ ⇒  stapelB = stapel || [ ttekst ]
+data₀ = 'i'  ⇒  stapelB = stapel || [ tint ]
+data₀ = 'l'  ⇒  stapelB = stapel || [ tlijst ]
+data₀ = 'd'  ⇒  stapelB = stapel || [ tmap ]
+data₀ = 'e'  ⇒  stapelB = stapel tot (#stapel - 1)
 
-	cijfer data₀ ⇒  rest = data vanaf (data vind ":" + 1)
-	data₀ = 'i'  ⇒  rest = data vanaf (data vind "e" + 1)
-	data₀ = 'l'  ⇒  rest = data vanaf 1
-	data₀ = 'd'  ⇒  rest = data vanaf 1
+cijfer data₀ ⇒  rest = data vanaf (data vind ":" + 1)
+data₀ = 'i'  ⇒  rest = data vanaf (data vind "e" + 1)
+data₀ = 'l'  ⇒  rest = data vanaf 1
+data₀ = 'd'  ⇒  rest = data vanaf 1

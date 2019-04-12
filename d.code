@@ -1,3 +1,5 @@
 ; hoort typefout te geven!!!
-a = [1,2,3] + "hoi"
-uit = tekst a
+a = [1,2,3] || "hoi"
+f(x) = x + 2
+
+uit = tekst(f [])
