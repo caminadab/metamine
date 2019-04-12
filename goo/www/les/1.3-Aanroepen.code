@@ -5,4 +5,4 @@ vijf = - 1 + 4 · 3 / 2
 oi = "hoi" vanaf 1
 
 ; Ook reguliere notatie wordt ondersteund.
-uit = vanaf(tekst(30), 1)
+uit = vanaf("hoi", 1)

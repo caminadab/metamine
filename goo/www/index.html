@@ -47,7 +47,7 @@ iedereen toegankelijk geworden.
 	<button id="valseknop">Hoi</button>
 
 	<textarea id="broncode" name="broncode"></textarea> 
-	<button id="volgendeles">➟</button>
+	<!--<button id="volgendeles">➟</button>-->
 	<button id="tekst"><b>Tekstuitvoer</b></button>
 	<button id="speel" style="color: black;"><b>▶▶▶ Afspelen ▶▶▶</b></button>
 	<div id="resultaat">
@@ -254,8 +254,32 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 			"Shift-Enter": function(cm) { if (speelknop.style.display != 'inline') speelknop.click(); else tekstknop.click(); }
 		},
   });
-	editor.setValue("Laden...");
-	editor.setSize(null, '500px');
+	editor.setValue(`; Programma's worden geschreven als lijsten van feiten.
+; Elk feit is geldig zolang dat het programma draait.
+; Dit programma print wat tekst en exit dan.
+uit = "hallo aardkloot"`);
+	if (false) editor.setValue(`; dit programma tekent door "tekening" te vullen met vormen
+; qua coordinaten: linksonder is (0,0) en rechtsboven is (16/9,1)
+; de code hoeft niet gesorteerd te staan
+tekening = [ achtergrond, bal, groet ]
+
+; de tekst "Hoi" aan de linkerkant
+groet = schrijf(groetpos, "Hoi", wit)
+	groetpos = (0, (1 + sin looptijd) / 2)
+
+
+; een gele cirkel die om het centrum (0.9, 0.5) cirkelt
+bal = cirkel(pos, straal, geel)
+	pos = (x, y)
+		x = 0.9 + 0.5 · cos(looptijd)
+		y = 0.5 + 0.5 · sin(looptijd)
+	straal = 0.2
+
+; maak de achtergrond zwartblauw
+achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
+	achtergrondkleur = (0, 0, sin looptijd + 0.5)
+`);
+	// editor.setSize(null, '500px');
 
 	// jaja!
 	var oldWidgets = [];
@@ -362,7 +386,6 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	var resultaat = document.getElementById("resultaat");
 
 	var tekstknop = document.getElementById("tekst");
-	tekstknop.style.display = 'none'; // jaja
 	tekstknop.addEventListener("click", function() {
 		fetch('/vt', {method: "POST", body: editor.getValue()} )
 			.then(x => x.text())
@@ -370,6 +393,10 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	});
 
 	var speelknop = document.getElementById("speel");
+
+	tekstknop.style.display = 'inline'; // jaja
+	speelknop.style.display = 'none'; // jaja
+
 	// gun de server wat rust...
 	var cheatz = `
 ; niet gluren!
