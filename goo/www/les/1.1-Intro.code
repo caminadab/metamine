@@ -1,0 +1,4 @@
+; Programma's worden geschreven als lijsten van feiten.
+; Elk feit is geldig zolang dat het programma draait.
+; Dit programma print wat tekst en exit dan.
+uit = "hallo aardkloot"

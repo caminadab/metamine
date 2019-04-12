@@ -5,26 +5,107 @@
 <i>nu met ontkevering</i>
 
 <p>
-	Mooie online code editor met debugger. Typ "<b>-&gt;</b>" om "<b>→</b>" in te voegen. Druk op &lt;Shift-Enter&gt; om af te spelen.
+	Taal is de eerste <i>general purpose</i> vijfde-generatie programmeertaal.
+Met een simpele syntax en een veilig typesysteem is code schrijven voor
+iedereen toegankelijk geworden.
+</p>
+<ul>
+	<li>Makkelijke en declaratieve code, zonder traditionele beslommeringen</li>
+	<li>Genereer efficiënte machinecode</li>
+	<li>Compileer functies naar SQL, GLSL, html+js</li>
+</ul>
+
+<i>type inference</i> en een fijne deductiemodule is dit een heerlijke taal 
+
+	<button id="c5">Cirkels</button>
+	<button id="c5">Cirkels</button>
+	<div class="onderwerp">
+		<button class="onderwerpnaam">Welkom</button>
+		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
+	</div> 
+	<div class="onderwerp">
+		<button class="onderwerpnaam">Lijsten</button>
+		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
+	</div> 
+	<div class="onderwerp">
+		<button class="onderwerpnaam">Ifs</button>
+		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
+	</div> 
+	<div class="onderwerp">
+		<button class="onderwerpnaam">Controle</button>
+		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
+	</div> 
+	<div class="onderwerp">
+		<button class="onderwerpnaam">Spellen</button>
+		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
+	</div> 
 	
 	<button id="vim"><b>Vim-modus</b></button>
 	<br> <!-- sorry lui -->
-	<button id="c5">Cirkels</button>
-	<button id="c1">Welkom</button>
-	<button id="c2">Fibonacci</button>
-	<button id="c3">Project Euler 1</button>
-	<button id="c4">Project Euler 2</button>
-	<button id="c5">Cirkels</button>
-	<textarea id="broncode" name="broncode">
-	</textarea> 
+	<br> <!-- sorry lui -->
+	
+	<button id="valseknop">Hoi</button>
+
+	<textarea id="broncode" name="broncode"></textarea> 
+	<button id="volgendeles">➟</button>
 	<button id="tekst"><b>Tekstuitvoer</b></button>
-</p>
 	<button id="speel" style="color: black;"><b>▶▶▶ Afspelen ▶▶▶</b></button>
 	<div id="resultaat">
 	</div>
+</p>
 
 <style>
 
+.volgendeles {
+	position: absolute;
+	left: -100;
+	top: -100;
+	font-size: 96px;
+	color: darkgreen;
+}
+
+.onderwerpnaam {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.onderwerp {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.subonderwerp {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.subonderwerp a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.subonderwerp a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.onderwerp:hover .subonderwerp {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.onderwerp:hover .onderwerpnaam {background-color: #3e8e41;} 
+
+canvas { background: #444; }
 .syntaxfout { background: #800; color: #A80; }
 .oplosfout { background: #049; color: #AFF; }
 .typeerfout { background: #805; color: #FBF; }
@@ -59,8 +140,8 @@
 }
 
 @keyframes AnimationName {
-    0%{background-position:0% 50%}
-    100%{background-position:400% 50%}
+    100%{background-position:0% 50%}
+    0%{background-position:400% 50%}
 }
 
 </style>
@@ -73,6 +154,9 @@
 <script src="lib/taal.js"></script>
 <script src="lib/vim.js"></script>
 <script>
+	// les systeem
+
+/*
 	// code tabs
 	var c1 = document.getElementById('c1');
 	c1.addEventListener("click", function () {
@@ -152,6 +236,7 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 		tekstknop.style.display = 'none';
 		editor.setValue(cirkelcode);
 	});
+*/
 
   var editor = CodeMirror.fromTextArea(document.getElementById("broncode"), {
     lineNumbers: false,
@@ -165,12 +250,11 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 		cursorScrollMargin: 10,
 		lineWrapping: true,
 		height: "1200px",
-		value: cirkelcode,
 		extraKeys: {
 			"Shift-Enter": function(cm) { if (speelknop.style.display != 'inline') speelknop.click(); else tekstknop.click(); }
 		},
   });
-	editor.setValue(cirkelcode);
+	editor.setValue("Laden...");
 	editor.setSize(null, '500px');
 
 	// jaja!
@@ -317,5 +401,33 @@ uit = "Nee"
 				}
 			});
 	});
+
+var data = [
+	['Intro', 'Waarde', 'Aanroepen', 'Als-Dan', 'Omschrijven', 'Omschrijflimiet'],
+	['Lijst', 'waarde', 'tekst', 'als dan', 'omschrijven', 'omschrijflimiet'],
+];
+
+var kaarten = document.getElementsByClassName("onderwerp");
+for (let i = 0; i < data.length; i++) {
+	let kaart = kaarten[i];
+	kaart.style.zIndex = '999';
+	
+	let link = kaart.getElementsByClassName('lesknop')[0];
+	let subonderwerp = kaart.getElementsByClassName('subonderwerp')[0];
+	for (let j = 0; j < data[i].length; j++) {
+		let b = link.cloneNode();
+		let titel = data[i][j];
+		b.innerHTML = titel;
+		b.style.zIndex = '999';
+		b.onclick = ev => {
+			fetch('/blog/taal-0.1.1/les/'+(i+1)+'.'+(j+1)+'-'+titel+'.code')
+				.then(x => x.text())
+				.then(t => editor.setValue(t));
+		};
+		subonderwerp.appendChild(b);
+	}
+	link.parentNode.removeChild(link);
+}
+	
 </script>
 </html>

@@ -1,0 +1,14 @@
+a = -3
+
+; Als-dan statements schrijf je met "als".
+; De tabs bepalen welke feiten onder het
+; "dan"-gedeelte vallen.
+
+als a < 0
+	bericht = "a is negatief!"
+
+; optioneel met "anders"-gedeelte
+als a > 0
+	uit = "a is positief"
+anders
+	uit = "a is niet-positief"

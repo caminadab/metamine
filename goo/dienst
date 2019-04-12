@@ -174,7 +174,7 @@ function serveer(sock)
 		end
 	end
 
-	print(os.date(), status, pad, inL)
+	print(os.date(), status, pad, string.sub(inL, 1, 20))
 
 	-- header
 	local h = string.format('HTTP/1.0 %d %s\r\n', status, statusberichten[status])
@@ -193,7 +193,6 @@ end
 
 -- test!
 local j = vt("tekening = [a, 2, 3]\na = 68 || []")
-print(json.encode(j))
 
 -- stop als argumenten!
 local veto = ...

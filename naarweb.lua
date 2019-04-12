@@ -55,9 +55,7 @@ function stap() {
 			var x1 = figuur[1][0] * 500;
 			var y1 = figuur[1][1] * 500 + 48;
 			var a = figuur[2];
-			var t = "";
-			for (var i = 0; i < a.length; i++)
-				t += String.fromCharCode(a[i]);
+			var t = arr2str(a);
 			if (figuur[3]) {
 				var R = figuur[3][0];
 				var G = figuur[3][1];
@@ -70,18 +68,20 @@ function stap() {
 	}
 }
 
-var stap;
+var istap;
 
 function probeerstap() {
 	try {
 		stap();
 	}
 	catch (e) {
-		clearInterval(stap);
+		clearInterval(istap);
+		alert("Executiefout! " + e);
 	}
 }
 
-stap = setInterval(probeerstap, 16);
+istap = setInterval(probeerstap, 16);
+
 </script>
 ]]
 function naarweb(exp)

@@ -45,7 +45,10 @@ local rapport = [[
 			position: relative;
 		}
 	</style>
+	<h>Syntaxrapport</h>
+	<pre class='asb'>%s</pre>
 	<pre class='code'>%s</pre>
+	<pre class='fouten'>%s</pre>
 ]]
 
 -- .format(tekst,tooltip)
@@ -102,7 +105,7 @@ assert(locsub("a\nb\n", {x1=1,y1=2,x2=3,y2=2}) == "b\n")
 function rapporteer_syntax(code,labels,stijl)
 	local gesorteerd = {}
 	for exp,label in pairs(labels) do
-		if isatoom(exp) then
+		if true or isatoom(exp) then
 			gesorteerd[#gesorteerd+1] = exp
 		end
 	end
@@ -124,7 +127,7 @@ function rapporteer_syntax(code,labels,stijl)
 
 		local tooltip = string.format(htmltoken, "vuller",  vuller, "")
 		tooltips[#tooltips+1] = tooltip
-		local tooltip = string.format(htmltoken, stijl[token] or "", token0, labels[token])
+		local tooltip = string.format(htmltoken, stijl[token] or "goed", token0, labels[token])
 		tooltips[#tooltips+1] = tooltip
 		vorige = loc
 	end
@@ -146,8 +149,17 @@ function rapporteer_syntax(code,labels,stijl)
 			end
 		end
 	end
+
+	local asb,fouten = ontleed(code)
+
+
 	--r(boom)
-	local html = string.format(rapport, table.concat(tooltips))
+	local tips = table.concat(tooltips)
+	local fouten = fouten and table.concat(map(fouten, function (fout) return fout.msg end), "\n") or ''
+	local asb = exp2string(asb)
+	local asb = string.gsub(asb, "[\27\155][][()#;?%d]*[A-PRZcf-ntqry=><~]", "")
+
+	local html = string.format(rapport, asb, tips, fouten)
 	local html = html:gsub('\t', '  ')
 	return html
 end
