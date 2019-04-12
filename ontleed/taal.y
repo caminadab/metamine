@@ -123,12 +123,10 @@ input:
 | "en" | "of" | "exof" | "noch" | "niet"
 | '.' | '@' | ':' | '!:' | ">>" | "<<"
 ;*/
-/*
-*/
 
 single:
-	NAAM 								{ $$ = FN1($1); }
-| TEKST								{ $$ = FN1($1); }
+	NAAM 								{ $$ = metloc($1, @1); }
+| TEKST								{ $$ = metloc($1, @1); }
 | single '%'					{ $$ = FN2(A("%"), $1); }
 | single '!'					{ $$ = FN2(A("faculteit"), $1); }
 | single '\''					{ $$ = FN2(A("'"), $1); }
@@ -143,12 +141,12 @@ single:
 | single M3						{ $$ = FN3(A("^"), $1, A("3")); }
 | single M4						{ $$ = FN3(A("^"), $1, A("4")); }
 | single MN						{ $$ = FN3(A("^"), $1, A("n")); }
-|	'(' exp ')'					{ $$ = FN1($2); }
-| '(' exp ',' exp ')'	{ $$ = FN3(A(","), $2, $4); }
-| '(' exp ',' exp ',' exp ')'	{ $$ = fn4loc(A(","), $2, $4, $6, yylloc); }
-| '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(A(","), $2, $4, $6, $8, yylloc); }
-| '[' list ']'				{ $$ = FN1($2); }
-| '{' set '}'					{ $$ = FN1($2); }
+|	'(' exp ')'					{ $$ = metloc($2, @$); }
+| '(' exp ',' exp ')'	{ $$ = fn3loc(A(","), $2, $4, @$); }
+| '(' exp ',' exp ',' exp ')'	{ $$ = fn4loc(A(","), $2, $4, $6, @$); }
+| '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(A(","), $2, $4, $6, $8, @$); }
+| '[' list ']'				{ $$ = metloc($2, @$); }
+| '{' set '}'					{ $$ = metloc($2, @$); }
 | '[' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
 | '(' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
 | '{' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
@@ -243,7 +241,7 @@ anders
 | exp '_' exp       	{ $$ = FN3(A("_"), $1, $3); }
 | exp '*' exp       	{ $$ = FN3(A("*"), $1, $3); }
 | exp '/' exp       	{ $$ = FN3(A("/"), $1, $3); }
-| exp '+' exp       	{ $$ = FN3(A("+"), $1, $3); }
+| exp '+' exp       	{ $$ = fn3loc(aloc("+", @2), $1, $3, @$); }
 | exp '-' exp       	{ $$ = FN3(A("-"), $1, $3); }
 
 | SOM exp			       	{ $$ = FN2(A("som"), $2); }
@@ -255,7 +253,7 @@ anders
 | exp "xx" exp				{ $$ = FN3(A("xx"), $1, $3); }
 | exp "=>" exp				{ $$ = FN3(A("=>"), $1, $3); }
 
-| exp '='	exp					{ $$ = FN3(A("="), $1, $3); }
+| exp '='	exp					{ $$ = fn3loc(aloc("=", @2), $1, $3, @$); }
 | exp "!=" exp				{ $$ = FN3(A("!="), $1, $3); }
 | exp "~=" exp				{ $$ = FN3(A("~="), $1, $3); }
 | exp '>' exp					{ $$ = FN3(A(">"), $1, $3); }

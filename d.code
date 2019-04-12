@@ -1,4 +1,3 @@
 ; hoort typefout te geven!!!
-f(x, y, z) = (z ⇒ x + y)
-a = f(1, 2, ja)
+a = [1,2,3] + "hoi"
 uit = tekst a

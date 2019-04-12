@@ -118,7 +118,7 @@ int lua_ontleed(lua_State* L) {
 	node* wortel;
 
 	char waarom[0x400];
-	int ok = yyparse((void**)&wortel, &waarom, scanner);
+	int ok = yyparse((void**)&wortel, (void*)&waarom, scanner);
 	yylex_destroy(scanner);
 
 	if (wortel)

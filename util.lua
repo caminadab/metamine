@@ -182,9 +182,21 @@ color = {
 	blue = '\x1B[34m',
 	purple = '\x1B[35m',
 	cyan = '\x1B[36m',
-	white = '\x1B[37m',
+	gray = '\x1B[37m',
+
+	brightred = '\x1B[91m',
+	brightyellow = '\x1B[93m',
+	brightcyan = '\x1B[96m',
+	white = '\x1B[97m',
 }
 color[1],color[2],color[3],color[4],color[5],color[6],color[7],color[8] = color.red,color.green,color.yellow,color.purple,color.cyan
+
+ansi = {
+	normal = '\x1B[0m',
+	bold = '\x1B[1m',
+	italic = '\x1B[3m',
+	underline = '\x1B[4m',
+}
 
 if false then
 
