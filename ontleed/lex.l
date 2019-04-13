@@ -16,6 +16,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 %option stack
 %option warn
 %option yylineno
+%option never-interactive
 
 %{
 	#include "node.h"
@@ -135,7 +136,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "dan"					{ return DAN; }
 "anders"			{ return ANDERS; }
 
-'					{ return OUD; }
+'\''					{ return OUD; }
 
 '.'					{ *yylval = karakter(yytext[1]); return TEKST; }
 \"([^"]|\"\")*\"					{ *yylval = tekst(a(yytext)); return TEKST; }

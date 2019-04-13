@@ -153,8 +153,9 @@ for i,v in ipairs(bieb) do
 	--print('BIEB', exphash(v[1]), exphash(type))
 end
 
-function typeer(exp, t)
+function typeer(exp)
 	local boom = exp
+	local code = exp.code
 	local bron = exp.bron or '?'
 	local typegraaf = typegraaf:kopieer()
 
@@ -166,7 +167,7 @@ function typeer(exp, t)
 	-- collisie: { bericht = "'a' moet zijn 'int', maar is 'tekst', exp = {bronpos, waarde}, fout = {bronpos, type}, moet = {bronpos, type} }
 
 	-- eigen :)
-	for i, exp in ipairs(exp) do -- boompairsdfs(exp, t) do
+	for i, exp in ipairs(exp) do
 		if isfn(exp) and isatoom(exp.fn) and exp.fn.v == ':' then
 			local v = exp
 			local symbool = exphash(v[1])
@@ -196,19 +197,20 @@ function typeer(exp, t)
 				-- c.code@7:11-12: "a" is "int" maar moet zijn "bit"
 				local isloc = oorzaakloc[exp] or exp.loc
 				local moetloc = typeoorzaakloc or oorzaakloc[exphash(exp)]
-				local msg = string.format('%s@%s: Typefout: "%s" is "%s" (bron: %s) maar moet zijn "%s" (bron: %s)',
+				local msg = string.format('%s@%s \t%s: %s is %s (%s) maar moet %s zijn (%s)',
 					bron, loctekst(exp.loc), -- locatie
-					combineer(exp), -- exp
-					combineer(types[exp]), -- echte type
-					loctekst(isloc), -- echte type bron
-					combineer(type), -- wordt verwacht als
-					loctekst(moetloc) -- "" "" bron
+					color.red .. 'Typefout' .. color.white,
+					color.brightyellow .. locsub(code, exp.loc) .. color.white, -- exp
+					color.brightcyan .. combineer(types[exp]) .. color.white, -- echte type
+					ansi.underline .. bron .. '@' .. loctekst(isloc) .. ansi.normal, -- echte type bron
+					color.brightcyan .. combineer(type) .. color.white, -- moet zijn
+					ansi.underline .. bron .. '@' .. loctekst(moetloc) .. ansi.normal -- moet zijn bron
 				)
 				-- kort: exp, istype, moettype
-				local kort = '"%s" is "%s" maar moet zijn "%s"'
+				local kort = '%s is %s maar moet %s zijn'
 				if not fouten[msg] then
 					print(msg)
-					fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort, isloc = isloc, moetloc = moetloc}
+					fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort, exp = locsub(code, exp.loc), isloc = isloc, moetloc = moetloc}
 					fouten[msg] = true
 				end
 				--print('Typegraaf:')
@@ -281,14 +283,12 @@ function typeer(exp, t)
 
 			local tfn = types[exp.fn]
 
-				if #exp == 1 and isvar(exp.fn) and not types[exp.fn] and types[exp[1]] and types[exp] then
-					-- typeer de functie zelf
-					-- f(2) = 3 → f = getal → getal
-					local functype = {fn=X'->', types[exp[1]], types[exp]}
-					weestype(exp.fn, functype)
-				end
-
-
+			if #exp == 1 and isvar(exp.fn) and not types[exp.fn] and types[exp[1]] and types[exp] then
+				-- typeer de functie zelf
+				-- f(2) = 3 → f = getal → getal
+				local functype = {fn=X'->', types[exp[1]], types[exp]}
+				weestype(exp.fn, functype, exp.loc)
+			end
 
 			-- deze exp heeft al een type
 			if naamtypes[exphash(exp)] then
@@ -311,7 +311,7 @@ function typeer(exp, t)
 							weestype(b, types[a], oorzaakloc[b])
 						else
 							fouten[#fouten+1] = {loc = exp.loc, msg = msg}
-							local msg = string.format('%s@%s: Typefout: links is "%s" (bron: %s), rechts is "%s" (bron: %s)',
+							local msg = string.format('%s@%s: Typefout: links is %s (bron: %s), rechts is %s (bron: %s)',
 								bron, loctekst(exp.loc), -- locatie
 								combineer(types[a]), -- links
 								loctekst(oorzaakloc[a] or a.loc), -- links bron
@@ -383,11 +383,12 @@ function typeer(exp, t)
 				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
 					local msg = string.format('%s@%s: Typefout: "%s" heeft %d argumenten maar moet er %d hebben',
 						bron, loctekst(exp.loc),
-						combineer(exp),
+						locsub(code, exp.loc),
 						nargs, N(tfn)
 					)
 					local kort = string.format('"%s" heeft %d argumenten maar moet er %d hebben',
-						combineer(exp), nargs, N(tfn))
+						locsub(code, exp.loc), nargs, N(tfn)
+					)
 					if not fouten[msg] then
 						print(msg)
 						fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort}

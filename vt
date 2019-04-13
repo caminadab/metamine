@@ -69,6 +69,7 @@ end
 
 local asb = ontleed(code)
 asb.bron = bronnen[1]
+asb.code = code
 
 -- annoteer ^_^
 local i = 1

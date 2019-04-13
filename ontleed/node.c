@@ -324,7 +324,7 @@ node* fn2loc(node* a, node* b, YYLTYPE yylloc) {
 }
 node* fn3loc(node* a, node* b, node* c, YYLTYPE yylloc) {
 	node* n = exp3(a, b, c);
-	n->loc = mix4(a->loc, b->loc, c->loc, yylloc);
+	n->loc = yylloc; //mix4(a->loc, b->loc, c->loc, yylloc);
 	return n;
 }
 node* fn4loc(node* a, node* b, node* c, node* d, YYLTYPE yylloc) {
@@ -342,7 +342,7 @@ node* metloc(node* n, YYLTYPE yylloc) {
 	return n;
 }
 node* metfout(node* n, char* fout) {
-	strcpy(&n->fout, fout);
+	strcpy(n->fout, fout);
 	return n;
 }
 

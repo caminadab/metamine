@@ -1,4 +1,5 @@
 ; hoort typefout te geven!!!
-f(x, y, z) = (z ⇒ x + y)
-a = f(1, 2, ja)
-uit = tekst a
+a = [1,2,3] || "hoi"
+f(x) = x + 2
+
+uit = tekst(f [])

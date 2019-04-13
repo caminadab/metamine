@@ -63,3 +63,9 @@ node* tekstloc(node* str, YYLTYPE yylloc);
 node* aloc(char* t, YYLTYPE yylloc);
 node* metloc(node* n, YYLTYPE yylloc);
 node* metfout(node* n, char* fout);
+
+// locatie zelf
+YYLTYPE mix(YYLTYPE a, YYLTYPE b);
+YYLTYPE mix3(YYLTYPE a, YYLTYPE b, YYLTYPE c);
+YYLTYPE mix4(YYLTYPE a, YYLTYPE b, YYLTYPE c, YYLTYPE d);
+YYLTYPE mix5(YYLTYPE a, YYLTYPE b, YYLTYPE c, YYLTYPE d, YYLTYPE e);
