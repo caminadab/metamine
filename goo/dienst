@@ -72,20 +72,25 @@ function vt(code)
 
 	local waarde,oplosfouten
 
+	local html
+
 	if not typeerfouten or true then
-		waarde,oplosfouten = oplos(exp, 'tekening')
+		waarde,oplosfouten = oplos(exp, 'uit')
+		if waarde then
+			local f = load(naarlua(waarde))
+			local ok,v = pcall(f)
+			local v = ok and string.char(table.unpack(v)) or '&lt;niets&gt;'
+			html = '<pre>'..v..'</pre>'
+		else
+			waarde,oplosfouten = oplos(exp, 'tekening')
+			html = naarweb(waarde)
+		end
 	end
 
 	-- foutje kan gebeuren
 	local fouten
 	if syntaxfouten or typeerfouten or oplosfouten then
 		fouten = cat(syntaxfouten, typeerfouten) --, oplosfouten or {})
-	end
-
-	local html
-
-	if waarde then
-		html = naarweb(waarde)
 	end
 
 	return {
@@ -164,8 +169,8 @@ function serveer(sock)
 	-- LEES!
 	else
     pad = pad:gsub('%.%.', '%.')
-    pad = pad:sub(2, #pad)
-		if pad == '' then pad = 'index.html' end
+		if pad == '/' then pad = '/index.html' end
+    pad = 'www' .. pad
 		uit = file(pad)
 		status = 200
 		if not uit then
@@ -174,7 +179,7 @@ function serveer(sock)
 		end
 	end
 
-	print(os.date(), status, pad, string.sub(inL, 1, 20))
+	print(os.date(), status, pad, string.sub(inL or '', 1, 20))
 
 	-- header
 	local h = string.format('HTTP/1.0 %d %s\r\n', status, statusberichten[status])
