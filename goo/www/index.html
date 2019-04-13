@@ -236,6 +236,9 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	});
 */
 
+	var speelknop = document.getElementById("speel");
+	var tekstknop = document.getElementById("tekst");
+
   var editor = CodeMirror.fromTextArea(document.getElementById("broncode"), {
     lineNumbers: false,
     matchBrackets: true,
@@ -430,6 +433,21 @@ cyaan = (0,1,1)
 uit = "Nee"
 `;
 
+	tekstknop.addEventListener("click", function() {
+		fetch('/vt', {method: "POST", body: editor.getValue() + cheatz} )
+			.then(x => x.json())
+			.then(j => {
+				resultaat.innerHTML = j.html;
+				setErrors(j.fouten);
+
+				var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
+				for (var i = 0; i < scripts.length; i++) {
+					eval(scripts[i].innerHTML);
+				}
+			});
+	});
+
+
 	speelknop.addEventListener("click", function() {
 		fetch('/vt', {method: "POST", body: editor.getValue() + cheatz} )
 			.then(x => x.json())
@@ -443,6 +461,10 @@ uit = "Nee"
 				}
 			});
 	});
+
+		speelknop.style.display = 'none';
+		tekstknop.style.display = 'inline';
+
 
 var data = [
 	['Intro', 'Waarde', 'Aanroepen', 'Als-Dan', 'Omschrijven', 'Omschrijflimiet'],
