@@ -207,10 +207,20 @@ function typeer(exp)
 					ansi.underline .. bron .. '@' .. loctekst(moetloc) .. ansi.normal -- moet zijn bron
 				)
 				-- kort: exp, istype, moettype
-				local kort = '%s is %s maar moet %s zijn'
+				--local kort = '%s is %s maar moet %s zijn'
+				local fmt = '{exp} is {istype} maar moet {moettype} zijn'
 				if not fouten[msg] then
 					print(msg)
-					fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort, exp = locsub(code, exp.loc), isloc = isloc, moetloc = moetloc}
+					fouten[#fouten+1] = {
+						loc = exp.loc,
+						msg = msg,
+						fmt = fmt,
+						exp = locsub(code, exp.loc),
+						istype = combineer(types[exp]),
+						moettype = combineer(type),
+						isloc = isloc,
+						moetloc = moetloc
+					}
 					fouten[msg] = true
 				end
 				--print('Typegraaf:')

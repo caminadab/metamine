@@ -40,6 +40,7 @@ end
 -- de "fout" als los interpretabel object
 function vt(code)
 	local exp = ontleed(code)
+	exp.code = code
 	local syntaxfouten = {}
 	for exp in boompairs(exp) do
 		if exp.fout then -- TODO niet meer in boom
@@ -56,17 +57,65 @@ function vt(code)
 		end
 	end
 
+	local function jsloc(loc)
+		local jloc = {
+			anchor = {
+				ch = loc.x1 - 1,
+				line = loc.y1 - 1,
+			},
+			head = {
+				ch = loc.x2 - 1,
+				line = loc.y2 - 1,
+			}
+		}
+		return jloc
+	end
+
 	local types,typeerfouten = typeer(exp)
 	
 	for i=1,#typeerfouten do
 		local fout = typeerfouten[i]
+		local waarom = fout.msg
+		if fout.fmt then
+			-- {exp} is {istype} maar moet {moettype} zijn
+			-- links is %s, rechts is %s
+			local istype = string.format(
+				'<span class="loc" onclick=\'selecteer(%s)\'>%s</span>',
+				json.encode(isloc),
+				fout.istype
+			)
+			local moettype = '<span class="loc" onclick="selecteer(fout.moetloc)">'..fout.moettype..'</span>'
+
+			waarom = fout.fmt
+			--waarom = string.gsub(waarom, '{exp}', '<b>'..fout.exp..'</b>')
+			--waarom = string.gsub(waarom, '{istype}', istype)
+			--waarom = string.gsub(waarom, '{moettype}', '<b>'..moettype..'</b>')
+		end
 		typeerfouten[i] = {
 			type = "typeer",
+
 			pos = {
 				ch = fout.loc.x1 - 1,
 				line = fout.loc.y1 - 1,
 			},
-			waarom = fout.msg,
+
+			loc = {
+				anchor = {
+					ch = fout.loc.x1 - 1,
+					line = fout.loc.y1 - 1,
+				},
+				head = {
+					ch = fout.loc.x2 - 1,
+					line = fout.loc.y2 - 1,
+				}
+			},
+			exp = fout.exp,
+			--exploc = fout.exp.loc,
+			waarom = waarom,
+			istype = fout.istype,
+			moettype = fout.moettype,
+			isloc = fout.isloc and jsloc(fout.isloc),
+			--moetloc = jsloc(fout.moetloc),
 		}
 	end
 
@@ -151,9 +200,10 @@ function serveer(sock)
 	if pad == '/vt' then
 		local internefout
 		local ok,j = xpcall(vt, debug.traceback, inn)
-		if not ok then internefout = exp end
+		if not ok then internefout = j end
 
 		if not ok then
+			print(internefout)
 			status = 500
 			uit = '<pre>'.."INTERNE FOUT!\n"..internefout..'</pre>'
 		else

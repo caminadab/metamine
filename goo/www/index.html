@@ -17,8 +17,6 @@ iedereen toegankelijk geworden.
 
 <i>type inference</i> en een fijne deductiemodule is dit een heerlijke taal 
 
-	<button id="c5">Cirkels</button>
-	<button id="c5">Cirkels</button>
 	<div class="onderwerp">
 		<button class="onderwerpnaam">Welkom</button>
 		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
@@ -44,8 +42,6 @@ iedereen toegankelijk geworden.
 	<br> <!-- sorry lui -->
 	<br> <!-- sorry lui -->
 	
-	<button id="valseknop">Hoi</button>
-
 	<textarea id="broncode" name="broncode"></textarea> 
 	<!--<button id="volgendeles">➟</button>-->
 	<button id="tekst"><b>Tekstuitvoer</b></button>
@@ -110,6 +106,8 @@ canvas { background: #444; }
 .oplosfout { background: #049; color: #AFF; }
 .typeerfout { background: #805; color: #FBF; }
 .fouticoon { background: #800; color: #F88; }
+
+.loc { cursor: pointer; text-decoration: underline; font-weight: bold; }
 
 #speel0 {
 	margin-top: 0.5cm;
@@ -281,11 +279,27 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 `);
 	// editor.setSize(null, '500px');
 
+	// zet de codemirror selectie
+	function selecteer(loc) {
+		editor.setSelection(loc.anchor, loc.head);
+	}
+
+	// formatteer fout
+	function formatError(error) {
+		var waarom = error.waarom;
+		waarom = waarom.replace('{exp}',
+			`<b onclick="alert('hoi'); selecteer(` + JSON.stringify(error.isloc) + `);">`+error.exp+`</b>`
+		);
+		alert(waarom);
+		return waarom;
+	}
+
 	// jaja!
 	var oldWidgets = [];
 	var oldLineWidgets = [];
+
 	function setErrors(errors) {
-		editor.setValue(editor.getValue());
+
 		// verwijder oude
 		for (var i = 0; i < oldWidgets.length; i++)
 			oldWidgets[i].parentNode.removeChild(oldWidgets[i]);
@@ -298,18 +312,19 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 		for (var i = 0; i < errors.length; i++) {
 			var error = errors[i];
 				var inline = document.createElement("div");
-					inline.innerHTML = '<b>⚠</b>';
+					inline.innerHTML = '<b>&nbsp;<!--⚠--></b>';
 					inline.classList.add("fouticoon");
 					inline.style.fontFamily = 'Verdana';
 					inline.style.position = 'absolute';
 					inline.style.marginRight = '0px';
 					inline.style.marginTop = '-18px';
-					inline.style.zIndex	= '999';
+					//inline.style.zIndex	= '9';
 			oldWidgets.push(inline);
 			var a = editor.addWidget(error.pos, inline, {above: true});
 				var message = document.createElement("div");
 					message.classList.add(error.type+"fout");
-					message.innerHTML = error.waarom;
+					message.classList.add("fout");
+					message.innerHTML = formatError(error);
 			var b = editor.addLineWidget(error.pos.line, message);
 			oldLineWidgets.push(b);
 		}
