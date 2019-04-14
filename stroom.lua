@@ -59,12 +59,22 @@ local function tekst(graaf)
 	if not next(graaf.pijlen) then
 		return '<lege graaf>'
 	end
-	local p = {}
+	local p2 = {}
+	local al = {}
 	for pijl in pairs(graaf.pijlen) do
-		p[#p+1] = pijl2tekst(pijl)
+		al[pijl.naar] = true
+		for bron in pairs(pijl.van) do al[bron] = true end
+		p2[#p2+1] = pijl2tekst(pijl)
 	end
-	table.sort(p)
-	return table.concat(p, '\n')
+	local p1 = {}
+	for punt in pairs(graaf.punten) do
+		if not al[punt] then
+			table.insert(p1, tostring(punt)..'.')
+		end
+	end
+	table.sort(p1)
+	table.sort(p2)
+	return table.concat(p1, '\n') .. '\n' .. table.concat(p2, '\n')
 end
 
 -- generator functie (pijl, punt)
@@ -264,14 +274,7 @@ function maglink(vahgraaf, pijl_of_van, naar)
 		end
 	end
 
-	-- ff zorgen dat de punten er zijn
-	vahgraaf.punten[van] = true
-	vahgraaf.punten[naar] = true
-
 	return true
-end
-
-function isstroomafwaarts(stroom, a, b)
 end
 
 function link(vahgraaf, pijl_of_van, naar)
@@ -313,14 +316,45 @@ function ontlink(vahgraaf, pijl_of_van, naar)
 	vahgraaf.pijlen[pijl] = nil
 end
 
+-- iterator over alle beginpunten
+local function begin(self)
+	-- verzamel begin
+	local van = {}
+	local nietbegin = {}
+	for pijl in pairs(self.pijlen) do
+		-- geen lege pijl?
+		if next(pijl.van) then
+			nietbegin[pijl.naar] = true
+		--else
+			--nieuw[pijl] = true
+		end
+	end
+	for punt in pairs(self.punten) do
+		if not nietbegin[punt] then
+			van[punt] = true
+		end
+	end
+
+	local it = nil
+	return function()
+		it = next(van, it)
+		return it
+	end
+end
+
+local stroommeta = {
+	__tostring = function(self) return self:tekst() end
+}
+
 function stroom()
-	return {
+	local stroom = {
 		punten = {},
 		pijlen = {},
 
-		punt = function (vahgraaf, punt)
-			vahgraaf.punten[punt] = true
+		punt = function (self, punt)
+			self.punten[punt] = true
 		end,
+		begin = begin,
 		naar = naar,
 		link = link,
 		maglink = maglink,
@@ -365,9 +399,12 @@ function stroom()
 		end,
 
 	}
+
+	setmetatable(stroom, stroommeta)
+	return stroom
 end
 
-if test or true then
+if test then
 	-- bereikbaar disj
 	local graaf = stroom()
 	graaf:punt('a')

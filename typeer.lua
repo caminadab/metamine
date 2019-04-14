@@ -219,7 +219,7 @@ function typeer(exp)
 						istype = combineer(types[exp]),
 						moettype = combineer(type),
 						isloc = isloc,
-						moetloc = moetloc
+						moetloc = moetloc,
 					}
 					fouten[msg] = true
 				end

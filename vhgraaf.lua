@@ -35,7 +35,6 @@ local function traceerhalfnaar(hgraaf, halfvan, naar)
 		if punt == naar then
 			halfnaar:punt(punt)
 			nieuwe[punt] = true
-			_G.print('PUNT', punt)
 		end
 	end
 
@@ -45,7 +44,6 @@ local function traceerhalfnaar(hgraaf, halfvan, naar)
 		for nieuw in pairs(nieuwe) do	
 			for pijl in hgraaf:naar(nieuw) do
 				if halfnaar:link(pijl) then
-					_G.print('PIJL', pijl2tekst(pijl))
 					for bron in pairs(pijl.van) do
 						nognieuwer[bron] = true
 					end
@@ -103,8 +101,8 @@ local function sorteer(hgraaf, van, naar)
 	
 	if not next(nieuw) then
 		_G.print('GEEN BEGIN GEVONDEN!')
-		_G.print(hgraaf:tekst())
-		_G.print()
+		print(hgraaf:tekst())
+		print()
 		local halfvan = maakstroom()
 		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
 		return false, halfvan, halfnaar -- TODO werk terug
@@ -168,7 +166,7 @@ local function sorteer(hgraaf, van, naar)
 	if not bekend[naar] then
 		print('NAAR ONBEKEND', naar)
 		local halfvan = stroom
-		local halfnaar = halfnaar(hgraaf, halfvan, naar)
+		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
 		return false, halfvan, halfnaar
 	end
 	print('KLAAR', stroom:tekst())
@@ -339,11 +337,11 @@ if test then
 	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'b')
 	assert(not stroom)
 	assert(not next(halfvan.punten))
-	assert(next(halfnaar.punten) == 'b')
+	assert(halfnaar.punten.b, halfnaar:tekst())
 
-	-- minigraaf zonder invoer
+	-- minigraaf zonder uitvoer
 	local gaaf = vhgraaf()
-	graaf:punt('b')
+	graaf:punt('a')
 	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'b')
 	assert(not stroom)
 	assert(not next(halfvan.punten))
@@ -368,5 +366,19 @@ if test then
 	assert(halfnaar.punten.c)
 	assert(halfnaar.punten.b)
 	assert(halfnaar.punten.a)
+
+	-- halve route niet vervulbaar
+	-- → a
+	-- a → b
+	-- b c → d
+	local graaf = vhgraaf()
+	graaf:link(set(), 'a')
+	graaf:link(set('a'), 'b')
+	graaf:link(set('b','c'), 'd')
+	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'd')
+	assert(not stroom)
+	assert(halfvan.punten.a, tostring(halfvan))
+	assert(halfnaar.punten.a, tostring(halfnaar))
+
 
 end
