@@ -291,9 +291,11 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	function formatError(error) {
 		var waarom = error.waarom;
 		waarom = waarom.replace('{exp}',
-			`<b onclick="alert('hoi'); selecteer(` + JSON.stringify(error.isloc) + `);">`+error.exp+`</b>`
+			`<b onclick="selecteer(` + JSON.stringify(error.isloc) + `);alert('hoi'); ">`+error.exp+`</b>`
 		);
-		alert(waarom);
+
+		waarom = waarom.replace('{istype}', error.istype);
+		waarom = waarom.replace('{moettype}', error.moettype);
 		return waarom;
 	}
 
@@ -403,13 +405,6 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 
 	var resultaat = document.getElementById("resultaat");
 
-	var tekstknop = document.getElementById("tekst");
-	tekstknop.addEventListener("click", function() {
-		fetch('/vt', {method: "POST", body: editor.getValue()} )
-			.then(x => x.text())
-			.then(x => resultaat.innerHTML = x);
-	});
-
 	var speelknop = document.getElementById("speel");
 
 	tekstknop.style.display = 'inline'; // jaja
@@ -430,14 +425,13 @@ oranje = (1,0.5,0)
 geel = (1,1,0)
 paars = (1,0,1) ; lelijk
 cyaan = (0,1,1)
-uit = "Nee"
 `;
 
 	tekstknop.addEventListener("click", function() {
 		fetch('/vt', {method: "POST", body: editor.getValue() + cheatz} )
 			.then(x => x.json())
 			.then(j => {
-				resultaat.innerHTML = j.html;
+				resultaat.innerHTML = j.html || "&lt;geen uitvoer&gt;";
 				setErrors(j.fouten);
 
 				var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));

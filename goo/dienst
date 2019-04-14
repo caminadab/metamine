@@ -87,10 +87,11 @@ function vt(code)
 			local moettype = '<span class="loc" onclick="selecteer(fout.moetloc)">'..fout.moettype..'</span>'
 
 			waarom = fout.fmt
-			--waarom = string.gsub(waarom, '{exp}', '<b>'..fout.exp..'</b>')
-			--waarom = string.gsub(waarom, '{istype}', istype)
-			--waarom = string.gsub(waarom, '{moettype}', '<b>'..moettype..'</b>')
+			waarom = string.gsub(waarom, '{exp}', '<b>'..fout.exp..'</b>')
+			waarom = string.gsub(waarom, '{istype}', istype)
+			waarom = string.gsub(waarom, '{moettype}', '<b>'..moettype..'</b>')
 		end
+		waarom = waarom or '<onbekende reden>'
 		typeerfouten[i] = {
 			type = "typeer",
 
@@ -132,7 +133,9 @@ function vt(code)
 			html = '<pre>'..v..'</pre>'
 		else
 			waarde,oplosfouten = oplos(exp, 'tekening')
-			html = naarweb(waarde)
+			if waarde then
+				html = naarweb(waarde)
+			end
 		end
 	end
 

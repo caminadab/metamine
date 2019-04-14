@@ -117,7 +117,7 @@ wit: (getal, getal, getal)
 (getal, int, getal) : (getal, getal, getal)
 (int, getal, getal) : (getal, getal, getal)
 
-pos : (getal, getal)
+pos : (kommagetal, kommagetal)
 pos : (int, int)
 pos : (getal, int)
 pos : (int, getal)
