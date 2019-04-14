@@ -249,9 +249,6 @@ function serveer(sock)
 end
 
 
--- test!
-local j = vt("tekening = [a, 2, 3]\na = 68 || []")
-
 -- stop als argumenten!
 local veto = ...
 if veto then return end

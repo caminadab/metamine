@@ -79,7 +79,7 @@ function oplos(exp,voor)
 			-- functie argumenten
 			--if args[val] then return true end
 			--if val.fn == '->' then args[val[1]] = true end
-			if type(val) == 'string' and val:sub(1,1) == '_' then
+			if type(val) == 'string' and val:sub(1,1) == '_' then -- TODO
 				return true
 			end
 
