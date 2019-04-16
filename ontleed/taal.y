@@ -218,7 +218,8 @@ block:
 
 exp:
 
- single
+	single '.'																					{ $$ = fn2loc(aloc(".", @2), $1, @$); }
+|	single
 
 /* als ... dan ... */
 | exp ALS exp	%prec ALS															{ $$ = fn3loc(aloc("=>", @2), $3, $1, @$); }
@@ -281,7 +282,7 @@ anders
 | exp "noch" exp			{ $$ = fn3loc(aloc("noch", @2), $1, $3, @$); }
 | "niet" exp					{ $$ = fn2loc(aloc("!", @2), $2, @$); }
 
-| exp '.' exp       	{ $$ = fn3loc(aloc(".", @2), $1, $3, @$); }
+/*| exp '.' exp       	{ $$ = fn3loc(aloc(".", @2), $1, $3, @$); }*/
 | exp '@' exp       	{ $$ = fn3loc(aloc("@", @2), $1, $3, @$); }
 | exp ':' exp       	{ $$ = fn3loc(aloc(":", @2), $1, $3, @$); }
 | exp "!:" exp       	{ $$ = fn2loc(aloc("!", @2), FN3(aloc(":", @2), $1, $3), @$); } // !(:(a b))

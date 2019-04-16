@@ -1,0 +1,5 @@
+graaf.is-bereikbaar(a, b) =  b ∈ bereikbaar
+	nieuw := {a}
+	nieuw := ∪ graaf.van(nieuw').naar
+	bereikbaar := {}
+	bereikbaar := bereikbaar' ∪ nieuw
