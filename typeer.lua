@@ -49,6 +49,7 @@ ja : bit
 nee : bit
 (+) :  (getal, getal) → getal
 (-) :  (getal, getal) → getal
+(-) :  getal → getal
 (*) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
 ;(^) :  (getal, getal) → getal
@@ -126,6 +127,31 @@ straal : kommagetal
 cirkel : (pos,straal,(getal, getal, getal)) → (int, pos, straal, (getal, getal, getal))
 rechthoek : (pos,pos,(getal, getal, getal)) → (int, pos, pos, (getal, getal, getal))
 ]]
+
+local typemt = {}
+
+-- is subtype?
+--function typemt:__lt(a, b)
+	--for 
+
+local metatypegraaf = {}
+
+function metatypegraaf:link(t)
+	local s = self.stroom
+
+	local a = s.punten['iets']
+	
+	--for pijl in s:van(a) do
+	--	local b = pijl.naar
+	--	if 
+
+	--if self.punten[t] then
+
+	--else
+	--	s:link(a, t)
+	--end
+end
+
 function typeer0(exp)
 	local t = {}
 	-- type = boom | set van types
@@ -144,6 +170,10 @@ biebtypes = {} -- types: naam → type
 
 -- bieb
 local typegraaf = stroom()
+
+--gettypegraaf
+
+
 typegraaf:link({}, "iets")
 for i,v in ipairs(bieb) do
 	local symbool = exphash(v[1])
@@ -219,7 +249,7 @@ function typeer(exp)
 						istype = combineer(types[exp]),
 						moettype = combineer(type),
 						isloc = isloc,
-						moetloc = moetloc
+						moetloc = moetloc,
 					}
 					fouten[msg] = true
 				end
@@ -238,7 +268,9 @@ function typeer(exp)
 			oorzaakloc[exp] = typeoorzaakloc or ol or exp.loc
 			typegraaf:link(set'iets', exphash(T))
 			if verboos then
-				print('TYPEER', exphash(exp)..': '..exphash(T)..'  vanwege '..loctekst(typeoorzaakloc or ol or exploc))
+				local t = typeoorzaakloc or ol or exploc
+				local s = t and '  vanwege ' .. (loctekst(t) or '')
+				print('TYPEER', exphash(exp)..': '..exphash(T))
 			end
 		end
 	end

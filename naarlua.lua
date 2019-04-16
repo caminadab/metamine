@@ -150,7 +150,7 @@ local int = function(a)
 	return math.floor(getal)
 end;
 local _iinterval = function(a,b)
-	local t = {}
+	local t = {is={lijst=true}}
 	for i = a,b-1 do
 		t[#t+1] = i
 	end

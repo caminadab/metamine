@@ -25,9 +25,40 @@ local function tekst(graaf)
 	return table.concat(p, '\n')
 end
 
+-- deze wordt van achter (doel) naar voor (bron) opgebouwd
+local function traceerhalfnaar(hgraaf, halfvan, naar)
+	local halfnaar = stroom()
+	local nieuwe = {}
+
+	-- doel
+	for punt in pairs(hgraaf.punten) do
+		if punt == naar then
+			halfnaar:punt(punt)
+			nieuwe[punt] = true
+		end
+	end
+
+	-- terugwerken
+	while next(nieuwe) do
+		local nognieuwer = {}
+		for nieuw in pairs(nieuwe) do	
+			for pijl in hgraaf:naar(nieuw) do
+				if halfnaar:link(pijl) then
+					for bron in pairs(pijl.van) do
+						nognieuwer[bron] = true
+					end
+				end
+			end
+		end
+		nieuwe = nognieuwer
+	end
+		
+	return halfnaar
+end
+
 -- van: functie
 -- naar: functie
--- → (stroom, foutmelding, bekend)
+-- → (stroom, halfvan, halfnaar)
 local function sorteer(hgraaf, van, naar)
 	if _G.verboos then print = _G.print end
 	if type(van) == 'string' then van = function(a) return a == van end end
@@ -35,7 +66,8 @@ local function sorteer(hgraaf, van, naar)
 		local van0 = van
 		van = function(a) return not not van0[a] end
 	end
-	local stroom = stroom()
+	local maakstroom = stroom
+	local stroom = maakstroom()
 	local nieuw = {}
 	local bekend = {}
 	local nuttig = {} -- gebruikte punten
@@ -61,7 +93,7 @@ local function sorteer(hgraaf, van, naar)
 
 		if van(punt) then
 			for pijl in hgraaf:van(punt) do
-				print('  Nieuw!')
+				LOG('  Nieuw! ' .. pijl2tekst(pijl))
 				nieuw[pijl] = true
 			end
 		end
@@ -69,9 +101,11 @@ local function sorteer(hgraaf, van, naar)
 	
 	if not next(nieuw) then
 		_G.print('GEEN BEGIN GEVONDEN!')
-		_G.print(hgraaf:tekst())
-		_G.print()
-		return false,'geen begin gevonden',{}
+		print(hgraaf:tekst())
+		print()
+		local halfvan = maakstroom()
+		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
+		return false, halfvan, halfnaar -- TODO werk terug
 	end
 	print('BEGIN:', pijl2tekst(next(nieuw)))
 
@@ -111,7 +145,7 @@ local function sorteer(hgraaf, van, naar)
 
 	end
 
-	if true then
+	if false then
 		-- snoei!
 		for pijl in pairs(stroom.pijlen) do
 			if not nuttig[pijl.naar] and pijl.naar ~= naar then
@@ -130,12 +164,20 @@ local function sorteer(hgraaf, van, naar)
 	end
 
 	if not bekend[naar] then
-		print('naar', naar)
-		return false, "doel onbekend", b, stroom
+		print('NAAR ONBEKEND', naar)
+		local halfvan = stroom
+		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
+		print()
+		print(halfnaar:tekst())
+		print()
+		return false, halfvan, halfnaar
 	end
 	print('KLAAR', stroom:tekst())
 
-	return stroom, nil, b
+	-- volg terug vanuit einde naar begin
+	-- stop daar waar nodes onbekend zijn maar hun parents bekend
+
+	return stroom, nil, nil
 end
 
 -- een voorwaartse hypergraaf is een hypergraaf waarbij elke hoek een specifiek punt als doel heefft
@@ -143,6 +185,10 @@ function vhgraaf()
 	return {
 		pijlen = {},
 		punten = {},
+
+		punt = function (self, punt)
+			self.punten[punt] = true
+		end;
 
 		-- maak een hyperpijl
 		link = function (h,pijl_of_van,naar)
@@ -253,13 +299,11 @@ if test then
 	-- a -> b moet erin zitten
 	assert(stroom:naar('b')() and stroom:naar('b')().van.a, stroom:tekst())
 
-end
-
-if test then
 	local graaf = vhgraaf()
-	--   / b \
-	--  a     d
-	--   \ c / 
+	local ruit = graaf
+	--    / b \
+	-- → a     d →
+	--    \ c / 
 	graaf:link(set(), 'a') -- a is een bron
 	graaf:link(set'a', 'b')
 	graaf:link(set'a', 'c')
@@ -279,4 +323,68 @@ if test then
 		if bc.van.c then c = 1 end
 	end
 	assert(b and c, stroom:tekst())
+
+
+	-- FOUTEN
+
+	-- lege graaf
+	local graaf = vhgraaf()
+	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'b')
+	assert(not stroom)
+	assert(not next(halfvan.punten))
+	assert(not next(halfnaar.punten))
+
+	-- minigraaf zonder uitvoer
+	local gaaf = vhgraaf()
+	graaf:punt('b')
+	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'b')
+	assert(not stroom)
+	assert(not next(halfvan.punten))
+	assert(halfnaar.punten.b, halfnaar:tekst())
+
+	-- minigraaf zonder uitvoer
+	local gaaf = vhgraaf()
+	graaf:punt('a')
+	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'b')
+	assert(not stroom)
+	assert(not next(halfvan.punten))
+	assert(next(halfnaar.punten) == 'b')
+
+	-- kleine graaf zonder invoer
+	local graaf = vhgraaf()
+	graaf:link(set'a', 'b')
+	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'b')
+	assert(not stroom)
+	assert(not next(halfvan.punten))
+	assert(halfnaar.punten.b)
+	assert(halfnaar.punten.a)
+
+	-- medium graaf zonder invoer
+	local graaf = vhgraaf()
+	graaf:link(set'a', 'b')
+	graaf:link(set'b', 'c')
+	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'c')
+	assert(not stroom)
+	assert(not next(halfvan.punten))
+	assert(halfnaar.punten.c)
+	assert(halfnaar.punten.b)
+	assert(halfnaar.punten.a)
+
+	-- halve route niet vervulbaar
+	-- → a
+	-- a → b
+	-- b c → d
+	local graaf = vhgraaf()
+	graaf:link(set(), 'a')
+	graaf:link(set('a'), 'b')
+	graaf:link(set('b','c'), 'd')
+	verboos = true
+	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'd')
+	assert(not stroom)
+	assert(next(halfvan.pijlen))
+	assert(halfvan.punten.a, tostring(halfvan))
+	assert(halfvan.punten.b, tostring(halfvan))
+	assert(halfnaar.punten.d, tostring(halfnaar))
+
+
 end

@@ -96,17 +96,23 @@ assert(asb, 'syntaxfout')
 local types,fouten = typeer(asb)
 
 if #fouten > 0 then
-	os.exit()
+	-- TODO print
+	--return
 end
 
 local doel = "uit"
 if tekening then doel = "tekening" end
 
-local uit,fout,bekend,exp2naam,halvestroom = oplos(asb, doel)
-if not uit then io.stderr:write('oplosfout: '..tostring(fout)) ; return end
+local uit,fouten,exp2naam = oplos(asb, doel)
+if not uit then
+	for i, fout in ipairs(fouten) do
+		print(fout.msg)
+	end
+	return
+end
 
 -- syntaxrapport
-if verboos then
+if false and verboos then
 	-- converteer van atoom naar string
 	for k,v in pairs(bekend) do if isatoom(k) and k.v then print('BEKEND IS', k.v); bekend[k.v] = true end end
 	for k,v in pairs(bieb) do bekend[k] = true end

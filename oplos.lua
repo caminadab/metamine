@@ -59,10 +59,10 @@ function punten(exp)
 	end
 end
 
--- it,fout,bekend,exp2naam
--- oplos: exp → waarde
+-- oplos: exp → waarde,fouten
 function oplos(exp,voor)
-	if isatoom(exp) then return X'fout',nil,{},{} end
+	local fouten = {}
+	if isatoom(exp) then return X'ZWARE FOUT',fouten end -- KAN NIET
 	if exp.fn.v == [[=]] or exp.fn.v == [[en]] then
 		local eqs
 		if exp.fn.v == [[=]] then
@@ -79,7 +79,7 @@ function oplos(exp,voor)
 			-- functie argumenten
 			--if args[val] then return true end
 			--if val.fn == '->' then args[val[1]] = true end
-			if type(val) == 'string' and val:sub(1,1) == '_' then
+			if type(val) == 'string' and val:sub(1,1) == '_' then -- TODO
 				return true
 			end
 
@@ -217,7 +217,8 @@ function oplos(exp,voor)
 		print(kennisgraaf:tekst())
 		print()
 
-		local stroom,fout,bekend,halvestroom = kennisgraaf:sorteer(invoer,voor)
+		local stroom,halfvan,halfnaar = kennisgraaf:sorteer(invoer,voor)
+
 		local vt = {
 			code = "ABC",
 			kennisgraaf = kennisgraaf,
@@ -226,7 +227,22 @@ function oplos(exp,voor)
 		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
 			file('fout.html', rapport(vt))
-			return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}, halvestroom
+			--return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}, halvestroom
+
+			local fouten = {}
+			print('HALV VAN')
+			print(halfvan:tekst())
+			print('HALV NAAR')
+			print(halfnaar:tekst())
+			for punt in pairs(halfnaar.punten) do
+				if not halfvan.punten[punt] then
+					local fout = {
+						msg = color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
+					}
+				end
+				fouten[#fouten+1] = fout
+			end
+			return false, fouten, {}
 		end
 		print()
 		print('Stroom verkregen')
@@ -234,6 +250,7 @@ function oplos(exp,voor)
 		print()
 		local substs = stroom:topologisch()
 		if not substs then
+			-- dit is een zware fout...
 			return false, 'kon niet topologisch sorteren', bekend, {}
 		end
 		-- lijst(subst)
@@ -292,7 +309,7 @@ function oplos(exp,voor)
 
 	end
 
-	return exp,nil,bekend,exp2naam
+	return exp,nil,exp2naam
 end
 
 if test and false then

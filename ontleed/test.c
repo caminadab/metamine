@@ -24,6 +24,8 @@ int test() {
 		{"a =\n\t3\n\nb = 1", "en(=(a co(3)) =(b 1))"},
 
 		// zieke blokken h3l
+		{"priem als #delers = 2", "=>(=(#(delers) 2) priem)"},
+		{"p: priem als\n\ta", "=>(a :(p priem))"},
 		{"als a dan b", "=>(a b)"},
 		{"als a dan\n\tb", "=>(a b)"},
 		{"als\n\ta\ndan\n\tb", "=>(a b)"},

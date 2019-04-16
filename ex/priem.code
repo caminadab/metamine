@@ -1,0 +1,40 @@
+; bereken de som van alle priemgetallen onder de duizend
+priem: nat + 2
+priem als #delers = 2
+
+deler: 1 .. priem
+deler: delers als
+	priem mod deler = 0
+
+p: priem
+p < 1000
+
+s = Σ p
+
+
+; achter de schermen...
+priem: 2 .. ∞
+priem = (2 .. ∞) waarvoor #delers = 2
+priem = p → (#delers = 2)
+priem = p → (#delers.perpriem = 2)
+
+deler: 1 .. priem
+(deler: delers) = (priem mod deler = 0)
+delers = (deler → priem mod deler = 0)
+deler.perpriem = p → (1 .. priem)
+delers.perpriem = (priem,deler → priem mod deler = 0)
+
+p: 2 .. ∞
+p: -∞ tot 1000
+p: -∞ .. 1000
+p: 2 .. 1000
+
+s = Σ
+	waarvoor
+		2 .. 1000
+		p →
+			2 =
+				#
+					waarvoor 
+						1 .. p
+						d → p mod d = 0
