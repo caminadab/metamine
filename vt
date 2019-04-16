@@ -97,7 +97,7 @@ local types,fouten = typeer(asb)
 
 if #fouten > 0 then
 	-- TODO print
-	return
+	--return
 end
 
 local doel = "uit"
@@ -112,7 +112,7 @@ if not uit then
 end
 
 -- syntaxrapport
-if verboos then
+if false and verboos then
 	-- converteer van atoom naar string
 	for k,v in pairs(bekend) do if isatoom(k) and k.v then print('BEKEND IS', k.v); bekend[k.v] = true end end
 	for k,v in pairs(bieb) do bekend[k] = true end

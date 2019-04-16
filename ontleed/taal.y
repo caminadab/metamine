@@ -221,6 +221,8 @@ exp:
  single
 
 /* als ... dan ... */
+| exp ALS exp	%prec ALS															{ $$ = fn3loc(aloc("=>", @2), $3, $1, @$); }
+| exp ALS '\n' TAB exp	%prec ALS										{ $$ = fn3loc(aloc("=>", @2), $5, $1, @$); }
 | ALS exp DAN exp %prec ALS													{ $$ = FN3(A("=>"), $2, $4); }
 | ALS exp DAN '\n' TAB exp %prec ALS								{ $$ = FN3(A("=>"), $2, $6); }
 | ALS exp '\n' TAB exp %prec ALS										{ $$ = FN3(A("=>"), $2, $5); }
@@ -263,7 +265,8 @@ anders
 | exp "<=" exp				{ $$ = fn3loc(aloc("<=", @2), $1, $3, @$); }
 
 | '#' exp							{ $$ = fn2loc(aloc("#", @1), $2, @$); }
-| exp '|' exp				{ $$ = fn3loc(aloc("|", @2), $1, $3, @$); }
+/*| exp '|' exp				{ $$ = fn3loc(aloc("|", @2), $1, $3, @$); }*/
+| '|' exp '|'					{ $$ = fn2loc(aloc("#", @1), $2, @$); }
 | exp '&' exp				{ $$ = fn3loc(aloc("&", @2), $1, $3, @$); }
 
 | exp ":=" exp				{ $$ = fn3loc(aloc(":=", @2), $1, $3, @$); }

@@ -1,0 +1,14 @@
+; bereken de som van alle priemgetallen onder de duizend
+priem: int
+priem > 1
+priem als |delers| = 2
+
+deler: 1 .. priem
+deler: delers als
+	priem mod deler = 0
+
+p: priem
+p < 1000
+
+s = Σ p
+uit = tekst s

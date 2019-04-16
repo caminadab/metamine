@@ -93,7 +93,7 @@ local function sorteer(hgraaf, van, naar)
 
 		if van(punt) then
 			for pijl in hgraaf:van(punt) do
-				print('  Nieuw!')
+				LOG('  Nieuw! ' .. pijl2tekst(pijl))
 				nieuw[pijl] = true
 			end
 		end
@@ -145,7 +145,7 @@ local function sorteer(hgraaf, van, naar)
 
 	end
 
-	if true then
+	if false then
 		-- snoei!
 		for pijl in pairs(stroom.pijlen) do
 			if not nuttig[pijl.naar] and pijl.naar ~= naar then
@@ -167,6 +167,9 @@ local function sorteer(hgraaf, van, naar)
 		print('NAAR ONBEKEND', naar)
 		local halfvan = stroom
 		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
+		print()
+		print(halfnaar:tekst())
+		print()
 		return false, halfvan, halfnaar
 	end
 	print('KLAAR', stroom:tekst())
@@ -375,10 +378,13 @@ if test then
 	graaf:link(set(), 'a')
 	graaf:link(set('a'), 'b')
 	graaf:link(set('b','c'), 'd')
+	verboos = true
 	local stroom,halfvan,halfnaar = graaf:sorteer('a', 'd')
 	assert(not stroom)
+	assert(next(halfvan.pijlen))
 	assert(halfvan.punten.a, tostring(halfvan))
-	assert(halfnaar.punten.a, tostring(halfnaar))
+	assert(halfvan.punten.b, tostring(halfvan))
+	assert(halfnaar.punten.d, tostring(halfnaar))
 
 
 end

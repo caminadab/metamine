@@ -2,12 +2,24 @@ require 'set'
 
 if not table.unpack then table.unpack = unpack end
 
+function LOG(...)
+	local verboos = _G.verboos
+	_G.verboos = true
+	log(...)
+	_G.verboos = verboos
+end
+
 function log(...)
+	if not verboos then return end
 	local t = {...}
 	local r = {}
 	if #t == 0 then print(); return end
 	for i,v in ipairs(t) do
-		r[#r+1] = unlisp(v)
+		if type(v) == 'table' then
+			r[#r+1] = unlisp(v)
+		else
+			r[#r+1] = tostring(v)
+		end
 		r[#r+1] = '\t'
 	end
 	local s = table.concat(r)

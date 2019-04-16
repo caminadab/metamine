@@ -230,10 +230,16 @@ function oplos(exp,voor)
 			--return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}, halvestroom
 
 			local fouten = {}
-			for punt in halfnaar:begin() do
-				local fout = {
-					msg = color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
-				}
+			print('HALV VAN')
+			print(halfvan:tekst())
+			print('HALV NAAR')
+			print(halfnaar:tekst())
+			for punt in pairs(halfnaar.punten) do
+				if not halfvan.punten[punt] then
+					local fout = {
+						msg = color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
+					}
+				end
 				fouten[#fouten+1] = fout
 			end
 			return false, fouten, {}
