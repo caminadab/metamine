@@ -151,7 +151,7 @@ local int = function(a)
 end;
 local _iinterval = function(a,b)
 	local t = {}
-	for i = 1,b-1 do
+	for i = a,b-1 do
 		t[#t+1] = i
 	end
 	return t
@@ -386,6 +386,9 @@ local function _len(t)
 		return len
 	end
 	if type(t) == 'table' and t.is and (t.is.tupel or t.is.lijst) then
+		return #t
+	end
+	if type(t) == 'table' then
 		return #t
 	end
 end
