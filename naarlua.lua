@@ -380,7 +380,9 @@ local herhaal = function(f)
 end
 
 local function _len(t)
-	if type(t) == 'table' and t.is and t.is.set then
+	if type(t) == 'number' then
+		return t
+	elseif type(t) == 'table' and t.is and t.is.set then
 		local len = 0
 		for _ in pairs(t.set) do len = len + 1 end
 		return len
