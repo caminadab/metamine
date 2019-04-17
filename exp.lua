@@ -36,6 +36,7 @@ function exphash(exp)
 	exphashR(exp, t)
 	return table.concat(t)
 end
+moes = exphash
 
 -- 1-gebaseerd
 -- 1 t/m 26 zijn A t/m Z

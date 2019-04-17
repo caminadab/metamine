@@ -26,18 +26,21 @@ end
 local metatypegraaf = {}
 
 function metatypegraaf:issubtype(type, super)
-	-- naar beneden
-	if type < super then
-		return true
+	-- (1..1000) : (..)
+	if isatoom(super) and isfn(type) then
+		if super.v == type.fn.v then
+			return true
+		end
 
 	-- moeilijk gaan doen
-	elseif isfn(type) and isfn(super) and moes(type.fn) == moes(super.fn) then
-		assert(#type == #super)
+	elseif isfn(type) and isfn(super) and self:issubtype(type.fn, super.fn) then -- moes(type.fn) == moes(super.fn) then
+		assert(#type == #super, "Type = "..moes(type)..", Super = "..moes(super))
 		local issub = true
 		for i=1,#type do
-			local akind = super[i]
+			local skind = super[i]
 			local tkind = type[i]
-			if moes(akind) ~= moes(tkind) and not self.graaf:stroomopwaarts(moes(akind), moes(tkind)) then
+			if moes(skind) ~= moes(tkind) and not self.graaf:stroomopwaarts(moes(skind), moes(tkind)) then
+				print('NIET, vanwege '..moes(skind)..' > '..moes(tkind))
 				issub = false
 			end
 		end
@@ -48,11 +51,17 @@ function metatypegraaf:issubtype(type, super)
 end
 
 function metatypegraaf:link(type, super)
+	if not getmetatable(type) then
+		type = maaktype(type)
+	end
 	--print('LINK', type)
 	local super = super or self.iets
 	local supermoes, typemoes
 	typemoes = moes(type)
 	supermoes = moes(super)
+	if not self.types[supermoes] then
+		super = self:link(super, self.iets)
+	end
 	super = assert(self.types[supermoes], supermoes)
 
 	-- vind bovengrens
@@ -121,11 +130,12 @@ end
 -- typegraaf:
 --   types: moes → type
 --   graaf: stroom(moes)
-function typegraaf()
+function maaktypegraaf()
 	local t = {}
 	t.graaf = stroom()
-	t.iets = maaktype('iets')
-	t.types = {[moes(t.iets)] = t.iets}
+	t.iets = maaktype 'iets'
+	t.niets = maaktype 'niets'
+	t.types = {iets = t.iets, niets = t.niets}
 
 	function __tostring(t)
 		return t.graaf:tekst()
@@ -133,32 +143,14 @@ function typegraaf()
 
 	t = setmetatable(t, {__index=metatypegraaf,__tostring=__tostring})
 
-	-- def
-	local getal = t:link(maaktype'getal')
-	t:link(maaktype'int', getal)
-	t:link(maaktype'kommagetal', getal)
-	--g:link(maaktype(O'(..)'), maaktype(O'int'))
-
-	local verzameling = t:link(maaktype'verzameling')
-	t:link(maaktype'lijst', verzameling)
-	t:link(maaktype'set', verzameling)
-	t:link(maaktype'tupel', verzameling)
-	t:link(maaktype'(->)')
-	t:link(maaktype'(,)')
-
 	return t
 end
 
--- map, fouten
-function typeer(exp)
-	-- typeafhankelijkheidsgraaf
-end
-
-if test then
+if true or test then
 	require 'ontleed'
 	local O = ontleedexp
 
-	local g = typegraaf()
+	local g = maaktypegraaf()
 	--[[
 	g:link(maaktype('int → int'))
 	g:link(maaktype('getal → int'))
@@ -166,10 +158,10 @@ if test then
 	]]
 	--g:link(maaktype('lijst int'))
 	--g:link(maaktype('lijst getal'))
-	g:link(maaktype('norm'), g.types.kommagetal)
-	g:link(maaktype('(getal, getal, getal)'))
-	g:link(maaktype('(kommagetal, kommagetal, kommagetal)'))
-	g:link(maaktype('(norm, norm, norm)'))
+	g:link(maaktype('int'), maaktype('getal'))
+	g:link(maaktype('lijst int'))
+	g:link(maaktype('lijst getal'))
+	g:link(maaktype('verzameling getal'))
 
 	print('Typegraaf')
 	print(g)

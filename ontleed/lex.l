@@ -49,6 +49,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "∈"					{ *yylval = a(":"); return ':'; }
 "∉"					{ *yylval = a("!:"); return NIN; }
 "⁻¹"				{ *yylval = a("^-1"); return INV; }
+
 "⁰"					{ *yylval = a("^0"); return M0; }
 "¹"					{ *yylval = a("^1"); return M1; }
 "²"					{ *yylval = a("^2"); return M2; }
@@ -78,11 +79,13 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "∪"					{ *yylval = a("unie"); return NAAM; }
 "∩"					{ *yylval = a("intersectie"); return NAAM; }
 "∅"					{ *yylval = a("leeg"); return NAAM; }
-"∧"					{ *yylval = a("/\\"); return EN; }
-"/\\"					{ *yylval = a("/\\"); return EN; }
-"\//"					{ *yylval = a("\\/"); return OF; }
-"∨"					{ *yylval = a("\\/"); return OF; }
+"∧"					{ *yylval = a("en"); return EN; }
+"∨"					{ *yylval = a("of"); return OF; }
+"⋀"					{ *yylval = a("EN"); return ENN; }
+"⋁"					{ *yylval = a("OF"); return OFN; }
 "√"					{ *yylval = a("wortel"); return NAAM; }
+"∛"					{ *yylval = a("derdemachtswortel"); return NAAM; }
+"∜"					{ *yylval = a("vierdemachtswortel"); return NAAM; }
 "∐"					{ *yylval = a("co"); return NAAM; }
 "∏"					{ *yylval = a("prod"); return NAAM; }
 "¬"					{ *yylval = a("niet"); return NIET; }

@@ -246,6 +246,8 @@ bieb = {
 
 	['of'] = function(a,b) return a or b end;
 	['en'] = function(a,b) return a and b end;
+	['OF'] = function(a,b) return a or b end;
+	['EN'] = function(a,b) return a and b end;
 	['!'] = function(a) return not a end;
 
 	['som'] = function(a)
