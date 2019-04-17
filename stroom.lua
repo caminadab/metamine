@@ -288,6 +288,8 @@ function link(vahgraaf, pijl_of_van, naar)
 		naar = pijl.naar 
 	end
 
+	if type(van) ~= 'table' then error('"van" moet set zijn maar is '..type(van)) end
+
 	if not vahgraaf:maglink(pijl) then
 		return false
 	end

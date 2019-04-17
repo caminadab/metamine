@@ -61,6 +61,7 @@ function file(name, data)
 		f:close()
 	end
 end
+bestand = file
 
 function kopie(t)
 	if type(t) == 'table' then

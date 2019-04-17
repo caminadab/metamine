@@ -128,6 +128,30 @@ int lua_ontleed(lua_State* L) {
 	return 1;
 }
 
+int lua_ontleedexp(lua_State* L) {
+	luaL_checkstring(L, 1);
+	lua_pushliteral(L, "\n");
+	lua_concat(L, 2);
+	const char* str = lua_tostring(L, -1);
+
+	yyscan_t scanner;
+	yylex_init(&scanner);
+	yy_scan_string(str, scanner);
+
+	node* wortel;
+
+	char waarom[0x400];
+	int ok = yyparse((void**)&wortel, (void*)&waarom, scanner);
+	wortel = wortel->first->next;
+	yylex_destroy(scanner);
+
+	if (wortel)
+		lua_pushlisp(L, wortel);
+	else
+		lua_pushnil(L); // !!??
+	return 1;
+}
+
 #ifdef _WIN32 //defined(_MSC_VER)
 	#define EXPORT __declspec(dllexport)
 	#define IMPORT __declspec(dllimport)
@@ -141,8 +165,8 @@ int lua_ontleed(lua_State* L) {
 #endif
 
 EXPORT int luaopen_ontleed(lua_State* L) {
-	lua_pushcfunction(L, lua_ontleed);
-	lua_setglobal(L, "ontleed");
+	lua_pushcfunction(L, lua_ontleed); lua_setglobal(L, "ontleed");
+	lua_pushcfunction(L, lua_ontleedexp); lua_setglobal(L, "ontleedexp");
 	//lua_pushcfunction(L, lua_code);
 	//lua_setglobal(L, "ontleed");
 	return 1;

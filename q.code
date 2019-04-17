@@ -1,3 +1,4 @@
 cirkel.
 a = |{2,3,3}|
+b = Σ 1 .. 1000
 uit = tekst(a)

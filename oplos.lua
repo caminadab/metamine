@@ -90,11 +90,29 @@ function oplos(exp,voor)
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
+		-- herschrijf (a < b) → (a: (b..∞) ∧ b: (-∞ .. a))
+		local nieuw = {}
+		local oud = {}
+		for eq in pairs(eqs) do
+			if isfn(eq) and eq.fn.v == '>' then
+				fn,eq[2],eq[1] = '<',eq[1],eq[2]
+			end
+			if isfn(eq) and eq.fn.v == '<' then
+				local fa = X(X':', eq[1], X(X'..', eq[2], X'oneindig'))
+				local fb = X(X':', eq[2], X(X'..', X(X'-', X'oneindig'), eq[1]))
+				nieuw[fa] = true
+				nieuw[fb] = true
+				oud[eq] = true
+			end
+		end
+		eqs = unie(eqs, nieuw)
+		eqs = complement(eqs, oud)
+
 		-- herschrijf (b ⇒ (a = c)) → (a |= (b ⇒ c))
 		for eq in pairs(eqs) do
 			if isfn(eq) then
 				local a = (eq.fn.v == '=>') 
-				local b = isexp(eq[2]) 
+				local b = a and isfn(eq[2]) 
 				local c = b and (eq[2].fn.v == '=')
 				if eq.fn.v == '=>' and isexp(eq[2]) and eq[2].fn.v == '=' then
 					eq.fn.v = '|='

@@ -25,7 +25,6 @@ end
 function verschil(a,b)
 	local s = set()
 	for k,v in pairs(a) do
-		print(k,v)
 		if not b[k] then
 			s[k] = val
 		end
@@ -43,6 +42,16 @@ function unie(...)
 		end
 	end
 	return r
+end
+
+function complement(a, b)
+	local s = {}
+	for v in pairs(a) do
+		if not b[v] then
+			s[v] = true
+		end
+	end
+	return s
 end
 
 function cat(...)

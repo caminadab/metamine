@@ -1,6 +1,7 @@
 require 'exp'
 require 'stroom'
 require 'infix'
+require 'typegraaf'
 
 --[[
 teken^int ⊂ (int → teken)
@@ -41,117 +42,6 @@ function isconstant(v)
 	return false
 end
 
-local bieb = [[
-getal : iets
-kommagetal : getal
-int : getal
-ja : bit
-nee : bit
-(+) :  (getal, getal) → getal
-(-) :  (getal, getal) → getal
-(-) :  getal → getal
-(*) :  (getal, getal) → getal
-(/) :  (getal, getal) → getal
-;(^) :  (getal, getal) → getal
-(#) :  lijst → int
-([) : lijst
-(>) :  (getal, getal) → bit
-(≥) :  (getal, getal) → bit
-(≤) :  (getal, getal) → bit
-(<) :  (getal, getal) → bit
-;(=) :  (iets, iets) → bit 
-;(⇒) :  (bit,iets) → iets 
-;(→) :  iets → (iets → iets)
-(||) :  (lijst, lijst) → lijst
-(en) : iets → bit
-
-(iets → iets) : iets
-(iets → int) : iets
-iets^int : (iets → int)
-int^int : (int → int)
-
-lijst: iets^int
-lijst int: lijst
-lijst byte: lijst
-
-data: lijst byte
-teken: int
-uit: tekst
-tekst: lijst int
-
-tijdstip : getal
-int : getal
-nu : tijdstip
-cijfer : iets → bit
-vind : (lijst, lijst) → int
-tot : (lijst, int) → lijst
-vanaf : (lijst, int) → lijst
-deel : (lijst, (int, int)) → lijst
-(∧) : iets → bit
-
-(iets → getal) : (iets → iets)
-
-herhaal : ((iets → iets) → (iets → iets))
-som : (lijst getal) → getal ; TODO
-(..) : (int, int) → lijst int
-waarvoor : (lijst, (iets → bit)) → lijst
-mod : (getal, getal) → getal
-
-kleur : (getal, getal, getal)
-(int, int, int) : (getal, getal, getal) ; hulpje
-genormaliseerd : getal ;tussen 0 en 1
-;kleur : (genormaliseerd, genormaliseerd, genormaliseerd)
-rood : (getal, getal, getal)
-groen : (getal, getal, getal)
-blauw : (getal, getal, getal)
-geel : (getal, getal, getal)
-paars : (getal, getal, getal)
-zwart: (getal, getal, getal)
-wit: (getal, getal, getal)
-
-; erg jammer dit
-(int, int, int) : (getal, getal, getal)
-(int, int, getal) : (getal, getal, getal)
-(int, getal, int) : (getal, getal, getal)
-(getal, int, int) : (getal, getal, getal)
-(getal, getal, int) : (getal, getal, getal)
-(getal, int, getal) : (getal, getal, getal)
-(int, getal, getal) : (getal, getal, getal)
-
-pos : (kommagetal, kommagetal)
-pos : (int, int)
-pos : (getal, int)
-pos : (int, getal)
-tekening : lijst
-straal : kommagetal
-cirkel : (pos,straal,(getal, getal, getal)) → (int, pos, straal, (getal, getal, getal))
-rechthoek : (pos,pos,(getal, getal, getal)) → (int, pos, pos, (getal, getal, getal))
-]]
-
-local typemt = {}
-
--- is subtype?
---function typemt:__lt(a, b)
-	--for 
-
-local metatypegraaf = {}
-
-function metatypegraaf:link(t)
-	local s = self.stroom
-
-	local a = s.punten['iets']
-	
-	--for pijl in s:van(a) do
-	--	local b = pijl.naar
-	--	if 
-
-	--if self.punten[t] then
-
-	--else
-	--	s:link(a, t)
-	--end
-end
-
 function typeer0(exp)
 	local t = {}
 	-- type = boom | set van types
@@ -164,7 +54,7 @@ function typeer0(exp)
 	end
 end
 
-local bieb,fouten = ontleed(bieb)
+local bieb,fouten = ontleed(bestand 'types.code')
 if fouten then error('biebfouten') end
 biebtypes = {} -- types: naam → type
 
