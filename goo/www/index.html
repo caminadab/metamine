@@ -255,10 +255,21 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 			"Shift-Enter": function(cm) { if (speelknop.style.display != 'inline') speelknop.click(); else tekstknop.click(); }
 		},
   });
-	editor.setValue(`; Programma's worden geschreven als lijsten van feiten.
-; Elk feit is geldig zolang dat het programma draait.
-; Dit programma print wat tekst en exit dan.
-uit = "hallo aardkloot"`);
+	editor.setValue(`totaal = Σ 1 .. 1000
+t = "de som van 1 tot 1000 = " || tekst(totaal)
+
+y = sin(looptijd)/2
+posA = (80%, 20%)
+posB = (70% + y, 80%)
+
+; vormen
+achtergrond = rechthoek((0,0), (2,1), zwart)
+balA = cirkel(posA, 0.1, geel)
+balB = cirkel(posB, 0.1, blauw)
+bericht = schrijf((30%, 30%), t, wit)
+
+tekening = [ achtergrond, balA, balB, bericht ]`);
+
 	if (false) editor.setValue(`; dit programma tekent door "tekening" te vullen met vormen
 ; qua coordinaten: linksonder is (0,0) en rechtsboven is (16/9,1)
 ; de code hoeft niet gesorteerd te staan

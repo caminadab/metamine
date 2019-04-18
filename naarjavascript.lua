@@ -27,7 +27,8 @@ end
 
 local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod')
 local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent'};
+local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype',
+	['%'] = '_procent', ['..'] = '_iinterval'};
 local function naarjavascriptR(exp,t,tabs,maakvar)
 	if tonumber(exp) then return tostring(exp) end
 	if isatoom(exp) then
@@ -256,6 +257,22 @@ var cos = Math.cos;
 var tan = Math.tan;
 var int = Math.floor;
 var abs = Math.abs;
+
+function _iinterval(a, b) {
+	var t = [];
+	for (var i = a; i < b; i++) {
+		t.push(i);
+	}
+	return t;
+}
+
+function som(l) {
+	var s = 0;
+	for (var i = 0; i < l.length; i++) {
+		s += l[i];
+	}
+	return s;
+}
 
 ]]
 javascriptbieb = javascriptbieb:gsub('\t', tab)

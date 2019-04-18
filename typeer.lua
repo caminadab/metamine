@@ -248,7 +248,7 @@ function typeer(exp)
 						if typegraaf:issubtype(tb, ta) then
 							weestype(a, types[b], oorzaakloc[exp])
 						-- a : b
-						elseif typegraaf:isubtype(ta, tb) then
+						elseif typegraaf:issubtype(ta, tb) then
 							weestype(b, types[a], oorzaakloc[b])
 						else
 							fouten[#fouten+1] = {loc = exp.loc, msg = msg}

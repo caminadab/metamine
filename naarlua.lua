@@ -142,6 +142,13 @@ local _pow = function(a,b)
 		end
 	end
 end
+local _atomen = {}
+local function atoom(i)
+	if not _atomen[i+1] then
+		_atomen[i+1] = "ATOOM-"..i
+	end
+	return _atomen[i+1]
+end
 local lijst = 'lijst'
 local getal = function(a)
 	return tonumber(string.char(table.unpack(a)))

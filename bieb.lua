@@ -10,6 +10,7 @@ bieb = {
 	-- wiskunde
 	looptijd = 3,
 	co = 3,
+	atoom = function(id) return '###' .. id end;
 	max = math.max,
 	min = math.min,
 	int = math.floor,

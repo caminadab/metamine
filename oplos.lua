@@ -108,6 +108,17 @@ function oplos(exp,voor)
 		eqs = unie(eqs, nieuw)
 		eqs = complement(eqs, oud)
 
+		local i = 0
+		-- vind atomen
+		for eq in pairs(eqs) do
+			for exp in boompairs(eq) do
+				if isfn(exp) and exp.fn.v == '.' then
+					exp.fn, exp[1], exp[2] = X'=', exp[1], {fn=X'atoom', X(tostring(i)) }
+					i = i + 1
+				end
+			end
+		end
+
 		-- herschrijf (b ⇒ (a = c)) → (a |= (b ⇒ c))
 		for eq in pairs(eqs) do
 			if isfn(eq) then

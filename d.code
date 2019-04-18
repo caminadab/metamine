@@ -1,3 +1,23 @@
-uit = tekst(a)
-a = b + c
-b = 3
+totaal = Σ 1 .. 1000
+t = "de som van 1 tot 1000 = " || tekst(totaal)
+
+y = sin(looptijd)/2
+posA = (80%, 20%)
+posB = (70% + y, 80%)
+
+; vormen
+achtergrond = rechthoek((0,0), (2,1), zwart)
+balA = cirkel(posA, 0.1, geel)
+balB = cirkel(posB, 0.1, blauw)
+bericht = schrijf((30%, 30%), t, wit)
+
+tekening = [ achtergrond, balA, balB, bericht ]
+
+wit = (1,1,1)
+zwart = (0,0,0)
+geel  = (1,1,0)
+blauw = (0,0,1)
+
+rechthoek(a,b,c) = (1, a, b, c)
+cirkel(d,e,f) = (0, d, e, f)
+schrijf(g,h,i) = (2, g, h, i)
