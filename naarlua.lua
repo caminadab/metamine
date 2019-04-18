@@ -119,6 +119,13 @@ local min = math.min
 local abs = math.abs
 local sin = math.sin
 local cos = math.cos
+local sincos = function(a)
+	local mt = {}
+	function mt:__call(i)
+		return self[i+1]
+	end
+	return setmetatable({is={tupel=true}, sin(a), cos(a)}, mt)
+end
 local tan = math.tan
 local function cijfer(a)
 	return string.byte('0', 1) <= a and a <= string.byte('9', 1)

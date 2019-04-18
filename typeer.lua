@@ -83,14 +83,6 @@ function typeer(exp)
 	local code = exp.code
 	local bron = exp.bron or '?'
 
-	-- eigen :)
-	for i, exp in ipairs(exp) do
-		if isfn(exp) and isatoom(exp.fn) and exp.fn.v == ':' then
-			local type,super = exp[1],exp[2]
-			typegraaf:link(type, super)
-		end
-	end
-
 	-- verenigt types
 	local function weestype(exp, type, typeoorzaakloc)
 		local T,ol
@@ -158,6 +150,14 @@ function typeer(exp)
 				local s = t and '  vanwege ' .. (loctekst(t) or '')
 				print('TYPEER', moes(exp)..': '..moes(T))
 			end
+		end
+	end
+
+	-- eigen :)
+	for i, exp in ipairs(exp) do
+		if isfn(exp) and isatoom(exp.fn) and exp.fn.v == ':' then
+			local val, type = exp[1],exp[2]
+			weestype(val, type, exp.loc)
 		end
 	end
 
@@ -245,10 +245,10 @@ function typeer(exp)
 					local tah, tbh = ta and moes(ta), tb and moes(tb)
 					if ta and tb and tah ~= tbh then
 						-- b : a
-						if typegraaf:issubtype(tbh, tah) then
+						if typegraaf:issubtype(tb, ta) then
 							weestype(a, types[b], oorzaakloc[exp])
 						-- a : b
-						elseif typegraaf:isubtype(tah, tbh) then
+						elseif typegraaf:isubtype(ta, tb) then
 							weestype(b, types[a], oorzaakloc[b])
 						else
 							fouten[#fouten+1] = {loc = exp.loc, msg = msg}

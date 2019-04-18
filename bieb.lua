@@ -243,6 +243,9 @@ bieb = {
 			else return math.atan(a)
 		end
 	end;
+	['sincos'] = function (a)
+		return {fn=',', math.sin(a), math.cos(a)}
+	end;
 
 	['of'] = function(a,b) return a or b end;
 	['en'] = function(a,b) return a and b end;

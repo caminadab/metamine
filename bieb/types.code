@@ -9,7 +9,6 @@ nee: bit
 
 verzameling: iets
 lijst: verzameling
-set: verzameling
 tupel: verzameling
 zak: verzameling
 (→): iets
@@ -20,6 +19,10 @@ zak: verzameling
 aantal: verzameling
 ontelbaar: verzameling
 
+sin :  getal → kommagetal
+cos :  getal → kommagetal
+tan :  getal → kommagetal
+sincos :  getal → (kommagetal, kommagetal)
 (+) :  (getal, getal) → getal
 (-) :  (getal, getal) → getal
 (-) :  getal → getal
@@ -35,10 +38,11 @@ ontelbaar: verzameling
 (||) :  (lijst, lijst) → lijst
 
 ; set!
+set: verzameling
 ({) : set
 (∩) : (set, set) → set
 (∪) : (set, set) → set
-(-) : (set, set) → set
+;(-) : (set, set) → set
 ;(∖) : (set, set) → set
 ;(⋂) : (aantal set) → set
 ;(⋃) : (aantal set) → set
@@ -65,7 +69,7 @@ ontelbaar: verzameling
 byte: int
 teken: int
 data: lijst byte
-tekst: lijst teken
+tekst: lijst ;lijst teken
 uit: tekst
 
 tijdstip : getal
@@ -81,6 +85,7 @@ herhaal : ((→) → (→))
 waarvoor : (verzameling, (iets → bit)) → verzameling
 mod : (getal, getal) → getal
 
+;cirkel(pos, straal, kleur).
 genormaliseerd : getal ; tussen 0 en 1
 kleur: (genormaliseerd, genormaliseerd, genormaliseerd)
 rood: kleur

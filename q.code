@@ -1,2 +1,2 @@
-;f = Σ ["hoi", 3]
-s = {1, 2, 3} waarvoor (x → #x > 1)
+a = {1, 2, 3} waarvoor sin
+uit = tekst(a)
