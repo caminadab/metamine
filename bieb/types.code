@@ -24,7 +24,7 @@ ontelbaar: verzameling
 (-) :  (getal, getal) → getal
 (-) :  getal → getal
 (*) :  (getal, getal) → getal
-(/) :  (getal, getal) → getal
+(/) :  (getal, getal) → kommagetal
 (^) :  (getal, getal) → getal
 (^) :  ((→), nat) → getal
 (#) :  verzameling → int
@@ -36,14 +36,15 @@ ontelbaar: verzameling
 
 ; set!
 ({) : set
-;(-) : (set, set) → set
+(∩) : (set, set) → set
+(∪) : (set, set) → set
+(-) : (set, set) → set
 ;(∖) : (set, set) → set
-;(∩) : (set, set) → set
-;(∪) : (set, set) → set
 ;(⋂) : (aantal set) → set
 ;(⋃) : (aantal set) → set
 
 ; logica
+(⇒) : (bit, iets) → iets
 (>) :  (getal, getal) → bit
 (≥) :  (getal, getal) → bit
 (≤) :  (getal, getal) → bit

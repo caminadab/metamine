@@ -25,7 +25,34 @@ end
 
 local metatypegraaf = {}
 
+function metatypegraaf:unie(a, b)
+	if isatoom(a) and isatoom(b) then
+		if self:issubtype(a, b) then
+			return a
+		elseif self:issubtype(b, a) then
+			return b
+		else
+			return false
+		end
+	end
+	local t = {fn = self:unie(a.fn or a, b.fn or b)}
+	if not t.fn then return false end
+	for i=1,math.max(#a, #b) do
+		if a[i] and b[i] then
+			t[i] = self:unie(a[i], b[i])
+		else
+			t[i] = a[i] or b[i]
+		end
+	end
+	return t
+end
+
 function metatypegraaf:issubtype(type, super)
+	if moes(type) == moes(super) then return true end
+	if self.graaf:stroomopwaarts(moes(super), moes(type)) then
+		return true
+	end
+
 	-- (1..1000) : (..)
 	if isatoom(super) and isfn(type) then
 		if super.v == type.fn.v then
@@ -33,14 +60,15 @@ function metatypegraaf:issubtype(type, super)
 		end
 
 	-- moeilijk gaan doen
-	elseif isfn(type) and isfn(super) and self:issubtype(type.fn, super.fn) then -- moes(type.fn) == moes(super.fn) then
-		assert(#type == #super, "Type = "..moes(type)..", Super = "..moes(super))
+	elseif isfn(type) and isfn(super) and self:issubtype(type.fn, super.fn) then -- and moes(type.fn) == moes(super.fn) then
+		if #super ~= #type then return false end
+		--assert(#type == #super, "Type = "..moes(type)..", Super = "..moes(super))
 		local issub = true
 		for i=1,#type do
 			local skind = super[i]
 			local tkind = type[i]
 			if moes(skind) ~= moes(tkind) and not self.graaf:stroomopwaarts(moes(skind), moes(tkind)) then
-				print('NIET, vanwege '..moes(skind)..' > '..moes(tkind))
+				--print('NIET, vanwege '..moes(skind)..' < '..moes(tkind))
 				issub = false
 			end
 		end
@@ -51,6 +79,7 @@ function metatypegraaf:issubtype(type, super)
 end
 
 function metatypegraaf:link(type, super)
+	if self.types[moes(type)] then return end
 	if not getmetatable(type) then
 		type = maaktype(type)
 	end
@@ -100,6 +129,8 @@ function metatypegraaf:link(type, super)
 		end
 	end
 
+	--print('LINK', moes(a), b and moes(b))
+
 	if b then
 		self.graaf:ontlink(bpijl)
 		self.graaf:link(set(moes(type)), moes(b))
@@ -146,7 +177,7 @@ function maaktypegraaf()
 	return t
 end
 
-if true or test then
+if test then
 	require 'ontleed'
 	local O = ontleedexp
 
@@ -158,10 +189,13 @@ if true or test then
 	]]
 	--g:link(maaktype('lijst int'))
 	--g:link(maaktype('lijst getal'))
-	g:link(maaktype('int'), maaktype('getal'))
+	local getal = g:link(maaktype 'getal')
+	g:link(maaktype('int'), getal)
+	local verzameling = maaktype 'verzameling'
+	g:link(maaktype'lijst', verzameling)
 	g:link(maaktype('lijst int'))
 	g:link(maaktype('lijst getal'))
-	g:link(maaktype('verzameling getal'))
+	--g:link(maaktype('verzameling getal'))
 
 	print('Typegraaf')
 	print(g)

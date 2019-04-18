@@ -68,6 +68,10 @@
 %token KDGA "<="
 %token OUD '\''
 %token TAB '\t' "tab"
+%token UNIE "unie"
+%token INTERSECTIE "intersectie"
+%token UNIEE "UNIE"
+%token INTERSECTIEE "INTERSECTIE"
 
 %token EN "en"
 %token OF "of"
@@ -81,7 +85,7 @@
 /* %precedence NAAM TEKST */
 %left ALS DAN ANDERS
 %left "=>"
-%left SOM
+%left SOM INTERSECTIEE UNIEE
 %left EN OF EXOF NOCH NIET
 %left '=' "!=" "~="
 %left ":=" "+=" "-=" "|=" "&="
@@ -93,7 +97,7 @@
 %left '&' '|'
 %left "||" "::"
 %left ".."
-%left "xx"
+%left "xx" UNIE INTERSECTIE
 %left '+' '-'
 %nonassoc CALL
 %left '*' '/'
@@ -165,7 +169,10 @@ single:
 | '(' '-' ')'       	{ $$ = A("-"); }
 
 | '(' '[' ')'     		{ $$ = A("[]"); }
+
 | '(' '{' ')'     		{ $$ = A("{}"); }
+| '(' UNIE ')'     		{ $$ = A("unie"); }
+| '(' INTERSECTIE ')' { $$ = A("intersectie"); }
 
 | '(' "->" ')'				{ $$ = A("->"); }
 | '(' "-->" ')'				{ $$ = A("-->"); }
@@ -254,7 +261,12 @@ anders
 | exp '+' exp       	{ $$ = fn3loc(aloc("+", @2), $1, $3, @$); }
 | exp '-' exp       	{ $$ = fn3loc(aloc("-", @2), $1, $3, @$); }
 
-| SOM exp			       	{ $$ = FN2(aloc("som", @2), $2); }
+| exp UNIE exp       	{ $$ = fn3loc(aloc("unie", @2), $1, $3, @$); }
+| exp INTERSECTIE exp { $$ = fn3loc(aloc("intersectie", @2), $1, $3, @$); }
+
+| SOM exp			       	{ $$ = fn2loc(aloc("som", @1), $2, @$); }
+| UNIEE exp			     	{ $$ = fn2loc(aloc("UU", @1), $2, @$); }
+| INTERSECTIEE exp	 	{ $$ = fn2loc(aloc("NN", @1), $2, @$); }
 | exp "->" exp				{ $$ = fn3loc(aloc("->", @2), $1, $3, @$); }
 | exp "-->" exp				{ $$ = fn3loc(aloc("-->", @2), $1, $3, @$); }
 | exp "||" exp				{ $$ = fn3loc(aloc("||", @2), $1, $3, @$); }
@@ -312,8 +324,8 @@ set:
 ;
 
 setitems:
-	exp									{ $$ = FN2(A("{}"), $1); }
-| setitems ',' exp			{ $$ = APPEND($1, $3); }
+	exp									{ $$ = fn2loc(A("{}"), $1, @$); }
+| setitems ',' exp		{ $$ = APPEND($1, $3); }
 ;
 
 items:

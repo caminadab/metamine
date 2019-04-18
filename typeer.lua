@@ -86,7 +86,7 @@ function typeer(exp)
 	-- eigen :)
 	for i, exp in ipairs(exp) do
 		if isfn(exp) and isatoom(exp.fn) and exp.fn.v == ':' then
-			local type,super = v[1],v[2]
+			local type,super = exp[1],exp[2]
 			typegraaf:link(type, super)
 		end
 	end
@@ -100,13 +100,15 @@ function typeer(exp)
 			local b = types[exp]
 
 			-- type ⊂ T(exp)
-			-- oftewel: type is specifieker
+			-- oftewel: b is specifieker
 			if typegraaf:issubtype(b, a) then
 				T = b or error('geen type')
 			-- T(exp) ⊂ type
-			-- oftewel: T is specifieker
+			-- oftewel: a is specifieker
 			elseif typegraaf:issubtype(a, b) then
 				T = a or error('geen type')
+			elseif typegraaf:unie(a, b) then
+				T = typegraaf:unie(a, b)
 			else
 				-- c.code@7:11-12: "a" is "int" maar moet "bit" zijn
 				local isloc = oorzaakloc[exp] or exp.loc
@@ -168,6 +170,10 @@ function typeer(exp)
 			T = X'tekst'
 		elseif isfn(exp) and exp.fn.v == '[]' then
 			T = X'lijst'
+		elseif isfn(exp) and exp.fn.v == '{}' then
+			T = X'set'
+		elseif isfn(exp) and exp.fn.v == ',' then
+			T = X'tupel'
 		elseif biebtypes[moes(exp)] then
 			T = biebtypes[moes(exp)] -- voorgedefinieerd is makkelijk
 		end
@@ -351,7 +357,7 @@ function typeer(exp)
 		print()
 	end
 
-	print(typegraaf.graaf:tekst())
+	--print(typegraaf.graaf:tekst())
 
 	return types, fouten
 end

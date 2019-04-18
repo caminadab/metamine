@@ -63,7 +63,7 @@ end
 function oplos(exp,voor)
 	local fouten = {}
 	if isatoom(exp) then return X'ZWARE FOUT',fouten end -- KAN NIET
-	if exp.fn.v == [[=]] or exp.fn.v == [[en]] then
+	if exp.fn.v == [[=]] or exp.fn.v == [[EN]] then
 		local eqs
 		if exp.fn.v == [[=]] then
 			eqs = set(exp)
