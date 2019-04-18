@@ -40,6 +40,7 @@ function metatypegraaf:unie(a, b)
 	for i=1,math.max(#a, #b) do
 		if a[i] and b[i] then
 			t[i] = self:unie(a[i], b[i])
+			if not t[i] then return false end
 		else
 			t[i] = a[i] or b[i]
 		end

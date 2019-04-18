@@ -169,7 +169,16 @@ function typeer(exp)
 		elseif exp.tekst then
 			T = X'tekst'
 		elseif isfn(exp) and exp.fn.v == '[]' then
-			T = X'lijst'
+			--T = X'lijst'
+			T = typegraaf.iets
+			for i=1,#exp do
+				local t = types[exp[i]]
+				if not t then break end
+				T = typegraaf:unie(T, t)
+				if not T then break end
+			end
+			if T then T = {fn=X'lijst', T}
+			else T = nil end
 		elseif isfn(exp) and exp.fn.v == '{}' then
 			T = X'set'
 		elseif isfn(exp) and exp.fn.v == ',' then
@@ -236,10 +245,10 @@ function typeer(exp)
 					local tah, tbh = ta and moes(ta), tb and moes(tb)
 					if ta and tb and tah ~= tbh then
 						-- b : a
-						if typegraaf:stroomopwaarts(tah, tbh) then
+						if typegraaf:issubtype(tbh, tah) then
 							weestype(a, types[b], oorzaakloc[exp])
 						-- a : b
-						elseif typegraaf:stroomopwaarts(tbh, tah) then
+						elseif typegraaf:isubtype(tah, tbh) then
 							weestype(b, types[a], oorzaakloc[b])
 						else
 							fouten[#fouten+1] = {loc = exp.loc, msg = msg}
