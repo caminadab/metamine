@@ -1,0 +1,14 @@
+totaal = Σ 1 .. 1000
+t = "de som van 1 tot 1000 = " || tekst(totaal)
+
+y = sin(looptijd)/2
+posA = (80%, 20%)
+posB = (70% + y, 80%)
+
+; vormen
+achtergrond = rechthoek((0,0), (2,1), zwart)
+
+tekening = [ achtergrond ]
+
+zwart = (0,0,0)
+rechthoek(a,b,c) = (1,a,b,c)
