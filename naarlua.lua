@@ -251,6 +251,8 @@ local deel = function(a,b)
 	return t
 end
 
+local rechthoek = function(a,b,c) return {is={vorm=true,rechthoek=true}, 1, a, b, c} end;
+
 local _kies = function(a,b)
 	local fa = type(a) == 'function'
 	local fb = type(b) == 'function'

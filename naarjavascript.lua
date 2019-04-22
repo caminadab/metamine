@@ -81,12 +81,12 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 		local sub = string.format('%s(%s[i])', naarjavascriptR(b,t,tabs,maakvar), A)
 
 		-- lus
-		t[#t+1] = string.format('%sfor (var i = 1; i < %s.length; i++) {\n',tabs,A)
+		t[#t+1] = string.format('%sfor (var i = 0; i < %s.length; i++) {\n',tabs,A)
 		local tabs1 = tabs .. tab
 
 		-- terugzetten
 		t[#t+1] = string.format('%s%s[i] = %s\n',tabs1,nieuw,sub)
-		t[#t+1] = tabs..'end\n'
+		t[#t+1] = tabs..'}\n'
 
 	elseif fn == '->' then
 		t[#t+1] = string.format('%svar %s = function (%s) {\n', tabs, var, a.v)
@@ -197,13 +197,6 @@ function tabel(t)
 	return t
 end
 
-local _kies = function(a,b)
-	local fa = type(a) == 'function'
-	local fb = type(b) == 'function'
-	if a and b then return 'fout' end
-	return a or b
-end
-
 local vind = function(a,b)
 	for i=1,#a-#b+1 do
 		local gevonden = true
@@ -273,6 +266,22 @@ function som(l) {
 	}
 	return s;
 }
+
+function _kies(a,b) {
+	return a || b;
+}
+
+function rechthoek(abc) { return [1, abc[0], abc[1], abc[2] ]; }
+function schrijf(abc) { return [2, abc[0], abc[1], abc[2] ]; }
+
+function atoom(i) {
+	return "##" + i;
+}
+
+var groen = [0,1,0];
+var rood = [1,0,0];
+var wit = [1,1,1];
+var zwart = [0,0,0];
 
 ]]
 javascriptbieb = javascriptbieb:gsub('\t', tab)

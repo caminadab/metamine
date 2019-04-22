@@ -1,0 +1,17 @@
+uit = "hoi" als looptijd > 1
+uit = ∅
+
+uit(-1) = "a"
+
+; looptijd: moment
+; looptijd: 0..∞
+; looptijd > 1  ⇒  looptijd: 1..∞
+; (looptijd: 1..∞ ⇒ "hoi"): 
+; Δ (looptijd > 1) = {0, 1}
+; delta((>), looptijd, X) = 
+; Δ(looptijd > 1) = Δ(looptijd = 1)
+; Δlooptijd = looptijd' + 1
+; Δ1 = (start → 1)
+; Δ(a = b) = {Δa
+; Δlooptijd = (altijd → nu - looptijd')
+; Δ = (waarde → (moment → functie))
