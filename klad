@@ -2,7 +2,6 @@ fib(0) = 0
 fib(1) = 1
 fib(ℕ+2) = fib(ℕ+1) + fib(ℕ+0)
 
-
 in → rec-status, rec-status → rec-status, rec-status → uit
 fib = n → recⁿ₀
 
@@ -15,7 +14,13 @@ fib = n → recⁿ₀
 Iteratief:
 	fib(ℕ+2) = fib(ℕ+1) + fib(ℕ+0)
 ->
+	(a,b,c) → (b,c,b+c)
 	(a,b) → (b,a+b)
+
+a = fib(ℕ+0)
+b = fib(ℕ+1)
+c = fib(ℕ+2)
+	(a,b,c) → (b+c,a,b)
 
 
 # kanaal

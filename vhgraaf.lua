@@ -251,7 +251,7 @@ end
 
 require 'util'
 
-if test then
+if false and test then
 	-- link
 	local graaf = vhgraaf()
 	graaf:link(set('a'), 'b')

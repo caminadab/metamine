@@ -1,15 +1,13 @@
 require 'func'
-local print = function () end
 
 -- is er, zonder alle pijlen te vervullen, een route van bron naar doel mogelijk?
 -- zoekt achterstevoren
 local function bereikbaar_disj(graaf, van, naar)
-	local print = function () end
-	print()
-	print('# start')
-	print(graaf:tekst())
+	--print()
+	--print('# start')
+	--print(graaf:tekst())
 
-	print(tostring(van)..' ?-> '..tostring(naar))
+	--print(tostring(van)..' ?-> '..tostring(naar))
 
 	if type(van) ~= 'table' then
 		van = {[van] = true}
@@ -21,20 +19,20 @@ local function bereikbaar_disj(graaf, van, naar)
 
 	while #nieuw > 0 do
 		local punt = table.remove(nieuw, #nieuw)
-		print('proberen', punt)
+		--print('proberen', punt)
 		klaar[punt] = true
 		for pijl in graaf:naar(punt) do
 			for bron0 in pairs(pijl.van) do
 				-- route van "naar" naar "van" gevonden!
-				print('gevonden',tostring(bron0)..' -> '..tostring(naar), van, bron0 == van)
+				--print('gevonden',tostring(bron0)..' -> '..tostring(naar), van, bron0 == van)
 				if bereikbaar[bron0] or van[bron0] or bron0 == van then
-					print('BEREIKBAAR')
+					--print('BEREIKBAAR')
 					return true
 				end
 				if not klaar[bron0] then
 					klaar[bron0] = true
 					nieuw[#nieuw+1] = bron0
-					print('todo', bron0)
+					--print('todo', bron0)
 				end
 			end
 		end
@@ -181,7 +179,7 @@ local function topologisch(hgraaf)
 
 	while next(nieuw) do
 		local pijl = next(nieuw)
-		print('LINK?',pijl2tekst(pijl))
+		--print('LINK?',pijl2tekst(pijl))
 		nieuw[pijl] = nil
 
 		-- alle bronnen bekend?
@@ -189,16 +187,17 @@ local function topologisch(hgraaf)
 		for bron in pairs(pijl.van) do
 			if not bekend[bron] and not van[bron] then
 				ok = false
-				print('  NEE: '.. bron..' is onbekend')
+				--print('  NEE: '.. bron..' is onbekend')
 			end
 		end
 
 		if ok then --and not bekend[pijl] then
 			volgorde[#volgorde+1] = pijl
-			print('  JA')
+			--print('  JA')
 			bekend[pijl.naar] = true
 			for pijl in hgraaf:van(pijl.naar) do
 				if true or not bekend[pijl.naar] then
+				--print('  GELINKT')
 					nieuw[pijl] = true
 				end
 			end
