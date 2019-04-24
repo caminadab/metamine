@@ -21,6 +21,50 @@ function unparse_atom(atom)
   return atom.v
 end
 
+local metaexp = {}
+
+function metaexp:moes()
+	return expmoes(self)
+end
+
+function uitgerold(exp)
+	local i = 0
+	local function r(exp, t)
+		if isatoom(exp) then
+			error('nee!')
+			exp.i, i = i, i + 1
+			t[#t+1] = "s"..exp.i.." := "..exp.v
+		elseif exp.fn.v == '->' and false then
+			exp.i, i = i, i + 1
+			t[#t+1] = "s"..exp.i.." := "..uitgerold(exp[2]) --exp2string(exp)
+		else
+			local x = {}
+			if isatoom(exp.fn) then
+				x.fn = exp.fn
+			else
+				x.fn = r(exp.fn, t)
+			end
+			for i,v in ipairs(exp) do
+				if isatoom(exp[i]) then
+					x[i] = exp[i]
+				else
+					x[i] = r(exp[i], t)
+				end
+			end
+			exp.i, i = i, i + 1
+			t[#t+1] = "s"..exp.i.." := "..combineer(x)
+		end
+		return X("s"..exp.i)
+	end
+	local t = {}
+	r(exp, t)
+	return table.concat(t, '\n')..'\n'
+end
+
+			
+			
+
+
 -- X('a', 3, 10)
 
 local nergens = {x1=-1,y1=-1,x2=-1,y2=-1}
@@ -45,7 +89,7 @@ function X(fn,...)
 			end
 		end
 	end
-	setmetatable(r, {__tostring=exp2string, __eq == function(a,b) return exphash(a) == exphash(b) end })
+	setmetatable(r, {__tostring=exp2string, __index=metaexp, __eq == function(a,b) return expmoes(a) == expmoes(b) end })
 	return r
 end
 

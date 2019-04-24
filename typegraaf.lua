@@ -1,7 +1,7 @@
 require 'stroom'
 require 'exp'
 
-local moes = exphash
+local moes = expmoes
 
 local typemt = {}
 

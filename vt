@@ -193,8 +193,8 @@ if opt.d or opt.doe then
 else
 	if opt.l or opt.lua then
 		uit = naarlua(uit)
-	else
-		uit = tostring(exp2string(uit or X'?'))..'\n'
+	elseif uit then
+		uit = uitgerold(uit)
 	end
 end
 --uit = unlisp(uit)

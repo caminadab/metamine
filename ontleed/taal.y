@@ -307,8 +307,8 @@ anders
 | exp "|=" exp				{ $$ = fn3loc(aloc("|=", @2), $1, $3, @$); }
 | exp "&=" exp				{ $$ = fn3loc(aloc("&=", @2), $1, $3, @$); }
 
-| exp "/\\" exp				{ $$ = fn3loc(aloc("/\\", @2), $1, $3, @$); }
-| exp "\\/" exp				{ $$ = fn3loc(aloc("\\/", @2), $1, $3, @$); }
+| exp "en" exp				{ $$ = fn3loc(aloc("/\\", @2), $1, $3, @$); }
+| exp "of" exp				{ $$ = fn3loc(aloc("\\/", @2), $1, $3, @$); }
 | exp "xof" exp			{ $$ = fn3loc(aloc("xof", @2), $1, $3, @$); }
 | exp "noch" exp			{ $$ = fn3loc(aloc("noch", @2), $1, $3, @$); }
 | "niet" exp					{ $$ = fn2loc(aloc("!", @2), $2, @$); }

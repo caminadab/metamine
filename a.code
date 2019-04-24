@@ -1,7 +1,6 @@
-;uit ||= "bezig..." als start = nu
-;uit ||= " klaar!" als looptijd = 1
-
-uit := "ok"
+uit := ""
+uit ||= "a.." als start = nu
+uit ||= "b!" als looptijd = 1
 
 ;uit ||= "ok" als looptijd = 1
 

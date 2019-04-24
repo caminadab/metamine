@@ -16,27 +16,27 @@ function loctekst(loc)
 	end
 end
 
-function exphashR(exp, t)
+function expmoesR(exp, t)
 	if isatoom(exp) then t[#t+1] = exp.v
 	else
 		if not isatoom(exp.fn) then t[#t+1] = '(' end
-		exphashR(exp.fn, t)
+		expmoesR(exp.fn, t)
 		if not isatoom(exp.fn) then t[#t+1] = ')' end
 		t[#t+1] = '('
 		for i, v in ipairs(exp) do
-			exphashR(v, t)
+			expmoesR(v, t)
 			if i ~= #exp then t[#t+1] = ' ' end
 		end
 		t[#t+1] = ')'
 	end
 end
 
-function exphash(exp)
+function expmoes(exp)
 	local t = {}
-	exphashR(exp, t)
+	expmoesR(exp, t)
 	return table.concat(t)
 end
-moes = exphash
+moes = expmoes
 
 -- 1-gebaseerd
 -- 1 t/m 26 zijn A t/m Z
@@ -165,9 +165,15 @@ function exp2string(self,tabs)
 	end
 end
 
+
+
 expmt.__tostring = exp2string
 
 function expmt:__eq(ander)
+	do
+		return self:moes() == ander:moes()
+	end
+
 	local zelf = self
 	if isatoom(zelf) ~= isatoom(ander) then return false end
 	if isatoom(zelf) then return zelf == ander end

@@ -72,7 +72,7 @@ function typeer(exp)
 
 	-- bieb
 	for i,v in ipairs(bieb) do
-		local type,super = v[1],v[2]
+		local type,super = X(v[1]),X(v[2])
 		typegraaf:link(type, super)
 		naamtypes[moes(type)] = super
 		biebtypes[moes(type)] = super -- types: naam → type
@@ -344,11 +344,11 @@ function typeer(exp)
 						local arg = exp[i]
 						if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
 						weestype(arg, A(tfn, i), exp.fn.loc)
-						--print('  ARG', moes(exp[i]), moes(A(tfn, i)), loctekst(exp[i].loc))
+						--print('  ARG', moes(exp)i]), moes(A)tfn, i)), loctekst(exp[i].loc))
 					end
 				end
 				weestype(exp, tfn[2], exp.fn.loc)
-				--print('  RET', moes(tfn[2]))
+				--print('  RET', moes(tfn)2]))
 
 			end
 		end
