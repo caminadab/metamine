@@ -54,9 +54,7 @@
 %token IMPLICEERT "=>"
 %token TO "->"
 %token MAPLET "-->"
-%token ASS ":="
 %token ISN "!="
-%token INC "+="
 %token CAT "||"
 %token ICAT "::"
 %token TIL ".."
@@ -68,10 +66,19 @@
 %token KDGA "<="
 %token OUD '\''
 %token TAB '\t' "tab"
+%token '\n' "regeleinde"
 %token UNIE "unie"
 %token INTERSECTIE "intersectie"
 %token UNIEE "UNIE"
 %token INTERSECTIEE "INTERSECTIE"
+
+%token ASS ":="
+%token CATASS "||="
+%token PLUSASS "+="
+%token MINASS "-="
+%token MAALASS "*="
+%token DEELASS "/="
+%token NIETASS "!="
 
 %token EN "en"
 %token OF "of"
@@ -88,7 +95,7 @@
 %left SOM INTERSECTIEE UNIEE
 %left EN OF EXOF NOCH NIET
 %left '=' "!=" "~="
-%left ":=" "+=" "-=" "|=" "&="
+%left ":=" "*=" "/=" "+=" "-=" "|=" "&=" "||="
 %left '@'
 %left ':' "!:"
 %left "->" "-->"
@@ -199,6 +206,9 @@ single:
 | '(' '#' ')'       	{ $$ = A("#"); }
 
 | '(' ":=" ')'				{ $$ = A(":="); }
+| '(' "||=" ')'				{ $$ = A("||="); }
+| '(' "*=" ')'				{ $$ = A("*="); }
+| '(' "/=" ')'				{ $$ = A("/="); }
 | '(' "+=" ')'				{ $$ = A("+="); }
 | '(' "-=" ')'				{ $$ = A("-="); }
 | '(' "|=" ')'				{ $$ = A("|="); }
@@ -289,6 +299,9 @@ anders
 | exp '&' exp				{ $$ = fn3loc(aloc("&", @2), $1, $3, @$); }
 
 | exp ":=" exp				{ $$ = fn3loc(aloc(":=", @2), $1, $3, @$); }
+| exp "||=" exp				{ $$ = fn3loc(aloc("||=", @2), $1, $3, @$); }
+| exp "*=" exp				{ $$ = fn3loc(aloc("*=", @2), $1, $3, @$); }
+| exp "/=" exp				{ $$ = fn3loc(aloc("/=", @2), $1, $3, @$); }
 | exp "+=" exp				{ $$ = fn3loc(aloc("+=", @2), $1, $3, @$); }
 | exp "-=" exp				{ $$ = fn3loc(aloc("-=", @2), $1, $3, @$); }
 | exp "|=" exp				{ $$ = fn3loc(aloc("|=", @2), $1, $3, @$); }

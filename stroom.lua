@@ -260,7 +260,6 @@ function metastroom:link(pijl_of_van, naar)
 	if not next(pijl.van) then
 		self.begin[pijl.naar] = true
 	end
-			_G.print(pijl2tekst(pijl))
 	for bron in pairs(pijl.van) do
 		if not self.punten[bron] then
 			self.begin[bron] = true

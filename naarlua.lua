@@ -114,6 +114,7 @@ local ja = true
 local nee = false
 local pack = pack or table.pack
 local unpack = unpack or table.unpack
+local niets = nil
 local max = math.max
 local min = math.min
 local abs = math.abs
@@ -254,9 +255,7 @@ end
 local rechthoek = function(a,b,c) return {is={vorm=true,rechthoek=true}, 1, a, b, c} end;
 
 local _kies = function(a,b)
-	local fa = type(a) == 'function'
-	local fb = type(b) == 'function'
-	if a and b then return 'fout' end
+	if a and b then return niets end
 	return a or b
 end
 
@@ -293,8 +292,9 @@ local cat = function(a,b)
 end
 
 local socket = require 'socket'
-start = start or socket.gettime()
-nu = socket.gettime()
+starttijd = start or socket.gettime()
+nu = starttijd
+local start = true
 
 local vind = function(a,b)
 	for i=1,#a-#b+1 do
@@ -386,11 +386,10 @@ end
 
 local herhaal = function(f)
 	return function(a)
-		local r = a
-		while a do
+		repeat
 			r = a
 			a = f(a)
-		end
+		until a == nil
 		return r
 	end
 end

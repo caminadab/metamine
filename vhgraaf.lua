@@ -100,18 +100,15 @@ local function sorteer(hgraaf, van, naar)
 	end
 	
 	if not next(nieuw) then
-		_G.print('GEEN BEGIN GEVONDEN!')
-		print(hgraaf:tekst())
-		print()
 		local halfvan = maakstroom()
 		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
 		return false, halfvan, halfnaar -- TODO werk terug
 	end
-	print('BEGIN:', pijl2tekst(next(nieuw)))
+	--print('BEGIN:', pijl2tekst(next(nieuw)))
 
 	while next(nieuw) do
 		local pijl = next(nieuw)
-		print('LINK?',pijl2tekst(pijl))
+		--print('LINK?',pijl2tekst(pijl))
 		nieuw[pijl] = nil
 
 		-- alle bronnen bekend?
@@ -119,25 +116,25 @@ local function sorteer(hgraaf, van, naar)
 		for bron in pairs(pijl.van) do
 			if not bekend[bron] and not van(bron) then
 				ok = false
-				print('  NEE: '.. tostring(bron)..' is onbekend', type(bron))
+				--print('  NEE: '.. tostring(bron)..' is onbekend', type(bron))
 			end
 		end
-		print('  DOEL?', pijl.naar)
+		--print('  DOEL?', pijl.naar)
 
 		-- mag linken
 		if ok --[[and not bekend[pijl] ]] and stroom:link(pijl) then
-			print('  JA')
+			--print('  JA')
 			for bron in pairs(pijl.van) do
 				nuttig[bron] = true
 			end
 			bekend[pijl.naar] = true
-				print('NIEUW?', pijl.naar, type(pijl.naar))
+				--print('NIEUW?', pijl.naar, type(pijl.naar))
 			for pijl in hgraaf:van(pijl.naar) do
-				print('NIEUW')
+				--print('NIEUW')
 				if true or not bekend[pijl.naar] then
 					nieuw[pijl] = true
 				else
-					print('   al bekend', pijl.naar)
+					--print('   al bekend', pijl.naar)
 				end
 			end
 			bekend[pijl] = true
@@ -158,21 +155,17 @@ local function sorteer(hgraaf, van, naar)
 	local b = {}
 	for pijl in pairs(bekend) do
 		if pijl.naar then
-			print('NAAR BEKEND', pijl.naar)
+			--print('NAAR BEKEND', pijl.naar)
 			b[pijl.naar] = true
 		end
 	end
 
 	if not bekend[naar] then
-		print('NAAR ONBEKEND', naar)
+		--print('NAAR ONBEKEND', naar)
 		local halfvan = stroom
 		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
-		print()
-		print(halfnaar:tekst())
-		print()
 		return false, halfvan, halfnaar
 	end
-	print('KLAAR', stroom:tekst())
 
 	-- volg terug vanuit einde naar begin
 	-- stop daar waar nodes onbekend zijn maar hun parents bekend
@@ -204,7 +197,6 @@ function vhgraaf()
 			end
 
 			for bron in pairs(van) do
-				print('PUNT', bron)
 				h.punten[bron] = true
 			end
 			h.punten[naar] = true

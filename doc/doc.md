@@ -251,8 +251,17 @@ Alle functies zijn puur en zonder zijeffecten. "tijd" is een impliciete paramete
 moment: getal
 	Een specifiek tijdstip in de tijd.
 
+tijdsduur: getal
+	Een tijdsduur, in seconden.
+
+tijdsinterval:
+	Een interval tussen twee momenten.
+
 nu: moment
 	Het huidige moment.
 
 start: moment
 	Het moment waarop het programma startte.
+
+looptijd: tijdsduur
+	Een specifiek tijdstip in de tijd.

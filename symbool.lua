@@ -75,6 +75,11 @@ function substitueer(exp, van, naar)
 			return exp
 		end
 	else
+		if isexp(van) then
+			if exphash(exp) == exphash(van) then
+				return naar
+			end
+		end
 		local t = {}
 		t.fn = substitueer(exp.fn, van, naar)
 		for i,v in ipairs(exp) do
@@ -87,6 +92,16 @@ end
 sym = {}
 sym.niets = X'niets'
 sym.start = X'start'
+sym.lijst = X'[]'
+sym.set = X'{}'
+sym.is = X'='
+sym.oud = X"'"
+sym.cat = X'||'
+sym.ass = X':='
+sym.catass = X'||='
+sym.alt = X'|'
+sym.altis = X'|='
+sym.dan = X'=>'
 function sym.maplet(a,b)
 	return X('-->', a, b)
 end

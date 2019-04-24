@@ -6,11 +6,6 @@ require 'vhgraaf'
 require 'bieb'
 require 'rapport'
 
-local print = function (...)
-	local print0 = print
-	if verboos then print(...) end
-end
-
 leed = combineer
 
 function T(exp)
@@ -90,9 +85,34 @@ function oplos(exp,voor)
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
+		local nieuw, oud = {}, {}
+
+		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
+
+		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
+		for eq in pairs(eqs) do
+			if eq.fn and eq.fn.v == ':=' then
+				--oud[eq] = true
+				local a, b = eq[1], eq[2]
+				--eq.fn,eq[1],eq[2] = sym.altis, a, 
+
+				local neq = X(sym.altis, a, X(sym.alt, X(sym.dan, sym.start, b), X(sym.oud, a)))
+				oud[eq] = true
+				nieuw[neq] = true
+			end
+		end
+
+		-- herschrijf (a ||= b) naar (a |= a' || b)
+		for eq in pairs(eqs) do
+			for exp in boompairs(eq) do
+				if exp.fn and exp.fn.v == "||=" then --== sym.catass then
+					local a, b = exp[1], exp[2]
+					exp.fn, exp[1], exp[2] = sym.altis, a, X(sym.cat, X(sym.oud, a), b)
+				end
+			end
+		end
+
 		-- herschrijf (a < b) → (a: (b..∞) ∧ b: (-∞ .. a))
-		local nieuw = {}
-		local oud = {}
 		for eq in pairs(eqs) do
 			if isfn(eq) and eq.fn.v == '>' then
 				eq.fn.v,fn,eq[2],eq[1] = '<',eq[1],eq[2]
@@ -105,8 +125,6 @@ function oplos(exp,voor)
 				oud[eq] = true
 			end
 		end
-		eqs = unie(eqs, nieuw)
-		eqs = complement(eqs, oud)
 
 		local i = 0
 		-- vind atomen
@@ -124,8 +142,8 @@ function oplos(exp,voor)
 			if isfn(eq) then
 				local a = (eq.fn.v == '=>') 
 				local b = a and isfn(eq[2]) 
-				local c = b and (eq[2].fn.v == '=')
-				if eq.fn.v == '=>' and isexp(eq[2]) and eq[2].fn.v == '=' then
+				local c = b and (eq[2].fn.v == '=' or eq[2].fn.v == '|=')
+				if eq.fn.v == '=>' and isexp(eq[2]) and (eq[2].fn.v == '=' or eq[2].fn.v == '|=')  then
 					eq.fn.v = '|='
 					eq[1],eq[2] = eq[2][1], {fn=X'=>', eq[1], eq[2][2]}
 				end
@@ -140,12 +158,15 @@ function oplos(exp,voor)
 				for naam in pairs(vrij) do
 					if bevat(eq[2], naam) then
 						eq[1],eq[2] = eq[1].fn, {fn=X'->', eq[1][1], eq[2]}
-						print(exp2string(eq))
+						print('HERSCHRIJF', exp2string(eq))
 						break
 					end
 				end
 			end
 		end
+
+		eqs = unie(eqs, nieuw)
+		eqs = complement(eqs, oud)
 
 		-- verzamel |=
 		local map = {} -- k → [v]
@@ -171,6 +192,34 @@ function oplos(exp,voor)
 			local eq = {fn=X'=', X(naam), alts}
 			eqs[eq] = true
 		end
+
+		-- herschrijf
+		--   a = f(a')
+		-- naar
+		--   a = (herhaal (a' → a))(niets)
+		local nieuw = {}
+		local oud = {}
+		for eq in pairs(eqs) do
+			if isfn(eq) and isatoom(eq[1]) and eq.fn.v == '=' then
+				local a,b = eq[1],eq[2]
+				for node in boompairs(b) do
+					if isfn(node) and node.fn.v == "'" and node[1].v == a.v then
+						local oude = X(node[1].v .. '_oud')
+						b = substitueer(b, node, oude)
+						node.fn = nil
+						node.v = a.v
+						eqn = X('=', a, X(X('herhaal', X('->', oude, b)), 'niets'))
+						oud[eq] = true
+						nieuw[eqn] = true
+					end
+				end
+			end
+		end
+
+		eqs = unie(eqs, nieuw)
+		eqs = complement(eqs, oud)
+
+		-- uit = (start ⇒ "ok") | (looptijd = 1 ⇒ uit' || "ok")
 
 		-- functies
 		local aantal = 1
@@ -227,6 +276,15 @@ function oplos(exp,voor)
 			end
 		end
 
+		if verboos then
+			print()
+			print('Voorgekauwd')
+			for eq in pairs(eqs) do
+				print(exp2string(eq))
+			end
+			print()
+		end
+
 		-- maak graaf
 		local kennisgraaf = vhgraaf()
 		local pijl2subst = {}
@@ -243,10 +301,6 @@ function oplos(exp,voor)
 			local pijl = kennisgraaf:link(bron, naam.v)
 			pijl2subst[pijl] = subst
 		end
-		print()
-		print('# Kennisgraaf')
-		print(kennisgraaf:tekst())
-		print()
 
 		local stroom,halfvan,halfnaar = kennisgraaf:sorteer(invoer,voor)
 
@@ -276,10 +330,6 @@ function oplos(exp,voor)
 			end
 			return false, fouten, {}
 		end
-		print()
-		print('Stroom verkregen')
-		print(stroom:tekst())
-		print()
 		local substs = stroom:topologisch()
 		if not substs then
 			-- dit is een zware fout...
@@ -292,8 +342,6 @@ function oplos(exp,voor)
 		local val = X(voor)--X'uit'
 		local exp2naam = {}
 
-		print()
-		print('Begin substitutie', exp2string(val))
 		local exp2naam = {}
 		for i=#substs,1,-1 do
 			local sub = pijl2subst[substs[i]]
@@ -302,21 +350,17 @@ function oplos(exp,voor)
 			val = substitueer(val0, naam, exp)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
-			print('SUBST', naam.v)
-
-			print('ONTKEVER', exp2string(exp))
+			if verboos then
+				print('SUBST', naam.v)
+			end
 
 			exp2naam[naam.v] = exp
 			local n2e = {}
 			for k,v in pairs(exp2naam) do
 				n2e[k] = substitueer(v, naam, exp)
-				print('N2E', exp2string(n2e[k]))
 			end
 			exp2naam = n2e
 		end
-
-		print('Klaar', exp2string(val))
-		print()
 
 		return val,nil,bekend,exp2naam
 

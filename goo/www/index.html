@@ -413,25 +413,8 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	tekstknop.style.display = 'inline'; // jaja
 	speelknop.style.display = 'none'; // jaja
 
-	// gun de server wat rust...
-	var cheatz = `
-; niet gluren!
-rechthoek(a,b,c) = (1, a, b, c)
-cirkel(d,e,f) = (0, d, e, f)
-schrijf(g,h,i) = (2, g, h, i)
-wit = (1,1,1)
-zwart = (0,0,0)
-rood = (1,0,0)
-groen = (0,1,0)
-blauw = (0,0,1)
-oranje = (1,0.5,0)
-geel = (1,1,0)
-paars = (1,0,1) ; lelijk
-cyaan = (0,1,1)
-`;
-
 	tekstknop.addEventListener("click", function() {
-		fetch('/vt', {method: "POST", body: editor.getValue() + cheatz} )
+		fetch('/vt', {method: "POST", body: editor.getValue()} )
 			.then(x => x.json())
 			.then(j => {
 				resultaat.innerHTML = j.html || "&lt;geen uitvoer&gt;";

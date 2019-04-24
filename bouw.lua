@@ -6,25 +6,31 @@ require 'ontleed'
 local O = ontleedexp
 
 -- mmap(Δexp)
+-- mmap((exp.i, exp))
 function delta(exp)
 	local moet = mmap()
-	moet[sym.start] = sym.maplet(sym.niets, exp)
+	moet[sym.start] = X("||=", exp)
 	return moet
 end
 
--- → graaf(lijst(
+--[[
+uit = in
+
+Δuit = Δin
+]]
+
+-- moment → (exp' → exp)
 function plan(moet)
+	-- plaats functies aan het eind
 	local start = {}
 	for moment,delta in pairs(moet) do
 		if moment == sym.start then
-			start[#start+1] = delta[2]
+			start[#start+1] = delta
 		else
 			print('Onbekend tijdstip: '..moment)
 		end
 	end
-	local graaf = stroom()
-	graaf:link(set(), start)
-	return graaf
+	return start
 end
 
 -- → asm_x64
@@ -32,12 +38,21 @@ function compileer(proc)
 	local t = {}
 
 	local i = 0
-	function reg()
+	local function reg()
 		local r = "r" .. i
 		i = i + 1
 		return r
 	end
 	local regs = {}
+	local pool = {}
+
+	local di = 0
+	local function data(exp)
+		local d = 'd' .. di
+		data[exp] = X'd'
+		di = di + 1
+		return d
+	end
 
 	for i,brok in pairs(proc:topologisch()) do
 		for _,w in ipairs(brok.naar) do
@@ -58,7 +73,7 @@ function compileer(proc)
 		end
 	end
 	for i, v in ipairs(t) do
-		print(exp2string(v))
+		t[i] = exp2string(v)
 	end
 	return table.concat(t, '\n')
 end
@@ -80,18 +95,19 @@ function bouw(exp)
 	local moet = delta(exp)
 	local proc = plan(moet) -- asm secties
 	local asm = compileer(proc)
+	print(asm)
 	do return end
 	local obj = assembleer(asm)
 	local elf = link(obj)
 	return elf
 end
 
-if test or true then
+if test then
 	require 'oplos'
 
 	verboos = true
 	bouw(oplos(ontleed[[
-uit = "som is " || s
-s = Σ 1 .. 1000
+uit ||= "ja" als start
+uit ||= "hoi" als looptijd = 1
 	]], 'uit'))
 end

@@ -23,24 +23,29 @@ end
 
 -- X('a', 3, 10)
 
+local nergens = {x1=-1,y1=-1,x2=-1,y2=-1}
 
 function X(fn,...)
+	if type(fn) == 'string' then
+		fn = {v=fn, loc=nergens}
+	end
+
 	local t = {...}
 	local r
 	if #t == 0 then
-		r = {v=fn}
+		r = fn
 	else
-		r = {fn={v=fn}}
+		r = {loc=nergens,fn=fn}
 		for i,s in ipairs(t) do
 			if type(s) == 'string' then
-				r[i] = {v=s}
+				r[i] = {v=s, loc = nergens}
 			else
 				--error('nesting niet ondersteund')
 				r[i] = s
 			end
 		end
 	end
-	setmetatable(r, {__tostring=exp2string})
+	setmetatable(r, {__tostring=exp2string, __eq == function(a,b) return exphash(a) == exphash(b) end })
 	return r
 end
 

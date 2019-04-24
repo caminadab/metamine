@@ -63,6 +63,7 @@ function maakvars()
 	end
 end
 
+-- willekeurige volgorde
 function boompairs(exp)
 	local t = {}
 	function r(exp)
@@ -87,6 +88,7 @@ function boompairs(exp)
 	end
 end
 
+-- depth first search
 function boompairsdfs(exp)
 	local t = {}
 	function r(exp)
@@ -109,6 +111,28 @@ function boompairsdfs(exp)
 	end
 end
 
+-- breadth first search
+function boompairsbfs(exp)
+	local t = {}
+	function r(exp)
+		if isatoom(exp) then
+			t[#t+1] = exp
+		else
+			t[#t+1] = exp
+			r(exp.fn)
+			for i,v in ipairs(exp) do
+				r(v)
+			end
+		end
+	end
+	r(exp)
+	
+	local i = 1
+	return function()
+		i = i + 1
+		return t[i-1]
+	end
+end
 
 function exp2string(self,tabs)
 	if type(self) ~= 'table' then return error('is geen expressie') end

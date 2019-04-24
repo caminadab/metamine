@@ -1,5 +1,17 @@
-uit = a + b
-a = 3
-b = c * d
-c = 8
-d.
+;uit ||= "bezig..." als start = nu
+;uit ||= " klaar!" als looptijd = 1
+
+uit := "ok"
+
+;uit ||= "ok" als looptijd = 1
+
+; Δuit =  (0 → (:= "hoi"))  ∐  (1 → (||= "ok"))
+; uit = ∫ (A ∐ B)
+
+; uit = (looptijd = 1  ⇒  uit' || "ok")
+
+;start → (||= "bezig...")
+;op(start+1) → (||= " klaar!")
+;uit := uit' || "hoi"
+
+

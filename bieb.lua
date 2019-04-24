@@ -24,10 +24,12 @@ bieb = {
 	int = math.floor,
 	abs = math.abs,
 	plafond = math.ceil,
+	["'"] = true,
 	['nu'] = (function()
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
+	starttijd = true,
 	['start'] = (function()
 		local socket = require 'socket'
 		return socket.gettime()
