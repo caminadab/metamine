@@ -330,5 +330,7 @@ setitems:
 
 items:
 	exp									{ $$ = FN2(A("[]"), $1); }
+| '\n' TAB exp '\n'		{ $$ = FN2(A("[]"), $3); }
 | items ',' exp				{ $$ = APPEND($1, $3); }
+| items TAB exp	'\n'				{ $$ = APPEND($1, $3); }
 ;

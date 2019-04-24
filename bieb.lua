@@ -7,6 +7,14 @@ local jslibtaal = {string.byte(javascriptbieb,1,#javascriptbieb)}
 jslibtaal.fn = '[]'
 
 bieb = {
+	-- tekening
+	rechthoek = true,
+	groen = true,
+	rood = true,
+	wit = true,
+	zwart = true,
+	schrijf = true,
+
 	-- wiskunde
 	looptijd = 3,
 	co = 3,

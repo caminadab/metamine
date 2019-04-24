@@ -52,7 +52,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 
 "⁰"					{ *yylval = a("^0"); return M0; }
 "¹"					{ *yylval = a("^1"); return M1; }
-"²"					{ *yylval = a("^2"); return M2; }
+"²"					{ return M2; }
 "³"					{ *yylval = a("^3"); return M3; }
 "⁴"					{ *yylval = a("^4"); return M4; }
 "ⁿ"					{ *yylval = a("^n"); return MN; }

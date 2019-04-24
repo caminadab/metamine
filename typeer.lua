@@ -59,7 +59,6 @@ end
 local bieb,fouten = ontleed(bestand 'bieb/types.code')
 if fouten then error('biebfouten') end
 
-
 function typeer(exp)
 	local typegraaf = maaktypegraaf()
 

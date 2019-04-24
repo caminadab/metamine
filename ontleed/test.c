@@ -18,12 +18,16 @@ f =
 
 int test() {
 	char* tests[][2] = {
+		{"a = \"♕\"", "=(a [](9813))"},
 		{"wit.", ".(wit)"},
+		//TODO{"a = [\n]", "=(a []())"},
+		{"a = [\n\tb\n]", "=(a [](b))"},
+		{"a = [\n\tb\n\tc\n]", "=(a [](b c))"},
 
 		{"a =\n\t3", "=(a co(3))"},
 		{"a =\n\t0 → 1\n\t1 → 2", "=(a co(->(0 1) ->(1 2)))"},
-		{"a =\n\t3\nb = 1", "en(=(a co(3)) =(b 1))"},
-		{"a =\n\t3\n\nb = 1", "en(=(a co(3)) =(b 1))"},
+		{"a =\n\t3\nb = 1", "EN(=(a co(3)) =(b 1))"},
+		{"a =\n\t3\n\nb = 1", "EN(=(a co(3)) =(b 1))"},
 
 		// zieke blokken h3l
 		{"priem als #delers = 2", "=>(=(#(delers) 2) priem)"},
@@ -34,12 +38,11 @@ int test() {
 		//{"als\n\ta\n\tb\ndan\n\tc\n\td", "=>(/\\(a b) /\\(c d))"},
 		//{"als a dan\n\tb = 10\nanders\n\tb = 20", "en(=>(a =(b 10)) =>(!(a) =(b 20)))"},
 		//{"als a \n\tb", "=>(a b)"},
-		{0,0},
 
 		// integratie
-		{"\n", "en"},
-		{"\n\n", "en"},
-		{"a = 10", "en(=(a 10))"},
+		{"\n", "EN"},
+		{"\n\n", "EN"},
+		{"a = 10", "EN(=(a 10))"},
 
 		// fouten
 		{"a ==", "a"},
@@ -161,7 +164,7 @@ int test() {
 		char* doel = tests[i][1];
 		char* lisp = ontleed(t);
 		char doel2[0x400];
-		sprintf(doel2, "en(%s)", doel);
+		sprintf(doel2, "EN(%s)", doel);
 		if (strcmp(lisp, doel) && strcmp(lisp, doel2)) {
 			puts("FOUT BIJ TEST");
 			puts(test);

@@ -1,0 +1,7 @@
+;a = {1, 2, 3} waarvoor sin
+f(a,b) = a + b
+A(ff,gg) = yy → ff(gg(yy))
+h = f A f
+c = h(2,3)
+uit = tekst(c)
+

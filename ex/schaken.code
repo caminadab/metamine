@@ -1,9 +1,73 @@
+tekening = velden || allestukvormen
+
+allestukvormen = stukvormen((1, 1), pion, stuk-wit) || stukvormen((0,0), koning, stuk-zwart)
+
+wit.
+zwart.
+speler: {wit, zwart}
+
+stukvormen((posx, posy), stuk, stuk-kleur) = [
+	schrijf((posx/8 + 0.02 + .003, posy/8 + 0.02 - .003), [symbolen(stuk)], achtergrondkleur)
+	schrijf((posx/8+0.02,posy/8+0.02), [symbolen(stuk)], voorgrondkleur)
+]
+
+; tekening = teken(velden) || teken(s ∈ bord.stukken)
+; stuk = {pos, kleur, soort}
+; pos: 0..8 × 0..8
+; pion. paard. loper. toren. dame. koning.
+
+; bord = pos → stuk
+
+voorgrondkleur = wit ;als stuk-kleur = stuk-wit
+;voorgrondkleur = zwart als stuk-kleur ≠ stuk-wit
+achtergrondkleur = rood
+
+
+; teken het veld
+veld = i → rechthoek(apos, bpos, veldkleur)
+veldx = i mod 8
+veldy = int(i / 8)
+apos = (veldx/8, veldy/8)
+bpos = ((veldx+1)/8, (veldy+1)/8)
+veldkleur = donkerbruin als (i + veldy) mod 2 = 0
+veldkleur = lichtbruin als (i + veldy) mod 2 = 1
+
+velden = (0 .. 64) map veld
+
+donkerbruin = (45%, 30%, 13%)
+lichtbruin = (95%, 80%, 68%)
+
+pion = 0
+paard = 1
+loper = 2
+toren = 3
+dame = 4
+koning = 5
+
+symbolen = "♟♞♝♜♛♚"
+
+;-
+wit.
+zwart.
+pos: 0..8 × 0..8
+stuk: {type, kleur, pos}
+
+; stukken
+schaakstuk.
+
+; pion
+pion: schaakstuk
+symbool(pion) = '♟'
+
+als pion.kleur = wit
+
+;♙♘♗♖♕♔
+-;
+
+;-
 uit = 
 
 p = stuk
-
-; IDENTITEITSGENERATIE: enum
-
 
 ;stuk(letter) = kleur(letter) & type(letter)
 
@@ -30,26 +94,8 @@ lees = tekst → stelling
 
 is-teken-witruimte = x → x ≤ 32
 
-startpos = lees "
-t p l v k l p t
-i i i i i i i i
-. . . . . . . .
-. . . . . . . .
-. . . . . . . .
-. . . . . . . .
-I I I I I I I I
-T P L V K L P T
-"
 
-wit = 10
-zwart = 20
-
-pion = 0
-paard = 1
-loper = 2
-toren = 3
-dame = 4
-koning = 5
+-;
 
 ;-
 kleur(letter) =

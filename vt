@@ -12,7 +12,6 @@ require 'doe'
 require 'naarlua'
 require 'naarweb'
 require 'rapport'
-require 'delta'
 require 'typeer'
 
 local opt,bronnen = getopt({...}, "u")

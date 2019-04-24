@@ -167,15 +167,35 @@ node* karakter(int ch) {
 	return a(buf);
 }
 
+int utf8len(char* a) {
+	if ((*a & 0x80) == 0x00) return 1;
+	if ((*a & 0xE0) == 0xC0) return 2;
+	if ((*a & 0xF0) == 0xE0) return 3;
+	if ((*a & 0xF8) == 0xF0) return 4;
+	return -1;
+}
+
+int utf8cp(char* a) {
+	int l = utf8len(a);
+	if (l == 1) return a[0] & 0x7F;
+	if (l == 2) return ((a[0] & 0x1F) << 6) | (a[1] & 0x3F);
+	if (l == 3) return ((a[0] & 0x0F) << 12) | ((a[1] & 0x3F) << 6) | (a[2] & 0x3F);
+	if (l == 4) return ((a[0] & 0x07) << 18) | ((a[1] & 0x3F) << 12) | ((a[2] & 0x3F) << 6) | (a[2] & 0x3F);
+	return -1;
+}
+
 node* tekst(node* str0) {
 	char* str = str0->data;
 	node* t = exp1(a("[]"));
 	t->tekst = 1;
 	t->loc = str0->loc;
-	for (int i = 1; str[i+1]; i++) {
+
+	int i = 0;
+	for (char* s = str + 1; *(s + utf8len(s)); s += utf8len(s), i++) {
+		// UTF-8
+		int cp = utf8cp(s);
 		char ch[16];
-		//itoa(str[i], 
-		sprintf(ch, "%d", str[i]);
+		sprintf(ch, "%d", cp);
 		node* tekennode = aloc(ch, t->loc);
 		tekennode->loc.first_column += i;
 		tekennode->loc.last_column = tekennode->loc.first_column + 1; // TODO unicode & regeleinden

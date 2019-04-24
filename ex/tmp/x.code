@@ -1,0 +1,41 @@
+uit = bestand '/dev/urandom'
+
+bestand(naam).
+; bestand = atoom(0)
+; naam = bestand.atoom(1)
+
+;-
+cirkel((0.2, 0.2), 0.3, blauw)
+
+cirkel(
+-;
+
+; bd := bestands-open naam
+; data,bd := bestand-lees bd'
+
+Δbestand =
+0 → is-leesbaar bd →
+0 →	bd = bestand-open naam
+
+in = stdin
+uit = stduit
+stduit: schrijfbaar-per-blok
+
+
+uit = bestand('/dev/urandom')
+
+bestand(naam).
+
+bestand-open: 
+
+bd = bestand-open naam
+brok = lees(bd) als is-leesbaar(bd)
+; brok: moment → data
+; is-leesbaar: bd → (moment → bit)
+; lees: bd → (moment → data)
+
+stduit = stduit' || brok
+
+
+Δ stduit(a) = schrijf(stduit, a)
+Δ stdin(a)  = lees(stdin, a)

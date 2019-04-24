@@ -13,6 +13,8 @@ bericht = schrijf((30%, 30%), t, wit)
 
 tekening = [ achtergrond, balA, balB, bericht ]
 
+; openGL-frame = vertices[
+
 wit = (1,1,1)
 zwart = (0,0,0)
 geel  = (1,1,0)

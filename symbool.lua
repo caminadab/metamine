@@ -84,3 +84,9 @@ function substitueer(exp, van, naar)
 	end
 end
 
+sym = {}
+sym.niets = X'niets'
+function sym.maplet(a,b)
+	return {fn=X'-->', a, b}
+end
+

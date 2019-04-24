@@ -95,7 +95,7 @@ function oplos(exp,voor)
 		local oud = {}
 		for eq in pairs(eqs) do
 			if isfn(eq) and eq.fn.v == '>' then
-				fn,eq[2],eq[1] = '<',eq[1],eq[2]
+				eq.fn.v,fn,eq[2],eq[1] = '<',eq[1],eq[2]
 			end
 			if isfn(eq) and eq.fn.v == '<' then
 				local fa = X(X':', eq[1], X(X'..', eq[2], X'oneindig'))
@@ -230,13 +230,15 @@ function oplos(exp,voor)
 		-- maak graaf
 		local kennisgraaf = vhgraaf()
 		local pijl2subst = {}
+		local bron2def = {}
 		for subst in pairs(subst) do
-			local _,naam,waarde = ':=',subst[1],subst[2]
+			local naam,waarde = subst[1],subst[2]
 			local bron0 = var(waarde,invoer)
 			local bron = {}
 			for k in pairs(bron0) do -- alleen naam is nodig
 				--assert(type(k.v) == 'string', see(k.v))
 				bron[k.v] = true
+				bron2def[k.v] = k
 			end
 			local pijl = kennisgraaf:link(bron, naam.v)
 			pijl2subst[pijl] = subst
@@ -255,7 +257,7 @@ function oplos(exp,voor)
 		}
 		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
-			file('fout.html', rapport(vt))
+			--file('fout.html', rapport(vt))
 			--return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}, halvestroom
 
 			local fouten = {}
@@ -263,13 +265,14 @@ function oplos(exp,voor)
 			print(halfvan:tekst())
 			print('HALV NAAR')
 			print(halfnaar:tekst())
-			for punt in pairs(halfnaar.punten) do
+			for punt in pairs(halfnaar.begin) do
 				if not halfvan.punten[punt] then
+					local def = bron2def[punt]
 					local fout = {
-						msg = color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
+						msg = exp.bron .. '@' .. loctekst(def.loc) .. ': ' .. color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
 					}
+					fouten[#fouten+1] = fout
 				end
-				fouten[#fouten+1] = fout
 			end
 			return false, fouten, {}
 		end

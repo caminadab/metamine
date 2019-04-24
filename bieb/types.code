@@ -96,7 +96,6 @@ schrijf: ((getal, getal), tekst, kleur) → rechthoek
 genormaliseerd : getal ; tussen 0 en 1
 kleur: (genormaliseerd, genormaliseerd, genormaliseerd)
 ;kleur: (getal, getal, getal)
-;-
 rood: kleur
 oranje: kleur
 groen: kleur
@@ -105,7 +104,6 @@ geel: kleur
 paars: kleur
 zwart: kleur
 wit: kleur
--;
 
 ;-
 pos : (kommagetal, kommagetal)

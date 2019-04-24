@@ -1,6 +1,7 @@
 #!/usr/bin/lua
 package.path = package.path .. ';bin/?.lua'
 test = true
+verboos = true
 
 require0 = require
 require = function(n)

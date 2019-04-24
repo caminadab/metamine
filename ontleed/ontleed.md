@@ -1,3 +1,3 @@
-ontleed: code -> lisp,err[]
+ontleed: code -> exp,err[]
 err: [wat,waar]
 waar: [regel,index]
