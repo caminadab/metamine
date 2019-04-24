@@ -77,6 +77,7 @@ function probeerstap() {
 	catch (e) {
 		clearInterval(istap);
 		alert("Executiefout! " + e);
+		alert(e.message || e.getMessage());
 	}
 }
 
