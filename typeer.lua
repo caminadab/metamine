@@ -147,7 +147,7 @@ function typeer(exp)
 			if verboos then
 				local t = typeoorzaakloc or ol or exploc
 				local s = t and '  vanwege ' .. (loctekst(t) or '')
-				print('TYPEER', moes(exp)..': '..moes(T))
+				--print('TYPEER', moes(exp)..': '..moes(T))
 			end
 		end
 	end
