@@ -130,11 +130,9 @@ function arr2str(a) {
 	return s;
 }
 
+var ja = true;
+var nee = false;
 /*
-local ja = true
-local nee = false
-local pack = pack or table.pack
-local unpack = unpack or table.unpack
 local _pow = function(a,b)
 	if type(a) == 'number' then
 		return a ^ b

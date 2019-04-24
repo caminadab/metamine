@@ -23,6 +23,7 @@ end
 
 -- X('a', 3, 10)
 
+
 function X(fn,...)
 	local t = {...}
 	local r
@@ -39,6 +40,7 @@ function X(fn,...)
 			end
 		end
 	end
+	setmetatable(r, {__tostring=exp2string})
 	return r
 end
 

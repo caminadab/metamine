@@ -86,7 +86,8 @@ end
 
 sym = {}
 sym.niets = X'niets'
+sym.start = X'start'
 function sym.maplet(a,b)
-	return {fn=X'-->', a, b}
+	return X('-->', a, b)
 end
 

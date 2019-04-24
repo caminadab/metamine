@@ -1,19 +1,5 @@
 require 'func'
 
-	--[[
-		begin = begin,
-		naar = naar,
-		link = link,
-		maglink = maglink,
-		ontlink = ontlink,
-		bereikbaar_disj = bereikbaar_disj,
-		stroomopwaarts = bereikbaar_disj,
-		tekst = tekst,
-		topologisch = topologisch,
-		topo = topologisch,
-		kopieer = kopieer,
-		]]
-
 local metastroom = {}
 
 -- is er, zonder alle pijlen te vervullen, een route van bron naar doel mogelijk?
@@ -113,6 +99,10 @@ function metastroom:kopieer()
 end
 
 function metastroom:topologisch()
+	if not next(self.pijlen) then
+		return {}
+	end
+
 	--local print = function () end
 	--TODO if isatoom(van) then van = {[van] = true} end
 	local volgorde = {}
@@ -136,7 +126,7 @@ function metastroom:topologisch()
 		end
 	end
 
-	for punt in pairs(van) do
+	for punt in pairs(self.begin) do
 		for pijl in self:van(punt) do
 			nieuw[pijl] = true
 		end
@@ -267,6 +257,10 @@ function metastroom:link(pijl_of_van, naar)
 	if self.begin[pijl.naar] then
 		self.begin[pijl.naar] = nil
 	end
+	if not next(pijl.van) then
+		self.begin[pijl.naar] = true
+	end
+			_G.print(pijl2tekst(pijl))
 	for bron in pairs(pijl.van) do
 		if not self.punten[bron] then
 			self.begin[bron] = true
@@ -309,6 +303,7 @@ end
 
 function metastroom:punt(punt)
 	self.punten[punt] = true
+	self.begin[punt] = true
 end
 
 -- hyperpijlen naar doel
@@ -390,7 +385,8 @@ if test then
 	assert(not graaf:link({a=true,c=true}, 'b'))
 
 	-- topologisch
-	local topo = graaf:topologisch()
+	local topo,fouten = graaf:topologisch()
+	assert(not fouten, tostring(graaf)) --table.concat(fouten))
 	assert(topo[1].naar == 'b')
 	assert(topo[2].naar == 'c')
 end

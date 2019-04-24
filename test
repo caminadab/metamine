@@ -1,11 +1,11 @@
 #!/usr/bin/lua
 package.path = package.path .. ';bin/?.lua'
 test = true
-verboos = true
+--verboos = true
 
 require0 = require
 require = function(n)
-	print('TESTING', n)
+	--print('TESTING', n)
 	return require0(n)
 end
 

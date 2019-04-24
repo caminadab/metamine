@@ -45,77 +45,28 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x0.84018771715471', exp: ''}, classes: 'hyper' },			{
+				{ data: {id: 's'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
 				data: {
-					id: 'x0.39438292681909',
-					source: 'x0.84018771715471',
-					target: 'a',
-				}
-			},
-							{
-						data: {
-							id: 'x0.78309922375861',
-							source: 'b',
-							target: 'x0.84018771715471',
-						}
-					},
-									{
-						data: {
-							id: 'x0.79844003347607',
-							source: 'uit',
-							target: 'x0.84018771715471',
-						}
-					},
-				{ data: {id: 'x0.91164735793678', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.19755136929338',
-					source: 'x0.91164735793678',
+					id: 'x0.84018771715471',
+					source: 'nil',
 					target: 'uit',
 				}
 			},
-							{
-						data: {
-							id: 'x0.33522275571489',
-							source: 'a',
-							target: 'x0.91164735793678',
-						}
-					},
-									{
-						data: {
-							id: 'x0.7682295948119',
-							source: 'b',
-							target: 'x0.91164735793678',
-						}
-					},
-				{ data: {id: 'x0.27777471080319', exp: ''}, classes: 'hyper' },			{
+					{
 				data: {
-					id: 'x0.55396995579543',
-					source: 'x0.27777471080319',
-					target: 'a',
+					id: 'x0.39438292681909',
+					source: 'nil',
+					target: 's',
 				}
 			},
-		{ data: {id: 'x0.47739705186216', exp: ''}, classes: 'hyper' },			{
+		{ data: {id: 'x0.78309922375861', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.62887092476192',
-					source: 'x0.47739705186216',
-					target: 'b',
+					id: 'x0.79844003347607',
+					source: 'x0.78309922375861',
+					target: 's',
 				}
 			},
-							{
-						data: {
-							id: 'x0.36478447279184',
-							source: 'a',
-							target: 'x0.47739705186216',
-						}
-					},
-									{
-						data: {
-							id: 'x0.51340091019562',
-							source: 'uit',
-							target: 'x0.47739705186216',
-						}
-					},
-							]
+					]
 		});
 	</script><script>infostroom = cytoscape({
 			container: document.getElementById('infostroom'),
@@ -152,77 +103,21 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'a'}, classes: 'waarde' },{ data: {id: 'b'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x0.95222972517471', exp: ''}, classes: 'hyper' },			{
+				{ data: {id: 's'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },			{
 				data: {
-					id: 'x0.9161950680037',
-					source: 'x0.95222972517471',
-					target: 'a',
-				}
-			},
-							{
-						data: {
-							id: 'x0.6357117279599',
-							source: 'b',
-							target: 'x0.95222972517471',
-						}
-					},
-									{
-						data: {
-							id: 'x0.71729692943268',
-							source: 'uit',
-							target: 'x0.95222972517471',
-						}
-					},
-				{ data: {id: 'x0.1416025553558', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.60696887625706',
-					source: 'x0.1416025553558',
+					id: 'x0.91164735793678',
+					source: 'nil',
 					target: 'uit',
 				}
 			},
-							{
-						data: {
-							id: 'x0.01630057162433',
-							source: 'a',
-							target: 'x0.1416025553558',
-						}
-					},
-									{
-						data: {
-							id: 'x0.24288677062974',
-							source: 'b',
-							target: 'x0.1416025553558',
-						}
-					},
-				{ data: {id: 'x0.13723157678602', exp: ''}, classes: 'hyper' },			{
+		{ data: {id: 'x0.19755136929338', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.80417675422699',
-					source: 'x0.13723157678602',
-					target: 'a',
+					id: 'x0.33522275571489',
+					source: 'x0.19755136929338',
+					target: 's',
 				}
 			},
-		{ data: {id: 'x0.15667908925408', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.40094439424618',
-					source: 'x0.15667908925408',
-					target: 'b',
-				}
-			},
-							{
-						data: {
-							id: 'x0.12979044678146',
-							source: 'a',
-							target: 'x0.15667908925408',
-						}
-					},
-									{
-						data: {
-							id: 'x0.10880880202577',
-							source: 'uit',
-							target: 'x0.15667908925408',
-						}
-					},
-							]
+					]
 		});
 	</script><script>				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

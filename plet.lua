@@ -39,8 +39,9 @@ function varnaam(i)
 end
 
 
-if test then
+if test and false then
 	require 'exp'
-	local w,t = plet{fn=X'*', {fn=X'+', X'1', X'2'}, X'3'}
+	require 'ontleed'
+	local w,t = plet(ontleedexp('(1 + 2) * 3'))
 	for i,w in ipairs(t) do print(exp2string(w)) end
 end
