@@ -1,1 +1,5 @@
-uit = a
+uit = a + b
+a = 3
+b = c * d
+c = 8
+d.

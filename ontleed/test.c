@@ -38,12 +38,11 @@ int test() {
 		//{"als\n\ta\n\tb\ndan\n\tc\n\td", "=>(/\\(a b) /\\(c d))"},
 		//{"als a dan\n\tb = 10\nanders\n\tb = 20", "en(=>(a =(b 10)) =>(!(a) =(b 20)))"},
 		//{"als a \n\tb", "=>(a b)"},
-		{0,0},
 
 		// integratie
-		{"\n", "en"},
-		{"\n\n", "en"},
-		{"a = 10", "en(=(a 10))"},
+		{"\n", "EN"},
+		{"\n\n", "EN"},
+		{"a = 10", "EN(=(a 10))"},
 
 		// fouten
 		{"a ==", "a"},
