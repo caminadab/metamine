@@ -30,7 +30,9 @@ function plan(moet)
 			print('Onbekend tijdstip: '..moment)
 		end
 	end
-	return start
+	local planning = stroom()
+	planning:link(set(), start)
+	return planning
 end
 
 -- → asm_x64
@@ -96,7 +98,7 @@ function bouw(exp)
 	local proc = plan(moet) -- asm secties
 	local asm = compileer(proc)
 	print(asm)
-	do return end
+	do return asm end
 	local obj = assembleer(asm)
 	local elf = link(obj)
 	return elf

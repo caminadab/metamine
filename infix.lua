@@ -317,7 +317,7 @@ local function unparseInfix_work(sexp, tt)
 			end
 
 		-- binop
-		else
+		elseif #sexp == 2 then
 			for i=1,#sexp do
 				local v = sexp[i]
 				local br = isfn(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
@@ -337,10 +337,22 @@ local function unparseInfix_work(sexp, tt)
 						insert(tt, ' ')
 					end
 				end
+
 			end
 
+		-- n-air
+		else
+			insert(tt, op)
+			insert(tt, '(')
+
+			for i=1,#sexp do
+				unparseInfix_work(sexp[i], tt)
+				if i~=#sexp then insert(tt, ', ') end
+			end
+			insert(tt, ')')
 		end
 	end
+
 	-- plet
 	for i,v in ipairs(tt) do
 		if isexp(v) then

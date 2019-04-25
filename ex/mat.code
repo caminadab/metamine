@@ -5,20 +5,17 @@ punten = vul-matrix [ kies-int[0,3], [breedte, hoogte] ]
 horiz = vul-matrix [ kies-int[0,3], [breedte - 1, hoogte] ]
 verti = vul-matrix [ kies-int[0,3], [breedte, hoogte - 1] ]
 
-standaarduitvoer = tekst(puzzel) || [10]
+uit = tekst(puzzel) || [10]
 
 ;geef-score = p → score
-
 ;-
 A - B
 |
 C - D
 -;
-
-
 ; maak matrix gevuld met shit
-vul-matrix = [cel, [w, h]] → mat
+vul-matrix = (cel, (w, h)) → mat
 rij = (f^w) []
 mat = (g^h) []
-f = r	→ r || [cel]
+f = r	→ ;r ||-; [cel]
 g = m → m || [rij]

@@ -1,19 +1,19 @@
 ; encodeer
 kenc = w → d
-	d = cat(w map (b → [#b] || b))
+d = cat(w map (b → [#b] || b))
 
 ; decodeer (recursief)
 kdecA =  data → Berichten
-	len = 1 + data₀
-	#data > 0  ⇒  Berichten = [ bericht ] || kdecB (data vanaf len)
-		bericht = data deel (1, len)
+len = 1 + data₀
+#data > 0  ⇒  Berichten = [ bericht ] || kdecB (data vanaf len)
+bericht = data deel (1, len)
 
 kdec = ((kdecB → kdecA)^999) (x → [])
 
 ; (||) : (a:lijst(ta), b:lijst(tb)) → c:lijst(ta ∪  tb)
 
 uit =  check cat ","
-	check =  (kenc ∘ kdec) berichten
-		berichten =  ["hoi", "hoe", "is", "het", "dan"]
+check =  (kenc ∘ kdec) berichten
+berichten =  ["hoi", "hoe", "is", "het", "dan"]
 
 

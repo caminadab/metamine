@@ -414,6 +414,20 @@ local function _maplet(a, b)
 	return {type="maplet", a, b}
 end
 
+local _args = {}
+local function _arg(n)
+	if _args[arg] == nil then
+		error('argument #'..n..' nog niet bekend, maar wel gebruikt')
+	end
+end
+local function _fn(...)
+	local t = {...}
+
+	return function (...)
+		return a
+	end
+end
+
 local function co(...)
 	local map = {}
 	for i,maplet in ipairs{...} do

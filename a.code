@@ -1,6 +1,10 @@
-uit := ""
-uit ||= "a.." als start = nu
-uit ||= "b!" als looptijd = 1
+;uit := ""
+;uit ||= "a.." als start = nu
+;uit ||= "b!" als looptijd = 1
+
+f = (x,y) → y + x
+z = 3
+uit = tekst(f(3, 8))
 
 ;uit ||= "ok" als looptijd = 1
 

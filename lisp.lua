@@ -33,10 +33,10 @@ function uitgerold(exp)
 		if isatoom(exp) then
 			error('nee!')
 			exp.i, i = i, i + 1
-			t[#t+1] = "s"..exp.i.." := "..exp.v
+			t[#t+1] = "s"..exp.i.." :=  "..exp.v
 		elseif exp.fn.v == '->' and false then
 			exp.i, i = i, i + 1
-			t[#t+1] = "s"..exp.i.." := "..uitgerold(exp[2]) --exp2string(exp)
+			t[#t+1] = "s"..exp.i.." :=  "..uitgerold(exp[2]) --exp2string(exp)
 		else
 			local x = {}
 			if isatoom(exp.fn) then
@@ -52,7 +52,7 @@ function uitgerold(exp)
 				end
 			end
 			exp.i, i = i, i + 1
-			t[#t+1] = "s"..exp.i.." := "..combineer(x)
+			t[#t+1] = "s"..exp.i.." :=  "..combineer(x)
 		end
 		return X("s"..exp.i)
 	end

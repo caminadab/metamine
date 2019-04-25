@@ -82,6 +82,8 @@ function oplos(exp,voor)
 			return tonumber(val)
 				or string.upper(val or '???')==val
 				or val == 'standaardinvoer' -- kuch...
+				or val == '_arg'
+				or val == '_fn'
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
@@ -222,7 +224,7 @@ function oplos(exp,voor)
 		-- uit = (start ⇒ "ok") | (looptijd = 1 ⇒ uit' || "ok")
 
 		-- functies
-		local aantal = 1
+		local aantal = 0
 		local nieuw = {}
 		local afval = {}
 		for eq in pairs(eqs) do
@@ -236,22 +238,29 @@ function oplos(exp,voor)
 						params = {inn}
 					end
 
+					-- pas vergelijking aan
+					lam.fn = X'_fn'
+					for i in ipairs(lam) do lam[i] = nil end
+
 					-- complexe parameters
 					for i,param in ipairs(params) do
 						if not isatoom(param) or true then
-							local naam = X('_'..varnaam(aantal))
+							--local naam = X('_'..varnaam(aantal))
+							local naam = X('_arg', tostring(aantal))
 							params[i] = naam
+							lam[i] = X(tostring(aantal))
 							local paramhulp = {fn=X'=', naam, param}
 							nieuw[paramhulp] = true -- HIER!
 
 							-- pas vergelijking aan
-							lam[1] = naam
+							--lam[1] = naam
 							--for i,v in ipairs(lam) do lam[i] = nil end
 							--for k,v in pairs(uit) do lam[k] = v end
 
-							aantal = aantal + 1
 						end
+						aantal = aantal + 1
 					end
+					lam[#lam+1] = uit
 				end
 			end
 		end
