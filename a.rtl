@@ -1,0 +1,6 @@
+d0 := "hoi\n"
+d1 := data(1000)
+
+r0 := read(0, d0, 1000)
+write(1, d0, 4)
+exit(0)

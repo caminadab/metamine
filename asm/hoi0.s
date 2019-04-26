@@ -1,9 +1,14 @@
 	.file	"hoi0.c"
 	.intel_syntax noprefix
 	.text
-	.section	.rodata
-.LC0:
+	.globl	getallen
+	.data
+	.align 32
+	.type	getallen, @object
+	.size	getallen, 256
+getallen:
 	.string	"hoi\n"
+	.zero	251
 	.text
 	.globl	_start
 	.type	_start, @function
@@ -15,8 +20,9 @@ _start:
 	.cfi_offset 6, -16
 	mov	rbp, rsp
 	.cfi_def_cfa_register 6
+	mov	BYTE PTR getallen[rip], 72
 	mov	ecx, 4
-	lea	rdx, .LC0[rip]
+	lea	rdx, getallen[rip]
 	mov	esi, 1
 	mov	edi, 1
 	mov	eax, 0

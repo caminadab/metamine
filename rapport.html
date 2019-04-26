@@ -45,11 +45,11 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'f'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x'}, classes: 'waarde' },{ data: {id: 'y'}, classes: 'waarde' },{ data: {id: 'z'}, classes: 'waarde' },{ data: {id: 'x0.84018771715471', exp: ''}, classes: 'hyper' },			{
+				{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'uit_oud'}, classes: 'waarde' },{ data: {id: 'x0.84018771715471', exp: ''}, classes: 'hyper' },			{
 				data: {
 					id: 'x0.39438292681909',
 					source: 'x0.84018771715471',
-					target: 'y',
+					target: 'uit_oud',
 				}
 			},
 					{
@@ -63,38 +63,17 @@
 				data: {
 					id: 'x0.91164735793678',
 					source: 'x0.79844003347607',
-					target: 'z',
+					target: 'uit_oud',
 				}
 			},
-		{ data: {id: 'x0.19755136929338', exp: ''}, classes: 'hyper' },			{
+					{
 				data: {
-					id: 'x0.33522275571489',
-					source: 'x0.19755136929338',
-					target: 'x',
+					id: 'x0.19755136929338',
+					source: 'nil',
+					target: 'uit',
 				}
 			},
-		{ data: {id: 'x0.7682295948119', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.27777471080319',
-					source: 'x0.7682295948119',
-					target: 'f',
-				}
-			},
-							{
-						data: {
-							id: 'x0.55396995579543',
-							source: 'x',
-							target: 'x0.7682295948119',
-						}
-					},
-									{
-						data: {
-							id: 'x0.47739705186216',
-							source: 'y',
-							target: 'x0.7682295948119',
-						}
-					},
-							]
+					]
 		});
 	</script><script>infostroom = cytoscape({
 			container: document.getElementById('infostroom'),
@@ -131,56 +110,21 @@
 				transform: function (node, pos) { return {x: pos.y, y: pos.x} },
 			},
 			elements: [
-				{ data: {id: 'f'}, classes: 'waarde' },{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'x'}, classes: 'waarde' },{ data: {id: 'y'}, classes: 'waarde' },{ data: {id: 'z'}, classes: 'waarde' },{ data: {id: 'x0.62887092476192', exp: ''}, classes: 'hyper' },			{
+				{ data: {id: 'uit'}, classes: 'waarde' },{ data: {id: 'uit_oud'}, classes: 'waarde' },{ data: {id: 'x0.33522275571489', exp: ''}, classes: 'hyper' },			{
 				data: {
-					id: 'x0.36478447279184',
-					source: 'x0.62887092476192',
-					target: 'y',
+					id: 'x0.7682295948119',
+					source: 'x0.33522275571489',
+					target: 'uit_oud',
 				}
 			},
 					{
 				data: {
-					id: 'x0.51340091019562',
+					id: 'x0.27777471080319',
 					source: 'nil',
 					target: 'uit',
 				}
 			},
-		{ data: {id: 'x0.95222972517471', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.9161950680037',
-					source: 'x0.95222972517471',
-					target: 'z',
-				}
-			},
-		{ data: {id: 'x0.6357117279599', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.71729692943268',
-					source: 'x0.6357117279599',
-					target: 'x',
-				}
-			},
-		{ data: {id: 'x0.1416025553558', exp: ''}, classes: 'hyper' },			{
-				data: {
-					id: 'x0.60696887625706',
-					source: 'x0.1416025553558',
-					target: 'f',
-				}
-			},
-							{
-						data: {
-							id: 'x0.01630057162433',
-							source: 'x',
-							target: 'x0.1416025553558',
-						}
-					},
-									{
-						data: {
-							id: 'x0.24288677062974',
-							source: 'y',
-							target: 'x0.1416025553558',
-						}
-					},
-							]
+					]
 		});
 	</script><script>				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];

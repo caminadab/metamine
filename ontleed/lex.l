@@ -162,7 +162,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 [0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
 [0-9]*\.[0-9]*			{ *yylval = a(yytext); return NAAM; }
 [0-9]*			{ *yylval = a(yytext); return NAAM; }
-[a-zA-Z\-]+	{ *yylval = a(yytext); return NAAM; }
+[a-zA-Z][a-zA-Z0-9\-]*	{ *yylval = a(yytext); return NAAM; }
 .						{ printf("fout symbool '%s' op regel %d\n", yytext, yylineno); *yylval = a("?"); return NAAM; }
 
 %%

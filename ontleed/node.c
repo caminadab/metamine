@@ -191,9 +191,21 @@ node* tekst(node* str0) {
 	t->loc = str0->loc;
 
 	int i = 0;
+	int esc = 0;
 	for (char* s = str + 1; *(s + utf8len(s)); s += utf8len(s), i++) {
 		// UTF-8
 		int cp = utf8cp(s);
+		if (esc) {
+			if (cp == 'n') cp = '\n';
+			else if (cp == 'r') cp = '\r';
+			else if (cp == 'e') cp = 0x31;
+			esc = 0;
+		}
+		else if (cp == '\\') {
+			esc = 1;
+			continue;
+		}
+
 		char ch[16];
 		sprintf(ch, "%d", cp);
 		node* tekennode = aloc(ch, t->loc);

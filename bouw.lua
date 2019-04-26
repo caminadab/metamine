@@ -104,7 +104,7 @@ function bouw(exp)
 	return elf
 end
 
-if test then
+if false and test then
 	require 'oplos'
 
 	verboos = true

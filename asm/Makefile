@@ -18,3 +18,7 @@ hoi0: hoi0.s
 
 clean:
 	rm *.o
+
+dump0: hoi0
+	objdump -D hoi0 -M intel
+
