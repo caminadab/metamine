@@ -33,7 +33,7 @@ function assembleer(rtl)
 	local l = {}
 	local di, ri = 0, 0
 
-	-- reg -> geboorte
+	-- reg -> waarde
 	local regs = {}
 
 	local function lek(reg,naar,d)
