@@ -1,5 +1,7 @@
-d0 := "hoi\n"
-write(1, d0, 4)
-write(1, d0, 4)
-write(1, d0, 4)
+start
+a := 2 * 3
+write(1, d0, a)
 exit(0)
+eind
+
+d0 := "hoi\n"

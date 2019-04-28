@@ -1,5 +1,8 @@
 local sysregs = { 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9' }
 local registers = { 'rax', 'rcx', 'rdx', 'rbx', 'rsp', 'rbp', 'rsi', 'rdi', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15' }
+for i, register in pairs(registers) do
+	registers[register] = i
+end
 
 local syscalls = {}
 local f = io.open('data/syscalls')
@@ -30,37 +33,73 @@ end
 function assembleer(rtl)
 	local d = {}
 	local r = {}
+	local t = r
 	local l = {}
 	local di, ri = 0, 0
 
-	-- reg -> waarde
+	-- reg -> varnaam
 	local regs = {}
+	-- varnaam -> data
+	local vars = {}
+	-- varnaam -> label
+	local labels = {}
 
-	local function lek(reg,naar,d)
+	local function maakvrij(reg)
+		if regs[reg] and vars[regs[reg]] then
+			t[#t+1],t[#t+2],t[#t+3],t[#t+4] = '\tmov ',regs[reg],', ',vars[regs[reg]]
+		end
+	end
+	
+	local function mov(reg, waarde, t)
+	end
+
+	local function emitdata(n,d)
+		if type(n.v) == 'number' then
+			d[#d+1] = '.d'..di..':\n'
+			d[#d+1] = '\t.zero '..n.v..'\n'
+		else
+			assert(isfn(n))
+			d[#d+1] = '.d'..di..':\n\t.byte '
+			for i,arg in ipairs(n) do
+				d[#d+1] = tostring(arg.v)
+				if i ~= #n then d[#d+1] = ',' end
+			end
+			d[#d+1] = '\n'
+		end
+		di = di + 1
 	end
 
 	for i,stat in ipairs(rtl) do
 		local x,v = stat[1],stat[2]
-		if stat.fn.v ~= ':=' then
+		if not v then --stat.fn and stat.fn.v == ':=' then
 			v = stat
 		end
-		local f = v.fn and v.fn.v
-		if f == 'data' then
-			d[#d+1] = '.d'..di..':\n'
-			d[#d+1] = '\t.zero '..v[1].v..'\n'
-			di = di + 1
+		local f = v.fn and v.fn.v or v.v
 
-		elseif f == '[]' then
-			d[#d+1] = '.d'..di..':\n\t.byte '
-			for i,arg in ipairs(v) do
-				d[#d+1] = tostring(arg.v)
-				if i ~= #v then d[#d+1] = ',' end
-			end
-			d[#d+1] = '\n'
-			di = di + 1
+		-- data
+		if f == 'data' or f == '[]' then
+			emitdata(v,r)
+
+		elseif f == 'eind' then
+			r[#r+1] = '\tret\n'
+
+		elseif f == '*' then
+			-- maak ze vrij
+			maakvrij(registers.r)
+			r[#r+1] = '\tmul\n'
+			--if not regs[v[2]] and regs[v[1]] then
+			--	regs
+
+		-- maak vrij
+		--for naam in pairs(var(v)) do
+			--maakvrij(
 
 		elseif syscalls[f] then
+			maakvrij(registers.rax)
+			for i in ipairs(v) do maakvrij(sysregs[i]) end
 			syscall(v, r)
+
+			regs.rax = x
 		end
 	end
 	local header = [[
@@ -72,7 +111,7 @@ function assembleer(rtl)
 
 _start:
 ]]
-	return header .. table.concat(r) .. '\tret\n\n\n' .. table.concat(d)
+	return header .. table.concat(r) .. table.concat(d)
 end
 
 -- swagolienja
