@@ -6,15 +6,16 @@
 
 _start:
 	# Spannend
-	mov rbx, .groet[rip]
-	mov rax, 1234
+	mov rax, 1234567
+	sub rsp, 64
+	mov rcx, rsp
 	call atoi
 
 	# Print groet
 	mov rax, 1
 	mov rdi, 1
-	lea rsi, .groet[rip]
-	mov rdx, rcx
+	mov rsi, rsp
+	mov rdx, r8
 	syscall
 
 	# Exit
@@ -24,36 +25,34 @@ _start:
 	ret
 
 
-# rax, rbx -> rax
 # int, data -> len
+# rax, rcx -> r8
 atoi:
-	mov rcx, 0  # uitvoerlengte 
-	# rbx = data
-	# rax = getal
+	mov r9, rcx # waar zijn we
 	cmp rax, 0  # getal
-	jne eind
+	jne lus
 
 nul:
-	lea rsi,.groep[rip+eax] # '0'
+	inc rcx
+	movb [rcx], '0'
+	jmp eind
 
 lus:
 	cmp rax, 0
-	mov rax,rdx
-	mod rdx, 10
+	je eind
+	cdq
+	mov rbx, 10
+	idiv rbx
 	add rdx, '0'
-	mov rbx[rcx], rdx
+	mov rbx, rdx
+	movb [rcx], bl
 	inc rcx
-
-	div rax, 10
 	jmp lus
 
 eind:
+	mov r8, rcx
+	sub r8, rsp
 	ret
-
-.wection .rwdata
-
-.bestand:
-	.string "test.txt"
 
 .groet:
 	.string	"hoi\n"

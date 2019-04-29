@@ -197,9 +197,8 @@ else
 	
 	-- zonder opties
 	elseif uit then
-		print(exp2string(uit))
-		print(uitgerold(uit))
-		uit = bouw(uit)
+		--uit = bouw(uit)
+		uit = exp2string(uit)
 	end
 end
 --uit = unlisp(uit)

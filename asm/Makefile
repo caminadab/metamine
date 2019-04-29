@@ -6,6 +6,10 @@ hoi: hoi.s
 dump: hoi
 	objdump -D hoi -M intel
 
+mul: mul.s
+	as mul.s -g -o mul.o --no-pad-sections -R 
+	ld mul.o -G -o mul -n --build-id=none -static 
+
 hoi0.s: hoi0.c
 	gcc hoi0.c -Os -S -fno-data-sections -nostartfiles -masm=intel
 

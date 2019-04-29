@@ -1,0 +1,15 @@
+start:
+	a := "hoi\n"
+	i := 0
+	j := 30
+
+lus:
+	i += 1
+	i += 1
+	k := i > j
+	ga klaar als k
+	write(0,a,4)
+	ga lus
+
+klaar:
+	exit(0)
