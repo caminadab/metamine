@@ -1,5 +1,6 @@
 require 'exp'
 require 'func'
+require 'infix'
 local fmt = string.format
 
 local sysregs = { 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9' }
@@ -105,7 +106,8 @@ function assembleer(stats)
 			assert(exp.v, "kan alleen atomaire waarden in lijsten stoppen")
 			local addr = regalloc()
 			maakvrij('rax')
-			t[#t+1] = fmt('mov rax, %s', regs[exp.v] or exp.v)
+			print('BBB', exp2string(exp))
+			t[#t+1] = fmt('mov rax, %s  # %s', regs[exp.v] or exp.v, combineer(naam))
 			t[#t+1] = fmt('lea %s, [%s+%s]', addr, regs[naam.fn.v], regs[naam[1].v] or naam[1].v)
 			t[#t+1] = fmt('movb [%s], al', addr, regs[exp.v] or exp.v)
 
@@ -127,7 +129,7 @@ function assembleer(stats)
 
 		-- functie einde
 		elseif exp.v == 'eind' then
-			t[#t+1] = 'ret'
+			t[#t+1] = 'ret\n'
 
 		-- data
 		elseif exp.fn and exp.fn.v == '[]' then
@@ -157,22 +159,30 @@ function assembleer(stats)
 			for i,arg in ipairs(args) do
 				-- in gebruik?
 				a[i] = maakvrij(sysregs[i])
+
 				if regs[arg.v] then 
 					t[#t+1] = string.format('mov %s, %s', sysregs[i], regs[arg.v])
+					regs[sysregs[i]] = arg.v
+					regs[arg.v] = sysregs[i]
+
 				elseif tonumber(arg.v) then
 					t[#t+1] = string.format('mov %s, %s', sysregs[i], arg.v)
+					regs[sysregs[i]] = arg.v
+					regs[arg.v] = sysregs[i]
 
 				elseif false and labels[arg.v] then
 					--t[#t+1] = string.format('lea %s, %s[rip]', sysregs[i], labels[arg.v])
 				else
 				print('ARG',exp2string(arg))
 					t[#t+1] = string.format('lea %s, %s[rip]', sysregs[i], regs[arg.v] or arg.v)
+					regs[sysregs[i]] = arg.v
+					regs[arg.v] = sysregs[i]
 					--error(arg.v..' is onbekend')
 				end
 			end
 			print(exp2string(exp))
 			--for i,v in pairs(exp
-			t[#t+1] = 'syscall\n'
+			t[#t+1] = fmt('syscall  # %s', exp.fn.v)
 
 			herstel('rax', r)
 			for i,w in ipairs(a) do
@@ -228,12 +238,16 @@ function assembleer(stats)
 			cmp = nil
 
 		elseif tonumber(exp.v) or tonumber(regs[exp.v]) then
+			t[#t+1] = fmt('mov rax, %s', regs[exp.v] or exp.v)
+			t[#t+1] = fmt('ret\n')
+			--[[
 			assert(naam, "nutteloze opdracht gevonden: "..exp2string(stat))
 			local doel = regalloc()
 			regs[doel] = exp.v
 			regs[naam.v] = doel
 			tijd[doel] = #t + 1
 			t[#t+1] = string.format('mov %s, %s', doel, exp.v)
+			]]
 
 		-- call!
 		elseif exp.fn and exp.fn.v then
@@ -250,7 +264,7 @@ function assembleer(stats)
 
 		else
 			t[#t+1] = fmt('mov rax, %s', regs[exp.v])
-			t[#t+1] = fmt('ret')
+			t[#t+1] = fmt('ret\n')
 		end
 	end
 
@@ -315,7 +329,7 @@ r3 := exit(0)
 
 ]]
 	require 'util'
-	local b = file 'b.rtl'
+	local b = file 'c.rtl'
 	b = b:gsub('\t','')
 	b = b:gsub('(%w+):[^=]', function(lbl) return '\nlabel '.. lbl..'\n' end)
 	print(b)
