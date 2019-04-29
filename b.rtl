@@ -1,15 +1,35 @@
 start:
-	a := "hoi\n"
-	i := 0
-	j := 30
+	d := data(20)
+	len := atoi(123456789, d)
+	write(1, d, len)
+	exit(0)
+
+atoi:
+	i := arg(0)
+	str := arg(1)
+	len := 0
+
+	z := 0
+	b := (i != z)
+	ga lus als b
+		
+nul:
+	str(0) := '0'
+	len += 1
+	len
 
 lus:
-	i += 1
-	i += 1
-	k := i > j
-	ga klaar als k
-	write(0,a,4)
+	tien := 10
+	(i,d) /= tien
+	z := 0
+	y := (i = z)
+	ga klaar als y
+	e := '0'
+	e += d
+	str(len) := e
+	len += 1
 	ga lus
 
 klaar:
-	exit(0)
+	len
+

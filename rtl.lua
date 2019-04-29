@@ -3,7 +3,8 @@ require 'func'
 local fmt = string.format
 
 local sysregs = { 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9' }
-local registers = { 'r12', 'r13', 'r14', 'r15', 'rbx', 'rdx', 'rsp', 'rbp', 'rsi', 'rdi', 'r8', 'r9', 'r10', 'rax' }
+local abiregs = { 'rdi', 'rsi', 'rdx', 'rcx', 'r8', 'r9'} -- r10 is static chain pointer in case of nested functions
+local registers = { 'r12', 'r13', 'r14', 'r15', 'rbx', 'rdx', 'rsi', 'rdi', 'r8', 'r9', 'r10', 'rax' }
 for i, register in pairs(registers) do
 	registers[register] = i
 end
@@ -25,10 +26,25 @@ local cmpops = {
 function assembleer(stats)
 	local regs = {} -- reg -> var, var -> reg
 	local tijd = {} -- reg -> vanaf
+	local stapel = {} -- var -> offset
+	local hstapel = 0 -- stapelhoogte
 	for i,reg in ipairs(registers) do tijd[reg] = 0 end
 
 	local d = {} -- data
 	local t = {} -- code
+
+	local function opstapel(reg)
+		if stapel[reg] then
+			t[#t+1] = fmt('mov -%s[%s], %s', tostring(hstapel), 'rbp', reg)
+			return
+		end
+		t[#t+1] = 'push '..reg
+		local var = regs[reg]
+		regs[var] = nil
+		regs[reg] = nil
+		stapel[var] = hstapel
+		hstapel = hstapel - 8
+	end
 
 	local function maakvrij(reg)
 		if not regs[reg] then
@@ -48,7 +64,11 @@ function assembleer(stats)
 				return ander
 			end
 		end
-		error "te weinig registers"
+		-- pak een willekeurige
+		local reg = registers[math.random(1, #registers)]
+		opstapel(reg)
+		return reg
+		--error "te weinig registers"
 	end
 
 	local function herstel(reg, waarde)
@@ -84,11 +104,14 @@ function assembleer(stats)
 		if naam and isfn(naam) then
 			assert(exp.v, "kan alleen atomaire waarden in lijsten stoppen")
 			local addr = regalloc()
-			t[#t+1] = fmt('lea %s, [%s+%s]', addr, regs[naam.fn.v], naam[1].v)
-			t[#t+1] = fmt('movb [%s], %s', addr, exp.v)
+			maakvrij('rax')
+			t[#t+1] = fmt('mov rax, %s', regs[exp.v] or exp.v)
+			t[#t+1] = fmt('lea %s, [%s+%s]', addr, regs[naam.fn.v], regs[naam[1].v] or naam[1].v)
+			t[#t+1] = fmt('movb [%s], al', addr, regs[exp.v] or exp.v)
 
 		-- compare
 		elseif exp.fn and cmpops[exp.fn.v] then
+			print(exp2string(exp))
 			assert(regs[exp[1].v], exp[1].v)
 			assert(regs[exp[2].v], exp[2].v)
 			local a = regs[exp[1].v]
@@ -101,6 +124,10 @@ function assembleer(stats)
 			local lbl = exp[1].v
 			if lbl == 'start' then lbl = '_start' end
 			t[#t+1] = lbl .. ':'
+
+		-- functie einde
+		elseif exp.v == 'eind' then
+			t[#t+1] = 'ret'
 
 		-- data
 		elseif exp.fn and exp.fn.v == '[]' then
@@ -139,7 +166,7 @@ function assembleer(stats)
 					--t[#t+1] = string.format('lea %s, %s[rip]', sysregs[i], labels[arg.v])
 				else
 				print('ARG',exp2string(arg))
-					t[#t+1] = string.format('lea %s, %s[rip]', sysregs[i], arg.v)
+					t[#t+1] = string.format('lea %s, %s[rip]', sysregs[i], regs[arg.v] or arg.v)
 					--error(arg.v..' is onbekend')
 				end
 			end
@@ -153,12 +180,46 @@ function assembleer(stats)
 			end
 
 		elseif exp.fn and exp.fn.v == '+=' then
-			t[#t+1] = fmt('add %s, %s', regs[exp[1].v], exp[2].v)
+			if exp[2].v == '1' then
+				t[#t+1] = fmt('inc %s', regs[exp[1].v])
+			else
+				t[#t+1] = fmt('add %s, %s', regs[exp[1].v], regs[exp[2].v] or exp[2].v)
+			end
+
+		elseif exp.fn and exp.fn.v == '*=' then
+			if exp[2].v == '2' then
+				t[#t+1] = fmt('shl %s', regs[exp[1].v])
+			else
+				t[#t+1] = fmt('mul %s', regs[exp[1].v], regs[exp[2].v] or exp[2].v)
+			end
+
+		elseif exp.fn and exp.fn.v == '/=' then
+			maakvrij('rdx')
+			maakvrij('rax')
+			t[#t+1]= fmt('mov rax, %s', regs[exp[1][1].v])
+			t[#t+1]= fmt('xor rdx, rdx')
+			t[#t+1] = fmt('idivq %s',  regs[exp[2].v])
+			if isfn(exp[1]) and exp[1].fn.v == ',' then
+				local a = exp[1][1].v
+				local b = exp[1][2].v
+				--regs[a] = 'rax'
+				regs[b] = 'rdx'
+				--regs['rax'] = a
+				regs['rdx'] = b
+			end
+			t[#t+1]= fmt('mov %s, rax', regs[exp[1][1].v])
 
 		-- jump
 		elseif exp.fn and exp.fn.v == 'ga' then
 			if exp[1].v == 'start' then exp[1].v = '_start' end
 			t[#t+1] = 'jmp '..exp[1].v
+
+		-- argument
+		elseif exp.fn and exp.fn.v == 'arg' then
+			local i = exp[1].v
+			local reg = abiregs[i+1] or error('ongeldig register')
+			regs[reg] = naam.v
+			regs[naam.v] = reg
 
 		elseif exp.fn and exp.fn.v == '=>' then
 			assert(cmp)
@@ -166,7 +227,7 @@ function assembleer(stats)
 			t[#t+1] = string.format('%s %s', cmp, exp[2][1].v)
 			cmp = nil
 
-		elseif tonumber(exp.v) then
+		elseif tonumber(exp.v) or tonumber(regs[exp.v]) then
 			assert(naam, "nutteloze opdracht gevonden: "..exp2string(stat))
 			local doel = regalloc()
 			regs[doel] = exp.v
@@ -174,11 +235,22 @@ function assembleer(stats)
 			tijd[doel] = #t + 1
 			t[#t+1] = string.format('mov %s, %s', doel, exp.v)
 
+		-- call!
 		elseif exp.fn and exp.fn.v then
+			local args = exp[1]
+			if exp[2] then args = exp end
+			local abis = {}
+			for i,n in ipairs(args) do
+				abis[#abis+1] = maakvrij(abiregs[i])
+				t[#t+1] = fmt('mov %s, %s  # argument', abiregs[i], regs[n.v] or n.v)
+			end
 			t[#t+1] = 'call '..exp.fn.v
+			regs['rax'] = naam.v
+			regs[naam.v] = 'rax'
 
 		else
-			error(exp2string(exp))
+			t[#t+1] = fmt('mov rax, %s', regs[exp.v])
+			t[#t+1] = fmt('ret')
 		end
 	end
 
@@ -219,13 +291,13 @@ function elf(asm)
 	local bd = io.open(naam..'.s', 'w')
 	bd:write(asm)
 	bd:close()
-	os.execute(string.format('as %s.s -o %s.o --no-pad-section -R', naam, naam))
-	os.execute(string.format('ld %s.o -o %s -n --build-id=none -static', naam, naam))
-	os.execute(string.format('strip %s', naam))
+	os.execute(string.format('as -g %s.s -o %s.o --no-pad-section -R', naam, naam))
+	os.execute(string.format('ld -g %s.o -o %s -n --build-id=none -static', naam, naam))
+	--os.execute(string.format('strip %s', naam))
 	local elf = file(naam)
-	os.remove(naam..'.s')
-	os.remove(naam..'.o')
-	os.remove(naam)
+	--os.remove(naam..'.s')
+	--os.remove(naam..'.o')
+	--os.remove(naam)
 	return elf
 end
 

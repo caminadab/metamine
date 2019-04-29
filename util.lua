@@ -57,6 +57,7 @@ function file(name, data)
 		return data
 	else
 		local f = io.open(name, 'w')
+		assert(f, 'onopenbaar: '..name)
 		f:write(data)
 		f:close()
 	end
