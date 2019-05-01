@@ -108,7 +108,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "-="				{ return MINASS; }
 "·="				{ return MAALASS; }
 "/="				{ return DEELASS; }
-"¬="				{ return NIETASS; }
+"¬="				{ return ISN; }
 "="					{ return '='; }
 ">"					{ return '>'; }
 "<"					{ return '<'; }

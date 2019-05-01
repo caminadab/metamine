@@ -66,7 +66,6 @@
 %token KDGA "<="
 %token OUD '\''
 %token TAB '\t' "tab"
-%token '\n' "regeleinde"
 %token UNIE "unie"
 %token INTERSECTIE "intersectie"
 %token UNIEE "UNIE"
@@ -78,7 +77,6 @@
 %token MINASS "-="
 %token MAALASS "*="
 %token DEELASS "/="
-%token NIETASS "!="
 
 %token EN "en"
 %token OF "of"
