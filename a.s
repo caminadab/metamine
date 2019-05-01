@@ -7,36 +7,31 @@
 _start:
 sub rsp, 8
 lea r12, [rsp]
-mov rax, 8
+mov rax, 72  # d 0
+lea r13, [r12+0]
+movb [r13], al
+mov rax, 111  # d 1
+lea r14, [r12+1]
+movb [r14], al
+mov rax, 105  # d 2
+lea r15, [r12+2]
+movb [r15], al
+mov rax, 3
 ret
 
-mov rdi, r12  # argument
-lea rsi, d[rip]  # argument
-lea rdx, e[rip]  # argument
-call memcpy
-mov rdi, r12  # argument
-call vul
-mov r13, rax
+mov rax, 75  # d n
+lea rbx, [r12+n]
+movb [rbx], al
 mov rax, 1
 mov rdi, 1
-mov rsi, r13
-mov rdx, 3
+mov rsi, r12
+mov rdx, 4
 syscall  # write
-mov rax, r13
-mov r14, rax
+mov r13, rax
 mov rax, 60
-mov r15, rdi
+mov r14, rdi
 mov rdi, 0
 syscall  # exit
-mov rax, r14
-mov rdi, r15
-vul:
-mov rbx, r13
-mov r13, rax
-mov rax, 72  # a 0
-lea r13, [rdi+0]
-movb [r13], al
-mov rax, rdi
-ret
+mov rax, r13
+mov rdi, r14
 
-d: .byte 104,111,105

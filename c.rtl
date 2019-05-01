@@ -1,14 +1,9 @@
-	d := "hoi"
-
 start:
-	a := data(8)
-	e := 8
-	memcpy(a, d, e)
-	f := vul(a)
-	write(1, f, 3)
+	d := data(8)
+	d(0) := 'H'
+	d(1) := 'o'
+	d(2) := 'i'
+	n := 3
+	d(n) := 'K'
+	write(1, d, 4)
 	exit(0)
-
-vul:
-	a := arg(0)
-	a(0) := 'H'
-	a
