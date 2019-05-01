@@ -1,13 +1,14 @@
+	d := "hoi"
+
 start:
-	str := data(64)
-	len := vul(str)
-	write(1, str, len)
+	a := data(8)
+	e := 8
+	memcpy(a, d, e)
+	f := vul(a)
+	write(1, f, 3)
 	exit(0)
-	eind
 
 vul:
 	a := arg(0)
 	a(0) := 'H'
-	exit(0)
-	a(1) := 'i'
-	2
+	a

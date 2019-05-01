@@ -108,7 +108,7 @@ function assembleer(stats)
 			maakvrij('rax')
 			print('BBB', exp2string(exp))
 			t[#t+1] = fmt('mov rax, %s  # %s', regs[exp.v] or exp.v, combineer(naam))
-			t[#t+1] = fmt('lea %s, [%s+%s]', addr, regs[naam.fn.v], regs[naam[1].v] or naam[1].v)
+			t[#t+1] = fmt('lea %s, [%s+%s]', addr, regs[naam.fn.v], naam[1].v or regs[naam[1].v] or naam[1].v)
 			t[#t+1] = fmt('movb [%s], al', addr, regs[exp.v] or exp.v)
 
 		-- compare
@@ -251,14 +251,19 @@ function assembleer(stats)
 
 		-- call!
 		elseif exp.fn and exp.fn.v then
-			local args = exp[1]
-			if exp[2] then args = exp end
+			local args = {exp[1]}
+			if isfn(exp[1]) then args = exp[1] end
 			local abis = {}
 			for i,n in ipairs(args) do
 				abis[#abis+1] = maakvrij(abiregs[i])
-				t[#t+1] = fmt('mov %s, %s  # argument', abiregs[i], regs[n.v] or n.v)
+				if regs[n.v] then
+					t[#t+1] = fmt('mov %s, %s  # argument', abiregs[i], regs[n.v])
+				else
+					t[#t+1] = fmt('lea %s, %s  # argument', abiregs[i],  n.v..'[rip]')
+				end
 			end
 			t[#t+1] = 'call '..exp.fn.v
+			if not naam then naam = X'?' end
 			regs['rax'] = naam.v
 			regs[naam.v] = 'rax'
 
@@ -277,7 +282,10 @@ function assembleer(stats)
 
 ]]
 
-	return header .. table.concat(t, '\n') .. '\n' .. table.concat(d, '\n') .. '\n'
+	return header
+		.. table.concat(t, '\n') .. '\n'
+		--.. '.section rwdata\n'
+		.. table.concat(d, '\n') .. '\n'
 end
 
 --[[
