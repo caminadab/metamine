@@ -3,7 +3,7 @@ package.path = package.path..';../?.lua'
 
 require 'naarlua'
 require 'naarweb'
-require 'infix'
+require 'combineer'
 require 'rapporteer-syntax'
 require 'json'
 

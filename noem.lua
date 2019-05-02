@@ -2,6 +2,7 @@ require 'util'
 require 'isoleer'
 require 'symbool'
 require 'vhgraaf'
+require 'lisp'
 
 local bieb = lisp [[
 (

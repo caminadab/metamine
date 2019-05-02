@@ -1,4 +1,3 @@
-require 'verenig'
 require 'exp'
 require 'isoleer'
 require 'symbool'

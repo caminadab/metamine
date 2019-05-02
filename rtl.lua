@@ -1,6 +1,6 @@
 require 'exp'
 require 'func'
-require 'infix'
+require 'combineer'
 local fmt = string.format
 
 local sysregs = { 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9' }
