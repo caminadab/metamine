@@ -1,4 +1,3 @@
-require 'lex'
 require 'util'
 
 function isatoom(exp)
@@ -316,64 +315,6 @@ function parseSexp2(sexpr)
 	end
 	
 	return stack[1]
-end
-
-require 'lex'
-function lisp(t)
-	local i = 1
-	local noise = {[';']=true, [' ']=true,
-	['\r']=true, ['\n']=true, ['\t']=true}
-	local tokens = lex(t)
-	local stack = {{}}
-	if not tokens then
-		error('parse-error')
-	end
-
-	function peek()
-		-- skip comments
-		while tokens[i] and
-		noise[tokens[i]:sub(1,1)] do
-			i = i + 1
-		end
-		return tokens[i]
-	end
-
-	function pop()
-		local v = peek()
-		i = i + 1
-		return v
-	end
-
-	while true do
-		local token = pop()
-
-		if token == '(' then
-			stack[#stack+1] = {}
-
-		elseif token == ')' then
-			if #stack == 1 then
-				error('teveel sluitende haakjes')
-			end
-			insert(stack[#stack-1], stack[#stack])
-			stack[#stack] = nil
-		
-		elseif not token then
-			break
-		
-		else
-			insert(stack[#stack], token)
-		end
-	end
-
-	-- samenvoeg
-	for i=#stack,2,-1 do
-		insert(stack[i-1], stack[i])
-	end
-
-	if #stack[1] > 1 then
-		--error('ruis na data')
-	end
-	return stack[1][1]
 end
 
 function maprec(waarde, map)

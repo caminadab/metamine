@@ -1,5 +1,5 @@
 require 'html'
-require 'infix'
+require 'combineer'
 
 function tag(naam,id,props,autoclose)
 	if type(id) == 'table' then

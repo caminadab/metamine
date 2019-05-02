@@ -1,6 +1,6 @@
 require 'exp'
 require 'stroom'
-require 'infix'
+require 'combineer'
 require 'typegraaf'
 
 --[[

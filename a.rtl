@@ -11,10 +11,11 @@ start:
 	eind
 
 atoi: (i, str) -> len
+	i := arg(0)
 	a := data(20)
 	b := (i > 0)
-	m := (i < 0)
 	ga lus als b
+	m := (i < 0)
 	ga neg als m
 	len := 0
 
