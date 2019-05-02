@@ -29,7 +29,7 @@ sincos :  getal → (kommagetal, kommagetal)
 (*) :  (getal, getal) → getal
 (/) :  (getal, getal) → kommagetal
 (^) :  (getal, getal) → getal
-(^) :  ((→), nat) → getal
+;(^) :  ((→), nat) → getal
 (#) :  verzameling → int
 ([) : lijst
 ;(=) :  (iets, iets) → bit 

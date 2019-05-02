@@ -3,6 +3,9 @@ require 'stroom'
 require 'combineer'
 require 'typegraaf'
 
+require 'ontleed'
+require 'oplos'
+
 --[[
 teken^int ⊂ (int → teken)
 tekst = teken^int
