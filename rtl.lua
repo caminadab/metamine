@@ -5,7 +5,8 @@ local fmt = string.format
 
 local sysregs = { 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9' }
 local abiregs = { 'rdi', 'rsi', 'rdx', 'rcx', 'r8', 'r9'} -- r10 is static chain pointer in case of nested functions
-local registers = { 'r12', 'r13', 'r14', 'r15', 'rbx', 'rdx', 'rsi', 'rdi', 'r8', 'r9', 'r10', 'rax' }
+-- moet restaureren: rbx, rbp, rsp, r12-r15
+local registers = { 'r12', 'r13', 'r14', 'r15', 'r10', 'r9', 'r8', 'rcx', 'rdx', 'rsi', 'rdi', 'rax' }
 for i, register in pairs(registers) do
 	registers[register] = i
 end
@@ -26,6 +27,7 @@ local cmpops = {
 
 function assembleer(stats)
 	local regs = {} -- reg -> var, var -> reg
+	setmetatable(regs, {__newindex = function (t,k,v) if not registers[k] then print(v, k) end; rawset(t,k,v); end })
 	local tijd = {} -- reg -> vanaf
 	local stapel = {} -- var -> offset
 	local hstapel = 0 -- stapelhoogte
@@ -56,7 +58,7 @@ function assembleer(stats)
 		for i,ander in ipairs(registers) do
 			if not regs[ander] then
 				-- hij is vrij! hernoem
-				t[#t+1] = fmt('mov %s, %s', ander, reg)
+				t[#t+1] = fmt('mov %s, %s  # maak ruimte', ander, reg)
 				local var = regs[reg]
 				--regs[andervar] = ander -- dit hoeft dus niet
 				regs[ander] = var
@@ -80,7 +82,6 @@ function assembleer(stats)
 
 	local i = 0
 	function regalloc()
-		print('ALLOC '..i)
 		local reg = registers[i + 1]
 		i = (i + 1) % #registers
 		maakvrij(reg)
@@ -101,19 +102,25 @@ function assembleer(stats)
 			local doelreg = regalloc()
 		end
 
-		-- b(0) := 'O'
+		-- a[i] := b
 		if naam and isfn(naam) then
-			assert(exp.v, "kan alleen atomaire waarden in lijsten stoppen")
+			local a,i,b = naam.fn.v, naam[1].v, exp.v
+			assert(b, "kan alleen atomaire waarden in lijsten stoppen")
 			local addr = regalloc()
+			local base = regs[a] or regalloc()
+			local off = regs[i]
+			if not off then
+				off = regalloc()
+				t[#t+1] = fmt('mov %s, %s', off, i)
+			end
 			maakvrij('rax')
-			print('BBB', exp2string(exp))
-			t[#t+1] = fmt('mov rax, %s  # %s', regs[exp.v] or exp.v, combineer(naam))
-			t[#t+1] = fmt('lea %s, [%s+%s]', addr, regs[naam.fn.v], naam[1].v or regs[naam[1].v] or naam[1].v)
-			t[#t+1] = fmt('movb [%s], al', addr, regs[exp.v] or exp.v)
+			--t[#t+1] = fmt('mov %s, %s  # %s', base, ) -- arg
+			t[#t+1] = fmt('mov rax, %s \t# zet %s', regs[b] or b, combineer(naam)) -- arg
+			t[#t+1] = fmt('lea %s, [%s+%s] \t# offset', addr, base, off) -- addres
+			t[#t+1] = fmt('movb [%s], al \t# indexed assign', addr, regs[b] or b) -- *addres = arg
 
 		-- compare
 		elseif exp.fn and cmpops[exp.fn.v] then
-			print(exp2string(exp))
 			assert(regs[exp[1].v], exp[1].v)
 			assert(regs[exp[2].v], exp[2].v)
 			local a = regs[exp[1].v]
@@ -131,14 +138,14 @@ function assembleer(stats)
 		elseif exp.v == 'eind' then
 			t[#t+1] = 'ret\n'
 
-		-- data
+		-- a := [1,2,3]
 		elseif exp.fn and exp.fn.v == '[]' then
 			assert(naam, 'data heeft geen naam')
 			local t = {}
 			for i=1,#exp do t[i] = exp[i].v end
 			d[#d+1] = naam.v..': '..'.byte '..table.concat(t, ',')
 
-		-- stack
+		-- a := data(8)
 		elseif exp.fn and exp.fn.v == 'data' then
 			t[#t+1] = 'sub rsp, '..exp[1].v
 			local reg = regalloc()
@@ -173,22 +180,21 @@ function assembleer(stats)
 				elseif false and labels[arg.v] then
 					--t[#t+1] = string.format('lea %s, %s[rip]', sysregs[i], labels[arg.v])
 				else
-				print('ARG',exp2string(arg))
 					t[#t+1] = string.format('lea %s, %s[rip]', sysregs[i], regs[arg.v] or arg.v)
 					regs[sysregs[i]] = arg.v
 					regs[arg.v] = sysregs[i]
 					--error(arg.v..' is onbekend')
 				end
 			end
-			print(exp2string(exp))
 			--for i,v in pairs(exp
 			t[#t+1] = fmt('syscall  # %s', exp.fn.v)
 
-			herstel('rax', r)
+			--herstel('rax', r)
 			for i,w in ipairs(a) do
-				herstel(sysregs[i], w)
+				--herstel(sysregs[i], w)
 			end
 
+		-- a += 3
 		elseif exp.fn and exp.fn.v == '+=' then
 			if exp[2].v == '1' then
 				t[#t+1] = fmt('inc %s', regs[exp[1].v])
@@ -196,6 +202,7 @@ function assembleer(stats)
 				t[#t+1] = fmt('add %s, %s', regs[exp[1].v], regs[exp[2].v] or exp[2].v)
 			end
 
+		-- a *= 3
 		elseif exp.fn and exp.fn.v == '*=' then
 			if exp[2].v == '2' then
 				t[#t+1] = fmt('shl %s', regs[exp[1].v])
@@ -203,6 +210,7 @@ function assembleer(stats)
 				t[#t+1] = fmt('mul %s', regs[exp[1].v], regs[exp[2].v] or exp[2].v)
 			end
 
+		-- a /= 3
 		elseif exp.fn and exp.fn.v == '/=' then
 			maakvrij('rdx')
 			maakvrij('rax')
@@ -231,13 +239,16 @@ function assembleer(stats)
 			regs[reg] = naam.v
 			regs[naam.v] = reg
 
+		-- conditional jump
 		elseif exp.fn and exp.fn.v == '=>' then
 			assert(cmp)
 			assert(exp[2].fn.v == 'ga')
 			t[#t+1] = string.format('%s %s', cmp, exp[2][1].v)
 			cmp = nil
 
-		elseif tonumber(exp.v) or tonumber(regs[exp.v]) then
+		-- 3 (retourneer)
+		elseif not naam and isatoom(exp) then
+			maakvrij('rax')
 			t[#t+1] = fmt('mov rax, %s', regs[exp.v] or exp.v)
 			t[#t+1] = fmt('ret\n')
 			--[[
@@ -267,9 +278,16 @@ function assembleer(stats)
 			regs['rax'] = naam.v
 			regs[naam.v] = 'rax'
 
+		-- a := 3
 		else
-			t[#t+1] = fmt('mov rax, %s', regs[exp.v])
-			t[#t+1] = fmt('ret\n')
+			assert(naam, exp2string(exp))
+			assert(isatoom(exp), exp2string(exp))
+			local r = regalloc()
+			t[#t+1] = fmt('mov %s, %s', r, exp.v) --regs[exp.v])
+			regs[r] = exp.v
+			--regs[exp.v] = r
+			regs[naam.v] = r
+		
 		end
 	end
 
@@ -314,7 +332,7 @@ function elf(asm)
 	bd:write(asm)
 	bd:close()
 	os.execute(string.format('as -g %s.s -o %s.o --no-pad-section -R', naam, naam))
-	os.execute(string.format('ld -g %s.o -o %s -n --build-id=none -static', naam, naam))
+	os.execute(string.format('ld -G %s.o -o %s -n --build-id=none -static', naam, naam))
 	--os.execute(string.format('strip %s', naam))
 	local elf = file(naam)
 	--os.remove(naam..'.s')
@@ -322,6 +340,22 @@ function elf(asm)
 	--os.remove(naam)
 	return elf
 end
+
+function exe(asm)
+	local naam = os.tmpname()
+	local bd = io.open(naam..'.s', 'w')
+	bd:write(asm)
+	bd:close()
+	os.execute(string.format('x86_64-w64-mingw32-as -g %s.s -o %s.o --no-pad-section -R', naam, naam))
+	os.execute(string.format('x86_64-w64-mingw32-ld -g %s.o -o %s -n --build-id=none -static', naam, naam))
+	--os.execute(string.format('strip %s', naam))
+	local elf = file(naam)
+	--os.remove(naam..'.s')
+	--os.remove(naam..'.o')
+	--os.remove(naam)
+	return elf
+end
+
 
 if true or test then
 	require 'ontleed'
@@ -348,8 +382,10 @@ r3 := exit(0)
 	local asm = assembleer(rtl)
 	print(asm)
 	local elf = elf(asm)
+	local exe = exe(asm)
 	file('a.s', asm)
 	file('a.elf', elf)
-	os.execute('chmod +x a.elf')
-	os.execute('./a.elf')
+	file('a.exe', exe)
+	--os.execute('chmod +x a.elf')
+	--os.execute('./a.elf')
 end

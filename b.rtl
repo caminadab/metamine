@@ -1,8 +1,10 @@
 start:
 	d := data(20)
-	len := atoi(123456789, d)
+	a := 123456789
+	len := atoi(a, d)
 	write(1, d, len)
 	exit(0)
+	eind
 
 atoi:
 	i := arg(0)

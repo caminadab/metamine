@@ -1,0 +1,24 @@
+	.file	"win.c"
+	.section .rdata,"dr"
+.LC0:
+	.ascii "ok\0"
+.LC1:
+	.ascii "hoi\0"
+	.text
+	.globl	__main
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.seh_proc	__main
+__main:
+	subq	$40, %rsp
+	.seh_stackalloc	40
+	.seh_endprologue
+	leaq	.LC0(%rip), %r8
+	leaq	.LC1(%rip), %rdx
+	xorl	%r9d, %r9d
+	xorl	%ecx, %ecx
+	call	*__imp_MessageBoxA(%rip)
+	xorl	%eax, %eax
+	addq	$40, %rsp
+	ret
+	.seh_endproc
+	.ident	"GCC: (GNU) 6.3.0 20170516"
