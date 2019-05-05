@@ -7,8 +7,6 @@ require 'bieb'
 require 'getopt'
 require 'lisp'
 
-require 'vertaal'
-require 'doe'
 require 'naarlua'
 require 'naarweb'
 require 'rapport'
@@ -100,10 +98,10 @@ if #fouten > 0 then
 	--return
 end
 
-local doel = "uit"
+local doel = "stduit"
 if tekening then doel = "tekening" end
 
-local uit,fouten,exp2naam = oplos(asb, doel)
+local uit,fouten,exp2naam = oplos(asb, 'stduit', 'stdin', 'stdfout', 'kanaal')
 if not uit then
 	for i, fout in ipairs(fouten) do
 		print(fout.msg)

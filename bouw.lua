@@ -7,9 +7,18 @@ local O = ontleedexp
 
 -- mmap(Δexp)
 -- mmap((exp.i, exp))
-function delta(exp)
+function delta(uit)
 	local moet = mmap()
-	moet[sym.start] = X("||=", exp)
+	moet[sym.start] = X("||=", 'uit', exp)
+	-- exp = I
+	-- g = tijd ⇒ uit
+	-- g: altijd ⇒ (stduit = 'hoi')
+	-- g' = moment ⇒ Δuit
+	-- g': start ⇒ (stduit ||= 'hoi')
+	-- f = x → y
+	-- f' = 1
+	-- 1' = 0
+	-- 
 	return moet
 end
 

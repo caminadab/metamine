@@ -1,4 +1,4 @@
-#include <windows.h>
+#include <Windows.h>
 
 int __main() {
 	MessageBoxA(0, "hoi", "ok", 0);

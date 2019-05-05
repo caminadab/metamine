@@ -1,6 +1,6 @@
 linux: main.c taal.yy.c node.c lua.c test.c lex.yy.c
 	mkdir -p bin
-	gcc -std=c11 -shared -I/usr/include/lua5.2 -o bin/ontleed.so -fPIC node.c lua.c taal.yy.c lex.yy.c test.c -Wno-multichar
+	gcc -Wall -std=c11 -shared -I/usr/include/lua5.2 -o bin/ontleed.so -fPIC node.c lua.c taal.yy.c lex.yy.c test.c -Wno-multichar
 
 test: main.c node.c test.c taal.yy.h taal.yy.c lex.yy.h lex.yy.c
 	mkdir -p bin

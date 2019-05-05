@@ -231,4 +231,5 @@ int test() {
 		totaal++;
 	}
 	printf("%d/%d fout\n", fout, totaal);
+	return 0;
 }
