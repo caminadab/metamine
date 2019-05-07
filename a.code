@@ -1,9 +1,11 @@
 udp-uit ∋ (lokaal-adres, ander, "hoi")
-	ander = (deze-gastheer, 10101)
+ander = (deze-gastheer, 10101)
 
+;-
 als start dan
 	k = kanaal(af-inet, kanaal-dgram, 0)
 	bk,b = bind(k, van)
+-;
 
 ;udpuit(addr) := "3 seconde later..."
 

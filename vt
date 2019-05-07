@@ -56,18 +56,22 @@ if opt.s or opt.syntaxis then
 	verboos = true
 end
 
-local ok,code = pcall(file, bronnen[1])
-if not ok or not code then print('bestand '..bronnen[1]..' niet gevonden') ; return end
+local codes = {}
+local asb = {fn=X'EN'}
 
--- rapporteer proces
-if opt.r or opt.rapport then
-	local html = rapport(code)
-	file('rapport.html', html)
+for i,bron in ipairs(bronnen) do
+	local ok,code = pcall(file, bron)
+	if not ok or not code then print('bestand '..bronnen[1]..' niet gevonden') ; return end
+	--codes[bron] = code
+
+	local sub = ontleed(code)
+	for i,eq in ipairs(sub) do
+		eq.bron = bronnen[1]
+		eq.code = code
+		asb[#asb+1] = eq
+	end
 end
 
-local asb = ontleed(code)
-asb.bron = bronnen[1]
-asb.code = code
 
 -- annoteer ^_^
 local i = 1
