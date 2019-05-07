@@ -1,4 +1,23 @@
-uit = "hoi"
+udp-uit ∋ (lokaal-adres, ander, "hoi")
+	ander = (deze-gastheer, 10101)
+
+als start dan
+	k = kanaal(af-inet, kanaal-dgram, 0)
+	bk,b = bind(k, van)
+
+;udpuit(addr) := "3 seconde later..."
+
+;uit = (udp.uit)
+;uit = {std, tcp, udp, bestand, }
+
+;udp.uit = (("localhost", 10101), "hoi")
+;std.uit = udp.in("localhost", 10101) cat "\n"
+
+; tcp (addr, data)
+; tcp (van, naar, in, uit, is-open, fd)
+;a = tcp. in
+;a |= in ↦ "ja"
+;net |= tcp(,,uit ↦ "hoi")
 
 ;uit = tekst(f(3, 8))
 ;uit := ""

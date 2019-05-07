@@ -46,7 +46,8 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 
 
 %%
-"∈"					{ *yylval = a(":"); return ':'; }
+"∈"					{ *yylval = a("zitin"); return NAAM; }
+"∋"					{ *yylval = a("bevat"); return NAAM; }
 "∉"					{ *yylval = a("!:"); return NIN; }
 "⁻¹"				{ *yylval = a("^-1"); return INV; }
 
@@ -162,6 +163,9 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 [0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
 [0-9]*\.[0-9]*			{ *yylval = a(yytext); return NAAM; }
 [0-9]*			{ *yylval = a(yytext); return NAAM; }
+
+0x[0-9A-Fa-f]+			{ *yylval = a(yytext); return NAAM; }
+
 [a-zA-Z][a-zA-Z0-9\-]*	{ *yylval = a(yytext); return NAAM; }
 .						{ printf("fout symbool '%s' op regel %d\n", yytext, yylineno); *yylval = a("?"); return NAAM; }
 

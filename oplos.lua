@@ -103,6 +103,18 @@ function oplos(exp,voor)
 			end
 		end
 
+		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
+		for eq in pairs(eqs) do
+			if isfn(eq) and isfn(eq[1]) and isatoom(eq[1].fn) and isatoom(eq[1][1]) and #eq[1] == 1 then
+
+				local a, b, c  = eq[1].fn, eq[1][1], eq[2]
+
+				local neq = X(sym.cois, a, X(sym.maplet, b, c))
+				--oud[eq] = true
+				nieuw[neq] = true
+			end
+		end
+
 		-- herschrijf (a ||= b) naar (a |= a' || b)
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
@@ -176,8 +188,8 @@ function oplos(exp,voor)
 			-- a |= b
 			if isfn(eq) and eq.fn.v == '|=' then
 				local a,b = eq[1],eq[2]
-				map[a.v] = map[a.v] or {}
-				local v = map[a.v]
+				map[a.v or a] = map[a.v or a] or {}
+				local v = map[a.v or a]
 				v[#v+1] = b
 				oud[eq] = true
 			end
@@ -190,6 +202,53 @@ function oplos(exp,voor)
 			if #alts == 1 then
 				alts = alts[1]
 			end
+			local eq = {fn=X'=', X(naam), alts}
+			eqs[eq] = true
+		end
+
+		-- verzamel ∐=
+		local map = {} -- k → [v]
+		local oud = {}
+		for eq in pairs(eqs) do
+			-- a ∐= b
+			if isfn(eq) and eq.fn.v == 'co=' then
+				local a,b = eq[1],eq[2]
+				map[a.v or a] = map[a.v or a] or {}
+				local v = map[a.v or a]
+				v[#v+1] = b
+				oud[eq] = true
+			end
+		end
+		for eq in pairs(oud) do
+			eqs[eq] = nil
+		end
+		for naam,alts in pairs(map) do
+			alts.fn = X'co'
+			local eq = {fn=X'=', X(naam), alts}
+			eqs[eq] = true
+		end
+
+		-- verzamel ∈ en ∋
+		local map = {} -- k → [v]
+		local oud = {}
+		for eq in pairs(eqs) do
+			-- a ∐= b
+			if isfn(eq) and (eq.fn.v == 'bevat' or eq.fn.v == 'zitin') then
+				if eq.fn.v == 'zitin' then
+					eq.fn,eq[1],eq[2] = X'bevat',eq[2],eq[1]
+				end
+				local a,b = eq[1],eq[2]
+				map[a.v or a] = map[a.v or a] or {}
+				local v = map[a.v or a]
+				v[#v+1] = b
+				oud[eq] = true
+			end
+		end
+		for eq in pairs(oud) do
+			eqs[eq] = nil
+		end
+		for naam,alts in pairs(map) do
+			alts.fn = X'UNIE'
 			local eq = {fn=X'=', X(naam), alts}
 			eqs[eq] = true
 		end

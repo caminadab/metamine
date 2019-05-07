@@ -1,0 +1,36 @@
+;-
+(+) = addq
+addq : (intq, intq) → intq
+
+inet-adres (ip, poort) =
+	af-inet || htons(poort) || htonl(ip) || intq(0)
+
+als udpuit ∋ (van, naar, data) dan
+	van = udp-adres (0, 0)
+	naar = kanaal-adres (deze-gastheer, 10101)
+
+als start dan
+	k := sys.socket(af-inet, sock-dgram, 0)
+	bk := sys.bind(k, van, #van)
+
+als bk.schrijfbaar dan
+	sys.sendto(bk, h, #h, 0, pakket.naar, #pakket.naar)
+
+htons(intw) = ((intw bit-en 0xFF00) bit-schr 8) bit-of (intw bit-en 0x00FF)
+-;
+
+; netwerkconstanten
+af-unix = uintd 1
+af-inet = uintd 2
+af-inet6 = uintd 10
+
+sock-stream = uintd 1
+sock-dgram = uintd 2
+
+deze-gastheer = 16777343
+lokaal-adres = (0, 0)
+
+gastheer : uintq
+poort : uintd
+
+adres : (gastheer, poort)

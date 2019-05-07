@@ -139,6 +139,7 @@ input:
 
 single:
 	NAAM 								{ $$ = metloc($1, @1); }
+|	single '.' single																	{ $$ = fn3loc(aloc(".", @2), $1, $3, @$); }
 | TEKST								{ $$ = metloc($1, @1); }
 | single '%'					{ $$ = fn2loc(aloc("%", @2), $1, @$); }
 | single '!'					{ $$ = fn2loc(aloc("faculteit", @2), $1, @$); }
@@ -239,7 +240,7 @@ block:
 
 exp:
 
-	single '.'																					{ $$ = fn2loc(aloc(".", @2), $1, @$); }
+	single '.'																				{ $$ = fn2loc(aloc(".", @2), $1, @$); }
 |	single
 
 /* als ... dan ... */

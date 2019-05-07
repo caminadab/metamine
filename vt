@@ -101,13 +101,28 @@ end
 local doel = "stduit"
 if tekening then doel = "tekening" end
 
-local uit,fouten,exp2naam = oplos(asb, 'stduit', 'stdin', 'stdfout', 'kanaal')
-if not uit then
-	for i, fout in ipairs(fouten) do
-		print(fout.msg)
+local inn = set("std-in", "tcp-in", "udp-in", "bestand-in")
+local uit = set("std-uit", "tcp-uit", "udp-uit", "bestand-uit")
+
+local alles = {fn=sym.co}
+for bron in pairs(uit) do
+	local waarde,fouten,exp2naam = oplos(asb, bron)
+	-- '∐(stduit ↦ stduit')
+	if waarde then
+		alles[#alles+1] = X(sym.maplet, bron, waarde)
 	end
-	return
+
+	if not waarde then
+		for i, fout in ipairs(fouten) do
+			print(fout.msg)
+		end
+		--return
+	end
 end
+uit = alles
+
+require 'construeer'
+local uit = construeer(uit)
 
 -- syntaxrapport
 if false and verboos then
