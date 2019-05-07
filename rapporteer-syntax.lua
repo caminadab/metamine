@@ -85,6 +85,7 @@ function locvind(code, x, y)
 end
 
 function locsub(code, loc)
+	if not code then return "???" end
 	local apos = locvind(code, loc.x1, loc.y1)
 	local bpos = locvind(code, loc.x2, loc.y2)
 	if not apos or not bpos then return false end

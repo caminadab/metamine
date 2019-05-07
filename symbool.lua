@@ -90,19 +90,19 @@ function substitueer(exp, van, naar)
 end
 
 sym = {}
-sym.niets = X'niets'
-sym.start = X'start'
-sym.lijst = X'[]'
-sym.set = X'{}'
-sym.is = X'='
-sym.oud = X"'"
-sym.cat = X'||'
-sym.ass = X':='
-sym.catass = X'||='
 sym.alt = X'|'
 sym.altis = X'|='
+sym.cat = X'||'
+sym.co = X'co'
+sym.cois = X'co='
 sym.dan = X'=>'
-function sym.maplet(a,b)
-	return X('-->', a, b)
-end
-
+sym.niets = X'niets'
+sym.lijst = X'[]'
+sym.is = X'='
+sym.oud = X"'"
+sym.ass = X':='
+sym.catass = X'||='
+sym.maplet = X'-->'
+sym.start = X'start'
+sym.set = X'{}'
+sym.stop = X'stop'

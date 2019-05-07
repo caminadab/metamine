@@ -1,7 +1,10 @@
 require 'lisp'
 require 'func'
+require 'set'
 
 local insert = table.insert
+
+local binop = set('+', '-', '*', '/', '^', 'en', 'of', '@', '=>')
 
 local function combineerR(sexp, tt)
 	if isatoom(sexp) then

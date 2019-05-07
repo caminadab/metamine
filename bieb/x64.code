@@ -1,0 +1,70 @@
+;-
+(+) = addq
+addq : (intq, intq) → intq
+
+inet-adres (ip, poort) =
+	af-inet || htons(poort) || htonl(ip) || intq(0)
+
+als udpuit ∋ (van, naar, data) dan
+	van = udp-adres (0, 0)
+	naar = kanaal-adres (deze-gastheer, 10101)
+
+als start dan
+	k := sys.socket(af-inet, sock-dgram, 0)
+	bk := sys.bind(k, van, #van)
+
+als bk.schrijfbaar dan
+	sys.sendto(bk, h, #h, 0, pakket.naar, #pakket.naar)
+
+htons(intw) = ((intw bit-en 0xFF00) bit-schr 8) bit-of (intw bit-en 0x00FF)
+-;
+
+; sys-errno
+sys-bind: (bd, sys-sockaddr, int) → int
+sys-write: (bd, data, int) → int
+sys-socket: (af, type, proto) → bd
+
+; tijd
+starttijd := nu
+na(delta) = (looptijd > delta)
+
+; standaardstromen
+bd: int
+leesbaar-bestand: bd
+schrijfbaar-bestand: bd
+
+;bestanden-uit std-uit = "hoi"
+std-uit = 0
+std-in = 1
+std-fout = 2
+
+; bestanden
+;open-lees: tekst → leesbaar-bestand
+;open-schrijf: tekst → schrijfbaar-bestand
+
+;lees-bestand: (leesbaar-bestand, data) → len
+;schrijf-bestand: (leesbaar-bestand, data) → len
+
+; netwerk
+;udp (kanaal) 
+
+; netwerkconstanten
+af-unix = uintd 1
+af-inet = uintd 2
+af-inet6 = uintd 10
+
+sock-stream = uintd 1
+sock-dgram = uintd 2
+
+localhost = 16777343
+elk-adres = (0, 0)
+
+udp-plug: (van) → kanaal
+udp-kanaal: (van, naar) → gebonden-kanaal
+schrijf-naar: (kanaal, doel, data) → (kanaal, len)
+;schrijf: (gebonden-kanaal, data) → (gebonden-kanaal, len)
+
+gastheer : uintq
+poort : uintd
+
+adres : (gastheer, poort)

@@ -1,16 +1,7 @@
-require 'exp'
-require 'util'
-require 'naarlua'
-require 'naarjavascript'
-
 local jslibtaal = {string.byte(javascriptbieb,1,#javascriptbieb)}
 jslibtaal.fn = '[]'
 
-bieb = {
-	-- rochel
-	['open-lees'] = true,
-
-	-- tekening
+tekening
 	rechthoek = true,
 	groen = true,
 	rood = true,
@@ -18,7 +9,7 @@ bieb = {
 	zwart = true,
 	schrijf = true,
 
-	-- wiskunde
+wiskunde
 	looptijd = 3,
 	co = 3,
 	atoom = function(id) return '###' .. id end;
@@ -27,18 +18,24 @@ bieb = {
 	int = math.floor,
 	abs = math.abs,
 	plafond = math.ceil,
+
+tijd
+	starttijd = true,
+
+dynamisch
 	["'"] = true,
 	['nu'] = (function()
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
-	starttijd = true,
 	['start'] = (function()
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
 	os.time(),
+
 	['inverteer'] = true; -- sure
+	['tau'] = 2 * math.pi;
 	['ja'] = true; 
 	['nee'] = false; 
 	['niets'] = false; 
@@ -54,13 +51,7 @@ bieb = {
 		return a
 	end;
 
-	['!'] = function(n)
-		local a = 1
-		for i=1,n do
-			a = a * n
-		end
-		return a
-	end;
+n! = (((x,n) → (x · n, n - 1))^n (n))₀
 
 	-- linksassociatief
 	['xx'] = function(a,b)
@@ -333,13 +324,6 @@ bieb = {
 	end;
 
 	['unie'] = function(a,b)
-		local s = {}
-		for v in pairs(a) do s[v] = true end
-		for v in pairs(b) do s[v] = true end
-		return s
-	end;
-
-	['UNIE'] = function(a,b)
 		local s = {}
 		for v in pairs(a) do s[v] = true end
 		for v in pairs(b) do s[v] = true end

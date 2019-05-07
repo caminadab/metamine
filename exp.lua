@@ -10,12 +10,13 @@ function atoom(exp,i) if exp[i] then return exp[i].v end end
 expmt = {}
 
 function loctekst(loc)
+	local bron = loc.bron or '?'
 	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
-		return string.format("%d:%d", loc.y1, loc.x1)
+		return string.format("%s@%d:%d", bron, loc.y1, loc.x1)
 	elseif loc.y1 == loc.y2 then
-		return string.format("%d:%d-%d", loc.y1, loc.x1, loc.x2)
+		return string.format("%s@%d:%d-%d", bron, loc.y1, loc.x1, loc.x2)
 	else
-		return string.format("%d:%d-%d:%d", loc.y1, loc.x1, loc.y2, loc.x2)
+		return string.format("%s@%d:%d-%d:%d", bron, loc.y1, loc.x1, loc.y2, loc.x2)
 	end
 end
 
