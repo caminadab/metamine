@@ -1,0 +1,4 @@
+ander = (lokale-gastheer, 10101)
+k := udp-kanaal (elk-adres, ander)
+
+k.uit = "Hallo"

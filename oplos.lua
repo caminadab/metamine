@@ -105,12 +105,20 @@ function oplos(exp,voor)
 
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 		for eq in pairs(eqs) do
-			if isfn(eq) and isfn(eq[1]) and isatoom(eq[1].fn) and isatoom(eq[1][1]) and #eq[1] == 1 then
-
+			--if isfn(eq) and isfn(eq[1]) --[[and isatoom(eq[1].fn)]] and isatoom(eq[1][1]) and #eq[1] == 1 then
+			if isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
 				local a, b, c  = eq[1].fn, eq[1][1], eq[2]
-
 				local neq = X(sym.cois, a, X(sym.maplet, b, c))
-				--oud[eq] = true
+				oud[eq] = true
+				nieuw[neq] = true
+				--error(exp2string(neq))
+			end
+
+		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
+			if isfn(eq) and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
+				local a, b, c  = eq[2].fn, eq[2][1], eq[1]
+				local neq = X(sym.cois, a, X(sym.maplet, b, c))
+				oud[eq] = true
 				nieuw[neq] = true
 			end
 		end
@@ -166,7 +174,7 @@ function oplos(exp,voor)
 		-- herschrijf  f(a) = a + 1
 		-- naar        f ∐= a → a + 1
 		for eq in pairs(eqs) do
-			if isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
+			if false and isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
 				local vrij = var(eq[1])
 				for naam in pairs(vrij) do
 					if bevat(eq[2], naam) then
@@ -226,6 +234,7 @@ function oplos(exp,voor)
 			alts.fn = X'co'
 			local eq = {fn=X'=', X(naam), alts}
 			eqs[eq] = true
+			print("HEB HEM " .. exp2string(eq))
 		end
 
 		-- verzamel ∈ en ∋
@@ -382,15 +391,17 @@ function oplos(exp,voor)
 			--return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}, halvestroom
 
 			local fouten = {}
-			print('HALV VAN')
-			print(halfvan:tekst())
-			print('HALV NAAR')
-			print(halfnaar:tekst())
+			if false then
+				print('HALV VAN')
+				print(halfvan:tekst())
+				print('HALV NAAR')
+				print(halfnaar:tekst())
+			end
 			for punt in pairs(halfnaar.begin) do
 				if not halfvan.punten[punt] then
 					local def = bron2def[punt]
 					local fout = {
-						msg = exp.bron .. '@' .. loctekst(def.loc) .. ': ' .. color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
+						msg = loctekst(def.loc) .. ': ' .. color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
 					}
 					fouten[#fouten+1] = fout
 				end

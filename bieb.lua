@@ -7,6 +7,9 @@ local jslibtaal = {string.byte(javascriptbieb,1,#javascriptbieb)}
 jslibtaal.fn = '[]'
 
 bieb = {
+	-- rochel
+	['open-lees'] = true,
+
 	-- tekening
 	rechthoek = true,
 	groen = true,
@@ -36,7 +39,6 @@ bieb = {
 	end) (10),
 	os.time(),
 	['inverteer'] = true; -- sure
-	['tau'] = 2 * math.pi;
 	['ja'] = true; 
 	['nee'] = false; 
 	['niets'] = false; 

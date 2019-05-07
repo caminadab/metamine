@@ -1,7 +1,22 @@
-udp-uit ∋ (lokaal-adres, ander, "hoi")
-ander = (deze-gastheer, 10101)
+;u = udp (lokaal-adres)
+;u(ander).uit = "hoi"
+;ander = (deze-gastheer, 10101)
+;std-uit = "ok"
+;b = bestand "hoi.txt"
+;bestanden-uit "hoi.txt" = "Hallo"
+;bestanden-uit "hoi.txt" = "Hallo"
+
+hoi := open-lees "hoi.txt"
+laat := open-lees "laat.txt"
+
+;bestanden-uit (hoi) = "Hallo"
+
+als ja dan
+	bestanden-uit = laat ↦ "Jaja!"
+
 
 ;-
+pakket ∈ 
 als start dan
 	k = kanaal(af-inet, kanaal-dgram, 0)
 	bk,b = bind(k, van)

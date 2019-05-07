@@ -109,7 +109,7 @@ function typeer(exp)
 				local moetloc = typeoorzaakloc or oorzaakloc[moes(exp)]
 				local msg = string.format('%s@%s \t%s: %s is %s (%s) maar moet %s zijn (%s)',
 					bron, loctekst(exp.loc), -- locatie
-					color.red .. 'Typefout' .. color.white,
+					color.brightred .. 'Typefout' .. color.white,
 					color.brightyellow .. locsub(code, exp.loc) .. color.white, -- exp
 					color.brightcyan .. combineer(types[exp]) .. color.white, -- echte type
 					ansi.underline .. bron .. '@' .. loctekst(isloc) .. ansi.normal, -- echte type bron
@@ -326,11 +326,11 @@ function typeer(exp)
 				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
 					local msg = string.format('%s@%s: Typefout: "%s" heeft %d argumenten maar moet er %d hebben',
 						bron, loctekst(exp.loc),
-						locsub(code, exp.loc),
+						'???', --locsub(code, exp.loc),
 						nargs, N(tfn)
 					)
 					local kort = string.format('"%s" heeft %d argumenten maar moet er %d hebben',
-						locsub(code, exp.loc), nargs, N(tfn)
+						'????' --[[locsub(code, exp.loc)]], nargs, N(tfn)
 					)
 					if not fouten[msg] then
 						print(msg)
