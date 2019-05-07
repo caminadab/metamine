@@ -357,7 +357,7 @@ function exe(asm)
 end
 
 
-if true or test then
+if false and test then
 	require 'ontleed'
 	local O = ontleed
 	local rtl = O[[

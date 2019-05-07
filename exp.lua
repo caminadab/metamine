@@ -4,6 +4,9 @@ exp |= { loc, val }
 ]]
 require 'lisp'
 
+function fn(exp) if isfn(exp) then return exp.fn.v end end
+function atoom(exp,i) if exp[i] then return exp[i].v end end
+
 expmt = {}
 
 function loctekst(loc)
@@ -164,7 +167,7 @@ function exp2string(self,tabs)
 		return fn..'('..table.concat(params,sep)..')'
 	end
 end
-
+e2s = exp2string
 
 
 expmt.__tostring = exp2string

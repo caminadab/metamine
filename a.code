@@ -1,23 +1,2 @@
-uit = "hoi"
-
-;uit = tekst(f(3, 8))
-;uit := ""
-;uit ||= "a.." als start = nu
-;uit ||= "b!" als looptijd = 1
-
-;f = (x,y) → y + x
-;z = 3
-
-
-;uit ||= "ok" als looptijd = 1
-
-; Δuit =  (0 → (:= "hoi"))  ∐  (1 → (||= "ok"))
-; uit = ∫ (A ∐ B)
-
-; uit = (looptijd = 1  ⇒  uit' || "ok")
-
-;start → (||= "bezig...")
-;op(start+1) → (||= " klaar!")
-;uit := uit' || "hoi"
-
-
+stduit = tekst(f(2, 3))
+f(x, y) = x + y
