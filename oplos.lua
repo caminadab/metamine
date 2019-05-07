@@ -108,7 +108,7 @@ function oplos(exp,voor)
 			--if isfn(eq) and isfn(eq[1]) --[[and isatoom(eq[1].fn)]] and isatoom(eq[1][1]) and #eq[1] == 1 then
 			if isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
 				local a, b, c  = eq[1].fn, eq[1][1], eq[2]
-				local neq = X(sym.cois, a, X(sym.maplet, b, c))
+				local neq = X(sym.cois, a, X(sym.map, b, c))
 				oud[eq] = true
 				nieuw[neq] = true
 				--error(exp2string(neq))
@@ -232,6 +232,9 @@ function oplos(exp,voor)
 		end
 		for naam,alts in pairs(map) do
 			alts.fn = X'co'
+			if #alts == 1 then
+				alts = alts[1]
+			end
 			local eq = {fn=X'=', X(naam), alts}
 			eqs[eq] = true
 			print("HEB HEM " .. exp2string(eq))

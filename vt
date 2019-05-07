@@ -13,6 +13,8 @@ require 'rapport'
 require 'typeer'
 require 'bouw'
 
+require 'controle'
+
 local opt,bronnen = getopt({...}, "u")
 
 for i,bron in pairs(bronnen) do
@@ -109,7 +111,7 @@ local doel = "stduit"
 if tekening then doel = "tekening" end
 
 local inn = { "bestanden-in", "udp-in", "tcp-in" }
-local uit = { "bestanden-uit", "udp-uit", "tcp-uit" }
+local uit = { "std-uit" }
 
 local alles = {fn=sym.lijst}
 for i, bron in ipairs(uit) do
@@ -127,6 +129,8 @@ for i, bron in ipairs(uit) do
 	end
 end
 uit = alles
+
+control(uit)
 
 -- syntaxrapport
 if false and verboos then

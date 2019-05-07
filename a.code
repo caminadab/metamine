@@ -1,2 +1,3 @@
-stduit = tekst(f(2, 3))
-f(x, y) = x + y
+std-uit = tekst(f(2, 3))
+f(x,y) = (a ⇒ x + (y · 3 / 8) + (2 + 3 * 4 ^ 8))
+a = 2 - 8 * (2/8)

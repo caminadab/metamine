@@ -17,26 +17,24 @@ als bk.schrijfbaar dan
 	sys.sendto(bk, h, #h, 0, pakket.naar, #pakket.naar)
 
 htons(intw) = ((intw bit-en 0xFF00) bit-schr 8) bit-of (intw bit-en 0x00FF)
--;
 
 ; sys-errno
 sys-bind: (bd, sys-sockaddr, int) → int
 sys-write: (bd, data, int) → int
 sys-socket: (af, type, proto) → bd
+-;
 
 ; tijd
 starttijd := nu
 na(delta) = (looptijd > delta)
 
-; standaardstromen
-bd: int
-leesbaar-bestand: bd
-schrijfbaar-bestand: bd
+std-uit = bestanden-uit 0
+uit = [ bestanden-uit ]
+;std-uit |= niets
 
-;bestanden-uit std-uit = "hoi"
-std-uit = 0
-std-in = 1
-std-fout = 2
+;std-uit = bestanden-uit 0
+;std-in = 1
+;std-fout = 2
 
 ; bestanden
 ;open-lees: tekst → leesbaar-bestand

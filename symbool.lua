@@ -102,6 +102,7 @@ sym.is = X'='
 sym.oud = X"'"
 sym.ass = X':='
 sym.catass = X'||='
+sym.map = X'->'
 sym.maplet = X'-->'
 sym.start = X'start'
 sym.set = X'{}'
