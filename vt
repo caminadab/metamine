@@ -48,6 +48,7 @@ end
 
 bronnen[#bronnen+1] = 'bieb/wisk.code'
 bronnen[#bronnen+1] = 'bieb/x64.code'
+bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
 if opt.v or opt.verboos then
 	verboos = true

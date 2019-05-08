@@ -76,11 +76,16 @@ function control(exp)
 
 	for sub in boompairsbfs(exp) do
 		-- functies
-		if fn(sub) == '_fn' then
-			local argnum = atoom(sub[1], 1)
-			local waarde = sub[2] or sub[1][2] 
+		if isfn(sub) and isfn(sub.fn) then
 
-			-- verwijder arg
+			-- elke complexe functie moet _fn bevatten
+			local func = sub.fn
+			assert(fn(func) == '_fn')
+
+			local argnum = atoom(func[1], 1)
+			local waarde = func[2] or func[1][2] 
+
+			-- verwijder args
 			for subb in boompairsdfs(waarde) do
 				if fn(subb) == '_arg' then
 					subb.fn = nil
@@ -92,9 +97,13 @@ function control(exp)
 			local i = #fns
 			fns[#fns+1] = waarde
 
-			-- fix deze
-			sub.fn = nil
-			sub.v = 'fn'..i
+			-- fix functieaanroep
+			--func.fn = sym.call
+			--func.fn = nil
+			--func.v = 'fn'..i
+			local fn = X('fn'..i)
+			sub.fn = sym.call
+			table.insert(sub, 1, fn)
 		end
 
 		-- als-dan logica
@@ -121,16 +130,17 @@ function control(exp)
 	for i, stat in pairs(stats) do
 		print('  '..combineer(stat))
 	end
-		print('  stop')
+	print('  stop')
 
 	-- plet de functies
 	for i=1,#fns do
 		local stats = plet(fns[i], maakvar)
 		print('fn'..(i-1)..':')
-		for i, stat in pairs(stats) do
+		for i, stat in ipairs(stats) do
 			print('  '..combineer(stat))
 		end
-		print('  eind')
+		local ret = stats[#stats][1]
+		print('  ret '..ret.v)
 	end
 end
 

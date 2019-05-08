@@ -1,8 +1,2 @@
-std-uit = a
-
-f(x,y) = (x + y als 2 > 1)
-
-als f(2,3) > 3 dan
-	a = "ja!"
-anders
-	a = "nee."
+f(x,y) = (x + y * 3 / (8 - 1 * 8)) ^ (6 - 3)
+std-uit = tekst(f(2,3))

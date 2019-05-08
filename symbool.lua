@@ -92,7 +92,9 @@ end
 sym = {}
 sym.alt = X'|'
 sym.altis = X'|='
+sym.call = X'call'
 sym.cat = X'||'
+sym.catass = X'||='
 sym.co = X'co'
 sym.cois = X'co='
 sym.dan = X'=>'
@@ -102,7 +104,6 @@ sym.lijst = X'[]'
 sym.is = X'='
 sym.oud = X"'"
 sym.ass = X':='
-sym.catass = X'||='
 sym.map = X'->'
 sym.maplet = X'-->'
 sym.start = X'start'
