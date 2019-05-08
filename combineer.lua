@@ -13,7 +13,8 @@ local function combineerR(sexp, tt)
 		local op = sexp.fn.v
 
 		-- lijst/set
-		if op == '[]' or op == '{}' then
+		if op == '[]' or op == '{}' or op == ',' then
+			if op == ',' then op = '()' end
 			insert(tt, op:sub(1,1))
 			for i=1,#sexp do
 				combineerR(sexp[i], tt)

@@ -121,8 +121,8 @@ function assembleer(stats)
 
 		-- compare
 		elseif exp.fn and cmpops[exp.fn.v] then
-			assert(regs[exp[1].v], exp[1].v)
-			assert(regs[exp[2].v], exp[2].v)
+			--assert(regs[exp[1].v], exp[1].v)
+			--assert(regs[exp[2].v], exp[2].v)
 			local a = regs[exp[1].v]
 			local b = regs[exp[2].v]
 			t[#t+1] = string.format('cmp %s, %s', a, b)
@@ -357,7 +357,7 @@ function exe(asm)
 end
 
 
-if false and test then
+if true or test then
 	require 'ontleed'
 	local O = ontleed
 	local rtl = O[[
@@ -371,7 +371,7 @@ r3 := exit(0)
 
 ]]
 	require 'util'
-	local b = file 'c.rtl'
+	local b = file 'b.rtl'
 	b = b:gsub('\t','')
 	b = b:gsub('(%w+):[^=]', function(lbl) return '\nlabel '.. lbl..'\n' end)
 	print(b)

@@ -9,7 +9,6 @@
 int yyerror(YYLTYPE* loc, void** root, char* waarom, void* scanner, const char* yymsg) {
 	print_loc(*loc);
 	printf(": %s\n", yymsg);
-	node* node = (struct node* )*root;
 
 	// lmao zedong
 	strcpy(waarom, yymsg);
@@ -118,7 +117,7 @@ int lua_ontleed(lua_State* L) {
 	node* wortel;
 
 	char waarom[0x400];
-	int ok = yyparse((void**)&wortel, (void*)&waarom, scanner);
+	yyparse((void**)&wortel, (void*)&waarom, scanner);
 	yylex_destroy(scanner);
 
 	if (wortel)
@@ -141,7 +140,7 @@ int lua_ontleedexp(lua_State* L) {
 	node* wortel;
 
 	char waarom[0x400];
-	int ok = yyparse((void**)&wortel, (void*)&waarom, scanner);
+	yyparse((void**)&wortel, (void*)&waarom, scanner);
 	wortel = wortel->first->next;
 	yylex_destroy(scanner);
 

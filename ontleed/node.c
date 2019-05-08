@@ -343,6 +343,7 @@ node* prependloc(node* atom, node* exp, YYLTYPE yylloc) {
 node* fn0loc(YYLTYPE yylloc) {
 	node* a = exp0();
 	a->loc = yylloc;
+	return a;
 }
 node* fn1loc(node* a, YYLTYPE yylloc) {
 	node* n = exp1(a);

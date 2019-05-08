@@ -73,9 +73,8 @@ end
 function control(exp)
 	local fns = {}
 	local maakvar = maakvars()
-	assert(maakvar)
 
-	for sub in boompairsdfs(exp) do
+	for sub in boompairsbfs(exp) do
 		-- functies
 		if fn(sub) == '_fn' then
 			local argnum = atoom(sub[1], 1)
@@ -90,33 +89,48 @@ function control(exp)
 			end
 
 			-- we hebben maar 1 arg nodig nu
+			local i = #fns
 			fns[#fns+1] = waarde
 
 			-- fix deze
 			sub.fn = nil
-			sub.v = 'fn'..#fns
+			sub.v = 'fn'..i
 		end
 
 		-- als-dan logica
 		if fn(sub) == '=>' then
-			local cond, dan = sub[1], sub[2]
-			fns[#fns+1] = cond
+			local cond, dan, anders = sub[1], sub[2], sub[3]
+
+			-- dan
+			local i = #fns
 			fns[#fns+1] = dan
-			sub[2] = X('fn' .. #fns+1)
+			sub[2] = X('fn' .. i)
+
+			-- anders
+			if anders then
+				local i = #fns
+				fns[#fns+1] = anders
+				sub[3] = X('fn' .. i)
+			end
 		end
 	end
 
-	-- de exp kan in zijn geheel worden geplet: alle onveilige rommel is eruit
-	fns[#fns+1] = exp
+	-- plet de start
+	print('start:')
+	local stats = plet(exp, maakvar)
+	for i, stat in pairs(stats) do
+		print('  '..combineer(stat))
+	end
+		print('  stop')
 
 	-- plet de functies
-	for i,fn in ipairs(fns) do
-		local stats = plet(fn, maakvar)
+	for i=1,#fns do
+		local stats = plet(fns[i], maakvar)
 		print('fn'..(i-1)..':')
 		for i, stat in pairs(stats) do
 			print('  '..combineer(stat))
 		end
-
+		print('  eind')
 	end
 end
 

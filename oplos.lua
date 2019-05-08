@@ -158,18 +158,45 @@ function oplos(exp,voor)
 			end
 		end
 
-		-- herschrijf (b ⇒ (a = c)) → (a |= (b ⇒ c))
+		-- herschrijf
+		--   c ⇒ (a = b)
+		-- naar
+		--   a |= (c ⇒ b)
+		--   b |= (c ⇒ a)
+		-- 
+		-- en
+		--   ⇒(c, d, (x = y))
+		-- naar
+		--   x |= (¬d ⇒ y)
+		--   y |= (¬d ⇒ x)
 		for eq in pairs(eqs) do
-			if isfn(eq) then
-				local a = (eq.fn.v == '=>') 
-				local b = a and isfn(eq[2]) 
-				local c = b and (eq[2].fn.v == '=' or eq[2].fn.v == '|=')
-				if eq.fn.v == '=>' and isexp(eq[2]) and (eq[2].fn.v == '=' or eq[2].fn.v == '|=')  then
-					eq.fn.v = '|='
-					eq[1],eq[2] = eq[2][1], {fn=X'=>', eq[1], eq[2][2]}
+			if fn(eq) == '=>' and (fn(eq[2]) == '=' or fn(eq[2]) == '|=') then
+				eq.fn.v = '|='
+				local c = eq[1]
+				local a = eq[2][1]
+				local b = eq[2][2]
+
+				-- twee nieuwe
+				local eqa = X{fn=sym.altis, a, {fn=sym.dan, c, b}}
+				local eqb = X{fn=sym.altis, b, {fn=sym.dan, c, a}}
+				nieuw[eqa] = true
+				nieuw[eqb] = true
+
+				if fn(eq[3]) == '=' or fn(eq[3]) == '|=' then
+					local e = {fn=sym.niet, c}
+					local ae = eq[3][1]
+					local be = eq[3][2]
+					local eqa = {fn=sym.altis, ae, {fn=sym.dan, e, be}}
+					local eqb = {fn=sym.altis, be, {fn=sym.dan, e, ae}}
+					nieuw[eqa] = true
+					nieuw[eqb] = true
 				end
 			end
 		end
+		eqs = complement(eqs, oud)
+		eqs = unie(eqs, nieuw)
+		nieuw = {}
+		oud = {}
 
 		-- herschrijf  f(a) = a + 1
 		-- naar        f ∐= a → a + 1
@@ -186,8 +213,8 @@ function oplos(exp,voor)
 			end
 		end
 
-		eqs = unie(eqs, nieuw)
 		eqs = complement(eqs, oud)
+		eqs = unie(eqs, nieuw)
 
 		-- verzamel |=
 		local map = {} -- k → [v]
@@ -237,7 +264,6 @@ function oplos(exp,voor)
 			end
 			local eq = {fn=X'=', X(naam), alts}
 			eqs[eq] = true
-			print("HEB HEM " .. exp2string(eq))
 		end
 
 		-- verzamel ∈ en ∋
