@@ -1,5 +1,6 @@
 std-uit = a
-f(x,y) = x + y
+
+f(x,y) = (x + y als 2 > 1)
 
 als f(2,3) > 3 dan
 	a = "ja!"

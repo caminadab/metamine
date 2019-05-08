@@ -182,7 +182,7 @@ function oplos(exp,voor)
 				nieuw[eqa] = true
 				nieuw[eqb] = true
 
-				if fn(eq[3]) == '=' or fn(eq[3]) == '|=' then
+				if eq[3] and (fn(eq[3]) == '=' or fn(eq[3]) == '|=') then
 					local e = {fn=sym.niet, c}
 					local ae = eq[3][1]
 					local be = eq[3][2]
