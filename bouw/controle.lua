@@ -5,7 +5,24 @@ require 'symbool'
 require 'combineer'
 
 --[[
-BLOK:
+
+f(x) = x + 1
+exitcode = f(3)
+
+
+start:
+	a := 3
+	b := call f, 3
+	ret b
+-> f
+<- f
+
+f:
+	y := arg 0
+	ret := y + 1
+-> start
+<- start
+	
 ]]
 
 -- plet tot een fijne moes
@@ -76,13 +93,20 @@ local function plet(waarde, maakvar)
 	return stats
 end
 
+
 -- control flow graph builder
 function controle(exp)
-	local cfg = graaf() -- blok
+	local cfg = maakgraaf() -- blok
 	local fns = {}
 	local maakvar = maakvars()
+	local startblok
 
 	for sub in boompairsbfs(exp) do
+		if sub == exp then
+			startblok = 'start'
+			cfg:punt(startblok)
+		end
+
 		-- functies
 		if isfn(sub) and isfn(sub.fn) then
 		end
@@ -125,6 +149,8 @@ function controle(exp)
 			print('  ret '..ret.v)
 		end
 	end
+
+	return cfg
 end
 
 if test then
@@ -133,6 +159,7 @@ if test then
 	local E = ontleedexp
 
 	local cfg = controle(E'2 * 3 + 4')
+	print(cfg)
 	--control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')
 	--control(E'_fn(0, _arg(0) ⇒ b · c + 3 / 7 ^ 3)')
 end

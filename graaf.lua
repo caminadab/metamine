@@ -11,7 +11,7 @@ function pijl2tekst(pijl)
 end
 
 function metagraaf:tekst()
-	if not next(self.pijlen) then
+	if not next(self.punten) and not next(self.pijlen) then
 		return '<lege graaf>'
 	end
 	local p2 = {}
@@ -201,7 +201,6 @@ end
 
 function metagraaf:punt(punt)
 	self.punten[punt] = true
-	self.begin[punt] = true
 end
 
 -- pijlen naar doel
@@ -241,7 +240,7 @@ local graafmeta = {
 	__index = metagraaf,
 }
 
-function graaf()
+function maakgraaf()
 	local graaf = {
 		punten = {},
 		pijlen = {},
