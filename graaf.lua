@@ -155,36 +155,6 @@ local function naar(self,doel)
 	end
 end
 
-function metagraaf:maglink(pijl_of_van, naar)
-	local van, pijl
-	if naar then
-		van = pijl_of_van
-		pijl = {van=van,naar=naar}
-	else
-		pijl = pijl_of_van
-		van = pijl.van
-		naar = pijl.naar 
-	end
-
-	-- mag geen route van "naar" naar "van"
-	for bron in pairs(van) do
-		-- bron bereikbaar vanaf einde?
-		if self:stroomopwaarts(naar, bron) then
-			return false
-		end
-	end
-
-	-- zit hij er al in?
-	for alpijl in pairs(self.pijlen) do
-		-- TODO kijk ook naar andere bronnen
-		if next(alpijl.van) == next(pijl.van) and pijl.naar == alpijl.naar then
-			return false
-		end
-	end
-
-	return true
-end
-
 function metagraaf:link(pijl_of_van, naar)
 	local van, pijl
 	if naar then
@@ -198,19 +168,8 @@ function metagraaf:link(pijl_of_van, naar)
 
 	if type(van) ~= 'table' then error('"van" moet set zijn maar is '..type(van)) end
 
-	if not self:maglink(pijl) then
-		return false
-	end
-
 	self.pijlen[pijl] = true
 
-	-- werk begin bij
-	if self.begin[pijl.naar] then
-		self.begin[pijl.naar] = nil
-	end
-	if not next(pijl.van) then
-		self.begin[pijl.naar] = true
-	end
 	for bron in pairs(pijl.van) do
 		if not self.punten[bron] then
 			self.begin[bron] = true
@@ -222,7 +181,6 @@ function metagraaf:link(pijl_of_van, naar)
 	for bron in pairs(van) do
 		self.punten[bron] = true
 	end
-
 
 	return pijl
 end
@@ -241,22 +199,12 @@ function metagraaf:ontlink(pijl_of_van, naar)
 	self.pijlen[pijl] = nil
 end
 
--- iterator over alle beginpunten
-function metagraaf:begin(self)
-	local begin = self.begin
-	local it = nil
-	return function()
-		it = next(begin, it)
-		return it
-	end
-end
-
 function metagraaf:punt(punt)
 	self.punten[punt] = true
 	self.begin[punt] = true
 end
 
--- hyperpijlen naar doel
+-- pijlen naar doel
 function metagraaf:naar(doel)
 	local hoek = nil
 	return function()
@@ -279,7 +227,7 @@ function metagraaf:van(bron)
 		while next(self.pijlen, pijl) do
 			local kan = next(self.pijlen, pijl)
 			pijl = kan
-			if kan.van[bron] then
+			if kan.van == bron then
 				return kan
 			end
 		end

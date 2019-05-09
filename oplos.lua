@@ -407,6 +407,8 @@ function oplos(exp,voor)
 			pijl2subst[pijl] = subst
 		end
 
+		if verboos then print(kennisgraaf:tekst()) end
+
 		local stroom,halfvan,halfnaar = kennisgraaf:sorteer(invoer,voor)
 
 		local vt = {

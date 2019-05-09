@@ -4,4 +4,4 @@ als 1 > 3 dan
 anders
 	a = 4
 
-std-uit = tekst(f(2))
+exitcode = a + f(2)

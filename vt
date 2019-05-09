@@ -11,9 +11,8 @@ require 'naarlua'
 require 'naarweb'
 require 'rapport'
 require 'typeer'
-require 'bouw'
 
-require 'controle'
+require 'bouw.controle'
 
 local opt,bronnen = getopt({...}, "u")
 
@@ -48,7 +47,7 @@ end
 
 bronnen[#bronnen+1] = 'bieb/wisk.code'
 bronnen[#bronnen+1] = 'bieb/x64.code'
-bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
+--bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
 if opt.v or opt.verboos then
 	verboos = true
@@ -112,26 +111,18 @@ local doel = "stduit"
 if tekening then doel = "tekening" end
 
 local inn = { "bestanden-in", "udp-in", "tcp-in" }
-local uit = { "std-uit" }
+local uit = { "uit" }
 
-local alles = {fn=sym.lijst}
-for i, bron in ipairs(uit) do
-	local waarde,fouten,exp2naam = oplos(asb, bron)
-	-- '∐(stduit ↦ stduit')
-	if waarde then
-		alles[#alles+1] = waarde
-	end
+local uit,fouten,exp2naam = oplos(asb, "uit")
 
-	if not waarde then
-		for i, fout in ipairs(fouten) do
-			print(fout.msg)
-		end
-		--return
+if not uit then
+	for i, fout in ipairs(fouten) do
+		print(fout.msg)
 	end
+	return
 end
-uit = alles
 
-control(uit)
+controle(uit)
 
 -- syntaxrapport
 if false and verboos then

@@ -28,8 +28,9 @@ sys-socket: (af, type, proto) → bd
 starttijd := nu
 na(delta) = (looptijd > delta)
 
-std-uit = bestanden-uit 0
-uit = [ bestanden-uit ]
+;std-uit = bestanden-uit 0
+;uit = [ bestanden-uit ]
+uit = exitcode
 ;std-uit |= niets
 
 ;std-uit = bestanden-uit 0
