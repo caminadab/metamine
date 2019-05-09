@@ -1,2 +1,7 @@
-f(x,y) = (x + y * 3 / (8 - 1 * 8)) ^ (6 - 3)
-std-uit = tekst(f(2,3))
+f(x) = x + a
+als 1 > 3 dan
+	a = 2
+anders
+	a = 4
+
+std-uit = tekst(f(2))

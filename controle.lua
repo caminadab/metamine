@@ -1,5 +1,12 @@
 require 'exp'
 require 'util'
+require 'graaf'
+require 'symbool'
+require 'combineer'
+
+--[[
+BLOK:
+]]
 
 -- plet tot een fijne moes
 -- dit bevat alleen atomaire functies, die tellen niet mee voor de (((factor)))
@@ -71,6 +78,7 @@ end
 
 -- control flow graph builder
 function control(exp)
+	local cfg = graaf() -- blok
 	local fns = {}
 	local maakvar = maakvars()
 
@@ -144,11 +152,13 @@ function control(exp)
 	end
 end
 
-if test then
+if true or test then
 	require 'lisp'
+	require 'ontleed'
 	local E = ontleedexp
 
-	control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')
-	control(E'_fn(0, _arg(0) ⇒ b · c + 3 / 7 ^ 3)')
+	control(E'2 * 3 + 4')
+	--control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')
+	--control(E'_fn(0, _arg(0) ⇒ b · c + 3 / 7 ^ 3)')
 end
 
