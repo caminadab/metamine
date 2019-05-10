@@ -90,6 +90,16 @@ function substitueer(exp, van, naar)
 end
 
 sym = {}
+
+sym.plus = X'+'
+sym.min = X'-'
+sym.keer = X'*'
+sym.deel = X'/'
+sym.plusis = X'+='
+sym.minis = X'-='
+sym.keeris = X'*='
+sym.deelis = X'/='
+
 sym.alt = X'|'
 sym.altis = X'|='
 sym.call = X'call'

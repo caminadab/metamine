@@ -325,7 +325,19 @@ function oplos(exp,voor)
 		local afval = {}
 		for eq in pairs(eqs) do
 			for lam in punten(eq) do
-				if isexp(lam) and lam.fn.v == '->' then
+				-- hijack: makkelijke functies
+				-- lam = (-> (, a b) (+ a b)) c d)
+				-- lam = (->(,(a b) +(a b))) (c d)
+				-- lam = (->(c -(c)) 3
+				if false and isfn(lam) and isfn(lam.fn) and fn(lam.fn) == '->' then
+					local arg,waarde = lam.fn[1],lam.fn[2]
+
+					-- x -> x + 1
+					-- (x, y) -> (arg 0)
+					lam = substitueer(waarde,arg,lam[1])
+
+				-- 
+				elseif isexp(lam) and lam.fn.v == '->' then
 					local inn,uit = lam[1],lam[2]
 					local params
 					if isexp(inn) and inn.fn.v == ',' and false then

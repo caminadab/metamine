@@ -67,6 +67,15 @@ function maakvars()
 	end
 end
 
+function maakindices()
+	local i = 1
+	return function ()
+		local var = tostring(j)
+		i = i + 1
+		return var
+	end
+end
+
 -- willekeurige volgorde
 function boompairs(exp)
 	local t = {}

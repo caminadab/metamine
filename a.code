@@ -1,7 +1,3 @@
-f(x) = x + a
-als 1 > 3 dan
-	a = 2
-anders
-	a = 4
-
+a = 2 / 3  ; delen is moeilijk
+f(x) = x + 1 ; functies niet
 exitcode = a + f(2)

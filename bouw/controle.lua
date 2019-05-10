@@ -93,13 +93,49 @@ local function plet(waarde, maakvar)
 	return stats
 end
 
+function controle(exp)
+	local graaf = maakgraaf()
+
+	local function conR(exp)
+		--print(exp2string(exp), type(exp))
+
+		if isatoom(exp) then return exp end
+
+		local op = fn(exp)
+		if op == '=>' then
+			local als = conR(exp[1])
+			local dan = conR(exp[2])
+			assert(exp[3], '(=>) moet 3 args hebben')
+			local anders = conR(exp[3])
+			local phi = {fn=sym.alt, dan, anders}
+
+			local dan = {fn=sym.dan, als, dan, anders}
+			graaf:link(als, dan)
+			graaf:link(als, anders)
+			graaf:link(dan, phi)
+			graaf:link(anders, phi)
+			return phi
+		end
+		local e = {}
+		e.fn = conR(exp.fn)
+		for k,v in ipairs(exp) do 
+			e[k] = conR(v)
+		end
+		return e
+	end
+
+	local G = conR(exp)
+		
+	return graaf
+end
 
 -- control flow graph builder
-function controle(exp)
+function controle2(exp)
 	local cfg = maakgraaf() -- blok
 	local fns = {}
 	local maakvar = maakvars()
 	local startblok
+	local procindex = maakindices()
 
 	for sub in boompairsbfs(exp) do
 		if sub == exp then
@@ -113,19 +149,27 @@ function controle(exp)
 
 		-- als-dan logica
 		if fn(sub) == '=>' then
+			if not sub[3] then error('fix dit ff dan') end
 			local cond, dan, anders = sub[1], sub[2], sub[3]
 
-			-- dan
-			local i = #fns
-			fns[#fns+1] = dan
-			sub[2] = X('fn' .. i)
+			local naam = 'p'..procindex()
+			local c = blok(naam, plet(sub[1]))
 
-			-- anders
-			if anders then
+
+			if false then
+				-- dan
 				local i = #fns
-				fns[#fns+1] = anders
-				sub[3] = X('fn' .. i)
+				fns[#fns+1] = dan
+				sub[2] = X('fn' .. i)
+
+				-- anders
+				if anders then
+					local i = #fns
+					fns[#fns+1] = anders
+					sub[3] = X('fn' .. i)
+				end
 			end
+
 		end
 	end
 
@@ -156,10 +200,15 @@ end
 if test then
 	require 'lisp'
 	require 'ontleed'
-	local E = ontleedexp
+	local E = ontleed
 
-	local cfg = controle(E'2 * 3 + 4')
-	print(cfg)
+	local graaf = controle(E[[
+als 2 > 1 dan
+	uit = 2 + 3
+anders
+	uit = 3 + 2
+]])
+	print(graaf)
 	--control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')
 	--control(E'_fn(0, _arg(0) ⇒ b · c + 3 / 7 ^ 3)')
 end

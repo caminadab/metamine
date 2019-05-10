@@ -54,11 +54,19 @@ end
 
 if test then
 	require 'ontleed'
-	local E = ontleed
+	require 'oplos'
+
+	local src = [[
+a = 2 / 3  ; delen is moeilijk
+f(x) = x + 1 ; functies niet
+exitcode = a + f(2)
+]]
 
 	local a = maakcfg()
-	a:link('start', E'a := 3\nret := a + 3\nstop')
-	a:link('fn', E'x := arg 0 \n ret := x + 1')
+	a:link('start', oplos(ontleed(src)))
+
+	--'a := 3\nret := a + 3\nstop')
+	--a:link('fn', E'x := arg 0 \n ret := x + 1')
 
 	--local fn = maakblok('fn', E'x := arg 0 \n ret := x + 1')
 

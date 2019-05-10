@@ -170,12 +170,6 @@ function metagraaf:link(pijl_of_van, naar)
 
 	self.pijlen[pijl] = true
 
-	for bron in pairs(pijl.van) do
-		if not self.punten[bron] then
-			self.begin[bron] = true
-		end
-	end
-
 	-- registreer punten
 	self.punten[naar] = true
 	for bron in pairs(van) do
