@@ -95,6 +95,7 @@ end
 
 function controle(exp)
 	local graaf = maakgraaf()
+	local maakvar = maakvars()
 	local procindex = maakindices()
 	local procs = {} -- naam → exp
 
@@ -109,22 +110,22 @@ function controle(exp)
 
 		local op = fn(exp)
 		if op == '=>' then
-			local als = maakproc()
-			local dan = conR(exp[2])
-			local anders = conR(exp[3])
-			procs[als] = conR(exp[1])
-			local dan = conR(exp[2])
 			assert(exp[3], '(=>) moet 3 args hebben')
-			local anders = conR(exp[3])
-			local phi = {fn=sym.alt, dan, anders}
-			procs[maakproc()] = als
+			local condexp = exp[1]
+			local dan = maakproc()
+			local anders = maakproc()
+			procs[dan] = conR(exp[2])
+			procs[anders] = conR(exp[3])
+			local phi = maakproc()
+			procs[phi] = {fn=sym.alt, X(dan), X(anders)}
 
-			local cond = {fn=sym.dan, als, X'DAN', X'ANDERSZ'}
+			local cond = maakproc()
+			procs[cond] = {fn=sym.dan, conR(condexp), X(dan), X(anders)} 
 			graaf:link(cond, dan)
 			graaf:link(cond, anders)
 			graaf:link(dan, phi)
 			graaf:link(anders, phi)
-			return phi
+			return X(phi)
 		else
 			local e = {}
 			e.fn = conR(exp.fn)
@@ -138,14 +139,17 @@ function controle(exp)
 	local G = conR(exp)
 
 	-- pletten & refs fixen
-
-
-	for punt in spairs(graaf.punten) do
-		--print(type(punt))
-		print('PUNT', exp2string(punt))
+	local blokken = {}
+	for k,v in pairs(procs) do
+		blokken[k] = plet(v, maakvar)
+		print(k..':')
+		for i,stat in ipairs(blokken[k]) do
+			print('  '..exp2string(stat))
+		end
 	end
-		
-	return graaf
+
+	-- graaf(naam), naam -> blok
+	return graaf, blokken
 end
 
 -- control flow graph builder
@@ -216,16 +220,20 @@ function controle2(exp)
 	return cfg
 end
 
-if test then
+if test or true then
 	require 'lisp'
 	require 'ontleed'
 	local E = ontleedexp
 
-	local graaf = controle(E[[
+	local graaf2 = controle(E[[
 als 2 > 1 dan
 	2 * 3
 anders
 	2 / 3
+]])
+
+	local graaf = controle(E[[
+(2/3) + (_fn(3, _arg(3) + 1))(2)
 ]])
 	print(graaf)
 	--control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')

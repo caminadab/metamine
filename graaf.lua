@@ -166,12 +166,18 @@ function metagraaf:link(pijl_of_van, naar)
 		naar = pijl.naar 
 	end
 
+	-- per van
+	if self.pervan[van] and self.pervan[van][naar] then
+		return self.pervan[van][naar]
+	end
+	self.pervan[van] = self.pervan[van] or {}
+	self.pervan[van][naar] = true
+
 	self.pijlen[pijl] = true
 
 	-- registreer punten
 	self.punten[naar] = true
 	self.punten[van] = true
-
 	return pijl
 end
 
@@ -186,6 +192,8 @@ function metagraaf:ontlink(pijl_of_van, naar)
 		naar = pijl.naar 
 	end
 
+	self.pervan[van][naar] = nil
+	if not next(self.pervan[van]) then self.pervan[van] = nil end
 	self.pijlen[pijl] = nil
 end
 
@@ -234,6 +242,7 @@ function maakgraaf()
 	local graaf = {
 		punten = {},
 		pijlen = {},
+		pervan = {}, -- van -> {naar}
 	}
 
 	setmetatable(graaf, graafmeta)

@@ -70,7 +70,7 @@ end
 function maakindices()
 	local i = 1
 	return function ()
-		local var = tostring(j)
+		local var = tostring(i)
 		i = i + 1
 		return var
 	end
