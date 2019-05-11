@@ -18,7 +18,7 @@ function metagraaf:tekst()
 	local al = {}
 	for pijl in pairs(self.pijlen) do
 		al[pijl.naar] = true
-		for bron in pairs(pijl.van) do al[bron] = true end
+		al[pijl.van] = true
 		p2[#p2+1] = pijl2tekst(pijl)
 	end
 	local p1 = {}
@@ -166,15 +166,11 @@ function metagraaf:link(pijl_of_van, naar)
 		naar = pijl.naar 
 	end
 
-	if type(van) ~= 'table' then error('"van" moet set zijn maar is '..type(van)) end
-
 	self.pijlen[pijl] = true
 
 	-- registreer punten
 	self.punten[naar] = true
-	for bron in pairs(van) do
-		self.punten[bron] = true
-	end
+	self.punten[van] = true
 
 	return pijl
 end

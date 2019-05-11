@@ -95,6 +95,12 @@ end
 
 function controle(exp)
 	local graaf = maakgraaf()
+	local procindex = maakindices()
+	local procs = {} -- naam → exp
+
+	local function maakproc()
+		return 'p'..procindex()
+	end
 
 	local function conR(exp)
 		--print(exp2string(exp), type(exp))
@@ -103,28 +109,41 @@ function controle(exp)
 
 		local op = fn(exp)
 		if op == '=>' then
-			local als = conR(exp[1])
+			local als = maakproc()
+			local dan = conR(exp[2])
+			local anders = conR(exp[3])
+			procs[als] = conR(exp[1])
 			local dan = conR(exp[2])
 			assert(exp[3], '(=>) moet 3 args hebben')
 			local anders = conR(exp[3])
 			local phi = {fn=sym.alt, dan, anders}
+			procs[maakproc()] = als
 
-			local dan = {fn=sym.dan, als, dan, anders}
-			graaf:link(als, dan)
-			graaf:link(als, anders)
+			local cond = {fn=sym.dan, als, X'DAN', X'ANDERSZ'}
+			graaf:link(cond, dan)
+			graaf:link(cond, anders)
 			graaf:link(dan, phi)
 			graaf:link(anders, phi)
 			return phi
+		else
+			local e = {}
+			e.fn = conR(exp.fn)
+			for k,v in ipairs(exp) do 
+				e[k] = conR(v)
+			end
+			return e
 		end
-		local e = {}
-		e.fn = conR(exp.fn)
-		for k,v in ipairs(exp) do 
-			e[k] = conR(v)
-		end
-		return e
 	end
 
 	local G = conR(exp)
+
+	-- pletten & refs fixen
+
+
+	for punt in spairs(graaf.punten) do
+		--print(type(punt))
+		print('PUNT', exp2string(punt))
+	end
 		
 	return graaf
 end
@@ -200,13 +219,13 @@ end
 if test then
 	require 'lisp'
 	require 'ontleed'
-	local E = ontleed
+	local E = ontleedexp
 
 	local graaf = controle(E[[
 als 2 > 1 dan
-	uit = 2 + 3
+	2 * 3
 anders
-	uit = 3 + 2
+	2 / 3
 ]])
 	print(graaf)
 	--control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')
