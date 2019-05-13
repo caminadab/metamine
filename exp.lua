@@ -42,6 +42,13 @@ function expmoes(exp)
 end
 moes = expmoes
 
+function assign(b, a)
+	local keys = {}
+	for k in pairs(a) do keys[k] = true end
+	for k in pairs(keys) do b[k] = nil end
+	for k,v in pairs(a) do b[k] = v end
+end
+
 -- 1-gebaseerd
 -- 1 t/m 26 zijn A t/m Z
 -- daarna AA t/m ZZ

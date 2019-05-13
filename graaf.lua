@@ -199,6 +199,7 @@ end
 
 function metagraaf:punt(punt)
 	self.punten[punt] = true
+	self.pervan[punt] = self.pervan[punt] or {}
 end
 
 -- pijlen naar doel

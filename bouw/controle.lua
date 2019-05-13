@@ -73,7 +73,8 @@ local function plet(waarde, maakvar)
 			for i,v in ipairs(args) do
 				-- alleen expressiekinderen hoeven berekend te worden
 				if isexp(v) then
-					r(args[i])
+					--print("SUB", exp2string(args[i]))
+					args[i] = r(args[i])
 				end
 			end
 
@@ -103,7 +104,7 @@ function controle(exp)
 		return 'p'..procindex()
 	end
 
-	local function conR(exp)
+	local function conR(exp, naam)
 		--print(exp2string(exp), type(exp))
 
 		if isatoom(exp) then return exp end
@@ -111,19 +112,38 @@ function controle(exp)
 		local op = fn(exp)
 		if op == '=>' then
 			assert(exp[3], '(=>) moet 3 args hebben')
-			local condexp = exp[1]
-			local dan = maakproc()
+			-- cond:
+			--
+			--     +-  als  -+
+			--     |         |
+			--     v         v
+			--   dan       anders
+			--     |         |
+			--     |         |
+			--     +-> phi <-+
+			local als    = maakproc()
+			local dan    = maakproc()
 			local anders = maakproc()
-			procs[dan] = conR(exp[2])
-			procs[anders] = conR(exp[3])
-			local phi = maakproc()
-			procs[phi] = {fn=sym.alt, X(dan), X(anders)}
+			local phi    = maakproc()
 
-			local cond = maakproc()
-			procs[cond] = {fn=sym.dan, conR(condexp), X(dan), X(anders)} 
-			graaf:link(cond, dan)
-			graaf:link(cond, anders)
-			graaf:link(dan, phi)
+			-- ga recursief doen
+			procs[als]    = conR(exp[1])
+			procs[dan]    = conR(exp[2])
+			procs[anders] = conR(exp[3])
+			procs[phi]   = {fn=sym.als, X(als), X(dan), X(anders)}
+			
+			-- keuzes duidelijk maken
+			local keus = X('ga', als, dan, anders)
+			local daarna = X('ga', phi)
+			procs[als].ga = keus
+			procs[dan].ga = daarna
+			procs[anders].ga = daarna
+			procs[phi].ga = X'TODO'
+
+			-- linken
+			graaf:link(als, anders)
+			graaf:link(als,    dan)
+			graaf:link(dan,    phi)
 			graaf:link(anders, phi)
 			return X(phi)
 		else
@@ -136,106 +156,58 @@ function controle(exp)
 		end
 	end
 
-	local G = conR(exp)
+	local start = conR(exp)
+	procs['start'] = start
+	graaf:punt('start')
 
-	-- pletten & refs fixen
 	local blokken = {}
-	for k,v in pairs(procs) do
-		blokken[k] = plet(v, maakvar)
-		print(k..':')
-		for i,stat in ipairs(blokken[k]) do
-			print('  '..exp2string(stat))
-		end
+	for naam in pairs(graaf.punten) do
+		local exp = procs[naam]
+		local blok = plet(exp, maakvar)
+		blok.naam = naam
+		blok.ret = blok[#blok][1]
+		blok[#blok+1] = exp.ga
+
+		blokken[naam] = blok
 	end
 
-	-- graaf(naam), naam -> blok
 	return graaf, blokken
 end
 
--- control flow graph builder
-function controle2(exp)
-	local cfg = maakgraaf() -- blok
-	local fns = {}
-	local maakvar = maakvars()
-	local startblok
-	local procindex = maakindices()
-
-	for sub in boompairsbfs(exp) do
-		if sub == exp then
-			startblok = 'start'
-			cfg:punt(startblok)
-		end
-
-		-- functies
-		if isfn(sub) and isfn(sub.fn) then
-		end
-
-		-- als-dan logica
-		if fn(sub) == '=>' then
-			if not sub[3] then error('fix dit ff dan') end
-			local cond, dan, anders = sub[1], sub[2], sub[3]
-
-			local naam = 'p'..procindex()
-			local c = blok(naam, plet(sub[1]))
-
-
-			if false then
-				-- dan
-				local i = #fns
-				fns[#fns+1] = dan
-				sub[2] = X('fn' .. i)
-
-				-- anders
-				if anders then
-					local i = #fns
-					fns[#fns+1] = anders
-					sub[3] = X('fn' .. i)
-				end
-			end
-
-		end
-	end
-
-	if false then
-		-- plet de start
-		print('start:')
-		local stats = plet(exp, maakvar)
-		for i, stat in pairs(stats) do
+function printcfg(blokken)
+	-- print het
+	for naam,blok in pairs(blokken) do
+		print(blok.naam..':')
+		for i,stat in ipairs(blok) do
 			print('  '..combineer(stat))
 		end
-		print('  stop')
-
-		-- plet de functies
-		for i=1,#fns do
-			local stats = plet(fns[i], maakvar)
-			print('fn'..(i-1)..':')
-			for i, stat in ipairs(stats) do
-				print('  '..combineer(stat))
-			end
-			local ret = stats[#stats][1]
-			print('  ret '..ret.v)
-		end
 	end
-
-	return cfg
 end
 
-if test or true then
+
+if test then
 	require 'lisp'
 	require 'ontleed'
 	local E = ontleedexp
 
-	local graaf2 = controle(E[[
+	local graaf, blokken = controle(E[[
 als 2 > 1 dan
 	2 * 3
 anders
 	2 / 3
 ]])
+	print(graaf)
+	printcfg(blokken)
+	print()
 
-	local graaf = controle(E[[
+	local graaf2, blokken2 = controle(E[[
+;2 * 3 + 8 / 7 ^ 2 - (3 * 2 + 8 / 7)
 (2/3) + (_fn(3, _arg(3) + 1))(2)
 ]])
-	print(graaf)
+
+	print(graaf2)
+	printcfg(blokken2)
+	print()
 	--control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')
 	--control(E'_fn(0, _arg(0) ⇒ b · c + 3 / 7 ^ 3)')
 end

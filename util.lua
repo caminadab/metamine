@@ -41,7 +41,7 @@ function seerec(t,tabs)
 	if type(t) == 'table' then
 		print()
 		print(tabs..'{')
-		for k,v in pairs(t) do io.write(tabs..'  ', k, '\t') ; seerec(v, tabs..'  ') end
+		for k,v in pairs(t) do seerec(k, tabs..'  ') ; seerec(v, tabs..'  ') end
 		print(tabs..'}')
 	else
 		print(tabs..tostring(t))

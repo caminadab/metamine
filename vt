@@ -122,7 +122,8 @@ if not uit then
 	return
 end
 
-controle(uit)
+local graaf, blokken = controle(uit)
+printcfg(blokken)
 
 -- syntaxrapport
 if false and verboos then

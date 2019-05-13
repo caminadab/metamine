@@ -86,6 +86,7 @@ function oplos(exp,voor)
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
+
 		local nieuw, oud = {}, {}
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
@@ -118,7 +119,7 @@ function oplos(exp,voor)
 			if isfn(eq) and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
 				local a, b, c  = eq[2].fn, eq[2][1], eq[1]
 				local neq = X(sym.cois, a, X(sym.maplet, b, c))
-				oud[eq] = true
+				--oud[eq] = true
 				nieuw[neq] = true
 			end
 		end
@@ -325,19 +326,9 @@ function oplos(exp,voor)
 		local afval = {}
 		for eq in pairs(eqs) do
 			for lam in punten(eq) do
-				-- hijack: makkelijke functies
-				-- lam = (-> (, a b) (+ a b)) c d)
-				-- lam = (->(,(a b) +(a b))) (c d)
-				-- lam = (->(c -(c)) 3
-				if false and isfn(lam) and isfn(lam.fn) and fn(lam.fn) == '->' then
-					local arg,waarde = lam.fn[1],lam.fn[2]
-
-					-- x -> x + 1
-					-- (x, y) -> (arg 0)
-					lam = substitueer(waarde,arg,lam[1])
 
 				-- 
-				elseif isexp(lam) and lam.fn.v == '->' then
+				if fn(lam) == '->' then
 					local inn,uit = lam[1],lam[2]
 					local params
 					if isexp(inn) and inn.fn.v == ',' and false then
@@ -483,6 +474,19 @@ function oplos(exp,voor)
 			exp2naam = n2e
 		end
 
+		-- nog ff sneaken
+		--error(exp2string(val))
+		for exp in boompairs(val) do
+			if isfn(exp) and fn(exp.fn) == '_fn' then
+				local narg, waarde = exp.fn[1], exp.fn[2]
+				local arg = X('_arg', narg)
+				local param = exp[1]
+				--error('sjaakpot')
+				local nexp = substitueer(waarde, arg, param)
+				assign(exp, nexp)
+			end
+		end
+
 		return val,nil,bekend,exp2naam
 
 		-- functie ontleding
@@ -509,24 +513,33 @@ function oplos(exp,voor)
 	return exp,nil,exp2naam
 end
 
-if test and false then
+if test then
 	require 'util'
 	require 'ontleed'
+
+	local v,f = oplos(ontleed'a = (x → x + 1)(2)', 'a')
+	assert(v)
+	assert(expmoes(v) == '+(2 1)',
+		'v.b = '..expmoes(v)..' ≠ 2')
+
+	do return end
 
 	assert(oplos(ontleed('a = 2'), 'a').v == '2')
 
 	-- b = 2 + 2
 	local v = oplos(ontleed('a = 2\na + 2 = b'), 'b')
 	assert(v)
-	assert(tostring(v.b) == '+(2 2)',
-		'v.b = '..tostring(v.b)..' ≠ +(2 2)')
+	assert(expmoes(v) == '+(2 2)',
+		'v.b = '..expmoes(v)..' ≠ +(2 2)')
 
-	local v = oplos(ontleed('f(a) = f(b)\na = 2'))
+	do return end
+
+	local v = oplos(ontleed('f(a) = f(b)\na = 2', 'b'))
 	assert(v)
-	assert(tostring(v.b) == '2',
-		'v.b = '..tostring(v.b)..' ≠ 2')
+	assert(expmoes(v.b) == '2',
+		'v.b = '..expmoes(v.b)..' ≠ 2')
 
-	local v = oplos(toexp(ontleed('f(a + 1) = f(b + 1)\na = 2')))
+	local v = oplos(toexp(ontleed('f(a + 1) = f(b + 1)\na = 2')), 'b')
 	assert(v)
 	assert(tostring(v.b) == '2',
 		'v.b = '..tostring(v.b)..' ≠ 2')
