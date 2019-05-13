@@ -13,6 +13,8 @@ require 'rapport'
 require 'typeer'
 
 require 'bouw.controle'
+require 'bouw.kijkgat'
+require 'bouw.codegen'
 
 local opt,bronnen = getopt({...}, "u")
 
@@ -122,8 +124,19 @@ if not uit then
 	return
 end
 
-local graaf, blokken = controle(uit)
-printcfg(blokken)
+local maakvar = maakvars()
+local graaf, blokken = controle(uit, maakvar)
+
+for naam, blok in pairs(blokken) do
+	blok.fn = X'EN'
+	print(exp2string(blok))
+	local blok2 = kijkgat(blok, maakvar)
+	blok2.fn = X'EN'
+	print(exp2string(blok2))
+	local blok3 = codegen(blok2)
+	print(blok3)
+end
+print()
 
 -- syntaxrapport
 if false and verboos then

@@ -33,11 +33,11 @@ c = a mod b
 
 ]]
 
-function kijkgat(blok)
-	local maakvar = maakvars()
-	for i=1,#blok do
+function kijkgat(blok, maakvar)
+	local maakvar = maakvar or maakvars()
+	for i=#blok,1,-1 do
 		local stat = blok[i]
-		local exp = stat[2]
+		local naam,exp = stat[1],stat[2]
 		local op = fn(exp)
 
 		-- a /= b
@@ -45,7 +45,8 @@ function kijkgat(blok)
 
 		if op == '+' or op == '-' or op == '*' or op == '/' or op == 'mod' then
 			-- tijdelijk
-			local t = maakvar()
+			--local t = maakvar()
+			local t = naam
 			local ruimte = {fn=sym.ass, X(t), exp[1]}
 			blok[i] = {fn=X(op..'='), X(t), exp[2]}
 			insert(blok, i, ruimte)

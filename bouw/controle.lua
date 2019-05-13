@@ -94,9 +94,9 @@ local function plet(waarde, maakvar)
 	return stats
 end
 
-function controle(exp)
+function controle(exp, maakvar)
 	local graaf = maakgraaf()
-	local maakvar = maakvars()
+	local maakvar = maakvar or maakvars()
 	local procindex = maakindices()
 	local procs = {} -- naam → exp
 
@@ -111,7 +111,9 @@ function controle(exp)
 
 		local op = fn(exp)
 		if op == '=>' then
-			assert(exp[3], '(=>) moet 3 args hebben')
+			--assert(exp[3], '(=>) moet 3 args hebben')
+			if not exp[3] then exp[3] = X'0' end
+
 			-- cond:
 			--
 			--     +-  als  -+
