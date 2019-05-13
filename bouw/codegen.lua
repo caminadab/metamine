@@ -24,13 +24,13 @@ function codegen(blok, t)
 			t[#t+1] = fmt('mov %s, %s', reg, val)
 		else
 			assert(opslag[val])
-			t[#t+1] = fmt('mov %s, rbp[8*%s]', reg, opslag[val])
+			t[#t+1] = fmt('mov %s, [rbp+8*%s]', reg, opslag[val])
 		end
 	end
 
 	local function opsla(val, reg)
 		assert(opslag[val])
-		t[#t+1] = fmt('mov rbp[8*%s], %s', opslag[val], reg)
+		t[#t+1] = fmt('mov [rbp+8*%s], %s', opslag[val], reg)
 	end
 
 	-- genereer dan echt

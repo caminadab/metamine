@@ -1,6 +1,6 @@
-;a = 2
-;b = a*a - (8/(1/3 + c))
-;c = 8
-;f(x + 1) = x - 2
-;exitcode = f(b) / 8 + 3 · a
-exitcode = 2 * 3 + 4
+a = 2
+b = a*a - (8/(1/3 + c))
+c = 8
+f(x + 1) = x - 2
+exitcode = f(b) / 8 + 3 · a
+;exitcode = 2 * 3 + 4
