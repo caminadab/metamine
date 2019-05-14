@@ -67,7 +67,9 @@ local function combineerR(sexp, tt)
 
 		-- n-air
 		else
+			if binop[op] then insert(tt, '(') end
 			insert(tt, op)
+			if binop[op] then insert(tt, ')') end
 			insert(tt, '(')
 
 			for i=1,#sexp do

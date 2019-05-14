@@ -41,7 +41,12 @@ function maakblok(naam, stats, epiloog)
 		assert(#epiloog[1] == 3 or #epiloog[1] == 4, 'onjuiste sprong')
 	end
 
-	local blok = {naam = naam, stats = stats, epiloog = epiloog}
+	local blok = {
+		naam = naam,
+		stats = stats,
+		epiloog = epiloog,
+		res = assert(stats[#stats][1]),
+	}
 	setmetatable(blok, {__tostring = blok2tekst})
 	return blok
 end

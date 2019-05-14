@@ -4,6 +4,8 @@ require 'graaf'
 require 'symbool'
 require 'combineer'
 
+require 'bouw.blok'
+
 --[[
 
 f(x) = x + 1
@@ -105,16 +107,13 @@ function controle(exp, maakvar)
 	end
 
 	local function conR(exp, naam)
-		--print(exp2string(exp), type(exp))
-
 		if isatoom(exp) then return exp end
 
 		local op = fn(exp)
 		if op == '=>' then
-			--assert(exp[3], '(=>) moet 3 args hebben')
 			if not exp[3] then exp[3] = X'0' end
 
-			-- cond:
+			--  cond:
 			--
 			--     +-  als  -+
 			--     |         |
@@ -128,26 +127,29 @@ function controle(exp, maakvar)
 			local anders = maakproc()
 			local phi    = maakproc()
 
-			-- ga recursief doen
-			procs[als]    = conR(exp[1])
-			procs[dan]    = conR(exp[2])
-			procs[anders] = conR(exp[3])
-			procs[phi]   = {fn=sym.als, X(als), X(dan), X(anders)}
-			
-			-- keuzes duidelijk maken
+			-- sprongen
 			local keus = X('ga', als, dan, anders)
 			local daarna = X('ga', phi)
-			procs[als].ga = keus
-			procs[dan].ga = daarna
-			procs[anders].ga = daarna
-			procs[phi].ga = X'TODO'
+
+			-- als 
+			local bals = maakblok(X(als), plet(conR(exp[1]), maakvar), keus)
+			local bdan = maakblok(X(dan), plet(conR(exp[2]), maakvar), daarna)
+			local banders = maakblok(X(anders), plet(conR(exp[3]), maakvar), daarna)
+
+			keus[1] = bals.res
+			
+			local alsdan = {fn=sym.als, bals.res, bdan.res, banders.res}
+
+			local bphi = maakblok(X(phi), plet(alsdan, maakvar), X'eind')
 
 			-- linken
-			graaf:link(als, anders)
-			graaf:link(als,    dan)
-			graaf:link(dan,    phi)
-			graaf:link(anders, phi)
-			return X(phi)
+			graaf:link(bals, banders)
+			graaf:link(bals,    bdan)
+			graaf:link(bdan,    bphi)
+			graaf:link(banders, bphi)
+			return conR(exp[1]), maakvar
+			--return X(phi)
+			--return plet(alsdan, maakvar)
 		else
 			local e = {}
 			e.fn = conR(exp.fn)
@@ -155,57 +157,43 @@ function controle(exp, maakvar)
 				e[k] = conR(v)
 			end
 			return e
+			--return plet(e, maakvar)
 		end
 	end
 
-	local start = conR(exp)
-	procs['start'] = start
-	graaf:punt('start')
+	local start = maakblok(X'start', plet(conR(exp), maakvar), X'stop')
+	--local start = maakblok(X'start', conR(exp), X'stop')
 
-	local blokken = {}
-	for naam in pairs(graaf.punten) do
-		local exp = procs[naam]
-		local blok = plet(exp, maakvar)
-		blok.naam = naam
-		blok.ret = blok[#blok][1]
-		blok[#blok+1] = exp.ga
+	-- startfix
+	local ret = start.stats[#start.stats][1]
+	table.insert(start.stats, X(':=', 'ret', ret))
 
-		blokken[naam] = blok
-	end
+	graaf:punt(start)
 
-	return graaf, blokken
+	return graaf
 end
-
-function printcfg(blokken)
-	-- print het
-	for naam,blok in pairs(blokken) do
-	end
-end
-
 
 if test then
 	require 'lisp'
 	require 'ontleed'
 	local E = ontleedexp
 
-	local graaf, blokken = controle(E[[
+	local cfg = controle(E[[
 als 2 > 1 dan
-	2 * 3
+	2 * 3 + 4 / (2 + 3)
 anders
 	2 / 3
 ]])
-	print(graaf)
-	printcfg(blokken)
-	print()
+
+	for blok in pairs(cfg.punten) do
+		print(blok)
+	end
 
 	local graaf2, blokken2 = controle(E[[
 ;2 * 3 + 8 / 7 ^ 2 - (3 * 2 + 8 / 7)
-(2/3) + (_fn(3, _arg(3) + 1))(2)
+(8*2/3*4) + (_fn(3, _arg(3) + 1))(2)
 ]])
 
-	print(graaf2)
-	printcfg(blokken2)
-	print()
 	--control(E'_fn(0, _arg(0) + 1 · 3 ^ 2 + 8)')
 	--control(E'_fn(0, _arg(0) ⇒ b · c + 3 / 7 ^ 3)')
 end
