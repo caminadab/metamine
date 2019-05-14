@@ -1,7 +1,7 @@
 start:
 	j := 0
 	l := data(20)
-	len := atoi(j, l)
+	len := call(atoi, j, l)
 
 	; Print groet
 	write(1, sp, len)
@@ -13,10 +13,8 @@ start:
 atoi: (i, str) -> len
 	i := arg(0)
 	a := data(20)
-	b := (i > 0)
-	ga lus als b
-	m := (i < 0)
-	ga neg als m
+	b := i cmp 0
+	ga(b, lus, nul, neg)
 	len := 0
 
 nul:
@@ -28,6 +26,7 @@ neg:
  i := -i
  len := 1
  str(0) := '-'
+ ga lus
 
 lus:
 	c := (i = 0)

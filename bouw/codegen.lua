@@ -23,7 +23,7 @@ function codegen(blok, t)
 		if tonumber(val) then
 			t[#t+1] = fmt('mov %s, %s', reg, val)
 		else
-			assert(opslag[val])
+			assert(opslag[val], val)
 			t[#t+1] = fmt('mov %s, [rbp+8*%s]', reg, opslag[val])
 		end
 	end
@@ -52,7 +52,24 @@ function codegen(blok, t)
 	end
 
 	-- dit is de nageboorte
-	t[#t+1] = 'jmp ???'
+	local epiloog = blok[#blok]
+
+	if fn(epiloog) == 'ga' then
+		-- simpele sprong
+		if fn(epiloog[1]) ~= ',' then
+			laad('rax', epiloog[1].v)
+			t[#t+1] = 'jmp rax'
+		end
+
+		if fn(epiloog[1]) == ',' then
+			laad('rax', epiloog[1][1].v)
+			laad('rbx', epiloog[1][2].v)
+			laad('rdx', epiloog[1][3].v)
+			t[#t+1] = 'cmp rax, 0'
+			t[#t+1] = 'jz rbx'
+			t[#t+1] = 'jmp rdx'
+		end
+	end
 
 	return table.concat(t, '\n')
 end
@@ -64,7 +81,8 @@ a := 2
 b := a
 c := a
 c += b
-ga(a, p0, p1)
+;ga a
+ga (a, b, c)
 ]]
 	local asm = codegen(ontleed(bron))
 	print(asm)

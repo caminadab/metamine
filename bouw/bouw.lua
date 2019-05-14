@@ -89,18 +89,6 @@ function compileer(proc)
 	return table.concat(t, '\n')
 end
 
-function assembleer(asm)
-	file('.tmp.asm', asm)
-	os.execute('as -msyntax=intel .tmp.asm -o .tmp.obj')
-	local obj = file('.tmp.obj')
-	--os.execute('rm .tmp.asm .tmp.obj')
-	return obj
-end
-
-function link(obj)
-	return "\x31 ELF"
-end
-
 -- elf x64
 function bouw(exp)
 	local moet = delta(exp)
