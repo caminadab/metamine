@@ -5,7 +5,12 @@ exp |= { loc, val }
 require 'lisp'
 
 function fn(exp) if isfn(exp) then return exp.fn.v end end
-function atoom(exp,i) if exp[i] then return exp[i].v end end
+function atoom(exp,i) 
+	if not i then
+		return exp.v
+	end
+	if exp[i] then return exp[i].v end
+end
 
 expmt = {}
 

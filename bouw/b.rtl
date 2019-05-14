@@ -1,7 +1,7 @@
 start:
-	d := data(20)
+	d := data (20)
 	a := 123456789
-	len := atoi(a, d)
+	len := call (atoi, a, d)
 	write(1, d, len)
 	exit(0)
 	eind
@@ -12,20 +12,23 @@ atoi:
 	len := 0
 
 	z := 0
-	b := (i != z)
-	ga lus als b
-		
+	b := (i = z)
+	ga (b, nul, lus)
+
 nul:
 	str(0) := '0'
 	len += 1
-	len
+	ret := len
+	eind
 
 lus:
 	tien := 10
 	(i,d) /= tien
 	z := 0
 	y := (i = z)
-	ga klaar als y
+	ga (y, klaar, schrijf)
+
+schrijf:
 	e := '0'
 	e += d
 	str(len) := e
@@ -33,5 +36,6 @@ lus:
 	ga lus
 
 klaar:
-	len
+	ret := len
+	eind
 

@@ -9,6 +9,15 @@ function codegen(blok, t)
 	-- instructies
 	local t = {}
 
+	-- proloog
+	t[#t+1] = [[
+.intel_syntax noprefix
+.text
+.global	_start
+
+.section .text
+]]
+
 	-- alloceer
 	for i=1,#blok-1 do
 		local stat = blok[i]
@@ -70,6 +79,13 @@ function codegen(blok, t)
 			t[#t+1] = 'jmp rdx'
 		end
 	end
+
+	t[#t+1] = [[
+mov rax, 60
+mov rdi, 0
+syscall
+ret
+]]
 
 	return table.concat(t, '\n')
 end

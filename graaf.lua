@@ -2,12 +2,17 @@ require 'func'
 
 local metagraaf = {}
 
-function pijl2tekst(pijl)
-	local van = ''
-	if pijl.van then
-		van = tostring(pijl.van)
+local function punt2tekst(punt)
+	local p = tostring(punt)
+	local q = p:match '([^\n]*)'
+	if q then
+		p = q .. '...'
 	end
-	return van .. ' -> ' .. tostring(pijl.naar)
+	return p
+end
+
+local function pijl2tekst(pijl)
+	return punt2tekst(pijl.van) .. ' -> ' .. punt2tekst(pijl.naar)
 end
 
 function metagraaf:tekst()
@@ -24,7 +29,7 @@ function metagraaf:tekst()
 	local p1 = {}
 	for punt in pairs(self.punten) do
 		if not al[punt] then
-			table.insert(p1, tostring(punt)..'.')
+			table.insert(p1, punt2tekst(punt)..'.')
 		end
 	end
 	table.sort(p1)

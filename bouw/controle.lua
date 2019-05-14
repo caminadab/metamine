@@ -179,10 +179,6 @@ end
 function printcfg(blokken)
 	-- print het
 	for naam,blok in pairs(blokken) do
-		print(blok.naam..':')
-		for i,stat in ipairs(blok) do
-			print('  '..combineer(stat))
-		end
 	end
 end
 

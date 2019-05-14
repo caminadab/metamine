@@ -1,6 +1,7 @@
 require 'graaf'
 require 'util'
 require 'combineer'
+require 'bouw.blok'
 
 -- { graaf, blokken }
 local metacfg = {}
@@ -41,7 +42,45 @@ function cfgmeta:__tostring()
 	return table.concat(t)
 end
 
+function leescfg(tekst)
+	local cfg = maakcfg()
+	local tekst = '\n'..tekst:gsub('\t', '') .. '\n'
+
+	local labels = {}
+	local tekst = tekst:gsub('\n([^\n:]+:\n)', function(blok) return '@'..blok end)
+
+	local refs = {}
+	for stuk in tekst:gmatch "@([^@]+)" do
+		local blok = leesblok(stuk)
+		refs[blok.naam.v] = blok
+		cfg:punt(blok)
+	end
+
+	-- link & check refs
+	for blok in pairs(cfg.punten) do
+		if fn(blok.epiloog) == 'ga' then
+			if fn(blok.epiloog[1]) == ',' then
+				-- multi
+				for i=2,#blok.epiloog[1] do
+					local label = blok.epiloog[1][i]
+					local ref = refs[label.v]
+					assert(ref, 'onbekend label '..label.v)
+					cfg:link(blok, ref)
+				end
+			else 
+				local label = blok.epiloog[1]
+				local ref = refs[label.v]
+				assert(ref, 'onbekend label '..label.v)
+				cfg:link(blok, ref)
+			end
+		end
+	end
+
+	return cfg
+end
+
 function maakcfg()
+	do return maakgraaf() end
 	local cfg = {
 		graaf = maakgraaf(),
 		blokken = {}
@@ -51,25 +90,23 @@ function maakcfg()
 	return cfg
 end
 
-
 if test then
 	require 'ontleed'
 	require 'oplos'
+	require 'util'
 
-	local src = [[
-a = 2 / 3  ; delen is moeilijk
-f(x) = x + 1 ; functies niet
-exitcode = a + f(2)
+	local a = leescfg [[
+start:
+	a := 3
+	ga lus
+lus:
+	stop
 ]]
-
-	local a = maakcfg()
-	a:link('start', oplos(ontleed(src)))
-
-	--'a := 3\nret := a + 3\nstop')
-	--a:link('fn', E'x := arg 0 \n ret := x + 1')
-
-	--local fn = maakblok('fn', E'x := arg 0 \n ret := x + 1')
-
 	print(a)
+
+	local b = leescfg(file "bouw/b.rtl")
+	print(b)
+
+
 end
 	
