@@ -27,11 +27,8 @@ f:
 	
 ]]
 
--- plet tot een fijne moes
--- dit bevat alleen atomaire functies, die tellen niet mee voor de (((factor)))
-local function plet(waarde, maakvar)
-	--for exp in boompairs(waarde) do assert(not isfn(exp) or isatoom(exp.fn)) end
-
+-- diepte bepalen
+local function peil(waarde)
 	-- bepaal diepte
 	local diepte = {}
 
@@ -55,7 +52,16 @@ local function plet(waarde, maakvar)
 			end
 		end
 	end
+	
+	return diepte
+end
 
+-- plet tot een fijne moes
+-- dit bevat alleen atomaire functies, die tellen niet mee voor de (((factor)))
+local function plet(waarde, maakvar)
+	--for exp in boompairs(waarde) do assert(not isfn(exp) or isatoom(exp.fn)) end
+
+	local diepte = peil(waarde)
 	local vars = {} -- exp2vars
 	local stats = {}
 
@@ -97,6 +103,39 @@ local function plet(waarde, maakvar)
 end
 
 function controle(exp, maakvar)
+	local graaf = maakgraaf()
+	local maakvar = maakvar or maakvars()
+	local procindex = maakindices()
+	local procs = {} -- naam → exp
+
+	local function maakproc()
+		return 'p'..procindex()
+	end
+
+	-- running block
+	local blok = maakblok(X'start', {}, X'stop')
+	graaf:punt(blok)
+	local function con(exp)
+		--if fn(exp) == '=>' then
+		--	table.insert(blok.stats, X'ok')
+		--end
+		table.insert(blok.stats, X'ok')
+		local stat = X(':=', maakvar)
+		if isfn(exp) then
+			for i,v in ipairs(exp) do
+				if isfn(v) then
+					con(v)
+				end
+			end
+		end
+
+	end
+	con(exp)
+
+	return graaf
+end
+
+function controle2(exp, maakvar)
 	local graaf = maakgraaf()
 	local maakvar = maakvar or maakvars()
 	local procindex = maakindices()

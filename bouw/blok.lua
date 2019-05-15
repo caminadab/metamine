@@ -45,7 +45,6 @@ function maakblok(naam, stats, epiloog)
 		naam = naam,
 		stats = stats,
 		epiloog = epiloog,
-		res = assert(stats[#stats][1]),
 	}
 	setmetatable(blok, {__tostring = blok2tekst})
 	return blok
