@@ -18,6 +18,10 @@ f =
 
 int test() {
 	char* tests[][2] = {
+		// als dan
+		{"als ja dan 1 anders 0", "=>(ja 1 0)"},
+
+		// idk
 		{"a = \"♕\"", "=(a [](9813))"},
 		{"wit.", ".(wit)"},
 		//TODO{"a = [\n]", "=(a []())"},

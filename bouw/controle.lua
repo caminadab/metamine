@@ -115,20 +115,79 @@ function controle(exp, maakvar)
 	-- running block
 	local blok = maakblok(X'start', {}, X'stop')
 	graaf:punt(blok)
-	local function con(exp)
+
+	local con
+
+	local function arg(exp)
+		local arg
+		if isfn(exp) then
+			arg = con(exp)
+		else
+			arg = exp
+		end
+		return arg
+	end
+
+	function con(exp)
 		--if fn(exp) == '=>' then
 		--	table.insert(blok.stats, X'ok')
 		--end
-		table.insert(blok.stats, X'ok')
-		local stat = X(':=', maakvar)
-		if isfn(exp) then
+		local fw = {fn=exp.fn}
+		local ret = X(maakvar())
+		local stat = X(':=', ret, fw)
+
+		-- normaal
+		if fn(exp) == '=>' then
+			local blok0 = blok
+			local eals, edan, eanders = exp[1], exp[2], exp[3]
+
+			-- phi (eindcontinuatie)
+			local phi = X(maakproc())
+			local bphi = maakblok(phi, {}, X'stop')
+			graaf:link(blok, bphi)
+
+			-- dan
+			local dan = X(maakproc())
+			local bdan = maakblok(dan, {}, X('ga', phi))
+			graaf:link(blok, bdan)
+			blok = bdan
+			local rdan = con(edan)
+
+			-- anders
+			local anders = X(maakproc())
+			local banders = maakblok(anders, {}, X('ga', phi))
+			graaf:link(blok, banders)
+			blok = banders
+			local randers = con(eanders)
+
+			-- conditie en sprong
+			blok = blok0
+			local econd = con(exp[1])
+			blok.epiloog = X('ga', econd, dan, anders)
+			--fw[1] = arg(exp[1])
+			--table.insert(blok.stats, X('ga', dan))
+
+			--table.insert(blok.stats, stat)
+			--local phi = maakblok(dan, {}, X'eind')
+			--blok = maakblok(dan, {}, X('ga', phi))
+
+			-- daadwerkelijke '=>'
+			local stat = X(':=', ret, X('=>', econd, rdan, randers))
+			table.insert(bphi.stats, stat)
+
+			-- ga rustig verder
+			blok = bphi
+
+
+		-- normale statement (TODO sorteer)
+		else
 			for i,v in ipairs(exp) do
-				if isfn(v) then
-					con(v)
-				end
+				fw[i] = arg(v)
 			end
+			table.insert(blok.stats, stat)
 		end
 
+		return ret
 	end
 	con(exp)
 
@@ -200,7 +259,7 @@ function controle2(exp, maakvar)
 		end
 	end
 
-	local start = maakblok(X'start', plet(conR(exp), maakvar), X'stop')
+	--local start = maakblok(X'start', plet(conR(exp), maakvar), X'stop')
 	--local start = maakblok(X'start', conR(exp), X'stop')
 
 	-- startfix
@@ -218,10 +277,10 @@ if test then
 	local E = ontleedexp
 
 	local cfg = controle(E[[
-als 2 > 1 dan
-	2 * 3 + 4 / (2 + 3)
+2 + als 2 > 1 dan
+	2 * 3 + 4 - (2 + 3)
 anders
-	2 / 3
+	2 - 3
 ]])
 
 	for blok in pairs(cfg.punten) do

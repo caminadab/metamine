@@ -46,3 +46,26 @@ web:
 
 clean:
 	rm -r bin/
+
+
+objects := $(patsubst %.lua,%.o,$(wildcard *.lua))
+
+main.o: main.s
+	as main.s -o main.o
+
+%.o: %.lua
+	luajit -b $< $@
+
+vt: *.lua $(objects)
+	ar rcus libvt.a *.o
+	gcc -nostdlib -o vt.app -Wl,--whole-archive libvt.a -Wl,--no-whole-archive -Wl,-E
+#ld -o vt.app --whole-archive libvt.a --no-whole-archive -E
+#,ld *.o -o vt.app
+
+clean2:
+	rm *.o
+	rm *.app
+	rm *.a
+
+
+sources := $(wildcard *.lua)

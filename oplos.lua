@@ -53,6 +53,34 @@ function punten(exp)
 	end
 end
 
+		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
+		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
+		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
+		-- herschrijf (a ||= b) naar (a |= a' || b)
+		-- herschrijf (a < b) → (a: (b..∞) ∧ b: (-∞ .. a))
+		-- vind atomen
+
+		-- herschrijf
+		--   c ⇒ (a = b)
+		-- naar
+		--   a |= (c ⇒ b)
+		--   b |= (c ⇒ a)
+		-- 
+		-- en
+		--   ⇒(c, d, (x = y))
+		-- naar
+		--   x |= (¬d ⇒ y)
+		--   y |= (¬d ⇒ x)
+		-- herschrijf  f(a) = a + 1
+		-- naar        f ∐= a → a + 1
+		-- verzamel |=
+		-- verzamel ∈ en ∋
+		-- herschrijf
+		--   a = f(a')
+		-- naar
+		--   a = (herhaal (a' → a))(niets)
+		-- functieargumenten
+
 -- oplos: exp → waarde,fouten
 function oplos(exp,voor)
 	local fouten = {}

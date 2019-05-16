@@ -29,7 +29,7 @@ function cfgmeta:__tostring()
 	t[#t+1] = tostring(self.graaf)
 	t[#t+1] = '\n'
 
-	for naam,blok in spairs(self.blokken) do
+	for blok in spairs(self.blokken) do
 		t[#t+1] = naam
 		t[#t+1] = ':\n'
 		for i,stat in ipairs(blok) do

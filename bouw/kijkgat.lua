@@ -3,16 +3,20 @@ require 'symbool'
 local insert = table.insert
 
 --[[
-
-
+KLAAR
 c = a + b
 	c = a
 	c += b
 
+MISS
+x := (=>)(c, d, a)
+	x := a
+	t := (c = 0)
+	x ?= (t => d)
+
+NOG
 c = a + 1
 	c ++
-
-
 
 c = a / b
 d = a mod b

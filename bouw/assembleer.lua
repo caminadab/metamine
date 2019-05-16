@@ -12,13 +12,16 @@ function assembleer(asm)
 	os.execute(string.format(
 		'as -g %s -o %s --no-pad-section -R', snaam, onaam
 	))
-	os.remove(snaam)
 
 	-- lees obj
 	local bd = io.open(onaam, 'r')
 	local obj = bd:read('*a')
 	bd:close()
-	os.remove(onaam)
+
+	if false then
+		os.remove(snaam)
+		os.remove(onaam)
+	end
 
 	return obj
 end

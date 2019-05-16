@@ -15,6 +15,8 @@ require 'typeer'
 require 'bouw.controle'
 require 'bouw.kijkgat'
 require 'bouw.codegen'
+require 'bouw.assembleer'
+require 'bouw.elf'
 
 local opt,bronnen = getopt({...}, "u")
 
@@ -125,18 +127,19 @@ if not uit then
 end
 
 local maakvar = maakvars()
-local graaf, blokken = controle(uit, maakvar)
+local cfg = controle(uit, maakvar)
 
-for naam, blok in pairs(blokken) do
-	blok.fn = X'EN'
-	print(exp2string(blok))
-	local blok2 = kijkgat(blok, maakvar)
-	blok2.fn = X'EN'
-	print(exp2string(blok2))
-	local blok3 = codegen(blok2)
-	print(blok3)
+for blok in pairs(cfg.punten) do
+	blok.stats.fn = X'EN'
+	print(exp2string(blok.stats))
+	blok.stats = kijkgat(blok.stats, maakvar)
 end
-print()
+local asm = codegen(cfg)
+file('a.s', asm)
+print(asm)
+local elf = elf(assembleer(asm))
+file('a.elf', elf)
+os.execute('chmod +x a.elf')
 
 -- syntaxrapport
 if false and verboos then
@@ -215,7 +218,7 @@ if opt.d or opt.doe then
 			uit = string.char(table.unpack(v))
 		end
 		break
-		io.write('\x1B[F', '\x1B[G', uit, '\x1B[K', '\n')
+		--io.write('\x1B[F', '\x1B[G', uit, '\x1B[K', '\n')
 	end
 
 else

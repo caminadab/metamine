@@ -246,7 +246,8 @@ exp:
 /* als ... dan ... */
 | exp ALS exp						 														{ $$ = fn3loc(aloc("=>", @2), $3, $1, @$); }
 | exp ALS '\n' TAB exp	%prec ALS										{ $$ = fn3loc(aloc("=>", @2), $5, $1, @$); }
-| ALS exp DAN exp %prec ALS													{ $$ = FN3(A("=>"), $2, $4); }
+| ALS exp DAN exp ANDERS exp  %prec ALS							{ $$ = fn4loc(aloc("=>", @1), $2, $4, $6, @$); }
+/*| ALS exp DAN exp  %prec ALS												{ $$ = FN3(A("=>"), $2, $4); }*/
 | ALS exp DAN '\n' TAB exp %prec ALS								{ $$ = FN3(A("=>"), $2, $6); }
 | ALS '\n' TAB exp '\n' DAN '\n' TAB exp %prec ALS	{ $$ = FN3(A("=>"), $4, $9); }
 

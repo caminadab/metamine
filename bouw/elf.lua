@@ -1,19 +1,24 @@
 require 'util'
 
 -- swagolienja
-function elf(asm)
+function elf(obj)
 	local onaam = os.tmpname()
 	local enaam = os.tmpname()
 
+	file(onaam, obj)
+
 	os.execute(string.format(
-		'ld -G %s -o %s -n --build-id=none -static',
+		'ld %s -o %s -n --build-id=none -static',
 		onaam, enaam
 	))
-	os.execute(string.format('strip %s', naam))
-	os.remove(onaam)
+	os.execute(string.format('strip %s', enaam))
 
 	local elf = file(enaam)
-	os.remove(enaam)
+
+	if false then
+		os.remove(onaam)
+		os.remove(enaam)
+	end
 	return elf
 end
 
