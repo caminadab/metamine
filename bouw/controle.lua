@@ -179,6 +179,15 @@ function controle(exp, maakvar)
 			blok = bphi
 
 
+		elseif tonumber(exp) then
+			stat[2] = X(tostring(exp))
+			table.insert(blok.stats, stat)
+
+
+		elseif isatoom(exp) then
+			stat[2] = exp
+			table.insert(blok.stats, stat)
+
 		-- normale statement (TODO sorteer)
 		else
 			for i,v in ipairs(exp) do

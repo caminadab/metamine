@@ -206,12 +206,14 @@ function oplos(exp,voor)
 				local b = eq[2][2]
 
 				-- twee nieuwe
-				local eqa = X{fn=sym.altis, a, {fn=sym.dan, c, b}}
-				local eqb = X{fn=sym.altis, b, {fn=sym.dan, c, a}}
+				local ae = eq[3] and eq[3][1]
+				local be = eq[3] and eq[3][2]
+				local eqa = X{fn=sym.altis, a, {fn=sym.dan, c, b, be}}
+				local eqb = X{fn=sym.altis, b, {fn=sym.dan, c, a, ae}}
 				nieuw[eqa] = true
 				nieuw[eqb] = true
 
-				if eq[3] and (fn(eq[3]) == '=' or fn(eq[3]) == '|=') then
+				if false and eq[3] and (fn(eq[3]) == '=' or fn(eq[3]) == '|=') then
 					local e = {fn=sym.niet, c}
 					local ae = eq[3][1]
 					local be = eq[3][2]

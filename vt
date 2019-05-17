@@ -36,11 +36,8 @@ if opt.h or opt.help or #bronnen == 0 then
 Vertaalt broncode naar applicaties.
 Opties:
     -h, --help        print deze hulp
-    -d, --doe         voer meteen uit
-    -s, --syntax 	  	print syntax
-    -l, --lua         genereer lua
-		-w, --web					genereer webcomponent
-    -t, --tekening		uitvoer is tekening
+    -g, --debug       genereer ontkeverinformatie
+    -i, --doe         voer meteen uit
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
     -v, --verboos     spraakzaam zijn
@@ -55,6 +52,10 @@ bronnen[#bronnen+1] = 'bieb/x64.code'
 
 if opt.v or opt.verboos then
 	verboos = true
+end
+
+if opt.g or opt.debug then
+	ontkever = true
 end
 
 if opt.t or opt.tekening then
@@ -127,7 +128,13 @@ if not uit then
 end
 
 local maakvar = maakvars()
+print(exp2string(uit))
 local cfg = controle(uit, maakvar)
+
+print(cfg)
+for blok in pairs(cfg.punten) do
+	print(blok)
+end
 
 for blok in pairs(cfg.punten) do
 	blok.stats.fn = X'EN'

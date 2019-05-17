@@ -8,10 +8,12 @@ function elf(obj)
 	file(onaam, obj)
 
 	os.execute(string.format(
-		'ld %s -o %s -n --build-id=none -static',
+		'ld -G %s -o %s -n --build-id=none -static',
 		onaam, enaam
 	))
-	os.execute(string.format('strip %s', enaam))
+	if not ontkever then
+		os.execute(string.format('strip %s', enaam))
+	end
 
 	local elf = file(enaam)
 
