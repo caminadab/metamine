@@ -89,7 +89,10 @@ function codegen(cfg)
 
 			elseif op == ':=' and f == '!' then
 				laad('rax', exp[1].v)
-				t[#t+1] = 'neg rax'
+				t[#t+1] = 'cmp rax, 0'
+				t[#t+1] = 'mov rax, 0'
+				t[#t+1] = 'mov rbx, 1'
+				t[#t+1] = 'cmove rax, rbx'
 				opsla(naam, 'rax')
 
 			elseif op == ':=' and val then

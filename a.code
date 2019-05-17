@@ -1,14 +1,1 @@
-c = 0
-d = ¬ c
-
-als c dan
-	a = 4
-anders
-	a = 5
-
-als d dan
-	b = 30
-anders
-	b = 40
-
-exitcode = a + b
+exitcode = 2 + 3
