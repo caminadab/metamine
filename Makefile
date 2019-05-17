@@ -53,6 +53,8 @@ objects := $(patsubst %.lua,%.o,$(wildcard *.lua))
 main.o: main.s
 	as main.s -o main.o
 
+
+
 %.o: %.lua
 	luajit -b $< $@
 
@@ -66,6 +68,5 @@ clean2:
 	rm *.o
 	rm *.app
 	rm *.a
-
 
 sources := $(wildcard *.lua)

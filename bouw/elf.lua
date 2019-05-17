@@ -7,17 +7,21 @@ function elf(obj)
 
 	file(onaam, obj)
 
+	os.execute('cc -c -fPIC -masm=intel -DONLY_MSPACES -DNO_MALLOC_STATS bouw/malloc.c')
+
 	os.execute(string.format(
-		'ld -G %s -o %s -n --build-id=none -static',
+		'ld -G malloc.o %s  -o %s -n --build-id=none -static',
 		onaam, enaam
 	))
 	if not ontkever then
 		os.execute(string.format('strip %s', enaam))
 	end
 
+
 	local elf = file(enaam)
 
 	if false then
+		os.remove('malloc.o')
 		os.remove(onaam)
 		os.remove(enaam)
 	end
