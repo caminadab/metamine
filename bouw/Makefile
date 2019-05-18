@@ -5,7 +5,7 @@ demo.o: demo.s
 	as demo.s -g -o demo.o --no-pad-sections -R 
 
 demo: malloc.o demo.o
-	ld malloc.o demo.o -lc -o demo
+	ld malloc.o demo.o -o demo
 
 demofast: malloc.o demo.o
 	ld demo.o -G -o demo -n --build-id=none -static 

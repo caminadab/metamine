@@ -620,43 +620,12 @@ int munmap(void *addr, size_t length) {
 	return 0;
 }
 
-#define hoi \
-	asm ( \
-	"mov a, %%rdi\n" \
-	"mov b, %%rsi\n" \
-	"mov c, %%rdx\n" \
-	"mov d, %%r10\n" \
-	"mov e, %%r8\n" \
-	"mov f, %%r9\n" \
-	"syscall\n" \
-	: "=r" (a)\
-	: \
-	: "rdi" \
-)
-
-#define abort() do { \
-	asm ( \
-	"mov $60, %%rax\n" \
-	"mov $127, %%rdi\n" \
-	"syscall\n" \
-	: \
-	: \
-	: "rdi" \
-); \
-} while (0)
-
-#define mmap2() do { \
-	asm ( \
-	".att_syntax\n" \
-	"movq $9, %%rax\n" \
-	"movq 127, %%rdi\n" \
-	"syscall\n" \
-	".att_syntax\n" \
-	: \
-	: \
-	: "rdi" \
-); \
-} while (0)
+void abort() {
+	asm ( "syscall"
+		:
+		: "a"(SYS_exit), "b"(127)
+	);
+}
 
 //#include <unistd.h>
 //#include <sys/syscall.h>
