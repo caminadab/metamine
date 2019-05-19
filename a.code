@@ -1,4 +1,15 @@
-exitcode = (a + b)/2
+data : iets
+
+exitcode = (a + b) * 2
+;|= data → "hoi"
+
+stduit = "hoi"
+
+b = uitvoerbestand "b"
+b.data = "hoi"
+
+; a = (1 ↦ "hoi", 
+
 b = - a + a
 
 als 2 > 1 dan
