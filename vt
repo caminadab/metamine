@@ -36,11 +36,25 @@ if opt.h or opt.help or #bronnen == 0 then
 Vertaalt broncode naar applicaties.
 Opties:
     -h, --help        print deze hulp
+    -v, --verboos     meer uitvoer
     -g, --debug       genereer ontkeverinformatie
-    -i, --doe         voer meteen uit
+    -d, --doe         voer meteen uit
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
-    -v, --verboos     spraakzaam zijn
+
+    -i                genereer intermediaire code
+    -S                genereer assembly-code
+
+    -A                print syntaxinformatie
+    -D                print info over toegepaste deductie's
+    -O                print oplosinformatie
+    -D                print delta-tijd informatie
+    -C                print de controlegraaf
+    -F                print uitvoer na kijkgatoptimalisaties
+    -G                print assemblycode
+    -H                print linker info
+    -M                print geheugenallocatie info
+    -J                print broncode
     -r, --rapport     genereer rapport
 ]])
 	return
@@ -53,6 +67,17 @@ bronnen[#bronnen+1] = 'bieb/x64.code'
 if opt.v or opt.verboos then
 	verboos = true
 end
+
+if opt.A then verbozeSyntax = true end
+if opt.D then verbozeDeductie = true end
+if opt.O then verbozeOplos = true end
+if opt.D then verbozeDelta = true end
+if opt.C then verbozeControle = true end
+if opt.F then verbozeKijkgat = true end
+if opt.G then verbozeAsm = true end
+if opt.H then verbozeLinker = true end
+if opt.M then verbozeOpslag = true end
+if opt.J then verbozeBroncode = true end
 
 if opt.g or opt.debug then
 	ontkever = true
@@ -69,8 +94,15 @@ end
 local codes = {}
 local asb = {fn=X'EN'}
 
+if verbozeBroncode then
+	print('=== BRONCODE ===')
+end
 for i,bron in ipairs(bronnen) do
 	local ok,code = pcall(file, bron)
+	if verbozeBroncode then
+		print('== '..bron..' ==')
+		print(code)
+	end
 	if not ok or not code then print('bestand '..bronnen[1]..' niet gevonden') ; return end
 	--codes[bron] = code
 
@@ -81,7 +113,9 @@ for i,bron in ipairs(bronnen) do
 		asb[#asb+1] = eq
 	end
 end
-
+if verbozeBroncode then
+	print()
+end
 
 -- annoteer ^_^
 local i = 1
@@ -91,8 +125,8 @@ for t in boompairs(asb) do
 	--io.write(t.i..': '..exp2string(t), ' ')
 end
 
-if verboos then
-	print('ASB')
+if verbozeSyntax then
+	print('=== SYNTAXBOOM ===')
 	print(exp2string(asb))
 	print()
 end
@@ -127,122 +161,35 @@ if not uit then
 	return
 end
 
+-- opgelost!
+if verbozeOplos then
+	print('=== TIJDLOOS ===')
+	print(exp2string(uit))
+	print()
+end
 local maakvar = maakvars()
-print(exp2string(uit))
 local cfg = controle(uit, maakvar)
 
-print(cfg)
-for blok in pairs(cfg.punten) do
-	print(blok)
+if verbozeControle then
+	print('=== CONTROLEGRAAF ===')
+	for blok in pairs(cfg.punten) do
+		print(blok)
+	end
+	print()
 end
 
 for blok in pairs(cfg.punten) do
-	blok.stats.fn = X'EN'
-	print(exp2string(blok.stats))
+	--blok.stats.fn = X'EN'
+	--print(exp2string(blok.stats))
 	blok.stats = kijkgat(blok.stats, maakvar)
 end
 local asm = codegen(cfg)
-file('a.s', asm)
-print(asm)
+if opt.S then
+	print(asm)
+	file('a.s', asm)
+	do return end
+end
+if verbozeAsm then print(asm) end
 local elf = elf(assembleer(asm))
 file('a.elf', elf)
 os.execute('chmod +x a.elf')
-
--- syntaxrapport
-if false and verboos then
-	-- converteer van atoom naar string
-	for k,v in pairs(bekend) do if isatoom(k) and k.v then print('BEKEND IS', k.v); bekend[k.v] = true end end
-	for k,v in pairs(bieb) do bekend[k] = true end
-	local label = {}
-	local klasse = {}
-	for t in boompairs(asb) do
-
-		-- opgelost
-		if false and isatoom(t) and exp2naam and exp2naam[t.v] then
-			label[t] = combineer(exp2naam[t.v])
-		end
-		
-		-- type
-		if types[t] or biebtypes[t] then
-			if isatoom(t) then
-				local bt = biebtypes[exphash(t)]
-				label[t] = combineer(types[t] or bt)
-				print(loctekst(t.loc), label[t])
-			end
-		end
-		
-		klasse[t] = 'fout'
-		if not bekend[t.v] then klasse[t] = 'fout' end
-		if bekend[t.v] then klasse[t] = 'goed' end
-	end
-	local html = rapporteer_syntax(code,label,klasse)
-	file('syntax.html', html)
-	print('syntaxrapport weggeschreven naar syntax.html')
-end
-
---- ACTIE GEDEELTE
-
-if opt.w or opt.web then
-	uit = naarweb(uit)
-
-	if opt.d or opt.doe then
-		local html = opt.u or opt.uit or 'a.html'
-		file(html, uit)
-		os.execute("firefox "..html)
-	else
-		print(uit)
-	end
-
-	return
-end
-
-if opt.d or opt.doe then
-	--local v = doe(uit)
-	local luacode = naarlua(uit)
-	local fn,fout = load(luacode)
-	if not fn then
-		print(fout)
-		file('code.log', luacode)
-		print('luacode weggeschreven naar code.log')
-		return
-	end
-
-	local socket = require 'socket'
-	while true do
-		socket.sleep(0.01)
-		local ok,fout = xpcall(fn, debug.traceback)
-		if not ok then
-			print(fout)
-			file('code.log', luacode)
-			print('luacode weggeschreven naar code.log')
-			return
-		end
-
-		v = fout -- niet
-		if type(v) ~= 'table' then
-			uit = tostring(combineer(v)) --'<ongeldig type>'
-		else
-			uit = string.char(table.unpack(v))
-		end
-		break
-		--io.write('\x1B[F', '\x1B[G', uit, '\x1B[K', '\n')
-	end
-
-else
-	if opt.l or opt.lua then
-		uit = naarlua(uit)
-	
-	-- zonder opties
-	elseif uit then
-		--uit = bouw(uit)
-		uit = exp2string(uit)
-	end
-end
---uit = unlisp(uit)
-
-local u = opt.u or opt.uitvoer
-if u then
-	file(u, uit)
-else
-	io.write(uit)
-end

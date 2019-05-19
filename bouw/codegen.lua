@@ -35,6 +35,10 @@ function codegen(cfg)
 ]]
 
 	-- alloceer
+	if verbozeOpslag then
+		print()
+		print('=== OPSLAG ===')
+	end
 	for blok in spairs(cfg.punten) do
 		labels[blok.naam.v] = true
 		for i, stat in ipairs(blok.stats) do
@@ -42,19 +46,25 @@ function codegen(cfg)
 			if not opslag[naam] then
 				opslag[naam] = top
 				top = top + 1
-				print('ALLOC', naam, opslag[naam])
+				if verbozeOpslag then
+					print(naam..':\tSlot #'..opslag[naam]..', 8 bytes')
+				end
 			end
 		end
 	end
+	if verbozeOpslag then
+		print()
+	end
 
 	local function laad(reg, val)
+		if val == 'ja' then val = 1 end
+		if val == 'nee' then val = 0 end
 		if tonumber(val) then
 			t[#t+1] = fmt('mov %s, %s', reg, val)
 		elseif labels[val] then
 			t[#t+1] = fmt('lea %s, %s[rip]', reg, val)
 		else
 			assert(opslag[val], 'onbekende waarde: '..val)
-			print('LAAD', val, opslag[val])
 			--t[#t+1] = fmt('mov %s, [rsp-8*%s]', reg, opslag[val])
 			t[#t+1] = fmt('mov %s, -%d[rsp]', reg, opslag[val] * 8)
 		end

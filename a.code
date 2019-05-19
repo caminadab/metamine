@@ -1,5 +1,9 @@
-exitcode = 2 + 3
-;standaarduitvoer = "hoi"
+exitcode = 2 + 3 · a
+als ja dan
+	a = 8
+anders
+	a = 1 / 3
+stduit = "hoi\n"
 
 ; bd := open("dat")
 ; bd schrijf "hoi"
