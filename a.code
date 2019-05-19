@@ -1,1 +1,17 @@
 exitcode = 2 + 3
+;standaarduitvoer = "hoi"
+
+; bd := open("dat")
+; bd schrijf "hoi"
+
+; bd := open-schrijf "uit"
+; dat := lees stdin
+; bd := schrijf(bd, dat)
+
+
+
+; io sched
+; delta
+; lifetime
+; l(2) = *
+; l(bd) = eerste(lees/schrijf(bd)) tot laatste("")

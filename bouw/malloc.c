@@ -528,6 +528,7 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 #include <sys/time.h>
 #include <stdarg.h>
 #include <fcntl.h>
+#include <stddef.h>
 #define LACKS_STDLIB_H 1
 #define LACKS_UNISTD_H 1
 //#define ONLY_MSPACES 1
@@ -539,7 +540,7 @@ int* __errno_location() { return &errno; }
 
 void* __curbrk = 0;
 
-void* brk(unsigned long brk0) {
+void* brk(void* brk0) {
 	void* ret;
 	asm ( "syscall"
 		: "=a"(ret)
@@ -549,7 +550,7 @@ void* brk(unsigned long brk0) {
 	return ret;
 }
 
-void* sbrk(long unsigned int increment) {
+void* sbrk(ptrdiff_t increment) {
 	if (!__curbrk)
 		brk(0);
 
@@ -565,7 +566,7 @@ int read(unsigned int fd, char* buf, size_t count) { return 0; }
 int open(const char* filename, int flags, ...) { 
 	va_list ap;
 
-	va_start(ap, 2);
+	va_start(ap, flags);
 	int mode = va_arg(ap, int);
 	va_end(ap);
 	
@@ -590,7 +591,7 @@ void* memset(void* src, int val, unsigned long len) {
 }
 
 void* memcpy(void *dest, const void *src, size_t n) {
-	char* a = src;
+	const char* a = src;
 	char* b = dest;
 	for (int i = 0; i < n; i++) {
 		b[i] = a[i];
@@ -602,8 +603,8 @@ void* memcpy(void *dest, const void *src, size_t n) {
 //#define mmap(a,b,c,d,e,f) \
 	//10
 
-void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset) {
-	int ret;
+void* mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset) {
+	void* ret;
 
 	asm ( "syscall"
 		: "=a"(ret)

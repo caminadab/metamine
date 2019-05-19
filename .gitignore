@@ -8,5 +8,6 @@ bin/
 troep/
 *.so
 *.dll
+*.o
 
 *.stackdump
