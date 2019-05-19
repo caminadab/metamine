@@ -11,13 +11,13 @@ mov rdx, -24[rsp]
 cmp rcx, 0
 cmovg rax, rdx
 mov -0[rsp], rax
-mov rax, 3
+mov rax, 1
 mov -8[rsp], rax
 mov rax, -8[rsp]
 mov rbx, -0[rsp]
 mul rbx
 mov -8[rsp], rax
-mov rax, 2
+mov rax, 0
 mov -16[rsp], rax
 mov rax, -16[rsp]
 mov rbx, -8[rsp]
@@ -29,21 +29,17 @@ syscall
 ret
 
 p2:
-mov rax, 8
+mov rax, 3
 mov -24[rsp], rax
 lea rax, p1[rip]
 jmp rax
 p3:
-mov rax, 1
-mov -32[rsp], rax
-mov rax, -32[rsp]
-mov rbx, 3
-idivq rbx
+mov rax, 2
 mov -32[rsp], rax
 lea rax, p1[rip]
 jmp rax
 _start:
-mov rax, 1
+mov rax, 0
 mov -40[rsp], rax
 mov rax, -40[rsp]
 lea rbx, p2[rip]

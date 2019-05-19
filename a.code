@@ -1,8 +1,9 @@
-exitcode = 2 + 3 · a
-als ja dan
-	a = 8
+exitcode = 0 + 1 · a
+als nee dan
+	a = 3
 anders
-	a = 1 / 3
+	a = 2
+
 stduit = "hoi\n"
 
 ; bd := open("dat")

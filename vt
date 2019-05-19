@@ -54,14 +54,14 @@ Opties:
     -G                print assemblycode
     -H                print linker info
     -M                print geheugenallocatie info
-    -J                print broncode
+    -B                print broncode
     -r, --rapport     genereer rapport
 ]])
 	return
 end
 
-bronnen[#bronnen+1] = 'bieb/wisk.code'
-bronnen[#bronnen+1] = 'bieb/x64.code'
+--bronnen[#bronnen+1] = 'bieb/wisk.code'
+--bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
 if opt.v or opt.verboos then
@@ -77,7 +77,7 @@ if opt.F then verbozeKijkgat = true end
 if opt.G then verbozeAsm = true end
 if opt.H then verbozeLinker = true end
 if opt.M then verbozeOpslag = true end
-if opt.J then verbozeBroncode = true end
+if opt.B then verbozeBroncode = true end
 
 if opt.g or opt.debug then
 	ontkever = true
@@ -152,9 +152,13 @@ if tekening then doel = "tekening" end
 local inn = { "bestanden-in", "udp-in", "tcp-in" }
 local uit = { "uit" }
 
-local uit,fouten,exp2naam = oplos(asb, "uit")
+local uit,fouten,exp2naam = oplos(asb, "exitcode")
 
 if not uit then
+	if not fouten[1] then
+		print('kon niet oplossen')
+		return
+	end
 	for i, fout in ipairs(fouten) do
 		print(fout.msg)
 	end
