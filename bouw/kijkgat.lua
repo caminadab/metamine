@@ -42,16 +42,23 @@ function kijkgat(blok, maakvar)
 	for i=#blok,1,-1 do
 		local stat = blok[i]
 		local naam,exp = stat[1],stat[2]
+		--print(stat and exp2string(exp))
 		local op = fn(exp)
+
+		if #exp == 1 and op == '-' then
+			local t = naam
+			blok[i] = X(':=', tostring(t), 0)
+			insert(blok, i+1, X('-=', t, exp[1]))
 
 		-- a /= b
 		-- a %= b
-
-		if op == '+' or op == '-' or op == '*' or op == '/' or op == 'mod' then
+		elseif #exp == 2 and op == '+' or op == '-' or op == '*' or op == '/' or op == 'mod' then
 			-- tijdelijk
 			--local t = maakvar()
 			local t = naam
+			-- t := arg0
 			local ruimte = {fn=sym.ass, X(t), exp[1]}
+			-- t *= arg1
 			blok[i] = {fn=X(op..'='), X(t), exp[2]}
 			insert(blok, i, ruimte)
 		end

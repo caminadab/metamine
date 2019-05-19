@@ -5,6 +5,7 @@ require 'set'
 local insert = table.insert
 
 local binop = set('+', '-', '*', '/', '^', 'en', 'of', '@', '=>')
+local lop = set('=', '!=', '=>', '>', '<', '>=', '<=')
 
 local function combineerR(sexp, tt)
 	if isatoom(sexp) then
@@ -46,6 +47,7 @@ local function combineerR(sexp, tt)
 			for i=1,#sexp do
 				local v = sexp[i]
 				local br = isfn(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
+				local br = br or (isfn(sexp.fn) and lop[fn(sexp.fn)])
 
 				if br then insert(tt, '(') end
 

@@ -81,11 +81,10 @@ function X(fn,...)
 	else
 		r = {loc=nergens,fn=fn}
 		for i,s in ipairs(t) do
-			if type(s) == 'string' then
-				r[i] = {v=s, loc = nergens}
-			else
-				--error('nesting niet ondersteund')
+			if type(s) == 'table' then
 				r[i] = s
+			else
+				r[i] = {v=tostring(s), loc = nergens}
 			end
 		end
 	end

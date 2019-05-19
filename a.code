@@ -1,22 +1,7 @@
-exitcode = 0 + 1 · a
-als nee dan
-	a = 3
+exitcode = (a + b)/2
+b = - a + a
+
+als 2 > 1 dan
+	a = 8
 anders
-	a = 2
-
-stduit = "hoi\n"
-
-; bd := open("dat")
-; bd schrijf "hoi"
-
-; bd := open-schrijf "uit"
-; dat := lees stdin
-; bd := schrijf(bd, dat)
-
-
-
-; io sched
-; delta
-; lifetime
-; l(2) = *
-; l(bd) = eerste(lees/schrijf(bd)) tot laatste("")
+	a = -100

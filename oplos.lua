@@ -1,4 +1,5 @@
 require 'exp'
+require 'combineer'
 require 'isoleer'
 require 'symbool'
 require 'vhgraaf'
@@ -414,11 +415,10 @@ function oplos(exp,voor)
 			end
 		end
 
-		if verboos then
-			print()
-			print('Voorgekauwd')
+		if verbozeKennis then
+			print('=== VOORGEKAUWD ===')
 			for eq in pairs(eqs) do
-				print(exp2string(eq))
+				print(combineer(eq))
 			end
 			print()
 		end
@@ -440,7 +440,10 @@ function oplos(exp,voor)
 			pijl2subst[pijl] = subst
 		end
 
-		if verboos then print(kennisgraaf:tekst()) end
+		-- ULTIEME KENNISGRAAF
+		if verbozeKennisgraaf then
+			print(kennisgraaf:tekst())
+		end
 
 		local stroom,halfvan,halfnaar = kennisgraaf:sorteer(invoer,voor)
 
@@ -505,6 +508,7 @@ function oplos(exp,voor)
 		end
 
 		-- nog ff sneaken
+		-- functies toepassen
 		--error(exp2string(val))
 		for exp in boompairs(val) do
 			if isfn(exp) and fn(exp.fn) == '_fn' then

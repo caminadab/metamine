@@ -64,7 +64,7 @@ function codegen(cfg)
 		elseif labels[val] then
 			t[#t+1] = fmt('lea %s, %s[rip]', reg, val)
 		else
-			assert(opslag[val], 'onbekende waarde: '..val)
+			assert(opslag[val], 'onbekende waarde: '..tostring(val))
 			--t[#t+1] = fmt('mov %s, [rsp-8*%s]', reg, opslag[val])
 			t[#t+1] = fmt('mov %s, -%d[rsp]', reg, opslag[val] * 8)
 		end
@@ -84,7 +84,10 @@ function codegen(cfg)
 			t[#t+1] = blok.naam.v .. ':'
 		end
 		for i,stat in ipairs(blok.stats) do
-			local op,naam,val,exp = fn(stat),stat[1].v,stat[2].v,stat[2]
+			local op,naam,val,exp = fn(stat),
+			stat[1].v,
+			stat[2] and stat[2].v,
+			stat[2]
 			local f = exp and fn(stat[2])
 
 			-- vertakkingvrije keus

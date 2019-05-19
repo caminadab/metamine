@@ -46,10 +46,14 @@ Opties:
     -S                genereer assembly-code
 
     -A                print syntaxinformatie
-    -D                print info over toegepaste deductie's
+    -K                print voorgekauwde (opgeloste) kennis
+
     -O                print oplosinformatie
+    -W                print opgeloste waarde (GENERIEK AS FUCK!)
+
     -D                print delta-tijd informatie
     -C                print de controlegraaf
+    -I                print intermediaire code
     -F                print uitvoer na kijkgatoptimalisaties
     -G                print assemblycode
     -H                print linker info
@@ -64,15 +68,21 @@ end
 --bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
+if opt.d or opt.doe then
+	doemeteen = true
+end
 if opt.v or opt.verboos then
 	verboos = true
 end
 
 if opt.A then verbozeSyntax = true end
 if opt.D then verbozeDeductie = true end
+if opt.K then verbozeKennis = true end
 if opt.O then verbozeOplos = true end
+if opt.W then verbozeWaarde = true end
 if opt.D then verbozeDelta = true end
 if opt.C then verbozeControle = true end
+if opt.I then verbozeIntermediair = true end
 if opt.F then verbozeKijkgat = true end
 if opt.G then verbozeAsm = true end
 if opt.H then verbozeLinker = true end
@@ -176,7 +186,13 @@ local cfg = controle(uit, maakvar)
 
 if verbozeControle then
 	print('=== CONTROLEGRAAF ===')
-	for blok in pairs(cfg.punten) do
+	print(cfg)
+	print()
+end
+
+if verbozeIntermediair then
+	print('=== INTERMEDIAIRE CODE ===')
+	for blok in spairs(cfg.punten) do
 		print(blok)
 	end
 	print()
@@ -197,3 +213,8 @@ if verbozeAsm then print(asm) end
 local elf = elf(assembleer(asm))
 file('a.elf', elf)
 os.execute('chmod +x a.elf')
+if doemeteen then
+	print('== START ==')
+	os.execute('./a.elf ; echo CODE $?')
+end
+
