@@ -56,6 +56,7 @@ Opties:
     -I                print intermediaire code
     -F                print uitvoer na kijkgatoptimalisaties
     -G                print assemblycode
+    -T                print typegraaf
     -H                print linker info
     -M                print geheugenallocatie info
     -B                print broncode
@@ -88,6 +89,7 @@ if opt.G then verbozeAsm = true end
 if opt.H then verbozeLinker = true end
 if opt.M then verbozeOpslag = true end
 if opt.B then verbozeBroncode = true end
+if opt.T then verbozeTypegraaf = true end
 
 if opt.g or opt.debug then
 	ontkever = true

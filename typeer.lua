@@ -57,9 +57,6 @@ function typeer0(exp)
 	end
 end
 
-local function cyan(x) return color.cyan .. x .. color.white end
-local function yellow(x) return color.brightyellow .. x .. color.white end
-
 function typefout(loc,msg,...)
 	local t = cat({loc, 'Typefout'}, {...})
 	local i = 0
@@ -90,7 +87,7 @@ function typefout(loc,msg,...)
 end
 			
 -- lees biebgraaf
-local bieb,fouten = ontleed(bestand 'bieb/types.code')
+local bieb,fouten = ontleed(bestand 'bieb/types.code', 'bieb/types.code')
 if fouten then error('biebfouten') end
 
 function typeer(exp)
@@ -106,7 +103,7 @@ function typeer(exp)
 
 	-- bieb
 	for i,v in ipairs(bieb) do
-		local type,super = X(v[1]),X(v[2])
+		local type,super = v[1],v[2]
 		typegraaf:link(type, super)
 		naamtypes[moes(type)] = super
 		biebtypes[moes(type)] = super -- types: naam → type
@@ -143,17 +140,12 @@ function typeer(exp)
 					exp.loc,
 					"{geel} is {cyaan} ({loc}) maar moet {cyaan} zijn ({loc})",
 					locsub(code, exp.loc),
-					types[exp], isloc,
+					exp2string(types[exp]), isloc,
 					exp2string(type), moetloc
 				)
 				if not fouten[tf] then
 					fouten[#fouten+1] = tf
 					fouten[tf] = true
-				end
-				if verbozeTypegraaf then
-					print('=== TYPEGRAAF ===')
-					print(typegraaf:tekst())
-					print()
 				end
 				return types,fouten
 			end
@@ -341,9 +333,10 @@ function typeer(exp)
 				-- local unpacking
 				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
 				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
-					local msg = typefout(exp.loc, '{geel} heeft {int} argumenten maar moet er {int} hebben',
+					local msg = typefout(exp.loc, '{geel} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc})',
 						locsub(code, exp.loc),
-						nargs, N(tfn)
+						nargs, oorzaakloc[exp],
+						N(tfn), oorzaakloc[tfn] or oorzaakloc[exp]
 					)
 					local kort = string.format('"%s" heeft %d argumenten maar moet er %d hebben',
 						'????' --[[locsub(code, exp.loc)]], nargs, N(tfn)
@@ -375,16 +368,26 @@ function typeer(exp)
 
 	end
 
-	if verboos then
+	local function isbieb(n)
+		return n:match('bieb/.*')
+	end
+
+	if verbozeTypegraaf then
+		print('=== TYPEGRAAF ===')
+		for pijl in pairs(typegraaf.graaf.pijlen) do
+			print(pijl2tekst(pijl))
+		end
 		print()
-		print('# Types')
+	end
+
+	if verbozeTypegraaf then
+		print()
+		print('== Types ==')
 		for exp, type in pairs(types) do
 			print(moes(exp)..'\t: '..moes(type))
 		end
 		print()
 	end
-
-	--print(typegraaf.graaf:tekst())
 
 	return types, fouten
 end

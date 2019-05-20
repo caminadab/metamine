@@ -1,20 +1,3 @@
-data : iets
-
-exitcode = (a + b) * 2
-;|= data → "hoi"
-
-;stduit = "hoi"
-
-a = 2 + "hoi"
-
-;b = uitvoerbestand "b"
-;b.data = "hoi"
-
-; a = (1 ↦ "hoi", 
-
-b = - a + a
-
-als 2 > 1 dan
-	a = 8
-anders
-	a = -100
+stduit = "hoi" + a
+a = 2 + 3
+exitcode = a
