@@ -76,7 +76,7 @@ if opt.v or opt.verboos then
 	verboos = true
 end
 
-if opt.A then verbozeSyntax = true end
+if opt.S then verbozeSyntax = true end
 if opt.D then verbozeDeductie = true end
 if opt.K then verbozeKennis = true end
 if opt.O then verbozeOplos = true end
@@ -85,7 +85,7 @@ if opt.D then verbozeDelta = true end
 if opt.C then verbozeControle = true end
 if opt.I then verbozeIntermediair = true end
 if opt.F then verbozeKijkgat = true end
-if opt.G then verbozeAsm = true end
+if opt.A then verbozeAsm = true end
 if opt.H then verbozeLinker = true end
 if opt.M then verbozeOpslag = true end
 if opt.B then verbozeBroncode = true end
@@ -168,7 +168,7 @@ if tekening then doel = "tekening" end
 local inn = { "bestanden-in", "udp-in", "tcp-in" }
 local uit = { "uit" }
 
-local uit,fouten,exp2naam = oplos(asb, "exitcode")
+local uit,fouten,exp2naam = oplos(asb, "stduit")
 
 if not uit then
 	if not fouten[1] then
@@ -211,12 +211,9 @@ for blok in pairs(cfg.punten) do
 end
 local asm = codegen(cfg)
 if opt.S then
-	print(asm)
-	file('a.s', asm)
-	do return end
+	--file('a.s', asm)
 end
-if verbozeAsm then print(asm) end
-local elf = elf(assembleer(asm))
+local elf = elf(assembleer(asm, 'a'), 'a2')
 file('a.elf', elf)
 os.execute('chmod +x a.elf')
 if doemeteen then

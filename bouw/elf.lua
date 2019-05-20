@@ -1,24 +1,23 @@
 require 'util'
 
 -- swagolienja
-function elf(obj)
-	local onaam = os.tmpname()
-	local enaam = os.tmpname()
+function elf(obj, naam)
+	local naam = naam or os.tmpname()
 
-	file(onaam, obj)
+	file(naam..'.o', obj)
 
-	os.execute('cc -c -fPIC -masm=intel -DONLY_MSPACES -DNO_MALLOC_STATS bouw/malloc.c')
+	--os.execute('cc -c -fPIC -masm=intel -DONLY_MSPACES -DNO_MALLOC_STATS bouw/malloc.c')
 
 	os.execute(string.format(
-		'ld -G malloc.o %s  -o %s -n --build-id=none -static',
-		onaam, enaam
+		'ld -G '..--[[malloc.o]]' %s.o -o %s.elf ', -- -n --build-id=none -static',
+		naam, naam
 	))
-	if not ontkever then
+	if false and not ontkever then
 		os.execute(string.format('strip %s', enaam))
 	end
 
 
-	local elf = file(enaam)
+	local elf = file(naam..'.elf')
 
 	if false then
 		os.remove('malloc.o')

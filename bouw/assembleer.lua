@@ -1,6 +1,6 @@
 
-function assembleer(asm)
-	local naam = os.tmpname()
+function assembleer(asm, naam)
+	local naam = naam or os.tmpname()
 	local snaam = naam .. '.s'
 	local onaam = naam .. '.o'
 

@@ -2,9 +2,10 @@ require 'ontleed' require 'exp'
 
 if true or test then
 	local a = ontleed('a = 10')
-	assert(a.fn == '=')
-	assert(a[1] == 'a')
-	assert(a[2] == '10')
+	do return end
+	assert(a.fn.v == '=')
+	assert(a[1].v == 'a')
+	assert(a[2].v == '10')
 
 	assert(ontleed('☆') == '__', ontleed('☆'))
 
