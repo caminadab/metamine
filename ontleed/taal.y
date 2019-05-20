@@ -16,19 +16,7 @@
   #include <stdio.h>
 	#include <string.h>
 
-	typedef struct node* YYSTYPE;
-
-	#define YYLTYPE_IS_DECLARED
-	typedef struct YYLTYPE  
-	{  
-		int first_line;  
-		int first_column;  
-		int last_line;  
-		int last_column;  
-	} YYLTYPE;
-
 	#include "node.h"
-
 	#include "lex.yy.h"
 
 	int yyerror(YYLTYPE* loc, void** root, char* waarom, void* scanner, const char* yymsg);
@@ -117,7 +105,7 @@
 
 /* ALTERNATIEF */
 input:
-	%empty						{ *root = $$ = A("EN"); }
+	%empty						{ $$ = aloc("EN", yylloc); *root = $$; }
 |	input exp '\n' 		{ $$ = APPEND($1, $2);  } /* lees regeltje */
 |	input exp '=' block '\n' 		{ $$ = APPEND($1, FN3(A("="), $2, $4));  } /* lees regeltje */
 |	input error '\n' 	{ $$ = APPEND($1, metfout(A("?"), waarom)); yyerrok; } /* lees regeltje */

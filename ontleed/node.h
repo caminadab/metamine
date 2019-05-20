@@ -1,6 +1,17 @@
-#include "taal.yy.h"
+//#include "taal.yy.h"
 
 typedef struct node node;
+typedef struct node* YYSTYPE;
+
+#define YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE  
+{  
+	int first_line;  
+	int first_column;  
+	int last_line;  
+	int last_column;  
+	char* file;
+} YYLTYPE;
 
 struct node {
 	// kids?
@@ -61,6 +72,7 @@ node* fn5loc(node* a, node* b, node* c, node* d, node* e, YYLTYPE yylloc);
 //node* node_copy(node* orig);
 node* tekstloc(node* str, YYLTYPE yylloc);
 node* aloc(char* t, YYLTYPE yylloc);
+node* abron(char* t, char* bron);
 node* metloc(node* n, YYLTYPE yylloc);
 node* metfout(node* n, char* fout);
 

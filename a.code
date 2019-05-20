@@ -3,10 +3,12 @@ data : iets
 exitcode = (a + b) * 2
 ;|= data → "hoi"
 
-stduit = "hoi"
+;stduit = "hoi"
 
-b = uitvoerbestand "b"
-b.data = "hoi"
+a = 2 + "hoi"
+
+;b = uitvoerbestand "b"
+;b.data = "hoi"
 
 ; a = (1 ↦ "hoi", 
 

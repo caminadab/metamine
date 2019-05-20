@@ -24,7 +24,8 @@ char* ontleed(char* code) {
 	node* wortel;
 
 	char foutmelding[0x400];
-	int ok = yyparse((void**)&wortel, foutmelding, scanner);
+
+	int ok = yyparse((void**)&wortel, &foutmelding, scanner);
 
 	yylex_destroy(scanner);
 

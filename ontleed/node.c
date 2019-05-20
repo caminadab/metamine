@@ -59,6 +59,12 @@ node* aloc(char* t, YYLTYPE yylloc) {
 	return n;
 }
 
+node* abron(char* t, char* bron) {
+	node* n = a(t);
+	n->loc.file = bron;
+	return n;
+}
+
 void node_assign(node* new, node* old) {
 	/*if (old->prev) old->prev->next = new;
 	if (old->next) old->next->prev = new;

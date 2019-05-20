@@ -57,7 +57,38 @@ function typeer0(exp)
 	end
 end
 
+local function cyan(x) return color.cyan .. x .. color.white end
+local function yellow(x) return color.brightyellow .. x .. color.white end
 
+function typefout(loc,msg,...)
+	local t = cat({loc, 'Typefout'}, {...})
+	local i = 0
+
+	local msg = "{loc}\t{rood}:\t" .. msg
+
+	local fmt = msg:gsub(
+		'{([^}]*)}',
+		function (arg)
+			i = i + 1
+			if t[i] == nil then error('niet genoeg argumenten') end
+			if arg == 'loc' then
+				return ansi.underline .. loctekst(t[i]) .. ansi.normal
+			elseif arg == 'rood' then
+				return color.brightred .. t[i] .. color.white
+			elseif arg == 'geel' then
+				return color.brightyellow .. t[i] .. color.white
+			elseif arg == 'exp' then
+				return color.brightyellow .. combineer(t[i]) .. color.white
+			elseif arg == 'int' then
+				return tostring(math.floor(t[i]))
+			elseif arg == 'cyaan' then
+				return color.brightcyan .. tostring(t[i]) .. color.white
+			end
+		end
+	)
+	return fmt
+end
+			
 -- lees biebgraaf
 local bieb,fouten = ontleed(bestand 'bieb/types.code')
 if fouten then error('biebfouten') end
@@ -82,7 +113,7 @@ function typeer(exp)
 	end
 
 	local boom = exp
-	local code = exp.code
+	local code = exp[1].code
 	local bron = exp.bron or '?'
 
 	-- verenigt types
@@ -107,34 +138,23 @@ function typeer(exp)
 				-- c.code@7:11-12: "a" is "int" maar moet "bit" zijn
 				local isloc = oorzaakloc[exp] or exp.loc
 				local moetloc = typeoorzaakloc or oorzaakloc[moes(exp)]
-				local msg = string.format('%s@%s \t%s: %s is %s (%s) maar moet %s zijn (%s)',
-					bron, loctekst(exp.loc), -- locatie
-					color.brightred .. 'Typefout' .. color.white,
-					color.brightyellow .. locsub(code, exp.loc) .. color.white, -- exp
-					color.brightcyan .. combineer(types[exp]) .. color.white, -- echte type
-					ansi.underline .. bron .. '@' .. loctekst(isloc) .. ansi.normal, -- echte type bron
-					color.brightcyan .. combineer(type) .. color.white, -- moet zijn
-					ansi.underline .. bron .. '@' .. loctekst(moetloc) .. ansi.normal -- moet zijn bron
+				assert(code)
+				local tf = typefout(
+					exp.loc,
+					"{geel} is {cyaan} ({loc}) maar moet {cyaan} zijn ({loc})",
+					locsub(code, exp.loc),
+					types[exp], isloc,
+					exp2string(type), moetloc
 				)
-				-- kort: exp, istype, moettype
-				--local kort = '%s is %s maar moet %s zijn'
-				local fmt = '{exp} is {istype} maar moet {moettype} zijn'
-				if not fouten[msg] then
-					print(msg)
-					fouten[#fouten+1] = {
-						loc = exp.loc,
-						msg = msg,
-						fmt = fmt,
-						exp = locsub(code, exp.loc),
-						istype = combineer(types[exp]),
-						moettype = combineer(type),
-						isloc = isloc,
-						moetloc = moetloc,
-					}
-					fouten[msg] = true
+				if not fouten[tf] then
+					fouten[#fouten+1] = tf
+					fouten[tf] = true
 				end
-				--print('Typegraaf:')
-				--print(typegraaf:tekst())
+				if verbozeTypegraaf then
+					print('=== TYPEGRAAF ===')
+					print(typegraaf:tekst())
+					print()
+				end
 				return types,fouten
 			end
 		else
@@ -254,12 +274,9 @@ function typeer(exp)
 							weestype(b, types[a], oorzaakloc[b])
 						else
 							fouten[#fouten+1] = {loc = exp.loc, msg = msg}
-							local msg = string.format('%s@%s: Typefout: links is %s (bron: %s), rechts is %s (bron: %s)',
-								bron, loctekst(exp.loc), -- locatie
-								combineer(types[a]), -- links
-								loctekst(oorzaakloc[a] or a.loc), -- links bron
-								combineer(types[b]), -- rechts
-								loctekst(oorzaakloc[b] or b.loc) -- rechts bron
+							local msg = typefout(exp.loc, 'links is {exp} ({loc}), rechts is {exp} ({loc})',
+								types[a], oorzaakloc[a] or a.loc,
+								types[b], oorzaakloc[b] or bl.loc
 							)
 							if not fouten[msg] then
 								print(msg)
@@ -324,9 +341,8 @@ function typeer(exp)
 				-- local unpacking
 				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
 				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
-					local msg = string.format('%s@%s: Typefout: "%s" heeft %d argumenten maar moet er %d hebben',
-						bron, loctekst(exp.loc),
-						'???', --locsub(code, exp.loc),
+					local msg = typefout(exp.loc, '{geel} heeft {int} argumenten maar moet er {int} hebben',
+						locsub(code, exp.loc),
 						nargs, N(tfn)
 					)
 					local kort = string.format('"%s" heeft %d argumenten maar moet er %d hebben',

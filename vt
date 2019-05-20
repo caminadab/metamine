@@ -116,7 +116,7 @@ for i,bron in ipairs(bronnen) do
 	if not ok or not code then print('bestand '..bronnen[1]..' niet gevonden') ; return end
 	--codes[bron] = code
 
-	local sub = ontleed(code)
+	local sub = ontleed(code, bron)
 	for i,eq in ipairs(sub) do
 		eq.bron = bronnen[1]
 		eq.code = code
@@ -149,9 +149,13 @@ end
 assert(asb, 'syntaxfout')
 
 -- typeer!
+--local function gekleurd(x, kleur)
 local types,fouten = typeer(asb)
 
 if #fouten > 0 then
+	for i,fout in ipairs(fouten) do
+		print(fout)
+	end
 	-- TODO print
 	--return
 end

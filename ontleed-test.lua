@@ -1,6 +1,6 @@
 require 'ontleed' require 'exp'
 
-if false and test then
+if true or test then
 	local a = ontleed('a = 10')
 	assert(a.fn == '=')
 	assert(a[1] == 'a')
@@ -12,6 +12,9 @@ if false and test then
 	assert(a.fn == '/\\')
 	assert(a[1].fn == '=')
 	assert(a[2][2] == 'd')
+
+	local a = toexp('a = 10', 'a.code')
+	assert(a.loc.bron == 'a.code')
 
 	local a = toexp(ontleed('a = b\nc = d\n'))
 	assert(tostring(a) == [[/\(=(a b) =(c d))]], tostring(a))
