@@ -15,6 +15,22 @@ local cmp = {
 	['<'] = 'l',
 }
 
+
+local function inlinetekst(exp, opslag, t)
+	local min,concat = math.min, table.concat
+	assert(fn(exp) == '[]')
+	t[#t+1] = fmt('movq -%d[rsp], %d', opslag+8, #exp)
+	for i=1,#exp,4 do
+		local num = {'0x'}
+		for j=min(i+4,#exp),i,-1 do
+			num[#num+1] = string.format('%02x', exp[j].v)
+		end
+		-- lengte
+		t[#t+1] = fmt('movq rax, %s', concat(num))
+		t[#t+1] = fmt('mov -%d[rsp], rax', opslag - (i-1))
+	end
+end
+
 function codegen(cfg)
 	if verbozeAsm then print(); print('=== ASSEMBLEERTAAL ===') end
 	-- naam -> opslag
@@ -56,21 +72,21 @@ function codegen(cfg)
 				local len = 8
 				-- lijst?
 				if f == 'b[]' then
-					len = #exp
+					len = #exp + 8
 				elseif f == '[]' then
-					len = #exp
+					len = #exp + 8
 				elseif f == 'd[]' then
-					len = 4 * exp
+					len = 4 * exp + 8
 				elseif f == 'q[]' then
-					len = 8 * exp
+					len = 8 * exp + 8
 				elseif f == '||' then
-					len = 256
+					len = 8 + 0x400
 				end
 					
-				opslag[naam] = top
+				opslag[naam] = top + len
 				top = top + math.ceil(len/8) * 8
 				if verbozeOpslag then
-					print(string.format('%s:\tSlot #%d, %d bytes', naam, opslag[naam]/8, len))
+					print(string.format('%s:\tOffset %d, %d bytes', naam, opslag[naam], len))
 				end
 			end
 		end
@@ -89,14 +105,14 @@ function codegen(cfg)
 		else
 			assert(opslag[val], 'onbekende waarde: '..tostring(val))
 			--t[#t+1] = fmt('mov %s, [rsp-8*%s]', reg, opslag[val])
-			t[#t+1] = fmt('mov %s, -%d[rsp]', reg, opslag[val] * 8)
+			t[#t+1] = fmt('mov %s, -%d[rsp]', reg, opslag[val])
 		end
 	end
 
 	local function opsla(val, reg)
 		assert(opslag[val])
 		--t[#t+1] = fmt('mov [rsp-8*%s], %s', opslag[val], reg)
-		t[#t+1] = fmt('mov -%d[rsp], %s', 8 * opslag[val], reg)
+		t[#t+1] = fmt('mov -%d[rsp], %s', opslag[val], reg)
 	end
 
 	local maakvar = maakvars()
@@ -176,22 +192,44 @@ function codegen(cfg)
 				opsla(naam, 'rax')
 
 			elseif f == '[]' then
-				t[#t+0] = fmt('movq -%d[rsp], %d', opslag[naam], #exp)
-				t[#t+1] = fmt('lea rax, -%d[rsp]', opslag[naam]+8) -- sneak de lengte weg
-				opsla(naam, 'rax')
+				--t[#t+0] = fmt('movq -%d[rsp], %d', opslag[naam], #exp)
+				inlinetekst(exp, opslag[naam], t)
+				t[#t+1] = fmt('lea rax, -%d[rsp]', opslag[naam]) -- sneak de lengte weg
+				--opsla(naam, 'rax')
 
 			elseif f == '||' then
 				local a,b = naam, exp[2].v
+				t[#t+1] = fmt('lea rcx, -%d[rsp]', opslag[a]+8) -- a.dat
+				t[#t+1] = fmt('mov rdx, -%d[rsp]', opslag[a]) -- a.len
+				t[#t+1] = fmt('lea r8, -%d[rsp]', opslag[b]+8) -- b.dat
+				t[#t+1] = fmt('mov r9, -%d[rsp]', opslag[b]) -- b.len
+
+				-- r3 := a.dat
+				-- r3 += r4
+				t[#t+1] = fmt('add rcx, rdx')
+
+				-- cat lus
+				local label = 'catlus'..maakvar()
+				t[#t+1] = fmt('%s:', label)
+
+				t[#t+1] = fmt('dec r9')
+				t[#t+1] = fmt('cmp r9, 0')
+				t[#t+1] = fmt('jne %s', label)
+
+				t[#t+1] = fmt('lea rax, -%d[rsp]', opslag[a])
+
+			elseif f == '||2' then
+				local a,b = naam, exp[2].v
 				-- rax: i: #a..#b
 				local label = 'catlus'..maakvar()
-				t[#t+1] = fmt('lea r12, -%d[rsp]', opslag[b]) -- b
+				t[#t+1] = fmt('lea r8, -%d[rsp]', opslag[b]+8) -- b.dat
 				t[#t+1] = fmt('mov rcx, -%d[rsp]', opslag[b]) -- b.len
-				t[#t+1] = 'mov r13, r12'
+				t[#t+1] = 'mov r9, r8'
 				t[#t+1] = 'dec rcx'
-				t[#t+1] = fmt('lea rbx, -%d[rsp]', opslag[a]+8) -- a
+				t[#t+1] = fmt('lea rbx, -%d[rsp]', opslag[a]+8) -- a.dat
 				t[#t+1] = fmt('mov rax, -%d[rsp]', opslag[a]) -- a.len
-				t[#t+1] = 'mov r14, rbx'
-				t[#t+1] = 'add r13, rax'
+				t[#t+1] = 'mov rdx, rbx'
+				t[#t+1] = 'add r9, rax'
 				t[#t+1] = 'add rbx, rax' -- a + a.len
 				t[#t+1] = label..':'
 				t[#t+1] = fmt('mov rax, [rbx]') -- 
@@ -202,8 +240,8 @@ function codegen(cfg)
 				t[#t+1] = 'jne '..label
 
 				-- nieuwe lengte
-				t[#t+1] = 'mov [r14], rbx'
-				t[#t+1] = 'mov rax, r14'
+				t[#t+1] = 'mov [rdx], rbx'
+				t[#t+1] = 'mov rax, rdx'
 				opsla(naam, 'rax')
 
 			else
@@ -220,10 +258,9 @@ function codegen(cfg)
 
 		elseif atoom(epiloog) == 'stop' then
 			local naam = blok.stats[#blok.stats][1]
-			laad('rax', naam)
 			t[#t+1] = "mov rdi, 1" -- string
-			t[#t+1] = "lea rsi, -8[rax]"
-			t[#t+1] = "movq rdx, [rax]" -- 
+			t[#t+1] = fmt("lea rsi, -%d[rsp]", opslag[naam.v])  -- buf
+			t[#t+1] = "movq rdx, -8[rsi]" -- len
 			t[#t+1] = "mov rax, 1" -- write
 			t[#t+1] = "syscall"
 
@@ -252,8 +289,15 @@ function codegen(cfg)
 		end
 	end
 
+	for blok in pairs(cfg.punten) do
+		if blok.naam == 'start' then
+			blokgen(blok)
+		end
+	end
 	for blok in spairs(cfg.punten) do
-		blokgen(blok)
+		if blok.naam ~= 'start' then
+			blokgen(blok)
+		end
 	end
 	t[#t+1] = ''
 

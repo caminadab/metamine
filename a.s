@@ -4,33 +4,30 @@
 
 .section .text
 
-movq -0[rsp], 3
-lea rax, -8[rsp]
-movq -8[rsp], 2
-lea rax, -16[rsp]
-mov -64[rsp], rax
-lea r12, -8[rsp]
-mov rcx, -8[rsp]
-mov r13, r12
-dec rcx
-lea rbx, -24[rsp]
-mov rax, -16[rsp]
-mov r14, rbx
-add r13, rax
-add rbx, rax
-catlusA:
-mov rax, [rbx]
-mov [r12], rax
-dec rcx
-dec r12
-cmp rcx, -1
-jne catlusA
-mov [r14], rbx
-mov rax, r14
-mov -128[rsp], rax
+_start:
+movq -50[rsp], 34
+movq rax, 0x6420696f68
+mov -42[rsp], rax
+movq rax, 0x67206e6164
+mov -38[rsp], rax
+movq rax, 0x2074616167
+mov -34[rsp], rax
+movq rax, 0x2074656820
+mov -30[rsp], rax
+movq rax, 0x68636f7420
+mov -26[rsp], rax
+movq rax, 0x656f672068
+mov -22[rsp], rax
+movq rax, 0x6577206465
+mov -18[rsp], rax
+movq rax, 0x646c657265
+mov -14[rsp], rax
+movq rax, 0x0a64
+mov -10[rsp], rax
+lea rax, -42[rsp]
 mov rdi, 1
-lea rsi, -8[r14]
-movq rdx, [r14]
+lea rsi, -42[rsp]
+movq rdx, -8[rsi]
 mov rax, 1
 syscall
 mov rdi, 0

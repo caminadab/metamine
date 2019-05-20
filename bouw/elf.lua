@@ -9,11 +9,11 @@ function elf(obj, naam)
 	--os.execute('cc -c -fPIC -masm=intel -DONLY_MSPACES -DNO_MALLOC_STATS bouw/malloc.c')
 
 	os.execute(string.format(
-		'ld -G '..--[[malloc.o]]' %s.o -o %s.elf ', -- -n --build-id=none -static',
+		'ld '..--[[malloc.o]]' %s.o -o %s.elf -n --build-id=none -static',
 		naam, naam
 	))
-	if false and not ontkever then
-		os.execute(string.format('strip %s', enaam))
+	if true and not ontkever then
+		os.execute(string.format('strip %s', naam..'.elf'))
 	end
 
 

@@ -9,6 +9,7 @@ troep/
 *.so
 *.dll
 *.elf
+*.out
 *.o
 
 *.stackdump
