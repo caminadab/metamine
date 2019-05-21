@@ -1,14 +1,10 @@
-als 2 > 1 dan
-	stduit = a
-anders
-	stduit = b
+;a = sluit(schrijf(schrijf(open("hoi.txt"), "hoi"), "ok"))
 
-+++
 
-;b = stduit schrijf "hoi"
+a = bestand("hoi.txt")
+a.uit = "hoi" || "ok"
 
-a = "102j"
-b = "XX"
+b = 3
+b.uit = "tja"
 
-;bhoi = bestand "hoi.txt"
-;bhoi.uit = "okay"
+std.uit = "ho"

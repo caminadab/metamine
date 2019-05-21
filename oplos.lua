@@ -54,6 +54,7 @@ function punten(exp)
 	end
 end
 
+		-- herschrijf (a.b) naar (b(a))
 		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
@@ -116,6 +117,15 @@ function oplos(exp,voor)
 		end
 
 
+		-- herschrijf a.b naar b(a)
+		for eq in pairs(eqs) do
+			for node in boompairs(eq) do
+				if fn(node) == '.' and #node == 2 then
+					node.fn,node[1],node[2] = node[2],node[1],nil
+				end
+			end
+		end
+
 		local nieuw, oud = {}, {}
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
@@ -145,7 +155,7 @@ function oplos(exp,voor)
 			end
 
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
-			if isfn(eq) and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
+			if isfn(eq) and eq[2] and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
 				local a, b, c  = eq[2].fn, eq[2][1], eq[1]
 				local neq = X(sym.cois, a, X(sym.maplet, b, c))
 				--oud[eq] = true
