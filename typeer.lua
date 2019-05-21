@@ -67,7 +67,7 @@ function typefout(loc,msg,...)
 		'{([^}]*)}',
 		function (arg)
 			i = i + 1
-			if t[i] == nil then error('niet genoeg argumenten') end
+			if t[i] == nil then return '' end ---error('niet genoeg argumenten') end
 			if arg == 'loc' then
 				return ansi.underline .. loctekst(t[i]) .. ansi.normal
 			elseif arg == 'rood' then
@@ -268,7 +268,7 @@ function typeer(exp)
 							fouten[#fouten+1] = {loc = exp.loc, msg = msg}
 							local msg = typefout(exp.loc, 'links is {exp} ({loc}), rechts is {exp} ({loc})',
 								types[a], oorzaakloc[a] or a.loc,
-								types[b], oorzaakloc[b] or bl.loc
+								types[b], oorzaakloc[b] or b.loc
 							)
 							if not fouten[msg] then
 								print(msg)

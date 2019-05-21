@@ -1,1 +1,14 @@
-stduit = "hallo wereldje van me\n"
+als 2 > 1 dan
+	stduit = a
+anders
+	stduit = b
+
++++
+
+;b = stduit schrijf "hoi"
+
+a = "102j"
+b = "XX"
+
+;bhoi = bestand "hoi.txt"
+;bhoi.uit = "okay"

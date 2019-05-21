@@ -91,7 +91,7 @@ if opt.M then verbozeOpslag = true end
 if opt.B then verbozeBroncode = true end
 if opt.T then verbozeTypegraaf = true end
 
-if opt.g or opt.debug then
+if opt.g or opt.debug or opt.ontkever then
 	ontkever = true
 end
 

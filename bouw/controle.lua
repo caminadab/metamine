@@ -128,12 +128,12 @@ function controle(exp, maakvar)
 		return arg
 	end
 
-	function con(exp)
+	function con(exp,ret)
 		--if fn(exp) == '=>' then
 		--	table.insert(blok.stats, X'ok')
 		--end
 		local fw = {fn=exp.fn}
-		local ret = X(maakvar())
+		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 
 		-- normaal
@@ -158,7 +158,7 @@ function controle(exp, maakvar)
 			local banders = maakblok(anders, {}, X('ga', phi))
 			graaf:link(blok, banders)
 			blok = banders
-			local randers = con(eanders)
+			local randers = con(eanders,rdan)
 
 			-- conditie en sprong
 			blok = blok0
@@ -172,7 +172,7 @@ function controle(exp, maakvar)
 			--blok = maakblok(dan, {}, X('ga', phi))
 
 			-- daadwerkelijke '=>'
-			local stat = X(':=', ret, X('=>', econd, rdan, randers))
+			local stat = X(':=', ret, rdan) --X('=>', econd, rdan, randers))
 			table.insert(bphi.stats, stat)
 
 			-- ga rustig verder
