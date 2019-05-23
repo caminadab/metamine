@@ -25,6 +25,14 @@ function loctekst(loc)
 	end
 end
 
+function locsub(code, loc)
+	if not code then return "???" end
+	local apos = locvind(code, loc.x1, loc.y1)
+	local bpos = locvind(code, loc.x2+1, loc.y2)
+	if not apos or not bpos then return false end
+	return string.sub(code, apos, bpos-1)
+end
+
 function expmoesR(exp, t)
 	if isatoom(exp) then t[#t+1] = exp.v
 	else

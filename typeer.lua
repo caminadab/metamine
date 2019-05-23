@@ -111,14 +111,11 @@ function typeer(exp)
 		biebtypes[moes(type)] = super -- types: naam → type
 	end
 
-	local boom = exp
 	local code = exp[1].code
-	local bron = exp.bron or '?'
 
 	-- verenigt types
 	local function weestype(exp, type, typeoorzaakloc)
 		local T,ol
-		--print('wees type', moes(exp) .. ' : '..moes(type), typeoorzaakloc and loctekst(typeoorzaakloc))
 		if types[exp] and moes(types[exp]) ~= moes(type) then
 			local a = type
 			local b = types[exp]

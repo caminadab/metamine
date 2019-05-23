@@ -70,7 +70,7 @@ byte: int
 teken: int
 data: lijst byte
 tekst: lijst ;lijst teken
-uit: int
+uit: tekst
 
 tijdstip : getal
 int : getal

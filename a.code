@@ -1,5 +1,9 @@
 uit = itoa(123)
 
-itoa(n) = itoa(rest) || [ cijfer(n) ]
+als n = 0 dan
+	itoa = n → ""
+anders
+	itoa = n → itoa(rest) || [ cijfer ] 
+
 rest = int (n / 10)
 cijfer = '0' + (n mod 10)
