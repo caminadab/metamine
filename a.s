@@ -6,7 +6,7 @@
 
 p1:
 # A := B
-mov rax, -28[rsp]
+mov rax, -36[rsp]
 mov -8[rsp], rax 	# A
 # stop
 mov rdi, 1
@@ -22,38 +22,44 @@ syscall
 ret
 
 p2:
-# B := [49, 48, 50, 106]
-lea rax, -20[rsp]
-mov -28[rsp], rax
-movq -20[rsp], 4
-movq rax, 0x6a323031
-mov -12[rsp], rax
+# B := [71, 114, 111, 116, 101, 114, 32, 100, 97, 110, 33, 10]
 lea rax, -28[rsp]
+mov -36[rsp], rax
+movq -28[rsp], 12
+movq rax, 0x65746f7247
+mov -20[rsp], rax
+movq rax, 0x6164207265
+mov -16[rsp], rax
+movq rax, 0x0a216e61
+mov -12[rsp], rax
+lea rax, -36[rsp]
 # ga p1
 lea rax, p1[rip]
 jmp rax
 p3:
-# B := [88, 88]
-lea rax, -20[rsp]
-mov -28[rsp], rax
-movq -20[rsp], 2
-movq rax, 0x5858
-mov -12[rsp], rax
+# B := [107, 108, 101, 105, 110, 101, 114, 10]
 lea rax, -28[rsp]
+mov -36[rsp], rax
+movq -28[rsp], 8
+movq rax, 0x6e69656c6b
+mov -20[rsp], rax
+movq rax, 0x0a72656e
+mov -16[rsp], rax
+lea rax, -36[rsp]
 # ga p1
 lea rax, p1[rip]
 jmp rax
 _start:
-# C := 2 < 1
+# C := 2 = 1
 mov rax, 2
 mov rbx, 1
 cmp rax, rbx
 mov rax, 0
 mov rbx, 1
-cmovl rax, rbx
-mov -40[rsp], rax 	# C
+cmove rax, rbx
+mov -48[rsp], rax 	# C
 # ga(C, p2, p3)
-mov rax, -40[rsp]
+mov rax, -48[rsp]
 lea rbx, p2[rip]
 lea rdx, p3[rip]
 cmp rax, 0

@@ -75,7 +75,7 @@ uit: int
 tijdstip : getal
 int : getal
 nu : tijdstip
-cijfer : iets → bit
+;cijfer : iets → bit
 vind : (lijst, lijst) → int
 tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst

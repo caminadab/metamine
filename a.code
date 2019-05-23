@@ -1,10 +1,5 @@
-;a = sluit(schrijf(schrijf(open("hoi.txt"), "hoi"), "ok"))
+uit = itoa(123)
 
-
-a = bestand("hoi.txt")
-a.uit = "hoi" || "ok"
-
-b = 3
-b.uit = "tja"
-
-std.uit = "ho"
+itoa(n) = itoa(rest) || [ cijfer(n) ]
+rest = int (n / 10)
+cijfer = '0' + (n mod 10)

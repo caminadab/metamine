@@ -72,14 +72,16 @@ function typefout(loc,msg,...)
 				return ansi.underline .. loctekst(t[i]) .. ansi.normal
 			elseif arg == 'rood' then
 				return color.brightred .. t[i] .. color.white
-			elseif arg == 'geel' then
+			elseif arg == 'code' then
 				return color.brightyellow .. t[i] .. color.white
 			elseif arg == 'exp' then
-				return color.brightyellow .. combineer(t[i]) .. color.white
+				return color.brightcyan .. combineer(t[i]) .. color.white
 			elseif arg == 'int' then
 				return tostring(math.floor(t[i]))
 			elseif arg == 'cyaan' then
 				return color.brightcyan .. tostring(t[i]) .. color.white
+			else
+				error('onbekend type: '..arg)
 			end
 		end
 	)
@@ -136,16 +138,16 @@ function typeer(exp)
 				local isloc = oorzaakloc[exp] or exp.loc
 				local moetloc = typeoorzaakloc or oorzaakloc[moes(exp)]
 				assert(code)
-				local tf = typefout(
+				local msg = typefout(
 					exp.loc,
-					"{geel} is {cyaan} ({loc}) maar moet {cyaan} zijn ({loc})",
+					"{code} is {exp} ({loc}) maar moet {exp} zijn ({loc})",
 					locsub(code, exp.loc),
-					exp2string(types[exp]), isloc,
-					exp2string(type), moetloc
+					types[exp], isloc,
+					type, moetloc
 				)
-				if not fouten[tf] then
-					fouten[#fouten+1] = tf
-					fouten[tf] = true
+				if not fouten[msg] then
+					fouten[#fouten+1] = {loc = exp, msg = msg}
+					fouten[msg] = true
 				end
 				return types,fouten
 			end
@@ -265,13 +267,15 @@ function typeer(exp)
 						elseif typegraaf:issubtype(ta, tb) then
 							weestype(b, types[a], oorzaakloc[b])
 						else
-							fouten[#fouten+1] = {loc = exp.loc, msg = msg}
-							local msg = typefout(exp.loc, 'links is {exp} ({loc}), rechts is {exp} ({loc})',
-								types[a], oorzaakloc[a] or a.loc,
-								types[b], oorzaakloc[b] or b.loc
+							local aloc = oorzaakloc[a] or a.loc
+							local bloc = oorzaakloc[b] or b.loc
+							local msg = typefout(exp.loc, '{code} is {exp} ({loc}), {code} is {exp} ({loc})',
+								locsub(code, a.loc),
+								types[a], aloc,
+								locsub(code, b.loc),
+								types[b], bloc
 							)
 							if not fouten[msg] then
-								print(msg)
 								fouten[#fouten+1] = {loc = exp.loc, msg = msg}
 								fouten[msg] = true
 							end
@@ -333,7 +337,7 @@ function typeer(exp)
 				-- local unpacking
 				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
 				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
-					local msg = typefout(exp.loc, '{geel} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc})',
+					local msg = typefout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc})',
 						locsub(code, exp.loc),
 						nargs, oorzaakloc[exp],
 						N(tfn), oorzaakloc[tfn] or oorzaakloc[exp]
@@ -342,7 +346,6 @@ function typeer(exp)
 						'????' --[[locsub(code, exp.loc)]], nargs, N(tfn)
 					)
 					if not fouten[msg] then
-						print(msg)
 						fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort}
 						fouten[msg] = true
 					end

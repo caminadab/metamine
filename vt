@@ -156,7 +156,7 @@ local types,fouten = typeer(asb)
 
 if #fouten > 0 then
 	for i,fout in ipairs(fouten) do
-		print(fout)
+		print(fout.msg)
 	end
 	-- TODO print
 	--return
@@ -213,8 +213,7 @@ local asm = codegen(cfg)
 if opt.S then
 	--file('a.s', asm)
 end
-local elf = elf(assembleer(asm, 'a'), 'a2')
-file('a.elf', elf)
+local elf = elf(assembleer(asm, 'a'), 'a')
 os.execute('chmod +x a.elf')
 if doemeteen then
 	print('== START ==')

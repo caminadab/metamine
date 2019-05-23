@@ -478,7 +478,7 @@ function oplos(exp,voor)
 				if not halfvan.punten[punt] then
 					local def = bron2def[punt]
 					local fout = {
-						msg = loctekst(def.loc) .. ': ' .. color.brightred .. "Oplosfout: " .. color.yellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
+						msg = ansi.underline .. loctekst(def.loc) .. ansi.normal .. '\t' .. color.brightred .. "Oplosfout" .. color.white .. ':\t' .. color.brightyellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
 					}
 					fouten[#fouten+1] = fout
 				end
