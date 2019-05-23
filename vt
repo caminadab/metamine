@@ -42,21 +42,25 @@ Opties:
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
 
-    -i                genereer intermediaire code
+    -I                genereer intermediaire code
     -S                genereer assembly-code
+    -R                genereer uitgebreid rapport
 
     -A                print syntaxinformatie
+    -G                print kennisgraaf
     -K                print voorgekauwde (opgeloste) kennis
 
     -O                print oplosinformatie
     -W                print opgeloste waarde (GENERIEK AS FUCK!)
+
+    -T                print types
+    -Y                print typegraaf
 
     -D                print delta-tijd informatie
     -C                print de controlegraaf
     -I                print intermediaire code
     -F                print uitvoer na kijkgatoptimalisaties
     -G                print assemblycode
-    -T                print typegraaf
     -H                print linker info
     -M                print geheugenallocatie info
     -B                print broncode
@@ -76,10 +80,11 @@ if opt.v or opt.verboos then
 	verboos = true
 end
 
+if opt.R then verbozeRapport = true end
 if opt.S then verbozeSyntax = true end
 if opt.D then verbozeDeductie = true end
 if opt.K then verbozeKennis = true end
-if opt.W then verbozeOplos = true end
+if opt.G then verbozeKennisgraaf = true end
 if opt.W then verbozeWaarde = true end
 if opt.D then verbozeDelta = true end
 if opt.C then verbozeControle = true end
@@ -89,7 +94,9 @@ if opt.A then verbozeAsm = true end
 if opt.H then verbozeLinker = true end
 if opt.M then verbozeOpslag = true end
 if opt.B then verbozeBroncode = true end
-if opt.T then verbozeTypegraaf = true end
+
+if opt.T then verbozeTypes = true end
+if opt.Y then verbozeTypegraaf = true end
 
 if opt.g or opt.debug or opt.ontkever then
 	ontkever = true

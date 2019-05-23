@@ -32,7 +32,15 @@ local function combineerR(sexp, tt)
 
 		-- unop
 		elseif #sexp == 1 then
-			insert(tt, op)
+			if op then
+				insert(tt, op)
+			else
+				-- complexe functie
+				insert(tt, '(')
+				combineerR(sexp.fn, tt)
+				insert(tt, ')')
+			end
+
 			if isatoom(sexp[1]) then
 				insert(tt, ' ')
 				insert(tt, sexp[1].v)
@@ -57,13 +65,16 @@ local function combineerR(sexp, tt)
 				if br then insert(tt, ')') end
 
 				if i ~= #sexp then
-					if op ~= ',' and op ~= '^' then
-						insert(tt, ' ')
+					insert(tt, ' ')
+					if op then
+						insert(tt, op)
+					else
+						-- complexe functie
+						insert(tt, '(')
+						combineerR(sexp.fn, tt)
+						insert(tt, ')')
 					end
-					insert(tt, op)
-					if op ~= ',' and op ~= '^' then
-						insert(tt, ' ')
-					end
+					insert(tt, ' ')
 				end
 
 			end

@@ -1,4 +1,5 @@
 require 'exp'
+require 'combineer'
 require 'bouw.cfg'
 
 local fmt = string.format
@@ -260,8 +261,7 @@ function codegen(cfg)
 				opsla(naam, 'rax')
 
 			else
-				print('F', exp.fn.v, exp2string(exp), cmp[f])
-				error('onbekende pseudo ass: '..exp2string(stat))
+				error('onbekende pseudo ass: '..combineer(stat))
 			end
 		end
 

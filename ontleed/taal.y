@@ -106,11 +106,11 @@
 /* ALTERNATIEF */
 input:
 	%empty						{ $$ = aloc("EN", yylloc); *root = $$; }
-|	input exp '\n' 		{ $$ = APPEND($1, $2);  } /* lees regeltje */
-|	input exp '=' block '\n' 		{ $$ = APPEND($1, FN3(A("="), $2, $4));  } /* lees regeltje */
-|	input error '\n' 	{ $$ = APPEND($1, metfout(A("?"), waarom)); yyerrok; } /* lees regeltje */
+|	input exp '\n' 		{ $$ = appendloc($1, $2, @$);  } /* lees regeltje */
+|	input exp '=' block '\n' 		{ $$ = appendloc($1, fn3loc(aloc("=", @3), $2, $4, @2), @$);  } /* lees regeltje */
+|	input error '\n' 	{ $$ = appendloc($1, metfout(aloc("?", @2), waarom), @$); yyerrok; } /* lees regeltje */
 |	input '\n' 				/* negeer witregels */
-|	error  						{ $$ = metfout(A("?"), waarom); yyerrok; }
+|	error  						{ $$ = metfout(aloc("?", @1), waarom); yyerrok; }
 ;
 
 /*op:
@@ -310,7 +310,7 @@ anders
 | '-' exp  %prec NEG	{ $$ = fn2loc(aloc("-", @2), $2, @$); }
 
 | single single %prec CALL { $$ = fn2loc($1, $2, @$); }
-| single single single %prec CALL { $$ = FN3($2, $1, $3); }
+| single single single %prec CALL { $$ = fn3loc($2, $1, $3, @$); }
 | single single single single %prec CALL { $$ = aloc("fout", @4); yyerrok; }
 |	'[' error ']'				
 ;

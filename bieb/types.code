@@ -33,8 +33,7 @@ sincos :  getal → (kommagetal, kommagetal)
 (#) :  verzameling → int
 ([) : lijst
 ;(=) :  (iets, iets) → bit 
-;(⇒) :  (bit,iets) → iets 
-;(→) :  iets → (iets → iets)
+;(→) :  (iets,iets) → (iets → iets)
 (||) :  (lijst, lijst) → lijst
 
 ; set!
@@ -48,7 +47,7 @@ set: verzameling
 ;(⋃) : (aantal set) → set
 
 ; logica
-(⇒) : (bit, iets) → iets
+;(⇒) : (bit, iets) → iets
 (>) :  (getal, getal) → bit
 (≥) :  (getal, getal) → bit
 (≤) :  (getal, getal) → bit
@@ -81,7 +80,8 @@ tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst
 deel : (lijst, (int, int)) → lijst
 
-herhaal : ((→) → (→))
+;herhaal : ((→) → (→))
+;herhaal : ((→), int) → (→)
 waarvoor : (verzameling, (iets → bit)) → verzameling
 mod : (getal, getal) → getal
 

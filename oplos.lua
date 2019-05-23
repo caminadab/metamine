@@ -457,6 +457,13 @@ function oplos(exp,voor)
 
 		local stroom,halfvan,halfnaar = kennisgraaf:sorteer(invoer,voor)
 
+		-- RAPPORTJE SCHRIJVEN
+		if verbozeRapport then
+			local rap = rapport {kennisgraaf = kennisgraaf, infostroom = stroom}
+			file('rapport.html', rap)
+			print('rapport weggeschreven naar "rapport.html"')
+		end
+
 		local vt = {
 			code = "ABC",
 			kennisgraaf = kennisgraaf,

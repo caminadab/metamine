@@ -93,6 +93,11 @@ local bieb,fouten = ontleed(bestand 'bieb/types.code', 'bieb/types.code')
 if fouten then error('biebfouten') end
 
 function typeer(exp)
+	if verbozeTypes then
+		print()
+		print('== Types ==')
+	end
+
 	local typegraaf = maaktypegraaf()
 
 	local biebtypes = {}
@@ -109,12 +114,14 @@ function typeer(exp)
 		typegraaf:link(type, super)
 		naamtypes[moes(type)] = super
 		biebtypes[moes(type)] = super -- types: naam → type
+		oorzaakloc[moes(type)] = v.loc
 	end
 
 	local code = exp[1].code
 
 	-- verenigt types
 	local function weestype(exp, type, typeoorzaakloc)
+		if type.v == 'iets' then return end
 		local T,ol
 		if types[exp] and moes(types[exp]) ~= moes(type) then
 			local a = type
@@ -158,10 +165,13 @@ function typeer(exp)
 			oorzaakloc[moes(exp)] = typeoorzaakloc or ol or exp.loc
 			oorzaakloc[exp] = typeoorzaakloc or ol or exp.loc
 			typegraaf:link(T)
-			if verboos then
+			if verbozeTypes then
 				local t = typeoorzaakloc or ol or exploc
-				local s = t and '  vanwege ' .. (loctekst(t) or '')
+				local s = t and '\t(' ..ansi.underline.. (loctekst(t) or '')..ansi.normal..')'
+
 				--print('TYPEER', moes(exp)..': '..moes(T))
+				print(combineer(exp)..'\t: '..combineer(T)..s)
+
 			end
 		end
 	end
@@ -198,13 +208,17 @@ function typeer(exp)
 			T = X'tupel'
 		elseif biebtypes[moes(exp)] then
 			T = biebtypes[moes(exp)] -- voorgedefinieerd is makkelijk
+			oorzaakloc[exp] = oorzaakloc[moes(exp)]
 		end
 		if T then
-			if verboos then print('MAKKELIJK', moes(exp), moes(T))  end
+			local t = oorzaakloc[moes(exp)]
+			local s = '\t(' ..ansi.underline.. (t and loctekst(t) or '')..ansi.normal..')'
+			if verbozeTypes then print(moes(exp), moes(T), s)  end
 			types[exp] = T
 			typegraaf:link(T)
 		end
 	end
+	if verbozeTypes then print() end
 
 	-- verkrijg aantal argumenten
 	local function N(exp)
@@ -245,15 +259,22 @@ function typeer(exp)
 			end
 
 			-- deze exp heeft al een type
-			if naamtypes[moes(exp)] then
+			if naamtypes[moes(exp)] and naamtypes[moes(exp)] ~= 'iets' then
 				local T = naamtypes[moes(exp)] -- voorgedefinieerd is makkelijk
 				weestype(exp, T, oorzaakloc[moes(exp)])
 
 			elseif isfn(exp) then
 				local fn,f,a,b = exp.fn, exp.fn.v, exp[1], exp[2]
 
+				-- speciaal voor 'herhaal'
+				if f == 'herhaal' and types[a] then
+					local ta, tb = types[a], types[b]
+					weestype(tb, X'int', exp.fn.loc)
+					weestype(exp, ta, exp.fn.loc)
+					weestype(exp.fn, X'->')
+
 				-- speciaal voor '='
-				if f == '=' then
+				elseif f == '=' then
 					local ta, tb = types[a], types[b]
 					local tah, tbh = ta and moes(ta), tb and moes(tb)
 					if ta and tb and tah ~= tbh then
@@ -334,7 +355,7 @@ function typeer(exp)
 				-- local unpacking
 				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
 				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
-					local msg = typefout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc})',
+					local msg = typefout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc}) '..exp2string(tfn),
 						locsub(code, exp.loc),
 						nargs, oorzaakloc[exp],
 						N(tfn), oorzaakloc[tfn] or oorzaakloc[exp]
@@ -355,17 +376,24 @@ function typeer(exp)
 					for i = 1, N(tfn) do
 						local arg = exp[i]
 						if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
-						weestype(arg, A(tfn, i), exp.fn.loc)
+						weestype(arg, A(tfn, i), oorzaakloc[moes(exp.fn)] or exp.fn.loc)
 						--print('  ARG', moes(exp)i]), moes(A)tfn, i)), loctekst(exp[i].loc))
 					end
 				end
-				weestype(exp, tfn[2], exp.fn.loc)
+				weestype(exp, tfn[2], oorzaakloc[moes(exp.fn)] or exp.fn.loc)
 				--print('  RET', moes(tfn)2]))
 
 			end
 		end
 	end
 
+	end -- for i=1,5
+
+	-- is alles nu getypeerd?
+	for exp in boompairs(exp) do
+		if not types[exp] then
+			print('kon type niet bepalen van '..exp2string(exp))
+		end
 	end
 
 	local function isbieb(n)
@@ -380,12 +408,7 @@ function typeer(exp)
 		print()
 	end
 
-	if verbozeTypegraaf then
-		print()
-		print('== Types ==')
-		for exp, type in pairs(types) do
-			print(moes(exp)..'\t: '..moes(type))
-		end
+	if verbozeTypes then
 		print()
 	end
 

@@ -1,0 +1,6 @@
+;f(n) = n + 1
+;g = f herhaal 10
+;uit = tekst(g("hoi"))
+
+3 = -a
+uit = tekst(a)

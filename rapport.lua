@@ -222,15 +222,15 @@ function rapport(vt)
 			jslib 'http://cdn.jsdelivr.net/qtip2/3.0.3/basic/jquery.qtip.min.js',
 		},
 		body {
-			deel { pre(vt.code) },
-			deel { pre(unlisp(feiten)) },
-			deel { pre(unlisp(dfeiten)) },
-			div('afh', {class='deel'}),
-			div('infostroom', {class='deel'}),
+			--deel { pre(vt.code) },
+			--deel { pre(unlisp(feiten)) },
+			--deel { pre(unlisp(dfeiten)) },
+			--div('afh', {class='deel'}),
+			--div('infostroom', {class='deel'}),
 			--deel { typetabel },
 			div('afh', {class='deel'}),
 			js (graaf2js(vt.kennisgraaf, 'afh', nil, map)),
-			js (graaf2js(vt.infostroom, 'infostroom', 'dagre', map)),
+			--js (graaf2js(vt.infostroom, 'infostroom', 'dagre', map)),
 			js [[
 				infostroom.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];
