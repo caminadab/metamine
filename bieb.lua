@@ -9,6 +9,7 @@ jslibtaal.fn = '[]'
 bieb = {
 	-- rochel
 	['open-lees'] = true,
+	syscall = true,
 
 	-- tekening
 	rechthoek = true,
@@ -16,7 +17,6 @@ bieb = {
 	rood = true,
 	wit = true,
 	zwart = true,
-	schrijf = true,
 
 	-- wiskunde
 	looptijd = 3,

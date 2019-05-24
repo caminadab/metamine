@@ -1,3 +1,9 @@
+; unix
+open: tekst → bd
+schrijf: (bd, tekst) → bd
+sluit: bd → bestand
+
+; getal
 getal: iets
 kommagetal: getal
 int: getal
@@ -92,7 +98,7 @@ cirkel: vorm
 cirkel: ((getal, getal), getal, kleur) → cirkel
 rechthoek: vorm
 rechthoek: ((getal, getal), (getal, getal), kleur) → rechthoek
-schrijf: ((getal, getal), tekst, kleur) → rechthoek
+;schrijf: ((getal, getal), tekst, kleur) → rechthoek
 genormaliseerd : getal ; tussen 0 en 1
 kleur: (genormaliseerd, genormaliseerd, genormaliseerd)
 ;kleur: (getal, getal, getal)

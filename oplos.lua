@@ -538,6 +538,12 @@ function oplos(exp,voor)
 			end
 		end
 
+
+		-- opgelost
+		if verbozeWaarde then
+			print(exp2string(val))
+		end
+
 		return val,nil,bekend,exp2naam
 
 		-- functie ontleding

@@ -1,7 +1,23 @@
-uit = [ 'A', a(i), 'K', 10]
-a = "hoi"
 
-als 2 < 1 dan
-	i = 0
-anders
-	i = 2
+; bestanden
+; syscalls
+; libcalls
+
+a = open("hoi.txt")
+b = schrijf(a, "hoi")
+c = sluit(b)
+;uit = c
+
+uit = open("hoi.txt")
+
+sysWrite = 2
+stduit = 1
+
+schrijf = (bd, dat) → syscall(sysWrite, bd, dat, #dat)
+open = pad → syscall(sysOpen, pad) ;, oRdonly)
+sluit = bd → syscall(sysClose, bd)
+
+sysOpen = 1
+sysWrite = 7
+sysClose = 2
+oRdonly = 0

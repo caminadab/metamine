@@ -232,8 +232,17 @@ function typeer(exp)
 		return 1
 	end
 
+	local function ARG(exp, i)
+		if #exp == 1 and fn(exp[1]) == ',' then
+			print(exp2string(exp), i)
+			return exp[1][i]
+		else
+			return exp[i]
+		end
+	end
+
 	-- verkrijg nde argument van functie
-	local function A(exp, i)
+	local function A0(exp, i)
 		assert(exp.fn.v == '->')
 		if isfn(exp[1]) and exp[1].fn.v == ',' then
 			return exp[1][i]
@@ -374,9 +383,13 @@ function typeer(exp)
 						--print('PER STUK', moes(exp), loctekst(tfn.loc))
 					end
 					for i = 1, N(tfn) do
-						local arg = exp[i]
-						if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
-						weestype(arg, A(tfn, i), oorzaakloc[moes(exp.fn)] or exp.fn.loc)
+						--print(exp2string(exp[i]))
+						--local arg = exp[i] or exp[1][i] or exp[1][1][i]
+						local arg = ARG(exp, i)
+						print('N', N(tfn), exp2string(tfn))
+						assert(arg, i .. ', '..exp2string(exp))
+						--if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
+						weestype(arg, A0(tfn, i), oorzaakloc[moes(exp.fn)] or exp.fn.loc)
 						--print('  ARG', moes(exp)i]), moes(A)tfn, i)), loctekst(exp[i].loc))
 					end
 				end
