@@ -1,5 +1,7 @@
-uit = c
-c = ['h', h, 'i', 10]
-h = 'o' + 1
+uit = [ 'A', a(i), 'K', 10]
 a = "hoi"
-b = a 4
+
+als 2 < 1 dan
+	i = 0
+anders
+	i = 2

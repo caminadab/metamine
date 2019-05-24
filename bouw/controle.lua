@@ -78,6 +78,7 @@ local function plet(waarde, maakvar)
 			end
 			table.sort(args, function (a, b) return diepte[a] < diepte[b] end)
 
+			args.fn = args[i]
 			for i,v in ipairs(args) do
 				-- alleen expressiekinderen hoeven berekend te worden
 				if isexp(v) then
@@ -190,6 +191,7 @@ function controle(exp, maakvar)
 
 		-- normale statement (TODO sorteer)
 		else
+			fw.fn = arg(exp.fn)
 			for i,v in ipairs(exp) do
 				fw[i] = arg(v)
 			end

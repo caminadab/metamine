@@ -55,7 +55,7 @@ local function combineerR(sexp, tt)
 			for i=1,#sexp do
 				local v = sexp[i]
 				local br = isfn(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
-				local br = br or (isfn(sexp.fn) and (lop[fn(sexp.fn)]) or (#v == 2 and not binop[fn(sexp[i])]))
+				local br = br or (isfn(sexp.fn) and (lop[fn(sexp.fn)]))-- or (#v == 2 and not binop[fn(sexp[i])]))
 
 
 				if br then insert(tt, '(') end

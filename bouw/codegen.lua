@@ -26,7 +26,6 @@ local function inlinetekst(exp, opslag, loc, t)
 		local num = {'0x'}
 		local s = {}
 		for j=min(i+4,#exp),i,-1 do
-			print(exp[j].v)
 			if tonumber(exp[j].v) then
 				num[#num+1] = string.format('%02x', exp[j].v)
 			else
@@ -274,6 +273,19 @@ function codegen(cfg)
 				-- nieuwe lengte
 				t[#t+1] = 'mov [rdx], rbx'
 				t[#t+1] = 'mov rax, rdx'
+				opsla(naam, 'rax')
+
+			-- index
+			-- = a[b]
+			elseif opslag[f] then
+				-- TODO bounds check
+				local a = f
+				local b = exp[1].v
+				t[#t+1] = fmt('lea rbx, %d[rsp]', opslag[a] + 16)
+				laad('rcx', b)
+				--t[#t+1] = fmt('lea rcx, %d[rsp]', tonumber(b) or opslag[b])
+				t[#t+1] = fmt('add rbx, rcx')
+				t[#t+1] = 'movb al, [rbx]'
 				opsla(naam, 'rax')
 
 			else
