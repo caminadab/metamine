@@ -17,18 +17,33 @@ local cmp = {
 }
 
 
-local function inlinetekst(exp, opslag, t)
+local function inlinetekst(exp, opslag, loc, t)
 	local min,concat = math.min, table.concat
 	assert(fn(exp) == '[]')
-	t[#t+1] = fmt('movq %d[rsp], %d', opslag, #exp)
+	-- lengte
+	t[#t+1] = fmt('movq %d[rsp], %d', loc, #exp)
 	for i=1,#exp,4 do
 		local num = {'0x'}
+		local s = {}
 		for j=min(i+4,#exp),i,-1 do
-			num[#num+1] = string.format('%02x', exp[j].v)
+			print(exp[j].v)
+			if tonumber(exp[j].v) then
+				num[#num+1] = string.format('%02x', exp[j].v)
+			else
+				num[#num+1] = '00'
+				-- custom pointer
+				s[#s+1] = fmt('movb al, %d[rsp]', opslag[exp[j].v])
+				s[#s+1] = fmt('movb %d[rsp], al', loc + 8 + (j-1))
+			end
 		end
-		-- lengte
-		t[#t+1] = fmt('movq rax, %s', concat(num))
-		t[#t+1] = fmt('mov %d[rsp], rax', opslag + 8 + (i-1))
+		-- getal
+		-- sla op
+		t[#t+1] = fmt('mov eax, %s', concat(num))
+		t[#t+1] = fmt('mov %d[rsp], eax', loc + 8 + (i-1))
+		-- extra's
+		for i,v in ipairs(s) do
+			t[#t+1] = v
+		end
 	end
 end
 
@@ -87,11 +102,12 @@ function codegen(cfg)
 				end
 				local slot = math.floor(len / 8)
 					
-				opslag[naam] = top - len
 				slots[naam] = slot
 				top = top - math.ceil(len/8) * 8
+				opslag[naam] = top
+
 				if verbozeOpslag then
-					print(string.format('%s:\tOffset %d, %d slots, %d bytes', naam, opslag[naam], slots, len))
+					print(string.format('%s:\tOffset %d, %d slots, %d bytes', naam, opslag[naam], slot, len))
 				end
 			end
 		end
@@ -209,7 +225,7 @@ function codegen(cfg)
 				-- ptr, len, data...
 				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[naam]+8) -- sneak de lengte weg
 				t[#t+1] = fmt('mov %d[rsp], rax', opslag[naam]) -- sneak de lengte weg
-				inlinetekst(exp, opslag[naam]+8, t)
+				inlinetekst(exp, opslag, opslag[naam]+8, t)
 				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[naam])
 				--opsla(naam, 'rax')
 

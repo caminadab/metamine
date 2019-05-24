@@ -1,9 +1,8 @@
 uit = itoa(123)
 
-als n = 0 dan
-	itoa = n → ""
+als n < 10 dan
+	itoa = n -> [ '0' + n ]
 anders
-	itoa = n → itoa(rest) || [ cijfer ] 
+	itoa = n -> itoa(n idiv 1) || itoa(n mod 10)
 
-rest = int (n / 10)
-cijfer = '0' + (n mod 10)
+idiv = (a,b) -> int(a/b)

@@ -1,6 +1,5 @@
-;f(n) = n + 1
-;g = f herhaal 10
-;uit = tekst(g("hoi"))
-
-3 = -a
-uit = tekst(a)
+uit = c
+c = ['h', h, 'i', 10]
+h = 'o' + 1
+a = "hoi"
+b = a 4
