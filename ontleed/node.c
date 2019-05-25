@@ -205,6 +205,7 @@ node* tekst(node* str0) {
 			if (cp == 'n') cp = '\n';
 			else if (cp == 'r') cp = '\r';
 			else if (cp == 'e') cp = 0x31;
+			else if (cp == '0') cp = '\0';
 			esc = 0;
 		}
 		else if (cp == '\\') {

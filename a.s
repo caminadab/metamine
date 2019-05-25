@@ -5,27 +5,31 @@
 .section .text
 
 _start:
-# B := [104, 111, 105, 46, 116, 120, 116]
-lea rax, -16[rsp]
+# B := [104, 111, 105, 46, 116, 120, 116, 0]
+lea rax, -8[rsp]
 mov -24[rsp], rax
-movq -16[rsp], 7
+movq -16[rsp], 8
 mov eax, 0x2e696f68
 mov -8[rsp], eax
-mov eax, 0x747874
+mov eax, 0x00747874
 mov -4[rsp], eax
 lea rax, -24[rsp]
-# A := syscall(1, B, 0)
-mov rax, 1
-mov rsi, -24[rsp]
-mov rdx, 0
-syscall
-# stop
-mov rdi, 1
+# C := 2
+mov rax, 2
+mov -32[rsp], rax 	# C
+# C += 64
+mov rax, -32[rsp]
+mov rbx, 64
+add rax, rbx
+mov -32[rsp], rax 	# C
+# A := syscall(2, B, C, 420)
+mov rax, 2
+mov rdi, -24[rsp]
 mov rsi, -32[rsp]
-movq rdx, [rsi]
-add rsi, 8
-mov rax, 1
+mov rdx, 420
 syscall
+mov -40[rsp], rax
+# stop
 # exit(0)
 mov rdi, 0
 mov rax, 60

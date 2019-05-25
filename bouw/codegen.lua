@@ -152,9 +152,9 @@ function codegen(cfg)
 		end
 		for i,stat in ipairs(blok.stats) do
 			local op,naam,val,exp = fn(stat),
-			stat[1].v,
-			stat[2] and stat[2].v,
-			stat[2]
+				stat[1].v,
+				stat[2] and stat[2].v,
+				stat[2]
 			local f = exp and fn(stat[2])
 			t[#t+1] = '# '..combineer(stat)
 
@@ -216,14 +216,14 @@ function codegen(cfg)
 
 			elseif f == '#' then
 				laad('rbx', exp[1].v)
-				t[#t+1] = 'mov rax, [rbx]'
+				t[#t+1] = 'mov rax, -8[rbx]'
 				opsla(naam, 'rax', naam)
 
 			elseif f == '[]' then
 				--t[#t+0] = fmt('movq %d[rsp], %d', opslag[naam], #exp)
 				-- ptr, len, data...
-				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[naam]+8) -- sneak de lengte weg
-				t[#t+1] = fmt('mov %d[rsp], rax', opslag[naam]) -- sneak de lengte weg
+				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[naam]+16) -- rax := ptr
+				t[#t+1] = fmt('mov %d[rsp], rax', opslag[naam]) -- array := ptr
 				inlinetekst(exp, opslag, opslag[naam]+8, t)
 				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[naam])
 				--opsla(naam, 'rax')
@@ -291,9 +291,10 @@ function codegen(cfg)
 			elseif f == 'syscall' then
 				laad('rax', exp[1].v)
 				for i=2,#exp do
-					laad(sysregs[i], exp[i].v)
+					laad(sysregs[i-1], exp[i].v)
 				end
 				t[#t+1] = 'syscall'
+				opsla(naam, 'rax')
 
 			else
 				error('onbekende pseudo ass: '..combineer(stat))
@@ -309,12 +310,14 @@ function codegen(cfg)
 
 		elseif atoom(epiloog) == 'stop' then
 			local naam = blok.stats[#blok.stats][1]
-			t[#t+1] = "mov rdi, 1" -- string
-			t[#t+1] = fmt("mov rsi, %d[rsp]", opslag[naam.v])  -- buf
-			t[#t+1] = "movq rdx, [rsi]" -- len
-			t[#t+1] = "add rsi, 8" -- len
+
+			--[[
 			t[#t+1] = "mov rax, 1" -- write
+			t[#t+1] = "mov rdi, 1" -- stdout
+			t[#t+1] = fmt("movq rsi, %d[rsp]", opslag[naam.v]) -- ptr
+			t[#t+1] = fmt("movq rdx, -8[rsi]") -- len = *(ptr - 8)
 			t[#t+1] = "syscall"
+			]]
 
 			t[#t+1] = '# exit(0)'
 			t[#t+1] = "mov rdi, 0\nmov rax, 60\nsyscall\nret\n"

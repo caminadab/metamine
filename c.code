@@ -1,23 +1,30 @@
-
 ; bestanden
 ; syscalls
 ; libcalls
 
-a = open("hoi.txt")
+a = open("hoi.txt\0")
 b = schrijf(a, "hoi")
 c = sluit(b)
-;uit = c
 
-uit = open("hoi.txt")
+uit = b
+
+;uit = "hoi"
+;uit = "hoi"
+;uit = open("hoi.txt\0")
 
 sysWrite = 2
 stduit = 1
 
 schrijf = (bd, dat) → syscall(sysWrite, bd, dat, #dat)
-open = pad → syscall(sysOpen, pad, oRdonly)
+open = pad → syscall(sysOpen, pad, oRdwr + oCreat, 420)
 sluit = bd → syscall(sysClose, bd)
 
-sysOpen = 1
-sysWrite = 7
+sysRead = 0
+sysWrite = 1
+sysOpen = 2
 sysClose = 2
+
 oRdonly = 0
+oWronly = 1
+oRdwr = 2
+oCreat = 64
