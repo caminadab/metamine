@@ -6,23 +6,17 @@ a = open("hoi.txt\0")
 b = schrijf(a, "hoi")
 c = sluit(b)
 
-uit = b
-
-;uit = "hoi"
-;uit = "hoi"
-;uit = open("hoi.txt\0")
-
-sysWrite = 2
-stduit = 1
+uit = c + schrijf(1, "hoi!\n") + d
+d = schrijf(2, "hee!\n")
 
 schrijf = (bd, dat) → syscall(sysWrite, bd, dat, #dat)
 open = pad → syscall(sysOpen, pad, oRdwr + oCreat, 420)
-sluit = bd → syscall(sysClose, bd)
+sluit = bc → syscall(sysClose, bc)
 
 sysRead = 0
 sysWrite = 1
 sysOpen = 2
-sysClose = 2
+sysClose = 3
 
 oRdonly = 0
 oWronly = 1

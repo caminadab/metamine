@@ -54,6 +54,7 @@ function punten(exp)
 	end
 end
 
+		-- fix dubbele args: f(,(2 3))
 		-- herschrijf (a.b) naar (b(a))
 		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
@@ -116,6 +117,16 @@ function oplos(exp,voor)
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
+		-- fix dubbele args: f(,(2 3))
+		for eq in pairs(eqs) do
+			for exp in boompairs(eq) do
+				if isfn(exp) and fn(exp) ~= '->' and fn(exp[1]) == ',' then
+					for i,v in ipairs(exp[1]) do
+						exp[i] = v
+					end
+				end
+			end
+		end
 
 		-- herschrijf a.b naar b(a)
 		for eq in pairs(eqs) do
@@ -146,9 +157,10 @@ function oplos(exp,voor)
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 		for eq in pairs(eqs) do
 			--if isfn(eq) and isfn(eq[1]) --[[and isatoom(eq[1].fn)]] and isatoom(eq[1][1]) and #eq[1] == 1 then
-			if isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
+			if isfn(eq) and isfn(eq[1]) then --TODO and #eq[1] == 1 then
 				local a, b, c  = eq[1].fn, eq[1][1], eq[2]
 				local neq = X(sym.cois, a, X(sym.map, b, c))
+				local meq = X(sym.cois, a, X(sym.map, b, c))
 				oud[eq] = true
 				nieuw[neq] = true
 				--error(exp2string(neq))
@@ -157,7 +169,7 @@ function oplos(exp,voor)
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
 			if isfn(eq) and eq[2] and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
 				local a, b, c  = eq[2].fn, eq[2][1], eq[1]
-				local neq = X(sym.cois, a, X(sym.maplet, b, c))
+				local neq = X(sym.cois, a, X(sym.map, b, c))
 				--oud[eq] = true
 				nieuw[neq] = true
 			end
@@ -243,7 +255,7 @@ function oplos(exp,voor)
 		-- herschrijf  f(a) = a + 1
 		-- naar        f ∐= a → a + 1
 		for eq in pairs(eqs) do
-			if false and isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
+			if true and isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
 				local vrij = var(eq[1])
 				for naam in pairs(vrij) do
 					if bevat(eq[2], naam) then
@@ -372,15 +384,16 @@ function oplos(exp,voor)
 				if fn(lam) == '->' then
 					local inn,uit = lam[1],lam[2]
 					local params
-					if isexp(inn) and inn.fn.v == ',' and false then
+					if fn(inn) == ',' then
 						params = inn
 					else
 						params = {inn}
 					end
 
 					-- pas vergelijking aan
-					lam.fn = X'_fn'
 					for i in ipairs(lam) do lam[i] = nil end
+					lam.fn = X'_fn'
+					lam[1] = uit
 
 					-- complexe parameters
 					for i,param in ipairs(params) do
@@ -388,7 +401,7 @@ function oplos(exp,voor)
 							--local naam = X('_'..varnaam(aantal))
 							local naam = X('_arg', tostring(aantal))
 							params[i] = naam
-							lam[i] = X(tostring(aantal))
+							lam[#lam+1] = X(tostring(aantal))
 							local paramhulp = {fn=X'=', naam, param}
 							nieuw[paramhulp] = true -- HIER!
 
@@ -400,7 +413,6 @@ function oplos(exp,voor)
 						end
 						aantal = aantal + 1
 					end
-					lam[#lam+1] = uit
 				end
 			end
 		end
@@ -418,7 +430,7 @@ function oplos(exp,voor)
 						if waarde then
 							local eq = {fn=X':=', naam, waarde}
 							subst[eq] = true
-							if verboos then print('ISOLEER', exp2string(eq)) end
+							if verboos or verbozeKennis then print('ISOLEER', exp2string(eq)) end
 						end
 					--end
 				end
@@ -529,12 +541,15 @@ function oplos(exp,voor)
 		--error(exp2string(val))
 		for exp in boompairs(val) do
 			if isfn(exp) and fn(exp.fn) == '_fn' then
-				local narg, waarde = exp.fn[1], exp.fn[2]
-				local arg = X('_arg', narg)
-				local param = exp[1]
+				local waarde = exp.fn[1]
+				for i=2,#exp.fn do
+					local narg = exp.fn[i]
+					local arg = X('_arg', narg)
+					local param = exp[i-1]
 				--error('sjaakpot')
-				local nexp = substitueer(waarde, arg, param)
-				assign(exp, nexp)
+					waarde = substitueer(waarde, arg, param)
+				end
+				assign(exp, waarde)
 			end
 		end
 
