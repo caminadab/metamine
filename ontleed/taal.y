@@ -144,7 +144,7 @@ single:
 | single M4						{ $$ = fn3loc(aloc("^", @2), $1, aloc("4", @2), @$); }
 | single MN						{ $$ = fn3loc(aloc("^", @2), $1, aloc("n", @2), @$); }
 |	'(' exp ')'					{ $$ = metloc($2, @$); }
-| '(' exp ',' exp ')'	{ $$ = fn3loc(A(","), $2, $4, @$); }
+| '(' exp ',' exp ')'				  %prec NAAM  { $$ = fn3loc(aloc(",", @3), $2, $4, @$); }
 | '(' exp ',' exp ',' exp ')'	{ $$ = fn4loc(A(","), $2, $4, $6, @$); }
 | '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(A(","), $2, $4, $6, $8, @$); }
 | '[' list ']'				{ $$ = metloc($2, @$); }

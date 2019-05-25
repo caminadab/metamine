@@ -541,7 +541,9 @@ function oplos(exp,voor)
 
 		-- opgelost
 		if verbozeWaarde then
+			print('=== WAARDE ===')
 			print(exp2string(val))
+			print()
 		end
 
 		return val,nil,bekend,exp2naam

@@ -234,7 +234,6 @@ function typeer(exp)
 
 	local function ARG(exp, i)
 		if #exp == 1 and fn(exp[1]) == ',' then
-			print(exp2string(exp), i)
 			return exp[1][i]
 		else
 			return exp[i]
@@ -386,7 +385,7 @@ function typeer(exp)
 						--print(exp2string(exp[i]))
 						--local arg = exp[i] or exp[1][i] or exp[1][1][i]
 						local arg = ARG(exp, i)
-						print('N', N(tfn), exp2string(tfn))
+						--print('N', N(tfn), exp2string(tfn))
 						assert(arg, i .. ', '..exp2string(exp))
 						--if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
 						weestype(arg, A0(tfn, i), oorzaakloc[moes(exp.fn)] or exp.fn.loc)
@@ -405,7 +404,9 @@ function typeer(exp)
 	-- is alles nu getypeerd?
 	for exp in boompairs(exp) do
 		if not types[exp] then
-			print('kon type niet bepalen van '..exp2string(exp))
+			if verbozeTypes then
+				print('kon type niet bepalen van '..exp2string(exp))
+			end
 		end
 	end
 

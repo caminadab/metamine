@@ -25,7 +25,7 @@ local function inlinetekst(exp, opslag, loc, t)
 	for i=1,#exp,4 do
 		local num = {'0x'}
 		local s = {}
-		for j=min(i+4,#exp),i,-1 do
+		for j=min(i+4-1,#exp),i,-1 do
 			if tonumber(exp[j].v) then
 				num[#num+1] = string.format('%02x', exp[j].v)
 			else
@@ -287,6 +287,13 @@ function codegen(cfg)
 				t[#t+1] = fmt('add rbx, rcx')
 				t[#t+1] = 'movb al, [rbx]'
 				opsla(naam, 'rax')
+
+			elseif f == 'syscall' then
+				laad('rax', exp[1].v)
+				for i=2,#exp do
+					laad(sysregs[i], exp[i].v)
+				end
+				t[#t+1] = 'syscall'
 
 			else
 				error('onbekende pseudo ass: '..combineer(stat))

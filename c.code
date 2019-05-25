@@ -14,7 +14,7 @@ sysWrite = 2
 stduit = 1
 
 schrijf = (bd, dat) → syscall(sysWrite, bd, dat, #dat)
-open = pad → syscall(sysOpen, pad) ;, oRdonly)
+open = pad → syscall(sysOpen, pad, oRdonly)
 sluit = bd → syscall(sysClose, bd)
 
 sysOpen = 1

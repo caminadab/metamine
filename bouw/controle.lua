@@ -56,53 +56,6 @@ local function peil(waarde)
 	return diepte
 end
 
--- plet tot een fijne moes
--- dit bevat alleen atomaire functies, die tellen niet mee voor de (((factor)))
-local function plet(waarde, maakvar)
-	--for exp in boompairs(waarde) do assert(not isfn(exp) or isatoom(exp.fn)) end
-
-	local diepte = peil(waarde)
-	local vars = {} -- exp2vars
-	local stats = {}
-
-	local function r(exp)
-		--if isatoom(exp) then return end
-		-- diepste tak eerst
-		if diepte[exp] == 0 and false then
-			return
-		else
-			-- sorteer op diepte
-			local args = {}
-			for i,v in ipairs(exp) do
-				args[i] = v
-			end
-			table.sort(args, function (a, b) return diepte[a] < diepte[b] end)
-
-			args.fn = args[i]
-			for i,v in ipairs(args) do
-				-- alleen expressiekinderen hoeven berekend te worden
-				if isexp(v) then
-					--print("SUB", exp2string(args[i]))
-					args[i] = r(args[i])
-				end
-			end
-
-			-- nu al onze kinderen geweest zijn kunnen wij
-			for i,v in ipairs(exp) do
-				exp[i] = vars[v] or exp[i]
-			end
-
-			local var = maakvar()
-			vars[exp] = X(var)
-			stats[#stats+1] = X(sym.ass, var, exp)
-		end
-	end
-
-	r(waarde)
-
-	return stats
-end
-
 function controle(exp, maakvar)
 	local graaf = maakgraaf()
 	local maakvar = maakvar or maakvars()
@@ -130,9 +83,6 @@ function controle(exp, maakvar)
 	end
 
 	function con(exp,ret)
-		--if fn(exp) == '=>' then
-		--	table.insert(blok.stats, X'ok')
-		--end
 		local fw = {fn=exp.fn}
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
@@ -165,20 +115,13 @@ function controle(exp, maakvar)
 			blok = blok0
 			local econd = con(exp[1])
 			blok.epiloog = X('ga', econd, dan, anders)
-			--fw[1] = arg(exp[1])
-			--table.insert(blok.stats, X('ga', dan))
-
-			--table.insert(blok.stats, stat)
-			--local phi = maakblok(dan, {}, X'eind')
-			--blok = maakblok(dan, {}, X('ga', phi))
 
 			-- daadwerkelijke '=>'
-			local stat = X(':=', ret, rdan) --X('=>', econd, rdan, randers))
+			local stat = X(':=', ret, rdan)
 			table.insert(bphi.stats, stat)
 
 			-- ga rustig verder
 			blok = bphi
-
 
 		elseif tonumber(exp) then
 			stat[2] = X(tostring(exp))
@@ -192,6 +135,9 @@ function controle(exp, maakvar)
 		-- normale statement (TODO sorteer)
 		else
 			fw.fn = arg(exp.fn)
+			if fn(exp[1]) == ',' then
+				exp = exp[1]
+			end
 			for i,v in ipairs(exp) do
 				fw[i] = arg(v)
 			end
