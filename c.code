@@ -1,5 +1,6 @@
 ; bestanden
 ; syscalls
 ; libcalls
-a = "hoi" || "b" || "c" || "" || "jippie!"
 uit = sluit(schrijf(stduit, a))
+a = "hoi" || [ x ]
+x = 10

@@ -239,6 +239,6 @@ local elf = elf(assembleer(asm, 'a'), 'a')
 os.execute('chmod +x a.elf')
 if doemeteen then
 	print('== START ==')
-	os.execute('./a.elf ; echo CODE $?')
+	os.execute('./a.elf')
 end
 
