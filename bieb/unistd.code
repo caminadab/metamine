@@ -1,0 +1,27 @@
+; bestanden
+; syscalls
+; libcalls
+
+Bd: bestand
+Dat: data
+schrijf = (Bd, Dat) → syscall(sysWrite, Bd, Dat, #Dat)
+open = Pad → syscall(sysOpen, Pad, oRdwr + oCreat, 420)
+sluit = Bc → syscall(sysClose, Bc)
+
+bestand: int
+stdin = 0
+stduit = 1
+stdfout = 2
+stdin: bestand
+stduit: bestand
+stdfout: bestand
+
+sysRead = 0
+sysWrite = 1
+sysOpen = 2
+sysClose = 3
+
+oRdonly = 0
+oWronly = 1
+oRdwr = 2
+oCreat = 64

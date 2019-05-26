@@ -30,6 +30,8 @@ if #bronnen == 0 then
 	print('geen invoer')
 end
 
+bronnen[#bronnen+1] = 'bieb/unistd.code'
+
 if opt.h or opt.help or #bronnen == 0 then
 	print(
 [[gebruik: vt [OPTIES...] [BESTANDEN...]
@@ -42,7 +44,6 @@ Opties:
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
 
-    -I                genereer intermediaire code
     -S                genereer assembly-code
     -R                genereer uitgebreid rapport
 
@@ -58,7 +59,10 @@ Opties:
 
     -D                print delta-tijd informatie
     -C                print de controlegraaf
+
     -I                print intermediaire code
+    -J                print kijkgat code
+
     -F                print uitvoer na kijkgatoptimalisaties
     -G                print assemblycode
     -H                print linker info
@@ -89,7 +93,7 @@ if opt.W then verbozeWaarde = true end
 if opt.D then verbozeDelta = true end
 if opt.C then verbozeControle = true end
 if opt.I then verbozeIntermediair = true end
-if opt.F then verbozeKijkgat = true end
+if opt.J then verbozeKijkgat = true end
 if opt.A then verbozeAsm = true end
 if opt.H then verbozeLinker = true end
 if opt.M then verbozeOpslag = true end
@@ -163,7 +167,9 @@ local types,fouten = typeer(asb)
 
 if #fouten > 0 then
 	for i,fout in ipairs(fouten) do
-		print(fout.msg)
+		if fout.loc.bron:sub(1,4) ~= 'bieb' then
+			print(fout.msg)
+		end
 	end
 	-- TODO print
 	--return
@@ -216,6 +222,15 @@ for blok in pairs(cfg.punten) do
 	--print(exp2string(blok.stats))
 	blok.stats = kijkgat(blok.stats, maakvar)
 end
+
+if verbozeKijkgat then
+	print('=== KIJKGAT CODE ===')
+	for blok in spairs(cfg.punten) do
+		print(blok)
+	end
+	print()
+end
+
 local asm = codegen(cfg)
 if opt.S then
 	--file('a.s', asm)

@@ -120,7 +120,7 @@ function oplos(exp,voor)
 		-- fix dubbele args: f(,(2 3))
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
-				if isfn(exp) and fn(exp) ~= '->' and fn(exp[1]) == ',' then
+				if isfn(exp) and fn(exp) ~= '->' and exp[1] and fn(exp[1]) == ',' then
 					for i,v in ipairs(exp[1]) do
 						exp[i] = v
 					end
@@ -425,6 +425,7 @@ function oplos(exp,voor)
 			if isfn(eq) and eq.fn.v == [[=]] then
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq[2] then
+					if bieb[naam] == nil then
 						--if verboos then print('Probeer', naam, toexp(eq)) end
 						local waarde = isoleer(eq,naam)
 						if waarde then
@@ -432,7 +433,7 @@ function oplos(exp,voor)
 							subst[eq] = true
 							if verboos or verbozeKennis then print('ISOLEER', exp2string(eq)) end
 						end
-					--end
+					end
 				end
 			end
 		end

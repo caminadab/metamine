@@ -15,7 +15,9 @@ end
 expmt = {}
 
 function loctekst(loc)
-	local bron = loc.bron or '?'
+	local bron = loc.bron or '?.code'
+	bron = bron:sub(1, -6)
+
 	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
 		return string.format("%s@%d:%d", bron, loc.y1, loc.x1)
 	elseif loc.y1 == loc.y2 then

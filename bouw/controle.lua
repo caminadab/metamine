@@ -135,7 +135,7 @@ function controle(exp, maakvar)
 		-- normale statement (TODO sorteer)
 		else
 			fw.fn = arg(exp.fn)
-			if fn(exp[1]) == ',' then
+			if exp[1] and fn(exp[1]) == ',' then
 				exp = exp[1]
 			end
 			for i,v in ipairs(exp) do

@@ -73,7 +73,7 @@ function typefout(loc,msg,...)
 			elseif arg == 'rood' then
 				return color.brightred .. t[i] .. color.white
 			elseif arg == 'code' then
-				return color.brightyellow .. t[i] .. color.white
+				return color.brightyellow .. tostring(t[i]) .. color.white
 			elseif arg == 'exp' then
 				return color.brightcyan .. combineer(t[i]) .. color.white
 			elseif arg == 'int' then
@@ -150,7 +150,7 @@ function typeer(exp)
 					type, moetloc
 				)
 				if not fouten[msg] then
-					fouten[#fouten+1] = {loc = exp, msg = msg}
+					fouten[#fouten+1] = {loc = exp.loc, msg = msg}
 					fouten[msg] = true
 				end
 				return types,fouten

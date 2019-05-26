@@ -52,7 +52,7 @@ function kijkgat(blok, maakvar)
 
 		-- a /= b
 		-- a %= b
-		elseif #exp == 2 and op == '+' or op == '-' or op == '*' or op == '/' or op == 'mod' then
+		elseif #exp == 2 and op == '+' or op == '-' or op == '*' or op == '/' or op == 'mod' or op == '||' then
 			-- tijdelijk
 			--local t = maakvar()
 			local t = naam

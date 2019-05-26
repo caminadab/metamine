@@ -21,7 +21,7 @@ local function inlinetekst(exp, opslag, loc, t)
 	local min,concat = math.min, table.concat
 	assert(fn(exp) == '[]')
 	-- lengte
-	t[#t+1] = fmt('movq %d[rsp], %d', loc, #exp)
+	t[#t+1] = fmt('movq %d[rsp], %d', loc-8, #exp)
 	for i=1,#exp,4 do
 		local num = {'0x'}
 		local s = {}
@@ -32,13 +32,13 @@ local function inlinetekst(exp, opslag, loc, t)
 				num[#num+1] = '00'
 				-- custom pointer
 				s[#s+1] = fmt('movb al, %d[rsp]', opslag[exp[j].v])
-				s[#s+1] = fmt('movb %d[rsp], al', loc + 8 + (j-1))
+				s[#s+1] = fmt('movb %d[rsp], al', loc + (j-1))
 			end
 		end
 		-- getal
 		-- sla op
 		t[#t+1] = fmt('mov eax, %s', concat(num))
-		t[#t+1] = fmt('mov %d[rsp], eax', loc + 8 + (i-1))
+		t[#t+1] = fmt('mov %d[rsp], eax', loc + (i-1))
 		-- extra's
 		for i,v in ipairs(s) do
 			t[#t+1] = v
@@ -91,7 +91,7 @@ function codegen(cfg)
 				if f == 'b[]' then
 					len = #exp + 8
 				elseif f == '[]' then
-					len = #exp + 8 + 8 -- ptr, len, data
+					len = #exp + 8 + 8 + 0x400-- ptr, len, data
 				elseif f == 'd[]' then
 					len = 4 * exp + 8
 				elseif f == 'q[]' then
@@ -205,6 +205,44 @@ function codegen(cfg)
 				t[#t+1] = 'sub rax, rbx'
 				opsla(naam, 'rax', naam)
 
+			elseif op == '||=' then
+				laad('rax', naam) -- a.ptr
+				laad('rcx', val) -- b.ptr
+				t[#t+1] = fmt('mov rbx, -8[rax]') -- a.len
+				t[#t+1] = fmt('mov rdx, -8[rcx]') -- b.len
+				t[#t+1] = fmt('inc rbx')
+				t[#t+1] = fmt('inc rdx')
+
+				-- lengte
+				t[#t+1] = fmt('add rbx, rdx') -- b.len
+				t[#t+1] = fmt('inc rbx') -- b.len
+				t[#t+1] = fmt('mov -8[rax], rbx') -- b.len
+				t[#t+1] = fmt('sub rbx, rdx') -- b.len
+				t[#t+1] = fmt('dec rcx') -- b.len
+
+				-- zet klaar aan einde
+				t[#t+1] = fmt('add rax, rdx')
+				t[#t+1] = fmt('add rax, rbx')
+				t[#t+1] = fmt('add rcx, rdx')
+
+				-- cat lus
+				local label = 'cat'..maakvar()
+				t[#t+1] = fmt('%s_start:', label)
+
+				-- rdx-- ; rdx? ga eind
+				t[#t+1] = fmt('dec rdx')
+				t[#t+1] = fmt('dec rcx')
+				t[#t+1] = fmt('dec rax')
+				t[#t+1] = fmt('cmp rdx, 0')
+				t[#t+1] = fmt('je %s_eind', label)
+
+				t[#t+1] = fmt('mov bl, [rcx]')
+				t[#t+1] = fmt('mov [rax], bl')
+				t[#t+1] = fmt('jmp %s_start', label)
+
+
+				t[#t+1] = fmt('%s_eind:', label)
+
 			elseif cmp[f] then
 				laad('rax', exp[1].v)
 				laad('rbx', exp[2].v)
@@ -222,32 +260,12 @@ function codegen(cfg)
 			elseif f == '[]' then
 				--t[#t+0] = fmt('movq %d[rsp], %d', opslag[naam], #exp)
 				-- ptr, len, data...
-				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[naam]+16) -- rax := ptr
+				local ptr = opslag[naam] + 16
+				t[#t+1] = fmt('lea rax, %d[rsp]', ptr) -- rax := ptr
 				t[#t+1] = fmt('mov %d[rsp], rax', opslag[naam]) -- array := ptr
-				inlinetekst(exp, opslag, opslag[naam]+8, t)
+				inlinetekst(exp, opslag, ptr, t)
 				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[naam])
 				--opsla(naam, 'rax')
-
-			elseif f == '||' then
-				local a,b = naam, exp[2].v
-				t[#t+1] = fmt('lea rcx, %d[rsp]', opslag[a]+8) -- a.dat
-				t[#t+1] = fmt('mov rdx, %d[rsp]', opslag[a]) -- a.len
-				t[#t+1] = fmt('lea r8, %d[rsp]', opslag[b]+8) -- b.dat
-				t[#t+1] = fmt('mov r9, %d[rsp]', opslag[b]) -- b.len
-
-				-- r3 := a.dat
-				-- r3 += r4
-				t[#t+1] = fmt('add rcx, rdx')
-
-				-- cat lus
-				local label = 'catlus'..maakvar()
-				t[#t+1] = fmt('%s:', label)
-
-				t[#t+1] = fmt('dec r9')
-				t[#t+1] = fmt('cmp r9, 0')
-				t[#t+1] = fmt('jne %s', label)
-
-				t[#t+1] = fmt('lea rax, %d[rsp]', opslag[a])
 
 			elseif f == '||2' then
 				local a,b = naam, exp[2].v
