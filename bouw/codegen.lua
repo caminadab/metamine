@@ -190,8 +190,16 @@ function codegen(cfg)
 			elseif op == '/=' then
 				laad('rax', naam)
 				laad('rbx', val)
+				t[#t+1] = 'cdq'
 				t[#t+1] = 'idivq rbx'
 				opsla(naam, 'rax', naam)
+
+			elseif op == 'mod=' then
+				laad('rax', naam)
+				laad('rbx', val)
+				t[#t+1] = 'cdq'
+				t[#t+1] = 'idivq rbx'
+				opsla(naam, 'rdx', naam)
 
 			elseif op == '+=' then
 				laad('rax', naam)
@@ -215,7 +223,8 @@ function codegen(cfg)
 
 				-- lengte
 				t[#t+1] = fmt('add rbx, rdx') -- b.len
-				t[#t+1] = fmt('inc rbx') -- b.len
+				t[#t+1] = fmt('dec rbx')
+				t[#t+1] = fmt('dec rbx')
 				t[#t+1] = fmt('mov -8[rax], rbx') -- b.len
 				t[#t+1] = fmt('sub rbx, rdx') -- b.len
 				t[#t+1] = fmt('dec rcx') -- b.len

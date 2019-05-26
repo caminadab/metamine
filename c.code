@@ -1,13 +1,5 @@
 ; bestanden
 ; syscalls
 ; libcalls
-;uit = sluit(schrijf(stduit, t))
-
-uit = sluit(schrijf(stduit, tt))
-tt = "" || "OKEE!" || [10]
-
-a = 1000 / 300
-b = a * 20
-c = b + a / 8
-
-t = tekst(c)
+a = "hoi" || "b" || "c" || "" || "jippie!"
+uit = sluit(schrijf(stduit, a))
