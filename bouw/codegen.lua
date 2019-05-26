@@ -207,6 +207,31 @@ function codegen(cfg)
 				t[#t+1] = 'add rax, rbx'
 				opsla(naam, 'rax', naam)
 
+			--t[#t+1] = 'cvtsi2sd xmm0, rax' -- m := float(b)
+
+			elseif op == 'wortel=' then
+				--laad('rax', naam)
+				t[#t+1] = fmt('fildd %s[rsp]', opslag[naam]) -- load int
+				t[#t+1] = 'fsqrt' -- a := int(m)
+				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- a := int(m)
+				--opsla(naam, 'rax')
+
+			elseif op == '^=' then
+				laad('rax', naam)
+				t[#t+1] = 'tbsr rbx, rax' -- b := log2 a
+			--	t[#t+1] = 'cvtsi2sd xmm0, rbx' -- m := float(b)
+				t[#t+1] = 'flid st(0), ' -- m := float(b)
+
+				t[#t+1] = 'fyl2x st(1), st(0)' --
+
+				t[#t+1] = 'cvttsd2si rax, xmm0' -- a := int(m)
+
+				opsla(naam, 'rax')
+
+				laad('rbx', val)
+				t[#t+1] = 'mul rax, rbx'
+				opsla(naam, 'rax', naam)
+
 			elseif op == '-=' then
 				laad('rax', naam)
 				laad('rbx', val)

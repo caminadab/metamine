@@ -52,7 +52,7 @@ function kijkgat(blok, maakvar)
 
 		-- a /= b
 		-- a %= b
-		elseif #exp == 2 and op == '+' or op == '-' or op == '*' or op == '/' or op == 'mod' or op == '||' then
+		elseif #exp == 2 and op == '+' or op == '-' or op == '*' or op == '/' or op == '^' or op == 'mod' or op == '||' or op == 'wortel' then
 			-- tijdelijk
 			--local t = maakvar()
 			local t = naam
@@ -63,6 +63,8 @@ function kijkgat(blok, maakvar)
 			insert(blok, i, ruimte)
 		end
 	end
+	-- dubbele eruit
+	local al = {}
 	return blok
 end
 

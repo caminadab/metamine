@@ -386,9 +386,11 @@ function typeer(exp)
 						--local arg = exp[i] or exp[1][i] or exp[1][1][i]
 						local arg = ARG(exp, i)
 						--print('N', N(tfn), exp2string(tfn))
-						assert(arg, i .. ', '..exp2string(exp))
 						--if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
-						weestype(arg, A0(tfn, i), oorzaakloc[moes(exp.fn)] or exp.fn.loc)
+						if arg then
+							assert(arg, i .. ', '..exp2string(exp))
+							weestype(arg, A0(tfn, i), oorzaakloc[moes(exp.fn)] or exp.fn.loc)
+						end
 						--print('  ARG', moes(exp)i]), moes(A)tfn, i)), loctekst(exp[i].loc))
 					end
 				end

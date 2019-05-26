@@ -1,10 +1,9 @@
 ; bestanden
 ; syscalls
 ; libcalls
-
 Bd: bestand
 Dat: data
-schrijf = (Bd, Dat) → syscall(sysWrite, Bd, Dat, #Dat)
+schrijf = (Bd, Dat) → syscall(sysWrite, Bd, Dat, #Dat) · 0 + Bd
 open = Pad → syscall(sysOpen, Pad, oRdwr + oCreat, 420)
 sluit = Bc → syscall(sysClose, Bc)
 

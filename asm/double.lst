@@ -1,0 +1,165 @@
+   1              		.file	"double.c"
+   2              		.intel_syntax noprefix
+   3              	# GNU C17 (Debian 8.3.0-7) version 8.3.0 (x86_64-linux-gnu)
+   4              	#	compiled by GNU C version 8.3.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl ve
+   5              	
+   6              	# GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+   7              	# meegegeven opties:  -imultiarch x86_64-linux-gnu double.c -masm=intel
+   8              	# -mtune=generic -march=x86-64 -g -O0 -fverbose-asm
+   9              	# ingeschakelde opties:  -fPIC -fPIE -faggressive-loop-optimizations
+  10              	# -fasynchronous-unwind-tables -fauto-inc-dec -fchkp-check-incomplete-type
+  11              	# -fchkp-check-read -fchkp-check-write -fchkp-instrument-calls
+  12              	# -fchkp-narrow-bounds -fchkp-optimize -fchkp-store-bounds
+  13              	# -fchkp-use-static-bounds -fchkp-use-static-const-bounds
+  14              	# -fchkp-use-wrappers -fcommon -fdelete-null-pointer-checks
+  15              	# -fdwarf2-cfi-asm -fearly-inlining -feliminate-unused-debug-types
+  16              	# -ffp-int-builtin-inexact -ffunction-cse -fgcse-lm -fgnu-runtime
+  17              	# -fgnu-unique -fident -finline-atomics -fira-hoist-pressure
+  18              	# -fira-share-save-slots -fira-share-spill-slots -fivopts
+  19              	# -fkeep-static-consts -fleading-underscore -flifetime-dse
+  20              	# -flto-odr-type-merging -fmath-errno -fmerge-debug-strings -fpeephole
+  21              	# -fplt -fprefetch-loop-arrays -freg-struct-return
+  22              	# -fsched-critical-path-heuristic -fsched-dep-count-heuristic
+  23              	# -fsched-group-heuristic -fsched-interblock -fsched-last-insn-heuristic
+  24              	# -fsched-rank-heuristic -fsched-spec -fsched-spec-insn-heuristic
+  25              	# -fsched-stalled-insns-dep -fschedule-fusion -fsemantic-interposition
+  26              	# -fshow-column -fshrink-wrap-separate -fsigned-zeros
+  27              	# -fsplit-ivs-in-unroller -fssa-backprop -fstdarg-opt
+  28              	# -fstrict-volatile-bitfields -fsync-libcalls -ftrapping-math -ftree-cselim
+  29              	# -ftree-forwprop -ftree-loop-if-convert -ftree-loop-im -ftree-loop-ivcanon
+  30              	# -ftree-loop-optimize -ftree-parallelize-loops= -ftree-phiprop
+  31              	# -ftree-reassoc -ftree-scev-cprop -funit-at-a-time -funwind-tables
+  32              	# -fverbose-asm -fzero-initialized-in-bss -m128bit-long-double -m64 -m80387
+  33              	# -malign-stringops -mavx256-split-unaligned-load
+  34              	# -mavx256-split-unaligned-store -mfancy-math-387 -mfp-ret-in-387 -mfxsr
+  35              	# -mglibc -mieee-fp -mlong-double-80 -mmmx -mno-sse4 -mpush-args -mred-zone
+  36              	# -msse -msse2 -mstv -mtls-direct-seg-refs -mvzeroupper
+  37              	
+  38              		.text
+  39              	.Ltext0:
+  40              		.section	.rodata
+  41              	.LC0:
+  42 0000 25640A00 		.string	"%d\n"
+  43              	.LC3:
+  44 0004 25660A00 		.string	"%f\n"
+  45              		.text
+  46              		.globl	main
+  48              	main:
+  49              	.LFB0:
+  50              		.file 1 "double.c"
+   1:double.c      **** #include <math.h>
+   2:double.c      **** #include <stdio.h>
+   3:double.c      **** 
+   4:double.c      **** int main() {
+  51              		.loc 1 4 12
+  52              		.cfi_startproc
+  53 0000 55       		push	rbp	#
+  54              		.cfi_def_cfa_offset 16
+  55              		.cfi_offset 6, -16
+  56 0001 4889E5   		mov	rbp, rsp	#,
+  57              		.cfi_def_cfa_register 6
+  58 0004 4883EC30 		sub	rsp, 48	#,
+  59              	# double.c:5: 	volatile int a = 10;
+   5:double.c      **** 	volatile int a = 10;
+  60              		.loc 1 5 15
+  61 0008 C745EC0A 		mov	DWORD PTR -20[rbp], 10	# a,
+  61      000000
+  62              	# double.c:6: 	volatile int b = 8;
+   6:double.c      **** 	volatile int b = 8;
+  63              		.loc 1 6 15
+  64 000f C745E808 		mov	DWORD PTR -24[rbp], 8	# b,
+  64      000000
+  65              	# double.c:7: 	int c = pow(a, b);
+   7:double.c      **** 	int c = pow(a, b);
+  66              		.loc 1 7 10
+  67 0016 8B45E8   		mov	eax, DWORD PTR -24[rbp]	# b.0_1, b
+  68 0019 F20F2AC8 		cvtsi2sd	xmm1, eax	# _2, b.0_1
+  69 001d 8B45EC   		mov	eax, DWORD PTR -20[rbp]	# a.1_3, a
+  70 0020 F20F2AC0 		cvtsi2sd	xmm0, eax	# _4, a.1_3
+  71 0024 E8000000 		call	pow@PLT	#
+  71      00
+  72              	# double.c:7: 	int c = pow(a, b);
+  73              		.loc 1 7 6
+  74 0029 F20F2CC0 		cvttsd2si	eax, xmm0	# tmp96, _5
+  75 002d 8945FC   		mov	DWORD PTR -4[rbp], eax	# c, tmp96
+  76              	# double.c:8: 	printf("%d\n", c);
+   8:double.c      **** 	printf("%d\n", c);
+  77              		.loc 1 8 2
+  78 0030 8B45FC   		mov	eax, DWORD PTR -4[rbp]	# tmp97, c
+  79 0033 89C6     		mov	esi, eax	#, tmp97
+  80 0035 488D3D00 		lea	rdi, .LC0[rip]	#,
+  80      000000
+  81 003c B8000000 		mov	eax, 0	#,
+  81      00
+  82 0041 E8000000 		call	printf@PLT	#
+  82      00
+  83              	# double.c:10: 	volatile double A = 2.0;
+   9:double.c      **** 
+  10:double.c      **** 	volatile double A = 2.0;
+  84              		.loc 1 10 18
+  85 0046 F20F1005 		movsd	xmm0, QWORD PTR .LC1[rip]	# tmp98,
+  85      00000000 
+  86 004e F20F1145 		movsd	QWORD PTR -32[rbp], xmm0	# A, tmp98
+  86      E0
+  87              	# double.c:11: 	volatile double B = 3.0;
+  11:double.c      **** 	volatile double B = 3.0;
+  88              		.loc 1 11 18
+  89 0053 F20F1005 		movsd	xmm0, QWORD PTR .LC2[rip]	# tmp99,
+  89      00000000 
+  90 005b F20F1145 		movsd	QWORD PTR -40[rbp], xmm0	# B, tmp99
+  90      D8
+  91              	# double.c:12: 	double C = A + B;
+  12:double.c      **** 	double C = A + B;
+  92              		.loc 1 12 15
+  93 0060 F20F104D 		movsd	xmm1, QWORD PTR -32[rbp]	# A.2_6, A
+  93      E0
+  94 0065 F20F1045 		movsd	xmm0, QWORD PTR -40[rbp]	# B.3_7, B
+  94      D8
+  95              	# double.c:12: 	double C = A + B;
+  96              		.loc 1 12 9
+  97 006a F20F58C1 		addsd	xmm0, xmm1	# tmp100, A.2_6
+  98 006e F20F1145 		movsd	QWORD PTR -16[rbp], xmm0	# C, tmp100
+  98      F0
+  99              	# double.c:13: 	printf("%f\n", C);
+  13:double.c      **** 	printf("%f\n", C);
+ 100              		.loc 1 13 2
+ 101 0073 F20F1045 		movsd	xmm0, QWORD PTR -16[rbp]	# tmp101, C
+ 101      F0
+ 102 0078 488D3D00 		lea	rdi, .LC3[rip]	#,
+ 102      000000
+ 103 007f B8010000 		mov	eax, 1	#,
+ 103      00
+ 104 0084 E8000000 		call	printf@PLT	#
+ 104      00
+ 105              	# double.c:15: 	return 0;
+  14:double.c      **** 
+  15:double.c      **** 	return 0;
+ 106              		.loc 1 15 9
+ 107 0089 B8000000 		mov	eax, 0	# _18,
+ 107      00
+ 108              	# double.c:16: }
+  16:double.c      **** }
+ 109              		.loc 1 16 1
+ 110 008e C9       		leave	
+ 111              		.cfi_def_cfa 7, 8
+ 112 008f C3       		ret	
+ 113              		.cfi_endproc
+ 114              	.LFE0:
+ 116              		.section	.rodata
+ 117              		.align 8
+ 118              	.LC1:
+ 119 0008 00000000 		.long	0
+ 120 000c 00000040 		.long	1073741824
+ 121              		.align 8
+ 122              	.LC2:
+ 123 0010 00000000 		.long	0
+ 124 0014 00000840 		.long	1074266112
+ 125              		.text
+ 126              	.Letext0:
+ 127              		.file 2 "/usr/include/x86_64-linux-gnu/bits/types.h"
+ 128              		.file 3 "/usr/lib/gcc/x86_64-linux-gnu/8/include/stddef.h"
+ 129              		.file 4 "/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h"
+ 130              		.file 5 "/usr/include/x86_64-linux-gnu/bits/types/FILE.h"
+ 131              		.file 6 "/usr/include/math.h"
+ 132              		.file 7 "/usr/include/stdio.h"
+ 133              		.file 8 "/usr/include/x86_64-linux-gnu/bits/sys_errlist.h"

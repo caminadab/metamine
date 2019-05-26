@@ -39,6 +39,7 @@ bieb = {
 	end) (10),
 	os.time(),
 	['inverteer'] = true; -- sure
+	['wortel'] = true; -- sure
 	['ja'] = true; 
 	['nee'] = false; 
 	['niets'] = false; 
