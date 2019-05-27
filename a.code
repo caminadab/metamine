@@ -1,8 +1,23 @@
-uit = itoa(123)
+uit = sluit(schrijf(stduit, tt))
 
-als n < 10 dan
-	itoa = n -> [ '0' + n ]
-anders
-	itoa = n -> itoa(n idiv 1) || itoa(n mod 10)
+tt = itoa(12345) || " HALLO \n"
 
-idiv = (a,b) -> int(a/b)
+itoa = i → a
+  r = 0 .. #log10(i)+1
+  a = r map cijfer
+  cijfer = n → '0' + (i / 10^n) mod 10
+
+log10 = e → log2(e) / log2(10)
+
+;-
+  a = [n8, n7, n6, n5, n4, n3, n2, n1, n0]
+    n0 = '0' + (i/1) mod 10
+    n1 = '0' + (i/10) mod 10
+    n2 = '0' + (i/100) mod 10
+    n3 = '0' + (i/1000) mod 10
+    n4 = '0' + (i/10000) mod 10
+    n5 = '0' + (i/100000) mod 10
+    n6 = '0' + (i/1000000) mod 10
+    n7 = '0' + (i/10000000) mod 10
+    n8 = '0' + (i/100000000) mod 10
+-;

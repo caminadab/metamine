@@ -167,7 +167,7 @@ function oplos(exp,voor)
 			end
 
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
-			if isfn(eq) and eq[2] and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
+			if false and isfn(eq) and eq[2] and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
 				local a, b, c  = eq[2].fn, eq[2][1], eq[1]
 				local neq = X(sym.cois, a, X(sym.map, b, c))
 				--oud[eq] = true

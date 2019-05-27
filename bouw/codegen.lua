@@ -177,6 +177,80 @@ function codegen(cfg)
 				t[#t+1] = 'cmove rax, rbx'
 				opsla(naam, 'rax', naam)
 
+			elseif f == '_arg' then
+				opsla(naam, abiregs[1])-- + tonumber(atoom(exp, 1))])
+
+			elseif f == '..' then
+				laad('rax', exp[1].v) -- onder
+				laad('rbx', exp[2].v) -- boven
+				-- rcx = count
+				t[#t+1] = 'mov rcx, rbx'
+				t[#t+1] = 'sub rcx, rax'
+				t[#t+1] = 'add rcx, 8'
+				-- malloc!
+				t[#t+1] = 'mov rdi, rcx'
+				t[#t+1] = 'call malloc'
+				t[#t+1] = 'add rax, 8'
+				opsla(naam, 'rax', 'malloc lijst')
+
+				local label = 'itot'..maakvar()
+				laad('rbx', exp[1].v) -- onder
+				laad('rcx', exp[2].v) -- boven
+				t[#t+1] = 'sub rcx, rbx'
+				t[#t+1] = 'mov -8[rax], rcx'
+
+				t[#t+1] = label..'_begin:'
+				t[#t+1] = fmt('cmp rcx, 0')
+				t[#t+1] = fmt('je %s_eind', label)
+
+				-- doe
+				t[#t+1] = fmt("movb [rax], bl")
+				t[#t+1] = fmt('inc bl')
+				t[#t+1] = fmt('inc rax')
+				t[#t+1] = fmt('dec rcx')
+
+				t[#t+1] = fmt('jmp %s_begin', label)
+
+				t[#t+1] = label..'_eind:'
+				laad('rax', naam)
+
+			elseif f == 'map' then
+				laad('rax', exp[1].v) -- lijst
+				opsla(naam, 'rax') -- lijst
+				laad('rbx', exp[2].v) -- functie
+				t[#t+1] = fmt('mov rcx, -8[rax]') -- lengte
+
+				-- start
+				local label = 'map'..maakvar()
+				t[#t+1] = fmt('%s_start:', label)
+
+				-- lus
+				t[#t+1] = fmt('dec rcx')
+				t[#t+1] = fmt('cmp rcx, 0')
+				t[#t+1] = fmt('jl %s_eind', label)
+
+				-- 
+				t[#t+1] = fmt('movb dil, [rax+rcx]')
+				t[#t+1] = fmt('push rax')
+				t[#t+1] = fmt('push rbx')
+				t[#t+1] = fmt('push rcx')
+				t[#t+1] = 'call rbx'
+				t[#t+1] = 'mov dl, al'
+				t[#t+1] = fmt('pop rcx')
+				t[#t+1] = fmt('pop rbx')
+				t[#t+1] = fmt('pop rax')
+				t[#t+1] = fmt('movb [rax+rcx], dl')
+				t[#t+1] = fmt('jmp %s_start', label)
+
+
+				t[#t+1] = fmt('%s_eind:', label)
+
+
+			elseif f == 'log2' then
+				laad('rax', exp[1].v)
+				t[#t+1] = 'bsr rax, rax'
+				opsla(naam, 'rax')
+
 			elseif op == ':=' and val then
 				laad('rax', val)
 				opsla(naam, 'rax', naam)
@@ -218,19 +292,25 @@ function codegen(cfg)
 
 			elseif op == '^=' then
 				laad('rax', naam)
-				t[#t+1] = 'tbsr rbx, rax' -- b := log2 a
-			--	t[#t+1] = 'cvtsi2sd xmm0, rbx' -- m := float(b)
-				t[#t+1] = 'flid st(0), ' -- m := float(b)
+				t[#t+1] = 'bsr rcx, rax' -- b := log2 a
+				t[#t+1] = fmt('mov %d[rsp], rcx', opslag[naam]) -- b := log2 a
 
-				t[#t+1] = 'fyl2x st(1), st(0)' --
+				t[#t+1] = fmt('fildd %s[rsp]', opslag[naam]) -- load int
+				if not opslag[val] then
+					t[#t+1] = fmt('movq %d[rsp], %s', opslag[naam], val)
+					opslag[val] = opslag[naam]
+				end
+				t[#t+1] = fmt('fildd %s[rsp]', opslag[val]) -- load int
+				if not opslag[val] then
+					opsla(naam, 'rax')
+				end
+				t[#t+1] = 'fyl2x'
 
-				t[#t+1] = 'cvttsd2si rax, xmm0' -- a := int(m)
-
-				opsla(naam, 'rax')
-
-				laad('rbx', val)
-				t[#t+1] = 'mul rax, rbx'
-				opsla(naam, 'rax', naam)
+				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- a := int(m)
+				t[#t+1] = fmt('mov rax, %d[rsp]', opslag[naam]) -- b := log2 a
+				t[#t+1] = fmt('sal eax, cl', opslag[naam]) -- b := log2 a
+				t[#t+1] = fmt('sal eax, cl', opslag[naam]) -- b := log2 a
+				t[#t+1] = fmt('mov %d[rsp], rax', opslag[naam]) -- b := log2 a
 
 			elseif op == '-=' then
 				laad('rax', naam)
@@ -390,6 +470,10 @@ function codegen(cfg)
 				t[#t+1] = 'jnz '..epiloog[2].v
 				t[#t+1] = 'jmp rdx'
 			end
+
+		elseif fn(epiloog) == 'ret' then
+			laad('rax', epiloog[1].v)
+			t[#t+1] = 'ret'
 		
 		else
 			error('onbekende epiloog: '..exp2string(epiloog))

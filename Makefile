@@ -23,6 +23,9 @@ all:
 	cd ontleed; make
 	cp -r ontleed/bin/* bin/
 
+malloc.o: bieb/malloc.c
+	cc -c -fPIC -DLACKS_STDLIB_H -DNO_MALLOC_STATS bieb/malloc.c -o bieb/malloc.o
+
 web:
 	cd ontleed; make web
 	mkdir -p bin

@@ -36,7 +36,7 @@ function leesblok(tekst)
 end
 
 function maakblok(naam, stats, epiloog)
-	assert(atoom(epiloog) == 'eind' or atoom(epiloog) == 'stop' or fn(epiloog) == 'ga', 'foute epiloog: '..combineer(epiloog))
+	assert(atoom(epiloog) == 'eind' or atoom(epiloog) == 'stop' or fn(epiloog) == 'ga' or fn(epiloog) == 'ret', 'foute epiloog: '..combineer(epiloog))
 	if fn(epiloog) == 'ga' and fn(epiloog[1]) == ',' then
 		assert(#epiloog[1] == 3 or #epiloog[1] == 4, 'onjuiste sprong')
 	end

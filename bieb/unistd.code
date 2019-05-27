@@ -4,6 +4,8 @@
 Bd: bestand
 Dat: data
 schrijf = (Bd, Dat) → syscall(sysWrite, Bd, Dat, #Dat) · 0 + Bd
+lees = (Bl) → syscall(sysRead, Bl, Buf, 1024) · 0 + Buf
+  Buf = "hoi"
 open = Pad → syscall(sysOpen, Pad, oRdwr + oCreat, 420)
 sluit = Bc → syscall(sysClose, Bc)
 

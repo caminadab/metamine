@@ -1,0 +1,4 @@
+uit = "fib(20) = " || tekst(x) || [10]
+x = fib 20
+fib = n → (fⁿ[0,1]) 0
+f = [a,b] → [b,a+b]

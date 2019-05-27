@@ -10,6 +10,7 @@ bieb = {
 	-- rochel
 	['open-lees'] = true,
 	syscall = true,
+	log2 = true,
 
 	-- tekening
 	rechthoek = true,
@@ -244,8 +245,6 @@ bieb = {
 		return r
 	end;
 
-	['log'] = math.log;
-
 	-- trig
 	['sin'] = math.sin;
 	['asin'] = math.asin;
@@ -313,7 +312,7 @@ bieb = {
 		return math.floor(getal)
 	end;
 
-	['cijfer'] = function(a)
+	['cijfer0'] = function(a)
 		--return not not (tonumber(a) and #tostring(a) == 1)
 		a = tonumber(a)
 		return 48 <= a and a <= 57
@@ -386,11 +385,6 @@ bieb = {
 	['kan-lezen'] = function(b)
 		if not b.buf then b.buf = b.fd:read(1024) end
 		return b.buf
-	end;
-	['lees'] = function(b)
-		local buf = b.buf
-		b.buf = nil
-		return buf
 	end;
 	['=>'] = function(a,b)
 		if a then return b

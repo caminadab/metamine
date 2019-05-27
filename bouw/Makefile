@@ -1,6 +1,3 @@
-malloc.o: malloc.c
-	cc -c -fPIC -DLACKS_STDLIB_H -DONLY_MSPACES -DNO_MALLOC_STATS malloc.c
-
 demo.o: demo.s
 	as demo.s -g -o demo.o --no-pad-sections -R 
 

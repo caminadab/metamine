@@ -60,10 +60,15 @@ function controle(exp, maakvar)
 	local graaf = maakgraaf()
 	local maakvar = maakvar or maakvars()
 	local procindex = maakindices()
+	local funcindex = maakindices()
 	local procs = {} -- naam → exp
 
 	local function maakproc()
 		return 'p'..procindex()
+	end
+
+	local function maakfunc()
+		return 'fn'..funcindex()
 	end
 
 	-- running block
@@ -87,8 +92,25 @@ function controle(exp, maakvar)
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 
-		-- normaal
-		if fn(exp) == '=>' then
+		if fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
+			local naam = X(maakfunc())
+			local waarde = exp[1]
+			local arg = exp[2]
+			exp.v = naam.v
+			exp.fn = nil
+			exp[1] = nil
+			exp[2] = nil
+			local bfn = maakblok(naam, {}, X('ret', '!!!'))
+			local b = blok
+			blok = bfn
+			local res = con(waarde)
+			bfn.epiloog[1] = res
+			graaf:punt(bfn)
+			blok = b
+			table.insert(blok.stats, X(':=', ret, naam))
+
+		-- alsdan!
+		elseif fn(exp) == '=>' then
 			local blok0 = blok
 			local eals, edan, eanders = exp[1], exp[2], exp[3]
 

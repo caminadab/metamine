@@ -10,10 +10,10 @@ function elf(obj, naam)
 
 	if ontkever then
 		print('ONTKEVER')
-		os.execute(string.format('ld %s.o -o %s.elf', naam, naam))
+		os.execute(string.format('ld bieb/malloc.o %s.o -o %s.elf', naam, naam))
 	else
 		-- malloc.o
-		os.execute(string.format( 'ld %s.o -o %s.elf -n --build-id=none -static', naam, naam))
+		os.execute(string.format( 'ld -O3 bieb/malloc.o %s.o -o %s.elf -n --build-id=none -static', naam, naam))
 		os.execute(string.format('strip %s', naam..'.elf'))
 	end
 
