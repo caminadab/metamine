@@ -138,7 +138,7 @@ function typeer(exp)
 			elseif typegraaf:unie(a, b) then
 				T = typegraaf:unie(a, b)
 			else
-				-- c.code@7:11-12: "a" is "int" maar moet "bit" zijn
+				-- c@7:11-12: "a" is "int" maar moet "bit" zijn
 				local isloc = oorzaakloc[exp] or exp.loc
 				local moetloc = typeoorzaakloc or oorzaakloc[moes(exp)]
 				assert(code)
@@ -187,10 +187,11 @@ function typeer(exp)
 
 	-- makkelijke types
 	for exp in boompairsdfs(exp, t) do
-		local T
+		local T,S
 		if tonumber(exp.v) and exp.v % 1 == 0 then
 			local n = tonumber(exp.v)
-			T = X'int'
+			T = exp
+			S = X'int'
 		elseif tonumber(exp.v) then T = X'kommagetal'
 		elseif exp.tekst then
 			--T = X'tekst'
@@ -205,7 +206,8 @@ function typeer(exp)
 				T = typegraaf:unie(T, t)
 				if not T then break end
 			end
-			if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
+			--if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
+			if true or T and T.v ~= 'iets' then T = X('^', T, #exp)
 			else T = nil end
 		elseif isfn(exp) and exp.fn.v == '{}' then
 			T = X'set'
@@ -368,8 +370,9 @@ function typeer(exp)
 			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'^') then
 				local elmin,elmax = typegraaf:paramtype(types[exp.fn], X'^')
 				local bereik = X('..', '0', elmax)
-				--weestype(exp[1], bereik, exp.loc) -- TODO loc
-				--weestype(bereik, X'nat', exp.loc) -- TODO loc
+				typegraaf:link(bereik, X'nat')
+				weestype(exp[1], bereik, oorzaakloc[exp.fn])
+				weestype(bereik, X'nat', exp.loc) -- TODO loc
 			end
 
 			-- koel doen met lijst indices

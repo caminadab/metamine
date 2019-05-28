@@ -82,6 +82,17 @@ function metatypegraaf:issubtype(type, super)
 		return true
 	end
 
+	if tonumber(type.v) and fn(super) == '..' then
+		local n = tonumber(type.v)
+		local min = tonumber(super[1].v)
+		local max = tonumber(super[2].v)
+		if min <= n and n < max then
+			return true
+		else
+			return false
+		end
+	end
+
 	-- (1..1000) : (..)
 	if isatoom(super) and isfn(type) then
 		if super.v == type.fn.v then

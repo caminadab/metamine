@@ -41,7 +41,7 @@ sincos :  getal → (kommagetal, kommagetal)
 (^) :  (getal, getal) → getal
 ;(^) :  ((→), nat) → getal
 (#) :  verzameling → int
-([) : lijst
+;([) : lijst
 ;(=) :  (iets, iets) → bit 
 ;(→) :  (iets,iets) → (iets → iets)
 (||) :  (lijst, lijst) → lijst
