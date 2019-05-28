@@ -1,6 +1,3 @@
-; arch
-byte: int
-
 uit: bit
 
 ; unix
@@ -14,6 +11,8 @@ getal: iets
 kommagetal: getal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)
+onnat: int ; int < 0
+byte: nat
 
 bit: iets
 ja: bit

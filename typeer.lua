@@ -167,7 +167,7 @@ function typeer(exp)
 			typegraaf:link(T)
 			if verbozeTypes then
 				local t = typeoorzaakloc or ol or exploc
-				local s = t and '\t(' ..ansi.underline.. (loctekst(t) or '')..ansi.normal..')'
+				local s = t and '\t(' ..ansi.underline.. (loctekst(t) or '')..ansi.normal..')' or ''
 
 				--print('TYPEER', moes(exp)..': '..moes(T))
 				if exp.loc and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then
@@ -192,8 +192,10 @@ function typeer(exp)
 			local n = tonumber(exp.v)
 			if 0 <= n and n < 256 then
 				T = X'byte'
+			elseif n > 0 then
+				T = X'nat'
 			else
-				T = X'int'
+				T = X'neg'
 			end
 		elseif tonumber(exp.v) then T = X'kommagetal'
 		elseif exp.tekst then
@@ -365,9 +367,11 @@ function typeer(exp)
 
 			end
 
+			-- koel doen met lijst indices
 			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'lijst') then
 				local eltype = typegraaf:paramtype(types[exp.fn], X'lijst')
 				weestype(exp, eltype, exp.loc) -- TODO loc
+				weestype(exp[1], X'nat', exp.loc) -- TODO loc
 			end
 
 			if tfn and #tfn == 2 and fn(tfn) == '->' then
