@@ -30,8 +30,6 @@ if #bronnen == 0 then
 	print('geen invoer')
 end
 
-bronnen[#bronnen+1] = 'bieb/unistd.code'
-
 if opt.h or opt.help or #bronnen == 0 then
 	print(
 [[gebruik: vt [OPTIES...] [BESTANDEN...]
@@ -72,6 +70,8 @@ Opties:
 ]])
 	return
 end
+
+bronnen[#bronnen+1] = 'bieb/unistd.code'
 
 --bronnen[#bronnen+1] = 'bieb/wisk.code'
 --bronnen[#bronnen+1] = 'bieb/x64.code'
@@ -194,12 +194,9 @@ if not uit then
 	return
 end
 
--- opgelost!
-if verbozeOplos then
-	print('=== TIJDLOOS ===')
-	print(exp2string(uit))
-	print()
-end
+-- machinespecifieke typechecker
+
+-- control flow!
 local maakvar = maakvars()
 local cfg = controle(uit, maakvar)
 
@@ -220,7 +217,7 @@ end
 for blok in pairs(cfg.punten) do
 	--blok.stats.fn = X'EN'
 	--print(exp2string(blok.stats))
-	blok.stats = kijkgat(blok.stats, maakvar)
+	--blok.stats = kijkgat(blok.stats, maakvar)
 end
 
 if verbozeKijkgat then

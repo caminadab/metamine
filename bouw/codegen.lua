@@ -255,40 +255,39 @@ function codegen(cfg)
 				laad('rax', val)
 				opsla(naam, 'rax', naam)
 
-			elseif op == '*=' then
-				laad('rax', naam)
-				laad('rbx', val)
+			elseif f == '*' then
+				laad('rax', exp[1].v)
+				laad('rbx', exp[2].v)
 				t[#t+1] = 'mul rbx'
-				opsla(naam, 'rax', naam)
+				opsla(naam, 'rax')
 
-			elseif op == '/=' then
-				laad('rax', naam)
-				laad('rbx', val)
+			elseif f == '/' then
+				laad('rax', exp[1].v)
+				laad('rbx', exp[2].v)
 				t[#t+1] = 'cdq'
 				t[#t+1] = 'idivq rbx'
 				opsla(naam, 'rax', naam)
 
-			elseif op == 'mod=' then
-				laad('rax', naam)
-				laad('rbx', val)
+			elseif f == 'mod' then
+				laad('rax', exp[1].v)
+				laad('rbx', exp[2].v)
 				t[#t+1] = 'cdq'
 				t[#t+1] = 'idivq rbx'
 				opsla(naam, 'rdx', naam)
 
-			elseif op == '+=' then
-				laad('rax', naam)
-				laad('rbx', val)
+			elseif f == '+' then
+				laad('rax', exp[1].v)
+				laad('rbx', exp[2].v)
 				t[#t+1] = 'add rax, rbx'
 				opsla(naam, 'rax', naam)
 
 			--t[#t+1] = 'cvtsi2sd xmm0, rax' -- m := float(b)
 
-			elseif op == 'wortel=' then
+			elseif f == 'wortel' then
 				--laad('rax', naam)
-				t[#t+1] = fmt('fildd %s[rsp]', opslag[naam]) -- load int
+				t[#t+1] = fmt('fildd %s[rsp]', opslag[val]) -- load int
 				t[#t+1] = 'fsqrt' -- a := int(m)
 				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- a := int(m)
-				--opsla(naam, 'rax')
 
 			elseif op == '^=' then
 				laad('rax', naam)

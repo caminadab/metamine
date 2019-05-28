@@ -1,3 +1,13 @@
+--[[
+Typegraaf
+	link
+	unie
+	issubtype
+	issupertype
+	=
+	<
+	tostring
+]]
 require 'stroom'
 require 'exp'
 
@@ -48,6 +58,24 @@ function metatypegraaf:unie(a, b)
 	return t
 end
 
+function metatypegraaf:paramtype(type, paramtype)
+	local doel = moes(type)
+	while doel do
+		--print('PARAMTYPE', doel, _G.type(doel))
+		local t = self.types[doel]
+		if t.fn and moes(t.fn) == moes(paramtype) then
+			return t[1]
+		end
+		local nieuwdoel = nil
+		for pijl in self.graaf:naar(doel) do
+			local bron = next(pijl.van)
+			nieuwdoel = bron
+		end
+		doel = nieuwdoel
+	end
+	error('geen param gevonden voor type '..exp2string(paramtype))
+end
+
 function metatypegraaf:issubtype(type, super)
 	if moes(type) == moes(super) then return true end
 	if self.graaf:stroomopwaarts(moes(super), moes(type)) then
@@ -90,7 +118,12 @@ function metatypegraaf:link(type, super)
 	typemoes = moes(type)
 	supermoes = moes(super)
 	if not self.types[supermoes] then
-		super = self:link(super, self.iets)
+		-- auto
+		if fn(super) == 'lijst' or fn(super) == 'set' then
+			super = self:link(super, super.fn)
+		else
+			super = self:link(super, self.iets)
+		end
 	end
 	super = assert(self.types[supermoes], supermoes)
 

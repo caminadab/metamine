@@ -131,7 +131,11 @@ function controle(exp, maakvar)
 			local banders = maakblok(anders, {}, X('ga', phi))
 			graaf:link(blok, banders)
 			blok = banders
-			local randers = con(eanders,rdan)
+
+			local randers = '???'
+			if eanders then
+				randers = con(eanders,rdan)
+			end
 
 			-- conditie en sprong
 			blok = blok0

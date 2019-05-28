@@ -1,0 +1,5 @@
+a = "hoi"
+b = a(i)
+
+
+uit = b

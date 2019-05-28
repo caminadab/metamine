@@ -1,3 +1,6 @@
+; arch
+byte: int
+
 uit: bit
 
 ; unix
@@ -77,7 +80,7 @@ set: verzameling
 byte: int
 teken: int
 data: lijst byte
-tekst: lijst ;lijst teken
+tekst: data ;lijst teken
 
 tijdstip : getal
 int : getal

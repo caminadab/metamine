@@ -188,7 +188,13 @@ function typeer(exp)
 	-- makkelijke types
 	for exp in boompairsdfs(exp, t) do
 		local T
-		if tonumber(exp.v) and exp.v % 1 == 0 then T = X'int'
+		if tonumber(exp.v) and exp.v % 1 == 0 then
+			local n = tonumber(exp.v)
+			if 0 <= n and n < 256 then
+				T = X'byte'
+			else
+				T = X'int'
+			end
 		elseif tonumber(exp.v) then T = X'kommagetal'
 		elseif exp.tekst then
 			T = X'tekst'
@@ -359,7 +365,12 @@ function typeer(exp)
 
 			end
 
-			if tfn and #tfn == 2 and tfn.fn.v == '->' then
+			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'lijst') then
+				local eltype = typegraaf:paramtype(types[exp.fn], X'lijst')
+				weestype(exp, eltype, exp.loc) -- TODO loc
+			end
+
+			if tfn and #tfn == 2 and fn(tfn) == '->' then
 
 				-- niet het gewenste aantal argumenten
 				local nargs = #exp
@@ -419,10 +430,23 @@ function typeer(exp)
 		return n:match('bieb/.*')
 	end
 
+	local function rpijl2tekst(pijl)
+		local r = {}
+		for bron in pairs(pijl.van) do
+			r[#r+1] = tostring(bron)
+		end
+		if #r == 0 then
+			r[#r+1] = '()'
+		end
+		table.sort(r)
+		return tostring(pijl.naar) .. ' <- ' .. table.concat(r, ' ')
+	end
+
 	if verbozeTypegraaf then
 		print('=== TYPEGRAAF ===')
-		for pijl in pairs(typegraaf.graaf.pijlen) do
-			print(pijl2tekst(pijl))
+		local t = set2lijst(typegraaf.graaf.pijlen, function(a, b) return rpijl2tekst(a) < rpijl2tekst(b) end)
+		for i,type in ipairs(t) do
+			print(rpijl2tekst(type))
 		end
 		print()
 	end

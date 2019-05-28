@@ -1,5 +1,9 @@
 uit = sluit(schrijf(stduit, a))
-a = itoa(2 ^ 100)
+a = itoa(b)
+
+b: int | tekst
+
+b = 2.4
 
 itoa =  i → [n8, n7, n6, n5, n4, n3, n2, n1, n0]
   n0 = '0' + (i/1) mod 10

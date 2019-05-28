@@ -26,6 +26,17 @@ function log(...)
 	print(s)
 end
 
+function set2lijst(s, volgorde)
+	local t = {}
+	for k in pairs(s) do
+		t[#t+1] = k
+	end
+	if volgorde then
+		table.sort(t, volgorde) 
+	end
+	return t
+end
+
 function see(t)
 	if type(t) == 'table' then
 		print('{')
