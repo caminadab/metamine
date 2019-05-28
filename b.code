@@ -1,4 +1,6 @@
-ander = (lokale-gastheer, 10101)
-k := udp-kanaal (elk-adres, ander)
+uit = sluit(schrijf(stduit, tt))
 
-k.uit = "Hallo"
+als 1 / 3 > 0 dan
+	tt = "goed!"
+anders
+	tt = "fout!"

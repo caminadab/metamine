@@ -6,6 +6,7 @@
 *.output
 bin/
 troep/
+asm/xcb
 *.so
 *.dll
 *.elf

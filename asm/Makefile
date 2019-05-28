@@ -26,6 +26,9 @@ clean:
 dump0: hoi0
 	objdump -D hoi0 -M intel
 
+xcb: xcb.c
+	gcc -Os -nostdlib xcb.c -o xcb -lxcb -lc
+
 win64.exe: win64.s
 	x86_64-w64-mingw32-gcc -Wl,-luser32 win64.s -Os -Wl,-n -Wl,--build-id=none -Wa,--no-pad-sections -Wa,-R -static -nostdlib -o win64.exe
 #	x86_64-w64-mingw32-gcc -luser32 -nostdlib -nostartfiles win64.s -luser32

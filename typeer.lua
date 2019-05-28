@@ -170,8 +170,9 @@ function typeer(exp)
 				local s = t and '\t(' ..ansi.underline.. (loctekst(t) or '')..ansi.normal..')'
 
 				--print('TYPEER', moes(exp)..': '..moes(T))
-				print(combineer(exp)..'\t: '..combineer(T)..s)
-
+				if exp.loc and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then
+					print(combineer(exp)..'\t: '..combineer(T)..s)
+				end
 			end
 		end
 	end
@@ -200,7 +201,7 @@ function typeer(exp)
 				T = typegraaf:unie(T, t)
 				if not T then break end
 			end
-			if T then T = {fn=X'lijst', T}
+			if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
 			else T = nil end
 		elseif isfn(exp) and exp.fn.v == '{}' then
 			T = X'set'
@@ -213,7 +214,9 @@ function typeer(exp)
 		if T then
 			local t = oorzaakloc[moes(exp)]
 			local s = '\t(' ..ansi.underline.. (t and loctekst(t) or '')..ansi.normal..')'
-			if verbozeTypes then print(moes(exp), moes(T), s)  end
+			if verbozeTypes and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then
+				print(moes(exp), moes(T), s)
+			end
 			types[exp] = T
 			typegraaf:link(T)
 		end
@@ -407,7 +410,7 @@ function typeer(exp)
 	for exp in boompairs(exp) do
 		if not types[exp] then
 			if verbozeTypes then
-				print('kon type niet bepalen van '..exp2string(exp))
+				--print('kon type niet bepalen van '..exp2string(exp))
 			end
 		end
 	end

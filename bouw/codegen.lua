@@ -428,6 +428,9 @@ function codegen(cfg)
 				t[#t+1] = 'syscall'
 				opsla(naam, 'rax')
 
+			elseif f == '@' then
+				error('dynamische functies nog niet ondersteund')
+
 			else
 				error('onbekende pseudo ass: '..combineer(stat))
 			end

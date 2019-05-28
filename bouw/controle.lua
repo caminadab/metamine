@@ -150,6 +150,7 @@ function controle(exp, maakvar)
 			table.insert(blok.stats, stat)
 
 
+		-- a := b
 		elseif isatoom(exp) then
 			stat[2] = exp
 			table.insert(blok.stats, stat)
@@ -169,83 +170,6 @@ function controle(exp, maakvar)
 		return ret
 	end
 	con(exp)
-
-	return graaf
-end
-
-function controle2(exp, maakvar)
-	local graaf = maakgraaf()
-	local maakvar = maakvar or maakvars()
-	local procindex = maakindices()
-	local procs = {} -- naam → exp
-
-	local function maakproc()
-		return 'p'..procindex()
-	end
-
-	local function conR(exp, naam)
-		if isatoom(exp) then return exp end
-
-		local op = fn(exp)
-		if op == '=>' then
-			if not exp[3] then exp[3] = X'0' end
-
-			--  cond:
-			--
-			--     +-  als  -+
-			--     |         |
-			--     v         v
-			--   dan       anders
-			--     |         |
-			--     |         |
-			--     +-> phi <-+
-			local als    = maakproc()
-			local dan    = maakproc()
-			local anders = maakproc()
-			local phi    = maakproc()
-
-			-- sprongen
-			local keus = X('ga', als, dan, anders)
-			local daarna = X('ga', phi)
-
-			-- als 
-			local bals = maakblok(X(als), plet(conR(exp[1]), maakvar), keus)
-			local bdan = maakblok(X(dan), plet(conR(exp[2]), maakvar), daarna)
-			local banders = maakblok(X(anders), plet(conR(exp[3]), maakvar), daarna)
-
-			keus[1] = bals.res
-			
-			local alsdan = {fn=sym.als, bals.res, bdan.res, banders.res}
-
-			local bphi = maakblok(X(phi), plet(alsdan, maakvar), X'eind')
-
-			-- linken
-			graaf:link(bals, banders)
-			graaf:link(bals,    bdan)
-			graaf:link(bdan,    bphi)
-			graaf:link(banders, bphi)
-			return conR(exp[1]), maakvar
-			--return X(phi)
-			--return plet(alsdan, maakvar)
-		else
-			local e = {}
-			e.fn = conR(exp.fn)
-			for k,v in ipairs(exp) do 
-				e[k] = conR(v)
-			end
-			return e
-			--return plet(e, maakvar)
-		end
-	end
-
-	--local start = maakblok(X'start', plet(conR(exp), maakvar), X'stop')
-	--local start = maakblok(X'start', conR(exp), X'stop')
-
-	-- startfix
-	local ret = start.stats[#start.stats][1]
-	table.insert(start.stats, X(':=', 'ret', ret))
-
-	graaf:punt(start)
 
 	return graaf
 end
