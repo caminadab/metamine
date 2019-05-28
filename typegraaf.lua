@@ -64,7 +64,7 @@ function metatypegraaf:paramtype(type, paramtype)
 		--print('PARAMTYPE', doel, _G.type(doel))
 		local t = self.types[doel]
 		if t.fn and moes(t.fn) == moes(paramtype) then
-			return t[1]
+			return table.unpack(t)
 		end
 		local nieuwdoel = nil
 		for pijl in self.graaf:naar(doel) do

@@ -11,7 +11,6 @@ getal: iets
 kommagetal: getal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)
-onnat: int ; int < 0
 byte: nat
 
 bit: iets
@@ -70,7 +69,8 @@ set: verzameling
 ; multi
 (Σ) : (verzameling getal) → getal
 ;(∫) : (ontelbaar getal) → getal
-(..) : (int, int) → lijst int
+;(..) : (int, int) → lijst int
+(..) : int
 
 
 (iets → iets) : iets

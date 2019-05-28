@@ -122,7 +122,7 @@ function typeer(exp)
 	-- verenigt types
 	local function weestype(exp, type, typeoorzaakloc)
 		if type.v == 'iets' then return end
-		local T,ol
+		local T,S,ol
 		if types[exp] and moes(types[exp]) ~= moes(type) then
 			local a = type
 			local b = types[exp]
@@ -190,16 +190,12 @@ function typeer(exp)
 		local T
 		if tonumber(exp.v) and exp.v % 1 == 0 then
 			local n = tonumber(exp.v)
-			if 0 <= n and n < 256 then
-				T = X'byte'
-			elseif n > 0 then
-				T = X'nat'
-			else
-				T = X'neg'
-			end
+			T = X'int'
 		elseif tonumber(exp.v) then T = X'kommagetal'
 		elseif exp.tekst then
-			T = X'tekst'
+			--T = X'tekst'
+			T = X('^', 'byte', tostring(#exp))
+			S = X'tekst'
 		elseif isfn(exp) and exp.fn.v == '[]' then
 			--T = X'lijst'
 			T = typegraaf.iets
@@ -226,7 +222,7 @@ function typeer(exp)
 				print(moes(exp), moes(T), s)
 			end
 			types[exp] = T
-			typegraaf:link(T)
+			typegraaf:link(T, S)
 		end
 	end
 	if verbozeTypes then print() end
@@ -367,11 +363,20 @@ function typeer(exp)
 
 			end
 
+
+			-- nog koeler doen met ranges
+			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'^') then
+				local elmin,elmax = typegraaf:paramtype(types[exp.fn], X'^')
+				local bereik = X('..', '0', elmax)
+				--weestype(exp[1], bereik, exp.loc) -- TODO loc
+				--weestype(bereik, X'nat', exp.loc) -- TODO loc
+			end
+
 			-- koel doen met lijst indices
 			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'lijst') then
 				local eltype = typegraaf:paramtype(types[exp.fn], X'lijst')
 				weestype(exp, eltype, exp.loc) -- TODO loc
-				weestype(exp[1], X'nat', exp.loc) -- TODO loc
+				--weestype(exp[1], X'nat', exp.loc) -- TODO loc
 			end
 
 			if tfn and #tfn == 2 and fn(tfn) == '->' then

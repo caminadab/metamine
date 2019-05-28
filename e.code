@@ -1,6 +1,6 @@
 a = "hoi"
 b = a(i)
 
-i = -1
+i = 2
 
 uit = b > 3
