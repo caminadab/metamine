@@ -1,8 +1,10 @@
 require 'naarjavascript'
 
 local html = [[
+<!--
 <canvas style="background: gray;" id="teke-ning" width="900" height="500">
 </canvas>
+-->
 <script>
 // jslib
 %s

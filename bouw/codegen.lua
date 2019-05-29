@@ -317,9 +317,9 @@ function codegen(cfg)
 				t[#t+1] = 'sub rax, rbx'
 				opsla(naam, 'rax', naam)
 
-			elseif op == '||=' then
-				laad('rax', naam) -- a.ptr
-				laad('rcx', val) -- b.ptr
+			elseif f == '||' then
+				laad('rax', exp[1].v) -- a.ptr
+				laad('rcx', exp[2].v) -- b.ptr
 				t[#t+1] = fmt('mov rbx, -8[rax]') -- a.len
 				t[#t+1] = fmt('mov rdx, -8[rcx]') -- b.len
 				t[#t+1] = fmt('inc rbx')
