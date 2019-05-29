@@ -79,7 +79,7 @@ set: verzameling
 byte: int
 teken: int
 data: lijst byte
-tekst: data ;lijst teken
+;tekst: data ;lijst teken
 
 tijdstip : getal
 int : getal
