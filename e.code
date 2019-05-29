@@ -1,4 +1,10 @@
-a = [1,2,3]
-b = a(4)
+tag = (a,b) → "<" || a || ">" || b || "</" || a || ">"
 
-uit = b > 3
+head = c → tag("head", c)
+html = d → tag("html", d)
+
+pagina1 = html [head "hoi"]
+pagina = tag("hoi", "ha")
+
+;uit = sluit(schrijf(stduit, pagina))
+uit = pagina1

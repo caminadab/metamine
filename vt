@@ -9,6 +9,7 @@ require 'lisp'
 
 require 'naarlua'
 require 'naarweb'
+require 'naarjavascript'
 require 'rapport'
 require 'typeer'
 
@@ -41,6 +42,8 @@ Opties:
     -d, --doe         voer meteen uit
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
+
+    -j,	--javascript	compileer naar javascript
 
     -S                genereer assembly-code
     -R                genereer uitgebreid rapport
@@ -83,6 +86,7 @@ end
 if opt.v or opt.verboos then
 	verboos = true
 end
+if opt.j then opt.javascript = true end
 
 if opt.R then verbozeRapport = true end
 if opt.S then verbozeSyntax = true end
@@ -191,6 +195,12 @@ if not uit then
 	for i, fout in ipairs(fouten) do
 		print(fout.msg)
 	end
+	return
+end
+
+if opt.javascript then
+	uit = javascriptbieb .. naarjavascript(uit)
+	print(uit)
 	return
 end
 

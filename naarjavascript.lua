@@ -131,7 +131,9 @@ function arr2str(a) {
 }
 
 var ja = true;
+
 var nee = false;
+
 /*
 local _pow = function(a,b)
 	if type(a) == 'number' then

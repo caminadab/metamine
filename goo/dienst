@@ -134,7 +134,13 @@ function vt(code)
 		else
 			waarde,oplosfouten = oplos(exp, 'tekening')
 			if waarde then
-				html = naarweb(waarde)
+				local js = naarjavascript(waarde)
+				html = '<script> var fn = ' + js + ';\n'
+					'var w = fn();\n' +
+					'var ret = document.getElementById("ret");\n' +
+					'ret.innerHTML = w;\n' +
+					'</script>\n' +
+					'<div id="ret" class="waarde">laden</div>'
 			end
 		end
 	end
