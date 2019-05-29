@@ -141,7 +141,8 @@ function typeer(exp)
 				-- c@7:11-12: "a" is "int" maar moet "bit" zijn
 				local isloc = oorzaakloc[exp] or exp.loc
 				local moetloc = typeoorzaakloc or oorzaakloc[moes(exp)]
-				assert(code)
+				--assert(code)
+				code = code or ''
 				local msg = typefout(
 					exp.loc,
 					"{code} is {exp} ({loc}) maar moet {exp} zijn ({loc})",
@@ -374,6 +375,8 @@ function typeer(exp)
 				weestype(exp[1], bereik, oorzaakloc[exp.fn])
 				weestype(bereik, X'nat', exp.loc) -- TODO loc
 			end
+
+			-- is dit "tekst"?
 
 			-- koel doen met lijst indices
 			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'lijst') then

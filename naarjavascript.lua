@@ -47,12 +47,12 @@ local function naarjavascriptR(exp,t,tabs,maakvar)
 		if fn == 'mod' then fn = '%' end
 		local A = naarjavascriptR(a,t,tabs,maakvar)
 		local B = naarjavascriptR(b,t,tabs,maakvar)
-		t[#t+1] = string.format('%svar %s = %s %s %s;\n', tabs, var, A, fn, B)
+		t[#t+1] = string.format('%s%s = %s %s %s;\n', tabs, var, A, fn, B)
 
 	elseif fn == '||' then
 		local A = naarjavascriptR(a,t,tabs,maakvar)
 		local B = naarjavascriptR(b,t,tabs,maakvar)
-		t[#t+1] = string.format('%svar %s = cat([%s, %s]);\n', tabs, var, A, B)
+		t[#t+1] = string.format('%s%s = cat([%s, %s]);\n', tabs, var, A, B)
 
 	elseif fn == '=>' then
 		local A = naarjavascriptR(a,t,tabs,maakvar)
@@ -287,11 +287,14 @@ javascriptbieb = javascriptbieb:gsub('\t', tab)
 -- biebbron zit in de weg, "javascript X" functie zit in de weg (global scope in expressie?)
 function naarjavascript(exp)
 	local t = {}
-	t[#t+1] = "(function() {\n"..tab.."nu = new Date().getTime() / 1000;\nlooptijd = nu - start;\n"
+	t[#t+1] = javascriptbieb
+	t[#t+1] = "nu = new Date().getTime() / 1000;\nlooptijd = nu - start;\n"
 	local var,t = naarjavascriptR(exp,t,tab,maakvars())
 	t[#t+1] = "\n"
-	t[#t+1] = tab.."return " .. var .. ";\n"
-	t[#t+1] = "})()\n"
+	--t[#t+1] = tab..'document.getElementById("uittekst").innerHTML = ' .. var .. ";\n"
+	t[#t+1] = tab..'A = ' .. var .. ";\n"
+	t[#t+1] = 'if (Array.isArray(A))'
+	t[#t+1] = 'A = arr2str(A);'
 	local lua = table.concat(t)
 	return lua
 end

@@ -75,7 +75,7 @@ function vt(code)
 	
 	for i=1,#typeerfouten do
 		local fout = typeerfouten[i]
-		local waarom = fout.msg
+		local waarom = 'typefout' --fout.msg
 		if fout.fmt then
 			-- {exp} is {istype} maar moet {moettype} zijn
 			-- links is %s, rechts is %s
@@ -126,17 +126,7 @@ function vt(code)
 
 	if not typeerfouten or true then
 		waarde,oplosfouten = oplos(exp, 'uit')
-		if waarde then
-			local f = load(naarlua(waarde))
-			local ok,v = pcall(f)
-			local v = ok and string.char(table.unpack(v)) or '&lt;niets&gt;'
-			html = '<pre>'..v..'</pre>'
-		else
-			waarde,oplosfouten = oplos(exp, 'tekening')
-			if waarde then
-				html = naarweb(waarde)
-			end
-		end
+		html = naarjavascript(waarde)
 	end
 
 	-- foutje kan gebeuren
