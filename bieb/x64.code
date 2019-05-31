@@ -1,3 +1,16 @@
+byte: 0 .. 256
+float : getal
+int : getal
+
+(+): (getal,getal) → getal
+
+(+i) : (+)
+(+i) : (int,int) → int
+(+i) = asm.iadd
+(+f) : (+)
+(+f) : (float,float) → float
+(+f) = asm.fadd
+
 ;-
 (+) = addq
 addq : (intq, intq) → intq

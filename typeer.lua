@@ -122,17 +122,30 @@ function typeer(exp)
 	-- verenigt types
 	local function weestype(exp, type, typeoorzaakloc)
 		if type.v == 'iets' then return end
-		local T,S,ol
+		local T,S,ol -- Type, Super, Oorzaakloc
 		if types[exp] and moes(types[exp]) ~= moes(type) then
 			local a = type
 			local b = types[exp]
 
 			-- type ⊂ T(exp)
-			-- oftewel: b is specifieker
+			-- oftewel: oude is specifieker
 			if typegraaf:issubtype(b, a) then
 				T = b or error('geen type')
+			--[[
+				T = a -- doe hem niet
+				local msg = typefout(
+					exp.loc,
+					"onzekere conversie van {exp} naar {exp}",
+					a,
+					b
+				)
+				if not fouten[msg] then
+					fouten[#fouten+1] = {loc = exp.loc, msg = msg}
+					fouten[msg] = true
+				end
+				]]
 			-- T(exp) ⊂ type
-			-- oftewel: a is specifieker
+			-- oftewel: nieuwe is specifieker
 			elseif typegraaf:issubtype(a, b) then
 				T = a or error('geen type')
 			elseif typegraaf:unie(a, b) then
@@ -192,7 +205,11 @@ function typeer(exp)
 		if tonumber(exp.v) and exp.v % 1 == 0 then
 			local n = tonumber(exp.v)
 			T = exp
-			S = X'int'
+			if n < 256 then
+				S = X'byte'
+			else
+				S = X'int'
+			end
 		elseif tonumber(exp.v) then T = X'kommagetal'
 		elseif exp.tekst then
 			--T = X'tekst'
@@ -471,4 +488,13 @@ function typeer(exp)
 	end
 
 	return types, fouten
+end
+
+if test then
+	-- automatisch verdiepen
+	local tg = maaktypegraaf()
+	tg:link('a', 'b')
+	tg:link('b', 'c')
+
+	tg:link('d', 'b')
 end

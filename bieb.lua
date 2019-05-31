@@ -11,6 +11,7 @@ bieb = {
 	['open-lees'] = true,
 	syscall = true,
 	log2 = true,
+	log10 = true,
 
 	-- tekening
 	rechthoek = true,
@@ -93,6 +94,20 @@ bieb = {
 		-- a = origineel
 		-- b = verbeterd
 	end;
+
+	['+i'] = true,
+	['-i'] = true,
+	['*i'] = true,
+	['/i'] = true,
+	['modi'] = true,
+	['intf'] = true,
+
+	['+f'] = true,
+	['-f'] = true,
+	['*f'] = true,
+	['/f'] = true,
+	['^f'] = true,
+	['modf'] = true,
 
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;

@@ -15,6 +15,7 @@ require 'typeer'
 
 require 'bouw.controle'
 require 'bouw.kijkgat'
+require 'bouw.arch'
 require 'bouw.codegen'
 require 'bouw.assembleer'
 require 'bouw.elf'
@@ -92,6 +93,7 @@ if opt.R then verbozeRapport = true end
 if opt.S then verbozeSyntax = true end
 if opt.D then verbozeDeductie = true end
 if opt.K then verbozeKennis = true end
+if opt.O then verbozeOplos = true end
 if opt.G then verbozeKennisgraaf = true end
 if opt.W then verbozeWaarde = true end
 if opt.D then verbozeDelta = true end
@@ -185,7 +187,10 @@ if tekening then doel = "tekening" end
 local inn = { "bestanden-in", "udp-in", "tcp-in" }
 local uit = { "uit" }
 
-local uit,fouten,exp2naam = oplos(asb, "uit")
+-- machinespecifieke typechecker
+local mach = arch_x64(asb, types)
+
+local uit,fouten,exp2naam = oplos(mach, "uit")
 
 if not uit then
 	if not fouten[1] then
@@ -200,11 +205,10 @@ end
 
 if opt.javascript then
 	uit = javascriptbieb .. naarjavascript(uit)
+	file('a.js', uit)
 	print(uit)
 	return
 end
-
--- machinespecifieke typechecker
 
 -- control flow!
 local maakvar = maakvars()

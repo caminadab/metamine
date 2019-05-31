@@ -3,11 +3,9 @@ uit = sluit(schrijf(stduit, tt))
 tt = itoa(12345) || " HALLO \n"
 
 itoa = i → a
-  r = 0 .. #log10(i)+1
+  r = 0 .. int(log10(i)+1)
   a = r map cijfer
   cijfer = n → '0' + (i / 10^n) mod 10
-
-log10 = e → log2(e) / log2(10)
 
 ;-
   a = [n8, n7, n6, n5, n4, n3, n2, n1, n0]

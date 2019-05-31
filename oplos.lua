@@ -431,7 +431,7 @@ function oplos(exp,voor)
 						if waarde then
 							local eq = {fn=X':=', naam, waarde}
 							subst[eq] = true
-							if verboos or verbozeKennis then print('ISOLEER', exp2string(eq)) end
+							if verboos or verbozeOplos then print('SUBST', exp2string(eq)) end
 						end
 					end
 				end

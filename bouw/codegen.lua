@@ -115,6 +115,10 @@ function codegen(cfg)
 		print()
 	end
 
+	local function laadf(val)
+		t[#t+1] = fmt('fildd %d[rsp]', opslag[val])
+	end
+
 	local function laad(reg, val, noot)
 		if noot then noot = ' \t# '..noot
 		else noot = '' end
@@ -130,6 +134,15 @@ function codegen(cfg)
 			--t[#t+1] = fmt('mov %s, [rsp-8*%s]', reg, opslag[val])
 			t[#t+1] = fmt('mov %s, %d[rsp]', reg, opslag[val]) .. noot
 		end
+	end
+
+	local function opslaf(val, noot)
+		if noot then noot = ' \t# '..noot
+		else noot = '' end
+
+		assert(opslag[val])
+
+		t[#t+1] = fmt('fistpd %d[rsp]', opslag[val]) .. noot
 	end
 
 	local function opsla(val, reg, noot)
@@ -168,6 +181,19 @@ function codegen(cfg)
 				t[#t+1] = 'cmp rcx, 1'
 				t[#t+1] = 'cmove rax, rdx \t# rax = rcx ? rdx : rax'
 				opsla(naam, 'rax', naam)
+
+			-- kutte met rutte
+			elseif f == 'log10' then
+				laadf(exp[1].v)
+				t[#t+1] = 'fldl2t'
+				t[#t+1] = 'fyl2x'
+				opslaf(naam)
+
+			-- kutte met rutte
+			elseif f == 'log' then
+				t[#t+1] = fmt('fild %d[rsp]', opslag[exp[1].v])
+				t[#t+1] = 'fldl2e'
+				t[#t+1] = fmt('fistp %d[rsp]', opslag[naam])
 
 			elseif op == ':=' and f == '!' then
 				laad('rax', exp[1].v)
@@ -245,6 +271,34 @@ function codegen(cfg)
 
 				t[#t+1] = fmt('%s_eind:', label)
 
+			elseif f == '^f' then
+				laadf(exp[1].v)
+				laadf(exp[2].v)
+				t[#t+1] = 'fyl2x'
+				t[#t+1] = 'fld1'
+				t[#t+1] = 'fld st(1)'
+				t[#t+1] = 'fprem'
+				t[#t+1] = 'f2xm1'
+				t[#t+1] = 'fadd'
+				t[#t+1] = 'fscale'
+				t[#t+1] = 'fxch st(1)'
+				opslaf(naam)
+
+			elseif f == '^i' then
+				local label = 'pow'..maakvar()
+				laad('rax', exp[1].v)
+				laad('rcx', exp[2].v)
+				t[#t+1] = 'mov rbx, 10'
+				t[#t+1] = fmt('%s_start:', label)
+				t[#t+1] = 'cmp rcx, 0'
+				t[#t+1] = fmt('je %s_eind', label)
+
+				t[#t+1] = 'mul rbx'
+				t[#t+1] = 'dec rcx'
+				t[#t+1] = fmt('jmp %s_start', label)
+				t[#t+1] = fmt('%s_eind:', label)
+
+				opsla(naam, 'rax')
 
 			elseif f == 'log2' then
 				laad('rax', exp[1].v)
@@ -255,31 +309,54 @@ function codegen(cfg)
 				laad('rax', val)
 				opsla(naam, 'rax', naam)
 
-			elseif f == '*' then
+			elseif f == '*i' then
 				laad('rax', exp[1].v)
 				laad('rbx', exp[2].v)
 				t[#t+1] = 'mul rbx'
 				opsla(naam, 'rax')
 
-			elseif f == '/' then
+			elseif f == '/i' then
 				laad('rax', exp[1].v)
 				laad('rbx', exp[2].v)
 				t[#t+1] = 'cdq'
 				t[#t+1] = 'idivq rbx'
 				opsla(naam, 'rax', naam)
 
-			elseif f == 'mod' then
+			elseif f == 'modi' then
 				laad('rax', exp[1].v)
 				laad('rbx', exp[2].v)
 				t[#t+1] = 'cdq'
 				t[#t+1] = 'idivq rbx'
 				opsla(naam, 'rdx', naam)
 
-			elseif f == '+' then
+			elseif f == '-i' then
+				laad('rax', exp[1].v)
+				laad('rbx', exp[2].v)
+				t[#t+1] = 'sub rax, rbx'
+				opsla(naam, 'rax', naam)
+
+			elseif f == '+i' then
 				laad('rax', exp[1].v)
 				laad('rbx', exp[2].v)
 				t[#t+1] = 'add rax, rbx'
 				opsla(naam, 'rax', naam)
+
+			-- float
+			
+			-- constanten
+
+			-- conversie
+			elseif f == 'intf' then
+				laadf(exp[1].v)
+				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- naam := f
+
+			-- aritm functies
+			elseif f == '+f' or f == '*f' or f == '/f' or f == '-f' or f == 'modf' then
+				local op = {['+'] = 'addp', ['-'] = 'subp', ['*'] = 'mulp', ['/'] = 'divp', ['mod'] = 'prem1'}
+				t[#t+1] = fmt('fildd %s[rsp]', opslag[exp[1].v]) -- f := a
+				t[#t+1] = fmt('fildd %s[rsp]', opslag[exp[2].v]) -- g := b
+				t[#t+1] = 'f'..op[f:sub(1,-2)]..'' -- f := f * g
+				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- naam := f
 
 			--t[#t+1] = 'cvtsi2sd xmm0, rax' -- m := float(b)
 

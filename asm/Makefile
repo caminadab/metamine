@@ -20,6 +20,9 @@ hoi0: hoi0.s
 	objcopy --remove-section .tbss hoi0
 	objcopy --remove-section .eh_frame hoi0
 
+double: double.c
+	gcc -mno-sse2 -Wa,-adhln -nostdlib double.c -o double
+
 clean:
 	rm *.o
 

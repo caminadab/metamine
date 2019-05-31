@@ -82,7 +82,7 @@ function controle(exp, maakvar)
 		if isfn(exp) then
 			arg = con(exp)
 		else
-			arg = exp
+			arg = con(exp)
 		end
 		return arg
 	end
@@ -161,7 +161,9 @@ function controle(exp, maakvar)
 
 		-- normale statement (TODO sorteer)
 		else
-			fw.fn = arg(exp.fn)
+			if isfn(exp.fn) then
+				fw.fn = arg(exp.fn)
+			end
 			if exp[1] and fn(exp[1]) == ',' then
 				exp = exp[1]
 			end

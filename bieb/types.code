@@ -8,7 +8,6 @@ sluit: bestand → bit
 
 ; getal
 getal: iets
-kommagetal: getal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)
 byte: nat
@@ -29,15 +28,15 @@ zak: verzameling
 aantal: verzameling
 ontelbaar: verzameling
 
-sin :  getal → kommagetal
-cos :  getal → kommagetal
-tan :  getal → kommagetal
-sincos :  getal → (kommagetal, kommagetal)
+sin :  getal → getal
+cos :  getal → getal
+tan :  getal → getal
+sincos :  getal → (getal, getal)
 (+) :  (getal, getal) → getal
 (-) :  (getal, getal) → getal
 (-) :  getal → getal
 (*) :  (getal, getal) → getal
-(/) :  (getal, getal) → kommagetal
+(/) :  (getal, getal) → getal
 (^) :  (getal, getal) → getal
 ;(^) :  ((→), nat) → getal
 (#) :  verzameling → int
@@ -69,8 +68,7 @@ set: verzameling
 ; multi
 (Σ) : (verzameling getal) → getal
 ;(∫) : (ontelbaar getal) → getal
-;(..) : (int, int) → lijst int
-(..) : int
+(..) : (int, int) → lijst int
 
 
 (iets → iets) : iets

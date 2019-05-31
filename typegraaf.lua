@@ -128,6 +128,12 @@ function metatypegraaf:link(type, super)
 	local supermoes, typemoes
 	typemoes = moes(type)
 	supermoes = moes(super)
+	if self.types[typemoes] then
+		self.graaf:link(set(typemoes), supermoes)
+		self.types[typemoes] = type
+		self.types[supermoes] = super
+		return
+	end
 	if not self.types[supermoes] then
 		-- auto
 		if fn(super) == 'lijst' or fn(super) == 'set' then

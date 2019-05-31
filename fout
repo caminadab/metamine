@@ -1,0 +1,38 @@
+=== INTERMEDIAIRE CODE ===
+fn1:
+  N := _arg 0
+  M := log2 N
+  O := log2 10
+  L := M / O
+  ret L
+fn2:
+  U := _arg 7
+  T := 10 ^ U
+  S := 12345 / T
+  R := S mod 10
+  Q := 48 + R
+  ret Q
+start:
+  K := fn1
+  J := K 12345
+  I := # J
+  H := I + 1
+  G := 0 .. H
+  P := fn2
+  F := G map P
+  V := [32, 72, 65, 76, 76, 79, 32, 10]
+  E := F || V
+  CB := fn1 12345
+  BB := # CB
+  AB := BB + 1
+  Z := 0 .. AB
+  Y := Z map fn2
+  DB := [32, 72, 65, 76, 76, 79, 32, 10]
+  X := Y || DB
+  W := # X
+  D := syscall(1, 1, E, W)
+  C := D * 0
+  B := C + 1
+  A := 3 syscall B
+  stop
+

@@ -1,6 +1,4 @@
-uit = sluit(schrijf(stduit, tt))
+uit = sluit(schrijf(stduit, t))
 
-als 1 / 3 > 0 dan
-	tt = "goed!"
-anders
-	tt = "fout!"
+a = (1/2) ^ (1/2)
+t = tekst(a) 
