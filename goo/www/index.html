@@ -1,61 +1,177 @@
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8">
-<h2>Welkom</h2>
-<i></i>
-
-
-	<div class="onderwerp">
-		<button class="onderwerpnaam">Welkom</button>
-		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
-	</div> 
-	<div class="onderwerp">
-		<button class="onderwerpnaam">Lijsten</button>
-		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
-	</div> 
-	<div class="onderwerp">
-		<button class="onderwerpnaam">Ifs</button>
-		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
-	</div> 
-	<div class="onderwerp">
-		<button class="onderwerpnaam">Controle</button>
-		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
-	</div> 
-	<div class="onderwerp">
-		<button class="onderwerpnaam">Spellen</button>
-		<div class="subonderwerp"> <button class='lesknop'>Laden...</a> </div>
-	</div> 
-	
-	<button id="vim"><b>Vim-modus</b></button>
-	<br> <!-- sorry lui -->
-	<br> <!-- sorry lui -->
-	
-	<textarea id="broncode" name="broncode"></textarea> 
-	<!--<button id="volgendeles">➟</button>-->
-	<button id="tekst"><b>Tekstuitvoer</b></button>
-	<button id="speel" style="color: black;"><b>▶▶▶ Afspelen ▶▶▶</b></button>
-	<div id="resultaat">
-	</div>
-</p>
-
+<head>
+	<title>Taal</title>
+</head>
+<body>
+	<div id="intro">
+		<h1><i>Welkom</i></h1>
+		<img class="logo" src="taal.png"></img>
 <p>
-	<span color="gray">
-		Taal is een fijne programmeertaal die makkelijk en leuk is om te schrijven.
-	</span>
-	<span color="black">
-		Met een simpele syntax en een veilig typesysteem is code schrijven voor
-		iedereen toegankelijk geworden.
-	</span
+Een nieuwe manier van programmeren.<br>
+Makkelijk, veilig, snel.<br>
 </p>
-<ul>
-	<li>Makkelijke en declaratieve code, zonder traditionele beslommeringen</li>
-	<li>Genereer efficiënte machinecode</li>
-	<li>Compileer functies naar SQL, GLSL, html+js</li>
-</ul>
+	</div>
 
-<i>type inference</i> en een fijne deductiemodule is dit een heerlijke taal 
+<div>
+	<textarea id="broncode" name="broncode"></textarea> 
+	<div id="uit">
+		<pre id="uit-tekst">
+		</pre>
+	</div>
+</div>
+
+<div>
+	<button id="vertaal">▶</button>
+	<div id="laadbalk">
+		<div id="foutmelding"></div>
+		<div id="voortgang"></div>
+	</div>
+	<button id="vim" style="display: none">Vim</button>
+</div>
+
+</body>
 
 <style>
+
+@media (max-width: 600px) {
+	#uit {
+		width: 100%;
+		float: none;
+	}
+}
+
+@media (min-width: 600px) {
+	#uit {
+		width: calc(50% - 20px);
+		height: 70vh;
+		font-width: bold;
+		background: #033;
+		display: inline;
+		float: right;
+	}
+}
+
+#uit-tekst {
+	transition: width 2.0s linear;
+	margin-left: 24px;
+}
+
+.CodeMirror {
+	float: left;
+	height: 60vh;
+	width: 50%;
+}
+
+textarea { height: 60vh; background: black; border: none; width: calc(50% + 18px); }
+
+
+
+button {
+	background: #012ED4;
+
+	text-decoration: none;
+	border: 0;
+	width: 200px;
+	font-size: 48px;
+	height: 70px;
+	line-height: 30px;
+	color: #1b1;
+	display: inline;
+	cursor: pointer;
+	float: left;
+
+	transition-property: background;
+	transition-duration: 0.0s;
+}
+
+button:hover {
+	background: #0023A1;
+	transition-duration: 0.0s;
+}
+
+button:active {
+	background: #000E42;
+}
+
+#laadbalk {
+	display: inline;
+	width: calc(50% - 200px + 20px);
+	float: left;
+	height: 70px;
+
+	background: #000625;
+}
+
+#voortgang {
+	width: 0%;
+	height: 70px;
+	background: #000E42;
+	white-space: nowrap;
+	line-height: 70px;
+	float: left;
+	display: inline;
+	
+	/* error */
+	color: #000E42;
+	transition: width 1.0s linear, opacity 1.0s linear;
+
+}
+
+#foutmelding {
+	opacity: 0;
+	display: inline;
+	width: 0;
+	font-size: 48px;
+	margin-left: 20px;
+	white-space: nowrap;
+	float: left;
+	transition: opacity 2.0s linear;
+	color: red;
+	font-weight: bold;
+}
+
+html, body {
+	background: #050070;
+	color: white;
+	font-family: Impace, Charcoal, sans-serif;
+	font-size: 32px;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+		float
+}
+
+#intro {
+	height: 30vh;
+}
+
+h1 {
+	font-size: 72px;
+	display: inline;
+	margin-left: 120px;
+		margin-top: 120px;
+}
+
+p {
+	margin-left: 60px;
+}
+
+.logo {
+	display: inline;
+	float: right;
+	height: 144px;
+	margin: 30px;
+}
+
+.bar {
+	background: #180D31;
+}
+
+.uit {
+	background: #1400BC;
+}
 
 .volgendeles {
 	position: absolute;
@@ -157,92 +273,82 @@ canvas { background: #444; }
 <script src="lib/taal.js"></script>
 <script src="lib/vim.js"></script>
 <script>
-	// les systeem
 
-/*
-	// code tabs
-	var c1 = document.getElementById('c1');
-	c1.addEventListener("click", function () {
-		speelknop.style.display = 'none';
-		tekstknop.style.display = 'inline';
-		editor.setValue(
-`a = 1 + []
-uit = tekst a
-`);});
-	var c2 = document.getElementById('c2');
-	c2.addEventListener("click", function () {
-		speelknop.style.display = 'none';
-		tekstknop.style.display = 'inline';
-		editor.setValue(
-`fib = n → (fⁿ[0,1])₀
-f = [a,b] → [b,a+b]
-uit = fib 30
-`); }
-	);
-	var c3 = document.getElementById('c3');
-	c3.addEventListener("click", function () {
-		speelknop.style.display = 'none';
-		tekstknop.style.display = 'inline';
-		editor.setValue(`goed = i → ((i mod 3=0) ∧ (i mod 5=0))
-s = Σ ((1 .. 1000) waarvoor goed)
-uit = tekst s
-; If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
-; Find the sum of all the multiples of 3 or 5 below 1000.
-		`); }
-	);
+	var vertaalknop = document.getElementById("vertaal");
+	var cknop = '#012ED4';
+	var voortgang = document.getElementById("voortgang");
+	var foutmelding = document.getElementById("foutmelding");
+	var laadbalk = document.getElementById("laadbalk");
 
-	var c4 = document.getElementById('c4');
-	c4.addEventListener("click", function() {
-		speelknop.style.display = 'none';
-		tekstknop.style.display = 'inline';
-		editor.setValue(`f = [somA, i, j] → (j ≤ 4e6 ⇒ [somB, j, i + j])
-j mod 2 = 0  ⇒ somB = somA + j
-j mod 2 ≠ 0  ⇒ somB = somA
+	function vertaal() {
+		voortgang.style.width = '100%';
+		voortgang.style.opacity = '1'
+		vertaalknop.style.backgroundColor = '#000E42';
 
-a = ((herhaal f) [0, 1, 1])₀
-uit = tekst(a)
+		fetch('/vt', {method: "POST", body: editor.getValue()})
+			.then(x => x.json())
+			.then(j => {
+				onsuccess();
+				uit.innerHTML = eval(j.html);
+				setErrors(j.fouten);
 
-; Each new term in the Fibonacci sequence is generated by adding the previous two terms. By starting with 1 and 2, the first 10 terms will be:
+				/*var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
+				for (var i = 0; i < scripts.length; i++) {
+					eval(scripts[i].innerHTML);
+				}*/
+			})
+       			.catch(e => onerror(e));
+	}
 
-; 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...
+	vertaalknop.addEventListener("mousedown", vertaal);
 
-; By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.
-`)});
+	function onsuccess() {
+		voortgang.style.opacity = '0'
 
-	var cirkelcode = `; dit programma tekent door "tekening" te vullen met vormen
-; qua coordinaten: linksonder is (0,0) en rechtsboven is (16/9,1)
-; de code hoeft niet gesorteerd te staan
-tekening = [ achtergrond, bal, groet ]
+		vertaalknop.innerHTML = '▶';
+		vertaalknop.style.background = 'green';
+		vertaalknop.style.transitionDuration = '0.0s';
 
-; de tekst "Hoi" aan de linkerkant
-groet = schrijf(groetpos, "Hoi", wit)
-	groetpos = (0, (1 + sin looptijd) / 2)
+		voortgang.style.opacity = '0'
+
+		foutmelding.style.opacity = "1.0"
+		foutmelding.style.color = "green"
+
+		// uitvoer!
 
 
-; een gele cirkel die om het centrum (0.9, 0.5) cirkelt
-bal = cirkel(pos, straal, geel)
-	pos = (x, y)
-		x = 0.9 + 0.5 · cos(looptijd)
-		y = 0.5 + 0.5 · sin(looptijd)
-	straal = 0.2
+		setTimeout(function() {
+			vertaalknop.style.background = cknop;
+			foutmelding.style.opacity = "0"
+			voortgang.style.opacity = "0"
+			vertaalknop.style.transitionDuration = '1.0s';
+			setTimeout(function() {
+				voortgang.style.transitionDuration = '0.0s';
+				voortgang.style.width = '0'
+				voortgang.style.opacity = "1"
 
-interpoleer = (a,b,n) → (n·a₀+m·b₀, n·a₁+b₁·m₁, n·c₁+m·b₂)
-	n + m = 1
+				setTimeout(function() {
+					voortgang.style.transitionDuration = '1.0s';
+				} , 2000);
+			}, 1000);
+		}, 100);
+	}
 
-; maak de achtergrond zwartblauw
-achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
-	achtergrondkleur = (0, 0, sin looptijd + 0.5)
-`;
-	var c5 = document.getElementById('c5');
-	c5.addEventListener("click", function() {
-		speelknop.style.display = 'inline';
-		tekstknop.style.display = 'none';
-		editor.setValue(cirkelcode);
-	});
-*/
+	function onerror(e) {
+		vertaalknop.innerHTML = '▶';
+		vertaalknop.style.background = 'red';
+		vertaalknop.style.transitionDuration = '0.0s';
+		foutmelding.style.color = "red"
 
-	var speelknop = document.getElementById("speel");
-	var tekstknop = document.getElementById("tekst");
+		foutmelding.innerHTML = e;
+		foutmelding.style.opacity = "1.0"
+
+		setTimeout(function() {
+			vertaalknop.style.background = cknop;
+			foutmelding.style.opacity = "0.0"
+			voortgang.style.width = '0%';
+		}, 5000);
+	}
 
   var editor = CodeMirror.fromTextArea(document.getElementById("broncode"), {
     lineNumbers: false,
@@ -256,38 +362,16 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 		cursorScrollMargin: 10,
 		lineWrapping: true,
 		height: "1200px",
+
 		extraKeys: {
-			"Shift-Enter": function(cm) { if (speelknop.style.display != 'inline') speelknop.click(); else tekstknop.click(); }
+			"Shift-Enter": function(cm) { vertaal(); },
+			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
 		},
   });
-	editor.setValue(`totaal = Σ 1 .. 1000
-t = "de som van 1 tot 1000 is " || tekst(totaal)
-
-uit = t
-
+	editor.setSize('50%', '60vh');
+	editor.setValue(`uit = Σ 0 .. 1000
 `);
 
-	if (false) editor.setValue(`; dit programma tekent door "tekening" te vullen met vormen
-; qua coordinaten: linksonder is (0,0) en rechtsboven is (16/9,1)
-; de code hoeft niet gesorteerd te staan
-tekening = [ achtergrond, bal, groet ]
-
-; de tekst "Hoi" aan de linkerkant
-groet = schrijf(groetpos, "Hoi", wit)
-	groetpos = (0, (1 + sin looptijd) / 2)
-
-
-; een gele cirkel die om het centrum (0.9, 0.5) cirkelt
-bal = cirkel(pos, straal, geel)
-	pos = (x, y)
-		x = 0.9 + 0.5 · cos(looptijd)
-		y = 0.5 + 0.5 · sin(looptijd)
-	straal = 0.2
-
-; maak de achtergrond zwartblauw
-achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
-	achtergrondkleur = (0, 0, sin looptijd + 0.5)
-`);
 	// editor.setSize(null, '500px');
 
 	// zet de codemirror selectie
@@ -411,44 +495,8 @@ achtergrond = rechthoek((0,0), (2,1), achtergrondkleur)
 	var vim = document.getElementById("vim");
 	vim.addEventListener("click", function() { editor.setOption('keyMap', 'vim'); });
 
-	var resultaat = document.getElementById("resultaat");
+	var uit = document.getElementById("uit-tekst");
 
-	var speelknop = document.getElementById("speel");
-
-	tekstknop.style.display = 'inline'; // jaja
-	speelknop.style.display = 'none'; // jaja
-
-	tekstknop.addEventListener("click", function() {
-		fetch('/vt', {method: "POST", body: editor.getValue()} )
-			.then(x => x.json())
-			.then(j => {
-				resultaat.innerHTML = j.html || "&lt;geen uitvoer&gt;";
-				setErrors(j.fouten);
-
-				var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
-				for (var i = 0; i < scripts.length; i++) {
-					eval(scripts[i].innerHTML);
-				}
-			});
-	});
-
-
-	speelknop.addEventListener("click", function() {
-		fetch('/vt', {method: "POST", body: editor.getValue() + cheatz} )
-			.then(x => x.json())
-			.then(j => {
-				resultaat.innerHTML = j.html;
-				setErrors(j.fouten);
-
-				var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
-				for (var i = 0; i < scripts.length; i++) {
-					eval(scripts[i].innerHTML);
-				}
-			});
-	});
-
-		speelknop.style.display = 'none';
-		tekstknop.style.display = 'inline';
 
 
 var data = [
@@ -456,27 +504,5 @@ var data = [
 	['Lijst', 'waarde', 'tekst', 'als dan', 'omschrijven', 'omschrijflimiet'],
 ];
 
-var kaarten = document.getElementsByClassName("onderwerp");
-for (let i = 0; i < data.length; i++) {
-	let kaart = kaarten[i];
-	kaart.style.zIndex = '999';
-	
-	let link = kaart.getElementsByClassName('lesknop')[0];
-	let subonderwerp = kaart.getElementsByClassName('subonderwerp')[0];
-	for (let j = 0; j < data[i].length; j++) {
-		let b = link.cloneNode();
-		let titel = data[i][j];
-		b.innerHTML = titel;
-		b.style.zIndex = '999';
-		b.onclick = ev => {
-			fetch('/blog/taal-0.1.1/les/'+(i+1)+'.'+(j+1)+'-'+titel+'.code')
-				.then(x => x.text())
-				.then(t => editor.setValue(t));
-		};
-		subonderwerp.appendChild(b);
-	}
-	link.parentNode.removeChild(link);
-}
-	
 </script>
 </html>

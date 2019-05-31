@@ -1,4 +1,4 @@
-.cm-s-slang.CodeMirror { background: #0f0f0f; color: #defdef; }
+.cm-s-slang.CodeMirror { background: #000; color: #fff; padding: 10px; }
 .cm-s-slang div.CodeMirror-selected { background: #515151; }
 .cm-s-slang .CodeMirror-line::selection, .cm-s-slang .CodeMirror-line > span::selection, .cm-s-slang .CodeMirror-line > span > span::selection { background: rgba(56, 56, 56, 0.99); }
 .cm-s-slang .CodeMirror-line::-moz-selection, .cm-s-slang .CodeMirror-line > span::-moz-selection, .cm-s-slang .CodeMirror-line > span > span::-moz-selection { background: rgba(56, 56, 56, 0.99); }
@@ -7,7 +7,7 @@
 .cm-s-slang .CodeMirror-guttermarker-subtle { color: azure; }
 .cm-s-slang .CodeMirror-linenumber { color: #FFFFFF; }
 .cm-s-slang .CodeMirror-cursor { border-left: 1px solid #00FF00; }
-.cm-s-slang .CodeMirror-activeline-background { background: #114; }
+.cm-s-slang .CodeMirror-activeline-background { background: #050010; }
 
 .cm-s-slang span.cm-keyword { color: cyan; font-weight: bold; }
 .cm-s-slang span.cm-atom { color: cyan; }
