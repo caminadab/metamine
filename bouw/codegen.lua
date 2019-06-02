@@ -244,7 +244,7 @@ function codegen(cfg)
 				laad('rax', exp[1].v) -- lijst
 				opsla(naam, 'rax') -- lijst
 				laad('rbx', exp[2].v) -- functie
-				t[#t+1] = fmt('mov rcx, -8[rax]') -- lengte
+				t[#t+1] = fmt('mov rcx, -8[rax]') -- lijstlengte
 
 				-- start
 				local label = 'map'..maakvar()

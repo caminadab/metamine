@@ -1,4 +1,4 @@
 uit = sluit(schrijf(stduit, t))
 
 a = (1/2) ^ (1/2)
-t = tekst(a) 
+t = [ '0' + int(a) ]

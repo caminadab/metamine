@@ -99,6 +99,7 @@ bieb = {
 	['-i'] = true,
 	['*i'] = true,
 	['/i'] = true,
+	['^i'] = true,
 	['modi'] = true,
 	['intf'] = true,
 

@@ -2,8 +2,8 @@
 
 ; unix
 ;bestand: int
-open: tekst → bestand
-schrijf: (bestand, tekst) → bestand
+open: data → bestand
+schrijf: (bestand, data) → bestand
 sluit: bestand → bit
 
 ; getal
@@ -37,7 +37,9 @@ sincos :  getal → (getal, getal)
 (-) :  getal → getal
 (*) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
+(/) :  (int, int) → getal
 (^) :  (getal, getal) → getal
+(^) :  (int, int) → int
 ;(^) :  ((→), nat) → getal
 (#) :  verzameling → int
 ;([) : lijst

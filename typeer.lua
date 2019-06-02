@@ -214,7 +214,7 @@ function typeer(exp)
 		elseif exp.tekst then
 			--T = X'tekst'
 			T = X('^', 'byte', tostring(#exp))
-			S = X'tekst'
+			S = X('lijst', 'byte')
 		elseif isfn(exp) and exp.fn.v == '[]' then
 			--T = X'lijst'
 			T = typegraaf.iets
