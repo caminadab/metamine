@@ -1,3 +1,4 @@
+;uit = cat((0 .. 10) map (y → "hoi"))
 uit = itoa(-1234)
 
 itoa = x → a
