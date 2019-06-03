@@ -12,6 +12,7 @@ require 'naarweb'
 require 'naarjavascript'
 require 'rapport'
 require 'typeer'
+require 'doe'
 
 require 'bouw.controle'
 require 'bouw.kijkgat'
@@ -44,6 +45,7 @@ Opties:
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
 
+    -i, --veilig      draai het programma in veilige modus
     -j,	--javascript	compileer naar javascript
 
     -S                genereer assembly-code
@@ -227,6 +229,14 @@ if verbozeIntermediair then
 	end
 	print()
 end
+
+-- INTERMEDIAIR --
+
+if opt.i or opt.veilig then
+	local exp = doe(cfg)
+	return
+end
+	
 
 for blok in pairs(cfg.punten) do
 	--blok.stats.fn = X'EN'

@@ -11,7 +11,12 @@ bieb = {
 	['open-lees'] = true,
 	syscall = true,
 	log2 = true,
-	log10 = true,
+	log10 = math.log10,
+	puts = true,
+	call = true,
+
+	xcb_connect = true,
+
 
 	-- tekening
 	rechthoek = true,
@@ -101,14 +106,21 @@ bieb = {
 	['/i'] = true,
 	['^i'] = true,
 	['modi'] = true,
-	['intf'] = true,
+	['entier'] = function(a) return math.floor(a) end,
+ 
+	['+i'] = function(a,b) return a + b end,
+	['-i'] = function(a,b) return a - b end,
+	['*i'] = function(a,b) return a * b end,
+	['/i'] = function(a,b) return a / b end,
+	['^i'] = function(a,b) return a ^ b end,
+	['modi'] = function(a,b) return a % b end,
 
-	['+f'] = true,
-	['-f'] = true,
-	['*f'] = true,
-	['/f'] = true,
-	['^f'] = true,
-	['modf'] = true,
+	['+f'] = function(a,b) return a + b end,
+	['-f'] = function(a,b) return a - b end,
+	['*f'] = function(a,b) return a * b end,
+	['/f'] = function(a,b) return a / b end,
+	['^f'] = function(a,b) return a ^ b end,
+	['modf'] = function(a,b) return a % b end,
 
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
@@ -208,8 +220,17 @@ bieb = {
 	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
 	['..'] = function(a,b)
 		local r = {}
-		for i=a,b-1 do
-			r[i-a+1] = i
+			print(a,b)
+		if a > b then
+			for i=a-1,b,-1 do
+				r[#r+1] = i
+			end
+		elseif a == b then
+			return {}
+		else
+			for i=a,b-1 do
+				r[#r+1] = i
+			end
 		end
 		return r
 	end;

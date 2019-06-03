@@ -260,7 +260,7 @@ function oplos(exp,voor)
 				for naam in pairs(vrij) do
 					if bevat(eq[2], naam) then
 						eq[1],eq[2] = eq[1].fn, {fn=X'->', eq[1][1], eq[2]}
-						print('HERSCHRIJF', exp2string(eq))
+						--print('HERSCHRIJF', exp2string(eq))
 						break
 					end
 				end

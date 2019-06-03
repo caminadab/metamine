@@ -507,6 +507,11 @@ function codegen(cfg)
 			elseif f == '@' then
 				error('dynamische functies nog niet ondersteund')
 
+			elseif f == 'xcb_connect' then
+				laad(abiregs[1], exp[1].v)
+				laad(abiregs[2], exp[2].v)
+				t[#t+1] = 'call xcb_connect'
+
 			else
 				error('onbekende pseudo ass: '..combineer(stat))
 			end

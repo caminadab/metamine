@@ -4,7 +4,7 @@
  
 #include <xcb/xcb.h>
  
-int _start ()
+int main ()
 {
   xcb_connection_t    *c;
   xcb_screen_t        *screen;

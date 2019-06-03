@@ -1,5 +1,7 @@
-uit = sluit(schrijf(stduit, t))
+uit = itoa(-1234)
 
-t = "hoi" map f
-f(a) = a + 1
-
+itoa = x → a
+  n = 1 + entier(log10(max(abs x, 1)))
+  neg = als x < 0 dan "-" anders ""
+  cijfer = m → '0' + (entier (abs x)/10^m) mod 10
+  a = neg || ((n .. 0) map cijfer)

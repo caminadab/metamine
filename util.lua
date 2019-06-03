@@ -9,6 +9,14 @@ function LOG(...)
 	_G.verboos = verboos
 end
 
+function taal2string(tt)
+	return string.char(table.unpack(tt))
+end
+
+function string2taal(tt)
+	return table.pack(string.byte(tt))
+end
+
 function log(...)
 	if not verboos then return end
 	local t = {...}
@@ -24,6 +32,18 @@ function log(...)
 	end
 	local s = table.concat(r)
 	print(s)
+end
+
+function emap(exp, fn, ...)
+	if isatoom(exp) then
+		return fn(exp, ...)
+	end
+	local s = {}
+	s.fn = fn(exp.fn, ...)
+	for i,v in ipairs(exp) do
+		s[i] = fn(v, ...)
+	end
+	return s
 end
 
 function set2lijst(s, volgorde)

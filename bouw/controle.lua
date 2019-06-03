@@ -73,6 +73,7 @@ function controle(exp, maakvar)
 
 	-- running block
 	local blok = maakblok(X'start', {}, X'stop')
+	graaf.start = blok
 	graaf:punt(blok)
 
 	local con
@@ -176,6 +177,11 @@ function controle(exp, maakvar)
 		return ret
 	end
 	con(exp)
+
+	graaf.namen = {}
+	for blok in pairs(graaf.punten) do
+		graaf.namen[blok.naam.v] = blok
+	end
 
 	return graaf
 end
