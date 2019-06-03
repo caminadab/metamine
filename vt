@@ -13,6 +13,7 @@ require 'naarjavascript'
 require 'rapport'
 require 'typeer'
 require 'doe'
+require 'optimaliseer'
 
 require 'bouw.controle'
 require 'bouw.kijkgat'
@@ -47,6 +48,8 @@ Opties:
 
     -i, --veilig      draai het programma in veilige modus
     -j,	--javascript	compileer naar javascript
+		
+    -O								optimaliseer uitvoer
 
     -S                genereer assembly-code
     -R                genereer uitgebreid rapport
@@ -55,7 +58,7 @@ Opties:
     -G                print kennisgraaf
     -K                print voorgekauwde (opgeloste) kennis
 
-    -O                print oplosinformatie
+    -Q                print oplosinformatie
     -W                print opgeloste waarde (GENERIEK AS FUCK!)
 
     -T                print types
@@ -95,7 +98,7 @@ if opt.R then verbozeRapport = true end
 if opt.S then verbozeSyntax = true end
 if opt.D then verbozeDeductie = true end
 if opt.K then verbozeKennis = true end
-if opt.O then verbozeOplos = true end
+if opt.Q then verbozeOplos = true end
 if opt.G then verbozeKennisgraaf = true end
 if opt.W then verbozeWaarde = true end
 if opt.D then verbozeDelta = true end
@@ -205,6 +208,14 @@ if not uit then
 	return
 end
 
+
+-- expressie fase: optm
+if opt.O then
+	uit = optimaliseer(uit)
+	--print(taal2string(uit))
+	--return
+end
+
 if opt.javascript then
 	uit = javascriptbieb .. naarjavascript(uit)
 	file('a.js', uit)
@@ -233,7 +244,13 @@ end
 -- INTERMEDIAIR --
 
 if opt.i or opt.veilig then
+	if verbozeIntermediair then
+		print('=== START ===')
+	end
 	local exp = doe(cfg)
+	if verbozeIntermediair then
+		print()
+	end
 	return
 end
 	

@@ -1,8 +1,10 @@
 ;uit = cat((0 .. 10) map (y → "hoi"))
-uit = itoa(-1234)
+uit = itoa(123)
+; entier aselect teleladen
 
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
   neg = als x < 0 dan "-" anders ""
-  cijfer = m → '0' + (entier (abs x)/10^m) mod 10
+  klein = (abs x)/10^m
+  cijfer = m → '0' + (entier klein) mod 10
   a = neg || ((n .. 0) map cijfer)

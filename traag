@@ -1,0 +1,113 @@
+=== INTERMEDIAIRE CODE ===
+fn1:
+  U := 48
+  Z := -1234
+  Y := abs Z
+  X := entier Y
+  BB := 10
+  DB := 1
+  CB := _arg DB
+  AB := BB ^i CB
+  W := X /f AB
+  EB := 10
+  V := W modi EB
+  T := U +i V
+  ret T
+p1:
+  B := C
+  K := 1
+  P := -1234
+  O := abs P
+  Q := 1
+  N := O max Q
+  M := log10 N
+  L := entier M
+  J := K +i L
+  R := 0
+  I := J .. R
+  S := fn1
+  H := I map S
+  A := B || H
+  stop
+p2:
+  D := 45
+  C := [D]
+  ga p1
+p3:
+  C := []
+  ga p1
+start:
+  F := -1234
+  G := 0
+  E := F < G
+  ga(E, p2, p3)
+
+F := -1234
+G := 0
+E := F < G
+D := 45
+C := [D]
+B := C
+K := 1
+P := -1234
+O := abs P
+Q := 1
+N := O max Q
+M := log10 N
+L := entier M
+J := K +i L
+R := 0
+I := J .. R
+4	0
+S := fn1
+H := I map S
+U := 48	3
+Z := -1234	3
+Y := abs Z	3
+X := entier Y	3
+BB := 10	3
+DB := 1	3
+CB := _arg DB	3
+AB := BB ^i CB	3
+W := X /f AB	3
+EB := 10	3
+V := W modi EB	3
+T := U +i V	3
+U := 48	2
+Z := -1234	2
+Y := abs Z	2
+X := entier Y	2
+BB := 10	2
+DB := 1	2
+CB := _arg DB	2
+AB := BB ^i CB	2
+W := X /f AB	2
+EB := 10	2
+V := W modi EB	2
+T := U +i V	2
+U := 48	1
+Z := -1234	1
+Y := abs Z	1
+X := entier Y	1
+BB := 10	1
+DB := 1	1
+CB := _arg DB	1
+AB := BB ^i CB	1
+W := X /f AB	1
+EB := 10	1
+V := W modi EB	1
+T := U +i V	1
+U := 48	0
+Z := -1234	0
+Y := abs Z	0
+X := entier Y	0
+BB := 10	0
+DB := 1	0
+CB := _arg DB	0
+AB := BB ^i CB	0
+W := X /f AB	0
+EB := 10	0
+V := W modi EB	0
+T := U +i V	0
+A := B || H
+-1234

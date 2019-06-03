@@ -154,7 +154,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 '\''					{ return OUD; }
 
 '.'					{ *yylval = karakter(yytext[1]); return TEKST; }
-\"([^"]|\"\")*\"					{ *yylval = tekst(a(yytext)); return TEKST; }
+\"([^"])*\"					{ *yylval = tekst(a(yytext)); return TEKST; }
 \n					{ return '\n'; }
 ;-[^$]*-;			// negeer commentaar
 ;[^-][^\n]*\n		{ return '\n'; }

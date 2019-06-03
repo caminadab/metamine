@@ -25,6 +25,11 @@ bieb = {
 	wit = true,
 	zwart = true,
 
+	-- willekeurig
+	aselect = function (a, b)
+		return math.random(a, b-1)
+	end,
+
 	-- wiskunde
 	looptijd = 3,
 	co = 3,
@@ -139,7 +144,7 @@ bieb = {
 		end
 	end;
 	['%'] = function(a) return a / 100 end;
-	['[]'] = function(...) return {fn='[]',...} end;
+	['[]'] = function(...) return {...} end;
 	['{}'] = function(...)
 		local t = {...}
 		local s = {is={set=true},set={}}
@@ -236,7 +241,7 @@ bieb = {
 	end;
 
 	['||'] = function(a,b)
-		if isatoom(a) or isatoom(b) or a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
+		--if isatoom(a) or isatoom(b) or a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
 		local j = 1
 		local t = {fn='[]'}
 		--if isatoom(a) then a = {a} end
@@ -423,9 +428,9 @@ bieb = {
 		if not b.buf then b.buf = b.fd:read(1024) end
 		return b.buf
 	end;
-	['=>'] = function(a,b)
+	['=>'] = function(a,b,c)
 		if a then return b
-		else return false end
+		else return c end
 	end;
 	-- delta componeer
 	-- 2@∆3 = 5

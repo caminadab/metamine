@@ -453,7 +453,9 @@ function typeer(exp)
 	for exp in boompairs(exp) do
 		if not types[exp] then
 			if verbozeTypes then
-				--print('kon type niet bepalen van '..exp2string(exp))
+				if fn(exp) ~= '=' and fn(exp) ~= '=>' and fn(exp) ~= '[]' then
+					print('kon type niet bepalen van '..exp2string(exp))
+				end
 			end
 		end
 	end

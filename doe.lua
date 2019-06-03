@@ -3,7 +3,10 @@ require 'bieb'
 
 local function waarde(a, env)
 	if isatoom(a) then
-		local w = tonumber(a.v) or env[a.v] or a.v == '_arg' or error('onbekend: '..tostring(a.v))
+		local w = tonumber(a.v) or env[a.v] or a.v == '_arg'
+		if w == nil then 
+			error('onbekend: '..tostring(a.v))
+		end
 		a.w = w
 	end
 	return a
@@ -11,7 +14,10 @@ end
 
 local function doeblok(blok, env, ...)
 	for i,stat in ipairs(blok.stats) do
-		print(combineer(stat), ...)
+		if verbozeIntermediair then
+			io.write(combineer(stat), '\t\t')
+			io.flush()
+		end
 		-- naam := exp
 		-- naam := f(a,b)
 		local naam,exp = stat[1],stat[2]
@@ -20,19 +26,29 @@ local function doeblok(blok, env, ...)
 		local exp = emap(exp, waarde, env)
 		local w
 		if isatoom(exp) then
-			w = exp.w
+			if exp.v == '[]' then
+				w = {}
+			else
+				w = exp.w
+			end
 		elseif fn(exp) == '_arg' then
 			local t = {...}
 			w = t[1]
 		else
-
 			local func = exp.fn.w
-			assert(func, "geen functie voor "..e2s(exp.fn))
+			assert(func ~= nil, "geen functie voor "..e2s(exp.fn))
 			local args = {}
 			for i,s in ipairs(exp) do
 				args[i] = s.w
 			end
-			w = func(table.unpack(args))
+			if type(func) == 'function' then
+				w = func(table.unpack(args))
+			else
+				w = func[args[1]]
+			end
+		end
+		if verbozeIntermediair then
+			io.write(combineer(w2exp(w)), '\n')
 		end
 		env[naam.v] = w
 	end

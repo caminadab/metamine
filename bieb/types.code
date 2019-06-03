@@ -33,6 +33,7 @@ cos :  getal → getal
 tan :  getal → getal
 sincos :  getal → (getal, getal)
 (+) :  (getal, getal) → getal
+(+) :  (int, int) → int
 (-) :  (getal, getal) → getal
 (-) :  getal → getal
 (*) :  (getal, getal) → getal
@@ -72,6 +73,12 @@ set: verzameling
 ;(∫) : (ontelbaar getal) → getal
 (..) : (int, int) → lijst int
 
+; util
+abs: getal → getal
+max: (getal,getal) → getal
+min: (getal,getal) → getal
+entier: getal → int
+(:): (iets,iets) → bit
 
 (iets → iets) : iets
 (iets → int) : iets
