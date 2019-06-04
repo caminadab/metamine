@@ -70,22 +70,25 @@ end
 function substitueer(exp, van, naar)
 	if isatoom(exp) then
 		if exp.v == van.v then
-			return naar
+			return naar, 1
 		else
-			return exp
+			return exp, 0
 		end
 	else
 		if isexp(van) then
 			if expmoes(exp) == expmoes(van) then
-				return naar
+				return naar, 1
 			end
 		end
 		local t = {}
+		local n = 0
 		t.fn = substitueer(exp.fn, van, naar)
 		for i,v in ipairs(exp) do
-			t[i] = substitueer(v, van, naar)
+			local m
+			t[i],m = substitueer(v, van, naar)
+			n = n + m
 		end
-		return t
+		return t, n
 	end
 end
 

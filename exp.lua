@@ -75,7 +75,7 @@ function varnaam(i)
 		local c = i % 26
 		i = math.floor(i / 26)
 		local l = string.char(string.byte('A') + c)
-		r = r .. r
+		r = l .. r
 	until i == 0
 	return r
 end

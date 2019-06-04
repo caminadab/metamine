@@ -273,6 +273,7 @@ bieb = {
 		local r = {fn='[]'}
 		for i,v in ipairs(a) do
 			--print('B', v, b(v))
+			print('map')
 			r[i] = b(v)
 		end
 		return r

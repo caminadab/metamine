@@ -1,30 +1,6 @@
 require 'util'
 require 'exp'
 
--- 1-gebaseerd
--- 1 t/m 26 zijn A t/m Z
--- daarna AA t/m ZZ
-function varnaam(i)
-	local r = ''
-	i = i - 1
-	repeat
-		local c = i % 26
-		i = math.floor(i / 26)
-		local l = string.char(string.byte('A') + c)
-		r = r .. l
-	until i == 0
-	return r
-end
-
-function maakvars()
-	local i = 1
-	return function ()
-		local var = varnaam(i)
-		i = i + 1
-		return var
-	end
-end
-
 local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod')
 local tab = '    '
 local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype',

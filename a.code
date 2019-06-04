@@ -1,9 +1,9 @@
 ;uit = cat((0 .. 10) map (y → "hoi"))
-uit = itoa(-123)
+uit = atoi("-123")
 
 atoi = b → i
   negatief = (b₀ = '-')
-  tekens = als negatief dan a vanaf 1 anders a
+  tekens = als negatief dan (a vanaf 1) anders a
   cijfers = tekens map (teken → teken - '0')
   i = Σ (0 .. j) map (k → cijfers(k) · 10^j)
     j = #tekens - k - 1

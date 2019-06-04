@@ -80,7 +80,7 @@ Opties:
 	return
 end
 
-bronnen[#bronnen+1] = 'bieb/unistd.code'
+--bronnen[#bronnen+1] = 'bieb/unistd.code'
 
 --bronnen[#bronnen+1] = 'bieb/wisk.code'
 --bronnen[#bronnen+1] = 'bieb/x64.code'
@@ -186,12 +186,6 @@ if #fouten > 0 then
 	--return
 end
 
-local doel = "stduit"
-if tekening then doel = "tekening" end
-
-local inn = { "bestanden-in", "udp-in", "tcp-in" }
-local uit = { "uit" }
-
 -- machinespecifieke typechecker
 local mach = arch_x64(asb, types)
 
@@ -199,7 +193,7 @@ local uit,fouten,exp2naam = oplos(mach, "uit")
 
 if not uit then
 	if not fouten[1] then
-		print('kon niet oplossen')
+		print('kon niet oplossen voor "uit"')
 		return
 	end
 	for i, fout in ipairs(fouten) do

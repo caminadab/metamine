@@ -522,17 +522,20 @@ function oplos(exp,voor)
 			local sub = pijl2subst[substs[i]]
 			local naam,exp = sub[1],sub[2]
 			local val0 = val
-			val = substitueer(val0, naam, exp)
+			local n
+			val, n = substitueer(val0, naam, exp)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
-			if verboos then
-				print('SUBST', naam.v)
+			if true or verboos then
+				print('SUBST', naam.v, n)
 			end
 
 			exp2naam[naam.v] = exp
 			local n2e = {}
 			for k,v in pairs(exp2naam) do
-				n2e[k] = substitueer(v, naam, exp)
+				local n
+				n2e[k],n = substitueer(v, naam, exp)
+				print('SUBST', combineer(exp)..':', n)
 			end
 			exp2naam = n2e
 		end

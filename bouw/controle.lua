@@ -80,7 +80,9 @@ function controle(exp, maakvar)
 
 	local function arg(exp)
 		local arg
-		if isfn(exp) then
+		if isfn(exp) and fn(exp) == '[]' then
+			arg = exp
+		elseif isfn(exp) then
 			arg = con(exp)
 		else
 			arg = con(exp)
@@ -177,6 +179,22 @@ function controle(exp, maakvar)
 		return ret
 	end
 	con(exp)
+
+	-- dubbelen filteren
+	local al = {}
+	for blok in pairs(graaf.punten) do
+		local i = 1
+		while blok.stats[i] do
+			local stat = blok.stats[i]
+			local m = moes(stat)
+			if al[m] then
+				table.remove(blok.stats, i)
+			else
+				al[m] = true
+				i = i + 1
+			end
+		end
+	end
 
 	graaf.namen = {}
 	for blok in pairs(graaf.punten) do

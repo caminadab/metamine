@@ -1,9 +1,10 @@
 require 'combineer'
 require 'bieb'
+require 'func'
 
 local function waarde(a, env)
 	if isatoom(a) then
-		local w = tonumber(a.v) or env[a.v] or a.v == '_arg'
+		local w = tonumber(a.v) or env[a.v] or (a.v == '_arg' and "JA")
 		if w == nil then 
 			error('onbekend: '..tostring(a.v))
 		end
@@ -15,7 +16,7 @@ end
 local function doeblok(blok, env, ...)
 	for i,stat in ipairs(blok.stats) do
 		if verbozeIntermediair then
-			io.write(combineer(stat), '\t\t')
+			io.write('  ', combineer(stat), '\t\t')
 			io.flush()
 		end
 		-- naam := exp
@@ -33,7 +34,18 @@ local function doeblok(blok, env, ...)
 			end
 		elseif fn(exp) == '_arg' then
 			local t = {...}
-			w = t[1]
+			w = t[1] or "FOUT"
+		elseif exp.fn and type(exp.fn.w) == 'table' then
+			-- woeps
+			local a = exp[1].w
+			local b = exp.fn.w
+			w = b[a+1]
+			local f = componeer(w2exp, combineer)
+			assert(w, f(b) .. '.' .. f(a))
+
+		elseif exp.fn == '_fn' then
+			w = env[fn(exp)]
+			
 		else
 			local func = exp.fn.w
 			assert(func ~= nil, "geen functie voor "..e2s(exp.fn))
@@ -50,6 +62,7 @@ local function doeblok(blok, env, ...)
 		if verbozeIntermediair then
 			io.write(combineer(w2exp(w)), '\n')
 		end
+
 		env[naam.v] = w
 	end
 	local epi = blok.epiloog
@@ -59,12 +72,15 @@ local function doeblok(blok, env, ...)
 		local a,d,e = epi[1], epi[2], epi[3]
 		if #epi == 3 then
 			if env[a.v] then
-				return env[d.v]()
+				print('ga '..d.v)
+				return env[d.v](...) -- dan 
 			else
-				return env[e.v]()
+				print('ga '..e.v)
+				return env[e.v](...) -- anders
 			end
 		else
-			return env[a.v]()
+			print('ga '..a.v)
+			return env[a.v](...) -- sws jmp
 		end
 	end
 end

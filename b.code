@@ -1,4 +1,8 @@
-uit = sluit(schrijf(stduit, t))
-
-a = (1/2) ^ (1/2)
-t = [ '0' + int(a) ]
+uit = a
+a = b + b + b + b + b
+b = c + c + c + c + c
+c = d + d + d + d + d
+d = e + e + e + e + e
+e = f + f + f + f + f
+f = g + g + g + g + g
+g = 8

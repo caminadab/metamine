@@ -18,7 +18,7 @@ function w2exp(w)
 			uit = X('[]', table.unpack(map(w, w2exp)))
 		end
 	else
-		return w
+		return X(w)
 		--error(w..type(w)	)
 	end
 	uit.w = w
