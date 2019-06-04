@@ -81,7 +81,7 @@ function controle(exp, maakvar)
 	local function arg(exp)
 		local arg
 		if isfn(exp) and fn(exp) == '[]' then
-			arg = exp
+			arg = con(exp)
 		elseif isfn(exp) then
 			arg = con(exp)
 		else
@@ -90,7 +90,13 @@ function controle(exp, maakvar)
 		return arg
 	end
 
+	local al = {}
 	function con(exp,ret)
+		if al[moes(exp)] then
+			--print('HERBRUIK', combineer(exp))
+			return al[moes(exp)]
+		end
+		--print('CON', combineer(exp))
 		local fw = {fn=exp.fn}
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
@@ -156,7 +162,6 @@ function controle(exp, maakvar)
 			stat[2] = X(tostring(exp))
 			table.insert(blok.stats, stat)
 
-
 		-- a := b
 		elseif isatoom(exp) then
 			stat[2] = exp
@@ -176,25 +181,11 @@ function controle(exp, maakvar)
 			table.insert(blok.stats, stat)
 		end
 
+		--print('REG', combineer(exp))
+		al[moes(exp)] = ret
 		return ret
 	end
 	con(exp)
-
-	-- dubbelen filteren
-	local al = {}
-	for blok in pairs(graaf.punten) do
-		local i = 1
-		while blok.stats[i] do
-			local stat = blok.stats[i]
-			local m = moes(stat)
-			if al[m] then
-				table.remove(blok.stats, i)
-			else
-				al[m] = true
-				i = i + 1
-			end
-		end
-	end
 
 	graaf.namen = {}
 	for blok in pairs(graaf.punten) do
