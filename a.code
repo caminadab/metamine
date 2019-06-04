@@ -1,6 +1,13 @@
 ;uit = cat((0 .. 10) map (y → "hoi"))
-uit = itoa(123)
-; entier aselect teleladen
+uit = itoa(-123)
+
+atoi = b → i
+  negatief = (b₀ = '-')
+  tekens = als negatief dan a vanaf 1 anders a
+  cijfers = tekens map (teken → teken - '0')
+  i = Σ (0 .. j) map (k → cijfers(k) · 10^j)
+    j = #tekens - k - 1
+
 
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
@@ -8,3 +15,15 @@ itoa = x → a
   klein = (abs x)/10^m
   cijfer = m → '0' + (entier klein) mod 10
   a = neg || ((n .. 0) map cijfer)
+
+; entier aselect teleladen
+;uit = "hoi" map (y → y + 1)
+;uit = "hoi" map succ
+;-
+atoi = b → y
+  neg = (b₀ = '-')
+  tekens = als neg dan b(1 .. #b) anders b
+  cijfers = tekens map (c → c - '0')
+  machten = (#cijfers .. 0) map (k → cijfers(#cijfers - k - 1) · 10^k)
+  y = Σ machten
+-;

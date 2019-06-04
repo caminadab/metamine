@@ -25,12 +25,16 @@ function w2exp(w)
 	return uit
 end
 
+local dynamisch = {
+	aselect = true
+}
+
 function optimaliseer(exp)
 	function w(e, ...)
 		if isatoom(e) then
 			if tonumber(e.v) then
 				e.w = tonumber(e.v)
-			elseif bieb[e.v] then
+			elseif bieb[e.v] and not dynamisch[e.v] then
 				e.w = bieb[e.v]
 			elseif e.v == '_arg0' then
 				e.w = ...
@@ -41,7 +45,7 @@ function optimaliseer(exp)
 		end
 		if isfn(e) then
 			if fn(e) == '_fn' then
-				local f = substitueer(e[1], X('_arg', e[2]), X'_arg0')
+				print('SUBST', 'arg', exp2string(e[2]))
 
 				-- is helemaal goed?
 				
@@ -59,14 +63,14 @@ function optimaliseer(exp)
 				local D = function (w)
 					local ok, res = pcall(
 						function()
-							return optimaliseer(substitueer(f, X'_arg0', w2exp(w))).w
+							return optimaliseer(substitueer(e[1], X('_arg', e[2]), w2exp(w))).w
 						end
 					)
 					assert(ok)
 					return res or nil
 				end
 
-				--e.w = D
+				e.w = D
 
 				return e
 			end

@@ -1,4 +1,4 @@
-standaarduitvoer = kop || data
+uit = (kop || data) map succ
 
 ; kop
 kop = status || host || length || re

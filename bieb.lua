@@ -14,6 +14,7 @@ bieb = {
 	log10 = math.log10,
 	puts = true,
 	call = true,
+	succ = function(x) return x + 1 end;
 
 	xcb_connect = true,
 
@@ -51,7 +52,7 @@ bieb = {
 	end) (10),
 	os.time(),
 	['inverteer'] = true; -- sure
-	['wortel'] = true; -- sure
+	['wortel'] = function(a) return math.sqrt(a) end;
 	['ja'] = true; 
 	['nee'] = false; 
 	['niets'] = false; 
@@ -121,7 +122,7 @@ bieb = {
 	['modi'] = function(a,b) return a % b end,
 
 	['+f'] = function(a,b) return a + b end,
-	['-f'] = function(a,b) return a - b end,
+	['-f'] = function(a,b) return b and a - b or -a end,
 	['*f'] = function(a,b) return a * b end,
 	['/f'] = function(a,b) return a / b end,
 	['^f'] = function(a,b) return a ^ b end,
