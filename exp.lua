@@ -50,10 +50,17 @@ function expmoesR(exp, t)
 	end
 end
 
+local moezen = {}
+
 function expmoes(exp)
+	if moezen[exp] then
+		return moezen[exp]
+	end
 	local t = {}
 	expmoesR(exp, t)
-	return table.concat(t)
+	local moes = table.concat(t)
+	moezen[exp] = moes
+	return moes
 end
 moes = expmoes
 

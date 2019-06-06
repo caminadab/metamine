@@ -92,14 +92,16 @@ function controle(exp, maakvar)
 
 	local al = {}
 	function con(exp,ret)
-		if al[moes(exp)] then
-			--print('HERBRUIK', combineer(exp))
-			return al[moes(exp)]
-		end
 		--print('CON', combineer(exp))
 		local fw = {fn=exp.fn}
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
+
+		if al[moes(exp)] then
+			--print('HERBRUIK', combineer(exp))
+			table.insert(blok.stats, X(':=', ret, al[moes(exp)]))
+			return ret --al[moes(exp)]
+		end
 
 		if fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
 			local naam = X(maakfunc())
