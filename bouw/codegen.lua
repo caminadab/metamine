@@ -206,6 +206,52 @@ function codegen(cfg)
 			elseif f == '_arg' then
 				opsla(naam, abiregs[1])-- + tonumber(atoom(exp, 1))])
 
+			elseif f == 'min' or f == 'max' then
+
+			elseif f == 'absi' then
+				-- abs(x) = (x XOR y) - y
+				-- y = x >>> 31
+				laad('rax', exp[1].v)
+				laad('rbx', exp[1].v)
+				t[#t+1] = [[
+movl rax, -8(rbp)	# -8(rbp) is memory for x on stack
+sarl  eax, 31						#  shift arithmetic right: x >>> 31, eax now represents y
+movl  edx, eax #  
+xorl  edx, -8(rbp) #  %edx = x XOR y
+movl  -4(rbp), edx    # -4(rbp) is memory for output on stack
+subl  -4(rbp), rax    # (x XOR y) - y
+cdq
+add rax, rdx
+xor rax, rdx
+]]
+				t[#t+1] = fmt('mov %d[rsp], 999', opslag[naam]) --lmao
+
+			elseif f == 'som' then
+				t[#t+1] = fmt('mov %d[rsp], 999', opslag[naam]) --lmao
+
+			elseif f == 'vanaf' then
+				laad('rax', exp[1].v)
+				opsla(naam, 'rax')
+
+			elseif f == 'entier' then
+				local snip = [[
+				# Retrieve the bit representation of the floating-point value.
+				fst   ]]..opslag[exp[1].v]..[[[rsp]
+				mov   rax, [rsp]
+
+				# Isolate the sign bit.
+				shr   rax, 31
+
+				# Use the sign bit as an index into the array of values to add the appropriate
+				# adjustment value to the original floating-point value at the top of the stack.
+				# (NOTE: This syntax is for MSVC's inline asm; translate as necessary.)
+				fadd  QWORD PTR [kSingleAdjustments + (rax * TYPE kSingleAdjustments)]
+
+				# Round the adjusted floating-point value to an integer.
+				# (Our adjustment ensures that it will be truncated, regardless of rounding mode.)
+				fistp ]]..opslag[exp[1].v]..'[rsp]'
+				t[#t+1] = snip
+
 			elseif f == '..' then
 				laad('rax', exp[1].v) -- onder
 				laad('rbx', exp[2].v) -- boven

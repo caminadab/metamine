@@ -408,7 +408,7 @@ function typeer(exp)
 				local nargs = #exp
 				-- local unpacking
 				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
-				if N(tfn) ~= nargs and N(tfn) ~= math.huge then
+				if false and N(tfn) ~= nargs and N(tfn) ~= math.huge then
 					local msg = typefout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc}) '..exp2string(tfn),
 						locsub(code, exp.loc),
 						nargs, oorzaakloc[exp],

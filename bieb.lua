@@ -39,6 +39,7 @@ bieb = {
 	min = math.min,
 	int = math.floor,
 	abs = math.abs,
+	absi = math.abs,
 	plafond = math.ceil,
 	["'"] = true,
 	['nu'] = (function()

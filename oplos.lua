@@ -431,7 +431,7 @@ function oplos(exp,voor)
 						if waarde then
 							local eq = {fn=X':=', naam, waarde}
 							subst[eq] = true
-							if verbozeOplos then print('SUBST', exp2string(eq)) end
+							--if verbozeOplos then print('SUBST', exp2string(eq)) end
 						end
 					end
 				end
@@ -527,7 +527,7 @@ function oplos(exp,voor)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
 			if true or verboos then
-				print('SUBST', naam.v, n)
+				--print('SUBST', naam.v, n)
 			end
 
 			exp2naam[naam.v] = exp
@@ -535,7 +535,7 @@ function oplos(exp,voor)
 			for k,v in pairs(exp2naam) do
 				local n
 				n2e[k],n = substitueer(v, naam, exp)
-				print('SUBST', combineer(exp), n..'x')
+				--print('SUBST', combineer(exp), n..'x')
 			end
 			exp2naam = n2e
 		end

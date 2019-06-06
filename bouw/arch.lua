@@ -1,8 +1,8 @@
 require 'typeer'
 
 function arch_x64(exp, types)
-	local fops = set('+', '-', '*', '^', 'mod', '/')
-	local iops = set('+', '-', '*', '^', 'mod')
+	local fops = set('+', '-', '*', '^', 'mod', '/', 'abs')
+	local iops = set('+', '-', '*', '^', 'mod', 'abs')
 	for sub in boompairs(exp) do
 		local isgetal = types[sub] and types[sub].v == 'getal'
 		local isint = types[sub] and types[sub].v == 'int'

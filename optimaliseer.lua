@@ -45,7 +45,7 @@ function optimaliseer(exp)
 		end
 		if isfn(e) then
 			if fn(e) == '_fn' then
-				print('SUBST', 'arg', exp2string(e[2]))
+				--print('SUBST', 'arg', exp2string(e[2]))
 
 				-- is helemaal goed?
 				
