@@ -15,7 +15,11 @@ function w2exp(w)
 		if w.isset then
 			uit = X('{}', table.unpack(map(w, w2exp)))
 		else
-			uit = X('[]', table.unpack(map(w, w2exp)))
+			uit = {}
+			for i,v in ipairs(w) do
+				uit[i] = w2exp(v)
+			end
+			uit.fn = X'[]'
 		end
 	else
 		return X(w)
@@ -29,7 +33,7 @@ local dynamisch = {
 	aselect = true
 }
 
-function optimaliseer(exp)
+local function optimaliseerO(exp)
 	function w(e, ...)
 		if isatoom(e) then
 			if tonumber(e.v) then
@@ -126,6 +130,16 @@ function optimaliseer(exp)
 	end
 
 	return exp
+end
+
+function optimaliseer(exp)
+	local coro = coroutine.create(optimaliseerO)
+	debug.sethook(coro, coroutine.yield, 'i', 10000)
+	local ok,nexp = coroutine.resume(coro, exp)
+	if not ok then
+		print('Optimalisatie vroegtijdig stopgezet, duurde te lang')
+	end
+	return ok and nexp or exp
 end
 
 if true or test then

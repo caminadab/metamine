@@ -227,7 +227,6 @@ bieb = {
 	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
 	['..'] = function(a,b)
 		local r = {}
-			print(a,b)
 		if a > b then
 			for i=a-1,b,-1 do
 				r[#r+1] = i

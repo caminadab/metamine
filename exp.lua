@@ -53,13 +53,13 @@ end
 local moezen = {}
 
 function expmoes(exp)
-	if moezen[exp] then
-		return moezen[exp]
-	end
+	---if moezen[exp] then
+		---return moezen[exp]
+	---end
 	local t = {}
 	expmoesR(exp, t)
 	local moes = table.concat(t)
-	moezen[exp] = moes
+	---moezen[exp] = moes
 	return moes
 end
 moes = expmoes
