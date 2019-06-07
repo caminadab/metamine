@@ -3,9 +3,6 @@ require 'util'
 require 'naarlua'
 require 'naarjavascript'
 
-local jslibtaal = {string.byte(javascriptbieb,1,#javascriptbieb)}
-jslibtaal.fn = '[]'
-
 bieb = {
 	-- rochel
 	['open-lees'] = true,
@@ -128,6 +125,15 @@ bieb = {
 	['/f'] = function(a,b) return a / b end,
 	['^f'] = function(a,b) return a ^ b end,
 	['modf'] = function(a,b) return a % b end,
+
+	['^h'] = function(a, b)
+		return function (x)
+			for i=1,b do
+				x = a(x)
+			end
+			return x
+		end
+	end;
 
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
@@ -273,7 +279,6 @@ bieb = {
 		local r = {fn='[]'}
 		for i,v in ipairs(a) do
 			--print('B', v, b(v))
-			print('map')
 			r[i] = b(v)
 		end
 		return r

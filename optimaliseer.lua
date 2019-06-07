@@ -134,7 +134,7 @@ end
 
 function optimaliseer(exp)
 	local coro = coroutine.create(optimaliseerO)
-	debug.sethook(coro, coroutine.yield, 'i', 10000)
+	debug.sethook(coro, coroutine.yield, 'i', 1e7)
 	local ok,nexp = coroutine.resume(coro, exp)
 	if not ok then
 		print('Optimalisatie vroegtijdig stopgezet, duurde te lang')

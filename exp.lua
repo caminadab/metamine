@@ -27,6 +27,18 @@ function loctekst(loc)
 	end
 end
 
+function bladeren(exp)
+	if isatoom(exp) then
+		return 1
+	else
+		local n = 0
+		for i,v in ipairs(exp) do
+			n = n + bladeren(v)
+		end
+		return n
+	end
+end
+
 function locsub(code, loc)
 	if not code then return "???" end
 	local apos = locvind(code, loc.x1, loc.y1)

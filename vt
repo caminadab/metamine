@@ -10,6 +10,7 @@ require 'lisp'
 require 'naarlua'
 require 'naarweb'
 require 'naarjavascript'
+require 'naarjavascript0'
 require 'rapport'
 require 'typeer'
 require 'doe'
@@ -189,6 +190,9 @@ end
 -- machinespecifieke typechecker
 local mach = arch_x64(asb, types)
 
+if opt.O then
+	mach = optimaliseer(mach)
+end
 local uit,fouten,exp2naam = oplos(mach, "uit")
 
 if not uit then
@@ -210,8 +214,9 @@ if opt.O then
 	--return
 end
 
-if opt.javascript then
-	uit = javascriptbieb .. naarjavascript(uit)
+-- oude hoge JS
+if opt.javascript and false then
+	uit = naarjavascript0(uit)
 	file('a.js', uit)
 	print(uit)
 	return
@@ -236,6 +241,15 @@ if verbozeIntermediair then
 end
 
 -- INTERMEDIAIR --
+
+-- nieuwe lage JS
+if opt.javascript then
+	uit = naarjavascript0(cfg)
+	file('a.js', uit)
+	print(uit)
+	return
+end
+
 
 if opt.i or opt.veilig then
 	if verbozeIntermediair then

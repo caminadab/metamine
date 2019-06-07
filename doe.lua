@@ -60,7 +60,9 @@ local function doeblok(blok, env, ...)
 			end
 		end
 		if verbozeIntermediair then
-			io.write(combineer(w2exp(w)), '\n')
+			if type(w) ~= 'table' then
+				io.write(combineer(w2exp(w)), '\n')
+			end
 		end
 
 		env[naam.v] = w

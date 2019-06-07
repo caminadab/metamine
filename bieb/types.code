@@ -41,7 +41,7 @@ sincos :  getal → (getal, getal)
 (/) :  (int, int) → getal
 (^) :  (getal, getal) → getal
 (^) :  (int, int) → int
-;(^) :  ((→), nat) → getal
+(^) :  ((→), int) → iets
 (#) :  verzameling → int
 ;([) : lijst
 ;(=) :  (iets, iets) → bit 

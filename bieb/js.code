@@ -1,0 +1,12 @@
+beginPath: canvas-path
+boog: canvas-path → canvas-path
+teken: canvas-path → canvas-object
+
+font: (canvas, font) → canvas
+fillText: (canvas, font) → canvas
+
+boog(pos, straal, hoekbereik) = "ctx.arc({pos₀}, {pos₁}, {straal}, {hoekbereik₀}, {hoekbereik₁})"
+
+uit = 
+
+path = boog(

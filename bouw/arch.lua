@@ -12,6 +12,8 @@ function arch_x64(exp, types)
 			sub.fn = X(fn(sub)..'f')
 		elseif isint and isfn(sub) and iops[fn(sub)] then
 			sub.fn = X(fn(sub)..'i')
+		elseif fn(sub) == '^' then
+			sub.fn = X(fn(sub)..'h')
 		end
 	end
 	return exp
