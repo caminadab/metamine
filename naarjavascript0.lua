@@ -29,7 +29,19 @@ local function sym(exp, t)
 	end
 end
 
+--[[
+[]       -> []
+[](1 2)  -> [1,2]
+{}(1 2)  -> {1,2}
++(1 2)   -> 1 + 2
+-(1)     -> - 1
+sin(1)   -> Math.sin(1)
+vanaf(a 1)   -> a.splice(1)
+]]
 function naarjavascript0(app)
+
+
+function naarjavascript1(app)
 	local t = {}
 	local gebruikt = {}
 	local function jsblok(blok)
