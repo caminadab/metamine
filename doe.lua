@@ -60,7 +60,7 @@ local function doeblok(blok, env, ...)
 				ok, w = pcall(func, table.unpack(args))
 				if not ok then
 					local err = w
-					local f = executiefout('{loc}', stat.loc)
+					local f = executiefout(stat.loc, err)
 					print()
 					print(fout2ansi(f))
 					return
@@ -70,7 +70,7 @@ local function doeblok(blok, env, ...)
 				w = func[args[1]]
 
 			else
-				local f = executiefout('{loc}', stat.loc)
+				local f = executiefout(stat.loc, 'onbekend index type: '..type(func))
 				print()
 				print(fout2ansi(f))
 			end

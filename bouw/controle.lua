@@ -106,6 +106,7 @@ function controle(exp, maakvar)
 		end
 
 		if fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
+			al = {}
 			local naam = X(maakfunc())
 			local waarde = exp[1]
 			local arg = exp[2]
@@ -134,6 +135,8 @@ function controle(exp, maakvar)
 			local bphi = maakblok(phi, {}, X'stop')
 			graaf:link(blok, bphi)
 
+			al = {}
+
 			-- dan
 			local dan = X(maakproc())
 			local bdan = maakblok(dan, {}, X('ga', phi))
@@ -141,11 +144,15 @@ function controle(exp, maakvar)
 			blok = bdan
 			local rdan = con(edan)
 
+			al = {}
+
 			-- anders
 			local anders = X(maakproc())
 			local banders = maakblok(anders, {}, X('ga', phi))
 			graaf:link(blok, banders)
 			blok = banders
+
+			al = {}
 
 			local randers = '???'
 			if eanders then
@@ -163,6 +170,7 @@ function controle(exp, maakvar)
 
 			-- ga rustig verder
 			blok = bphi
+			al = {}
 
 		elseif tonumber(exp) then
 			stat[2] = X(tostring(exp))

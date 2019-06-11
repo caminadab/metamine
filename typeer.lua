@@ -204,17 +204,17 @@ function typeer(exp)
 		local T,S
 		if tonumber(exp.v) and exp.v % 1 == 0 then
 			local n = tonumber(exp.v)
-			T = exp
+			--T = exp
 			if n < 256 then
-				S = X'byte'
+				T = X'byte'
 			else
-				S = X'int'
+				T = X'int'
 			end
 		elseif tonumber(exp.v) then T = X'kommagetal'
 		elseif exp.tekst then
 			--T = X'tekst'
-			T = X('^', 'byte', tostring(#exp))
-			S = X('lijst', 'byte')
+			--T = X('^', 'byte', tostring(#exp))
+			T = X('lijst', 'byte')
 		elseif isfn(exp) and exp.fn.v == '[]' then
 			--T = X'lijst'
 			T = typegraaf.iets

@@ -1,15 +1,16 @@
 ;uit = cat((0 .. 10) map (y → "hoi"))
 ; test
-uit = atoi("123")
-;uit = itoa(-123)
+uit = atoi("-123")
+;uit = atoi(itoa(-123))
 
 atoi = b → i
   negatief = (b₀ = '-')
   s = als negatief dan -1 anders 1
+
   tekens = als negatief dan (b vanaf 1) anders b
   cijfers = tekens map (teken → teken - '0')
-  i = s · Σ ((0 .. #tekens) map (k → cijfers(j) · 10^k))
-    j = #b - k - 1
+  i = s · Σ ((0 .. #tekens) map (k → cijfers(j) · 10^k)) ;cijfers(j) · 10^k))
+    j = #tekens - k - 1
 
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))

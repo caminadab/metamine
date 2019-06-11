@@ -1,8 +1,9 @@
 require 'util'
 
-function fout(type, fmt, ...)
+function fout(type, loc, fmt, ...)
 	-- Typefout: a is int (loc1) maar moet tekst zijn (loc2)
 	local t = {
+		loc = loc,
 		type = type,
 		fmt = fmt,
 		args = {...},
@@ -10,16 +11,17 @@ function fout(type, fmt, ...)
 	return t
 end
 
-function executiefout(fmt, ...) return fout("executie", fmt, ...) end
-function syntaxfout(fmt, ...) return fout("syntax", fmt, ...) end
-function oplosfout(fmt, ...) return fout("oplos", fmt, ...) end
-function typeerfout(fmt, ...) return fout("type", fmt, ...) end
+function executiefout(...) return fout("executie", ...) end
+function syntaxfout(...) return fout("syntax", ...) end
+function oplosfout(...) return fout("oplos", ...) end
+function typeerfout(...) return fout("type", ...) end
 
 function fout2ansi(fout)
+	local loc =  ansi.underline .. loctekst(fout.loc) .. ansi.normal
 	local type = color.brightred .. fout.type .. 'fout' .. color.white .. ': '
 	local i = 0
 	local t = fout.args
-	local ansi = type .. fout.fmt:gsub('{([^}]*)}', function (spec)
+	local ansi = loc .. '\t' .. type .. '\t' .. fout.fmt:gsub('{([^}]*)}', function (spec)
 		i = i + 1
 		if spec == 'loc' then
 			return ansi.underline .. loctekst(t[i]) .. ansi.normal

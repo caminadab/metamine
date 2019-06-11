@@ -397,7 +397,7 @@ xor rax, rdx
 				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- naam := f
 
 			-- aritm functies
-			elseif f == '+f' or f == '*f' or f == '/f' or f == '-f' or f == 'modf' then
+			elseif f == '+d' or f == '*d' or f == '/d' or f == '-d' or f == 'modd' then
 				local op = {['+'] = 'addp', ['-'] = 'subp', ['*'] = 'mulp', ['/'] = 'divp', ['mod'] = 'prem1'}
 				t[#t+1] = fmt('fildd %s[rsp]', opslag[exp[1].v]) -- f := a
 				t[#t+1] = fmt('fildd %s[rsp]', opslag[exp[2].v]) -- g := b
