@@ -55,7 +55,7 @@ local function doeblok(blok, env, ...)
 				args[i] = s.w
 			end
 			if type(func) == 'function' then
-				--w = func(table.unpack(args))
+				--w = func(able.unpack(args))
 				local ok
 				ok, w = pcall(func, table.unpack(args))
 				if not ok then
@@ -79,6 +79,8 @@ local function doeblok(blok, env, ...)
 		if verbozeIntermediair then
 			if type(w) ~= 'table' then
 				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), '\n')
+			else
+				io.write('\t\t', loctekst(stat.loc), '\n')
 			end
 		end
 

@@ -1,7 +1,7 @@
 ;uit = cat((0 .. 10) map (y → "hoi"))
 ; test
-uit = atoi("-123")
-;uit = atoi(itoa(-123))
+;uit = atoi("-123")
+uit = atoi(itoa(-123))
 
 atoi = b → i
   negatief = (b₀ = '-')
