@@ -495,8 +495,8 @@ end
 if test then
 	-- automatisch verdiepen
 	local tg = maaktypegraaf()
-	tg:link('a', 'b')
-	tg:link('b', 'c')
+	tg:link(X'a', X'b')
+	tg:link(X'b', X'c')
 
-	tg:link('d', 'b')
+	tg:link(X'd', X'b')
 end

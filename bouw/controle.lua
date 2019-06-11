@@ -97,9 +97,11 @@ function controle(exp, maakvar)
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 
-		if al[moes(exp)] then
+		if false and al[moes(exp)] then
 			--print('HERBRUIK', combineer(exp))
-			table.insert(blok.stats, X(':=', ret, al[moes(exp)]))
+			local stat = X(':=', ret, al[moes(exp)])
+			stat.loc = exp.loc
+			table.insert(blok.stats, stat)
 			return ret --al[moes(exp)]
 		end
 
@@ -118,7 +120,9 @@ function controle(exp, maakvar)
 			bfn.epiloog[1] = res
 			graaf:punt(bfn)
 			blok = b
-			table.insert(blok.stats, X(':=', ret, naam))
+			local stat = X(':=', ret, naam)
+			stat.loc = exp.loc
+			table.insert(blok.stats, stat)
 
 		-- alsdan!
 		elseif fn(exp) == '=>' then
@@ -162,11 +166,13 @@ function controle(exp, maakvar)
 
 		elseif tonumber(exp) then
 			stat[2] = X(tostring(exp))
+			stat.loc = exp.loc
 			table.insert(blok.stats, stat)
 
 		-- a := b
 		elseif isatoom(exp) then
 			stat[2] = exp
+			stat.loc = exp.loc
 			table.insert(blok.stats, stat)
 
 		-- normale statement (TODO sorteer)
@@ -180,6 +186,7 @@ function controle(exp, maakvar)
 			for i,v in ipairs(exp) do
 				fw[i] = arg(v)
 			end
+			stat.loc = exp.loc
 			table.insert(blok.stats, stat)
 		end
 
@@ -210,7 +217,7 @@ anders
 ]])
 
 	for blok in pairs(cfg.punten) do
-		print(blok)
+		--print(blok)
 	end
 
 	local graaf2, blokken2 = controle(E[[

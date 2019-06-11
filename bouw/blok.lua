@@ -1,5 +1,6 @@
 require 'combineer'
 require 'exp'
+require 'lisp'
 
 --[[
 op: * / + - 
@@ -21,6 +22,8 @@ function blok2tekst(self)
 	t[#t+1] = self.naam.v..':'
 	for i,stat in ipairs(self.stats) do
 		t[#t+1] = '  '..combineer(stat)
+		-- met locatie
+		--t[#t+1] = '  '..combineer(stat)..'  '..(stat.loc and loctekst(stat.loc) or '')
 	end
 	t[#t+1] = '  '..combineer(self.epiloog)
 	return table.concat(t, '\n')

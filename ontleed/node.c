@@ -381,6 +381,17 @@ node* metloc(node* n, YYLTYPE yylloc) {
 	n->loc = yylloc;
 	return n;
 }
+node* tekstmetloc(node* n, YYLTYPE yylloc) {
+	n->loc = yylloc;
+	yylloc.first_column = n->loc.first_column + 1;
+	yylloc.last_column = n->loc.first_column + 2;
+	for (node* teken = n->first; teken; teken = n->next) {
+		teken->loc = yylloc;
+		yylloc.first_column++;
+		yylloc.last_column++;
+	}
+	return n;
+}
 node* metfout(node* n, char* fout) {
 	strcpy(n->fout, fout);
 	return n;

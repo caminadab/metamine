@@ -73,6 +73,7 @@ function metatypegraaf:paramtype(type, paramtype)
 		end
 		doel = nieuwdoel
 	end
+	do return X'iets' end
 	error('geen param gevonden voor type '..exp2string(paramtype))
 end
 

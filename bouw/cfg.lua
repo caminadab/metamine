@@ -28,6 +28,7 @@ function cfgmeta:__tostring()
 	local t = {}
 	t[#t+1] = tostring(self.graaf)
 	t[#t+1] = '\n'
+	do return end
 
 	for blok in spairs(self.blokken) do
 		t[#t+1] = naam
@@ -35,6 +36,11 @@ function cfgmeta:__tostring()
 		for i,stat in ipairs(blok) do
 			t[#t+1] = '  '
 			t[#t+1] = combineer(stat)
+			do
+				t[#t+1] = '  '
+				t[#t+1] = loctekst(stat[2].loc)
+				t[#t+1] = '!!!'
+			end
 			t[#t+1] = '\n'
 		end
 		t[#t+1] = '\n'

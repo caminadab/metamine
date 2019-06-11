@@ -12,7 +12,7 @@ end
 ]]
 
 local bestanden = io.popen('ls *.lua')
-local gehad = {}
+local gehad = {test=true}
 for bestand in bestanden:lines() do
 	local kort = bestand:sub(1,-5)
 	if gehad[kort] then break end

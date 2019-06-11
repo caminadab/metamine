@@ -119,14 +119,14 @@ bieb = {
 	['^i'] = function(a,b) return a ^ b end,
 	['modi'] = function(a,b) return a % b end,
 
-	['+f'] = function(a,b) return a + b end,
-	['-f'] = function(a,b) return b and a - b or -a end,
-	['*f'] = function(a,b) return a * b end,
-	['/f'] = function(a,b) return a / b end,
-	['^f'] = function(a,b) return a ^ b end,
-	['modf'] = function(a,b) return a % b end,
+	['+g'] = function(a,b) return a + b end,
+	['-g'] = function(a,b) return b and a - b or -a end,
+	['*g'] = function(a,b) return a * b end,
+	['/g'] = function(a,b) return a / b end,
+	['^g'] = function(a,b) return a ^ b end,
+	['modg'] = function(a,b) return a % b end,
 
-	['^h'] = function(a, b)
+	['^f'] = function(a, b)
 		return function (x)
 			for i=1,b do
 				x = a(x)

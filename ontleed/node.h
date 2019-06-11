@@ -74,6 +74,7 @@ node* tekstloc(node* str, YYLTYPE yylloc);
 node* aloc(char* t, YYLTYPE yylloc);
 node* abron(char* t, char* bron);
 node* metloc(node* n, YYLTYPE yylloc);
+node* tekstmetloc(node* n, YYLTYPE yylloc);
 node* metfout(node* n, char* fout);
 
 // locatie zelf

@@ -1,6 +1,7 @@
 require 'combineer'
 require 'bieb'
 require 'func'
+require 'fout'
 
 local function waarde(a, env)
 	if isatoom(a) then
@@ -54,14 +55,30 @@ local function doeblok(blok, env, ...)
 				args[i] = s.w
 			end
 			if type(func) == 'function' then
-				w = func(table.unpack(args))
-			else
+				--w = func(table.unpack(args))
+				local ok
+				ok, w = pcall(func, table.unpack(args))
+				if not ok then
+					local err = w
+					local f = executiefout('{loc}', stat.loc)
+					print()
+					print(fout2ansi(f))
+					return
+				end
+
+			elseif type(func) == 'table' then
 				w = func[args[1]]
+
+			else
+				local f = executiefout('{loc}', stat.loc)
+				print()
+				print(fout2ansi(f))
 			end
+
 		end
 		if verbozeIntermediair then
 			if type(w) ~= 'table' then
-				io.write(combineer(w2exp(w)), '\n')
+				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), '\n')
 			end
 		end
 

@@ -524,6 +524,7 @@ function oplos(exp,voor)
 			local val0 = val
 			local n
 			val, n = substitueer(val0, naam, exp)
+			val.loc = assert(exp.loc)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
 			if true or verboos then

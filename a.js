@@ -1,10 +1,5 @@
-var D = 0;
-var BX = M;
-var BY = 49;
-var BZ = 50;
-var CA = 51;
-var BW = [](BX, BY, BZ, CA);
-var CB = D;
-var BV = BW(CB);
-var CC = M;
-var BU = =(BV, CC);
+
+var B = 1;
+var C = B;
+var A = C + C;
+print(A)

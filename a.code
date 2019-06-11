@@ -1,19 +1,21 @@
 ;uit = cat((0 .. 10) map (y → "hoi"))
-uit = atoi("-123")
+; test
+uit = atoi("123")
+;uit = itoa(-123)
 
 atoi = b → i
   negatief = (b₀ = '-')
-  tekens = als negatief dan (a vanaf 1) anders a
+  s = als negatief dan -1 anders 1
+  tekens = als negatief dan (b vanaf 1) anders b
   cijfers = tekens map (teken → teken - '0')
-  i = Σ (0 .. j) map (k → cijfers(k) · 10^j)
-    j = #tekens - k - 1
-
+  i = s · Σ ((0 .. #tekens) map (k → cijfers(j) · 10^k))
+    j = #b - k - 1
 
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
   neg = als x < 0 dan "-" anders ""
-  klein = (abs x)/10^m
-  cijfer = m → '0' + (entier klein) mod 10
+  geschaald = (abs x)/10^m
+  cijfer = m → '0' + (entier geschaald) mod 10
   a = neg || ((n .. 0) map cijfer)
 
 ; entier aselect teleladen

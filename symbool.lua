@@ -80,7 +80,7 @@ function substitueer(exp, van, naar)
 				return naar, 1
 			end
 		end
-		local t = {}
+		local t = {loc=exp.loc}
 		local n = 0
 		t.fn = substitueer(exp.fn, van, naar)
 		for i,v in ipairs(exp) do
