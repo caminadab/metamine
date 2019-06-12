@@ -1,2 +1,37 @@
-uit = Σ (0 .. 10000) map f
-f = x → 3·x² + 1
+uit = atoi("123")
+
+atoi = b → i
+	; negatief?
+  negatief = (b₀ = '-')
+  sign = als negatief dan -1 anders 1
+
+	; cijfers van de tekst
+  tekens = als negatief dan (b vanaf 1) anders (b)
+  cijfers = tekens map (t → t - '0')
+
+	; waarde van elk cijfer gegeven de positie
+  waarde = (k → cijfers(j) · 10^k)
+    j = #tekens - k - 1
+
+	; positie en resultaat
+	pos = 0 .. #tekens
+  i = sign · Σ (pos map waarde)
+
+itoa = x → a
+  n = 1 + entier(log10(max(abs x, 1)))
+  neg = als x < 0 dan "-" anders ""
+  geschaald = (abs x)/10^m
+  cijfer = m → '0' + (entier geschaald) mod 10
+  a = neg || ((n .. 0) map cijfer)
+
+; entier aselect teleladen
+;uit = "hoi" map (y → y + 1)
+;uit = "hoi" map succ
+;-
+atoi = b → y
+  neg = (b₀ = '-')
+  tekens = als neg dan b(1 .. #b) anders b
+  cijfers = tekens map (c → c - '0')
+  machten = (#cijfers .. 0) map (k → cijfers(#cijfers - k - 1) · 10^k)
+  y = Σ machten
+-;

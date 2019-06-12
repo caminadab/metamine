@@ -173,9 +173,12 @@ for exp in boompairs(asb) do
 end
 assert(asb, 'syntaxfout')
 
+-- machinespecifieke typechecker
+local mach = arch_x64(asb, typeer(asb))
+
 -- typeer!
 --local function gekleurd(x, kleur)
-local types,fouten = typeer(asb)
+local types,fouten = typeer(mach)
 
 if #fouten > 0 then
 	for i,fout in ipairs(fouten) do
@@ -184,11 +187,9 @@ if #fouten > 0 then
 		end
 	end
 	-- TODO print
-	--return
+	return
 end
 
--- machinespecifieke typechecker
-local mach = arch_x64(asb, types)
 
 if opt.O then
 	mach = optimaliseer(mach)

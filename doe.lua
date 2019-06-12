@@ -77,7 +77,7 @@ local function doeblok(blok, env, ...)
 
 		end
 		if verbozeIntermediair then
-			if type(w) ~= 'table' then
+			if true or type(w) ~= 'table' then
 				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), '\n')
 			else
 				io.write('\t\t', loctekst(stat.loc), '\n')
@@ -88,7 +88,12 @@ local function doeblok(blok, env, ...)
 	end
 	local epi = blok.epiloog
 	if fn(epi) == 'ret' then
-		return env[blok.stats[#blok.stats][1].v]
+		local a = env[blok.stats[#blok.stats][1].v]
+		print('RET', a)
+		return a
+	elseif fn(epi) == 'stop' then
+		print('STOP', a)
+		return env[blok.stats[#blok.stats][1].v] or error'ok'
 	elseif fn(epi) == 'ga' then
 		local a,d,e = epi[1], epi[2], epi[3]
 		if #epi == 3 then

@@ -152,7 +152,7 @@ bieb = {
 		end
 	end;
 	['%'] = function(a) return a / 100 end;
-	['[]'] = function(...) return {...} end;
+	['[]'] = function(...)  return {...} end;
 	['{}'] = function(...)
 		local t = {...}
 		local s = {is={set=true},set={}}
@@ -277,10 +277,19 @@ bieb = {
 	-- linq
 	['map'] = function(a,b)
 		local r = {fn='[]'}
-		for i,v in ipairs(a) do
-			--print('B', v, b(v))
+		for i=1,#a do --i,v in ipairs(a) do
+			local v = a[i]
+			print('VOOR')
+			local s = b(v)
+			print('NA')
+			assert(s)
 			r[i] = b(v)
+			print('B', i, v, r[i])
 		end
+		print(#a)
+		see(a)
+		see(r)
+		print'ok'
 		return r
 	end;
 

@@ -85,7 +85,7 @@ function controle(exp, maakvar)
 		elseif isfn(exp) then
 			arg = con(exp)
 		else
-			arg = con(exp)
+			arg = (exp)
 		end
 		return arg
 	end
@@ -114,7 +114,7 @@ function controle(exp, maakvar)
 			exp.fn = nil
 			exp[1] = nil
 			exp[2] = nil
-			local bfn = maakblok(naam, {}, X('ret', '!!!'))
+			local bfn = maakblok(naam, {}, X('ret', '9999999'))
 			local b = blok
 			blok = bfn
 			local res = con(waarde)
