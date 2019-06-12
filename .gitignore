@@ -2,6 +2,7 @@
 
 # autogen
 *.yy.*
+*.gen.*
 
 *.output
 bin/

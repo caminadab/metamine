@@ -67,7 +67,7 @@ end
 
 -- X('a', 3, 10)
 
-local nergens = {x1=-1,y1=-1,x2=-1,y2=-1}
+nergens = {x1=-1,y1=-1,x2=-1,y2=-1}
 
 function X(fn,...)
 	if type(fn) == 'string' then

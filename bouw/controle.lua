@@ -132,7 +132,7 @@ function controle(exp, maakvar)
 
 			-- phi (eindcontinuatie)
 			local phi = X(maakproc())
-			local bphi = maakblok(phi, {}, X'stop')
+			local bphi = maakblok(phi, {}, blok0.epiloog) -- krijgt zelfde eind
 			graaf:link(blok, bphi)
 
 			al = {}
@@ -161,7 +161,7 @@ function controle(exp, maakvar)
 
 			-- conditie en sprong
 			blok = blok0
-			local econd = con(exp[1])
+			local econd = con(eals)
 			blok.epiloog = X('ga', econd, dan, anders)
 
 			-- daadwerkelijke '=>'
@@ -199,7 +199,7 @@ function controle(exp, maakvar)
 		end
 
 		--print('REG', combineer(exp))
-		al[moes(exp)] = ret
+		--al[moes(exp)] = ret
 		return ret
 	end
 	con(exp)

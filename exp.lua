@@ -15,6 +15,7 @@ end
 expmt = {}
 
 function loctekst(loc)
+	if not loc then loc = nergens end
 	local bron = loc.bron or '?.code'
 	bron = bron:sub(1, -6)
 

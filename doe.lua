@@ -38,11 +38,11 @@ local function doeblok(blok, env, ...)
 			w = t[1] or "FOUT"
 		elseif exp.fn and type(exp.fn.w) == 'table' then
 			-- woeps
-			local a = exp[1].w
-			local b = exp.fn.w
-			w = b[a+1]
+			local a = exp.fn.w
+			local i = exp[1].w
+			w = a[i+1]
 			local f = componeer(w2exp, combineer)
-			assert(w ~= nil, f(b) .. '.' .. f(a))
+			assert(w ~= nil, f(a) .. '.' .. f(i))
 
 		elseif exp.fn == '_fn' then
 			w = env[fn(exp)]
@@ -89,32 +89,42 @@ local function doeblok(blok, env, ...)
 	local epi = blok.epiloog
 	if fn(epi) == 'ret' then
 		local a = env[blok.stats[#blok.stats][1].v]
-		print('RET', a)
+		print('ret '..a)
 		return a
-	elseif fn(epi) == 'stop' then
-		print('STOP', a)
-		return env[blok.stats[#blok.stats][1].v] or error'ok'
+	elseif epi.v == 'stop' then
+		local a =  env[blok.stats[#blok.stats][1].v]
+		print('stop '..a)
+		os.exit()
 	elseif fn(epi) == 'ga' then
 		local a,d,e = epi[1], epi[2], epi[3]
 		if #epi == 3 then
-			if env[a.v] then
-				print('ga '..d.v)
-				return env[d.v](...) -- dan 
-			else
-				print('ga '..e.v)
-				return env[e.v](...) -- anders
-			end
+			local b = env[a.v]
+			local doel = b and d.v or e.v
+			print(string.format('ga %s want %s = %s', doel, a.v, b))
+			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi))
+			return env[doel](...)
 		else
 			print('ga '..a.v)
 			return env[a.v](...) -- sws jmp
 		end
+	else
+		error('slechte epiloog: '..combineer(epi))
 	end
 end
 
 function doe(cfg)
 	local env = {}
 	for k,v in pairs(bieb) do env[k] = v end
-	for k,v in pairs(cfg.namen) do env[k] = function(...) return doeblok(v, env, ...) end end
+	for k,v in pairs(cfg.namen) do
+		env[k] = function(...)
+			local isf = true or fn(v.epiloog) == 'ret'
+			if isf then print('...') end
+			local ret = doeblok(v, env, ...)
+			if isf then io.write('\n...') end
+			io.flush()
+			return ret
+		end
+	end
 
 	-- GA
 	doeblok(cfg.start, env)

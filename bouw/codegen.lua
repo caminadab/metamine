@@ -136,14 +136,23 @@ function codegen(cfg)
 		end
 	end
 
-	local function opslaf(val, noot)
+	-- sla dubbele-precisie drijvende-kommagetal op op de stack
+	local function opslaD(val, noot)
 		if noot then noot = ' \t# '..noot
 		else noot = '' end
-
 		assert(opslag[val])
-
-		t[#t+1] = fmt('fistpd %d[rsp]', opslag[val]) .. noot
+		t[#t+1] = fmt('fstpq %d[rsp]', opslag[val]) .. noot
 	end
+
+	-- laad dubbele-precisie drijvende-kommagetal van de stack
+	local function laadD(val, noot)
+		if noot then noot = ' \t# '..noot
+		else noot = '' end
+		assert(opslag[val], 'geen geheugenslot gevonden voor '..val)
+		t[#t+1] = fmt('fldd %d[rsp]', opslag[val]) .. noot
+	end
+
+	--	t[#t+1] = fmt('fistpd %d[rsp]', opslag[val]) .. noot
 
 	local function opsla(val, reg, noot)
 		if noot then noot = ' \t# '..noot
@@ -189,11 +198,27 @@ function codegen(cfg)
 				t[#t+1] = 'fyl2x'
 				opslaf(naam)
 
-			-- kutte met rutte
+			-- kutte met rutte 2
 			elseif f == 'log' then
 				t[#t+1] = fmt('fild %d[rsp]', opslag[exp[1].v])
 				t[#t+1] = 'fldl2e'
 				t[#t+1] = fmt('fistp %d[rsp]', opslag[naam])
+
+			-- float constants
+			elseif val == '1d' then
+				t[#t+1] = 'fld1'
+				opslaD(naam)
+
+			elseif val == '0d' then
+				t[#t+1] = 'fldz'
+				opslaD(naam)
+
+			elseif f == '^d' then
+				--t[#t+1] = 'fldz'
+				--opslaD(naam)
+
+			-- TODO float constants
+			elseif val == 'pi' then
 
 			elseif op == ':=' and f == '!' then
 				laad('rax', exp[1].v)
@@ -227,7 +252,7 @@ xor rax, rdx
 				t[#t+1] = fmt('mov %d[rsp], 999', opslag[naam]) --lmao
 
 			elseif f == 'som' then
-				t[#t+1] = fmt('mov %d[rsp], 999', opslag[naam]) --lmao
+				t[#t+1] = fmt('movq %d[rsp], 999', opslag[naam]) --lmao
 
 			elseif f == 'vanaf' then
 				laad('rax', exp[1].v)
@@ -399,8 +424,9 @@ xor rax, rdx
 			-- aritm functies
 			elseif f == '+d' or f == '*d' or f == '/d' or f == '-d' or f == 'modd' then
 				local op = {['+'] = 'addp', ['-'] = 'subp', ['*'] = 'mulp', ['/'] = 'divp', ['mod'] = 'prem1'}
-				t[#t+1] = fmt('fildd %s[rsp]', opslag[exp[1].v]) -- f := a
-				t[#t+1] = fmt('fildd %s[rsp]', opslag[exp[2].v]) -- g := b
+
+				laadD(exp[1].v)
+				laadD(exp[2].v)
 				t[#t+1] = 'f'..op[f:sub(1,-2)]..'' -- f := f * g
 				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- naam := f
 
@@ -412,12 +438,12 @@ xor rax, rdx
 				t[#t+1] = 'fsqrt' -- a := int(m)
 				t[#t+1] = fmt('fistpd %s[rsp]', opslag[naam]) -- a := int(m)
 
-			elseif op == '^=' then
+			elseif f == '^d' then
 				laad('rax', naam)
 				t[#t+1] = 'bsr rcx, rax' -- b := log2 a
 				t[#t+1] = fmt('mov %d[rsp], rcx', opslag[naam]) -- b := log2 a
 
-				t[#t+1] = fmt('fildd %s[rsp]', opslag[naam]) -- load int
+				t[#t+1] = fmt('fld %s[rsp]', opslag[naam]) -- load int
 				if not opslag[val] then
 					t[#t+1] = fmt('movq %d[rsp], %s', opslag[naam], val)
 					opslag[val] = opslag[naam]

@@ -121,6 +121,8 @@ function typeer(exp)
 
 	-- verenigt types
 	local function weestype(exp, type, typeoorzaakloc)
+		local exp = maaktype(exp, typegraaf)
+		local type = maaktype(type, typegraaf)
 		if type.v == 'iets' then return end
 		local T,S,ol -- Type, Super, Oorzaakloc
 		if types[exp] and moes(types[exp]) ~= moes(type) then
@@ -224,8 +226,8 @@ function typeer(exp)
 				T = typegraaf:unie(T, t)
 				if not T then break end
 			end
-			--if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
-			if true or T and T.v ~= 'iets' then T = X('^', T, #exp)
+			if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
+			--if true or T and T.v ~= 'iets' then T = X('^', T, #exp)
 			else T = nil end
 		elseif isfn(exp) and exp.fn.v == '{}' then
 			T = X'set'

@@ -1,18 +1,21 @@
-;uit = cat((0 .. 10) map (y → "hoi"))
-; test
-lees(open "/dev/random"
-
-uit = atoi("-123")
-;uit = atoi(itoa(-123))
+uit = atoi("90")
 
 atoi = b → i
+	; negatief?
   negatief = (b₀ = '-')
-  s = als negatief dan -1 anders 1
+  sign = als negatief dan -1 anders 1
 
-  tekens = als negatief dan (b vanaf 1) anders b
-  cijfers = tekens map (teken → teken - '0')
-  i = s · Σ ((0 .. #tekens) map (k → cijfers(j) · 10^k)) ;cijfers(j) · 10^k))
+	; cijfers van de tekst
+  tekens = als negatief dan (b vanaf 1) anders (b)
+  cijfers = tekens map (t → t - '0')
+
+	; waarde van elk cijfer gegeven de positie
+  waarde = (k → cijfers(k) · 10^k)
     j = #tekens - k - 1
+
+	; positie en resultaat
+	pos = 0 .. #tekens
+  i = sign · Σ (pos map waarde)
 
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))

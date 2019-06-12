@@ -14,7 +14,7 @@ function elf(obj, naam)
 	else
 		-- malloc.o
 		-- WEG -n
-		os.execute(string.format( 'ld -O3 '..--[[bieb/malloc.o]]' %s.o -rpath-link=/lib64/ -dynamic-linker /lib64/ld-linux-x86-64.so.2 -m elf_x86_64 -o %s.elf --build-id=none -lpthread -lxcb', naam, naam))
+		os.execute(string.format( 'ld -O3 bieb/malloc.o %s.o -rpath-link=/lib64/ -dynamic-linker /lib64/ld-linux-x86-64.so.2 -m elf_x86_64 -o %s.elf --build-id=none -lpthread -lxcb', naam, naam))
 		--os.execute(string.format('strip %s', naam..'.elf'))
 	end
 

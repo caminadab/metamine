@@ -102,7 +102,7 @@ int lua_ontleed(lua_State* L) {
 
 	char* file = "?";
 	if (lua_gettop(L) == 2)
-		file = luaL_checkstring(L, 2);
+		file = (char*)luaL_checkstring(L, 2);
 
 	const char* str = luaL_checkstring(L, 1);
 

@@ -15,6 +15,16 @@ local moes = expmoes
 
 local typemt = {}
 
+-- maak nieuw type!
+function maaktype(exp, tg)
+	assert(tg, 'geen typegraaf')
+	if type(exp) == 'string' then exp = ontleedexp(exp) end
+	exp.tg = tg
+	if not exp.fn and not exp.v then error('arg is geen exp') end
+	return setmetatable(exp, typemt)
+end
+
+
 function typemt:__eq(other)
 	return moes(self) == moes(other)
 end
@@ -31,6 +41,17 @@ function typemt:__lt(other)
 			return true
 		end
 	end
+end
+
+typemt.__index = {}
+
+function typemt.__index:issubtype(ander)
+	if type(ander) == 'string' then
+		ander = maaktype(X(ander), self.tg)
+	elseif not ander.tg then
+		ander.tg = self.tg
+	end
+	return self.tg:issubtype(self, ander)
 end
 
 local metatypegraaf = {}
@@ -122,7 +143,7 @@ end
 function metatypegraaf:link(type, super)
 	if self.types[moes(type)] then return end
 	if not getmetatable(type) then
-		type = maaktype(type)
+		type = maaktype(type, self)
 	end
 	--print('LINK', type)
 	local super = super or self.iets
@@ -204,20 +225,14 @@ function metatypegraaf:link(type, super)
 	return type
 end
 
-function maaktype(exp)
-	if type(exp) == 'string' then exp = ontleedexp(exp) end
-	if not exp.fn and not exp.v then error('arg is geen exp') end
-	return setmetatable(exp, typemt)
-end
-
 -- typegraaf:
 --   types: moes → type
 --   graaf: stroom(moes)
 function maaktypegraaf()
 	local t = {}
 	t.graaf = stroom()
-	t.iets = maaktype 'iets'
-	t.niets = maaktype 'niets'
+	t.iets = maaktype('iets', t)
+	t.niets = maaktype('niets', t)
 	t.types = {iets = t.iets, niets = t.niets}
 
 	function __tostring(t)
@@ -242,11 +257,11 @@ if test then
 	--g:link(maaktype('lijst int'))
 	--g:link(maaktype('lijst getal'))
 	local getal = g:link(maaktype 'getal')
-	g:link(maaktype('int'), getal)
+	g:link(maaktype('int', g), getal)
 	local verzameling = maaktype 'verzameling'
 	g:link(maaktype'lijst', verzameling)
-	g:link(maaktype('lijst int'))
-	g:link(maaktype('lijst getal'))
+	g:link(maaktype('lijst int', g))
+	g:link(maaktype('lijst getal', g))
 	--g:link(maaktype('verzameling getal'))
 
 	print('Typegraaf')
