@@ -118,7 +118,7 @@ function controle(exp, maakvar)
 			local b = blok
 			blok = bfn
 			local res = con(waarde)
-			bfn.epiloog[1] = res
+			blok.epiloog[1] = res
 			graaf:punt(bfn)
 			blok = b
 			local stat = X(':=', ret, naam)
@@ -129,40 +129,37 @@ function controle(exp, maakvar)
 		elseif fn(exp) == '=>' then
 			local blok0 = blok
 			local eals, edan, eanders = exp[1], exp[2], exp[3]
+			
+			-- procnamen
+			local dan = X(maakproc())
+			local anders = X(maakproc())
+			local phi = X(maakproc())
 
 			-- phi (eindcontinuatie)
-			local phi = X(maakproc())
 			local bphi = maakblok(phi, {}, blok0.epiloog) -- krijgt zelfde eind
 			graaf:link(blok, bphi)
 
-			al = {}
+			-- als
+			blok = blok0
+			local econd = con(eals)
+			-- sprong
+			blok.epiloog = X('ga', econd, dan, anders)
 
 			-- dan
-			local dan = X(maakproc())
 			local bdan = maakblok(dan, {}, X('ga', phi))
 			graaf:link(blok, bdan)
 			blok = bdan
 			local rdan = con(edan)
 
-			al = {}
-
 			-- anders
-			local anders = X(maakproc())
 			local banders = maakblok(anders, {}, X('ga', phi))
 			graaf:link(blok, banders)
 			blok = banders
-
-			al = {}
 
 			local randers = '???'
 			if eanders then
 				randers = con(eanders,rdan)
 			end
-
-			-- conditie en sprong
-			blok = blok0
-			local econd = con(eals)
-			blok.epiloog = X('ga', econd, dan, anders)
 
 			-- daadwerkelijke '=>'
 			local stat = X(':=', ret, rdan)

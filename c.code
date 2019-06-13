@@ -1,0 +1,4 @@
+f = x → y + 1
+
+als x > 'j' dan y = x+1 anders y = x - 1
+uit = "hoi" map f

@@ -1,4 +1,5 @@
-uit = atoi("90")
+;uit = itoa(atoi("100") + 23)
+uit = itoa(123)
 
 atoi = b → i
 	; negatief?
@@ -10,7 +11,7 @@ atoi = b → i
   cijfers = tekens map (t → t - '0')
 
 	; waarde van elk cijfer gegeven de positie
-  waarde = (k → cijfers(k) · 10^k)
+  waarde = (k → cijfers(j) · 10^k)
     j = #tekens - k - 1
 
 	; positie en resultaat
@@ -20,18 +21,6 @@ atoi = b → i
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
   neg = als x < 0 dan "-" anders ""
+  a = neg || ((n .. 0) map cijfer)
   geschaald = (abs x)/10^m
   cijfer = m → '0' + (entier geschaald) mod 10
-  a = neg || ((n .. 0) map cijfer)
-
-; entier aselect teleladen
-;uit = "hoi" map (y → y + 1)
-;uit = "hoi" map succ
-;-
-atoi = b → y
-  neg = (b₀ = '-')
-  tekens = als neg dan b(1 .. #b) anders b
-  cijfers = tekens map (c → c - '0')
-  machten = (#cijfers .. 0) map (k → cijfers(#cijfers - k - 1) · 10^k)
-  y = Σ machten
--;
