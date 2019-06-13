@@ -81,7 +81,6 @@ Opties:
 	return
 end
 
---bronnen[#bronnen+1] = 'bieb/unistd.code'
 
 --bronnen[#bronnen+1] = 'bieb/wisk.code'
 --bronnen[#bronnen+1] = 'bieb/x64.code'
@@ -89,6 +88,8 @@ end
 
 if opt.j then
 	bronnen[#bronnen+1] = 'bieb/js.code'
+else
+	bronnen[#bronnen+1] = 'bieb/unistd.code'
 end
 
 if opt.d or opt.doe then
@@ -198,7 +199,7 @@ end
 if opt.O then
 	mach = optimaliseer(mach)
 end
-local uit,fouten,exp2naam = oplos(mach, "uit")
+local uit,fouten,exp2naam = oplos(mach, "app")
 
 if not uit then
 	if not fouten[1] then

@@ -1,6 +1,7 @@
 ; bestanden
 ; syscalls
 ; libcalls
+;-
 Bd: bestand
 Dat: data
 schrijf = (Bd, Dat) → syscall(sysWrite, Bd, Dat, #Dat) · 0 + Bd
@@ -8,6 +9,7 @@ lees = (Bl) → syscall(sysRead, Bl, Buf, 1024) · 0 + Buf
   Buf = "hoi"
 open = Pad → syscall(sysOpen, Pad, oRdwr + oCreat, 420)
 sluit = Bc → syscall(sysClose, Bc)
+-;
 
 bestand: int
 stdin = 0
@@ -26,3 +28,11 @@ oRdonly = 0
 oWronly = 1
 oRdwr = 2
 oCreat = 64
+;-
+
+; push
+app = schrijf(stduit, uit)
+-;
+schrijf = x → tekst(x) || "hoi"
+;app = stduit schrijf uit
+;app = uit
