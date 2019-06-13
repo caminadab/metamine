@@ -55,7 +55,7 @@ bieb = {
 	['nee'] = false; 
 	['niets'] = false; 
 	['min'] = function(a,b) return math.min(a,b) end;
-	['mod'] = function(a,b) return math.modf(a,b) end;
+	['mod'] = function(a,b) return a % b end;
 
 	['jslib'] = jslibtaal,
 	['javascript'] = function(fn) 

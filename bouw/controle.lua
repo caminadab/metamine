@@ -118,7 +118,7 @@ function controle(exp, maakvar)
 			local b = blok
 			blok = bfn
 			local res = con(waarde)
-			bfn.epiloog[1] = res
+			blok.epiloog[1] = res
 			graaf:punt(bfn)
 			blok = b
 			local stat = X(':=', ret, naam)

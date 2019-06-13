@@ -93,7 +93,7 @@ local function doeblok(blok, env, ...)
 		return a
 	elseif epi.v == 'stop' then
 		local a =  env[blok.stats[#blok.stats][1].v]
-		print('stop '..a)
+		print('stop')
 		os.exit()
 	elseif fn(epi) == 'ga' then
 		local a,d,e = epi[1], epi[2], epi[3]
