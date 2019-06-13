@@ -13,6 +13,8 @@ bieb = {
 	call = true,
 	succ = function(x) return x + 1 end;
 
+	looptijd = 0,
+
 	xcb_connect = true,
 
 

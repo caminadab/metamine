@@ -87,6 +87,10 @@ end
 --bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
+if opt.j then
+	bronnen[#bronnen+1] = 'bieb/js.code'
+end
+
 if opt.d or opt.doe then
 	doemeteen = true
 end

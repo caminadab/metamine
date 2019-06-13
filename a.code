@@ -1,5 +1,7 @@
 ;uit = itoa(atoi("100") + 23)
-uit = itoa(123)
+uit = "looptijd: " || itoa(looptijd)
+
+_app = sluit(schrijf(stduit, uit))
 
 atoi = b → i
 	; negatief?
