@@ -1,0 +1,140 @@
+;uit: bit
+
+; unix
+;bestand: int
+NL.open = UK.open
+NL.data = UK.data
+NL.bestand = UK.file
+NL.sluit = UK.close
+NL.schrijf = UK.write
+NL.bit = UK.bool
+NL.ja = UK.true
+NL.nee = UK.false
+
+NL.getal = EN.double
+NL.int = EN.int
+NL.byte = EN.byte
+
+NL.som = EN.sum
+NL.lijst = EN.list
+NL.iets = EN.any
+NL.tupel = EN.tuple
+NL.verzameling = EN.collection
+NL.zak = EN.bag
+
+verzameling: iets
+lijst: verzameling
+tupel: verzameling
+zak: verzameling
+(→): iets
+(,): tupel
+
+; telbaar aantal
+; vgl. "a = 1..1000" (aantal, telbaar) en "0 < a < 1" (ontelbaar)
+aantal: verzameling
+ontelbaar: verzameling
+
+sin :  getal → getal
+cos :  getal → getal
+tan :  getal → getal
+sincos :  getal → (getal, getal)
+(+) :  (getal, getal) → getal
+(+) :  (int, int) → int
+(-) :  (getal, getal) → getal
+(-) :  getal → getal
+(*) :  (getal, getal) → getal
+(/) :  (getal, getal) → getal
+(/) :  (int, int) → getal
+(^) :  (getal, getal) → getal
+(^) :  (int, int) → int
+;(^) :  ((→), int) → iets
+(#) :  verzameling → int
+;([) : lijst
+;(=) :  (iets, iets) → bit 
+;(→) :  (iets,iets) → (iets → iets)
+(||) :  (lijst, lijst) → lijst
+
+; set!
+set: verzameling
+({) : set
+(∩) : (set, set) → set
+(∪) : (set, set) → set
+;(-) : (set, set) → set
+;(∖) : (set, set) → set
+;(⋂) : (aantal set) → set
+;(⋃) : (aantal set) → set
+
+; logica
+;(⇒) : (bit, iets) → iets
+(>) :  (getal, getal) → bit
+(≥) :  (getal, getal) → bit
+(≤) :  (getal, getal) → bit
+(<) :  (getal, getal) → bit
+(∧) : (bit, bit) → bit
+(⋀) : iets → bit
+(⋁) : verzameling bit → bit
+
+; multi
+(Σ) : (verzameling getal) → getal
+;(∫) : (ontelbaar getal) → getal
+(..) : (int, int) → lijst int
+
+; util
+abs: getal → getal
+max: (getal,getal) → getal
+min: (getal,getal) → getal
+entier: getal → int
+(:): (iets,iets) → bit
+
+(iets → iets) : iets
+(iets → int) : iets
+
+byte: int
+teken: int
+data: lijst byte
+;tekst: data ;lijst teken
+
+tijdstip : getal
+int : getal
+nu : tijdstip
+;cijfer : iets → bit
+vind : (lijst, lijst) → int
+tot : (lijst, int) → lijst
+vanaf : (lijst, int) → lijst
+deel : (lijst, (int, int)) → lijst
+
+;herhaal : ((→) → (→))
+;herhaal : ((→), int) → (→)
+waarvoor : (verzameling, (iets → bit)) → verzameling
+mod : (getal, getal) → getal
+
+; tekening!
+vorm: iets
+tekening: lijst(vorm)
+cirkel: vorm
+cirkel: ((getal, getal), getal, kleur) → cirkel
+rechthoek: vorm
+rechthoek: ((getal, getal), (getal, getal), kleur) → rechthoek
+;schrijf: ((getal, getal), tekst, kleur) → rechthoek
+genormaliseerd : getal ; tussen 0 en 1
+kleur: (genormaliseerd, genormaliseerd, genormaliseerd)
+;kleur: (getal, getal, getal)
+rood: kleur
+oranje: kleur
+groen: kleur
+blauw: kleur
+geel: kleur
+paars: kleur
+zwart: kleur
+wit: kleur
+
+;-
+pos : (kommagetal, kommagetal)
+pos : (int, int)
+pos : (getal, int)
+pos : (int, getal)
+tekening : lijst
+straal : kommagetal
+cirkel : (pos,straal,(getal, getal, getal)) → (int, pos, straal, (getal, getal, getal))
+rechthoek : (pos,pos,(getal, getal, getal)) → (int, pos, pos, (getal, getal, getal))
+-;
