@@ -235,13 +235,15 @@ end
 
 if verbozeIntermediair then
 	print('=== INTERMEDIAIRE CODE ===')
+	
+	print(cfg.start)
 	for blok in spairs(cfg.punten) do
-		print(blok)
+		if blok ~= cfg.start then
+			print(blok)
+		end
 	end
 	print()
 end
-
--- INTERMEDIAIR --
 
 -- nieuwe lage JS
 if opt.javascript then

@@ -78,7 +78,7 @@ local function doeblok(blok, env, ...)
 		end
 		if verbozeIntermediair then
 			if true or type(w) ~= 'table' then
-				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), '\n')
+				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), --[['\t', locsub(exp.code, stat.loc)]] '\n')
 			else
 				io.write('\t\t', loctekst(stat.loc), '\n')
 			end
@@ -117,8 +117,8 @@ function doe(cfg)
 	for k,v in pairs(bieb) do env[k] = v end
 	for k,v in pairs(cfg.namen) do
 		env[k] = function(...)
-			local isf = true or fn(v.epiloog) == 'ret'
-			if isf then print('...') end
+			local isf = k:sub(1,2) == 'fn'
+			if isf then print('...') ; print('call '..k); end
 			local ret = doeblok(v, env, ...)
 			if isf then io.write('\n...') end
 			io.flush()
