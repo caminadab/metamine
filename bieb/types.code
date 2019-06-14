@@ -22,6 +22,7 @@ zak: verzameling
 aantal: verzameling
 ontelbaar: verzameling
 
+succ: nat → nat
 sin :  getal → getal
 cos :  getal → getal
 tan :  getal → getal
@@ -80,6 +81,7 @@ entier: getal → int
 byte: int
 teken: int
 data: lijst byte
+tekst: lijst byte
 ;tekst: data ;lijst teken
 
 tijdstip : getal

@@ -47,7 +47,38 @@ vanaf(A 1)   -> A.splice(1)
 local immjs = {
 	['[]'] = '[...]',
 	['{}'] = '{}',
+
+	-- arit
 	['+i'] = 'A + B',
+	['+'] = 'A + B',
+	['-'] = 'A + B',
+	['*'] = 'A + B',
+	['/'] = 'A + B',
+	['^'] = 'Math.pow(A, B)',
+
+	-- cmp
+	['>'] = 'A > B',
+	['>='] = 'A >= B',
+	['='] = 'A === B',
+	['!='] = 'A !=== B',
+	['<='] = 'A <= B',
+	['<'] = 'A < B',
+
+	-- trig
+	['sin'] = 'Math.sin(A)',
+	['cos'] = 'Math.cos(A)',
+	['tan'] = 'Math.tan(A)',
+	['sincos'] = '[Math.sin(A), Math.cos(A)]',
+
+	-- lijst
+	['#'] = 'A.length',
+
+	-- func
+	['map'] = 'A.map(B)',
+
+	
+	-- LIB
+	['print'] = 'print(A)'
 }
 
 function naarjavascript0(app)
@@ -85,6 +116,15 @@ function naarjavascript0(app)
 		end
 	end
 
+	for blok in pairs(app.punten) do
+		local naam = blok.naam.v
+		if blok.naam.v:sub(1,2) == 'fn' then
+			t[#t+1] = 'function '..naam..'() {'
+			blokjs(blok)
+			t[#t+1] = 'return '..blok.stats[#blok.stats][1].v..';'
+			t[#t+1] = '}'
+		end
+	end
 	blokjs(app.start)
 
 	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')

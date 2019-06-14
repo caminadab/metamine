@@ -11,7 +11,7 @@ bieb = {
 	log10 = math.log10,
 	puts = true,
 	call = true,
-	succ = function(x) return x + 1 end;
+	--succ = function(x) return x + 1 end;
 
 	looptijd = 0,
 
