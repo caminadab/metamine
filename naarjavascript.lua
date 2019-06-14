@@ -1,115 +1,203 @@
 require 'util'
-require 'exp'
+require 'func'
+require 'symbool'
+require 'combineer'
 
-local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '/\\', '\\/', 'mod')
-local tab = '    '
-local bieb = {['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['^'] = '_pow', [':'] = '_istype',
-	['%'] = '_procent', ['..'] = '_iinterval'};
-local function naarjavascriptR(exp,t,tabs,maakvar)
-	if tonumber(exp) then return tostring(exp) end
-	if isatoom(exp) then
-		return exp.v,t
-	end
-	if not exp.fn then return '0' end
+local infix = set('*', '/', '+', '-', 'mod')
 
-	local fn,a,b = exp.fn.v, exp[1], exp[2]
-	local var = maakvar()
+local aliases = {
+	['..'] = '_toti',
+}
 
-	if infix[fn] then
-		if fn == '=' then fn = '===' end
-		if fn == '!=' then fn = '!==' end
-		if fn == '+i' then fn = '+i' end
-		if fn == '/\\' then fn = '&&' end
-		if fn == '\\/' then fn = '||' end
-		if fn == 'mod' then fn = '%' end
-		local A = naarjavascriptR(a,t,tabs,maakvar)
-		local B = naarjavascriptR(b,t,tabs,maakvar)
-		t[#t+1] = string.format('%s%s = %s %s %s;\n', tabs, var, A, fn, B)
+local jsbiebbron = file('bieb/bieb.js')
 
-	elseif fn == '||' then
-		local A = naarjavascriptR(a,t,tabs,maakvar)
-		local B = naarjavascriptR(b,t,tabs,maakvar)
-		t[#t+1] = string.format('%s%s = cat([%s, %s]);\n', tabs, var, A, B)
-
-	elseif fn == '=>' then
-		local A = naarjavascriptR(a,t,tabs,maakvar)
-		t[#t+1] = string.format('%svar %s = false;\n', tabs, var)
-		t[#t+1] = string.format('%sif (%s) {\n', tabs, A)
-		local B = naarjavascriptR(b,t,tabs..tab,maakvar)
-		t[#t+1] = string.format('%s%s = %s;\n', tabs..tab, var, B)
-		t[#t+1] = string.format('%s}\n', tabs)
-
-	elseif fn == '[]' or fn == ',' then
-		local vars = {}
-		for i,v in ipairs(exp) do
-			vars[i] = naarjavascriptR(v,t,tabs,maakvar)
-		end
-		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%svar %s = [%s];\n', tabs, var, inhoud)
-
-	elseif fn == 'map' then
-		-- nieuw
-		local nieuw = var
-		t[#t+1] = string.format('%svar %s = [];\n', tabs, nieuw)
-
-		local A = naarjavascriptR(a,t,tabs,maakvar)
-
-		-- mappen
-		local sub = string.format('%s(%s[i])', naarjavascriptR(b,t,tabs,maakvar), A)
-
-		-- lus
-		t[#t+1] = string.format('%sfor (var i = 0; i < %s.length; i++) {\n',tabs,A)
-		local tabs1 = tabs .. tab
-
-		-- terugzetten
-		t[#t+1] = string.format('%s%s[i] = %s\n',tabs1,nieuw,sub)
-		t[#t+1] = tabs..'}\n'
-
-	elseif fn == '->' then
-		t[#t+1] = string.format('%svar %s = function (%s) {\n', tabs, var, a.v)
-		local res = naarjavascriptR(b, t, tabs..tab, maakvar)
-		t[#t+1] = string.format('%sreturn %s;\n', tabs..tab, res)
-		t[#t+1] = string.format('%s}\n', tabs)
-
-	elseif true then
-		-- normale functie aanroep
-		local vars = {}
-		for k,v in pairs(exp) do
-			vars[k] = naarjavascriptR(v,t,tabs,maakvar)
-		end
-		if bieb[fn] then vars.fn = bieb[fn] end
-		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%svar %s = _I(%s, %s);\n', tabs, var, vars.fn, inhoud)
-
-	else
-		print('???', toexp(exp))
-
-	end
-
-	return var,t
+local jsbieb = {}
+for waarde, naam in jsbiebbron:gmatch('(var ([^ ]*) = .-\n)\n') do
+	jsbieb[naam] = waarde
 end
 
--- biebbron zit in de weg, "javascript X" functie zit in de weg (global scope in expressie?)
-function naarjavascript(exp)
-	local t = {}
-
-	-- bieb
-	for naam in boompairs(exp) do
-		if isatoom(naam) and jsbieb[atoom(naam)] then
-			gebruikt[naam.v] = true
+local function sym(exp, t)
+	local f = fn(exp)
+	local op = f and f:sub(1,-2)
+	if infix[op] then
+		t[#t+1] = exp[1].v .. op .. exp[2].v
+	elseif op == '[]' then
+		t[#t+1] = '[' .. table.concat(map(exp, function(sub) return sub.v end), ', ') .. ']'
+	else
+		if isatoom(exp) then
+			t[#t+1] = exp.v
+		else
+			--t[#t+1] = f .. '(' .. exp[1].v .. ')' --table.concat(map(exp, function(sub) return sub.v end), ', ') .. ')'
+			t[#t+1] = f .. '(' .. table.concat(map(exp, function(sub) return sub.v end), ', ') .. ')'
 		end
 	end
-	for naam in spairs(gebruikt) do
-		t[#t+1] = jsbieb[naam]
+end
+
+--[[
+[]       -> []
+[](...)  -> [...]
+{}(1 2)  -> {1,2}
++(A B)   -> A + B
+*(A B)   -> A * B
+-(A)     -> - A
+
+sin(A)   -> Math.sin(A)
+vanaf(A 1)   -> A.splice(1)
+]]
+local immjs = {
+	['[]'] = '[...]',
+	['{}'] = '{}',
+	['_arg'] = '_argA',
+
+	-- arit
+	['+i'] = 'A + B',
+	['+'] = 'A + B',
+	['-'] = 'A + B',
+	['*'] = 'A + B',
+	['/'] = 'A + B',
+	['mod'] = 'A % B',
+	['^'] = 'Math.pow(A, B)',
+
+	-- cmp
+	['>'] = 'A > B',
+	['>='] = 'A >= B',
+	['='] = 'A === B',
+	['!='] = 'A !=== B',
+	['<='] = 'A <= B',
+	['<'] = 'A < B',
+
+	-- deduct
+	['en'] = 'A && B', 
+	['of'] = 'A || B', 
+	['=>'] = 'A ? B : C', 
+
+	-- trig
+	['sin'] = 'Math.sin(A)',
+	['cos'] = 'Math.cos(A)',
+	['tan'] = 'Math.tan(A)',
+	['sincos'] = '[Math.sin(A), Math.cos(A)]',
+
+	-- discreet
+	['min'] = 'Math.min(A,B)',
+	['max'] = 'Math.max(A,B)',
+	['entier'] = 'Math.floor(A)',
+	['abs'] = 'Math.abs(A)',
+	['sign'] = '(A > 0 ? 1 : -1)',
+
+	-- exp
+	['log10'] = 'Math.log(A, 10)',
+	['||'] = 'A.concat(B)',
+
+	-- lijst
+	['#'] = 'A.length',
+	['som'] = 'A.reduce((a,b) => a + b, 0)',
+	['..'] = '[...Array(Math.abs(B-A)).keys()].map(a => A > B? a + A : A + B - 1 - a);',
+
+	-- func
+	['map'] = 'A.map(B)',
+
+	
+	-- LIB
+	['print'] = 'print(A)'
+}
+
+function naarjavascript(app)
+	local s = {}
+	local t = {}
+	local maakvar = maakvars()
+
+	local function blokjs(blok)
+		for i,stat in ipairs(blok.stats) do
+			local naam, exp = stat[1], stat[2]
+			local var = maakvar()
+			local f = fn(exp)
+			local a = exp[1] and exp[1].v
+			local b = exp[2] and exp[2].v
+			local c = exp[3] and exp[3].v
+
+			if isatoom(exp) then
+				t[#t+1] = string.format('%s = %s;', naam, exp.v)
+			elseif immjs[f] then
+				-- a = CMD(a, b)
+				local cmd = immjs[f]
+				cmd = cmd:gsub('A', '_A_')
+				cmd = cmd:gsub('B', '_B_')
+				cmd = cmd:gsub('C', '_C_')
+				cmd = cmd:gsub('%.%.%.', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
+				cmd = a and cmd:gsub('_A_', a) or cmd
+				cmd = b and cmd:gsub('_B_', b) or cmd
+				cmd = c and cmd:gsub('_C_', c) or cmd
+				t[#t+1] = string.format('%s = %s;', naam, cmd)
+			elseif bieb[f] then
+				t[#t+1] = string.format('%s = %s(%s);', naam, f, table.concat(map(exp, function(a) return a.v end), ','))
+			else
+				t[#t+1] = string.format("throw 'onbekende functie: ' + " .. f .. ";")
+			end
+		end
 	end
 
-	t[#t+1] = "nu = new Date().getTime() / 1000;\nlooptijd = nu - start;\n"
-	local var,t = naarjavascriptR(exp,t,tab,maakvars())
-	t[#t+1] = "\n"
-	--t[#t+1] = tab..'document.getElementById("uittekst").innerHTML = ' .. var .. ";\n"
-	t[#t+1] = tab..'A = ' .. var .. ";\n"
-	t[#t+1] = 'if (Array.isArray(A))'
-	t[#t+1] = 'A = arr2str(A);'
-	local lua = table.concat(t)
-	return lua
+
+	-- ;(((
+	local blokken = {}
+	for blok in pairs(app.punten) do
+		blokken[blok.naam.v] = blok
+	end
+
+	local function flow(blok)
+		blokjs(blok)
+		local epi = blok.epiloog
+		if fn(epi) == 'ga' and #epi == 3 then
+			t[#t+1] = 'if ('..epi[1].v..') {'
+			local b = blokken[epi[2].v]
+			blokjs(b)
+			t[#t+1] = '} else {'
+			blokjs(blokken[epi[3].v])
+			t[#t+1] = '}'
+			blokjs(blokken[b.epiloog[1].v])
+		elseif fn(epi) == 'ga' and #epi == 1 then
+			error'OK'
+			blokjs(epi[1].v)
+		elseif fn(epi) == 'ret' then
+			t[#t+1] = 'return '..epi[1].v..';'
+		elseif epi.v == 'stop' then
+			-- niets
+		else
+			error('foute epiloog: '..combineer(epi))
+		end
+	end
+
+	for blok in pairs(app.punten) do
+		local naam = blok.naam.v
+		if blok.naam.v:sub(1,2) == 'fn' then
+			t[#t+1] = 'function '..naam..'(_argA, _argB, _argC) {'
+			flow(blok)
+			t[#t+1] = 'return '..blok.stats[#blok.stats][1].v..';'
+			t[#t+1] = '}'
+		end
+	end
+	flow(app.start)
+
+	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
+end
+
+if test then
+	require 'bouw.controle'
+	require 'bouw.arch'
+	require 'ontleed'
+	require 'oplos'
+
+	local function moetzijn(broncode, waarde)
+		local exp = ontleed(broncode)
+		local types = typeer(exp)
+		local tussencode = controle(oplos(arch_x64(exp, types), 'uit'))
+		local a = naarjavascript(tussencode)
+		a = a .. "\nprint(A)"
+		file('a.js', a)
+		print(a)
+		os.execute('js a.js > a.out')
+		local b = file('a.out'):sub(1,-2)
+		assert(b == waarde, 'was '..b..' maar moest zijn '..waarde)
+	end
+
+	moetzijn("uit = 1 + 1", '2')
 end

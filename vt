@@ -10,7 +10,6 @@ require 'lisp'
 require 'naarlua'
 require 'naarweb'
 require 'naarjavascript'
-require 'naarjavascript0'
 require 'rapport'
 require 'typeer'
 require 'doe'
@@ -229,7 +228,7 @@ end
 
 -- oude hoge JS
 if opt.javascript and false then
-	uit = naarjavascript0(uit)
+	uit = naarjavascript(uit)
 	file('a.js', uit)
 	print(uit)
 	return
@@ -259,7 +258,7 @@ end
 
 -- nieuwe lage JS
 if opt.javascript then
-	uit = naarjavascript0(cfg)
+	uit = naarjavascript(cfg)
 	file('a.js', uit)
 	print(uit)
 	return

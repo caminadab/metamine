@@ -61,7 +61,6 @@ function controle(exp, maakvar)
 	local maakvar = maakvar or maakvars()
 	local procindex = maakindices()
 	local funcindex = maakindices()
-	local procs = {} -- naam → exp
 
 	local function maakproc()
 		return 'p'..procindex()

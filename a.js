@@ -1,9 +1,4 @@
 
-function fn1() {
-throw 'onbekende functie: ' + ;
-var E = F > 104;
-return E;
-}
-var B = [...];
-var C = fn1;
-var A = C.map(C);
+C = [0, 1000rray(Math.abs(100-0)).keys()].map(a => 0 > 100? a + 0 : 0 + 100 - 1 - a);;
+B = C.reduce((a,b) => a + b, 0);
+A = print(B);
