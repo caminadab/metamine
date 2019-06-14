@@ -6,7 +6,7 @@ require 'naarjavascript'
 bieb = {
 	-- rochel
 	['open-lees'] = true,
-	syscall = true,
+		
 	log2 = true,
 	log10 = math.log10,
 	puts = true,
@@ -14,6 +14,10 @@ bieb = {
 	succ = function(x) return x + 1 end;
 
 	looptijd = 0,
+
+	-- lua
+	print = function(a) print(string.char(table.unpack(a))) end,
+	
 
 	xcb_connect = true,
 
@@ -31,7 +35,6 @@ bieb = {
 	end,
 
 	-- wiskunde
-	looptijd = 3,
 	co = 3,
 	atoom = function(id) return '###' .. id end;
 	max = math.max,

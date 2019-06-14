@@ -1,16 +1,3 @@
-; bestanden
-; syscalls
-; libcalls
-;-
-Bd: bestand
-Dat: data
-schrijf = (Bd, Dat) → syscall(sysWrite, Bd, Dat, #Dat) · 0 + Bd
-lees = (Bl) → syscall(sysRead, Bl, Buf, 1024) · 0 + Buf
-  Buf = "hoi"
-open = Pad → syscall(sysOpen, Pad, oRdwr + oCreat, 420)
-sluit = Bc → syscall(sysClose, Bc)
--;
-
 bestand: int
 stdin = 0
 stduit = 1
@@ -19,20 +6,33 @@ stdin: bestand
 stduit: bestand
 stdfout: bestand
 
-sysRead = 0
-sysWrite = 1
-sysOpen = 2
-sysClose = 3
+sysread = 0
+syswrite = 1
+sysopen = 2
+sysclose = 3
 
-oRdonly = 0
-oWronly = 1
-oRdwr = 2
-oCreat = 64
-;-
+ordonly = 0
+owronly = 1
+ordwr = 2
+ocreat = 64
+
 
 ; push
 app = schrijf(stduit, uit)
+schrijf = (Bd, Dat) → syscall(syswrite, Bd, Dat, #Dat) · 0 + Bd
+sluit = Bc → syscall(sysclose, Bc)
+;-
 -;
-schrijf = x → tekst(x) || "hoi"
 ;app = stduit schrijf uit
 ;app = uit
+; bestanden
+; syscalls
+; libcalls
+;-
+Bd: bestand
+Dat: data
+lees = (Bl) → syscall(sysRead, Bl, Buf, 1024) · 0 + Buf
+  Buf = "hoi"
+open = Pad → syscall(sysOpen, Pad, oRdwr + oCreat, 420)
+-;
+;app = sluit(schrijf(stduit, uit))

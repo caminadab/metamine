@@ -88,6 +88,8 @@ end
 
 if opt.j then
 	bronnen[#bronnen+1] = 'bieb/js.code'
+elseif opt.i then
+	bronnen[#bronnen+1] = 'bieb/lua.code'
 else
 	bronnen[#bronnen+1] = 'bieb/unistd.code'
 end
@@ -118,6 +120,7 @@ if opt.B then verbozeBroncode = true end
 
 if opt.T then verbozeTypes = true end
 if opt.Y then verbozeTypegraaf = true end
+if opt.i then opt.veilig = true end
 
 if opt.g or opt.debug or opt.ontkever then
 	ontkever = true
@@ -186,13 +189,17 @@ local mach = arch_x64(asb, typeer(asb))
 local types,fouten = typeer(mach)
 
 if #fouten > 0 then
+	local exit = false
 	for i,fout in ipairs(fouten) do
 		if fout.loc.bron:sub(1,4) ~= 'bieb' then
 			print(fout.msg)
+			exit = true
 		end
 	end
 	-- TODO print
-	return
+	if exit then
+		--return
+	end
 end
 
 
@@ -203,7 +210,7 @@ local uit,fouten,exp2naam = oplos(mach, "app")
 
 if not uit then
 	if not fouten[1] then
-		print('kon niet oplossen voor "uit"')
+		print('kon niet oplossen voor "app"')
 		return
 	end
 	for i, fout in ipairs(fouten) do

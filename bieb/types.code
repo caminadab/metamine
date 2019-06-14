@@ -1,11 +1,5 @@
 ;uit: bit
 
-; unix
-;bestand: int
-open: data → bestand
-schrijf: (bestand, data) → bestand
-sluit: bestand → bit
-
 ; getal
 getal: iets
 int: getal
