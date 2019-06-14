@@ -45,60 +45,61 @@ sin(A)   -> Math.sin(A)
 vanaf(A 1)   -> A.splice(1)
 ]]
 local immjs = {
-	['[]'] = '[...]',
+	['[]'] = '[ARGS]',
+	['{}'] = 'new Set(ARGS)',
 	['{}'] = '{}',
 	['_arg'] = '_argA',
 
 	-- arit
-	['+i'] = 'A + B',
-	['+'] = 'A + B',
-	['-'] = 'A + B',
-	['*'] = 'A + B',
-	['/'] = 'A + B',
-	['mod'] = 'A % B',
-	['^'] = 'Math.pow(A, B)',
+	['+i'] = 'X + Y',
+	['+'] = 'X + Y',
+	['-'] = 'X - Y',
+	['*'] = 'X * Y',
+	['/'] = 'X / Y',
+	['mod'] = 'X % Y',
+	['^'] = 'Math.pow(X, Y)',
 
 	-- cmp
-	['>'] = 'A > B',
-	['>='] = 'A >= B',
-	['='] = 'A === B',
-	['!='] = 'A !=== B',
-	['<='] = 'A <= B',
-	['<'] = 'A < B',
+	['>'] = 'X > Y',
+	['>='] = 'X >= Y',
+	['='] = 'X === Y',
+	['!='] = 'X !=== Y',
+	['<='] = 'X <= Y',
+	['<'] = 'X < Y',
 
 	-- deduct
-	['en'] = 'A && B', 
-	['of'] = 'A || B', 
-	['=>'] = 'A ? B : C', 
+	['en'] = 'X && Y', 
+	['of'] = 'X || Y', 
+	['=>'] = 'X ? Y : Z', 
 
 	-- trig
-	['sin'] = 'Math.sin(A)',
-	['cos'] = 'Math.cos(A)',
-	['tan'] = 'Math.tan(A)',
-	['sincos'] = '[Math.sin(A), Math.cos(A)]',
+	['sin'] = 'Math.sin(X)',
+	['cos'] = 'Math.cos(X)',
+	['tan'] = 'Math.tan(X)',
+	['sincos'] = '[Math.sin(X), Math.cos(X)]',
 
 	-- discreet
-	['min'] = 'Math.min(A,B)',
-	['max'] = 'Math.max(A,B)',
-	['entier'] = 'Math.floor(A)',
-	['abs'] = 'Math.abs(A)',
-	['sign'] = '(A > 0 ? 1 : -1)',
+	['min'] = 'Math.min(X,Y)',
+	['max'] = 'Math.max(X,Y)',
+	['entier'] = 'Math.floor(X)',
+	['abs'] = 'Math.abs(X)',
+	['sign'] = '(X > 0 ? 1 : -1)',
 
 	-- exp
-	['log10'] = 'Math.log(A, 10)',
-	['||'] = 'A.concat(B)',
+	['log10'] = 'Math.log(X, 10)',
+	['||'] = 'X.concat(Y)',
 
 	-- lijst
-	['#'] = 'A.length',
-	['som'] = 'A.reduce((a,b) => a + b, 0)',
-	['..'] = '[...Array(Math.abs(B-A)).keys()].map(a => A > B? a + A : A + B - 1 - a);',
+	['#'] = 'X.length',
+	['som'] = 'X.reduce((a,b) => a + b, 0)',
+	['..'] = '[...Array(Math.abs(Y-X)).keys()].map(a => X > Y? a + X : X + Y - 1 - a)',
 
 	-- func
-	['map'] = 'A.map(B)',
+	['map'] = 'X.map(Y)',
 
 	
 	-- LIB
-	['print'] = 'print(A)'
+	['print'] = 'print(X)'
 }
 
 function naarjavascript(app)
@@ -120,16 +121,18 @@ function naarjavascript(app)
 			elseif immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
-				cmd = cmd:gsub('A', '_A_')
-				cmd = cmd:gsub('B', '_B_')
-				cmd = cmd:gsub('C', '_C_')
-				cmd = cmd:gsub('%.%.%.', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
-				cmd = a and cmd:gsub('_A_', a) or cmd
-				cmd = b and cmd:gsub('_B_', b) or cmd
-				cmd = c and cmd:gsub('_C_', c) or cmd
+				cmd = cmd:gsub('X', '_X_')
+				cmd = cmd:gsub('Y', '_Y_')
+				cmd = cmd:gsub('Z', '_Z_')
+				cmd = cmd:gsub('ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
+				cmd = a and cmd:gsub('_X_', a) or cmd
+				cmd = b and cmd:gsub('_Y_', b) or cmd
+				cmd = c and cmd:gsub('_Z_', c) or cmd
 				t[#t+1] = string.format('%s = %s;', naam, cmd)
 			elseif bieb[f] then
 				t[#t+1] = string.format('%s = %s(%s);', naam, f, table.concat(map(exp, function(a) return a.v end), ','))
+			elseif true then -- TODO check lijst
+				t[#t+1] = string.format('%s = %s[%s];', naam, f, table.concat(map(exp, function(a) return a.v end), ','))
 			else
 				t[#t+1] = string.format("throw 'onbekende functie: ' + " .. f .. ";")
 			end
@@ -149,14 +152,13 @@ function naarjavascript(app)
 		if fn(epi) == 'ga' and #epi == 3 then
 			t[#t+1] = 'if ('..epi[1].v..') {'
 			local b = blokken[epi[2].v]
-			blokjs(b)
+			flow(b)
 			t[#t+1] = '} else {'
-			blokjs(blokken[epi[3].v])
+			flow(blokken[epi[3].v])
 			t[#t+1] = '}'
-			blokjs(blokken[b.epiloog[1].v])
+			--flow(blokken[b.epiloog[1].v])
 		elseif fn(epi) == 'ga' and #epi == 1 then
-			error'OK'
-			blokjs(epi[1].v)
+			flow(blokken[epi[1].v])
 		elseif fn(epi) == 'ret' then
 			t[#t+1] = 'return '..epi[1].v..';'
 		elseif epi.v == 'stop' then
@@ -164,6 +166,8 @@ function naarjavascript(app)
 		else
 			error('foute epiloog: '..combineer(epi))
 		end
+		--print('KLAAR')
+		--t[#t+1] = 
 	end
 
 	for blok in pairs(app.punten) do
@@ -171,7 +175,6 @@ function naarjavascript(app)
 		if blok.naam.v:sub(1,2) == 'fn' then
 			t[#t+1] = 'function '..naam..'(_argA, _argB, _argC) {'
 			flow(blok)
-			t[#t+1] = 'return '..blok.stats[#blok.stats][1].v..';'
 			t[#t+1] = '}'
 		end
 	end

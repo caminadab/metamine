@@ -22,7 +22,7 @@ require 'bouw.codegen'
 require 'bouw.assembleer'
 require 'bouw.elf'
 
-local opt,bronnen = getopt({...}, "u")
+opt,bronnen = getopt({...}, "u")
 
 for i,bron in pairs(bronnen) do
 	if bron:sub(-5) ~= '.code' then
@@ -69,6 +69,7 @@ Opties:
 
     -I                print intermediaire code
     -J                print kijkgat code
+    -L                print elke uitgevoerde instructie
 
     -F                print uitvoer na kijkgatoptimalisaties
     -G                print assemblycode
@@ -122,6 +123,7 @@ if opt.Y then verbozeTypegraaf = true end
 if opt.i then opt.veilig = true end
 
 if opt.g or opt.debug or opt.ontkever then
+	opt.g = true
 	ontkever = true
 end
 
@@ -266,7 +268,7 @@ end
 
 
 if opt.i or opt.veilig then
-	if verbozeIntermediair then
+	if opt.L then
 		print('=== START ===')
 	end
 	local exp = doe(cfg)

@@ -344,6 +344,12 @@ bieb = {
 	end;
 
 	['tekst'] = function(a)
+		if type(a) == 'table' then
+			return a
+		else
+			return table.pack(string.byte(a,1,#a))
+		end
+		--[[
 		local t
 		if a == true then t = 'ja' end 
 		if a == false then t = 'nee' end 
@@ -354,6 +360,7 @@ bieb = {
 		local t = table.pack(string.byte(tostring(t),1,#tostring(t)))
 		t.fn = '[]'
 		return t
+		]]
 	end;
 
 	['getal'] = function(a)

@@ -16,7 +16,7 @@ end
 
 local function doeblok(blok, env, ...)
 	for i,stat in ipairs(blok.stats) do
-		if verbozeIntermediair then
+		if opt.L then
 			io.write('  ', combineer(stat), '\t\t')
 			io.flush()
 		end
@@ -76,7 +76,7 @@ local function doeblok(blok, env, ...)
 			end
 
 		end
-		if verbozeIntermediair then
+		if opt.L then
 			if true or type(w) ~= 'table' then
 				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), --[['\t', locsub(exp.code, stat.loc)]] '\n')
 			else
@@ -89,22 +89,22 @@ local function doeblok(blok, env, ...)
 	local epi = blok.epiloog
 	if fn(epi) == 'ret' then
 		local a = env[blok.stats[#blok.stats][1].v]
-		print('ret '..a)
+		if opt.L then print('ret '..a) end
 		return a
 	elseif epi.v == 'stop' then
 		local a =  env[blok.stats[#blok.stats][1].v]
-		print('stop')
+		if opt.L then print('stop') end
 		os.exit()
 	elseif fn(epi) == 'ga' then
 		local a,d,e = epi[1], epi[2], epi[3]
 		if #epi == 3 then
 			local b = env[a.v]
 			local doel = b and d.v or e.v
-			print(string.format('ga %s want %s = %s', doel, a.v, b))
+			if opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
 			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi))
 			return env[doel](...)
 		else
-			print('ga '..a.v)
+			if opt.L then print('ga '..a.v) end
 			return env[a.v](...) -- sws jmp
 		end
 	else
@@ -118,10 +118,12 @@ function doe(cfg)
 	for k,v in pairs(cfg.namen) do
 		env[k] = function(...)
 			local isf = k:sub(1,2) == 'fn'
-			if isf then print('...') ; print('call '..k); end
+			if isf and opt.L then print('...') ; print('call '..k); end
 			local ret = doeblok(v, env, ...)
-			if isf then io.write('\n...') end
-			io.flush()
+			if opt.L then 
+				if isf then io.write('\n...') end
+				io.flush()
+			end
 			return ret
 		end
 	end

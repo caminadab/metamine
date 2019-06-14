@@ -1,5 +1,5 @@
 ;open = ioopen
 ;sluit = ioclose
 ;stduit = iostduit
-app = print(uit)
+app = print(tekst(uit))
 
