@@ -9,6 +9,7 @@ bin/
 troep/
 asm/xcb
 a.s
+a.js
 *.so
 *.dll
 *.elf

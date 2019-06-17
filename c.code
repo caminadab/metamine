@@ -1,4 +1,1 @@
-uit = "hoi" map prof
-prof = x → als x > 'h' dan 'H' anders 'L'
-
-app = uit
+a = "hoi"
