@@ -3,6 +3,7 @@
 # autogen
 *.yy.*
 *.gen.*
+*.js
 
 *.output
 bin/

@@ -45,9 +45,9 @@ local function doeblok(blok, env, ...)
 			local f = componeer(w2exp, combineer)
 			assert(w ~= nil, f(a) .. '.' .. f(i))
 
-		elseif exp.fn == '_fn' then
+		elseif exp.fn.v == '_fn' then
 			w = env[fn(exp)]
-			
+
 		else
 			local func = exp.fn.w
 			assert(func ~= nil, "geen functie voor "..e2s(exp.fn))

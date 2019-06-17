@@ -86,6 +86,7 @@ end
 
 -- oplos: exp → waarde,fouten
 function oplos(exp,voor)
+	local maakvar = maakvars()
 	local fouten = {}
 	if isatoom(exp) then return X'ZWARE FOUT',fouten end -- KAN NIET
 	if exp.fn.v == [[=]] or exp.fn.v == [[EN]] then
@@ -377,7 +378,7 @@ function oplos(exp,voor)
 				for node in boompairs(b) do
 					if isfn(node) and node.fn.v == "'" and node[1].v == a.v then
 						local oude = X(node[1].v .. '_oud')
-						b = substitueer(b, node, oude)
+						b = substitueerzuinig(b, node, oude, maakvar)
 						node.fn = nil
 						node.v = a.v
 						eqn = X('=', a, X(X('herhaal', X('->', oude, b)), 'niets'))
@@ -543,7 +544,7 @@ function oplos(exp,voor)
 			local naam,exp = sub[1],sub[2]
 			local val0 = val
 			local n
-			val, n = substitueerzuinig(val0, naam, exp)
+			val, n = substitueerzuinig(val0, naam, exp, maakvar)
 			val.loc = assert(exp.loc or nergens)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
@@ -555,7 +556,7 @@ function oplos(exp,voor)
 			local n2e = {}
 			for k,v in pairs(exp2naam) do
 				local n
-				n2e[k],n = substitueerzuinig(v, naam, exp)
+				n2e[k],n = substitueerzuinig(v, naam, exp, maakvar)
 				--print('SUBST', combineer(exp), n..'x')
 			end
 			exp2naam = n2e
@@ -572,7 +573,7 @@ function oplos(exp,voor)
 					local arg = X('_arg', narg)
 					local param = exp[i-1]
 				--error('sjaakpot')
-					waarde = substitueer(waarde, arg, param)
+					waarde = substitueerzuinig(waarde, arg, param, maakvar)
 				end
 				assign(exp, waarde)
 			end
@@ -584,7 +585,6 @@ function oplos(exp,voor)
 			exp.moes = moes(exp)
 		end
 		local al = {}
-		local maakvar = maakvars()
 		for exp in boompairsdfs(val) do
 			if al[exp.moes] then
 				--assign(exp, X'~A')

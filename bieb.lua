@@ -16,7 +16,7 @@ bieb = {
 	looptijd = 0,
 
 	-- lua
-	print = function(a) print(string.char(table.unpack(a))) end,
+	['print'] = function(a) if opt.L then print() end; print(string.char(table.unpack(a))) ; return 0; end,
 	
 
 	xcb_connect = true,
@@ -347,6 +347,7 @@ bieb = {
 		if type(a) == 'table' then
 			return a
 		else
+			a = tostring(a)
 			return table.pack(string.byte(a,1,#a))
 		end
 		--[[

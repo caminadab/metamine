@@ -100,12 +100,22 @@ function controle(exp, maakvar)
 			--print('HERBRUIK', combineer(exp))
 			local stat = X(':=', ret, al[moes(exp)])
 			stat.loc = exp.loc
+			al[ret.v] = stat[2]
 			table.insert(blok.stats, stat)
 			return ret --al[moes(exp)]
 		end
 
 		if isatoom(exp) and atoom(exp):sub(1,1) == '~' then
-				
+			--fw = exp.exp
+			--print(e2s(fw))
+			--table.insert(blok.stats, stat)
+			--error'ok'
+			local stat = X(':=', ret, assert(al[exp.v:sub(1,-2)], exp.v))
+			stat.loc = exp.loc
+			al[ret.v] = exp
+			assign(fw, exp)
+			table.insert(blok.stats, stat)
+			return ret --al[moes(exp)]
 		
 		-- functie
 		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
@@ -126,6 +136,7 @@ function controle(exp, maakvar)
 			blok = b
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
+			al[ret.v] = stat[2]
 			table.insert(blok.stats, stat)
 
 		-- alsdan!
@@ -166,6 +177,7 @@ function controle(exp, maakvar)
 
 			-- daadwerkelijke '=>'
 			local stat = X(':=', ret, rdan)
+			al[ret.v] = rdan
 			table.insert(bphi.stats, stat)
 
 			-- ga rustig verder
@@ -175,12 +187,14 @@ function controle(exp, maakvar)
 		elseif tonumber(exp) then
 			stat[2] = X(tostring(exp))
 			stat.loc = exp.loc
+			al[exp] = stat[2]
 			table.insert(blok.stats, stat)
 
 		-- a := b
 		elseif isatoom(exp) then
 			stat[2] = exp
 			stat.loc = exp.loc
+			--al[exp] = stat[2]
 			table.insert(blok.stats, stat)
 
 		-- normale statement (TODO sorteer)
@@ -195,11 +209,12 @@ function controle(exp, maakvar)
 				fw[i] = arg(v)
 			end
 			stat.loc = exp.loc
+			al[stat[1].v] = stat[2]
 			table.insert(blok.stats, stat)
 		end
 
-		--print('REG', combineer(exp))
-		--al[moes(exp)] = ret
+		--print('REG', combineer(exp), ret)
+		al[moes(exp)] = ret
 		return ret
 	end
 	con(exp)

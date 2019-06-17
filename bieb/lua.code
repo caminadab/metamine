@@ -2,4 +2,4 @@
 ;sluit = ioclose
 ;stduit = iostduit
 app = print(tekst(uit))
-succ = XXX → XXX + 1
+succ = succa → succa + 1

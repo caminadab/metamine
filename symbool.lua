@@ -92,7 +92,7 @@ function substitueer(exp, van, naar)
 	end
 end
 
-function substitueerzuinig(exp, van, naar, al, maakvar)
+function substitueerzuinig(exp, van, naar, maakvar, al)
 	--do return substitueer(exp, van, naar) end
 	local al = al or {}
 	local maakvar = maakvar or maakvars()
@@ -115,21 +115,23 @@ function substitueerzuinig(exp, van, naar, al, maakvar)
 				res, num = naar, 1
 			end
 		end
-		local t = {loc=exp.loc}
+		local t = {loc=exp.loc,ref=exp.ref}
 		local n = 0
-		t.fn = substitueerzuinig(exp.fn, van, naar, al, maakvar)
+		t.fn = substitueerzuinig(exp.fn, van, naar, maakvar, al)
 		for i,v in ipairs(exp) do
 			local m
-			t[i],m = substitueerzuinig(v, van, naar, al, maakvar)
+			t[i],m = substitueerzuinig(v, van, naar, maakvar, al)
 			n = n + m
 		end
 		res, num = t, n
 	end
-	local ref = X('~'..maakvar())
-	ref.exp = res
-	exp.ref = ref.v
-	if isfn(exp) then
-		al[moes(exp)] = {ref, num}
+	if not exp.ref then
+		local ref = X('~'..maakvar())
+		ref.exp = res
+		exp.ref = ref.v
+		if isfn(exp) then
+			al[moes(exp)] = {ref, num}
+		end
 	end
 	return res, num
 end

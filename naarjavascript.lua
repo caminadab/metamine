@@ -178,9 +178,9 @@ function naarjavascript(app)
 	for blok in pairs(app.punten) do
 		local naam = blok.naam.v
 		if blok.naam.v:sub(1,2) == 'fn' then
-			t[#t+1] = tabs..'function '..naam..'(_argA, _argB, _argC) {'
+			t[#t+1] = 'function '..naam..'(_argA, _argB, _argC) {'
 			flow(blok, '  ')
-			t[#t+1] = tabs..'}'
+			t[#t+1] = '}'
 		end
 	end
 	flow(app.start, '')
