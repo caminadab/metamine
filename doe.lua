@@ -11,6 +11,7 @@ local function waarde(a, env)
 		end
 		a.w = w
 	end
+	assert(a.w, 'onbekend: '..e2s(a))
 	return a
 end
 
@@ -75,6 +76,8 @@ local function doeblok(blok, env, ...)
 			end
 
 		end
+		assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
+
 		if opt.L then
 			if true or type(w) ~= 'table' then
 				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), --[['\t', locsub(exp.code, stat.loc)]] '\n')

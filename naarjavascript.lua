@@ -107,7 +107,7 @@ function naarjavascript(app)
 	local t = {}
 	local maakvar = maakvars()
 
-	local function blokjs(blok)
+	local function blokjs(blok, tabs)
 		for i,stat in ipairs(blok.stats) do
 			local naam, exp = stat[1], stat[2]
 			local var = maakvar()
@@ -117,7 +117,7 @@ function naarjavascript(app)
 			local c = exp[3] and exp[3].v
 
 			if isatoom(exp) then
-				t[#t+1] = string.format('%s = %s;', naam, exp.v)
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam, exp.v)
 			elseif immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
@@ -128,13 +128,13 @@ function naarjavascript(app)
 				cmd = a and cmd:gsub('_X_', a) or cmd
 				cmd = b and cmd:gsub('_Y_', b) or cmd
 				cmd = c and cmd:gsub('_Z_', c) or cmd
-				t[#t+1] = string.format('%s = %s;', naam, cmd)
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam, cmd)
 			elseif bieb[f] then
-				t[#t+1] = string.format('%s = %s(%s);', naam, f, table.concat(map(exp, function(a) return a.v end), ','))
+				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam, f, table.concat(map(exp, function(a) return a.v end), ','))
 			elseif true then -- TODO check lijst
-				t[#t+1] = string.format('%s = %s[%s];', naam, f, table.concat(map(exp, function(a) return a.v end), ','))
+				t[#t+1] = string.format('%s%s = %s[%s];', tabs, naam, f, table.concat(map(exp, function(a) return a.v end), ','))
 			else
-				t[#t+1] = string.format("throw 'onbekende functie: ' + " .. f .. ";")
+				t[#t+1] = string.format(tabs .. "throw 'onbekende functie: ' + " .. f .. ";")
 			end
 		end
 	end
@@ -146,19 +146,24 @@ function naarjavascript(app)
 		blokken[blok.naam.v] = blok
 	end
 
-	local function flow(blok)
-		blokjs(blok)
+	local function flow(blok, tabs)
+		blokjs(blok, tabs)
 		local epi = blok.epiloog
 		if fn(epi) == 'ga' and #epi == 3 then
-			t[#t+1] = 'if ('..epi[1].v..') {'
+			t[#t+1] = tabs .. 'if ('..epi[1].v..') {'
 			local b = blokken[epi[2].v]
-			flow(b)
-			t[#t+1] = '} else {'
-			flow(blokken[epi[3].v])
-			t[#t+1] = '}'
+			flow(b, tabs..'  ')
+			t[#t+1] = tabs .. '} else {'
+			flow(blokken[epi[3].v], tabs..'  ')
+			t[#t+1] = tabs .. '}'
+			
+			local phi = blokken[b.epiloog[1].v]
+			if phi then
+				flow(phi, tabs)
+			end
 			--flow(blokken[b.epiloog[1].v])
 		elseif fn(epi) == 'ga' and #epi == 1 then
-			flow(blokken[epi[1].v])
+			--flow(blokken[epi[1].v], tabs..'  ')
 		elseif fn(epi) == 'ret' then
 			t[#t+1] = 'return '..epi[1].v..';'
 		elseif epi.v == 'stop' then
@@ -173,12 +178,12 @@ function naarjavascript(app)
 	for blok in pairs(app.punten) do
 		local naam = blok.naam.v
 		if blok.naam.v:sub(1,2) == 'fn' then
-			t[#t+1] = 'function '..naam..'(_argA, _argB, _argC) {'
-			flow(blok)
-			t[#t+1] = '}'
+			t[#t+1] = tabs..'function '..naam..'(_argA, _argB, _argC) {'
+			flow(blok, '  ')
+			t[#t+1] = tabs..'}'
 		end
 	end
-	flow(app.start)
+	flow(app.start, '')
 
 	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
 end

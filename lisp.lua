@@ -23,10 +23,6 @@ end
 
 local metaexp = {}
 
-function metaexp:moes()
-	return expmoes(self)
-end
-
 function uitgerold(exp)
 	local i = 0
 	local function r(exp, t)
@@ -140,7 +136,7 @@ function unparse_work(sexpr, maxlen, tabs, res)
   res = res or {}
   if isatoom(sexpr) then
     insert(res, tostring(sexpr.v))
-		if sexpr.ref then
+		if false and sexpr.ref then
 			insert(res, sexpr.ref)
 		end
 	elseif isfn(sexpr) then

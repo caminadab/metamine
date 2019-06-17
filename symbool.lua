@@ -127,6 +127,7 @@ function substitueerzuinig(exp, van, naar, al, maakvar)
 	end
 	local ref = X('~'..maakvar())
 	ref.exp = res
+	exp.ref = ref.v
 	if isfn(exp) then
 		al[moes(exp)] = {ref, num}
 	end

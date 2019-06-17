@@ -67,7 +67,8 @@ end
 function expmoes(exp)
 	if exp.moes then
 		-- niets...
-		exp.moes = tostring(exp.moes)
+		assert(type(exp.moes) == 'string')
+		--exp.moes = tostring(exp.moes)
 	elseif isatoom(exp) then
 		exp.moes = exp.v
 	else
@@ -278,29 +279,6 @@ function bevat(exp, naam)
 		end
 		return false
 	end
-end
-
-function maakfn(naam,...)
-	local exp
-	if type(naam) == 'table' then
-		exp = naam
-	else
-		exp = { fn = naam, ... }
-	end
-
-	setmetatable(exp, expmt)
-	return exp
-end
-
-function maakeq(l,r)
-	local eq = {type='eq',fn='=',l,r}
-	setmetatable(eq, {
-		__tostring = function(zelf)
-			return tostring(zelf[1])..' = '..tostring(zelf[2])
-		end;
-		__eq = expmt.__eq;
-	})
-	return eq
 end
 
 function T(tabs)

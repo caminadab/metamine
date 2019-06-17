@@ -84,7 +84,7 @@ function controle(exp, maakvar)
 		elseif isfn(exp) then
 			arg = con(exp)
 		else
-			arg = (exp)
+			arg = con(exp)
 		end
 		return arg
 	end
@@ -105,8 +105,9 @@ function controle(exp, maakvar)
 		end
 
 		if isatoom(exp) and atoom(exp):sub(1,1) == '~' then
-				error'ok'
+				
 		
+		-- functie
 		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
 			al = {}
 			local naam = X(maakfunc())
