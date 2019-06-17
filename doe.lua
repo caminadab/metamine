@@ -61,7 +61,6 @@ local function doeblok(blok, env, ...)
 				if not ok then
 					local err = w
 					local f = executiefout(stat.loc, err)
-					print()
 					print(fout2ansi(f))
 					return
 				end

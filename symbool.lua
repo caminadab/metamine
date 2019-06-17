@@ -92,6 +92,47 @@ function substitueer(exp, van, naar)
 	end
 end
 
+function substitueerzuinig(exp, van, naar, al, maakvar)
+	--do return substitueer(exp, van, naar) end
+	local al = al or {}
+	local maakvar = maakvar or maakvars()
+	if al[moes(exp)] then
+		local resnum = al[moes(exp)]
+		local ref, num = resnum[1], resnum[2]
+		ref.exp.ref = assert(ref.v)
+		return ref, num
+	end
+	local res,num
+	if isatoom(exp) then
+		if exp.v == van.v then
+			res, num = naar, 1
+		else
+			res, num = exp, 0
+		end
+	else
+		if isexp(van) then
+			if expmoes(exp) == expmoes(van) then
+				res, num = naar, 1
+			end
+		end
+		local t = {loc=exp.loc}
+		local n = 0
+		t.fn = substitueerzuinig(exp.fn, van, naar, al, maakvar)
+		for i,v in ipairs(exp) do
+			local m
+			t[i],m = substitueerzuinig(v, van, naar, al, maakvar)
+			n = n + m
+		end
+		res, num = t, n
+	end
+	local ref = X('~'..maakvar())
+	ref.exp = res
+	if isfn(exp) then
+		al[moes(exp)] = {ref, num}
+	end
+	return res, num
+end
+
 sym = {}
 
 sym.plus = X'+'

@@ -140,6 +140,9 @@ function unparse_work(sexpr, maxlen, tabs, res)
   res = res or {}
   if isatoom(sexpr) then
     insert(res, tostring(sexpr.v))
+		if sexpr.ref then
+			insert(res, sexpr.ref)
+		end
 	elseif isfn(sexpr) then
     local split = unparse_len(sexpr) > maxlen
 		if sexpr.fn then
@@ -184,6 +187,9 @@ function unparse_work(sexpr, maxlen, tabs, res)
     end
 		insert(res, color[(tabs%#color)+1])
 		insert(res, ')')
+		if sexpr.ref then
+			insert(res, sexpr.ref)
+		end
 		insert(res, color.white)
   end
   return res

@@ -193,7 +193,7 @@ if #fouten > 0 then
 	local exit = false
 	for i,fout in ipairs(fouten) do
 		if fout.loc.bron:sub(1,4) ~= 'bieb' then
-			print(fout.msg)
+			print(fout2ansi(fout.msg))
 			exit = true
 		end
 	end

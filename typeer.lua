@@ -5,6 +5,7 @@ require 'typegraaf'
 
 require 'ontleed'
 require 'oplos'
+require 'fout'
 
 --[[
 teken^int ⊂ (int → teken)
@@ -57,39 +58,8 @@ function typeer0(exp)
 	end
 end
 
-function typefout(loc,msg,...)
-	local t = cat({loc, 'Typefout'}, {...})
-	local i = 0
-
-	local msg = "{loc}\t{rood}:\t" .. msg
-
-	local fmt = msg:gsub(
-		'{([^}]*)}',
-		function (arg)
-			i = i + 1
-			if t[i] == nil then return '' end ---error('niet genoeg argumenten') end
-			if arg == 'loc' then
-				return ansi.underline .. loctekst(t[i]) .. ansi.normal
-			elseif arg == 'rood' then
-				return color.brightred .. t[i] .. color.white
-			elseif arg == 'code' then
-				return color.brightyellow .. tostring(t[i]) .. color.white
-			elseif arg == 'exp' then
-				return color.brightcyan .. combineer(t[i]) .. color.white
-			elseif arg == 'int' then
-				return tostring(math.floor(t[i]))
-			elseif arg == 'cyaan' then
-				return color.brightcyan .. tostring(t[i]) .. color.white
-			else
-				error('onbekend type: '..arg)
-			end
-		end
-	)
-	return fmt
-end
-			
 -- lees biebgraaf
-local bieb,fouten = ontleed(bestand 'bieb/types.code', 'bieb/types.code')
+local bieb,fouten = ontleed(bestand 'bieb/std.code', 'bieb/std.code')
 if fouten then error('biebfouten') end
 
 function typeer(exp)
@@ -135,7 +105,7 @@ function typeer(exp)
 				T = b or error('geen type')
 			--[[
 				T = a -- doe hem niet
-				local msg = typefout(
+				local msg = typeerfout(
 					exp.loc,
 					"onzekere conversie van {exp} naar {exp}",
 					a,
@@ -158,16 +128,16 @@ function typeer(exp)
 				local moetloc = typeoorzaakloc or oorzaakloc[moes(exp)]
 				--assert(code)
 				code = code or ''
-				local msg = typefout(
+				local msg = typeerfout(
 					exp.loc,
 					"{code} is {exp} ({loc}) maar moet {exp} zijn ({loc})",
 					locsub(code, exp.loc),
 					types[exp], isloc,
 					type, moetloc
 				)
-				if not fouten[msg] then
+				if not fouten[fout2ansi(msg)] then
 					fouten[#fouten+1] = {loc = exp.loc, msg = msg}
-					fouten[msg] = true
+					fouten[fout2ansi(msg)] = true
 				end
 				return types,fouten
 			end
@@ -324,7 +294,7 @@ function typeer(exp)
 						else
 							local aloc = oorzaakloc[a] or a.loc
 							local bloc = oorzaakloc[b] or b.loc
-							local msg = typefout(exp.loc, '{code} is {exp} ({loc}), {code} is {exp} ({loc})',
+							local msg = typeerfout(exp.loc, '{code} is {exp} ({loc}), {code} is {exp} ({loc})',
 								locsub(code, a.loc),
 								types[a], aloc,
 								locsub(code, b.loc),
@@ -411,7 +381,7 @@ function typeer(exp)
 				-- local unpacking
 				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
 				if false and N(tfn) ~= nargs and N(tfn) ~= math.huge then
-					local msg = typefout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc}) '..exp2string(tfn),
+					local msg = typeerfout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc}) '..exp2string(tfn),
 						locsub(code, exp.loc),
 						nargs, oorzaakloc[exp],
 						N(tfn), oorzaakloc[tfn] or oorzaakloc[exp]

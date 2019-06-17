@@ -11,10 +11,11 @@ function fout(type, loc, fmt, ...)
 	return t
 end
 
-function executiefout(...) return fout("executie", ...) end
-function syntaxfout(...) return fout("syntax", ...) end
-function oplosfout(...) return fout("oplos", ...) end
-function typeerfout(...) return fout("type", ...) end
+-- loc, fmt, ...
+function executiefout(...) return fout("Executie", ...) end
+function syntaxfout(...) return fout("Syntax", ...) end
+function oplosfout(...) return fout("Oplos", ...) end
+function typeerfout(...) return fout("Type", ...) end
 
 function fout2ansi(fout)
 	local loc =  ansi.underline .. loctekst(fout.loc) .. ansi.normal

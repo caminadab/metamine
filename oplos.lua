@@ -117,6 +117,26 @@ function oplos(exp,voor)
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
+		-- lange reeksen "+" naar "Σ"
+		for eq in pairs(eqs) do
+			local plus = {}
+			for exp in boompairsdfs(eq) do
+				if fn(exp) == '+' then
+					plus[exp] = 1 + (plus[exp[1]] or 0)
+
+					--local function r(exp)
+						--if exp[
+
+					--if plus[exp] > 4 then
+						--exp.fn = 'som'
+				elseif exp[1] and fn(exp[1]) == '+' then
+					if plus[exp[1]] > 4 then
+						exp[1] = X('som', exp[1])
+					end
+				end
+			end
+		end
+
 		-- fix dubbele args: f(,(2 3))
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
@@ -523,7 +543,7 @@ function oplos(exp,voor)
 			local naam,exp = sub[1],sub[2]
 			local val0 = val
 			local n
-			val, n = substitueer(val0, naam, exp)
+			val, n = substitueerzuinig(val0, naam, exp)
 			val.loc = assert(exp.loc or nergens)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
@@ -535,7 +555,7 @@ function oplos(exp,voor)
 			local n2e = {}
 			for k,v in pairs(exp2naam) do
 				local n
-				n2e[k],n = substitueer(v, naam, exp)
+				n2e[k],n = substitueerzuinig(v, naam, exp)
 				--print('SUBST', combineer(exp), n..'x')
 			end
 			exp2naam = n2e
@@ -558,6 +578,32 @@ function oplos(exp,voor)
 			end
 		end
 
+		-- comprimeer 'm
+		if false then
+		for exp in boompairsdfs(val) do
+			exp.moes = moes(exp)
+		end
+		local al = {}
+		local maakvar = maakvars()
+		for exp in boompairsdfs(val) do
+			if al[exp.moes] then
+				--assign(exp, X'~A')
+				local v,fn = exp.v,exp.fn
+				exp.v = '~'..maakvar()
+				exp.fn = nil
+				if exp.v == '~E' then
+					exp.v,exp.fn = v,fn
+					al[exp.moes] = nil
+					exp.moes = exp.v
+					print(exp.v)
+				else
+					exp.moes = exp.v
+				end
+				print(exp.moes, loctekst(exp.loc), exp.v)
+			end
+			al[exp.moes] = exp.loc
+		end
+		end
 
 		-- opgelost
 		if verbozeWaarde then

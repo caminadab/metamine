@@ -104,7 +104,10 @@ function controle(exp, maakvar)
 			return ret --al[moes(exp)]
 		end
 
-		if fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
+		if isatoom(exp) and atoom(exp):sub(1,1) == '~' then
+				error'ok'
+		
+		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
 			al = {}
 			local naam = X(maakfunc())
 			local waarde = exp[1]

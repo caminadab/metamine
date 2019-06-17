@@ -49,6 +49,7 @@ function locsub(code, loc)
 end
 
 function expmoesR(exp, t)
+	if exp.moes then t[#t+1] = tostring(exp.moes); return end
 	if isatoom(exp) then t[#t+1] = exp.v
 	else
 		if not isatoom(exp.fn) then t[#t+1] = '(' end
@@ -63,9 +64,30 @@ function expmoesR(exp, t)
 	end
 end
 
-local moezen = {}
-
 function expmoes(exp)
+	if exp.moes then
+		-- niets...
+		exp.moes = tostring(exp.moes)
+	elseif isatoom(exp) then
+		exp.moes = exp.v
+	else
+		local t = {}
+		t[#t+1] = expmoes(exp.fn)
+		t[#t+1] = '('
+		for i=1,#exp do
+			t[#t+1] = expmoes(exp[i])
+			if i ~= #exp then
+				t[#t+1] = ' '
+			end
+		end
+		t[#t+1] = ')'
+		exp.moes = table.concat(t)
+	end
+	return exp.moes
+end
+
+
+function expmoes0(exp)
 	---if moezen[exp] then
 		---return moezen[exp]
 	---end
