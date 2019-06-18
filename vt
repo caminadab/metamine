@@ -6,6 +6,7 @@ require 'bieb'
 
 require 'getopt'
 require 'lisp'
+require 'vertolk'
 
 require 'naarlua'
 require 'naarweb'
@@ -14,9 +15,10 @@ require 'rapport'
 require 'typeer'
 require 'doe'
 require 'optimaliseer'
+require 'oplos'
 
 require 'bouw.controle'
-require 'bouw.kijkgat'
+--require 'bouw.kijkgat'
 require 'bouw.arch'
 require 'bouw.codegen'
 require 'bouw.assembleer'
@@ -167,6 +169,12 @@ for t in boompairs(asb) do
 	t.i = i
 	i = i + 1
 	--io.write(t.i..': '..exp2string(t), ' ')
+end
+
+-- vertolk
+if opt.lang == 'en' then
+	asb = vertolk(asb)
+	print(e2s(asb))
 end
 
 if verbozeSyntax then

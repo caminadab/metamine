@@ -1,0 +1,64 @@
+open	open
+uit	out
+data	data
+bestand	file
+sluit	close
+schrijf	write
+bit	bool
+ja	true
+nee	false
+
+getal	double
+int	int
+byte	byte
+
+som	sum
+lijst	list
+iets	any
+tupel	tuple
+verzameling	collection
+zak	bag
+set	set
+
+wortel	sqrt
+
+sin	sin
+cos	cos
+tan	tan
+sincos	sincos
+
+abs	abs
+min	min
+max	max
+entier	floor
+teken	char
+
+tekst	string
+cat	concat
+moment	moment
+nu	now
+
+deel	slice
+vanaf	from
+tot	til
+
+herhaal	repeat
+mod	mod
+
+oppervlakte	area
+straal	radius
+vorm	shape
+canvas	canvas
+cirkel	circle
+rechthoek	rect
+
+waarvoor	where
+kleur	color
+rood	red
+oranje	orange
+geel	yellow
+paars	purple
+zwart	black
+wit	white
+
+uit	out
