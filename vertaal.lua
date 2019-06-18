@@ -17,7 +17,7 @@ function vertaal(code, doel)
 	local types,typeerfouten = typeer(asb)
 	local mach = arch_x64(asb, types)
 	local uit,oplosfouten = oplos(mach, "uit")
-	local uit = optimaliseer(uit)
+	--local uit = optimaliseer(uit)
 	local fouten = cat(syntaxfouten, typeerfouten, oplosfouten)
 	local app = controle(uit, maakvar)
 

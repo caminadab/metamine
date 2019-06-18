@@ -93,54 +93,61 @@ function substitueer(exp, van, naar)
 end
 
 function substitueerzuinig(exp, van, naar, maakvar, al)
-	local al = al or {}
-	local maakvar = maakvar or maakvars()
+	--do return substitueer(exp, van, naar) end
+	--local m = moes(van)..'_'..moes(naar)
+	al = al or {}
+	local ret
 
-	do return substitueer(exp, van, naar) end
-	if not exp.ref then
-		local ref = X('~'..maakvar())
-		ref.exp = res
-		exp.ref = ref
-	end
-	local wasal = al[moes(exp)]
-	al[moes(exp)] = {exp.ref, 0}
-
-	if wasal and isfn(exp) then
-		local resnum = al[moes(exp)]
-		local ref, num = resnum[1], resnum[2]
-		assert(ref)
-		assert(ref.v)
-		ref.exp = ref.exp or {}
-		ref.exp.ref = assert(ref)
-		return ref, num
-	end
-	local res,num
-	if isatoom(exp) then
-		if exp.v == van.v then
-			res, num = naar, 1
+	-- maak ref
+	local ref = van.ref
+	if not ref then
+		if isatoom(van) then
+			ref = X('~' .. van.v)
 		else
-			res, num = exp, 0
+			error('UHH')
+			ref = X('~' .. maakvar())
 		end
+		van.exp = ref
+		naar.ref = ref
+	end
+
+	if isexp(naar) and al[moes(van)] then
+		ret = al[moes(van)]
+		--al[moes(van)] = ref
+
+	elseif isatoom(exp) then
+		if exp.v == van.v then
+			if isexp(naar) then
+				al[moes(van)] = ref
+			--naar.ref = assert(ref)
+				--print(ret, naar)
+			end
+			ret = naar
+			naar.ref = ref
+		else
+			ret = exp
+		end
+
 	else
 		if isexp(van) then
-			if expmoes(exp) == expmoes(van) then
-				res, num = naar, 1
+			if moes(exp) == moes(van) then
+				error'RAAR'
+				return naar, 1
 			end
 		end
-		local t = {loc=exp.loc,ref=exp.ref}
+		local t = {loc=exp.loc}
 		local n = 0
-		--al[moes(exp)] = {
 		t.fn = substitueerzuinig(exp.fn, van, naar, maakvar, al)
 		for i,v in ipairs(exp) do
-			local m
-			t[i],m = substitueerzuinig(v, van, naar, maakvar, al)
-			n = n + m
+			t[i] = substitueerzuinig(v, van, naar, maakvar, al)
 		end
-		res, num = t, n
+		--t.ref = X('~'..maakvar())
+		t.ref = exp.ref
+		ret = t
 	end
-	--al[moes(res)] = al[moes(res)] or {}
-	--al[moes(res)][2] = num
-	return res, num
+	--van.ref = ref
+
+	return assert(ret, 'niet ret')
 end
 
 sym = {}
@@ -174,3 +181,12 @@ sym.maplet = X'-->'
 sym.start = X'start'
 sym.set = X'{}'
 sym.stop = X'stop'
+
+if test then
+	local a = X('+', 'a', 'a')
+	local s = X('/', '1', '2')
+	local b = substitueerzuinig(a, X'a', s)
+	local _, tel = string.gsub(moes(b), "/", "")
+	assert(tel == 1, e2s(b))
+	assert(b[2].exp == s)
+end

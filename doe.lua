@@ -5,7 +5,7 @@ require 'fout'
 
 local function waarde(a, env)
 	if isatoom(a) then
-		local w = tonumber(a.v) or env[a.v] or (a.v == '_arg' and "JA")
+		local w = tonumber(a.v) or env[a.v] or (a.v == '_arg' and "JA" or nil)
 		if w == nil then 
 			error('onbekend: '..tostring(a.v))
 		end

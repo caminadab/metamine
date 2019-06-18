@@ -90,6 +90,26 @@ function controle(exp, maakvar)
 	end
 
 	local al = {}
+
+	function mkstat(stat, ret)
+		if verbozeIntermediair then
+			print('  '..combineer(stat))
+		end
+		stat.loc = exp.loc
+		--stat.ref = ret.ref
+		local val = stat[2]
+		--print(e2s(stat), val.ref)
+		if val.ref then
+			--error(val.ref)
+			--al[ret.v] = val.ref
+			al[val.ref.v] = stat[1]
+			print('REG:', val.ref.v)
+			--al[ret.v] = assert(stat[2].ref, 'statement heeft geen referentiecode: '..e2s(stat))
+		end
+		table.insert(blok.stats, stat)
+		return ret
+	end
+
 	function con(exp,ret)
 		--print('CON', combineer(exp))
 		local fw = {fn=exp.fn}
@@ -98,24 +118,17 @@ function controle(exp, maakvar)
 
 		if false and al[moes(exp)] then
 			--print('HERBRUIK', combineer(exp))
-			local stat = X(':=', ret, al[moes(exp)])
+			local stat = X(':=', ret, assert(al[moes(exp)]))
 			stat.loc = exp.loc
 			al[ret.v] = stat[2]
-			table.insert(blok.stats, stat)
-			return ret --al[moes(exp)]
+			return mkstat(stat, ret)
 		end
 
 		if isatoom(exp) and atoom(exp):sub(1,1) == '~' then
-			--fw = exp.exp
-			--print(e2s(fw))
-			--table.insert(blok.stats, stat)
-			--error'ok'
-			local stat = X(':=', ret, assert(al[exp.v:sub(1,-2)], exp.v))
+			local stat = X(':=', ret, assert(al[exp.v]))--, 'niet geregistreerd: '..exp.v)) --assert(al[exp.v:sub(1,-2)], exp.v))
+			--error('OK')
 			stat.loc = exp.loc
-			--al[ret.v] = exp
-			assign(fw, exp)
-			table.insert(blok.stats, stat)
-			return ret --al[moes(exp)]
+			return mkstat(stat, ret)
 		
 		-- functie
 		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
@@ -187,15 +200,14 @@ function controle(exp, maakvar)
 		elseif tonumber(exp) then
 			stat[2] = X(tostring(exp))
 			stat.loc = exp.loc
-			al[exp] = stat[2]
-			table.insert(blok.stats, stat)
+			mkstat(stat, ret)
 
 		-- a := b
 		elseif isatoom(exp) then
 			stat[2] = exp
 			stat.loc = exp.loc
 			--al[exp] = stat[2]
-			table.insert(blok.stats, stat)
+			mkstat(stat, ret)
 
 		-- normale statement (TODO sorteer)
 		else
@@ -209,9 +221,14 @@ function controle(exp, maakvar)
 				fw[i] = arg(v)
 			end
 			stat.loc = exp.loc
-			al[stat[1].v] = stat[2]
+			stat[2].ref = exp.ref
+
+			if exp.ref then
+				al[exp.ref] = stat
+			end
+
 			--print('NORMAAL', combineer(stat))
-			table.insert(blok.stats, stat)
+			mkstat(stat, ret)
 		end
 
 		--print('REG', combineer(exp), ret)
