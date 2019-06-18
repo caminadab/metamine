@@ -99,7 +99,8 @@ local immjs = {
 
 	
 	-- LIB
-	['print'] = 'print(X)'
+	['tekst'] = 'toString(X)',
+	['print'] = 'print(X)',
 }
 
 function naarjavascript(app)
@@ -165,7 +166,7 @@ function naarjavascript(app)
 		elseif fn(epi) == 'ga' and #epi == 1 then
 			--flow(blokken[epi[1].v], tabs..'  ')
 		elseif fn(epi) == 'ret' then
-			t[#t+1] = 'return '..epi[1].v..';'
+			t[#t+1] = tabs..'return '..epi[1].v..';'
 		elseif epi.v == 'stop' then
 			-- niets
 		else
@@ -201,11 +202,10 @@ if test then
 		local a = naarjavascript(tussencode)
 		a = a .. "\nprint(A)"
 		file('a.js', a)
-		print(a)
 		os.execute('js a.js > a.out')
 		local b = file('a.out'):sub(1,-2)
 		assert(b == waarde, 'was '..b..' maar moest zijn '..waarde)
 	end
 
-	moetzijn("uit = 1 + 1", '2')
+--	moetzijn("uit = 1 + 1", '2')
 end

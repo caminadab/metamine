@@ -184,7 +184,7 @@ function unparse_work(sexpr, maxlen, tabs, res)
 		insert(res, color[(tabs%#color)+1])
 		insert(res, ')')
 		if sexpr.ref then
-			insert(res, sexpr.ref)
+			insert(res, sexpr.ref.v)
 		end
 		insert(res, color.white)
   end

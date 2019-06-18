@@ -38,7 +38,7 @@ local function optimaliseerO(exp)
 		if isatoom(e) then
 			if tonumber(e.v) then
 				e.w = tonumber(e.v)
-			elseif bieb[e.v] and not dynamisch[e.v] then
+			elseif bieb[e.v] ~= nil and not dynamisch[e.v] then
 				e.w = bieb[e.v]
 			elseif e.v == '_arg0' then
 				e.w = ...
@@ -142,7 +142,7 @@ function optimaliseer(exp)
 	return ok and nexp or exp
 end
 
-if true or test then
+if test then
 	require 'ontleed'
 	require 'combineer'
 

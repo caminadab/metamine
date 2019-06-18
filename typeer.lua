@@ -4,7 +4,6 @@ require 'combineer'
 require 'typegraaf'
 
 require 'ontleed'
-require 'oplos'
 require 'fout'
 
 --[[

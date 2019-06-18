@@ -108,10 +108,8 @@ start:
 lus:
 	stop
 ]]
-	print(a)
 
 	local b = leescfg(file "bouw/b.rtl")
-	print(b)
 
 
 end

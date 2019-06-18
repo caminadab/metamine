@@ -1,0 +1,26 @@
+out = "runtime: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(runtime + 3)))))))
+
+
+atoi = b → i
+	; negative?
+  negative = (b₀ = '-')
+  sign = if negative then -1 else 1
+
+	; cijfers van de tekst
+  chars = if negative dan (b vanaf 1) else (b)
+  digits = chars map (t → t - '0')
+
+	; waarde van elk cijfer gegeven de positie
+  val = (k → digits(j) · 10^k)
+    j = #digits - k - 1
+
+	; positie en resultaat
+	pos = 0 .. #digits
+  i = sign · Σ (pos map val)
+
+itoa = x → a
+  n = 1 + floor(log10(max(abs x, 1)))
+  neg = if x < 0 then "-" else ""
+  a = neg || ((n .. 0) map digit)
+  scaled = (abs x)/10^m
+  digit = m → '0' + (floor scaled) mod 10

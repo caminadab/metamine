@@ -11,14 +11,15 @@ local function waarde(a, env)
 		end
 		a.w = w
 	end
-	assert(a.w, 'onbekend: '..e2s(a))
+	assert(a.w ~= nil, 'onbekend: '..e2s(a))
 	return a
 end
 
 local function doeblok(blok, env, ...)
 	for i,stat in ipairs(blok.stats) do
-		if opt.L then
-			io.write('  ', combineer(stat), '\t\t')
+		if opt and opt.L then
+			-- locsub(exp.code, stat.loc), 
+			io.write('  ', combineer(stat), '\t', loctekst(stat.loc), '\t\t' )
 			io.flush()
 		end
 		-- naam := exp
@@ -36,7 +37,8 @@ local function doeblok(blok, env, ...)
 			end
 		elseif fn(exp) == '_arg' then
 			local t = {...}
-			w = t[1] or "FOUT"
+			w = t[1]-- or "FOUT"
+			assert(w ~= nil, "geen argument meegegeven")
 		elseif exp.fn and type(exp.fn.w) == 'table' then
 			-- woeps
 			local a = exp.fn.w
@@ -78,12 +80,8 @@ local function doeblok(blok, env, ...)
 		end
 		assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
 
-		if opt.L then
-			if true or type(w) ~= 'table' then
-				io.write(combineer(w2exp(w)), '\t', loctekst(stat.loc), --[['\t', locsub(exp.code, stat.loc)]] '\n')
-			else
-				io.write('\t\t', loctekst(stat.loc), '\n')
-			end
+		if opt and opt.L then
+			io.write(combineer(w2exp(w)), '\n')
 		end
 
 		env[naam.v] = w
@@ -95,8 +93,8 @@ local function doeblok(blok, env, ...)
 		return a
 	elseif epi.v == 'stop' then
 		local a =  env[blok.stats[#blok.stats][1].v]
-		if opt.L then print('stop') end
-		os.exit()
+		if opt and opt.L then print('stop') end
+		return a
 	elseif fn(epi) == 'ga' then
 		local a,d,e = epi[1], epi[2], epi[3]
 		if #epi == 3 then
@@ -115,6 +113,10 @@ local function doeblok(blok, env, ...)
 end
 
 function doe(cfg)
+	if cfg == nil then
+		return nil
+	end
+	assert(cfg.namen, 'is geen controlegraaf')
 	local env = {}
 	for k,v in pairs(bieb) do env[k] = v end
 	for k,v in pairs(cfg.namen) do
@@ -131,14 +133,6 @@ function doe(cfg)
 	end
 
 	-- GA
-	doeblok(cfg.start, env)
-
-	local uit
-	if type(env.A) == 'table' then
-		uit = taal2string(env.A)
-	else
-		uit = tostring(env.A)
-	end
-	print(uit)
-	--for k,v in pairs(env) do print(k,v) end
+	local ret = doeblok(cfg.start, env)
+	return ret
 end

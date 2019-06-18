@@ -1,17 +1,13 @@
 require 'exp'
 require 'util'
 require 'naarlua'
-require 'naarjavascript'
 
 bieb = {
-	-- rochel
-	['open-lees'] = true,
 		
 	log2 = true,
 	log10 = math.log10,
 	puts = true,
 	call = true,
-	--succ = function(x) return x + 1 end;
 
 	looptijd = 0,
 
@@ -64,6 +60,7 @@ bieb = {
 
 	['jslib'] = jslibtaal,
 	['javascript'] = function(fn) 
+		require 'naarjavascript'
 		local code,err = naarjavascript(fn)
 		if not code and verboos then print('GEEN JAVASCRIPT: '..err) end
 		local a = table.pack(string.byte(code, 1, #code))
@@ -116,6 +113,7 @@ bieb = {
 	['^i'] = true,
 	['modi'] = true,
 	['entier'] = function(a) return math.floor(a) end,
+	['ceiling'] = function(a) return math.ceil(a) end,
  
 	['+i'] = function(a,b) return a + b end,
 	['-i'] = function(a,b) return a - b end,

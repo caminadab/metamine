@@ -11,12 +11,18 @@ require = function(n)
 end
 ]]
 
-local bestanden = io.popen('ls *.lua')
+local bestanden = io.popen('ls *.lua ; ls bouw/*.lua')
 local gehad = {test=true}
 for bestand in bestanden:lines() do
 	local kort = bestand:sub(1,-5)
-	if gehad[kort] then break end
 	gehad[kort] = true
-	print(kort)
-	require(kort)
+	io.write(kort, ':\t')
+	io.flush()
+	if kort ~= 'test' then
+		require(kort)
+	end
+	io.write(ansi.regelbegin)
+	io.write(ansi.wisregel)
+	io.flush()
 end
+print("KLAAR!")

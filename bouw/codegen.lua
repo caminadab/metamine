@@ -666,11 +666,11 @@ start:
 	ga klaar
 
 klaar:
+	a := 1
 	stop
 ]]
 	local cfg = leescfg(code)
 	local asm = codegen(cfg)
-	print(asm)
 
 end
 

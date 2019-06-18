@@ -112,7 +112,7 @@ function controle(exp, maakvar)
 			--error'ok'
 			local stat = X(':=', ret, assert(al[exp.v:sub(1,-2)], exp.v))
 			stat.loc = exp.loc
-			al[ret.v] = exp
+			--al[ret.v] = exp
 			assign(fw, exp)
 			table.insert(blok.stats, stat)
 			return ret --al[moes(exp)]
@@ -210,6 +210,7 @@ function controle(exp, maakvar)
 			end
 			stat.loc = exp.loc
 			al[stat[1].v] = stat[2]
+			--print('NORMAAL', combineer(stat))
 			table.insert(blok.stats, stat)
 		end
 

@@ -31,12 +31,14 @@ abs	abs
 min	min
 max	max
 entier	floor
+ceiling	ceil
 teken	char
 
 tekst	string
 cat	concat
 moment	moment
 nu	now
+looptijd	runtime
 
 deel	slice
 vanaf	from

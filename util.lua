@@ -237,6 +237,8 @@ color = {
 color[1],color[2],color[3],color[4],color[5],color[6],color[7],color[8] = color.red,color.green,color.yellow,color.purple,color.cyan
 
 ansi = {
+	regelbegin = '\x1B[G',
+	wisregel = '\x1B[2K',
 	normal = '\x1B[0m',
 	bold = '\x1B[1m',
 	italic = '\x1B[3m',

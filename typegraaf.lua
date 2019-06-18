@@ -256,14 +256,11 @@ if test then
 	]]
 	--g:link(maaktype('lijst int'))
 	--g:link(maaktype('lijst getal'))
-	local getal = g:link(maaktype 'getal')
+	local getal = g:link(maaktype('getal', g))
 	g:link(maaktype('int', g), getal)
-	local verzameling = maaktype 'verzameling'
-	g:link(maaktype'lijst', verzameling)
+	local verzameling = maaktype('verzameling', g)
+	g:link(maaktype('lijst', g), verzameling)
 	g:link(maaktype('lijst int', g))
 	g:link(maaktype('lijst getal', g))
 	--g:link(maaktype('verzameling getal'))
-
-	print('Typegraaf')
-	print(g)
 end
