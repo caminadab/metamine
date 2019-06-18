@@ -45,7 +45,7 @@ if test then
 	test('a = als 2 < 1 dan 1 anders - 1\nuit = als a > 0 dan a - 1 anders a + 1', 0)
 
 	-- functies
-	opt = {L=true}
-	verbozeWaarde = true
+	--opt = {L=true}
+	--verbozeWaarde = true
 	test("f = a → a + 1\nuit = f(-1)", 0)
 end

@@ -96,7 +96,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 	local al = al or {}
 	local maakvar = maakvar or maakvars()
 
-	--do return substitueer(exp, van, naar) end
+	do return substitueer(exp, van, naar) end
 	if not exp.ref then
 		local ref = X('~'..maakvar())
 		ref.exp = res
