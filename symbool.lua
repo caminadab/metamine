@@ -104,19 +104,21 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		if isatoom(van) then
 			ref = X('~' .. van.v)
 		else
-			error('UHH')
+			--error('UHH')
 			ref = X('~' .. maakvar())
 		end
 		van.exp = ref
 		naar.ref = ref
 	end
 
-	if isexp(naar) and al[moes(van)] then
-		ret = al[moes(van)]
-		--al[moes(van)] = ref
+	if isatoom(exp) then
+		if al[moes(van)] and exp.v == van.v then
+		print('AL', moes(van))
+			al[moes(van)] = ref
+			ret = al[moes(van)]
+			ret.ref = ref
 
-	elseif isatoom(exp) then
-		if exp.v == van.v then
+		elseif exp.v == van.v then
 			if isexp(naar) then
 				al[moes(van)] = ref
 			--naar.ref = assert(ref)
@@ -126,15 +128,19 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 			naar.ref = ref
 		else
 			ret = exp
+
 		end
 
 	else
+
 		if isexp(van) then
 			if moes(exp) == moes(van) then
-				error'RAAR'
+				--error'RAAR'
+				naar.ref = exp.ref
 				return naar, 1
 			end
 		end
+
 		local t = {loc=exp.loc}
 		local n = 0
 		t.fn = substitueerzuinig(exp.fn, van, naar, maakvar, al)
@@ -146,6 +152,8 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		ret = t
 	end
 	--van.ref = ref
+
+	--al[moes(van)] = ref
 
 	return assert(ret, 'niet ret')
 end

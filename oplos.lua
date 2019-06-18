@@ -542,6 +542,7 @@ function oplos(exp,voor)
 			exp2naam = n2e
 		end
 
+		--[[
 		-- nog ff sneaken
 		-- functies toepassen
 		--error(exp2string(val))
@@ -558,32 +559,7 @@ function oplos(exp,voor)
 				assign(exp, waarde)
 			end
 		end
-
-		-- comprimeer 'm
-		if false then
-		for exp in boompairsdfs(val) do
-			exp.moes = moes(exp)
-		end
-		local al = {}
-		for exp in boompairsdfs(val) do
-			if al[exp.moes] then
-				--assign(exp, X'~A')
-				local v,fn = exp.v,exp.fn
-				exp.v = '~'..maakvar()
-				exp.fn = nil
-				if exp.v == '~E' then
-					exp.v,exp.fn = v,fn
-					al[exp.moes] = nil
-					exp.moes = exp.v
-					print(exp.v)
-				else
-					exp.moes = exp.v
-				end
-				print(exp.moes, loctekst(exp.loc), exp.v)
-			end
-			al[exp.moes] = exp.loc
-		end
-		end
+		]]
 
 		-- opgelost
 		if verbozeWaarde then

@@ -103,7 +103,8 @@ function controle(exp, maakvar)
 			--error(val.ref)
 			--al[ret.v] = val.ref
 			al[val.ref.v] = stat[1]
-			print('REG:', val.ref.v)
+			print(e2s(stat), e2s(stat[1]))
+			print('REG:', val.ref.v, e2s(stat[1]))
 			--al[ret.v] = assert(stat[2].ref, 'statement heeft geen referentiecode: '..e2s(stat))
 		end
 		table.insert(blok.stats, stat)
@@ -116,23 +117,15 @@ function controle(exp, maakvar)
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 
-		if false and al[moes(exp)] then
-			--print('HERBRUIK', combineer(exp))
-			local stat = X(':=', ret, assert(al[moes(exp)]))
-			stat.loc = exp.loc
-			al[ret.v] = stat[2]
-			return mkstat(stat, ret)
-		end
-
 		if isatoom(exp) and atoom(exp):sub(1,1) == '~' then
-			local stat = X(':=', ret, assert(al[exp.v]))--, 'niet geregistreerd: '..exp.v)) --assert(al[exp.v:sub(1,-2)], exp.v))
+			local stat = X(':=', ret, (assert(al[exp.v], 'niet geregistreerd: '..exp.v))) --assert(al[exp.v:sub(1,-2)], exp.v))
 			--error('OK')
 			stat.loc = exp.loc
 			return mkstat(stat, ret)
 		
 		-- functie
 		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
-			al = {}
+			--al = {}
 			local naam = X(maakfunc())
 			local waarde = exp[1]
 			local arg = exp[2]
@@ -150,7 +143,8 @@ function controle(exp, maakvar)
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
 			al[ret.v] = stat[2]
-			table.insert(blok.stats, stat)
+			--table.insert(blok.stats, stat)
+			mkstat(stat, ret)
 
 		-- alsdan!
 		elseif fn(exp) == '=>' then
@@ -195,7 +189,7 @@ function controle(exp, maakvar)
 
 			-- ga rustig verder
 			blok = bphi
-			al = {}
+			--al = {}
 
 		elseif tonumber(exp) then
 			stat[2] = X(tostring(exp))
