@@ -108,6 +108,9 @@ function controle(exp, maakvar)
 			print('REG:', val.ref.v, e2s(stat[1]))
 			--al[ret.v] = assert(stat[2].ref, 'statement heeft geen referentiecode: '..e2s(stat))
 		end
+		if not val.ref and isfn(val) then
+			error('geen referentie voor '..e2s(val))
+		end
 		table.insert(blok.stats, stat)
 		return ret
 	end
@@ -185,14 +188,10 @@ function controle(exp, maakvar)
 
 			-- daadwerkelijke '=>'
 			local stat = X(':=', ret, rdan)
+			stat[2].ref = exp.ref
 			al[ret.v] = rdan
 			blok = bphi
 			mkstat(stat, ret)
-			--table.insert(bphi.stats, stat)
-
-			-- ga rustig verder
-			blok = bphi
-			--al = {}
 
 		elseif tonumber(exp) then
 			stat[2] = X(tostring(exp))
