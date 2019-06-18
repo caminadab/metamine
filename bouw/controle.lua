@@ -132,6 +132,7 @@ function controle(exp, maakvar)
 		
 		-- functie
 		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
+			assert(exp.ref)
 			--al = {}
 			local naam = X(maakfunc())
 			local waarde = exp[1]
@@ -144,7 +145,8 @@ function controle(exp, maakvar)
 			local b = blok
 			blok = bfn
 			al[ret.v] = stat[2]
-			stat[2].ref = exp.ref
+			print('FN AL', ret.v, e2s(stat))
+			stat[2].ref = assert(exp.ref)
 			local res = con(waarde)
 			blok.epiloog[1] = res
 			graaf:punt(bfn)
