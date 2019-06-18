@@ -28,6 +28,10 @@ if test then
 	require 'doe'
 
 	local function test(code, moet)
+	print()
+	print()
+	print(code)
+	print()
 		local v = vertaal(code)
 		local imm = doe(v)
 		assert(imm == moet, 'klopt niet: '..tostring(imm))
@@ -42,6 +46,9 @@ if test then
 	-- alsdan
 	test('uit = als 2 > 1 dan 1 anders - 1', 1)
 	test('uit = als 2 < 1 dan 1 anders - 1', -1)
+	opt = {L=true}
+	verbozeIntermediair=true
+	verbozeWaarde=true
 	test('a = als 2 < 1 dan 1 anders - 1\nuit = als a > 0 dan a - 1 anders a + 1', 0)
 
 	-- functies

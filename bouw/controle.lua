@@ -103,6 +103,7 @@ function controle(exp, maakvar)
 			--error(val.ref)
 			--al[ret.v] = val.ref
 			al[val.ref.v] = stat[1]
+				assert(isatoom(stat[1]))
 			print(e2s(stat), e2s(stat[1]))
 			print('REG:', val.ref.v, e2s(stat[1]))
 			--al[ret.v] = assert(stat[2].ref, 'statement heeft geen referentiecode: '..e2s(stat))
@@ -185,7 +186,9 @@ function controle(exp, maakvar)
 			-- daadwerkelijke '=>'
 			local stat = X(':=', ret, rdan)
 			al[ret.v] = rdan
-			table.insert(bphi.stats, stat)
+			blok = bphi
+			mkstat(stat, ret)
+			--table.insert(bphi.stats, stat)
 
 			-- ga rustig verder
 			blok = bphi

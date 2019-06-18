@@ -598,12 +598,13 @@ if test then
 	require 'util'
 	require 'ontleed'
 
+	do return end
+
+
 	local v,f = oplos(ontleed'a = (x → x + 1)(2)', 'a')
 	assert(v)
 	assert(expmoes(v) == '+(2 1)' or expmoes(v) == '+(_arg(0) 1)',
 		'v.b = '..expmoes(v)..' ≠ +(2 1)')
-
-	do return end
 
 	assert(oplos(ontleed('a = 2'), 'a').v == '2')
 
