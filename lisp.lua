@@ -92,6 +92,7 @@ end
 
 -- {fn='a'}
 function unparse_len(exp)
+	if exp.len then return exp.len end
 	if exp == nil then return 0 end
 	if type(exp) == 'string' then return #exp end
 	if exp.v then return #exp.v end
@@ -104,6 +105,7 @@ function unparse_len(exp)
 		len = len + unparse_len(v)
 	end
 	len = len + #exp - 1 + 2
+	exp.len = len
 	return len
 end
 

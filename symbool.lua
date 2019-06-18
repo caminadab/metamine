@@ -111,15 +111,27 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		naar.ref = ref
 	end
 
+	-- maak ref voor exp
+	if not exp.ref then
+		if isatoom(exp) then
+			exp.ref = X('~' .. van.v)
+		else
+			--error('UHH')
+			exp.ref = X('~' .. maakvar())
+		end
+		van.exp = ref
+		naar.ref = ref
+	end
+
 	if isatoom(exp) then
 		if al[moes(van)] and exp.v == van.v then
 			al[moes(van)] = ref
 			ret = al[moes(van)]
-			ret.ref = ref
+			ret.ref = assert(ref)
 
 		elseif exp.v == van.v then
 			if isexp(naar) then
-				al[moes(van)] = ref
+				al[moes(van)] = assert(ref)
 			--naar.ref = assert(ref)
 				--print(ret, naar)
 			end
@@ -147,7 +159,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 			t[i] = substitueerzuinig(v, van, naar, maakvar, al)
 		end
 		--t.ref = X('~'..maakvar())
-		t.ref = exp.ref
+		t.ref = assert(exp.ref, 'exp heeft geen ref: '..moes(exp))
 		ret = t
 	end
 	--van.ref = ref
@@ -194,6 +206,6 @@ if test then
 	local s = X('/', '1', '2')
 	local b = substitueerzuinig(a, X'a', s)
 	local _, tel = string.gsub(moes(b), "/", "")
-	assert(tel == 1, e2s(b))
+	assert(tel == 1, moes(b))
 	--assert(b[2].exp == s, e2s(b))
 end

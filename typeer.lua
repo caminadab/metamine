@@ -248,7 +248,7 @@ function typeer(exp)
 		return exp[1]
 	end
 
-	for i=1,5 do
+	--for i=1,1 do
 
 	-- rest van de types
 	local T = {}
@@ -418,7 +418,7 @@ function typeer(exp)
 		end
 	end
 
-	end -- for i=1,5
+	--end -- for i=1,5
 
 	-- is alles nu getypeerd?
 	for exp in boompairs(exp) do

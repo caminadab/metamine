@@ -92,24 +92,27 @@ function controle(exp, maakvar)
 	local al = {}
 
 	function mkstat(stat, ret)
-		if verbozeIntermediair then
-			print('  '..combineer(stat))
-		end
 		stat.loc = exp.loc
 		--stat.ref = ret.ref
 		local val = stat[2]
+		if verbozeIntermediair then
+			print('  '..combineer(stat)..'  '..(val.ref and val.ref.v or ''))
+		end
 		--print(e2s(stat), val.ref)
+		if not val.ref then
+			--val.ref = X('~'..maakvar())
+		end
 		if val.ref then
 			--error(val.ref)
 			--al[ret.v] = val.ref
 			al[val.ref.v] = stat[1]
 				assert(isatoom(stat[1]))
-			print(e2s(stat), e2s(stat[1]))
-			print('REG:', val.ref.v, e2s(stat[1]))
+			--print(e2s(stat), e2s(stat[1]))
+			--print('REG:', val.ref.v, e2s(stat[1]))
 			--al[ret.v] = assert(stat[2].ref, 'statement heeft geen referentiecode: '..e2s(stat))
 		end
 		if not val.ref and isfn(val) then
-			error('geen referentie voor '..e2s(val))
+			--error('geen referentie voor '..e2s(val))
 		end
 		table.insert(blok.stats, stat)
 		return ret
@@ -140,6 +143,8 @@ function controle(exp, maakvar)
 			local bfn = maakblok(naam, {}, X('ret', '9999999'))
 			local b = blok
 			blok = bfn
+			al[ret.v] = stat[2]
+			stat[2].ref = exp.ref
 			local res = con(waarde)
 			blok.epiloog[1] = res
 			graaf:punt(bfn)
@@ -217,13 +222,15 @@ function controle(exp, maakvar)
 				fw[i] = arg(v)
 			end
 			stat.loc = exp.loc
-			stat[2].ref = exp.ref
+			--stat[2].ref = exp.ref
 
-			if exp.ref then
-				al[exp.ref] = stat
-			end
+			--assert(exp.ref, e2s(stat)..' heeft geen referentie')
+			--if exp.ref then
+			--	al[exp.ref] = stat
+			--end
 
 			--print('NORMAAL', combineer(stat))
+			stat[2].ref = exp.ref
 			mkstat(stat, ret)
 		end
 

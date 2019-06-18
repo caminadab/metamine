@@ -1,10 +1,4 @@
-;uit = itoa(atoi("100") + 23)
-;uit = Σ 0 .. 100
-;uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(looptijd + 3)))))))
 uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(looptijd + 3)))))))
-;app = sluit(schrijf(stduit, uit)) + 3
-;uit = "hoi"
-
 
 atoi = b → i
 	; negatief?
