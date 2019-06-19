@@ -93,6 +93,7 @@ function substitueer(exp, van, naar)
 end
 
 function substitueerzuinig(exp, van, naar, maakvar, al)
+	if S then S = S + 1 end
 	--do return substitueer(exp, van, naar) end
 	--local m = moes(van)..'_'..moes(naar)
 	al = al or {}
@@ -204,7 +205,7 @@ sym.stop = X'stop'
 if test then
 	local a = X('+', 'a', 'a')
 	local s = X('/', '1', '2')
-	local b = substitueerzuinig(a, X'a', s)
+	local b = substitueerzuinig(a, X'a', s, maakvars())
 	local _, tel = string.gsub(moes(b), "/", "")
 	assert(tel == 1, moes(b))
 	--assert(b[2].exp == s, e2s(b))

@@ -346,6 +346,7 @@ function oplos(exp,voor)
 			eqs[eq] = true
 		end
 
+		S = 0
 		-- herschrijf
 		--   a = f(a')
 		-- naar
@@ -541,6 +542,7 @@ function oplos(exp,voor)
 			end
 			exp2naam = n2e
 		end
+		print('aantal subcalls = ', S)
 
 		--[[
 		-- nog ff sneaken

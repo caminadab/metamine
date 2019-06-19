@@ -20,7 +20,7 @@ start:
 <- f
 
 f:
-	y := arg 0
+	y := _arg 0
 	ret := y + 1
 -> start
 <- start
@@ -79,6 +79,9 @@ function controle(exp, maakvar)
 
 	local function arg(exp)
 		local arg
+		if exp.v and exp.v:sub(1,1) == '~' then
+			error'NEE'
+		end
 		if isfn(exp) and fn(exp) == '[]' then
 			arg = con(exp)
 		elseif isfn(exp) then
@@ -86,10 +89,12 @@ function controle(exp, maakvar)
 		else
 			arg = con(exp)
 		end
+		arg.ref = exp.ref
 		return arg
 	end
 
 	local al = {}
+	setmetatable(al, {__newindex = function (...) print(...) ; rawset(...); print(debug.traceback()) end})
 
 	function mkstat(stat, ret)
 		stat.loc = exp.loc
@@ -102,10 +107,14 @@ function controle(exp, maakvar)
 		if not val.ref then
 			--val.ref = X('~'..maakvar())
 		end
-		if val.ref then
+		-- TODO WAT IS AL?
+		-- TODO VERKEERD GEZET
+		-- TODO HOI
+		if val.ref and not al[val.ref.v] then
 			--error(val.ref)
 			--al[ret.v] = val.ref
-			al[val.ref.v] = stat[1]
+			al[val.ref.v] = stat
+			print('REF', val.ref.v, e2s(stat))
 				assert(isatoom(stat[1]))
 			--print(e2s(stat), e2s(stat[1]))
 			--print('REG:', val.ref.v, e2s(stat[1]))
@@ -124,7 +133,8 @@ function controle(exp, maakvar)
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 
-		if isatoom(exp) and atoom(exp):sub(1,1) == '~' then
+		if isatoom(exp) and exp.v:sub(1,1) == '~' then
+			--error('ok'.. exp.v)
 			local stat = X(':=', ret, (assert(al[exp.v], 'niet geregistreerd: '..exp.v))) --assert(al[exp.v:sub(1,-2)], exp.v))
 			--error('OK')
 			stat.loc = exp.loc
@@ -144,16 +154,19 @@ function controle(exp, maakvar)
 			local bfn = maakblok(naam, {}, X('ret', '9999999'))
 			local b = blok
 			blok = bfn
-			al[ret.v] = stat[2]
-			print('FN AL', ret.v, e2s(stat))
-			stat[2].ref = assert(exp.ref)
+			al[ret.v] = naam
+			waarde.ref = naam
+			--print('FN AL', ret.v, e2s(stat))
+			--stat[2].ref = assert(exp.ref)
 			local res = con(waarde)
 			blok.epiloog[1] = res
 			graaf:punt(bfn)
 			blok = b
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
-			al[ret.v] = stat[2]
+			stat[2].ref = naam
+			al[ret.v] = naam
+			print('FUNCTIE', naam)
 			--table.insert(blok.stats, stat)
 			mkstat(stat, ret)
 
@@ -204,6 +217,7 @@ function controle(exp, maakvar)
 			stat[2] = X(tostring(exp))
 			stat.loc = exp.loc
 			mkstat(stat, ret)
+			stat[2].ref = exp.ref
 
 		-- a := b
 		elseif isatoom(exp) then
@@ -214,17 +228,33 @@ function controle(exp, maakvar)
 
 		-- normale statement (TODO sorteer)
 		else
+			local fw = {fn=exp.fn}
+			local ret = ret or X(maakvar())
+			local stat = X(':=', ret, fw)
+
 			if isfn(exp.fn) then
+			--error'OK'
+			print('FUNC', e2s(exp.fn))
+				al[exp.fn.ref] = fw.fn
 				fw.fn = arg(exp.fn)
+				fw.fn.ref = assert(exp.fn.ref)
+				print(fw.fn.ref)
+				--error('OK')
+				print('FN', e2s(fw.fn))
+			else
+				if exp.fn.v:sub(1,1) == '~' then
+					fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
+					print('jajajaja', exp.fn)
+				end
 			end
 			if exp[1] and fn(exp[1]) == ',' then
 				exp = exp[1]
 			end
 			for i,v in ipairs(exp) do
 				fw[i] = arg(v)
+				fw[i].ref = v.ref
 			end
 			stat.loc = exp.loc
-			--stat[2].ref = exp.ref
 
 			--assert(exp.ref, e2s(stat)..' heeft geen referentie')
 			--if exp.ref then

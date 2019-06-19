@@ -1,2 +1,2 @@
-f = x → x + 1
-uit = f (f 100)
+;f = x → x + 1
+uit = succ(succ(100))

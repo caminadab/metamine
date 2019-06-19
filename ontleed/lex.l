@@ -149,7 +149,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "!="					{ return ISN; }
 
 "als"					{ return ALS; }
-"if"					{ return IF; }
+"if"					{ return ALS; }
 "dan"					{ return DAN; }
 "then"					{ return DAN; }
 "anders"			{ return ANDERS; }
