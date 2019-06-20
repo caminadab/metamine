@@ -176,7 +176,7 @@ function naarjavascript(app)
 		--t[#t+1] = 
 	end
 
-	for blok in pairs(app.punten) do
+	for blok in spairs(app.punten) do
 		local naam = blok.naam.v
 		if blok.naam.v:sub(1,2) == 'fn' then
 			t[#t+1] = 'function '..naam..'(_argA, _argB, _argC) {'

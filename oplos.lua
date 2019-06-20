@@ -542,7 +542,7 @@ function oplos(exp,voor)
 			end
 			exp2naam = n2e
 		end
-		print('aantal subcalls = ', S)
+		--print('aantal subcalls = ', S)
 
 		--[[
 		-- nog ff sneaken
