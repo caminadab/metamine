@@ -99,8 +99,8 @@ local immjs = {
 
 	
 	-- LIB
-	['tekst'] = 'toString(X)',
-	['print'] = 'print(X)',
+	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
+	['print'] = 'console.log(X)',
 }
 
 function naarjavascript(app)

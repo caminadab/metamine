@@ -9,8 +9,6 @@ bieb = {
 	puts = true,
 	call = true,
 
-	looptijd = 0,
-
 	-- lua
 	['print'] = function(a) if opt.L then print() end; print(string.char(table.unpack(a))) ; return 0; end,
 	

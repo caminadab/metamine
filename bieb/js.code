@@ -1,6 +1,8 @@
 uit: tekst
 html: tekst
 
+looptijd = 0
+
 app = print(tekst(uit))
 
 ;canvasid.
