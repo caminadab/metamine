@@ -92,7 +92,7 @@ local immjs = {
 	-- lijst
 	['#'] = 'X.length',
 	['som'] = 'X.reduce((a,b) => a + b, 0)',
-	['..'] = '[...Array(Math.abs(Y-X)).keys()].map(a => X > Y? a + X : X + Y - 1 - a)',
+	['..'] = 'Array.from({length: Math.abs(Y-X)}).map(a => X > Y? a + X : X + Y - 2 - a)',
 
 	-- func
 	['map'] = 'X.map(Y)',

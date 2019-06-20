@@ -271,6 +271,9 @@ if opt.javascript then
 	uit = naarjavascript(cfg)
 	file('a.js', uit)
 	print(uit)
+	if opt.d then
+		os.execute('js a.js')
+	end
 	return
 end
 
