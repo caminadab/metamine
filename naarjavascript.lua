@@ -118,7 +118,7 @@ function naarjavascript(app)
 			local c = exp[3] and exp[3].v
 
 			if isatoom(exp) then
-				t[#t+1] = string.format('%s%s = %s;', tabs, naam, exp.v)
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, exp.v)
 			elseif immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
@@ -129,11 +129,11 @@ function naarjavascript(app)
 				cmd = a and cmd:gsub('_X_', a) or cmd
 				cmd = b and cmd:gsub('_Y_', b) or cmd
 				cmd = c and cmd:gsub('_Z_', c) or cmd
-				t[#t+1] = string.format('%s%s = %s;', tabs, naam, cmd)
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, cmd)
 			elseif bieb[f] then
-				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam, f, table.concat(map(exp, function(a) return a.v end), ','))
+				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			elseif true then -- TODO check lijst
-				t[#t+1] = string.format('%s%s = %s[%s];', tabs, naam, f, table.concat(map(exp, function(a) return a.v end), ','))
+				t[#t+1] = string.format('%s%s = %s[%s];', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			else
 				t[#t+1] = string.format(tabs .. "throw 'onbekende functie: ' + " .. f .. ";")
 			end

@@ -12,7 +12,7 @@ i = j + j + j + j + j + j + j + j + j + j
 j = k + k + k + k + k + k + k + k + k + k 
 k = l + l + l + l + l + l + l + l + l + l 
 l = m + m + m + m + m + m + m + m + m + m 
-m = n + n + n + n + n + n + n + n + n + n + z(3) 
+m = n + n + n + n + n + n + n + n + n + n
 n = o + o + o + o + o + o + o + o + o + o 
 o = p + p + p + p + p + p + p + p + p + p
 p = q + q + q + q + q + q + q + q + q + q
@@ -26,5 +26,3 @@ w = x + x + x + x + x + x + x + x + x + x
 x = y + y + y + y + y + y + y + y + y + y
 y = z + z + z + z + z + z + z + z + z + z
 z = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
-
-z = succ

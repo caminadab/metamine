@@ -76,11 +76,15 @@ function controle(exp, maakvar)
 	graaf:punt(blok)
 
 	local con
+	local al = {}
+	--setmetatable(al, {__newindex = function (...) print(...) ; rawset(...); print(debug.traceback()) end})
 
 	local function arg(exp)
 		local arg
 		if exp.v and exp.v:sub(1,1) == '~' then
-			error'NEE'
+			--error'NEE'
+			--print('ARG AL', exp.v)
+			return al[exp.v]
 		end
 		if isfn(exp) and fn(exp) == '[]' then
 			arg = con(exp)
@@ -92,9 +96,6 @@ function controle(exp, maakvar)
 		arg.ref = exp.ref
 		return arg
 	end
-
-	local al = {}
-	setmetatable(al, {__newindex = function (...) print(...) ; rawset(...); print(debug.traceback()) end})
 
 	function mkstat(stat, ret)
 		stat.loc = exp.loc
@@ -111,10 +112,12 @@ function controle(exp, maakvar)
 		-- TODO VERKEERD GEZET
 		-- TODO HOI
 		if val.ref and not al[val.ref.v] then
+			--print(val.ref.v .. ' -> '..e2s(stat[1]))
+			--print('REF', val.ref.v, e2s(stat[1]))
 			--error(val.ref)
 			--al[ret.v] = val.ref
-			al[val.ref.v] = stat
-			print('REF', val.ref.v, e2s(stat))
+			al[val.ref.v] = stat[1]
+			--print(debug.traceback())
 				assert(isatoom(stat[1]))
 			--print(e2s(stat), e2s(stat[1]))
 			--print('REG:', val.ref.v, e2s(stat[1]))
@@ -154,8 +157,8 @@ function controle(exp, maakvar)
 			local bfn = maakblok(naam, {}, X('ret', '9999999'))
 			local b = blok
 			blok = bfn
-			al[ret.v] = naam
-			waarde.ref = naam
+			--al[ret.v] = naam
+			--waarde.ref = 
 			--print('FN AL', ret.v, e2s(stat))
 			--stat[2].ref = assert(exp.ref)
 			local res = con(waarde)
@@ -164,9 +167,8 @@ function controle(exp, maakvar)
 			blok = b
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
-			stat[2].ref = naam
+			stat[2].ref = exp.ref --naam
 			al[ret.v] = naam
-			print('FUNCTIE', naam)
 			--table.insert(blok.stats, stat)
 			mkstat(stat, ret)
 
@@ -224,6 +226,7 @@ function controle(exp, maakvar)
 			stat[2] = exp
 			stat.loc = exp.loc
 			--al[exp] = stat[2]
+			stat[2].ref = exp.ref
 			mkstat(stat, ret)
 
 		-- normale statement (TODO sorteer)
@@ -234,17 +237,14 @@ function controle(exp, maakvar)
 
 			if isfn(exp.fn) then
 			--error'OK'
-			print('FUNC', e2s(exp.fn))
-				al[exp.fn.ref] = fw.fn
+				--al[exp.fn] = fw.fn.ref
 				fw.fn = arg(exp.fn)
 				fw.fn.ref = assert(exp.fn.ref)
-				print(fw.fn.ref)
 				--error('OK')
-				print('FN', e2s(fw.fn))
 			else
 				if exp.fn.v:sub(1,1) == '~' then
 					fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
-					print('jajajaja', exp.fn)
+					--print('jajajaja', fw.fn, exp.fn.v)
 				end
 			end
 			if exp[1] and fn(exp[1]) == ',' then
@@ -252,7 +252,7 @@ function controle(exp, maakvar)
 			end
 			for i,v in ipairs(exp) do
 				fw[i] = arg(v)
-				fw[i].ref = v.ref
+				--fw[i].ref = v.ref
 			end
 			stat.loc = exp.loc
 
@@ -262,7 +262,7 @@ function controle(exp, maakvar)
 			--end
 
 			--print('NORMAAL', combineer(stat))
-			stat[2].ref = exp.ref
+			fw.ref = exp.ref -- TODO nodig?
 			mkstat(stat, ret)
 		end
 

@@ -114,8 +114,11 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 
 	-- maak ref voor exp
 	if not exp.ref then
+		-- TODO hoeven atomen inderdaad geen referentie?
 		if isatoom(exp) then
-			exp.ref = X('~' .. van.v)
+			if false then
+				exp.ref = X('~' .. exp.v)
+			end
 		else
 			--error('UHH')
 			exp.ref = X('~' .. maakvar())
@@ -128,7 +131,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		if al[moes(van)] and exp.v == van.v then
 			al[moes(van)] = ref
 			ret = al[moes(van)]
-			ret.ref = assert(ref)
+			--ret.ref = assert(ref)
 
 		elseif exp.v == van.v then
 			if isexp(naar) then

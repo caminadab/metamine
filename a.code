@@ -1,5 +1,6 @@
 uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(looptijd + 3)))))))
 
+; tekst -> integer
 atoi = b → i
 	; negatief?
   negatief = (b₀ = '-')
@@ -17,6 +18,7 @@ atoi = b → i
 	pos = 0 .. #tekens
   i = sign · Σ (pos map waarde)
 
+; integer -> tekst
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
   neg = als x < 0 dan "-" anders ""

@@ -5,10 +5,14 @@ require 'fout'
 
 local function waarde(a, env)
 	if isatoom(a) then
-		local w = tonumber(a.v) or env[a.v] or (a.v == '_arg' and "JA" or nil)
+		local w
+		if w == nil then w = tonumber(a.v) end
+		if w == nil then w = env[a.v] end
+		if w == nil then w = (a.v == '_arg' and "JA" or nil) end
 		if w == nil then 
 			error('onbekend: '..tostring(a.v))
 		end
+
 		a.w = w
 	end
 	assert(a.w ~= nil, 'onbekend: '..e2s(a))
@@ -72,7 +76,7 @@ local function doeblok(blok, env, ...)
 				w = func[args[1]]
 
 			else
-				local f = executiefout(stat.loc, 'onbekend index type: '..type(func))
+				local f = executiefout(stat.loc, 'onbekend index type: '..type(func)..' ('..e2s(stat)..')')
 				print()
 				print(fout2ansi(f))
 			end
@@ -89,7 +93,7 @@ local function doeblok(blok, env, ...)
 	local epi = blok.epiloog
 	if fn(epi) == 'ret' then
 		local a = env[blok.stats[#blok.stats][1].v]
-		if opt.L then print('ret '..a) end
+		if opt.L then print('ret '..tostring(a)) end
 		return a
 	elseif epi.v == 'stop' then
 		local a =  env[blok.stats[#blok.stats][1].v]
