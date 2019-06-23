@@ -81,7 +81,7 @@ entier: getal → int
 byte: int
 teken: int
 data: lijst byte
-tekst: lijst byte
+;tekst: lijst byte
 ;tekst: data ;lijst teken
 
 tijdstip : getal

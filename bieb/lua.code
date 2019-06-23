@@ -3,3 +3,4 @@
 ;stduit = iostduit
 app = print(tekst(uit))
 succ = succa → succa + 1
+looptijd = 0

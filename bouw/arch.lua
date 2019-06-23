@@ -8,12 +8,22 @@ function arch_x64(exp, types)
 		local isint = types[sub] and types[sub].v == 'int'
 		if fn(sub) == 'int' then
 			sub.fn = X('intd')
-		elseif types[sub.fn] and types[sub.fn]:issubtype('->') then
-			--error'ok'
+		elseif types[sub.fn] and (isfn(sub.fn) or (sub.fn.exp and isfn(sub.fn.exp))) and types[sub.fn]:issubtype('->') then
+			error('ja!'..e2s(sub.fn))
+			
 			--sub.fn = X(fn(sub)..'f')
 		elseif types[sub.fn] and types[sub.fn]:issubtype('lijst') then
 			--error'ok'
 			--sub.fn = X(fn(sub)..'f')
+			--sub.fn = X'999'
+			--sub.v = nil
+			--sub.fn,sub[1],sub[2] = X'_', sub.fn, sub[1]
+			--print('OK', e2s(sub))
+			--sub.fn = X'_'
+			print('ASDF', e2s(sub))
+			--sub[1] = sub.f
+			--sub[2] = sub[1]
+			--sub[1] = sub.fn
 		elseif isgetal and isfn(sub) and fops[fn(sub)] then
 			sub.fn = X(fn(sub)..'d')
 		elseif isint and isfn(sub) and iops[fn(sub)] then

@@ -93,6 +93,8 @@ local immjs = {
 	['#'] = 'X.length',
 	['som'] = 'X.reduce((a,b) => a + b, 0)',
 	['..'] = 'Array.from({length: Math.abs(Y-X)}).map(a => X > Y? a + X : X + Y - 2 - a)',
+	['_'] = 'X[Y]',
+	['call'] = 'X(Y)',
 
 	-- func
 	['map'] = 'X.map(Y)',
@@ -133,6 +135,7 @@ function naarjavascript(app)
 			elseif bieb[f] then
 				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			elseif true then -- TODO check lijst
+				print(f, f.ref)
 				t[#t+1] = string.format('%s%s = %s[%s];', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			else
 				t[#t+1] = string.format(tabs .. "throw 'onbekende functie: ' + " .. f .. ";")
@@ -198,14 +201,13 @@ if test then
 	local function moetzijn(broncode, waarde)
 		local exp = ontleed(broncode)
 		local types = typeer(exp)
-		local tussencode = controle(oplos(arch_x64(exp, types), 'uit'))
+		local tussencode = controle(oplos(arch_x64(exp, types), 'app'))
 		local a = naarjavascript(tussencode)
-		a = a .. "\nprint(A)"
 		file('a.js', a)
 		os.execute('js a.js > a.out')
 		local b = file('a.out'):sub(1,-2)
 		assert(b == waarde, 'was '..b..' maar moest zijn '..waarde)
 	end
 
---	moetzijn("uit = 1 + 1", '2')
+	moetzijn("uit = 1 + 1", '2')
 end

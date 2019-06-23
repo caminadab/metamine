@@ -145,6 +145,7 @@ function metagraaf:topologisch()
 end
 
 -- hyperpijlen naar doel
+-- O(n)
 local function naar(self,doel)
 	local pijl = nil
 	return function()
@@ -208,6 +209,7 @@ function metagraaf:punt(punt)
 end
 
 -- pijlen naar doel
+-- O(m)
 function metagraaf:naar(doel)
 	local hoek = nil
 	return function()
@@ -224,6 +226,7 @@ function metagraaf:naar(doel)
 end
 
 -- hyperpijlen van bron
+-- O(m)
 function metagraaf:van(bron)
 	local pijl = nil
 	return function()

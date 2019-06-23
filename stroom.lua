@@ -2,8 +2,9 @@ require 'func'
 
 local metastroom = {}
 
--- is er, zonder alle pijlen te vervullen, een route van bron naar doel mogelijk?
+-- is er een route van 'van' naar 'naar' mogelijk?
 -- zoekt achterstevoren
+-- O(n·m)
 function metastroom:stroomopwaarts(van, naar)
 	--print()
 	--print('# start')

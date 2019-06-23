@@ -518,13 +518,17 @@ function oplos(exp,voor)
 		--TODOlocal val = voor
 		local val = X(voor)--X'uit'
 		local exp2naam = {}
-
-		local exp2naam = {}
+		-- sets van exps, op naam
+		local naam2exp = {}
+		
+		-- O(diepte · sz)
 		for i=#substs,1,-1 do
 			local sub = pijl2subst[substs[i]]
 			local naam,exp = sub[1],sub[2]
 			local val0 = val
 			local n
+			naam2exp[naam] = naam2exp[naam] or {}
+			--naam2exp[naam][exp] = true
 			val, n = substitueerzuinig(val0, naam, exp, maakvar)
 			val.loc = assert(exp.loc or nergens)
 			--exp2naam[val0] = naam

@@ -57,6 +57,7 @@ Opties:
     -R                genereer uitgebreid rapport
 
     -A                print syntaxinformatie
+    -R                print architectuurspecifieke boom
     -G                print kennisgraaf
     -K                print voorgekauwde (opgeloste) kennis
 
@@ -192,6 +193,10 @@ assert(asb, 'syntaxfout')
 
 -- machinespecifieke typechecker
 local mach = arch_x64(asb, typeer(asb))
+if opt.R then
+	print('=== ARCH ===')
+	print(e2s(mach))
+end
 
 -- typeer!
 --local function gekleurd(x, kleur)
