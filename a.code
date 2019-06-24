@@ -1,4 +1,4 @@
-uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(looptijd + 3)))))))
+uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
 
 ; tekst -> integer
 atoi = b → i

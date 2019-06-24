@@ -92,7 +92,9 @@ function substitueer(exp, van, naar)
 	end
 end
 
+Al = {}
 function substitueerzuinig(exp, van, naar, maakvar, al)
+	al = Al or al or {}
 	local moezen = exp.moezen
 
 	local function maakref(exp)
@@ -117,6 +119,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		end
 		if not isatoom(exp) then
 			exp.ref = maakref(exp)
+			exp.ref.exp = exp
 		end
 		table.insert(moezen[m], exp)
 	end
@@ -128,11 +131,13 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		if not next(moezen[m]) then moezen[m] = nil end
 	end
 
+	if not van.ref then van.ref = maakref(van) end
+	if not naar.ref then naar.ref = maakref(naar) end
+
 	if not moezen then
 		moezen = {}
-		for sub in boompairs(exp) do
+		for sub in boompairsbfs(exp) do
 			link(sub)
-			sub.ref = maakref(sub)
 		end
 	end
 	exp.moezen = moezen
@@ -141,21 +146,35 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		return exp, 0
 	end
 
+	-- hier gaan we!
 	for i, sub in ipairs(moezen[moes(van)]) do
 		ontlink(sub, i)
-		if i == 1 or isatoom(sub) then
-			local ref = sub.ref
+		-- lang uitschrijven
+		if i == 1 or isatoom(naar) then
+			local ref = van.ref --sub.ref or van.ref
 			assign(sub, naar)
+			if not al[ref.v] then
+			print('REF', ref.v)--, e2s(sub))
+			al[ref.v] = ref
+			end
+
 			sub.ref = ref
+			ref.exp = sub
 			naar.ref = ref
+			van.exp = ref
 			for ultrasub in boompairs(sub) do
 				ultrasub.moes = nil
-				if isfn(ultrasub) then
-					link(ultrasub)
-				end
+				link(ultrasub)
 			end
+
+		-- geen referentie!
+		elseif not naar.ref then
+			assign(sub, naar)
+			print('geen ref!', e2s(naar))
+
+		-- afkorten
 		else
-			assign(sub, assert(naar.ref, 'missende ref voor '..e2s(naar)))
+			assign(sub, naar.ref)
 		end
 	end
 	return exp
