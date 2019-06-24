@@ -24,6 +24,21 @@ require 'bouw.codegen'
 require 'bouw.assembleer'
 require 'bouw.elf'
 
+-- installeer profiler
+local aantal = {}
+local D = debug.getinfo
+function trace()
+	local info = D(2, "Sl")
+	local loc = info.source .. "@" .. info.currentline
+	local a = aantal[loc]
+	if not a then
+		aantal[loc] = 1
+	else
+		aantal[loc] = a + 1
+	end
+end
+--debug.sethook(trace, "l")
+
 opt,bronnen = getopt({...}, "u")
 
 for i,bron in pairs(bronnen) do
@@ -244,6 +259,7 @@ end
 -- oude hoge JS
 if opt.javascript and false then
 	uit = naarjavascript(uit)
+
 	file('a.js', uit)
 	print(uit)
 	return
@@ -274,6 +290,21 @@ end
 -- nieuwe lage JS
 if opt.javascript then
 	uit = naarjavascript(cfg)
+	debug.sethook()
+	local t = {}
+	for i=1,10 do
+		local max = 0
+		local maxloc = 'a'
+		for loc, num in pairs(aantal) do
+			if num > max then
+				maxloc = loc
+				max = num
+			end
+		end
+		print('trace', maxloc, max)
+		aantal[maxloc] = nil
+	end
+
 	file('a.js', uit)
 	print(uit)
 	if opt.d then
@@ -319,4 +350,3 @@ if doemeteen then
 	print('== START ==')
 	os.execute('./a.elf')
 end
-

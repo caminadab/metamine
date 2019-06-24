@@ -225,12 +225,14 @@ function metastroom:maglink(pijl_of_van, naar)
 	end
 
 	-- zit hij er al in?
+	--[[
 	for alpijl in pairs(self.pijlen) do
 		-- TODO kijk ook naar andere bronnen
 		if next(alpijl.van) == next(pijl.van) and pijl.naar == alpijl.naar then
 			return false
 		end
 	end
+	--]]
 
 	return true
 end
@@ -267,6 +269,16 @@ function metastroom:link(pijl_of_van, naar)
 		end
 	end
 
+	-- werk van bij
+	for bron in pairs(pijl.van) do
+		self.van2pijl[bron] = self.van2pijl[bron] or {}
+		self.van2pijl[bron][pijl] = true
+	end
+
+	-- werk naar bij
+	self.naar2pijl[pijl.naar] = self.naar2pijl[pijl.naar] or {}
+	self.naar2pijl[pijl.naar][pijl] = true
+
 	-- registreer punten
 	self.punten[naar] = true
 	for bron in pairs(van) do
@@ -287,6 +299,22 @@ function metastroom:ontlink(pijl_of_van, naar)
 		van = pijl.van
 		naar = pijl.naar 
 	end
+
+	-- werk van bij
+	for bron in pairs(pijl.van) do
+		self.van2pijl[bron][pijl] = nil
+		if not next(self.van2pijl[bron]) then
+			self.van2pijl[bron] = nil
+		end
+	end
+
+	-- werk naar bij
+	self.naar2pijl[pijl.naar][pijl] = nil
+	self.naar2pijl[pijl.naar] = self.naar2pijl[pijl.naar] or {}
+	if not next(self.naar2pijl[pijl.naar]) then
+		self.naar2pijl[pijl.naar] = nil
+	end
+
 
 	self.pijlen[pijl] = nil
 end
@@ -322,8 +350,22 @@ function metastroom:naar(doel)
 	end
 end
 
--- hyperpijlen van bron
 function metastroom:van(bron)
+	if not self.van2pijl[bron] then
+		return function() return nil end
+	end
+	return pairs(self.van2pijl[bron])
+end
+
+function metastroom:naar(bron)
+	if not self.naar2pijl[bron] then
+		return function() return nil end
+	end
+	return pairs(self.naar2pijl[bron])
+end
+
+-- hyperpijlen van bron
+function metastroom:van0(bron)
 	local pijl = nil
 	return function()
 		while next(self.pijlen, pijl) do
@@ -348,6 +390,8 @@ function stroom()
 		punten = {},
 		pijlen = {},
 		begin = {},
+		van2pijl = {},
+		naar2pijl = {},
 	}
 
 	setmetatable(stroom, stroommeta)

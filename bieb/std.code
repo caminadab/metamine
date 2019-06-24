@@ -70,6 +70,7 @@ set: verzameling
 
 ; util
 abs: getal → getal
+absd: getal → getal
 max: (getal,getal) → getal
 min: (getal,getal) → getal
 entier: getal → int

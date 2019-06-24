@@ -54,10 +54,15 @@ local immjs = {
 	['+i'] = 'X + Y',
 	['+'] = 'X + Y',
 	['-'] = 'X - Y',
+	['-d'] = 'X - Y',
 	['*'] = 'X * Y',
+	['*d'] = 'X * Y',
 	['/'] = 'X / Y',
+	['/d'] = 'X / Y',
 	['mod'] = 'X % Y',
+	['modi'] = 'X % Y',
 	['^'] = 'Math.pow(X, Y)',
+	['^i'] = 'Math.pow(X, Y)',
 
 	-- cmp
 	['>'] = 'X > Y',
@@ -83,6 +88,8 @@ local immjs = {
 	['max'] = 'Math.max(X,Y)',
 	['entier'] = 'Math.floor(X)',
 	['abs'] = 'Math.abs(X)',
+	['absd'] = 'Math.abs(X)',
+	['absi'] = 'Math.abs(X)',
 	['sign'] = '(X > 0 ? 1 : -1)',
 
 	-- exp
@@ -95,6 +102,7 @@ local immjs = {
 	['..'] = 'Array.from({length: Math.abs(Y-X)}).map(a => X > Y? a + X : X + Y - 2 - a)',
 	['_'] = 'X[Y]',
 	['call'] = 'X(Y)',
+	['vanaf'] = 'X.slice(Y, X.length)',
 
 	-- func
 	['map'] = 'X.map(Y)',
@@ -136,7 +144,7 @@ function naarjavascript(app)
 				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			elseif true then -- TODO check lijst
 				print(f, f.ref)
-				t[#t+1] = string.format('%s%s = %s[%s];', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
+				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			else
 				t[#t+1] = string.format(tabs .. "throw 'onbekende functie: ' + " .. f .. ";")
 			end

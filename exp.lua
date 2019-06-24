@@ -67,8 +67,7 @@ end
 function expmoes(exp)
 	if exp.moes then
 		-- niets...
-		assert(type(exp.moes) == 'string')
-		--exp.moes = tostring(exp.moes)
+		--assert(type(exp.moes) == 'string')
 	elseif isatoom(exp) then
 		exp.moes = exp.v
 	else

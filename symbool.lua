@@ -108,7 +108,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 			--error('UHH')
 			ref = X('~' .. maakvar())
 		end
-		van.exp = ref
+		--van.exp = ref
 		naar.ref = ref
 	end
 

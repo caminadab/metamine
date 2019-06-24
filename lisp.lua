@@ -2,7 +2,7 @@ require 'lex'
 require 'util'
 
 function isatoom(exp)
-	if type(exp) ~= 'table' then see(exp); print(debug.traceback()) ; return true end
+	--if type(exp) ~= 'table' then see(exp); print(debug.traceback()) ; return true end
 	return exp.v ~= nil
 end
 

@@ -35,6 +35,7 @@ bieb = {
 	min = math.min,
 	int = math.floor,
 	abs = math.abs,
+	absd = math.abs,
 	absi = math.abs,
 	plafond = math.ceil,
 	["'"] = true,
