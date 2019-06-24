@@ -7,10 +7,11 @@ function componeer(...)
 	return function (...)
 		local r = {...}
 		for i,fn in ipairs(fns) do
-			r = table.pack(fn(table.unpack(r)))
+
+			r = {fn(...)}
 			if r[1] == nil then return nil end
 		end
-		return table.unpack(r)
+		return unpack(r)
 	end
 end
 

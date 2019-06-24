@@ -102,7 +102,7 @@ moes = expmoes
 function assign(b, a)
 	b.moes = nil
 	local keys = {}
-	for k in pairs(a) do keys[k] = true end
+	for k in pairs(b) do keys[k] = true end
 	for k in pairs(keys) do b[k] = nil end
 	for k,v in pairs(a) do b[k] = v end
 end

@@ -345,7 +345,7 @@ bieb = {
 			return a
 		else
 			a = tostring(a)
-			return table.pack(string.byte(a,1,#a))
+			return {string.byte(a,1,#a)}
 		end
 		--[[
 		local t

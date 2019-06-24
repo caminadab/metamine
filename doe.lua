@@ -64,7 +64,7 @@ local function doeblok(blok, env, ...)
 			if type(func) == 'function' then
 				--w = func(able.unpack(args))
 				local ok
-				ok, w = pcall(func, table.unpack(args))
+				ok, w = xpcall(func, function(f) return f ..'\n' .. debug.traceback() end, table.unpack(args))
 				if not ok then
 					local err = w
 					local f = executiefout(stat.loc, err)

@@ -11,6 +11,11 @@ local function combineerR(sexp, tt)
 	if isatoom(sexp) then
 		insert(tt, sexp.v)
 	else
+		if not sexp.fn then
+			see(sexp)
+			print(type(sexp))
+			for k,v in pairs(sexp) do print(k,v) end
+		end
 		local op = sexp.fn.v
 
 		-- lijst/set

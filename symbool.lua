@@ -93,6 +93,51 @@ function substitueer(exp, van, naar)
 end
 
 function substitueerzuinig(exp, van, naar, maakvar, al)
+	local moezen = exp.moezen
+
+	local function link(exp)
+		local m = moes(exp)
+		if not moezen[m] then
+			moezen[m] = {}
+		end
+		table.insert(moezen[m], exp)
+	end
+
+	function ontlink(exp, i)
+		local m = moes(exp)
+		if not moezen[m] then return end
+		table.remove(moezen[m], i)
+		if not next(moezen[m]) then moezen[m] = nil end
+	end
+
+	if not moezen then
+		moezen = {}
+		for sub in boompairs(exp) do
+			link(sub)
+		end
+	end
+	exp.moezen = moezen
+
+	if not moezen[moes(van)] then
+		return exp, 0
+	end
+
+	for i, sub in ipairs(moezen[moes(van)]) do
+		ontlink(sub, i)
+		if i == 1 or isatoom(sub) then
+			assign(sub, naar)
+			for ultrasub in boompairs(sub) do
+				ultrasub.moes = nil
+				link(ultrasub)
+			end
+		else
+			assign(sub, X'~1')
+		end
+	end
+	return exp
+end
+
+function substitueerzuinig(exp, van, naar, maakvar, al)
 	if S then S = S + 1 end
 	--do return substitueer(exp, van, naar) end
 	--local m = moes(van)..'_'..moes(naar)
