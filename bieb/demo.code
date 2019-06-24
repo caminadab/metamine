@@ -1,2 +1,1 @@
-app = setinnerhtml(getelementbyid "uit", "<canvas></canvas>")
-
+app = alert(tekst(uit))

@@ -108,7 +108,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 			end
 			exp.ref = ref
 		end
-		print('REF', e2s(exp), ref)
+		--print('REF', e2s(exp), ref)
 		return ref
 	end
 
@@ -149,14 +149,14 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 
 	-- hier gaan we!
 	local vannen = moezen[moes(van)]
-	print(moes(van)..' is '..#vannen..' keer gevonden')
+	--print(moes(van)..' is '..#vannen..' keer gevonden')
 	for i, sub in ipairs(vannen) do
 		ontlink(sub, i)
 		-- lang uitschrijven
 		if i == 1 or isatoom(naar) then
 			local ref = van.ref --sub.ref or van.ref
 			assign(sub, naar)
-			print('UITSCHRIJF', moes(van), e2s(sub))
+			--print('UITSCHRIJF', moes(van), e2s(sub))
 			naar.ref = van.ref
 			if true or not al[ref.v] then
 			--print('REF', ref.v, e2s(naar), isatoom(naar))
@@ -183,12 +183,12 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		-- afkorten
 		else
 			assign(sub, naar.ref)
-			print('AFKORT', moes(van), e2s(sub))
+			--print('AFKORT', moes(van), e2s(sub))
 		end
 
-		print('EXP' ,e2s(exp))
+		--print('EXP' ,e2s(exp))
 	end
-		print('RET' ,e2s(exp))
+		--print('RET' ,e2s(exp))
 	return exp
 end
 
