@@ -95,10 +95,28 @@ end
 function substitueerzuinig(exp, van, naar, maakvar, al)
 	local moezen = exp.moezen
 
+	local function maakref(exp)
+		-- maak ref
+		local ref = exp.ref
+		if not ref then
+			if isatoom(exp) then
+				ref = X('~' .. exp.v)
+			else
+				ref = X('~' .. maakvar())
+			end
+			exp.ref = ref
+		end
+		--print('REF', e2s(exp), ref)
+		return ref
+	end
+
 	local function link(exp)
 		local m = moes(exp)
 		if not moezen[m] then
 			moezen[m] = {}
+		end
+		if not isatoom(exp) then
+			exp.ref = maakref(exp)
 		end
 		table.insert(moezen[m], exp)
 	end
@@ -114,6 +132,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		moezen = {}
 		for sub in boompairs(exp) do
 			link(sub)
+			sub.ref = maakref(sub)
 		end
 	end
 	exp.moezen = moezen
@@ -125,19 +144,24 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 	for i, sub in ipairs(moezen[moes(van)]) do
 		ontlink(sub, i)
 		if i == 1 or isatoom(sub) then
+			local ref = sub.ref
 			assign(sub, naar)
+			sub.ref = ref
+			naar.ref = ref
 			for ultrasub in boompairs(sub) do
 				ultrasub.moes = nil
-				link(ultrasub)
+				if isfn(ultrasub) then
+					link(ultrasub)
+				end
 			end
 		else
-			assign(sub, X'~1')
+			assign(sub, assert(naar.ref, 'missende ref voor '..e2s(naar)))
 		end
 	end
 	return exp
 end
 
-function substitueerzuinig(exp, van, naar, maakvar, al)
+function substitueerzuinig0(exp, van, naar, maakvar, al)
 	if S then S = S + 1 end
 	--do return substitueer(exp, van, naar) end
 	--local m = moes(van)..'_'..moes(naar)
