@@ -104,22 +104,24 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 			if isatoom(exp) then
 				ref = X('~' .. exp.v)
 			else
-				ref = X('~' .. maakvar())
+				--ref = X('~' .. maakvar())
 			end
 			exp.ref = ref
 		end
-		--print('REF', e2s(exp), ref)
+		print('REF', e2s(exp), ref)
 		return ref
 	end
 
 	local function link(exp)
+		--print('LINK', e2s(exp))
+		exp.moes = nil
 		local m = moes(exp)
 		if not moezen[m] then
 			moezen[m] = {}
 		end
 		if not isatoom(exp) then
 			exp.ref = maakref(exp)
-			exp.ref.exp = exp
+			--exp.ref.exp = exp
 		end
 		table.insert(moezen[m], exp)
 	end
@@ -131,8 +133,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		if not next(moezen[m]) then moezen[m] = nil end
 	end
 
-	if not van.ref then van.ref = maakref(van) end
-	if not naar.ref then naar.ref = maakref(naar) end
+	--if not naar.ref then naar.ref = maakref(naar) end
 
 	if not moezen then
 		moezen = {}
@@ -147,22 +148,29 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 	end
 
 	-- hier gaan we!
-	for i, sub in ipairs(moezen[moes(van)]) do
+	local vannen = moezen[moes(van)]
+	print(moes(van)..' is '..#vannen..' keer gevonden')
+	for i, sub in ipairs(vannen) do
 		ontlink(sub, i)
 		-- lang uitschrijven
 		if i == 1 or isatoom(naar) then
 			local ref = van.ref --sub.ref or van.ref
 			assign(sub, naar)
-			if not al[ref.v] then
-			print('REF', ref.v)--, e2s(sub))
-			al[ref.v] = ref
+			print('UITSCHRIJF', moes(van), e2s(sub))
+			naar.ref = van.ref
+			if true or not al[ref.v] then
+			--print('REF', ref.v, e2s(naar), isatoom(naar))
+			--al[ref.v] = ref
 			end
 
+			if not van.ref then
+				van.ref = maakref(van)
+			end
+			ref = van.ref
 			sub.ref = ref
 			ref.exp = sub
-			naar.ref = ref
 			van.exp = ref
-			for ultrasub in boompairs(sub) do
+			for ultrasub in boompairsdfs(sub) do
 				ultrasub.moes = nil
 				link(ultrasub)
 			end
@@ -175,8 +183,12 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		-- afkorten
 		else
 			assign(sub, naar.ref)
+			print('AFKORT', moes(van), e2s(sub))
 		end
+
+		print('EXP' ,e2s(exp))
 	end
+		print('RET' ,e2s(exp))
 	return exp
 end
 

@@ -57,4 +57,6 @@ if test then
 	verbozeIntermediair=true
 	verbozeWaarde=true
 	test("f = a → a + 1\nuit = f(-1)", 0)
+
+	error 'OK'
 end
