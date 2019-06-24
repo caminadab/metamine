@@ -1,4 +1,4 @@
-#!/usr/bin/lua
+#!/usr/bin/luajit
 package.path = package.path .. ";../?.lua"
 require 'exp'
 require 'rapporteer-syntax'

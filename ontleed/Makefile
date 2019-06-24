@@ -1,6 +1,6 @@
 linux: main.c taal.yy.c node.c lua.c test.c lex.yy.c
 	mkdir -p bin
-	gcc -Wall -Wno-unused -std=c11 -shared -I/usr/include/lua5.2 -o bin/ontleed.so -fPIC node.c lua.c taal.yy.c lex.yy.c test.c -Wno-multichar
+	gcc -Wall -Wno-unused -std=c11 -shared -I/usr/include/lua5.1 -o bin/ontleed.so -fPIC node.c lua.c taal.yy.c lex.yy.c test.c -Wno-multichar
 
 test: main.c node.c test.c taal.yy.h taal.yy.c lex.yy.h lex.yy.c
 	mkdir -p bin
@@ -9,7 +9,7 @@ test: main.c node.c test.c taal.yy.h taal.yy.c lex.yy.h lex.yy.c
 
 windows: main.c taal.yy.c node.c lua.c
 	mkdir -p bin
-	gcc -std=c99 -ggdb -fPIC -shared -I/usr/include/lua5.2 -o bin/ontleed.dll main.c taal.yy.c node.c lua.c -llua test.c lex.yy.c
+	gcc -std=c99 -ggdb -fPIC -shared -I/usr/include/lua5.1 -o bin/ontleed.dll main.c taal.yy.c node.c lua.c -llua test.c lex.yy.c
 
 wintest: main.c taal.yy.c node.c
 	gcc -std=c99 -ggdb -o bin/test main.c taal.yy.c lex.yy.c node.c test.c -lm
