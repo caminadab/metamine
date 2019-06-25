@@ -145,7 +145,7 @@ function controle(exp, maakvar)
 		
 		-- functie
 		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
-			assert(exp.ref)
+			--assert(exp.ref)
 			--al = {}
 			local naam = X(maakfunc())
 			local waarde = exp[1]
@@ -239,7 +239,7 @@ function controle(exp, maakvar)
 			--error'OK'
 				--al[exp.fn] = fw.fn.ref
 				fw.fn = arg(exp.fn)
-				fw.fn.ref = assert(exp.fn.ref)
+				fw.fn.ref = exp.fn.ref -- assert(exp.fn.ref)
 				--error('OK')
 			else
 				if exp.fn.v:sub(1,1) == '~' then

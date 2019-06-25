@@ -45,7 +45,7 @@ Makkelijk, veilig, snel.<br>
 @media (min-width: 600px) {
 	#uit {
 		width: calc(50% - 20px);
-		height: 70vh;
+		height: 300px;
 		font-width: bold;
 		background: #033;
 		display: inline;
@@ -289,7 +289,8 @@ canvas { background: #444; }
 			.then(x => x.json())
 			.then(j => {
 				onsuccess();
-				uit.innerHTML = eval(j.html);
+				eval(j.js);
+				//uit.innerHTML = j.js + '<h1>' + eval(j.js) + '</h1>';
 				setErrors(j.fouten);
 
 				/*var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
@@ -369,7 +370,7 @@ canvas { background: #444; }
 		},
   });
 	editor.setSize('50%', '60vh');
-	editor.setValue(`uit = Σ 0 .. 1000
+	editor.setValue(`uit = Σ 1 .. 1000
 `);
 
 	// editor.setSize(null, '500px');

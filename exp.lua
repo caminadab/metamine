@@ -65,7 +65,7 @@ function expmoesR(exp, t)
 end
 
 function expmoes(exp)
-	if exp.moes then
+	if false and exp.moes then
 		-- niets...
 		--assert(type(exp.moes) == 'string')
 	elseif isatoom(exp) then

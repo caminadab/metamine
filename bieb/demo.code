@@ -1,2 +1,3 @@
-app = setinnerhtml(getelementbyid "uit", "<canvas></canvas>")
-
+app = alert(tekst(uit))
+succ = xy → xy + 1
+looptijd = 0

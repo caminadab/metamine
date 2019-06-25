@@ -3,6 +3,7 @@ linux:
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
 	ln -sf ../bin/ontleed.so goo/ontleed.so
+	ln -sf ./bin/ontleed.so ontleed.so
 	ln -sf ../vt bin/vt
 	ln -sf ../doe bin/doe
 	
@@ -14,7 +15,7 @@ windows:
 	ln -sf ../doe bin/doe
 
 deploy:
-	scp -r goo/www/* pi:/var/www/blog/taal-0.1.1
+	scp -r goo/www/* pi:/var/www/html/
 
 #scp -r goo/* pi:/var/www/blog/taal-0.1.1
 

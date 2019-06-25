@@ -99,10 +99,11 @@ local immjs = {
 	-- lijst
 	['#'] = 'X.length',
 	['som'] = 'X.reduce((a,b) => a + b, 0)',
-	['..'] = 'Array.from({length: Math.abs(Y-X)}).map(a => X > Y? a + X : X + Y - 2 - a)',
+	['..'] = 'X < Y ? Array.from(new Array(Y-X), (x,i) => X + i) : Array.from(new Array(Y-X), (x,i) => Y - 1 - i)',
 	['_'] = 'X[Y]',
 	['call'] = 'X(Y)',
 	['vanaf'] = 'X.slice(Y, X.length)',
+	['alert'] = 'document.getElementById("uit").innerHTML = X',
 
 	-- func
 	['map'] = 'X.map(Y)',

@@ -2,6 +2,7 @@ require 'util'
 require 'ontleed'
 require 'typeer'
 require 'bouw.arch'
+require 'bouw.controle'
 require 'optimaliseer'
 require 'oplos'
 
@@ -16,7 +17,7 @@ function vertaal(code, doel)
 
 	local types,typeerfouten = typeer(asb)
 	local mach = arch_x64(asb, types)
-	local uit,oplosfouten = oplos(mach, "uit")
+	local uit,oplosfouten = oplos(mach, "app")
 	--local uit = optimaliseer(uit)
 	local fouten = cat(syntaxfouten, typeerfouten, oplosfouten)
 	local app = controle(uit, maakvar)
@@ -57,4 +58,6 @@ if test then
 	verbozeIntermediair=true
 	verbozeWaarde=true
 	test("f = a → a + 1\nuit = f(-1)", 0)
+
+	error 'OK'
 end

@@ -1,8 +1,9 @@
-#!/usr/bin/lua
+#!/usr/bin/luajit
 package.path = package.path..';../?.lua'
 
 require 'naarlua'
 require 'naarweb'
+require 'vertaal'
 require 'combineer'
 require 'rapporteer-syntax'
 require 'json'
@@ -40,23 +41,6 @@ end
 -- 
 -- de "fout" als los interpretabel object
 function vt(code)
-	local exp = ontleed(code)
-	exp.code = code
-	local syntaxfouten = {}
-	for exp in boompairs(exp) do
-		if exp.fout then -- TODO niet meer in boom
-			local syntaxfout = {
-				type = "syntax",
-				pos = {
-					ch = exp.loc.x1 - 1,
-					line = exp.loc.y1 - 1
-				},
-				waarom = exp.fout,
-				waarde = "?",
-			}
-			syntaxfouten[#syntaxfouten+1] = syntaxfout
-		end
-	end
 
 	local function jsloc(loc)
 		local jloc = {
@@ -72,73 +56,12 @@ function vt(code)
 		return jloc
 	end
 
-	local types,typeerfouten = typeer(exp)
-	
-	for i=1,#typeerfouten do
-		local fout = typeerfouten[i]
-		local waarom = 'typefout' --fout.msg
-		if fout.fmt then
-			-- {exp} is {istype} maar moet {moettype} zijn
-			-- links is %s, rechts is %s
-			local istype = string.format(
-				'<span class="loc" onclick=\'selecteer(%s)\'>%s</span>',
-				json.encode(isloc),
-				fout.istype
-			)
-			local moettype = '<span class="loc" onclick="selecteer(fout.moetloc)">'..fout.moettype..'</span>'
-
-			waarom = fout.fmt
-			--waarom = string.gsub(waarom, '{exp}', '<b>'..string.gsub(fout.exp, '%', '') ..'</b>')
-			--waarom = string.gsub(waarom, '{istype}', istype)
-			--waarom = string.gsub(waarom, '{moettype}', '<b>'..moettype..'</b>')
-		end
-		waarom = waarom or '<onbekende reden>'
-		typeerfouten[i] = {
-			type = "typeer",
-
-			pos = {
-				ch = fout.loc.x1 - 1,
-				line = fout.loc.y1 - 1,
-			},
-
-			loc = {
-				anchor = {
-					ch = fout.loc.x1 - 1,
-					line = fout.loc.y1 - 1,
-				},
-				head = {
-					ch = fout.loc.x2 - 1,
-					line = fout.loc.y2 - 1,
-				}
-			},
-			exp = fout.exp,
-			--exploc = fout.exp.loc,
-			waarom = waarom,
-			istype = fout.istype,
-			moettype = fout.moettype,
-			isloc = fout.isloc and jsloc(fout.isloc),
-			--moetloc = jsloc(fout.moetloc),
-		}
-	end
-
-	local waarde,oplosfouten
-
-	local html
-
-	if not typeerfouten or true then
-		waarde,oplosfouten = oplos(exp, 'uit')
-		waarde = optimaliseer(waarde)
-		html = naarjavascript(waarde)
-	end
-
-	-- foutje kan gebeuren
-	local fouten
-	if syntaxfouten or typeerfouten or oplosfouten then
-		fouten = cat(syntaxfouten, typeerfouten) --, oplosfouten or {})
-	end
+	local icode,fouten = vertaal(code, "demo")
+	local js = naarjavascript(icode)
+	local fouten = map(fouten, fout2html)
 
 	return {
-		html = html,
+		js = js,
 		fouten = fouten,
 	}
 end
@@ -166,12 +89,19 @@ function serveer(sock)
 	-- header
   coroutine.yield()
 	local line = sock:receive('*l')
+	if not line then
+		coroutine.yield()
+		line = sock:receive('*l')
+	end
 	local methode,pad = line:match("([^ ]*) ([^ ]*) ([^ ]*)")
 
 	while true do
-		coroutine.yield()
 		local line = sock:receive('*l')
-		if line == '' then
+		if not line then
+			coroutine.yield()
+			line = sock:receive('*l')
+		end
+		if not line or line == '' then
 			break
 		end
 		
@@ -185,8 +115,13 @@ function serveer(sock)
 	local inn
 	local uit
 	if len then
-		coroutine.yield()
+		--coroutine.yield()
 		inn = sock:receive(len)
+		if not inn then
+			coroutine.yield()
+			inn = sock:receive(len)
+		end
+		--print('INN', inn)
 	end
 
 	-- uitvoer, log (in), http statuscode
@@ -199,13 +134,13 @@ function serveer(sock)
 	-- VERTAAL!
 	if pad == '/vt' then
 		local internefout
-		local ok,j = xpcall(vt, debug.traceback, inn)
+		local ok,j = pcall(vt, inn)
 		if not ok then internefout = j end
 
 		if not ok then
 			print(internefout)
 			status = 500
-			uit = '<pre>'.."INTERNE FOUT!\n"..internefout..'</pre>'
+			uit = '"FOUT!"'--'e>'.."INTERNE FOUT!\n"..internefout..'</pre>'
 		else
 			status = 200
 			uit = json.encode(j) -- json(html, fouten)

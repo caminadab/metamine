@@ -155,7 +155,7 @@ function isoleer(eq,name)
 	end
 end
 
-if test then
+if false and test then
 	verboos = true
 	require 'ontleed'
 	assert(isoleer(ontleed('a = b')[1], X'b').v == 'a')
