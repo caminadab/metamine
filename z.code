@@ -1,0 +1,3 @@
+f = succ ∘ succ ∘ g
+g = x → x · 2
+uit = f(1)

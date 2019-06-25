@@ -1,11 +1,15 @@
 require 'exp'
 require 'combineer'
 require 'bouw.cfg'
+require 'bouw.link'
 
 local fmt = string.format
 
+-- registers voor argumenten van syscalls
 local sysregs = { 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9' }
+-- registers voor argumenten van abicalls
 local abiregs = { 'rdi', 'rsi', 'rdx', 'rcx', 'r8', 'r9'} -- r10 is static chain pointer in case of nested functions
+-- registers op volgorde van bruikbaarheid (~6 general purpose registers)
 local registers = { 'r12', 'r13', 'r14', 'r15', 'r10', 'r9', 'r8', 'rcx', 'rdx', 'rsi', 'rdi', 'rax' }
 local cmp = {
 	['>'] = 'g',
@@ -15,7 +19,6 @@ local cmp = {
 	['<='] = 'le',
 	['<'] = 'l',
 }
-
 
 local function inlinetekst(exp, opslag, loc, t)
 	local min,concat = math.min, table.concat
@@ -46,6 +49,17 @@ local function inlinetekst(exp, opslag, loc, t)
 	end
 end
 
+local immasm = {
+	['+i'] = 'mov rax, X\nmov rbx, Y\nadd rax, rbx\nmov R, rax',
+	['-i'] = 'mov rax, X\nmov rbx, Y\nsub rax, rbx\nmov R, rax',
+	['*i'] = 'mov rax, X\nmov rbx, Y\nimul rbx\nmov R, rax',
+	['/i'] = 'mov rax, X\nmov rbx, Y\nidiv rbx\nmov R, rax',
+	['+d'] = 'fld X\nfld Y\nfadd\nfstpq R',
+	['-d'] = 'fld X\nfld Y\nfsub\nfstpq R',
+	['*d'] = 'fld X\nfld Y\nfmul\nfstpq R',
+	['/d'] = 'fld X\nfld Y\nfdiv\nfstpq R',
+}
+
 function codegen(cfg)
 	if verbozeAsm then print(); print('=== ASSEMBLEERTAAL ===') end
 	-- naam -> opslag
@@ -71,7 +85,7 @@ function codegen(cfg)
 	t[#t+1] = [[
 .intel_syntax noprefix
 .text
-.global	_start
+.global	start
 
 .section .text
 ]]
@@ -168,7 +182,7 @@ function codegen(cfg)
 	-- genereer dan echt
 	local function blokgen(blok)
 		if blok.naam.v == 'start' then
-			t[#t+1] = '_start:'
+			t[#t+1] = 'start:'
 		else
 			t[#t+1] = blok.naam.v .. ':'
 		end
@@ -403,6 +417,8 @@ xor rax, rdx
 			elseif f == '-i' then
 				laad('rax', exp[1].v)
 				laad('rbx', exp[2].v)
+				sub(rax, rbx)
+				mov(naam, rax)
 				t[#t+1] = 'sub rax, rbx'
 				opsla(naam, 'rax', naam)
 
@@ -638,12 +654,12 @@ xor rax, rdx
 	end
 
 	for blok in pairs(cfg.punten) do
-		if blok.naam == 'start' then
+		if blok.naam.v == 'start' then
 			blokgen(blok)
 		end
 	end
 	for blok in spairs(cfg.punten) do
-		if blok.naam ~= 'start' then
+		if blok.naam.v ~= 'start' then
 			blokgen(blok)
 		end
 	end
@@ -653,24 +669,26 @@ xor rax, rdx
 end
 
 
-if test then
+if true or test then
 	require 'ontleed'
 	require 'bouw.blok'
+	require 'bouw.assembleer'
 
 	local code = [[
 start:
-	c := 1
-	d := 2
-	a := 3
-	e := (als c dan d anders a)
-	ga klaar
-
-klaar:
-	a := 1
+	b := 60
+	c := 3
+	a := b syscall c
 	stop
 ]]
-	local cfg = leescfg(code)
-	local asm = codegen(cfg)
+	local app = leescfg(code)
+	local asm = codegen(app)
 
+	local obj = assembleer(asm)
+	local elf = link(obj)
+	file('.test.elf', elf)
+	os.execute('chmod +x .test.elf')
+	print(os.execute('./.test.elf'))
+	os.remove('.test.elf')
 end
 

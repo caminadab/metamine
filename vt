@@ -22,7 +22,7 @@ require 'bouw.controle'
 require 'bouw.arch'
 require 'bouw.codegen'
 require 'bouw.assembleer'
-require 'bouw.elf'
+require 'bouw.link'
 
 -- installeer profiler
 local aantal = {}
@@ -344,7 +344,7 @@ local asm = codegen(cfg)
 if opt.S then
 	--file('a.s', asm)
 end
-local elf = elf(assembleer(asm, 'a'), 'a')
+local elf = link(assembleer(asm, 'a'), 'a')
 os.execute('chmod +x a.elf')
 if doemeteen then
 	print('== START ==')

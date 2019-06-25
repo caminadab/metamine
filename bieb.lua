@@ -13,6 +13,7 @@ bieb = {
 	['print'] = function(a) if opt.L then print() end; print(string.char(table.unpack(a))) ; return 0; end,
 	
 
+	syscall = function(a) error 'SYSCALL' end, 
 	xcb_connect = true,
 
 

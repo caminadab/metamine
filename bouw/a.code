@@ -1,8 +1,0 @@
-do
-	local fn
-
-	function fn(a)
-		return a + 1
-	end
-end
-print(fn(3))

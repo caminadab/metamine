@@ -16,6 +16,7 @@ owronly = 1
 ordwr = 2
 ocreat = 64
 
+succ = succa → succa + 1
 
 ; push
 app = schrijf(stduit, uit)
