@@ -206,15 +206,12 @@ if test then
 	require 'bouw.arch'
 	require 'ontleed'
 	require 'oplos'
+	require 'vertaal'
 
 	local function moetzijn(broncode, waarde)
-		local exp = ontleed(broncode)
-		local types = typeer(exp)
-		local tussencode = controle(oplos(arch_x64(exp, types), 'app'))
-		local a = naarjavascript(tussencode)
-		file('a.js', a)
-		os.execute('js a.js > a.out')
-		local b = file('a.out'):sub(1,-2)
+		local js = vertaal(broncode, "js")
+		local res = doejs(js)
+
 		assert(b == waarde, 'was '..b..' maar moest zijn '..waarde)
 	end
 

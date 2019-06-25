@@ -207,6 +207,7 @@ function typeer(exp)
 			oorzaakloc[exp] = oorzaakloc[moes(exp)]
 		end
 		if T then
+			T = maaktype(T, typegraaf)
 			local t = oorzaakloc[moes(exp)]
 			local s = '\t(' ..ansi.underline.. (t and loctekst(t) or '')..ansi.normal..')'
 			if verbozeTypes and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then

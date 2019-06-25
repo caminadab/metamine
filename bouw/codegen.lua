@@ -669,7 +669,7 @@ xor rax, rdx
 end
 
 
-if true or test then
+if test then
 	require 'ontleed'
 	require 'bouw.blok'
 	require 'bouw.assembleer'

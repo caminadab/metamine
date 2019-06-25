@@ -15,6 +15,7 @@ local function combineerR(sexp, tt)
 			see(sexp)
 			print(type(sexp))
 			for k,v in pairs(sexp) do print(k,v) end
+			error'GEEN FN'
 		end
 		local op = sexp.fn.v
 

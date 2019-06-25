@@ -21,7 +21,6 @@ function blok2tekst(self)
 	local t = {}
 	t[#t+1] = self.naam.v..':'
 	for i,stat in ipairs(self.stats) do
-		see(stat)
 		t[#t+1] = '  '..combineer(stat)
 		-- met locatie
 		--t[#t+1] = '  '..combineer(stat)..'  '..(stat.loc and loctekst(stat.loc) or '')

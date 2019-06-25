@@ -345,6 +345,7 @@ if opt.S then
 	--file('a.s', asm)
 end
 local elf = link(assembleer(asm, 'a'), 'a')
+file('a.elf', elf)
 os.execute('chmod +x a.elf')
 if doemeteen then
 	print('== START ==')

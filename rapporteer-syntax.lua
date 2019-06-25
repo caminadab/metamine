@@ -56,34 +56,6 @@ local htmltoken = [[<span class='tooltip %s'>%s]]..
 	[[<span class='infobox'><span class='info'>%s</span></span>]]..
 	[[</span>]]
 
---
-local function loclt(a,b)
-	if  a.y1 > b.y1 then return false end
-	if  a.y1 < b.y1 then return true end
-	if  a.x1 > b.x1 then return false end
-	if  a.x1 < b.x1 then return true end
-
-	if  a.y2 > b.y2 then return false end
-	if  a.y2 < b.y2 then return true end
-	if  a.x2 > b.x2 then return false end
-	if  a.x2 < b.x2 then return true end
-	return false
-end
-
-function locvind(code, x, y)
-	local pos = 1
-	for i=1,y-1 do
-		pos = code:find('\n', pos)
-		if not pos then return false end
-		pos = pos + 1
-	end
-	pos = pos + x - 1
-	if pos > #code+1 then
-		return false
-	end
-	return pos
-end
-
 assert(locvind("a", 1, 1) == 1)
 assert(locvind("a\n", 2, 1) == 2)
 assert(locvind("a\n", 1, 3) == false)

@@ -104,7 +104,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 			if isatoom(exp) then
 				ref = X('~' .. exp.v)
 			else
-				--ref = X('~' .. maakvar())
+				ref = X('~' .. maakvar())
 			end
 			exp.ref = ref
 		end
@@ -119,10 +119,15 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		if not moezen[m] then
 			moezen[m] = {}
 		end
+		-- zitten we er al in?
+		if moezen[m][exp] then
+			return false
+		end
 		if not isatoom(exp) then
 			exp.ref = maakref(exp)
 			--exp.ref.exp = exp
 		end
+		moezen[m][exp] = true
 		table.insert(moezen[m], exp)
 	end
 
@@ -130,7 +135,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		local m = moes(exp)
 		if not moezen[m] then return end
 		table.remove(moezen[m], i)
-		if not next(moezen[m]) then moezen[m] = nil end
+		if #moezen[m] == 0 then moezen[m] = nil end
 	end
 
 	--if not naar.ref then naar.ref = maakref(naar) end
@@ -149,7 +154,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 
 	-- hier gaan we!
 	local vannen = moezen[moes(van)]
-	--print(moes(van)..' is '..#vannen..' keer gevonden')
+
 	for i, sub in ipairs(vannen) do
 		ontlink(sub, i)
 		-- lang uitschrijven
@@ -176,13 +181,13 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 			end
 
 		-- geen referentie!
-		elseif not naar.ref then
+		elseif not van.ref then
 			assign(sub, naar)
 			print('geen ref!', e2s(naar))
 
 		-- afkorten
 		else
-			assign(sub, naar.ref)
+			assign(sub, van.ref)
 			--print('AFKORT', moes(van), e2s(sub))
 		end
 

@@ -93,7 +93,7 @@ local function doeblok(blok, env, ...)
 	local epi = blok.epiloog
 	if fn(epi) == 'ret' then
 		local a = env[blok.stats[#blok.stats][1].v]
-		if opt.L then print('ret '..tostring(a)) end
+		if opt and opt.L then print('ret '..tostring(a)) end
 		return a
 	elseif epi.v == 'stop' then
 		local a =  env[blok.stats[#blok.stats][1].v]
@@ -116,6 +116,17 @@ local function doeblok(blok, env, ...)
 	end
 end
 
+function doejs(js)
+	local jsnaam = os.tmpname()
+	local resnaam = os.tmpname()
+	file(pad, js)
+	os.execute(string.format('js %s > %s', jsnaam, resnaam))
+	local res = file(resnaam):sub(1,-2)
+	os.remove(jsnaam)
+	os.remove(resnaam)
+	return res
+end
+
 function doe(cfg)
 	if cfg == nil then
 		return nil
@@ -126,7 +137,7 @@ function doe(cfg)
 	for k,v in pairs(cfg.namen) do
 		env[k] = function(...)
 			local isf = k:sub(1,2) == 'fn'
-			if isf and opt.L then print('...') ; print('call '..k); end
+			if isf and opt and opt.L then print('...') ; print('call '..k); end
 			local ret = doeblok(v, env, ...)
 			if opt and opt.L then 
 				if isf then io.write('\n...') end

@@ -29,13 +29,9 @@ if test then
 	require 'doe'
 
 	local function test(code, moet)
-	print()
-	print()
-	print(code)
-	print()
-		local v = vertaal(code)
+		local v = vertaal(code, 'ifunc')
 		local imm = doe(v)
-		assert(imm == moet, 'klopt niet: '..tostring(imm))
+		assert(imm == moet, string.format('vertaal("%s") moet %s zijn maar was %s', code, moet, imm))
 	end
 
 	-- arith
@@ -45,19 +41,42 @@ if test then
 	test('a = 1 + 1\nb = a - a + a\nuit = a · b', 4)
 
 	-- alsdan
-	test('uit = als 2 > 1 dan 1 anders - 1', 1)
-	test('uit = als 2 < 1 dan 1 anders - 1', -1)
-	opt = {L=true}
-	verbozeIntermediair=true
-	verbozeWaarde=true
-	test('a = als 2 < 1 dan 1 anders - 1\nuit = als a > 0 dan a - 1 anders a + 1', 0)
+	test('uit = als 2 > 1 dan 1 anders -1', 1)
+	test('uit = als 2 < 1 dan 1 anders -1', -1)
+	test('a = als 2 < 1 dan 1 anders -1\nuit = als a > 0 dan a - 1 anders a + 1', 0)
 
 	-- functies
-	--opt = {L=true}
-	--verbozeWaarde = true
-	verbozeIntermediair=true
-	verbozeWaarde=true
 	test("f = a → a + 1\nuit = f(-1)", 0)
 
-	error 'OK'
+	local itoatoitoa = [[
+uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
+
+; tekst -> integer
+atoi = b → i
+	; negatief?
+  negatief = (b₀ = '-')
+  sign = als negatief dan -1 anders 1
+
+	; cijfers van de tekst
+  tekens = als negatief dan (b vanaf 1) anders (b)
+  cijfers = tekens map (t → t - '0')
+
+	; waarde van elk cijfer gegeven de positie
+  waarde = (k → cijfers(j) · 10^k)
+    j = #tekens - k - 1
+
+	; positie en resultaat
+	pos = 0 .. #tekens
+  i = sign · Σ (pos map waarde)
+
+; integer -> tekst
+itoa = x → a
+  n = 1 + entier(log10(max(abs x, 1)))
+  neg = als x < 0 dan "-" anders ""
+  a = neg || ((n .. 0) map cijfer)
+  geschaald = (abs x)/10^m
+  cijfer = m → '0' + (entier geschaald) mod 10
+]]
+
+	test(itoatoitoa, -3)
 end
