@@ -13,6 +13,8 @@
 		<i>Voor mensen, niet voor machines.</i></p>
 	</div>
 
+	
+
 <div>
 	<textarea id="broncode" name="broncode"></textarea> 
 	<div id="uit">
@@ -31,12 +33,52 @@
 	<button id="vim" style="display: none">Vim</button>
 </div>
 
+<br>
+
+<div id="wat">
+	<h1><i>Wat</i></h1>
+	<p>
+		Metamine is een nieuwe manier van ontwikkelen.
+		Schrijf snel declaratieve code in de vorm van
+		simpele vergelijkingen en maak je geen zorgen
+		meer over <i>control flow</i>, efficiëntie of
+		platform.
+	</p>
+	<!--
+	<p>
+		De compiler remixt je code en genereert een goed
+		programma voor windows, linux, of, zoals in deze demo, javascript.
+		Declaratieve bibliotheken zorgen voor een
+		makkelijke ervaring of het nou gaat om OpenGL,
+		GUI's, of tcp/udp.
+	</p>
+	-->
+
+	<h1><i>Q&A</i></h1>
+		<input id="vraag" placeholder="Stel je vraag..."></input>
+		<br>
+		<button id="vraagknop" onclick="fetch('/vraag', {method: 'post', body: document.getElementById('vraag').value}).then(x => {document.getElementById('vraagknop').style.backgroundColor='green'; document.getElementById('vraag').value=''; document.getElementById('vraag').placeholder='Vraag verzonden';})">Vraag!</button>
+		<div id="qena">
+		</div>
+	</p>
+
 </body>
 
 <style>
 
-.paneel {
+#vraag {
+	background: black;
+	border: none;
+	padding: 10px;
+	color: white;
+	font-size: 24px;
 	width: 100%;
+}
+
+.paneel {
+	clear: both;
+	width: 100%;
+	min-height: 100px;
 }
 
 @media (max-width: 600px) {
@@ -82,6 +124,7 @@ textarea { height: 300px; background: black; border: none; width: 50%; box-sizin
 button {
 	background: #012ED4;
 
+	color: white;
 	text-decoration: none;
 	border: 0;
 	width: 200px;
@@ -160,9 +203,7 @@ html, body {
 
 h1 {
 	font-size: 72px;
-	display: inline;
-	margin-left: 120px;
-		margin-top: 120px;
+	margin-left: 80px;
 }
 
 p {
@@ -241,9 +282,17 @@ canvas { background: #444; }
 	
 	var demoindex = 0;
 	var demos = [
-		'; bereken de som van 1 t/m 999\nuit = Σ 1 .. 1000',
+`; bereken gemiddelde
+kosten = [1, 8, 3, 4, 5]
+mean = (Σ kosten) / |kosten|
+uit = mean`,
+`; nu met behulp van een functie
+kosten = [1, 10, 100, 1000, 10000]
+mean(s) = (Σ s) / |s|
+uit = mean(kosten)`,
+		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1000',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
-		'; verhoog alle tekens in een stuk tekst\nuit = "hoi" map (a → a + 1)',
+		'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
 		'; als-dan & concatenatie \nantwoord = als 2 > 1 dan "ja" anders "nee"\nuit = "klopt dit: " || antwoord',
 	];
 
@@ -408,7 +457,7 @@ canvas { background: #444; }
 		"0/": "∅",
 		"o/": "∅",
 		"/o": "∅",
-		"oo": "∞",
+		"ooo": "∞",
 		"tau": "τ",
 		"som": "Σ",
 		"->": "→",
