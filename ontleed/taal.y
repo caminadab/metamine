@@ -7,7 +7,8 @@
 %lex-param {void* scanner}
 
 %parse-param {void** root}
-%parse-param {char* waarom}
+%parse-param {struct fout* fouten}
+%parse-param {int* foutindex}
 %parse-param {void* scanner}
 
 %{
@@ -19,7 +20,9 @@
 	#include "node.h"
 	#include "lex.yy.h"
 
-	int yyerror(YYLTYPE* loc, void** root, char* waarom, void* scanner, const char* yymsg);
+	#define MAXFOUTEN 10
+
+	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* foutindex, void* scanner, const char* yymsg);
 
 	#define A(a) aloc(a,yylloc)
 	#define APPEND(a,b) appendloc(a,b,yylloc)
@@ -108,9 +111,9 @@ input:
 	%empty						{ $$ = aloc("EN", yylloc); *root = $$; }
 |	input exp '\n' 		{ $$ = appendloc($1, $2, @$);  } /* lees regeltje */
 |	input exp '=' block '\n' 		{ $$ = appendloc($1, fn3loc(aloc("=", @3), $2, $4, @2), @$);  } /* lees regeltje */
-|	input error '\n' 	{ $$ = appendloc($1, metfout(aloc("?", @2), waarom), @$); yyerrok; } /* lees regeltje */
+|	input error '\n' 	{ $$ = appendloc($1, aloc("?", @2), @$); yyerrok; } /* lees regeltje */
 |	input '\n' 				/* negeer witregels */
-|	error  						{ $$ = metfout(aloc("?", @1), waarom); yyerrok; }
+|	error  						{ $$ = aloc("?", @1); yyerrok; }
 ;
 
 /*op:
@@ -149,9 +152,9 @@ single:
 | '(' exp ',' exp ',' exp ',' exp ')'	{ $$ = fn5loc(A(","), $2, $4, $6, $8, @$); }
 | '[' list ']'				{ $$ = metloc($2, @$); }
 | '{' set '}'					{ $$ = metloc($2, @$); }
-| '[' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
-| '(' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
-| '{' error 					{ $$ = metfout(A("?"), waarom); yyerrok; }
+| '[' error 					{ $$ = A("?"); yyerrok; }
+| '(' error 					{ $$ = A("?"); yyerrok; }
+| '{' error 					{ $$ = A("?"); yyerrok; }
 
 /*| '(' op ')'					{ $$ = $2; }*/
 
@@ -215,9 +218,9 @@ single:
 | '(' ">>" ')'       	{ $$ = A(">>"); }
 | '(' "<<" ')'       	{ $$ = A("<<"); }
 
-|	'(' error ')'				{ $$ = metfout(A("?"), waarom); yyerrok; }
-|	'[' error ']'				{ $$ = metfout(A("?"), waarom); yyerrok; }
-|	'{' error '}'				{ $$ = metfout(FN2(A("{}"), A("?")), waarom); yyerrok; }
+|	'(' error ')'				{ $$ = A("?"); yyerrok; }
+|	'[' error ']'				{ $$ = A("?"); yyerrok; }
+|	'{' error '}'				{ $$ = FN2(A("{}"), A("?")); yyerrok; }
 ;
 
 blockline: '\n' TAB exp { $$ = $3; }

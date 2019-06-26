@@ -1,4 +1,5 @@
 //#include "taal.yy.h"
+#define MAXFOUTEN 10
 
 typedef struct node node;
 typedef struct node* YYSTYPE;
@@ -12,6 +13,11 @@ typedef struct YYLTYPE
 	int last_column;  
 	char* file;
 } YYLTYPE;
+
+struct fout {
+	YYLTYPE loc;
+	char msg[256];
+};
 
 struct node {
 	// kids?

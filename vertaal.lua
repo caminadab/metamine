@@ -77,6 +77,38 @@ itoa = x → a
   geschaald = (abs x)/10^m
   cijfer = m → '0' + (entier geschaald) mod 10
 ]]
-
 	test(itoatoitoa, -3)
+
+	local plus260 = [[
+; 10 x 26 blok van vergelijkingen
+uit = a
+a = b + b + b + b + b + b + b + b + b + b
+b = c + c + c + c + c + c + c + c + c + c 
+c = d + d + d + d + d + d + d + d + d + d 
+d = e + e + e + e + e + e + e + e + e + e 
+e = f + f + f + f + f + f + f + f + f + f 
+f = g + g + g + g + g + g + g + g + g + g 
+g = h + h + h + h + h + h + h + h + h + h
+h = i + i + i + i + i + i + i + i + i + i 
+i = j + j + j + j + j + j + j + j + j + j 
+j = k + k + k + k + k + k + k + k + k + k 
+k = l + l + l + l + l + l + l + l + l + l 
+l = m + m + m + m + m + m + m + m + m + m 
+m = n + n + n + n + n + n + n + n + n + n
+n = o + o + o + o + o + o + o + o + o + o 
+o = p + p + p + p + p + p + p + p + p + p
+p = q + q + q + q + q + q + q + q + q + q
+q = r + r + r + r + r + r + r + r + r + r
+r = s + s + s + s + s + s + s + s + s + s
+s = t + t + t + t + t + t + t + t + t + t
+t = u + u + u + u + u + u + u + u + u + u
+u = v + v + v + v + v + v + v + v + v + v
+v = w + w + w + w + w + w + w + w + w + w
+w = x + x + x + x + x + x + x + x + x + x
+x = y + y + y + y + y + y + y + y + y + y
+y = z + z + z + z + z + z + z + z + z + z
+z = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+	]]
+
+	test(plus260, '1e+26')
 end

@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
-char* ontleed(char* code);
+#include "node.h"
+
+int ontleed(char* code, struct fout* fouten, int maxfouten);
 
 /*
 a = 1  → +(1 2)
@@ -16,7 +19,11 @@ f =
 	1 → 2
 */
 
-int test() {
+int main() {
+	struct fout fouten[1];
+	int numfouten = ontleed("a = 3)", fouten, 1);
+	assert(numfouten == 1);
+		
 	char* tests[][2] = {
 		// als dan
 		{"als ja dan 1 anders 0", "=>(ja 1 0)"},
@@ -224,9 +231,9 @@ int test() {
 		strcpy(t, test);
 		strcat(t, "\n");
 		char* doel = tests[i][1];
-		char* lisp = ontleed(t);
-		char doel2[0x400];
-		sprintf(doel2, "EN(%s)", doel);
+		int nfouten = ontleed(t, 0, 0);
+		char doelen[0x400];
+		sprintf(doelen, "EN(%s)", doel);
 		if (strcmp(lisp, doel) && strcmp(lisp, doel2)) {
 			puts("FOUT BIJ TEST");
 			puts(test);
@@ -238,5 +245,6 @@ int test() {
 		totaal++;
 	}
 	printf("%d/%d fout\n", fout, totaal);
+
 	return 0;
 }

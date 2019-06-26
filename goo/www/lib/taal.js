@@ -35,11 +35,11 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "bruin", "geel", "cyaan",
 		"cirkel", "rechthoek", "schrijf", "taart", "polygoon", "sin", "cos", "tan", "abs"
   ]);
-  var keywords = wordRE(["als","dan","herhaal","fout" ]);
+  var keywords = wordRE(["als","dan","anders","if","then","else","herhaal","repeat","fout","error" ]);
 
-  var indentTokens = wordRE(["function", "if","repeat","do", "\\(", "{", "\\["]);
-  var dedentTokens = wordRE(["end", "until", "\\)", "}"]);
-  var dedentPartial = prefixRE(["end", "until", "\\)", "}", "\\]", "else", "elseif"]);
+  var indentTokens = wordRE([]);//"function", "if","repeat","do", "\\(", "{", "\\["]);
+  var dedentTokens = wordRE([]);//"end", "until", "\\)", "}"]);
+  var dedentPartial = prefixRE([]);//"end", "until", "\\)", "}", "\\]", "else", "elseif"]);
 
   function readBracket(stream) {
     var level = 0;

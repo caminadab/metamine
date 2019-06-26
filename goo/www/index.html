@@ -7,11 +7,10 @@
 <body>
 	<div id="intro">
 		<h1><i>Welkom</i></h1>
-		<img class="logo" src="taal.png"></img>
-<p>
-Een nieuwe manier van programmeren.<br>
-Makkelijk, veilig, snel.<br>
-</p>
+		
+		<!--<img class="logo" src="taal.png"></img>-->
+		<p><i>Een nieuwe programmeertaal.</i></br>
+		<i>Voor mensen, niet voor machines.</i></p>
 	</div>
 
 <div>
@@ -22,18 +21,23 @@ Makkelijk, veilig, snel.<br>
 	</div>
 </div>
 
-<div>
+<div class="paneel">
 	<button id="vertaal">▶</button>
 	<div id="laadbalk">
 		<div id="foutmelding"></div>
 		<div id="voortgang"></div>
 	</div>
+	<button id="volgende">⏭</button>
 	<button id="vim" style="display: none">Vim</button>
 </div>
 
 </body>
 
 <style>
+
+.paneel {
+	width: 100%;
+}
 
 @media (max-width: 600px) {
 	#uit {
@@ -44,8 +48,8 @@ Makkelijk, veilig, snel.<br>
 
 @media (min-width: 600px) {
 	#uit {
-		width: calc(50% - 20px);
-		height: 300px;
+		width: 50%;
+		min-height: 300px;
 		font-width: bold;
 		background: #033;
 		display: inline;
@@ -60,11 +64,10 @@ Makkelijk, veilig, snel.<br>
 
 .CodeMirror {
 	float: left;
-	height: 60vh;
-	width: 50%;
+	box-sizing: border-box;
 }
 
-textarea { height: 60vh; background: black; border: none; width: calc(50% + 18px); }
+textarea { height: 300px; background: black; border: none; width: 50%; box-sizing: border-box; }
 
 
 
@@ -77,7 +80,6 @@ button {
 	font-size: 48px;
 	height: 70px;
 	line-height: 30px;
-	color: #1b1;
 	display: inline;
 	cursor: pointer;
 	float: left;
@@ -85,6 +87,13 @@ button {
 	transition-property: background;
 	transition-duration: 0.0s;
 }
+
+#intro {
+	min-height: 250px;
+}
+
+#vertaal { color: #1b1; }
+#volgende { color: #bb0; font-size: 72px; }
 
 button:hover {
 	background: #0023A1;
@@ -97,7 +106,6 @@ button:active {
 
 #laadbalk {
 	display: inline;
-	width: calc(50% - 200px + 20px);
 	float: left;
 	height: 70px;
 
@@ -136,15 +144,10 @@ html, body {
 	background: #050070;
 	color: white;
 	font-family: Impace, Charcoal, sans-serif;
-	font-size: 32px;
+	font-size: 24px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
-		float
-}
-
-#intro {
-	height: 30vh;
 }
 
 h1 {
@@ -181,47 +184,6 @@ p {
 	color: darkgreen;
 }
 
-.onderwerpnaam {
-  background-color: #4CAF50;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
-}
-
-/* The container <div> - needed to position the dropdown content */
-.onderwerp {
-  position: relative;
-  display: inline-block;
-}
-
-/* Dropdown Content (Hidden by Default) */
-.subonderwerp {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-/* Links inside the dropdown */
-.subonderwerp a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-/* Change color of dropdown links on hover */
-.subonderwerp a:hover {background-color: #ddd;}
-
-/* Show the dropdown menu on hover */
-.onderwerp:hover .subonderwerp {display: block;}
-
-/* Change the background color of the dropdown button when the dropdown content is shown */
-.onderwerp:hover .onderwerpnaam {background-color: #3e8e41;} 
-
 canvas { background: #444; }
 .syntaxfout { background: #800; color: #A80; }
 .oplosfout { background: #049; color: #AFF; }
@@ -234,16 +196,11 @@ canvas { background: #444; }
 	margin-top: 0.5cm;
 	margin-bottom: 0.5cm;
 	cursor: pointer;
-	font-size: 48px;
+	font-size: 24px;
 	width: 100%;
-	padding: 10px;
-	border: 10px solid black;
+	/* padding: 10px; */
+	/* border: 10px solid black; */
 	transition-property: border;
-}
-
-#speel0:hover {
-	border: 10px solid white;
-	animation: Knipper 0.05s linear infinite !important;
 }
 
 @keyframes Knipper {
@@ -273,8 +230,17 @@ canvas { background: #444; }
 <script src="lib/taal.js"></script>
 <script src="lib/vim.js"></script>
 <script>
+	
+	var demoindex = 0;
+	var demos = [
+		'; bereken de som van 1 t/m 999\nuit = Σ 1 .. 1000',
+		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
+		'; verhoog alle tekens in een stuk tekst\nuit = "hoi" map (a → a + 1)',
+		'; als-dan & concatenatie \nantwoord = als 2 > 1 dan "ja" anders "nee"\nuit = "klopt dit: " || antwoord',
+	];
 
 	var vertaalknop = document.getElementById("vertaal");
+	var volgendeknop = document.getElementById("volgende");
 	var cknop = '#012ED4';
 	var voortgang = document.getElementById("voortgang");
 	var foutmelding = document.getElementById("foutmelding");
@@ -291,6 +257,7 @@ canvas { background: #444; }
 				onsuccess();
 				eval(j.js);
 				//uit.innerHTML = j.js + '<h1>' + eval(j.js) + '</h1>';
+				alert(j.fouten);
 				setErrors(j.fouten);
 
 				/*var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
@@ -302,6 +269,9 @@ canvas { background: #444; }
 	}
 
 	vertaalknop.addEventListener("mousedown", vertaal);
+	volgendeknop.addEventListener("mousedown", function() {
+		editor.setValue(demos[++demoindex]);
+	});
 
 	function onsuccess() {
 		voortgang.style.opacity = '0'
@@ -369,9 +339,8 @@ canvas { background: #444; }
 			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
 		},
   });
-	editor.setSize('50%', '60vh');
-	editor.setValue(`uit = Σ 1 .. 1000
-`);
+	editor.setSize('50%', '300px');
+	editor.setValue(demos[demoindex]);
 
 	// editor.setSize(null, '500px');
 
@@ -409,6 +378,7 @@ canvas { background: #444; }
 		
 		for (var i = 0; i < errors.length; i++) {
 			var error = errors[i];
+			alert(error);
 				var inline = document.createElement("div");
 					inline.innerHTML = '<b>&nbsp;<!--⚠--></b>';
 					inline.classList.add("fouticoon");
@@ -498,12 +468,6 @@ canvas { background: #444; }
 
 	var uit = document.getElementById("uit-tekst");
 
-
-
-var data = [
-	['Intro', 'Waarde', 'Aanroepen', 'Als-Dan', 'Omschrijven', 'Omschrijflimiet'],
-	['Lijst', 'waarde', 'tekst', 'als dan', 'omschrijven', 'omschrijflimiet'],
-];
 
 </script>
 </html>

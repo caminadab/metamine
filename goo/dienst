@@ -57,6 +57,7 @@ function vt(code)
 	end
 
 	local icode,fouten = vertaal(code, "demo")
+	for i,fout in ipairs(fouten) do print(fout2html(fout)) end
 	local js = naarjavascript(icode)
 	local fouten = map(fouten, fout2html)
 

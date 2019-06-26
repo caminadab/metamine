@@ -59,7 +59,7 @@ end
 
 -- lees biebgraaf
 local bieb,fouten = ontleed(bestand 'bieb/std.code', 'bieb/std.code')
-if fouten then error('biebfouten') end
+if fouten then map(fouten, function(fout) print(fout2ansi(fout)) end) end
 
 function typeer(exp)
 	if verbozeTypes then

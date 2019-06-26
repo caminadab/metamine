@@ -168,7 +168,10 @@ for i,bron in ipairs(bronnen) do
 	if not ok or not code then print('bestand '..bronnen[1]..' niet gevonden') ; return end
 	--codes[bron] = code
 
-	local sub = ontleed(code, bron)
+	local sub,fouten = ontleed(code, bron)
+	for i,fout in ipairs(fouten) do
+		print(fout2ansi(fout))
+	end
 	for i,eq in ipairs(sub) do
 		eq.bron = bronnen[1]
 		eq.code = code

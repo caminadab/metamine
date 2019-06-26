@@ -16,7 +16,7 @@ int yyerror(YYLTYPE* loc, void** root, void* scanner, const char* yymsg) {
 	return 0;
 }
 
-char* ontleed(char* code) {
+int ontleed(char* code, struct fout* fouten, int maxfouten) {
 	yyscan_t scanner;
 	yylex_init(&scanner);
 	yy_scan_string(code, scanner);

@@ -6,12 +6,16 @@
 #include "taal.yy.h"
 #include "lex.yy.h"
 
-int yyerror(YYLTYPE* loc, void** root, char* waarom, void* scanner, const char* yymsg) {
-	print_loc(*loc);
-	printf(": %s\n", yymsg);
-
-	// lmao zedong
-	strcpy(waarom, yymsg);
+int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, void* scanner, const char* yymsg) {
+	if (*numfouten <= MAXFOUTEN) {
+		struct fout* fout = &fouten[*numfouten];
+		fout->loc = *loc; // loc
+		if (*numfouten < MAXFOUTEN)
+			strcpy(fout->msg, yymsg); //msg
+		else
+			strcpy(fout->msg, "max aantal syntaxfouten bereikt");
+		*numfouten += 1;
+	}
 
 	return 0;
 }
@@ -68,21 +72,6 @@ void lua_pushlisp(lua_State* L, node* node) {
 	}
 }
 
-/*
-void lua_pushfout(lua_State* L, fout fout) {
-	lua_createtable(L, 0, 2);
-	lua_pushinteger(L, fout.lijn + 1);
-	lua_setfield(L, -2, "lijn");
-	lua_pushstring(L, fout.bericht);
-	lua_setfield(L, -2, "bericht");
-}
-*/
-node* ontleed(char* code) {
-	//node* wortel = yyparse(code);
-	//return wortel;
-	return 0;
-}
-
 int lua_code(lua_State* L) {
 	return 1;
 }
@@ -93,27 +82,32 @@ void setfile(node* node, char* file) {
 	if (node->first) setfile(node->first, file);
 }
 
+// ontleed(code [, bron])
 int lua_ontleed(lua_State* L) {
+	// voeg '\n' aan het einde toe
 	luaL_checkstring(L, 1);
 	lua_pushvalue(L, 1);
 	lua_pushliteral(L, "\n");
 	lua_concat(L, 2);
 	lua_replace(L, 1);
 
+	// bron (of "?")
 	char* file = "?";
 	if (lua_gettop(L) == 2)
 		file = (char*)luaL_checkstring(L, 2);
 
-	const char* str = luaL_checkstring(L, 1);
+	// code
+	const char* code = luaL_checkstring(L, 1);
 
 	yyscan_t scanner;
 	yylex_init(&scanner);
-	yy_scan_string(str, scanner);
+	yy_scan_string(code, scanner);
 
-	char waarom[0x400];
 	node* wortel;
+	int numfouten = 0;
+	struct fout fouten[10];
 
-	yyparse((void**)&wortel, (void*)&waarom, scanner);
+	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, scanner);
 	yylex_destroy(scanner);
 
 	// file fixen
@@ -123,7 +117,28 @@ int lua_ontleed(lua_State* L) {
 		lua_pushlisp(L, wortel);
 	else
 		lua_pushnil(L); // !!??
-	return 1;
+
+	// fouten pushen
+	lua_createtable(L, numfouten, 0);
+	for (int i = 0; i < numfouten; i++) {
+		// index
+		lua_pushinteger(L, i+1);
+		// fout
+		lua_createtable(L, 0, 2);
+		{
+			// type
+			lua_pushstring(L, "syntax");
+			lua_setfield(L, -2, "type");
+			// msg
+			lua_pushstring(L, fouten[i].msg);
+			lua_setfield(L, -2, "fmt");
+			// loc
+			lua_pushloc(L, fouten[i].loc);
+			lua_setfield(L, -2, "loc");
+		}
+		lua_settable(L, -3);
+	}
+	return 2;
 }
 
 int lua_ontleedexp(lua_State* L) {
@@ -137,9 +152,10 @@ int lua_ontleedexp(lua_State* L) {
 	yy_scan_string(str, scanner);
 
 	node* wortel;
+	struct fout fouten[10];
+	int numfouten = 0;
 
-	char waarom[0x400];
-	yyparse((void**)&wortel, (void*)&waarom, scanner);
+	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, scanner);
 	wortel = wortel->first->next;
 	yylex_destroy(scanner);
 

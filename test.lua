@@ -12,7 +12,7 @@ require = function(kort)
 	io.flush()
 	local r
 	if kort ~= 'test' then
-		r = require0(kort)
+		r = pcall(require0,kort)
 	end
 	return r
 end

@@ -54,11 +54,13 @@ local immasm = {
 	['-i'] = 'mov rax, X\nmov rbx, Y\nsub rax, rbx\nmov R, rax',
 	['*i'] = 'mov rax, X\nmov rbx, Y\nimul rbx\nmov R, rax',
 	['/i'] = 'mov rax, X\nmov rbx, Y\nidiv rbx\nmov R, rax',
-	['+d'] = 'fld X\nfld Y\nfadd\nfstpq R',
-	['-d'] = 'fld X\nfld Y\nfsub\nfstpq R',
-	['*d'] = 'fld X\nfld Y\nfmul\nfstpq R',
-	['/d'] = 'fld X\nfld Y\nfdiv\nfstpq R',
+	['+d'] = 'fldd X\nfldd Y\nfadd\nfstpd R',
+	['-d'] = 'fldd X\nfldd Y\nfsub\nfstpd R',
+	['*d'] = 'fldd X\nfldd Y\nfmul\nfstpd R',
+	['/d'] = 'fldd X\nfldd Y\nfdiv\nfstpd R',
 }
+
+immasm['/'] = immasm['/d']
 
 function codegen(cfg)
 	if verbozeAsm then print(); print('=== ASSEMBLEERTAAL ===') end
@@ -204,6 +206,16 @@ function codegen(cfg)
 				t[#t+1] = 'cmp rcx, 1'
 				t[#t+1] = 'cmove rax, rdx \t# rax = rcx ? rdx : rax'
 				opsla(naam, 'rax', naam)
+
+			-- ez templates
+			elseif immasm[f] then
+				local asm = immasm[f]
+				asm = asm:gsub('X', fmt('%d[rsp]',opslag[exp[1].v]))
+				if exp[2] then
+					asm = asm:gsub('Y', fmt('%d[rsp]',opslag[exp[2].v]))
+				end
+				asm = asm:gsub('R', fmt('%d[rsp]',opslag[naam]))
+				t[#t+1] = asm
 
 			-- kutte met rutte
 			elseif f == 'log10' then

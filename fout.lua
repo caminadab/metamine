@@ -1,4 +1,5 @@
 require 'util'
+require 'exp'
 
 -- fmt: {rood} is {exp} maar moet {cyaan} zijn
 function fout(type, loc, fmt, ...)
