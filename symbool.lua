@@ -152,6 +152,8 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		return exp, 0
 	end
 
+	exp.moes = nil
+
 	-- hier gaan we!
 	local vannen = moezen[moes(van)]
 
@@ -278,37 +280,37 @@ function substitueerzuinig0(exp, van, naar, maakvar, al)
 	return assert(ret, 'niet ret')
 end
 
-sym = {}
+sym = {
+	plus = X'+',
+	min = X'-',
+	keer = X'*',
+	deel = X'/',
+	plusis = X'+=',
+	minis = X'-=',
+	keeris = X'*=',
+	deelis = X'/=',
 
-sym.plus = X'+'
-sym.min = X'-'
-sym.keer = X'*'
-sym.deel = X'/'
-sym.plusis = X'+='
-sym.minis = X'-='
-sym.keeris = X'*='
-sym.deelis = X'/='
-
-sym.alt = X'|'
-sym.altis = X'|='
-sym.call = X'call'
-sym.cat = X'||'
-sym.catass = X'||='
-sym.co = X'co'
-sym.cois = X'co='
-sym.dan = X'=>'
-sym.als = X'=>'
-sym.niet = X'!'
-sym.niets = X'niets'
-sym.lijst = X'[]'
-sym.is = X'='
-sym.oud = X"'"
-sym.ass = X':='
-sym.map = X'->'
-sym.maplet = X'-->'
-sym.start = X'start'
-sym.set = X'{}'
-sym.stop = X'stop'
+	alt = X'|',
+	altis = X'|=',
+	call = X'call',
+	cat = X'||',
+	catass = X'||=',
+	co = X'co',
+	cois = X'co=',
+	dan = X'=>',
+	als = X'=>',
+	niet = X'!',
+	niets = X'niets',
+	lijst = X'[]',
+	is = X'=',
+	oud = X"'",
+	ass = X':=',
+	map = X'->',
+	maplet = X'-->',
+	start = X'start',
+	set = X'{}',
+	stop = X'stop',
+}
 
 if test then
 	local a = X('+', 'a', 'a')

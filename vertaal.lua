@@ -16,10 +16,20 @@ function vertaal(code, doel)
 	asb.fn = X'EN'
 
 	local types,typeerfouten = typeer(asb)
+	if #typeerfouten > 0 then
+		return nil, cat(syntaxfouten, typeerfouten)
+	end
+
 	local mach = arch_x64(asb, types)
 	local uit,oplosfouten = oplos(mach, "app")
-	--local uit = optimaliseer(uit)
+
 	local fouten = cat(syntaxfouten, typeerfouten, oplosfouten)
+
+	if not uit then
+		return nil, fouten
+	end
+
+	--local uit = optimaliseer(uit)
 	local app = controle(uit, maakvar)
 
 	return app, fouten
@@ -27,6 +37,10 @@ end
 
 if test then
 	require 'doe'
+
+	-- fouten
+	local _,f = vertaal('uit = )')
+	assert(#f > 0)
 
 	local function test(code, moet)
 		local v = vertaal(code, 'ifunc')
@@ -47,6 +61,8 @@ if test then
 
 	-- functies
 	test("f = a → a + 1\nuit = f(-1)", 0)
+
+	do return end
 
 	local itoatoitoa = [[
 uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))

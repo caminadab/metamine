@@ -42,24 +42,12 @@ end
 -- de "fout" als los interpretabel object
 function vt(code)
 
-	local function jsloc(loc)
-		local jloc = {
-			anchor = {
-				ch = loc.x1 - 1,
-				line = loc.y1 - 1,
-			},
-			head = {
-				ch = loc.x2 - 1,
-				line = loc.y2 - 1,
-			}
-		}
-		return jloc
-	end
-
 	local icode,fouten = vertaal(code, "demo")
-	for i,fout in ipairs(fouten) do print(fout2html(fout)) end
-	local js = naarjavascript(icode)
-	local fouten = map(fouten, fout2html)
+	local js = ''
+	if icode then
+		js = naarjavascript(icode)
+	end
+	local fouten = map(fouten, fout2json)
 
 	return {
 		js = js,
@@ -135,13 +123,13 @@ function serveer(sock)
 	-- VERTAAL!
 	if pad == '/vt' then
 		local internefout
-		local ok,j = pcall(vt, inn)
+		local ok,j = xpcall(vt, debug.traceback, inn)
 		if not ok then internefout = j end
 
 		if not ok then
 			print(internefout)
 			status = 500
-			uit = '"FOUT!"'--'e>'.."INTERNE FOUT!\n"..internefout..'</pre>'
+			uit = json.encode {js="alert('Serverfout!')",fouten={}}
 		else
 			status = 200
 			uit = json.encode(j) -- json(html, fouten)

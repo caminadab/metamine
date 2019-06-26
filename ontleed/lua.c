@@ -124,12 +124,12 @@ int lua_ontleed(lua_State* L) {
 		// index
 		lua_pushinteger(L, i+1);
 		// fout
-		lua_createtable(L, 0, 2);
+		lua_createtable(L, 0, 3);
 		{
 			// type
 			lua_pushstring(L, "syntax");
 			lua_setfield(L, -2, "type");
-			// msg
+			// fmt
 			lua_pushstring(L, fouten[i].msg);
 			lua_setfield(L, -2, "fmt");
 			// loc
@@ -184,8 +184,6 @@ int lua_ontleedexp(lua_State* L) {
 EXPORT int luaopen_ontleed(lua_State* L) {
 	lua_pushcfunction(L, lua_ontleed); lua_setglobal(L, "ontleed");
 	lua_pushcfunction(L, lua_ontleedexp); lua_setglobal(L, "ontleedexp");
-	//lua_pushcfunction(L, lua_code);
-	//lua_setglobal(L, "ontleed");
 	return 1;
 }
 

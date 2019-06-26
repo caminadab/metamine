@@ -100,7 +100,7 @@ local immjs = {
 	['#'] = 'X.length',
 	['som'] = 'X.reduce((a,b) => a + b, 0)',
 	['..'] = 'X < Y ? Array.from(new Array(Y-X), (x,i) => X + i) : Array.from(new Array(Y-X), (x,i) => Y - 1 - i)',
-	['_'] = 'X[Y]',
+	['_'] = 'X[Y] != null ? X[Y] : (function() {throw("ongeldige index in lijst");})()',
 	['call'] = 'X(Y)',
 	['vanaf'] = 'X.slice(Y, X.length)',
 	['alert'] = 'document.getElementById("uit").innerHTML = X',
@@ -209,10 +209,11 @@ if test then
 	require 'vertaal'
 
 	local function moetzijn(broncode, waarde)
-		local js = vertaal(broncode, "js")
+		local icode = vertaal(broncode, "js")
+		local js = naarjavascript(icode)
 		local res = doejs(js)
 
-		assert(b == waarde, 'was '..b..' maar moest zijn '..waarde)
+		assert(res == waarde, 'was '..res..' maar moest zijn '..waarde)
 	end
 
 	moetzijn("uit = 1 + 1", '2')

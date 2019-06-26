@@ -40,18 +40,26 @@
 }
 
 @media (max-width: 600px) {
-	#uit {
+	.CodeMirror {
 		width: 100%;
 		float: none;
 	}
+	#uit {
+		width: 100%;
+		float: none;
+		height: 300px;
+	}
+}
+
+#uit {
+	min-height: 300px;
+	font-width: bold;
+	background: #033;
 }
 
 @media (min-width: 600px) {
 	#uit {
 		width: 50%;
-		min-height: 300px;
-		font-width: bold;
-		background: #033;
 		display: inline;
 		float: right;
 	}
@@ -255,9 +263,12 @@ canvas { background: #444; }
 			.then(x => x.json())
 			.then(j => {
 				onsuccess();
-				eval(j.js);
+				try {
+					eval(j.js);
+				} catch (e) {
+					uit.innerHTML = "executiefout: " + e;
+				}
 				//uit.innerHTML = j.js + '<h1>' + eval(j.js) + '</h1>';
-				alert(j.fouten);
 				setErrors(j.fouten);
 
 				/*var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
@@ -265,11 +276,12 @@ canvas { background: #444; }
 					eval(scripts[i].innerHTML);
 				}*/
 			})
-       			.catch(e => onerror(e));
+       			//.catch(e => onerror(e));
 	}
 
 	vertaalknop.addEventListener("mousedown", vertaal);
 	volgendeknop.addEventListener("mousedown", function() {
+		setErrors([]);
 		editor.setValue(demos[++demoindex]);
 	});
 
@@ -349,18 +361,6 @@ canvas { background: #444; }
 		editor.setSelection(loc.anchor, loc.head);
 	}
 
-	// formatteer fout
-	function formatError(error) {
-		var waarom = error.waarom;
-		waarom = waarom.replace('{exp}',
-			`<b onclick="selecteer(` + JSON.stringify(error.isloc) + `);alert('hoi'); ">`+error.exp+`</b>`
-		);
-
-		waarom = waarom.replace('{istype}', error.istype);
-		waarom = waarom.replace('{moettype}', error.moettype);
-		return waarom;
-	}
-
 	// jaja!
 	var oldWidgets = [];
 	var oldLineWidgets = [];
@@ -378,7 +378,6 @@ canvas { background: #444; }
 		
 		for (var i = 0; i < errors.length; i++) {
 			var error = errors[i];
-			alert(error);
 				var inline = document.createElement("div");
 					inline.innerHTML = '<b>&nbsp;<!--⚠--></b>';
 					inline.classList.add("fouticoon");
@@ -388,12 +387,12 @@ canvas { background: #444; }
 					inline.style.marginTop = '-18px';
 					//inline.style.zIndex	= '9';
 			oldWidgets.push(inline);
-			var a = editor.addWidget(error.pos, inline, {above: true});
+			var a = editor.addWidget(error.loc.anchor, inline, {above: true});
 				var message = document.createElement("div");
 					message.classList.add(error.type+"fout");
 					message.classList.add("fout");
-					message.innerHTML = formatError(error);
-			var b = editor.addLineWidget(error.pos.line, message);
+					message.innerHTML = error.html;
+			var b = editor.addLineWidget(error.loc.anchor.line, message);
 			oldLineWidgets.push(b);
 		}
 	}

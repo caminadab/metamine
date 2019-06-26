@@ -499,9 +499,7 @@ function oplos(exp,voor)
 			for punt in pairs(halfnaar.begin) do
 				if not halfvan.punten[punt] then
 					local def = bron2def[punt]
-					local fout = {
-						msg = ansi.underline .. loctekst(def.loc) .. ansi.normal .. '\t' .. color.brightred .. "Oplosfout" .. color.white .. ':\t' .. color.brightyellow .. tostring(punt) .. color.white .. " is ongedefinieerd"
-					}
+					local fout = oplosfout(def.loc, '{code} is ongedefinieerd', punt)
 					fouten[#fouten+1] = fout
 				end
 			end
@@ -510,7 +508,7 @@ function oplos(exp,voor)
 		local substs = stroom:topologisch()
 		if not substs then
 			-- dit is een zware fout...
-			return false, 'kon niet topologisch sorteren', bekend, {}
+			return false, {oplosfout(nergens, 'zware fout')}
 		end
 		-- lijst(subst)
 

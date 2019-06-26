@@ -119,7 +119,7 @@ end
 function doejs(js)
 	local jsnaam = os.tmpname()
 	local resnaam = os.tmpname()
-	file(pad, js)
+	file(jsnaam, js)
 	os.execute(string.format('js %s > %s', jsnaam, resnaam))
 	local res = file(resnaam):sub(1,-2)
 	os.remove(jsnaam)

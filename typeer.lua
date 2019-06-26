@@ -127,16 +127,17 @@ function typeer(exp)
 				local moetloc = typeoorzaakloc or oorzaakloc[moes(exp)]
 				--assert(code)
 				code = code or ''
-				local msg = typeerfout(
+				local fout = typeerfout(
 					exp.loc,
 					"{code} is {exp} ({loc}) maar moet {exp} zijn ({loc})",
 					locsub(code, exp.loc),
 					types[exp], isloc,
 					type, moetloc
 				)
-				if not fouten[fout2ansi(msg)] then
-					fouten[#fouten+1] = {loc = exp.loc, msg = msg}
-					fouten[fout2ansi(msg)] = true
+				local a = fout2ansi(fout)
+				if not fouten[a] then
+					fouten[#fouten+1] = fout
+					fouten[a] = true
 				end
 				return types,fouten
 			end
@@ -294,15 +295,16 @@ function typeer(exp)
 						else
 							local aloc = oorzaakloc[a] or a.loc
 							local bloc = oorzaakloc[b] or b.loc
-							local msg = typeerfout(exp.loc, '{code} is {exp} ({loc}), {code} is {exp} ({loc})',
+							local fout = typeerfout(exp.loc, '{code} is {exp} ({loc}), {code} is {exp} ({loc})',
 								locsub(code, a.loc),
 								types[a], aloc,
 								locsub(code, b.loc),
 								types[b], bloc
 							)
-							if not fouten[msg] then
-								fouten[#fouten+1] = {loc = exp.loc, msg = msg}
-								fouten[msg] = true
+							local a = fout2ansi(fout)
+							if not fouten[a] then
+								fouten[#fouten+1] = fout
+								fouten[a] = true
 							end
 						end
 					elseif types[a] then weestype(b, types[a], exp.loc) ; oorzaakloc[b] = exp.loc
@@ -381,17 +383,15 @@ function typeer(exp)
 				-- local unpacking
 				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
 				if false and N(tfn) ~= nargs and N(tfn) ~= math.huge then
-					local msg = typeerfout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc}) '..exp2string(tfn),
+					local msg = typeerfout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc})',
 						locsub(code, exp.loc),
 						nargs, oorzaakloc[exp],
 						N(tfn), oorzaakloc[tfn] or oorzaakloc[exp]
 					)
-					local kort = string.format('"%s" heeft %d argumenten maar moet er %d hebben',
-						'????' --[[locsub(code, exp.loc)]], nargs, N(tfn)
-					)
-					if not fouten[msg] then
-						fouten[#fouten+1] = {loc = exp.loc, msg = msg, kort = kort}
-						fouten[msg] = true
+					local a = fout2html(msg)
+					if not fouten[a] then
+						fouten[#fouten+1] = fout
+						fouten[a] = true
 					end
 				end
 

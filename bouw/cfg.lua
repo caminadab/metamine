@@ -96,7 +96,7 @@ function maakcfg()
 	return cfg
 end
 
-if test then
+if false and test then
 	require 'ontleed'
 	require 'oplos'
 	require 'util'

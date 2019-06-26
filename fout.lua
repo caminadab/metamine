@@ -19,9 +19,24 @@ function syntaxfout(...) return fout("syntax", ...) end
 function oplosfout(...) return fout("oplos", ...) end
 function typeerfout(...) return fout("typeer", ...) end
 
-function fout2html(fout)
+function jsloc(loc)
+	local jloc = {
+		anchor = {
+			ch = loc.x1 - 1,
+			line = loc.y1 - 1,
+		},
+		head = {
+			ch = loc.x2 - 1,
+			line = loc.y2 - 1,
+		}
+	}
+	return jloc
+end
+
+-- → {loc: loc, html: demohtml}
+function fout2json(fout)
 	local hfout = {}
-	hfout.loc = fout.loc.y1
+	hfout.loc = jsloc(fout.loc)
 	hfout.type = fout.type
 
 	local i = 0
@@ -35,7 +50,7 @@ function fout2html(fout)
 		elseif spec == 'code' then
 			return '<pre>' .. tostring(t[i]) .. '</pre>'
 		elseif spec == 'exp' then
-			return color.brightcyan .. combineer(t[i]) .. color.white
+			return '<span color="cyan">' .. combineer(t[i]) .. '</span>'
 		elseif spec == 'int' then
 			return tostring(math.floor(t[i]))
 		elseif spec == 'cyaan' then
@@ -45,12 +60,13 @@ function fout2html(fout)
 		end
 	end
 	)
-	return html
+	hfout.html = html
+	return hfout
 end
 
 function fout2ansi(fout)
 	local loc =  ansi.underline .. loctekst(fout.loc) .. ansi.normal
-	local type = color.brightred .. fout.type .. 'fout' .. color.white .. ': '
+	local type = color.brightred .. fout.type:gsub('^(.)', string.upper) .. 'fout' .. color.white .. ': '
 	local i = 0
 	local t = fout.args
 	local ansi = loc .. '\t' .. type .. '\t' .. fout.fmt:gsub('{([^}]*)}', function (spec)

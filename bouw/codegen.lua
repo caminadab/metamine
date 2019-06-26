@@ -700,7 +700,8 @@ start:
 	local elf = link(obj)
 	file('.test.elf', elf)
 	os.execute('chmod +x .test.elf')
-	print(os.execute('./.test.elf'))
+	local exitcode = os.execute('./.test.elf')
 	os.remove('.test.elf')
+	assert(exitcode/256 == 3)
 end
 
