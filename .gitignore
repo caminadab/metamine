@@ -4,6 +4,7 @@
 *.yy.*
 *.gen.*
 *.js
+*.log
 
 *.output
 bin/
