@@ -1,6 +1,6 @@
-html = (uit/tijd)(moment)
-ververs = moment → setInnerHtml(html)
-app = requestAnimationFrame(ververs)
+;html = (uit/tijd)(moment)
+;ververs = moment → setInnerHtml(html)
+app = consolelog(uit)
 
 ;canvasid.
 ;canvas = "<canvas id=\"" || tekst(canvasid) || "\"</canvas>"

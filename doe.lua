@@ -3,12 +3,12 @@ require 'bieb'
 require 'func'
 require 'fout'
 
-local function waarde(a, env)
+local function waarde(a, env, ...)
 	if isatoom(a) then
 		local w
 		if w == nil then w = tonumber(a.v) end
 		if w == nil then w = env[a.v] end
-		if w == nil then w = (a.v == '_arg' and "JA" or nil) end
+		if w == nil then w = (a.v and a.v:sub(1,4) == '_arg' and ({...})[a.v:sub(5,5) + 1]) or nil end
 		if w == nil then 
 			error('onbekend: '..tostring(a.v))
 		end
@@ -31,7 +31,7 @@ local function doeblok(blok, env, ...)
 		local naam,exp = stat[1],stat[2]
 		local uit
 	
-		local exp = emap(exp, waarde, env)
+		local exp = emap(exp, waarde, env, ...)
 		local w
 		if isatoom(exp) then
 			if exp.v == '[]' then
@@ -39,10 +39,6 @@ local function doeblok(blok, env, ...)
 			else
 				w = exp.w
 			end
-		elseif fn(exp) == '_arg' then
-			local t = {...}
-			w = t[1]-- or "FOUT"
-			assert(w ~= nil, "geen argument meegegeven")
 		elseif exp.fn and type(exp.fn.w) == 'table' then
 			-- woeps
 			local a = exp.fn.w
@@ -76,7 +72,7 @@ local function doeblok(blok, env, ...)
 				w = func[args[1]]
 
 			else
-				local f = executiefout(stat.loc, 'onbekend index type: '..type(func)..' ('..e2s(stat)..')')
+				local f = executiefout(stat.loc, 'onbekende index: '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
 				print()
 				print(fout2ansi(f))
 			end
@@ -137,7 +133,7 @@ function doe(cfg)
 	for k,v in pairs(cfg.namen) do
 		env[k] = function(...)
 			local isf = k:sub(1,2) == 'fn'
-			if isf and opt and opt.L then print('...') ; print('call '..k); end
+			if isf and opt and opt.L then print('...') ; print('call '..k..' '..table.concat(map({...}, function(x) return combineer(w2exp(x)) end), ' ')); end
 			local ret = doeblok(v, env, ...)
 			if opt and opt.L then 
 				if isf then io.write('\n...') end

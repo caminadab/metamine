@@ -254,8 +254,9 @@ function codegen(cfg)
 				t[#t+1] = 'cmove rax, rbx'
 				opsla(naam, 'rax', naam)
 
-			elseif f == '_arg' then
-				opsla(naam, abiregs[1])-- + tonumber(atoom(exp, 1))])
+			elseif val == '_arg0' then opsla(naam, abiregs[1])
+			elseif val == '_arg1' then opsla(naam, abiregs[2])
+			elseif val == '_arg2' then opsla(naam, abiregs[3])
 
 			elseif f == 'min' or f == 'max' then
 

@@ -1,2 +1,5 @@
-;bord = (0 .. 8) × (0 .. 8)
-uit = "hoi" \
+bord = (0 .. 8) × (0 .. 8)
+uit = bord map f
+
+iseven = n → (n mod 2 = 0)
+f = [x, y] → iseven(x + y)

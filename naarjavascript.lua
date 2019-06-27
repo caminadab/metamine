@@ -48,7 +48,11 @@ local immjs = {
 	['[]'] = '[ARGS]',
 	['{}'] = 'new Set(ARGS)',
 	['{}'] = '{}',
-	['_arg'] = '_argA',
+	['_arg0'] = '_arg0',
+	['_arg1'] = '_arg1',
+	['_arg2'] = '_arg2',
+	['_arg3'] = '_arg3',
+	['_arg4'] = '_arg4',
 
 	-- arit
 	['+i'] = 'X + Y',
@@ -108,7 +112,7 @@ local immjs = {
 
 	-- func
 	['map'] = 'X.map(Y)',
-
+	['@'] = 'function(a, b, c, d, e) { return Y(X(a, b, c, d, e)); }',
 	
 	-- LIB
 	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
@@ -121,7 +125,7 @@ local immjs = {
 	return 0;
 })()]],
 	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = X.toString()', --X.map(String.fromCharCode).reduce((a,b)=>a+b);',
-	['print'] = 'console.log(X)',
+	['consolelog'] = 'console.log(X)',
 	['looptijd'] = '(new Date().getTime() - start)/1000', 
 }
 
@@ -204,7 +208,7 @@ function naarjavascript(app)
 	for blok in spairs(app.punten) do
 		local naam = blok.naam.v
 		if blok.naam.v:sub(1,2) == 'fn' then
-			t[#t+1] = 'function '..naam..'(_argA, _argB, _argC) {'
+			t[#t+1] = 'function '..naam..'(_arg0, _arg1, _arg2, _arg3, _arg4) {'
 			flow(blok, '  ')
 			t[#t+1] = '}'
 		end

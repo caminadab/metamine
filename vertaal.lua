@@ -62,6 +62,9 @@ if test then
 	-- functies
 	test("f = a → a + 1\nuit = f(-1)", 0)
 
+	-- componistenoperator
+	test("f = x → x · 2\ng = y → y - 1\nh = f ∘ g ∘ f ∘ f ∘ g\nuit = h(3)", 19)
+
 	do return end
 
 	local itoatoitoa = [[
