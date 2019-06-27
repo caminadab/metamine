@@ -111,14 +111,14 @@ local immjs = {
 	
 	-- LIB
 	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
-	['requestAnimationFrame'] = '(function f(t) {requestAnimationFrame(f); return X(t); })()' --[[({
+	['requestAnimationFrame'] = 'requestAnimationFrame(X())', --[['(function f(t) {requestAnimationFrame(f); return X(t); })()' --[[({
 	//function f(t) {
 	//	X(t);
 	//	requestAnimationFrame(f);
 	//}
 	//return requestAnimationFrame(f);
 	return 0;
-})()]],
+})()]]
 	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = X.toString()', --X.map(String.fromCharCode).reduce((a,b)=>a+b);',
 	['print'] = 'console.log(X)',
 	['looptijd'] = '(new Date().getTime() - start)/1000', 
