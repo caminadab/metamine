@@ -15,7 +15,7 @@ windows:
 	ln -sf ../doe bin/doe
 
 deploy:
-	scp -r goo/www/* pi:/var/www/html/
+	scp -r goo/www/* metamine.nl:/var/www/html/
 
 #scp -r goo/* pi:/var/www/blog/taal-0.1.1
 

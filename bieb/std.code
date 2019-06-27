@@ -85,6 +85,7 @@ data: lijst byte
 ;tekst: lijst byte
 ;tekst: data ;lijst teken
 
+looptijd : getal
 tijdstip : getal
 int : getal
 nu : tijdstip

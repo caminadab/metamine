@@ -15,13 +15,18 @@ function vertaal(code, doel)
 	local asb = cat(asb, asb2)
 	asb.fn = X'EN'
 
+	-- types voor ARCH
+	local types,typeerfouten = typeer(asb)
+
+	local mach = arch_x64(asb, types)
+	local uit,oplosfouten = oplos(mach, "app")
+
+	-- definitieve types
 	local types,typeerfouten = typeer(asb)
 	if #typeerfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
 
-	local mach = arch_x64(asb, types)
-	local uit,oplosfouten = oplos(mach, "app")
 
 	local fouten = cat(syntaxfouten, typeerfouten, oplosfouten)
 

@@ -116,7 +116,6 @@ local immjs = {
 	['_'] = 'X[Y] != null ? X[Y] : (function() {throw("ongeldige index in lijst");})()',
 	['call'] = 'X(Y)',
 	['vanaf'] = 'X.slice(Y, X.length)',
-	['alert'] = 'document.getElementById("uit").innerHTML = X',
 	['xx'] = 'X.map(x => Y.map(y => [x, y]))',
 
 	-- func
