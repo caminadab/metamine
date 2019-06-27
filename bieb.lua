@@ -11,6 +11,9 @@ bieb = {
 
 	-- web
 	alert =  function(s) print(s) end;
+	requestAnimationFrame = function () error('niet beschikbaar') end;
+	setInnerHtml = function () error('niet beschikbaar') end;
+	looptijd = 0;
 
 	-- lua
 	['print'] = function(a) if opt and opt.L then print() end; print(string.char(table.unpack(a))) ; return 0; end,

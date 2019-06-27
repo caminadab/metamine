@@ -1,3 +1,5 @@
-app = alert(tekst(uit))
 succ = xy → xy + 1
-looptijd = 0
+
+;html = (uit/tijd)(moment)
+ververs = moment → setInnerHtml(uit)
+app = requestAnimationFrame(ververs)

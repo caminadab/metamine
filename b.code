@@ -1,1 +1,8 @@
-uit = Σ 1 .. "hoi"
+; schaakbord
+bord = (0 .. 8) × (0 .. 8)
+iseven(z) = (z mod 2 = 0)
+
+kleur = (x,y) → k
+k = als iseven (x + y) dan 1 anders 0
+;kleur = [beige, bruin]
+uit = k map kleur

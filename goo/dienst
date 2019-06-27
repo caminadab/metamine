@@ -48,6 +48,7 @@ function vt(code)
 		js = naarjavascript(icode)
 	end
 	local fouten = map(fouten, fout2json)
+	print(js)
 
 	return {
 		js = js,

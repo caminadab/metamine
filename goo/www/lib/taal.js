@@ -32,7 +32,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		"tekst", "int", "getal", "cijfer", "letter", "witruimte",
 
 		// tekening
-		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "bruin", "geel", "cyaan",
+		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "beige", "bruin", "geel", "cyaan",
 		"cirkel", "rechthoek", "schrijf", "taart", "polygoon", "sin", "cos", "tan", "abs"
   ]);
   var keywords = wordRE(["als","dan","anders","if","then","else","herhaal","repeat","fout","error" ]);

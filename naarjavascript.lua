@@ -111,7 +111,17 @@ local immjs = {
 	
 	-- LIB
 	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
+	['requestAnimationFrame'] = '(function f(t) {requestAnimationFrame(f); return X(t); })()' --[[({
+	//function f(t) {
+	//	X(t);
+	//	requestAnimationFrame(f);
+	//}
+	//return requestAnimationFrame(f);
+	return 0;
+})()]],
+	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = X.toString()', --X.map(String.fromCharCode).reduce((a,b)=>a+b);',
 	['print'] = 'console.log(X)',
+	['looptijd'] = '(new Date().getTime() - start)/1000', 
 }
 
 function naarjavascript(app)
@@ -128,7 +138,9 @@ function naarjavascript(app)
 			local b = exp[2] and exp[2].v
 			local c = exp[3] and exp[3].v
 
-			if isatoom(exp) then
+			if isatoom(exp) and immjs[exp.v] then
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immjs[exp.v])
+			elseif isatoom(exp) then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, exp.v)
 			elseif immjs[f] then
 				-- a = CMD(a, b)
@@ -196,6 +208,7 @@ function naarjavascript(app)
 			t[#t+1] = '}'
 		end
 	end
+	table.insert(s, 'start = new Date().getTime();\n')
 	flow(app.start, '')
 
 	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')

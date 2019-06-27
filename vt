@@ -65,6 +65,7 @@ Opties:
 
     -i, --veilig      draai het programma in veilige modus
     -j,	--javascript	compileer naar javascript
+    -x,	--demo				compileer naar demo
 		
     -O								optimaliseer uitvoer
 
