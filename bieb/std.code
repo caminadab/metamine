@@ -103,6 +103,7 @@ waarvoor : (verzameling, (iets → bit)) → verzameling
 mod : (getal, getal) → getal
 
 ; tekening!
+;-
 vorm: iets
 tekening: lijst(vorm)
 cirkel: vorm
@@ -121,6 +122,7 @@ geel: kleur
 paars: kleur
 zwart: kleur
 wit: kleur
+-;
 
 ;-
 pos : (kommagetal, kommagetal)

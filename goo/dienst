@@ -136,6 +136,21 @@ function serveer(sock)
 			uit = json.encode(j) -- json(html, fouten)
 		end
 
+	elseif pad == '/vraag' then
+		local mail = string.format(
+[[To: ymte@pc
+Subject: vraag
+From: vraag@metamine.nl
+
+%s
+]], inn)
+		file('.mail', mail)
+		os.execute('sendmail -vt < .mail')
+		uit = "deep ping"
+		status = 200
+		file('.vraag', inn)
+		os.execute('cat .vraag >> vragen.log')
+
 	-- LEES!
 	else
     pad = pad:gsub('%.%.', '%.')
