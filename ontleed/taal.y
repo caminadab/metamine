@@ -35,6 +35,7 @@
 %}
 
 %token '\n' RE "regeleinde"
+%token FOUT
 %token NAAM "naam"
 %token TEKST "tekst"
 %token ALS "als"

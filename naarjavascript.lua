@@ -104,6 +104,7 @@ local immjs = {
 	['call'] = 'X(Y)',
 	['vanaf'] = 'X.slice(Y, X.length)',
 	['alert'] = 'document.getElementById("uit").innerHTML = X',
+	['xx'] = 'X.map(x => Y.map(y => [x, y]))',
 
 	-- func
 	['map'] = 'X.map(Y)',
@@ -111,7 +112,7 @@ local immjs = {
 	
 	-- LIB
 	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
-	['requestAnimationFrame'] = '(function f(t) {requestAnimationFrame(f); return X(t); })()' --[[({
+	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; } requestAnimationFrame(f); return X(t); })()' --[[({
 	//function f(t) {
 	//	X(t);
 	//	requestAnimationFrame(f);
@@ -209,6 +210,7 @@ function naarjavascript(app)
 		end
 	end
 	table.insert(s, 'start = new Date().getTime();\n')
+	table.insert(s, 'stop = false;\n')
 	flow(app.start, '')
 
 	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')

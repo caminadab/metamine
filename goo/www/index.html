@@ -304,6 +304,7 @@ uit = mean(kosten)`,
 	var laadbalk = document.getElementById("laadbalk");
 
 	function vertaal() {
+		stop = true; // stop draaiende programma's
 		voortgang.style.width = '100%';
 		voortgang.style.opacity = '1'
 		vertaalknop.style.backgroundColor = '#000E42';
@@ -318,11 +319,6 @@ uit = mean(kosten)`,
 					uit.innerHTML = "executiefout: " + e;
 				}
 				setErrors(j.fouten);
-
-				/*var scripts = Array.prototype.slice.call(resultaat.getElementsByTagName("script"));
-				for (var i = 0; i < scripts.length; i++) {
-					eval(scripts[i].innerHTML);
-				}*/
 			})
        			//.catch(e => onerror(e));
 	}
@@ -440,7 +436,11 @@ uit = mean(kosten)`,
 					message.classList.add(error.type+"fout");
 					message.classList.add("fout");
 					message.innerHTML = error.html;
-			var b = editor.addLineWidget(error.loc.anchor.line, message);
+
+			var line = error.loc.anchor.line;
+			if (line > editor.lineCount())
+				line = 0;
+			var b = editor.addLineWidget(line, message);
 			oldLineWidgets.push(b);
 		}
 	}

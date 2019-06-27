@@ -28,7 +28,8 @@ function jsloc(loc)
 		head = {
 			ch = loc.x2 - 1,
 			line = loc.y2 - 1,
-		}
+		},
+		source = loc.bron,
 	}
 	return jloc
 end
@@ -48,7 +49,7 @@ function fout2json(fout)
 		elseif spec == 'rood' then
 			return '<span color="red">'.. t[i] .. '</span>'
 		elseif spec == 'code' then
-			return '<pre>' .. tostring(t[i]) .. '</pre>'
+			return '<b>' .. tostring(t[i]) .. '</b>'
 		elseif spec == 'exp' then
 			return '<span color="cyan">' .. combineer(t[i]) .. '</span>'
 		elseif spec == 'int' then
