@@ -305,7 +305,7 @@ if opt.javascript then
 				max = num
 			end
 		end
-		print('trace', maxloc, max)
+		--print('trace', maxloc, max)
 		aantal[maxloc] = nil
 	end
 

@@ -44,8 +44,7 @@ local function doeblok(blok, env, ...)
 			local a = exp.fn.w
 			local i = exp[1].w
 			w = a[i+1]
-			local f = componeer(w2exp, combineer)
-			assert(w ~= nil, f(a) .. '.' .. f(i))
+			assert(w ~= nil, combineer(w2exp(a)) .. '.' .. combineer(w2exp(b)))
 
 		elseif exp.fn.v == '_fn' then
 			w = env[fn(exp)]

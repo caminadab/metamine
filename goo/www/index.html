@@ -286,11 +286,9 @@ canvas { background: #444; }
 kosten = [1, 8, 3, 4, 5]
 mean = (Σ kosten) / |kosten|
 uit = mean`,
-`; nu met behulp van een functie
-kosten = [1, 10, 100, 1000, 10000]
-mean(s) = (Σ s) / |s|
-uit = mean(kosten)`,
+		'; maak een timer\ntimer = 10 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"',
 		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1000',
+		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x || " hoi"\nuit = (f^aantal)("groet:")',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
 		'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
 		'; als-dan & concatenatie \nantwoord = als 2 > 1 dan "ja" anders "nee"\nuit = "klopt dit: " || antwoord',
@@ -438,7 +436,7 @@ uit = mean(kosten)`,
 					message.innerHTML = error.html;
 
 			var line = error.loc.anchor.line;
-			if (line > editor.lineCount())
+			if (line > editor.lineCount() || line < 0)
 				line = 0;
 			var b = editor.addLineWidget(line, message);
 			oldLineWidgets.push(b);

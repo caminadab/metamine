@@ -43,7 +43,14 @@ if test then
 	assert(#f > 0)
 
 	local function test(code, moet)
-		local v = vertaal(code, 'ifunc')
+		local v,f = vertaal(code, 'ifunc')
+		if not v and #f > 0 then
+			print('tijdens testen van '..code..':')
+			for i,fout in ipairs(f) do
+				print(fout2ansi(fout))
+			end
+		end
+			
 		local imm = doe(v)
 		assert(imm == moet, string.format('vertaal("%s") moet %s zijn maar was %s', code, moet, imm))
 	end
@@ -62,8 +69,11 @@ if test then
 	-- functies
 	test("f = a → a + 1\nuit = f(-1)", 0)
 
-	-- componistenoperator
+	-- componeer
 	test("f = x → x · 2\ng = y → y - 1\nh = f ∘ g ∘ f ∘ f ∘ g\nuit = h(3)", 19)
+
+	-- als
+	test("als 2 > 1 dan\n\tuit = 2\nanders\n\tuit = 3", 2)
 
 	do return end
 

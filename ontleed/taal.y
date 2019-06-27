@@ -164,6 +164,7 @@ single:
 | '(' '*' ')'       	{ $$ = A("*"); }
 | '(' '/' ')'       	{ $$ = A("/"); }
 | '(' '+' ')'       	{ $$ = A("+"); }
+| '(' '+' 'i' ')'       	{ $$ = A("+i"); }
 | '(' '-' ')'       	{ $$ = A("-"); }
 
 | '(' '[' ')'     		{ $$ = A("[]"); }
@@ -237,11 +238,10 @@ exp:
 
 /* als ... dan ... */
 | exp ALS exp						 														{ $$ = fn3loc(aloc("=>", @2), $3, $1, @$); }
-| exp ALS '\n' TAB exp	%prec ALS										{ $$ = fn3loc(aloc("=>", @2), $5, $1, @$); }
 | ALS exp DAN exp ANDERS exp  %prec ALS							{ $$ = fn4loc(aloc("=>", @1), $2, $4, $6, @$); }
-/*| ALS exp DAN exp  %prec ALS												{ $$ = FN3(A("=>"), $2, $4); }*/
-| ALS exp DAN '\n' TAB exp %prec ALS								{ $$ = FN3(A("=>"), $2, $6); }
-| ALS '\n' TAB exp '\n' DAN '\n' TAB exp %prec ALS	{ $$ = FN3(A("=>"), $4, $9); }
+/*| ALS exp DAN exp  %prec ALS											{ $$ = FN3(A("=>"), $2, $4); }*/
+/*| ALS exp DAN '\n' exp %prec ALS									{ $$ = FN3(A("=>"), $2, $6); }*/
+| ALS '\n' exp '\n' DAN '\n' exp %prec ALS	{ $$ = FN3(A("=>"), $4, $7); }
 
 /* als ... dan ... anders */
 /*
@@ -251,11 +251,9 @@ anders
 	b = 3
 */
 | ALS exp DAN '\n'   		/* 1, 2, 3, 4 */
-  TAB exp '\n'   				/* 5, 6, 7 */
-	ANDERS '\n'   				/* 8, 9 */
-	TAB exp  %prec ALS    /* 10, 11 */								{ $$ = fn4loc(aloc("=>", @1), $2, $6, $11, @$); }
-
-| ALS exp DAN '\n' exp '\n' ANDERS '\n' exp %prec ALS { $$ = FN3(A("/\\"), FN3(A("=>"), $2, $5), FN3(A("=>"), FN2(A("!"), $2), $9)); }
+  exp '\n'   						/* 5, 6 */
+	ANDERS '\n'   				/* 7, 8 */
+	exp  %prec ALS    		/* 9 */								{ $$ = fn4loc(aloc("=>", @1), $2, $5, $9, @$); }
 
 | exp '^' exp       	{ $$ = fn3loc(aloc("^", @2), $1, $3, @$); }
 | exp '_' exp       	{ $$ = fn3loc(aloc("_", @2), $1, $3, @$); }

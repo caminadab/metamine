@@ -369,6 +369,8 @@ bieb = {
 		return tonumber(string.char(table.unpack(a)))
 	end;
 
+	['intd'] = math.floor,
+
 	['int'] = function(a)
 		if tonumber(a) then
 			return math.floor(a)

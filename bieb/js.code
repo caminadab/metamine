@@ -1,6 +1,6 @@
 ;html = (uit/tijd)(moment)
 ;ververs = moment → setInnerHtml(html)
-app = consolelog(uit)
+app = consolelog(tekst(uit))
 
 ;canvasid.
 ;canvas = "<canvas id=\"" || tekst(canvasid) || "\"</canvas>"
@@ -8,6 +8,7 @@ app = consolelog(uit)
 ;app = setinnerhtml("res", 
 succ = xy → xy + 1
 
+;-
 ; canvas pad
 beginpad: canvaspad
 boog: canvaspad → canvaspad
@@ -18,13 +19,14 @@ streep: canvaspad → tekenbaar
 lijn: canvaspad → canvaspad
 cirkel: canvaspad → canvaspad
 
+font: (canvas, font) → canvas
+fillText: (canvas, font) → canvas
+-;
+
 ; pad.
 ; c = canvaspad(pad)
 ; t = vul(cirkel(canvaspad))
 
-
-font: (canvas, font) → canvas
-fillText: (canvas, font) → canvas
 
 ;boog(pos, straal, hoekbereik) = "ctx.arc({pos₀}, {pos₁}, {straal}, {hoekbereik₀}, {hoekbereik₁})"
 
