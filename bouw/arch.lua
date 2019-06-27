@@ -11,7 +11,7 @@ function arch_x64(exp, types)
 			sub.fn = X('intd')
 		--elseif types[sub.fn] and (isfn(sub.fn) or (sub.fn.exp and isfn(sub.fn.exp))) and types[sub.fn]:issubtype('->') then
 			--error('ja!'..e2s(sub.fn))
-			
+
 			--sub.fn = X(fn(sub)..'f')
 		elseif types[sub.fn] and types[sub.fn]:issubtype('lijst') then
 			--error'ok'

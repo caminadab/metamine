@@ -22,7 +22,7 @@ function w2exp(w)
 			uit.fn = X'[]'
 		end
 	else
-		return X(w)
+		uit = X(tostring(w))
 		--error(w..type(w)	)
 	end
 	uit.w = w

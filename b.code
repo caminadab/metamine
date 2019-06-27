@@ -1,8 +1,5 @@
-; schaakbord
 bord = (0 .. 8) × (0 .. 8)
-iseven(z) = (z mod 2 = 0)
+uit = bord map f
 
-kleur = (x,y) → k
-k = als iseven (x + y) dan 1 anders 0
-;kleur = [beige, bruin]
-uit = k map kleur
+iseven = n → (n mod 2 = 0)
+f = [x, y] → iseven(x + y)

@@ -281,6 +281,17 @@ function typeer(exp)
 					weestype(exp, ta, exp.fn.loc)
 					weestype(exp.fn, X'->')
 
+				-- speciaal voor 'map'
+				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
+				elseif f == 'map' and types[b] then
+					weestype(exp, X('lijst', types[b]))
+
+				-- speciaal voor 'componeer'
+				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
+				elseif f == '@' and types[a] and types[b] then
+					-- TODO check
+					weestype(exp, X('->', types[a][1], types[b][2]))
+
 				-- speciaal voor '='
 				elseif f == '=' then
 					local ta, tb = types[a], types[b]

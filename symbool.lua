@@ -70,6 +70,7 @@ end
 function substitueer(exp, van, naar)
 	if isatoom(exp) then
 		if exp.v == van.v then
+			naar.ref = van.ref
 			return naar, 1
 		else
 			return exp, 0
@@ -77,6 +78,7 @@ function substitueer(exp, van, naar)
 	else
 		if isexp(van) then
 			if expmoes(exp) == expmoes(van) then
+				naar.ref = van.ref
 				return naar, 1
 			end
 		end
@@ -88,6 +90,7 @@ function substitueer(exp, van, naar)
 			t[i],m = substitueer(v, van, naar)
 			n = n + m
 		end
+		t.ref = exp.ref
 		return t, n
 	end
 end
@@ -161,22 +164,16 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		ontlink(sub, i)
 		-- lang uitschrijven
 		if i == 1 or isatoom(naar) then
-			local ref = van.ref --sub.ref or van.ref
+			local ref = sub.ref or van.ref or naar.ref
+			if not ref then
+				ref = maakref(van)
+			end
 			assign(sub, naar)
-			--print('UITSCHRIJF', moes(van), e2s(sub))
-			naar.ref = van.ref
-			if true or not al[ref.v] then
-			--print('REF', ref.v, e2s(naar), isatoom(naar))
-			--al[ref.v] = ref
-			end
-
-			if not van.ref then
-				van.ref = maakref(van)
-			end
-			ref = van.ref
+			--print('UITSCHRIJF', moes(van), moes(sub), e2s(ref))
 			sub.ref = ref
 			ref.exp = sub
 			van.exp = ref
+			naar.ref = ref
 			for ultrasub in boompairsdfs(sub) do
 				ultrasub.moes = nil
 				link(ultrasub)
@@ -197,87 +194,6 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 	end
 		--print('RET' ,e2s(exp))
 	return exp
-end
-
-function substitueerzuinig0(exp, van, naar, maakvar, al)
-	if S then S = S + 1 end
-	--do return substitueer(exp, van, naar) end
-	--local m = moes(van)..'_'..moes(naar)
-	al = al or {}
-	local ret
-
-	-- maak ref
-	local ref = van.ref
-	if not ref then
-		if isatoom(van) then
-			ref = X('~' .. van.v)
-		else
-			--error('UHH')
-			ref = X('~' .. maakvar())
-		end
-		--van.exp = ref
-		naar.ref = ref
-	end
-
-	-- maak ref voor exp
-	if not exp.ref then
-		-- TODO hoeven atomen inderdaad geen referentie?
-		if isatoom(exp) then
-			if false then
-				exp.ref = X('~' .. exp.v)
-			end
-		else
-			--error('UHH')
-			exp.ref = X('~' .. maakvar())
-		end
-		van.exp = ref
-		naar.ref = ref
-	end
-
-	if isatoom(exp) then
-		if al[moes(van)] and exp.v == van.v then
-			al[moes(van)] = ref
-			ret = al[moes(van)]
-			--ret.ref = assert(ref)
-
-		elseif exp.v == van.v then
-			if isexp(naar) then
-				al[moes(van)] = assert(ref)
-			--naar.ref = assert(ref)
-				--print(ret, naar)
-			end
-			ret = naar
-			naar.ref = ref
-		else
-			ret = exp
-
-		end
-
-	else
-
-		if isexp(van) then
-			if moes(exp) == moes(van) then
-				--error'RAAR'
-				naar.ref = exp.ref
-				return naar, 1
-			end
-		end
-
-		local t = {loc=exp.loc}
-		local n = 0
-		t.fn = substitueerzuinig(exp.fn, van, naar, maakvar, al)
-		for i,v in ipairs(exp) do
-			t[i] = substitueerzuinig(v, van, naar, maakvar, al)
-		end
-		--t.ref = X('~'..maakvar())
-		t.ref = assert(exp.ref, 'exp heeft geen ref: '..moes(exp))
-		ret = t
-	end
-	--van.ref = ref
-
-	--al[moes(van)] = ref
-
-	return assert(ret, 'niet ret')
 end
 
 sym = {

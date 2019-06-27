@@ -48,21 +48,32 @@ local immjs = {
 	['[]'] = '[ARGS]',
 	['{}'] = 'new Set(ARGS)',
 	['{}'] = '{}',
-	['_arg'] = '_argA',
+	['_arg0'] = '_arg0',
+	['_arg1'] = '_arg1',
+	['_arg2'] = '_arg2',
+	['_arg3'] = '_arg3',
+	['_arg4'] = '_arg4',
 
 	-- arit
 	['+i'] = 'X + Y',
+	['+d'] = 'X + Y',
 	['+'] = 'X + Y',
 	['-'] = 'X - Y',
+	['-i'] = 'X - Y',
 	['-d'] = 'X - Y',
 	['*'] = 'X * Y',
+	['*i'] = 'X * Y',
 	['*d'] = 'X * Y',
 	['/'] = 'X / Y',
+	['/i'] = 'X / Y',
 	['/d'] = 'X / Y',
 	['mod'] = 'X % Y',
 	['modi'] = 'X % Y',
+	['modd'] = 'X % Y',
 	['^'] = 'Math.pow(X, Y)',
 	['^i'] = 'Math.pow(X, Y)',
+	['^d'] = 'Math.pow(X, Y)',
+	['^f'] = 'function(res) { for (var i = 0; i < Y; i++) res = X(res); return res; }',
 
 	-- cmp
 	['>'] = 'X > Y',
@@ -87,6 +98,8 @@ local immjs = {
 	['min'] = 'Math.min(X,Y)',
 	['max'] = 'Math.max(X,Y)',
 	['entier'] = 'Math.floor(X)',
+	['int'] = 'Math.floor(X)',
+	['intd'] = 'Math.floor(X)',
 	['abs'] = 'Math.abs(X)',
 	['absd'] = 'Math.abs(X)',
 	['absi'] = 'Math.abs(X)',
@@ -104,24 +117,31 @@ local immjs = {
 	['call'] = 'X(Y)',
 	['vanaf'] = 'X.slice(Y, X.length)',
 	['alert'] = 'document.getElementById("uit").innerHTML = X',
+	['xx'] = 'X.map(x => Y.map(y => [x, y]))',
 
 	-- func
 	['map'] = 'X.map(Y)',
-
+	['@'] = 'function(a, b, c, d, e) { return Y(X(a, b, c, d, e)); }',
 	
 	-- LIB
 	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
-	['requestAnimationFrame'] = 'requestAnimationFrame(X())', --[['(function f(t) {requestAnimationFrame(f); return X(t); })()' --[[({
+	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; } var r = X(t); requestAnimationFrame(f); return r; })()' --[[({
 	//function f(t) {
 	//	X(t);
 	//	requestAnimationFrame(f);
 	//}
 	//return requestAnimationFrame(f);
 	return 0;
-})()]]
-	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = X.toString()', --X.map(String.fromCharCode).reduce((a,b)=>a+b);',
-	['print'] = 'console.log(X)',
-	['looptijd'] = '(new Date().getTime() - start)/1000', 
+})()]],
+	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b)=>a+b) : X.toString();',
+	['consolelog'] = 'console.log(X)',
+}
+
+local immsym = {
+	looptijd = '(new Date().getTime() - start)/1000', 
+	sin = 'Math.sin',
+	cos = 'Math.cos',
+	tan = 'Math.tan',
 }
 
 function naarjavascript(app)
@@ -138,8 +158,8 @@ function naarjavascript(app)
 			local b = exp[2] and exp[2].v
 			local c = exp[3] and exp[3].v
 
-			if isatoom(exp) and immjs[exp.v] then
-				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immjs[exp.v])
+			if isatoom(exp) and immsym[exp.v] then
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
 			elseif isatoom(exp) then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, exp.v)
 			elseif immjs[f] then
@@ -153,6 +173,8 @@ function naarjavascript(app)
 				cmd = b and cmd:gsub('_Y_', b) or cmd
 				cmd = c and cmd:gsub('_Z_', c) or cmd
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, cmd)
+			elseif immsym[exp.v] then
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
 			elseif bieb[f] then
 				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			elseif true then -- TODO check lijst
@@ -203,12 +225,13 @@ function naarjavascript(app)
 	for blok in spairs(app.punten) do
 		local naam = blok.naam.v
 		if blok.naam.v:sub(1,2) == 'fn' then
-			t[#t+1] = 'function '..naam..'(_argA, _argB, _argC) {'
+			t[#t+1] = 'function '..naam..'(_arg0, _arg1, _arg2, _arg3, _arg4) {'
 			flow(blok, '  ')
 			t[#t+1] = '}'
 		end
 	end
 	table.insert(s, 'start = new Date().getTime();\n')
+	table.insert(s, 'stop = false;\n')
 	flow(app.start, '')
 
 	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
@@ -222,7 +245,13 @@ if test then
 	require 'vertaal'
 
 	local function moetzijn(broncode, waarde)
-		local icode = vertaal(broncode, "js")
+		local icode,f = vertaal(broncode, "js")
+		if not icode then
+			print('javascript vertaalfouten')
+			for i,fout in ipairs(f) do
+				print(fout2ansi(fout))
+			end
+		end
 		local js = naarjavascript(icode)
 		local res = doejs(js)
 

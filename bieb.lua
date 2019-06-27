@@ -10,13 +10,17 @@ bieb = {
 	call = true,
 
 	-- web
-	alert =  function(s) print(s) end;
+	consolelog =  function(s) print(s) end;
 	requestAnimationFrame = function () error('niet beschikbaar') end;
 	setInnerHtml = function () error('niet beschikbaar') end;
 	looptijd = 0;
 
 	-- lua
-	['print'] = function(a) if opt and opt.L then print() end; print(string.char(table.unpack(a))) ; return 0; end,
+	['print'] = function(a)
+		if opt and opt.L then print() end;
+		print(combineer(w2exp(a)))
+		return 0
+	end,
 	
 
 	syscall = function(a) error 'SYSCALL' end, 
@@ -84,20 +88,13 @@ bieb = {
 
 	-- linksassociatief
 	['xx'] = function(a,b)
-		--if type(a) == 'number' and type(b) == 'number' then
-			--return {
-			
-		if a.is.tupel and b.is.tupel then
-			for i=1,#b.val do
-				a.val[#a.val+1] = b.val[i]
-			end
-			return a
-		else
-			if a.is.tupel then
-				a.type.lang = a.type.lang + 1
-				a.val[#a.val+1] = b.val
+		local t = {}
+		for i,aa in ipairs(a) do
+			for i,bb in ipairs(b) do
+				t[#t+1] = {aa, bb}
 			end
 		end
+		return t
 	end;
 			
 	['lua'] = function(func)
@@ -371,6 +368,8 @@ bieb = {
 	['getal'] = function(a)
 		return tonumber(string.char(table.unpack(a)))
 	end;
+
+	['intd'] = math.floor,
 
 	['int'] = function(a)
 		if tonumber(a) then

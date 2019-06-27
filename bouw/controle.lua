@@ -149,11 +149,14 @@ function controle(exp, maakvar)
 			--al = {}
 			local naam = X(maakfunc())
 			local waarde = exp[1]
-			local arg = exp[2]
+			local args = {exp[2], exp[3], exp[4]}
+			exp.moes = nil
 			exp.v = naam.v
 			exp.fn = nil
 			exp[1] = nil
 			exp[2] = nil
+			exp[3] = nil
+			exp[4] = nil
 			local bfn = maakblok(naam, {}, X('ret', '9999999'))
 			local b = blok
 			blok = bfn
@@ -161,6 +164,15 @@ function controle(exp, maakvar)
 			--waarde.ref = 
 			--print('FN AL', ret.v, e2s(stat))
 			--stat[2].ref = assert(exp.ref)
+
+			-- argumenten
+			local nargs = #waarde - 1
+			for i,arg in ipairs(args) do
+				local argvan = X('_arg', arg)
+				local argnaar = X('_arg'..(i-1))
+				waarde = substitueerzuinig(waarde, argvan, argnaar, maakvar)
+			end
+
 			local res = con(waarde)
 			blok.epiloog[1] = res
 			graaf:punt(bfn)
