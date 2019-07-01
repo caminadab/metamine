@@ -15,7 +15,9 @@ require 'optimaliseer'
 
 local socket = require 'socket'
 local server = socket.bind('127.0.0.1','1237')
-assert(server)
+assert(server, 'serverpoort 1237 is niet beschikbaar')
+local log = io.open('dienst.log', 'a')
+assert(log, 'logbestand is niet beschikbaar')
 local sockets = {server}
 local coros = {}
 
@@ -118,6 +120,8 @@ function serveer(sock)
 
 	if inn then
 		inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
+		log:write(inL, '\n')
+		log:flush()
 	end
 
 	-- VERTAAL!

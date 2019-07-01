@@ -165,7 +165,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 ((\d+)|(\.\d+))(e\d*)? { *yylval = a(yytext); return NAAM; }
 -?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; } /* getal */
 -?[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*\.[0-9]*			{ *yylval = a(yytext); return NAAM; }
+-?[0-9]*\.[0-9]+			{ *yylval = a(yytext); return NAAM; }
 -?[0-9]*			{ *yylval = a(yytext); return NAAM; }
 [a-zA-Z_][a-zA-Z0-9\-_]*	{ *yylval = a(yytext); return NAAM; }
 0x[0-9A-Fa-f]+			{ *yylval = a(yytext); return NAAM; }

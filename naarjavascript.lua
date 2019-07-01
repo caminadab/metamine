@@ -123,6 +123,7 @@ local immjs = {
 	['@'] = 'function(a, b, c, d, e) { return Y(X(a, b, c, d, e)); }',
 	
 	-- LIB
+	['vierkant'] = 'context.beginPath();\ncontext.rect(X[0], X[1], Y, Y);\ncontext.fillStyle = "green";\ncontext.fill();',
 	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
 	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; } var r = X(t); requestAnimationFrame(f); return r; })()' --[[({
 	//function f(t) {
