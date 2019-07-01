@@ -14,6 +14,7 @@ bieb = {
 	requestAnimationFrame = function () error('niet beschikbaar') end;
 	setInnerHtml = function () error('niet beschikbaar') end;
 	looptijd = 0;
+	vierkant = function() error('niet beschikbaar') end;
 
 	-- lua
 	['print'] = function(a)

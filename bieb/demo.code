@@ -3,3 +3,4 @@ succ = xy → xy + 1
 ;html = (uit/tijd)(moment)
 ververs = moment → setInnerHtml(uit)
 app = requestAnimationFrame(ververs)
+canvas = objs → setInnerHtml("<canvas>yeah</canvas>")

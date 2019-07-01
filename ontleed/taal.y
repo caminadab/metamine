@@ -255,6 +255,10 @@ anders
 	ANDERS '\n'   				/* 7, 8 */
 	exp  %prec ALS    		/* 9 */								{ $$ = fn4loc(aloc("=>", @1), $2, $5, $9, @$); }
 
+| ALS exp DAN '\n'   		/* 1, 2, 3, 4 */
+  exp '\n'   						/* 5, 6 */
+	%prec ALS    				{ $$ = fn3loc(aloc("=>", @1), $2, $5, @$); }
+
 | exp '^' exp       	{ $$ = fn3loc(aloc("^", @2), $1, $3, @$); }
 | exp '_' exp       	{ $$ = fn3loc(aloc("_", @2), $1, $3, @$); }
 | exp '*' exp       	{ $$ = fn3loc(aloc("*", @2), $1, $3, @$); }
