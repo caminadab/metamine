@@ -7,8 +7,8 @@ require 'optimaliseer'
 require 'oplos'
 
 function vertaal(code, doel)
-	opt = {T=true,L=true}
-	verbozeTypes = true
+	--opt = {T=true,L=true}
+	--verbozeTypes = true
 	local doel = doel or "ifunc"
 	local maakvar = maakvars()
 

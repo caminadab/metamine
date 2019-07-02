@@ -56,6 +56,7 @@ local immjs = {
 	['_arg2'] = '_arg2',
 	['_arg3'] = '_arg3',
 	['_arg4'] = '_arg4',
+	['|'] = 'X || Y',
 
 	-- arit
 	['+i'] = 'X + Y',

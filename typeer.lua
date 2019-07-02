@@ -492,7 +492,7 @@ function typeer(exp)
 	-- is alles nu getypeerd?
 	for exp in boompairs(exp) do
 		if not types[exp] then
-				if fn(exp) ~= '=' and fn(exp) ~= '=>' and fn(exp) ~= '[]' then
+				if false and fn(exp) ~= '=' and fn(exp) ~= '=>' and fn(exp) ~= '[]' then
 					local fout = typeerfout(exp.loc, 'kon type niet bepalen van {code}',
 						combineer(exp)
 					)
