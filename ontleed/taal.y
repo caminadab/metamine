@@ -252,8 +252,8 @@ exp:
 
 /* als ... dan ... */
 | exp ALS exp						 														{ $$ = fn3loc(aloc("=>", @2), $3, $1, @$); }
-| ALS exp DAN exp ANDERS exp  %prec ALS							{ $$ = fn4loc(aloc("=>", @1), $2, $4, $6, @$); }
-| ALS exp DAN exp  %prec ALS											{ $$ = FN3(A("=>"), $2, $4); }
+| ALS exp DAN exp ANDERS exp EIND  %prec ALS							{ $$ = fn4loc(aloc("=>", @1), $2, $4, $6, @$); }
+| ALS exp DAN exp  EIND %prec ALS											{ $$ = FN3(A("=>"), $2, $4); }
 
 | exp '^' exp       	{ $$ = fn3loc(aloc("^", @2), $1, $3, @$); }
 | exp '_' exp       	{ $$ = fn3loc(aloc("_", @2), $1, $3, @$); }

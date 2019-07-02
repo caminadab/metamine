@@ -4,10 +4,10 @@ uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
 atoi = b → i
 	; negatief?
   negatief = (b₀ = '-')
-  sign = als negatief dan -1 anders 1
+  sign = als negatief dan -1 anders 1 eind
 
 	; cijfers van de tekst
-  tekens = als negatief dan (b vanaf 1) anders (b)
+  tekens = als negatief dan (b vanaf 1) anders (b) eind
   cijfers = tekens map (t → t - '0')
 
 	; waarde van elk cijfer gegeven de positie
@@ -21,7 +21,7 @@ atoi = b → i
 ; integer -> tekst
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
-  neg = als x < 0 dan "-" anders ""
+  neg = als x < 0 dan "-" anders "" eind
   a = neg || ((n .. 0) map cijfer)
   geschaald = (abs x)/10^m
   cijfer = m → '0' + (entier geschaald) mod 10

@@ -10,11 +10,12 @@ int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int 
 		fouten[*numfouten-1].loc = *loc;
 		return 1;
 	}
-	// fouten
-	struct fout fout;
-	fout.loc = *loc;
+	struct fout* fout = &fouten[*numfouten];
+	fout->loc = *loc;
+	strcpy(fout->msg, yymsg);
+
 	(*numfouten)++;
-	strcpy(fout.msg, yymsg);
+
 	return 0;
 }
 

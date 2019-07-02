@@ -3,8 +3,8 @@ itoa = i → a
 bases = entier(log10(i)) .. 0
 
 tiental = 10^basis
-cijfer = int((|i| / tiental) mod 10)
-cijfers = bases map (basis → cijfer)
+cijfer = int((abs(i) / tiental) mod 10)
+cijfers = bases map (basis → cijfer + '0')
 
 als i < 0 dan
 	a = "-" || cijfers
@@ -12,5 +12,5 @@ anders
 	a = cijfers
 eind
 
-uit = itoa(123)
+uit = itoa(-123)
 

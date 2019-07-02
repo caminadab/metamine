@@ -24,7 +24,7 @@ local function waarde(a, env, ...)
 		if w == nil then
 			w = (a.v and a.v:sub(1,4) == '_arg' and ({...})[a.v:sub(5,5) + 1]) or nil end
 		if w == nil then 
-			error('onbekend: '..tostring(a.v))
+			--error('onbekend: '..tostring(a.v))
 		end
 
 		a.w = w
