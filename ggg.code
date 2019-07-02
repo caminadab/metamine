@@ -1,7 +1,4 @@
-; maak een timer
-timer = 10 - int(looptijd)
-als timer > 0 dan
-	uit = tekst(timer)
-anders
-	uit = "Boem!"
-eind
+; zeg een aantal keer "hoi"
+aantal = int(looptijd)
+f = x → x || " hoi"
+uit = (f^aantal)("groet:")

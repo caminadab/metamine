@@ -110,7 +110,7 @@ function oplos(exp,voor)
 			end
 
 			if type(val) == 'table' then return false end
-			return tonumber(val)
+			return (tonumber(val) and true)
 				or string.upper(val or '???')==val
 				or val == 'standaardinvoer' -- kuch...
 				or val == '_arg'

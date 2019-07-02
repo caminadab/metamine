@@ -5,6 +5,10 @@ require 'fout'
 
 local function waarde(a, env, ...)
 	local t = {...}
+	if fn(a) == '[]u' then
+		--w = string.char(unpack(map(a, function(x) return tonumber(x) end)))
+		--return a
+	end
 	if #t == 1 and type(t[1]) == 'table' then
 		t = t[1]
 	end

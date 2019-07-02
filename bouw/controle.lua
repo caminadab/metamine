@@ -89,7 +89,7 @@ function controle(exp, maakvar)
 		if isfn(exp) and fn(exp) == '[]' then
 			arg = con(exp)
 		elseif isfn(exp) and fn(exp) == '[]u' then
-			arg = exp
+			arg = con(exp)
 		elseif isfn(exp) then
 			arg = con(exp)
 		else
