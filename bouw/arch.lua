@@ -31,10 +31,11 @@ function arch.js(exp, types)
 		if type then
 			if fn(sub) == '[]' then
 				if type:issubtype('tekst') then
-					sub.fn = X('[]b')
+					sub.fn = X('[]u')
 				end
 			end
 		end
+		local a,b = sub[1],sub[2]
 
 		local isgetal = types[sub[1]] and types[sub[1]].v == 'getal'
 		local isint = types[sub[1]] and types[sub[1]]:issubtype('int')
@@ -44,11 +45,14 @@ function arch.js(exp, types)
 			--sub.fn = X('tekst')
 		elseif fn(sub) == '||' and types[sub] and types[sub]:issubtype('tekst') then
 			sub.fn = X('||u')
-		elseif fn(sub) == 'cat' and types[sub] and types[sub]:issubtype('tekst') then
+		elseif fn(sub) == '||' and types[a] and types[b] and types[a]:issubtype('tekst') and types[a]:issubtype('tekst') then
+			error'JAAJA'
+			sub.fn = X('||u')
+		elseif fn(sub) == 'cat' and types[a] and types[b] and types[a]:issubtype('tekst') and types[b]:issubtype('tekst') then
 			sub.fn = X('catu')
 
 		-- index
-		elseif types[sub.fn] and types[sub.fn]:issubtype('tekst') then
+		elseif types[sub.fn] and types[sub.fn]:paramtype('int').v == 'teken' then
 			error'OK!'
 			sub[2] = sub[1]
 			sub[1] = sub.fn

@@ -16,6 +16,17 @@ bieb = {
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
 
+	['_'] = function(a, b)
+		if type(a) == 'string' then
+			return a:byte(b+1)
+		end
+		return a[b]
+	end;
+
+	['_u'] = function(a, b)
+		return a:byte(b)
+	end;
+
 	-- lua
 	['print'] = function(a)
 		if type(a) == 'table' and #a > 1 then

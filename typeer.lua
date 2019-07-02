@@ -4,6 +4,7 @@ require 'combineer'
 require 'typegraaf'
 
 require 'ontleed'
+require 'oplos'
 require 'fout'
 
 --[[
@@ -186,19 +187,7 @@ function typeer(exp)
 			T = X'kommagetal'
 		elseif isfn(exp) and exp.fn.v == '[]u' then
 			weestype(exp.fn, X'tekens')
-			T = X('tekst')
-		elseif isfn(exp) and exp.fn.v == '[]' then
-			--T = X'lijst'
-			T = typegraaf.iets
-			for i=1,#exp do
-				local t = types[exp[i]]
-				if not t then break end
-				T = typegraaf:unie(T, t)
-				if not T then break end
-			end
-			if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
-			--if true or T and T.v ~= 'iets' then T = X('^', T, #exp)
-			else T = nil end
+			weestype(exp, X('tekst'))
 		elseif isfn(exp) and exp.fn.v == '{}' then
 			T = X'set'
 		elseif isfn(exp) and exp.fn.v == ',' then
@@ -225,7 +214,7 @@ function typeer(exp)
 			local t = oorzaakloc[moes(exp)]
 			local s = '\t(' ..ansi.underline.. (t and loctekst(t) or '')..ansi.normal..')'
 			if verbozeTypes and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then
-				print(moes(exp), moes(T), s)
+				--print(moes(exp), moes(T), s)
 			end
 			types[exp] = T
 			typegraaf:link(T, S)
@@ -298,23 +287,49 @@ function typeer(exp)
 				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
 				-- map: (T:collectie)(A), (A → B) → T(B)
 				elseif f == 'map' and types[a] and types[b] then
-					local atype =X('collectie', a:paramtype('collectie'))
-					local btype = X('collectie', types[b[2]])
+					local atype =X('verzameling', a:paramtype('verzameling'))
+					local btype = X('verzameling', types[b[2]])
 					weestype(a, atype)
 					weestype(exp, btype)
+					print('ATYPE', e2s(atype))
 					print('BTYPE', e2s(btype))
 
 				-- speciaal voor 'xx'
 				elseif f == 'xx' and types[a] and types[b] then
 					local type = X('lijst', X('tupel', types[a]:paramtype('lijst'), types[b]:paramtype('lijst')))
-					print('TYPEEE', e2s(type))
 					weestype(exp, type)
+					weestype(fn, 'dinges')
 
 				-- speciaal voor '_'
 				elseif f == '_' and types[a] and types[b] then
 					local type = types[a]:paramtype('lijst')
-					print('TYPEEE', e2s(type))
 					weestype(exp, type)
+					weestype(b, X'nat')
+					--weestype(a, X'lijst')
+
+				elseif isfn(exp) and f == '[]' then
+					--T = X'lijst'
+					print('JA', e2s(exp))
+					T = typegraaf.iets
+					for i=1,#exp do
+						local t = types[exp[i]]
+						if not t then break end
+						T = typegraaf:unie(T, t)
+						print('UNIE', e2s(T))
+						if not T then break end
+					end
+					if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
+					--if true or T and T.v ~= 'iets' then T = X('^', T, #exp)
+					else T = nil end
+					weestype(exp, T)
+
+				elseif f == '||' and types[a] and types[b] then
+					local asub = types[a]:paramtype('lijst')
+					local bsub = types[a]:paramtype('lijst')
+					local sub = typegraaf:unie(asub, bsub)
+					local type = X('lijst', sub)
+					weestype(exp, type)
+					weestype(fn, X'ok')
 
 				-- speciaal voor '[]u'
 				elseif f == '[]u' then
@@ -352,6 +367,7 @@ function typeer(exp)
 								fouten[a] = true
 							end
 						end
+						weestype(fn, 'ok')
 					elseif types[a] then weestype(b, types[a], exp.loc) ; oorzaakloc[b] = exp.loc
 					elseif types[b] then weestype(a, types[b], exp.loc) ; oorzaakloc[a] = exp.loc
 					end
@@ -473,7 +489,6 @@ function typeer(exp)
 	-- is alles nu getypeerd?
 	for exp in boompairs(exp) do
 		if not types[exp] then
-			if verbozeTypes then
 				if fn(exp) ~= '=' and fn(exp) ~= '=>' and fn(exp) ~= '[]' then
 					local fout = typeerfout(exp.loc, 'kon type niet bepalen van {code}',
 						combineer(exp)
@@ -483,7 +498,6 @@ function typeer(exp)
 						fouten[#fouten+1] = fout
 						fouten[a] = true
 					end
-				end
 			end
 		end
 	end

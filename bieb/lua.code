@@ -1,6 +1,3 @@
-;open = ioopen
-;sluit = ioclose
-;stduit = iostduit
-app = print(uit)
-succ = succa → succa + 1
+app = print(tekst(uit))
+succ = succA → succA + 1
 looptijd = 0

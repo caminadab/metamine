@@ -93,9 +93,8 @@ function expmoesR(exp, t)
 end
 
 function expmoes(exp)
-	if exp.moes then -- TODO is dit veilig??
+	if exp.moes then
 		-- niets...
-		--assert(type(exp.moes) == 'string')
 	elseif isatoom(exp) then
 		exp.moes = exp.v
 	else
