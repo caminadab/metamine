@@ -1,10 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
 #include "node.h"
-
-int ontleed(char* code, struct fout* fouten, int maxfouten);
+#include "ontleed.h"
 
 /*
 a = 1  → +(1 2)
@@ -20,13 +20,21 @@ f =
 */
 
 int main() {
-	struct fout fouten[1];
-	int numfouten = ontleed("a = 3)", fouten, 1);
+	struct fout fouten[10];
+
+	char* buf = malloc(1024 * 1024);
+	int numfouten = ontleed("a = 3)", buf, 1024 * 1024, fouten, 10);
+	printf(buf);
+	printf("\n");
+	printf("%d\n", numfouten);
 	assert(numfouten == 1);
 		
 	char* tests[][2] = {
 		// als dan
 		{"als ja dan 1 anders 0", "=>(ja 1 0)"},
+		{"als ja dan\na = 2\neind", "=>(ja EN(=(a 2)))"},
+		{"als ja dan\na = 2\nanders\na = 3\neind", "=>(ja EN(=(a 2)) EN(=(a 3)))"},
+		{0, 0},
 
 		// idk
 		{"a = \"♕\"", "=(a [](9813))"},
@@ -227,14 +235,22 @@ int main() {
 
 	for (int i = 0; tests[i][0]; i++) {
 		char* test = tests[i][0];
+		char* doel = tests[i][1];
+
 		char t[0x100];
 		strcpy(t, test);
 		strcat(t, "\n");
-		char* doel = tests[i][1];
-		int nfouten = ontleed(t, 0, 0);
+
+		int len = 200;
+		char lisp[len];
+
+		struct fout fouten[10];
+
+		int nfouten = ontleed(t, lisp, len, fouten, 10);
 		char doelen[0x400];
 		sprintf(doelen, "EN(%s)", doel);
-		if (strcmp(lisp, doel) && strcmp(lisp, doel2)) {
+
+		if (strcmp(lisp, doel) && strcmp(lisp, doelen)) {
 			puts("FOUT BIJ TEST");
 			puts(test);
 			printf("MOET ZIJN %s\n", doel);

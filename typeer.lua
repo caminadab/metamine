@@ -291,8 +291,8 @@ function typeer(exp)
 					local btype = X('verzameling', types[b[2]])
 					weestype(a, atype)
 					weestype(exp, btype)
-					print('ATYPE', e2s(atype))
-					print('BTYPE', e2s(btype))
+					--print('ATYPE', e2s(atype))
+					--print('BTYPE', e2s(btype))
 
 				-- speciaal voor 'xx'
 				elseif f == 'xx' and types[a] and types[b] then
@@ -309,19 +309,20 @@ function typeer(exp)
 
 				elseif isfn(exp) and f == '[]' then
 					--T = X'lijst'
-					print('JA', e2s(exp))
 					T = typegraaf.iets
 					for i=1,#exp do
 						local t = types[exp[i]]
 						if not t then break end
 						T = typegraaf:unie(T, t)
-						print('UNIE', e2s(T))
+						--print('UNIE', e2s(T))
 						if not T then break end
 					end
 					if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
 					--if true or T and T.v ~= 'iets' then T = X('^', T, #exp)
 					else T = nil end
+					if T ~= nil then
 					weestype(exp, T)
+					end
 
 				elseif f == '||' and types[a] and types[b] then
 					local asub = types[a]:paramtype('lijst')

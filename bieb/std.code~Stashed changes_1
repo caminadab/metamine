@@ -1,7 +1,3 @@
-; webspecifiek
-alert: tekst → bit
-consolelog: tekst → bit
-
 ;uit: bit
 
 ; getal
@@ -21,6 +17,11 @@ zak: verzameling
 (→): iets
 (,): tupel
 
+; telbaar aantal
+; vgl. "a = 1..1000" (aantal, telbaar) en "0 < a < 1" (ontelbaar)
+aantal: verzameling
+ontelbaar: verzameling
+
 succ: nat → nat
 sin :  getal → getal
 cos :  getal → getal
@@ -35,13 +36,12 @@ sincos :  getal → (getal, getal)
 (/) :  (int, int) → getal
 (^) :  (getal, getal) → getal
 (^) :  (int, int) → int
-(^) :  (int, int) → int
-(^) :  ((→), nat) → iets
+;(^) :  ((→), int) → iets
 (#) :  verzameling → int
 ;([) : lijst
 ;(=) :  (iets, iets) → bit 
 ;(→) :  (iets,iets) → (iets → iets)
-;(||) :  (lijst, lijst) → lijst
+(||) :  (lijst, lijst) → lijst
 
 ; set!
 set: verzameling
@@ -70,7 +70,6 @@ set: verzameling
 
 ; util
 abs: getal → getal
-absd: getal → getal
 max: (getal,getal) → getal
 min: (getal,getal) → getal
 entier: getal → int
@@ -82,9 +81,9 @@ entier: getal → int
 byte: int
 teken: int
 data: lijst byte
-;tekst: lijst teken
+tekst: lijst byte
+;tekst: data ;lijst teken
 
-looptijd : getal
 tijdstip : getal
 int : getal
 nu : tijdstip
@@ -100,7 +99,6 @@ waarvoor : (verzameling, (iets → bit)) → verzameling
 mod : (getal, getal) → getal
 
 ; tekening!
-;-
 vorm: iets
 tekening: lijst(vorm)
 cirkel: vorm
@@ -119,7 +117,6 @@ geel: kleur
 paars: kleur
 zwart: kleur
 wit: kleur
--;
 
 ;-
 pos : (kommagetal, kommagetal)

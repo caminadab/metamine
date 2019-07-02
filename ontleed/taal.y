@@ -8,7 +8,8 @@
 
 %parse-param {void** root}
 %parse-param {struct fout* fouten}
-%parse-param {int* foutindex}
+%parse-param {int* numfouten}
+%parse-param {int maxfouten}
 %parse-param {void* scanner}
 
 %{
@@ -18,11 +19,10 @@
 	#include <string.h>
 
 	#include "node.h"
+	#include "ontleed.h"
 	#include "lex.yy.h"
 
-	#define MAXFOUTEN 10
-
-	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* foutindex, void* scanner, const char* yymsg);
+	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int maxfouten, void* scanner, const char* yymsg);
 
 	#define A(a) aloc(a,yylloc)
 	#define APPEND(a,b) appendloc(a,b,yylloc)
@@ -41,6 +41,7 @@
 %token ALS "als"
 %token DAN "dan"
 %token ANDERS "anders"
+%token EIND "eind"
 %token NIN "!:"
 %token SOM "som"
 %token IMPLICEERT "=>"
@@ -109,12 +110,25 @@
 
 /* ALTERNATIEF */
 input:
-	%empty						{ $$ = aloc("EN", yylloc); *root = $$; }
-|	input exp '\n' 		{ $$ = appendloc($1, $2, @$);  } /* lees regeltje */
-|	input exp '=' block '\n' 		{ $$ = appendloc($1, fn3loc(aloc("=", @3), $2, $4, @2), @$);  } /* lees regeltje */
-|	input error '\n' 	{ $$ = appendloc($1, aloc("?", @2), @$); yyerrok; } /* lees regeltje */
-|	input '\n' 				/* negeer witregels */
-|	error  						{ $$ = aloc("?", @1); yyerrok; }
+	block							{ *root = $1; $$ = $1; }
+;
+
+block:
+	stats							{ $$ = $1; }
+;
+
+stats:
+	%empty						{ $$ = aloc("EN", @$); }
+| stats stat '\n'				{ $$ = appendloc($1, $2, @$); }
+| stats '\n'				{ $$ = $1; }
+| stats error							{ $$ = appendloc($1, aloc("?", @1), @$); }
+;
+
+stat:
+	exp 		{ $$ = $1; }
+|	ALS exp DAN '\n' block EIND	{ $$ = fn3loc(aloc("=>", @1), $2, $5, @$); }
+|	ALS exp DAN '\n' block ANDERS '\n' block EIND	{ $$ = fn4loc(aloc("=>", @1), $2, $5, $8, @$); }
+/*|	error 	{ printf("ok"); $$ = aloc("?", @1); yyerrok; }*/
 ;
 
 /*op:
@@ -239,25 +253,7 @@ exp:
 /* als ... dan ... */
 | exp ALS exp						 														{ $$ = fn3loc(aloc("=>", @2), $3, $1, @$); }
 | ALS exp DAN exp ANDERS exp  %prec ALS							{ $$ = fn4loc(aloc("=>", @1), $2, $4, $6, @$); }
-/*| ALS exp DAN exp  %prec ALS											{ $$ = FN3(A("=>"), $2, $4); }*/
-/*| ALS exp DAN '\n' exp %prec ALS									{ $$ = FN3(A("=>"), $2, $6); }*/
-| ALS '\n' exp '\n' DAN '\n' exp %prec ALS	{ $$ = FN3(A("=>"), $4, $7); }
-
-/* als ... dan ... anders */
-/*
-als exp
-	b = 2
-anders
-	b = 3
-*/
-| ALS exp DAN '\n'   		/* 1, 2, 3, 4 */
-  exp '\n'   						/* 5, 6 */
-	ANDERS '\n'   				/* 7, 8 */
-	exp  %prec ALS    		/* 9 */								{ $$ = fn4loc(aloc("=>", @1), $2, $5, $9, @$); }
-
-| ALS exp DAN '\n'   		/* 1, 2, 3, 4 */
-  exp '\n'   						/* 5, 6 */
-	%prec ALS    				{ $$ = fn3loc(aloc("=>", @1), $2, $5, @$); }
+| ALS exp DAN exp  %prec ALS											{ $$ = FN3(A("=>"), $2, $4); }
 
 | exp '^' exp       	{ $$ = fn3loc(aloc("^", @2), $1, $3, @$); }
 | exp '_' exp       	{ $$ = fn3loc(aloc("_", @2), $1, $3, @$); }

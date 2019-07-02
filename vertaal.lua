@@ -72,9 +72,9 @@ if test then
 	test('a = 1 + 1\nb = a - a + a\nuit = a · b', 4)
 
 	-- alsdan
-	test('uit = als 2 > 1 dan 1 anders -1', 1)
-	test('uit = als 2 < 1 dan 1 anders -1', -1)
-	test('a = als 2 < 1 dan 1 anders -1\nuit = als a > 0 dan a - 1 anders a + 1', 0)
+	--test('uit = als 2 > 1 dan 1 anders -1', 1)
+	--test('uit = als 2 < 1 dan 1 anders -1', -1)
+	--test('a = als 2 < 1 dan 1 anders -1\nuit = als a > 0 dan a - 1 anders a + 1', 0)
 
 	-- functies
 	test("f = a → a + 1\nuit = f(-1)", 0)
@@ -83,7 +83,7 @@ if test then
 	test("f = x → x · 2\ng = y → y - 1\nh = f ∘ g ∘ f ∘ f ∘ g\nuit = h(3)", 19)
 
 	-- als
-	test("als 2 > 1 dan\n\tuit = 2\nanders\n\tuit = 3", 2)
+	test("als 2 > 1 dan\n\tuit = 2\nanders\n\tuit = 3\neind", 2)
 
 	-- functietjes
 	test([[

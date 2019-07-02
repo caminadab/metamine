@@ -1,0 +1,16 @@
+itoa = i → a
+
+bases = entier(log10(i)) .. 0
+
+tiental = 10^basis
+cijfer = int((|i| / tiental) mod 10)
+cijfers = bases map (basis → cijfer)
+
+als i < 0 dan
+	a = "-" || cijfers
+anders
+	a = cijfers
+eind
+
+uit = itoa(123)
+

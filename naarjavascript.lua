@@ -148,6 +148,7 @@ local immsym = {
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
+	niets = 'null',
 }
 
 function naarjavascript(app)

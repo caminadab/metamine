@@ -5,20 +5,23 @@
 #include "node.h"
 #include "taal.yy.h"
 #include "lex.yy.h"
+#include "ontleed.h"
 
-int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, void* scanner, const char* yymsg) {
-	if (*numfouten <= MAXFOUTEN) {
-		struct fout* fout = &fouten[*numfouten];
-		fout->loc = *loc; // loc
-		if (*numfouten < MAXFOUTEN)
-			strcpy(fout->msg, yymsg); //msg
-		else
-			strcpy(fout->msg, "max aantal syntaxfouten bereikt");
-		*numfouten += 1;
-	}
+/*
+	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int maxfouten, void* scanner, const char* yymsg) {
+		if (*numfouten <= MAXFOUTEN) {
+			struct fout* fout = &fouten[*numfouten];
+			fout->loc = *loc; // loc
+			if (*numfouten < MAXFOUTEN)
+				strcpy(fout->msg, yymsg); //msg
+			else
+				strcpy(fout->msg, "teveel syntaxfouten");
+			*numfouten += 1;
+		}
 
 	return 0;
 }
+*/
 
 void lua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_createtable(L, 0, 5);
@@ -105,9 +108,9 @@ int lua_ontleed(lua_State* L) {
 
 	node* wortel;
 	int numfouten = 0;
-	struct fout fouten[10];
+	struct fout fouten[100];
 
-	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, scanner);
+	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, 100, scanner);
 	yylex_destroy(scanner);
 
 	// file fixen
@@ -152,10 +155,10 @@ int lua_ontleedexp(lua_State* L) {
 	yy_scan_string(str, scanner);
 
 	node* wortel;
-	struct fout fouten[10];
+	struct fout fouten[100];
 	int numfouten = 0;
 
-	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, scanner);
+	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, 100, scanner);
 	wortel = wortel->first->next;
 	yylex_destroy(scanner);
 

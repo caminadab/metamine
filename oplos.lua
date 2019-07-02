@@ -233,6 +233,28 @@ function oplos(exp,voor)
 			end
 		end
 
+		-- pak blokken uit
+		for eq in pairs(eqs) do
+			if fn(eq) == '=>' then
+				if fn(eq[2]) == 'EN' then
+					for i,sub in ipairs(eq[2]) do
+						local eq = X('=>', eq[1], sub)--X'niets')
+						nieuw[eq] = true
+						--print('BLOK', e2s(eq))
+					end
+				end
+				if fn(eq[3]) == 'EN' then
+					for i,sub in ipairs(eq[3]) do
+						local eq = X('=>', X('!', eq[1]), sub)--X'niets')
+						nieuw[eq] = true
+						--print('BLOK', e2s(eq))
+					end
+				end
+			end
+		end
+
+		eqs = unie(eqs, nieuw)
+
 		-- herschrijf
 		--   c ⇒ (a = b)
 		-- naar
@@ -252,8 +274,9 @@ function oplos(exp,voor)
 				local b = eq[2][2]
 
 				-- twee nieuwe
-				local ae = eq[3] and eq[3][1]
-				local be = eq[3] and eq[3][2]
+				local ae = eq[3] and eq[3][1] or X'niets'
+				local be = eq[3] and eq[3][2] or X'niets'
+				--assert(ae and be)
 				local eqa = X{fn=sym.altis, a, {fn=sym.dan, c, b, be}}
 				local eqb = X{fn=sym.altis, b, {fn=sym.dan, c, a, ae}}
 				nieuw[eqa] = true

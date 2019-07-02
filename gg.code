@@ -1,0 +1,9 @@
+itoa = i → a
+
+als i < 0 dan
+	a = "-"
+anders
+	a = "+"
+eind
+
+uit = itoa(-123)

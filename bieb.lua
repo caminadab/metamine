@@ -2,6 +2,7 @@ require 'exp'
 require 'util'
 require 'naarlua'
 
+local niets = {}
 bieb = {
 		
 	log2 = true,
@@ -40,7 +41,7 @@ bieb = {
 				end
 			end
 			if txt then
-				print('OK', string.char(table.unpack(a)))
+				print(string.char(table.unpack(a)))
 				return 0
 			end
 		end
@@ -91,7 +92,7 @@ bieb = {
 	['wortel'] = function(a) return math.sqrt(a) end;
 	['ja'] = true; 
 	['nee'] = false; 
-	['niets'] = false; 
+	['niets'] = "niets";
 	['min'] = function(a,b) return math.min(a,b) end;
 	['mod'] = function(a,b) return a % b end;
 
@@ -238,6 +239,8 @@ bieb = {
 			end
 		end
 		]]
+		if a == "niets" then a = nil end
+		if b == "niets" then b = nil end
 		if a and b then return 'fout' end
 		return a or b
 	end;
@@ -495,7 +498,7 @@ bieb = {
 	end;
 	['=>'] = function(a,b,c)
 		if a then return b
-		else return c end
+		else return c or niets end
 	end;
 	-- delta componeer
 	-- 2@∆3 = 5

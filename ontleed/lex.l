@@ -154,6 +154,8 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "then"					{ return DAN; }
 "anders"			{ return ANDERS; }
 "else"			{ return ANDERS; }
+"eind"			{ return EIND; }
+"end"			{ return END; }
 
 '\''					{ return OUD; }
 
