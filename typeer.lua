@@ -340,6 +340,7 @@ function typeer(exp)
 				elseif f == '@' and types[a] and types[b] then
 					-- TODO check
 					weestype(exp, X('->', types[a][1], types[b][2]))
+					weestype(fn, X'ok')
 
 				-- speciaal voor '='
 				elseif f == '=' then
@@ -378,6 +379,7 @@ function typeer(exp)
 				-- speciaal voor '⇒'
 				elseif f == '=>' then
 					weestype(a, X'bit', exp.fn.loc)
+					weestype(fn, X'ok', exp.fn.loc)
 					if types[b] then weestype(exp, types[b], oorzaakloc[b]) end 
 
 				-- speciaal voor ',' (tupel)

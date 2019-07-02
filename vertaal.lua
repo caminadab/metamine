@@ -7,6 +7,8 @@ require 'optimaliseer'
 require 'oplos'
 
 function vertaal(code, doel)
+	opt = {T=true,L=true}
+	verbozeTypes = true
 	local doel = doel or "ifunc"
 	local maakvar = maakvars()
 
@@ -17,14 +19,17 @@ function vertaal(code, doel)
 
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)
+	if #typeerfouten > 0 then
+		return nil, cat(syntaxfouten, typeerfouten)
+	end
 
 	local mach = arch[doel](asb, types)
 	local uit,oplosfouten = oplos(mach, "app")
 
 	-- definitieve types
-	local types,typeerfouten = typeer(asb)
+	local types = typeer(asb)
 	if #typeerfouten > 0 then
-		return nil, cat(syntaxfouten, typeerfouten)
+		--return nil, cat(syntaxfouten, typeerfouten)
 	end
 
 
