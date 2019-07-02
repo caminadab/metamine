@@ -14,6 +14,7 @@ bieb = {
 	consolelog =  function(s) print(s) end;
 	requestAnimationFrame = function () error('niet beschikbaar') end;
 	setInnerHtml = function () error('niet beschikbaar') end;
+	getContext = function () error('niet beschikbaar') end;
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
 

@@ -184,7 +184,8 @@ function typeer(exp)
 				T = X'int'
 			end
 		elseif tonumber(exp.v) then
-			T = X'kommagetal'
+			--T = X'kommagetal'
+			T = X'getal'
 		elseif isfn(exp) and fn(exp) == '[]u' then
 			weestype(exp.fn, X'tekens')
 			weestype(exp, X('tekst'))

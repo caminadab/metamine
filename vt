@@ -106,7 +106,7 @@ end
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
 local doel
-if opt.j then doel = 'js'
+if opt.j then doel = 'demo'
 elseif opt.i then doel = 'lua'
 elseif opt.x then doel = 'demo'
 else doel = 'unistd' end
@@ -249,11 +249,10 @@ if not uit then
 		return
 	end
 	for i, fout in ipairs(fouten) do
-		print(fout.msg)
+		print(fout2ansi(fout))
 	end
 	return
 end
-
 
 -- expressie fase: optm
 if opt.O then

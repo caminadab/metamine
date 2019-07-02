@@ -1,6 +1,12 @@
+; html = (uit/tijd)(moment)
 succ = xy → xy + 1
 
-;html = (uit/tijd)(moment)
-ververs = moment → setInnerHtml(uit)
 app = requestAnimationFrame(ververs)
-canvas = objs → setInnerHtml("<canvas>yeah</canvas>")
+ververs = dt → setInnerHtml(uit)
+
+el = setInnerHtml("<canvas></canvas")
+ctx = getContext(el)
+
+a = #(objs map (obj → obj(ctx))) > -1
+canvas = objs → (a ⇒ "<canvas></canvas>")
+;ververs = dt → obj

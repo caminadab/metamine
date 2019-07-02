@@ -1,9 +1,2 @@
-itoa = i → a
-
-als i < 0 dan
-	a = "-"
-anders
-	a = "+"
-eind
-
-uit = itoa(-123)
+v = vierkant((20%, 20%), 60%)
+uit = canvas(v)

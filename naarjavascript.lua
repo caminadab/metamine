@@ -53,14 +53,10 @@ local immjs = {
 	['[]u'] = 'TARGS',
 	['{}'] = 'new Set(ARGS)',
 	['{}'] = '{}',
-	['_arg0'] = '_arg0',
-	['_arg1'] = '_arg1',
-	['_arg2'] = '_arg2',
-	['_arg3'] = '_arg3',
-	['_arg4'] = '_arg4',
 	['|'] = 'X || Y',
 
 	-- arit
+	['%'] = 'X / 100',
 	['+i'] = 'X + Y',
 	['+d'] = 'X + Y',
 	['+'] = 'X + Y',
@@ -134,11 +130,12 @@ local immjs = {
 	-- func
 	['map'] = 'X.map(Y)',
 	['@'] = 'function(a, b, c, d, e) { return Y(X(a, b, c, d, e)); }',
+	[','] = '[ARGS]',
 	
 	-- LIB
-	['vierkant'] = 'context.beginPath();\ncontext.rect(X[0], X[1], Y, Y);\ncontext.fillStyle = "green";\ncontext.fill();',
+	['vierkant'] = '(function(c){\n\t\tc.beginPath();\n\t\tc.rect(X * 150, Y * 150, Z * 150, Z * 150);\n\t\tc.fillStyle = "green";\n\t\tc.fill();\n\t\treturn c;})',
 	['tekst'] = 'X.toString()',
-	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; } var r = X(t); requestAnimationFrame(f); return r; })()' --[[({
+	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; }; var r = X(t); requestAnimationFrame(f); return true; })()' --[[({
 	//function f(t) {
 	//	X(t);
 	//	requestAnimationFrame(f);
@@ -146,16 +143,26 @@ local immjs = {
 	//return requestAnimationFrame(f);
 	return 0;
 })()]],
-	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = X.toString();',
+	['setInnerHtml'] = '(uit.innerHTML == X.toString()) ? uit.children[0] : ((uit.innerHTML = X.toString()) && uit.children[0])',
+	['getContext'] = 'X.getContext("2d")',
 	['consolelog'] = 'console.log(X)',
 }
 
 local immsym = {
+	['_arg0'] = '_arg0',
+	['_arg1'] = '_arg1',
+	['_arg2'] = '_arg2',
+	['_arg3'] = '_arg3',
+	['_arg4'] = '_arg4',
 	looptijd = '(new Date().getTime() - start)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
 	niets = 'null',
+	ja = 'true',
+	nee = 'false',
+	tau = '(Math.PI * 2)',
+	pi = 'Math.PI',
 }
 
 function naarjavascript(app)
@@ -246,6 +253,7 @@ function naarjavascript(app)
 		end
 	end
 	table.insert(s, 'start = new Date().getTime();\n')
+	table.insert(s, 'uit = document.getElementById("uit");')
 	table.insert(s, 'stop = false;\n')
 	flow(app.start, '')
 

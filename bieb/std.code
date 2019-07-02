@@ -1,6 +1,7 @@
 ; webspecifiek
 alert: tekst → bit
 consolelog: tekst → bit
+vierkant: (ℝ, ℝ, ℝ) → (canvas → canvas)
 
 ;uit: bit
 
@@ -120,6 +121,7 @@ paars: kleur
 zwart: kleur
 wit: kleur
 -;
+kommagetal : getal
 
 ;-
 pos : (kommagetal, kommagetal)

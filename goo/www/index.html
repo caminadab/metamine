@@ -56,6 +56,8 @@
 	-->
 
 	<h1><i>Q&A</i></h1>
+		<h2>Hoe werkt het?</h2>
+		<p>Een webservice vertaalt je code naar javascript. Je computer/mobiel draait vervolgens de javascript lokaal.</p>
 		<input id="vraag" placeholder="Stel je vraag..."></input>
 		<br>
 		<button id="vraagknop" onclick="fetch('/vraag', {method: 'post', body: document.getElementById('vraag').value}).then(x => {document.getElementById('vraagknop').style.backgroundColor='green'; document.getElementById('vraag').value=''; document.getElementById('vraag').placeholder='Vraag verzonden';})">Vraag!</button>
@@ -252,7 +254,11 @@ p {
 	color: darkgreen;
 }
 
-canvas { background: #444; }
+canvas {
+	background: #112;
+	width: 100%;
+	height: 100%;
+}
 .syntaxfout { background: #800; color: #A80; }
 .oplosfout { background: #049; color: #AFF; }
 .typeerfout { background: #805; color: #FBF; }
@@ -301,10 +307,15 @@ canvas { background: #444; }
 	
 	var demoindex = 0;
 	var demos = [
-`; maak een stopwatch
+`; simpele stopwatch
 uit = looptijd`,
-		'; maak een timer\ntimer = 10 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind',
-		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1000',
+		'; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind',
+`; spel
+x = 90% + sin(looptijd) / 2
+y = 50%
+v = vierkant(x, y, 10%)
+uit = canvas [v]`,
+		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001',
 		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x || " hoi"\nuit = (f^aantal)("groet:")',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
 		'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
