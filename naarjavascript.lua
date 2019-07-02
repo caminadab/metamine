@@ -133,8 +133,10 @@ local immjs = {
 	[','] = '[ARGS]',
 	
 	-- LIB
-	['vierkant'] = '(function(c){\n\t\tc.beginPath();\n\t\tc.rect(X * 150, Y * 150, Z * 150, Z * 150);\n\t\tc.fillStyle = "green";\n\t\tc.fill();\n\t\treturn c;})',
+	['vierkant'] = '(function(x,y,z) {return (function(c){/*console.log(x+" "+y+" "+z);*/\n\t\tc.beginPath();\n\t\tc.rect(x * 640, y * 640, z * 640, z * 640);\n\t\tc.fillStyle = "red";\n\t\tc.fill();\n\t\treturn c;}); })(X,Y,Z)',
+	['cirkel'] = '(function(x,y,z) {return (function(c){/*console.log(x+" "+y+" "+z);*/\n\t\tc.beginPath();\n\t\tc.arc(x * 640, y * 640, z * 640/2, 0, Math.PI * 2);\n\t\tc.fillStyle = "green";\n\t\tc.fill();\n\t\treturn c;}); })(X,Y,Z)',
 	['tekst'] = 'X.toString()',
+	['clearCanvas'] = 'X.clearRect(0,0,1280,720) || X',
 	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; }; var r = X(t); requestAnimationFrame(f); return true; })()' --[[({
 	//function f(t) {
 	//	X(t);
@@ -143,8 +145,8 @@ local immjs = {
 	//return requestAnimationFrame(f);
 	return 0;
 })()]],
-	['setInnerHtml'] = '(uit.innerHTML == X.toString()) ? uit.children[0] : ((uit.innerHTML = X.toString()) && uit.children[0])',
-	['getContext'] = 'X.getContext("2d")',
+	['setInnerHtml'] = '(html == X.toString()) ? uit.children[0] : ((uit.innerHTML = X.toString()) && (html = X.toString()) && uit.children[0])',
+	['getContext'] = 'uit.children[0].getContext("2d")',
 	['consolelog'] = 'console.log(X)',
 }
 
@@ -253,6 +255,7 @@ function naarjavascript(app)
 		end
 	end
 	table.insert(s, 'start = new Date().getTime();\n')
+	table.insert(s, 'html = "";')
 	table.insert(s, 'uit = document.getElementById("uit");')
 	table.insert(s, 'stop = false;\n')
 	flow(app.start, '')

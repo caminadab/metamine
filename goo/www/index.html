@@ -311,10 +311,11 @@ canvas {
 uit = looptijd`,
 		'; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind',
 `; spel
-x = 90% + sin(looptijd) / 2
+x = 90% + sin(looptijd - 1) / 2
 y = 50%
 v = vierkant(x, y, 10%)
-uit = canvas [v]`,
+c = cirkel(50%, 50%, 30%)
+uit = canvas [v, c]`,
 		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001',
 		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x || " hoi"\nuit = (f^aantal)("groet:")',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',

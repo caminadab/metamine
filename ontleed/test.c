@@ -34,6 +34,7 @@ int main() {
 		{"als ja dan 1 anders 0", "=>(ja 1 0)"},
 		{"als ja dan\na = 2\neind", "=>(ja EN(=(a 2)))"},
 		{"als ja dan\na = 2\nanders\na = 3\neind", "=>(ja EN(=(a 2)) EN(=(a 3)))"},
+		//{"b = (1 < 2 < 3)", "=(b en(<(1 2) <(2 3)))"},
 		{0, 0},
 
 		// idk

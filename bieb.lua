@@ -15,8 +15,10 @@ bieb = {
 	requestAnimationFrame = function () error('niet beschikbaar') end;
 	setInnerHtml = function () error('niet beschikbaar') end;
 	getContext = function () error('niet beschikbaar') end;
+	clearCanvas = function () error('niet beschikbaar') end;
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
+	cirkel = function() error('niet beschikbaar') end;
 
 	['_'] = function(a, b)
 		if type(a) == 'string' then

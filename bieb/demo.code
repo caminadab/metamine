@@ -1,12 +1,20 @@
 ; html = (uit/tijd)(moment)
 succ = xy → xy + 1
 
+ververs = moment → setInnerHtml(uit)
+app = requestAnimationFrame(ververs)
+
+
+;-
+;app = (requestAnimationFrame(ververs) ⇒ el )
+;ververs = dt → uit
 app = requestAnimationFrame(ververs)
 ververs = dt → setInnerHtml(uit)
+-;
 
-el = setInnerHtml("<canvas></canvas")
+el = setInnerHtml("<canvas width='1280' height='720'></canvas>")
 ctx = getContext(el)
 
-a = #(objs map (obj → obj(ctx))) > -1
-canvas = objs → (a ⇒ "<canvas></canvas>")
+a = (clearCanvas(ctx) ⇒ (#(objs map (obj → obj(ctx))) > -1))
+canvas = objs → (a ⇒ "<canvas width='1280' height='720'></canvas>")
 ;ververs = dt → obj
