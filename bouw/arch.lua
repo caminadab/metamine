@@ -46,10 +46,11 @@ function arch.js(exp, types)
 		elseif fn(sub) == '||' and types[sub] and types[sub]:issubtype('tekst') then
 			sub.fn = X('||u')
 		elseif fn(sub) == '||' and types[a] and types[b] and types[a]:issubtype('tekst') and types[a]:issubtype('tekst') then
-			error'JAAJA'
 			sub.fn = X('||u')
 		elseif fn(sub) == 'cat' and types[a] and types[b] and types[a]:issubtype('tekst') and types[b]:issubtype('tekst') then
 			sub.fn = X('catu')
+		elseif fn(sub) == 'map' and types[a] and types[b] and types[exp] and types[a]:issubtype('tekst') and types[b]:issubtype('tekst') and types[exp]:issubtype('tekst') then
+			sub.fn = X('mapuu')
 
 		-- index
 		elseif types[sub.fn] and types[sub.fn]:paramtype('int').v == 'teken' then

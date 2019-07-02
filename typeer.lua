@@ -185,12 +185,12 @@ function typeer(exp)
 			end
 		elseif tonumber(exp.v) then
 			T = X'kommagetal'
-		elseif isfn(exp) and exp.fn.v == '[]u' then
+		elseif isfn(exp) and fn(exp) == '[]u' then
 			weestype(exp.fn, X'tekens')
 			weestype(exp, X('tekst'))
-		elseif isfn(exp) and exp.fn.v == '{}' then
+		elseif isfn(exp) and fn(exp) == '{}' then
 			T = X'set'
-		elseif isfn(exp) and exp.fn.v == ',' then
+		elseif isfn(exp) and fn(exp) == ',' then
 			--T = X'tupel'
 			local T = {fn=X'tupel'}
 			local ok = true
@@ -287,7 +287,7 @@ function typeer(exp)
 				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
 				-- map: (T:collectie)(A), (A → B) → T(B)
 				elseif f == 'map' and types[a] and types[b] then
-					local atype =X('verzameling', a:paramtype('verzameling'))
+					local atype =X('verzameling', types[a]:paramtype('verzameling'))
 					local btype = X('verzameling', types[b[2]])
 					weestype(a, atype)
 					weestype(exp, btype)

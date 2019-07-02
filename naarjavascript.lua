@@ -114,6 +114,10 @@ local immjs = {
 	-- exp
 	['log10'] = 'Math.log(X, 10)',
 	['||'] = 'X.concat(Y)',
+	['||u'] = 'X + Y',
+	['cat'] = 'X.join(Y)', -- TODO werkt dit?
+	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < X.length; i++) { totaal += Y(X[i]); }; return totaal; })() ', -- TODO werkt dit?
+	['catu'] = 'X.join(Y)',
 
 	-- lijst
 	['#'] = 'X.length',
