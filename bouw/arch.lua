@@ -1,42 +1,70 @@
 require 'typeer'
 
-function arch_x64(exp, types)
+arch = {}
+
+function arch.x64(exp, types)
 	local fops = set('+', '-', '*', '^', 'mod', 'abs', '/')
 	local iops = set('+', '-', '*', '^', 'mod', 'abs')
 	for sub in boompairs(exp) do
 		local isgetal = types[sub[1]] and types[sub[1]].v == 'getal'
 		local isint = types[sub[1]] and types[sub[1]]:issubtype('int')
-		--if isint then print(combineer(sub) .. ' : '..e2s(types[sub[1]])..' : int') end
 		if fn(sub) == 'int' then
 			sub.fn = X('intd')
-		--elseif types[sub.fn] and (isfn(sub.fn) or (sub.fn.exp and isfn(sub.fn.exp))) and types[sub.fn]:issubtype('->') then
-			--error('ja!'..e2s(sub.fn))
-
-			--sub.fn = X(fn(sub)..'f')
 		elseif types[sub.fn] and types[sub.fn]:issubtype('lijst') then
-			--error'ok'
-			--sub.fn = X(fn(sub)..'f')
-			--sub.fn = X'999'
-			--sub.v = nil
-			--sub.fn,sub[1],sub[2] = X'_', sub.fn, sub[1]
-			--print('OK', e2s(sub))
-			--print('ASDF', e2s(sub))
 			sub[2] = sub[1]
 			sub[1] = sub.fn
 			sub.fn = X'_'
-			--sub[1] = sub.fn
 		elseif isgetal and isfn(sub) and fops[fn(sub)] then
 			sub.fn = X(fn(sub)..'d')
 		elseif isint and iops[fn(sub)] then
-			if fn(sub) == '^' then
-				--error('JA')
-			end
 			sub.fn = X(fn(sub)..'i')
 		elseif fn(sub) == '^' then
 			sub.fn = X(fn(sub)..'f')
-		else
-			--error('WEET NIET')
 		end
 	end
 	return exp
 end
+
+function arch.js(exp, types)
+	for sub in boompairs(exp) do
+		local type = types[sub]
+		if type then
+			if fn(sub) == '[]' then
+				if type:issubtype('tekst') then
+					sub.fn = X('[]b')
+				end
+			end
+		end
+
+		local isgetal = types[sub[1]] and types[sub[1]].v == 'getal'
+		local isint = types[sub[1]] and types[sub[1]]:issubtype('int')
+		if fn(sub) == 'int' then
+			sub.fn = X('intd')
+		--elseif types[sub.fn] and types[sub.fn]:issubtype('[]u') then
+			--sub.fn = X('tekst')
+		elseif fn(sub) == '||' and types[sub] and types[sub]:issubtype('tekst') then
+			sub.fn = X('||u')
+		elseif fn(sub) == 'cat' and types[sub] and types[sub]:issubtype('tekst') then
+			sub.fn = X('catu')
+
+		-- index
+		elseif types[sub.fn] and types[sub.fn]:issubtype('tekst') then
+			error'OK!'
+			sub[2] = sub[1]
+			sub[1] = sub.fn
+			sub.fn = X'_u'
+		--[[
+		elseif types[sub.fn] and types[sub.fn]:issubtype('lijst') then
+			sub[2] = sub[1]
+			sub[1] = sub.fn
+			sub.fn = X'_'
+		]]
+		elseif fn(sub) == '^' then
+			sub.fn = X(fn(sub)..'f')
+		end
+	end
+	return exp
+end
+
+arch.ifunc = arch.js
+arch.demo = arch.js

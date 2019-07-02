@@ -1,5 +1,15 @@
-bord = (0 .. 8) × (0 .. 8)
-uit = bord map f
+uit = "hoi"
+;pos = (0..8) × (0..8)
+;vlak = p → vierkant(p₀, p₁, 1/8)
+;uit = canvas(pos map vlak)
 
-iseven = n → (n mod 2 = 0)
-f = [x, y] → iseven(x + y)
+;-
+venster = glfwMakeContextCurrent(c.glfwCreateWindow(640, 480, "Venster", 0, 0))
+
+zolang niet glfwWindowShouldClose(venster)
+	als ¬ glfwWindowShouldClose dan
+		venster = poll(venster swap clear(venster'))
+anders
+	uit = glfwTerminate
+eind
+-;

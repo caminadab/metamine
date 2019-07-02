@@ -192,7 +192,7 @@ int utf8cp(char* a) {
 
 node* tekst(node* str0) {
 	char* str = str0->data;
-	node* t = exp1(a("[]"));
+	node* t = exp1(a("[]u"));
 	t->tekst = 1;
 	t->loc = str0->loc;
 

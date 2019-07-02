@@ -18,11 +18,26 @@ bieb = {
 
 	-- lua
 	['print'] = function(a)
+		if type(a) == 'table' and #a > 1 then
+			local txt = true
+			for i,v in ipairs(a) do
+				if type(v) == 'number' and v % 1 == 0 and v > 0 then
+					-- goed
+				else
+					txt = false
+					break
+				end
+			end
+			if txt then
+				print('OK', string.char(table.unpack(a)))
+				return 0
+			end
+		end
+			
 		if opt and opt.L then print() end;
 		print(combineer(w2exp(a)))
 		return 0
 	end,
-	
 
 	syscall = function(a) error 'SYSCALL' end, 
 	xcb_connect = true,
@@ -159,6 +174,7 @@ bieb = {
 		end
 	end;
 	['%'] = function(a) return a / 100 end;
+	['[]u'] = function(...)  return string.char(...) end;
 	['[]'] = function(...)  return {...} end;
 	['{}'] = function(...)
 		local t = {...}
@@ -255,6 +271,9 @@ bieb = {
 	end;
 
 	['||'] = function(a,b)
+		if type(a) == 'string' or type(b) == 'string' then
+			return tostring(a) .. tostring(b)
+		end
 		--if isatoom(a) or isatoom(b) or a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
 		local j = 1
 		local t = {fn='[]'}
@@ -263,6 +282,14 @@ bieb = {
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
 		for i,v in ipairs(b) do t[j] = v; j=j+1 end
 		return t
+	end;
+
+	['||u'] = function(a,b)
+		return a .. b
+	end;
+
+	['catu'] = function(t)
+		return table.concat(t)
 	end;
 
 	-- lib

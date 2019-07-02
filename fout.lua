@@ -92,6 +92,32 @@ function fout2ansi(fout)
 	return ansi
 end
 			
+function fout2string(fout)
+	local loc =  loctekst(fout.loc)
+	local type = fout.type:gsub('^(.)', string.upper) .. 'fout' .. ': '
+	local i = 0
+	local t = fout.args
+	local string = loc .. '\t' .. type .. '\t' .. fout.fmt:gsub('{([^}]*)}', function (spec)
+		i = i + 1
+		if spec == 'loc' then
+			return loctekst(t[i])
+		elseif spec == 'rood' then
+			return t[i]
+		elseif spec == 'code' then
+			return tostring(t[i])
+		elseif spec == 'exp' then
+			return combineer(t[i])
+		elseif spec == 'int' then
+			return tostring(math.floor(t[i]))
+		elseif spec == 'cyaan' then
+			return tostring(t[i])
+		else
+			error('onbekend type: '..spec)
+		end
+	end
+	)
+	return string
+end
 
 --[[
 	oplos

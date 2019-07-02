@@ -54,6 +54,14 @@ function typemt.__index:issubtype(ander)
 	return self.tg:issubtype(self, ander)
 end
 
+function typemt.__index:paramtype(ander)
+	if type(ander) == 'string' then
+		ander = maaktype(X(ander), self.tg)
+	elseif not ander.tg then
+		ander.tg = self.tg
+	end
+	return self.tg:paramtype(self, ander)
+end
 local metatypegraaf = {}
 
 function metatypegraaf:unie(a, b)
@@ -79,11 +87,13 @@ function metatypegraaf:unie(a, b)
 	return t
 end
 
+-- paramtype('tekst', 'lijst') = 'teken'
 function metatypegraaf:paramtype(type, paramtype)
 	local doel = moes(type)
 	while doel do
 		--print('PARAMTYPE', doel, _G.type(doel))
 		local t = self.types[doel]
+		assert(t, 'geen type voor '..doel)
 		if t.fn and moes(t.fn) == moes(paramtype) then
 			return table.unpack(t)
 		end

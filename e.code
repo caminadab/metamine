@@ -1,4 +1,1 @@
-f = (a, b) → a + b
-g = (c, d) → c + d
-
-uit = f(g(2, 3), f(g(1, 8), 2))
+uit = "hoi"

@@ -163,7 +163,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 	for i, sub in ipairs(vannen) do
 		ontlink(sub, i)
 		-- lang uitschrijven
-		if i == 1 or isatoom(naar) then
+		if i == 1 or isatoom(naar) and not naar.v:sub(1,4) == '_arg' then
 			local ref = sub.ref or van.ref or naar.ref
 			if not ref then
 				ref = maakref(van)

@@ -119,6 +119,7 @@ function oplos(exp,voor)
 		end
 
 		-- fix dubbele args: f(,(2 3))
+		if true then
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
 				if isfn(exp) and fn(exp) ~= '->' and exp[1] and fn(exp[1]) == ',' then
@@ -127,6 +128,7 @@ function oplos(exp,voor)
 					end
 				end
 			end
+		end
 		end
 
 		-- herschrijf a.b naar b(a)

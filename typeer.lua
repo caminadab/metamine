@@ -182,11 +182,11 @@ function typeer(exp)
 			else
 				T = X'int'
 			end
-		elseif tonumber(exp.v) then T = X'kommagetal'
-		elseif exp.tekst then
-			--T = X'tekst'
-			--T = X('^', 'byte', tostring(#exp))
-			T = X('lijst', 'byte')
+		elseif tonumber(exp.v) then
+			T = X'kommagetal'
+		elseif isfn(exp) and exp.fn.v == '[]u' then
+			weestype(exp.fn, X'tekens')
+			T = X('tekst')
 		elseif isfn(exp) and exp.fn.v == '[]' then
 			--T = X'lijst'
 			T = typegraaf.iets
@@ -202,7 +202,20 @@ function typeer(exp)
 		elseif isfn(exp) and exp.fn.v == '{}' then
 			T = X'set'
 		elseif isfn(exp) and exp.fn.v == ',' then
-			T = X'tupel'
+			--T = X'tupel'
+			local T = {fn=X'tupel'}
+			local ok = true
+			for i=1,#exp do
+				local t = types[exp[i]]
+				if not t then
+					ok = false
+					break
+				end
+				T[i] = t
+			end
+			if not ok then
+				T = nil
+			end
 		elseif biebtypes[moes(exp)] then
 			T = biebtypes[moes(exp)] -- voorgedefinieerd is makkelijk
 			oorzaakloc[exp] = oorzaakloc[moes(exp)]
@@ -250,7 +263,7 @@ function typeer(exp)
 		return exp[1]
 	end
 
-	--for i=1,1 do
+	for i=1,5 do
 
 	-- rest van de types
 	local T = {}
@@ -283,8 +296,29 @@ function typeer(exp)
 
 				-- speciaal voor 'map'
 				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
-				elseif f == 'map' and types[b] then
-					weestype(exp, X('lijst', types[b]))
+				-- map: (T:collectie)(A), (A → B) → T(B)
+				elseif f == 'map' and types[a] and types[b] then
+					local atype =X('collectie', a:paramtype('collectie'))
+					local btype = X('collectie', types[b[2]])
+					weestype(a, atype)
+					weestype(exp, btype)
+					print('BTYPE', e2s(btype))
+
+				-- speciaal voor 'xx'
+				elseif f == 'xx' and types[a] and types[b] then
+					local type = X('lijst', X('tupel', types[a]:paramtype('lijst'), types[b]:paramtype('lijst')))
+					print('TYPEEE', e2s(type))
+					weestype(exp, type)
+
+				-- speciaal voor '_'
+				elseif f == '_' and types[a] and types[b] then
+					local type = types[a]:paramtype('lijst')
+					print('TYPEEE', e2s(type))
+					weestype(exp, type)
+
+				-- speciaal voor '[]u'
+				elseif f == '[]u' then
+					weestype(exp, X'tekst')
 
 				-- speciaal voor 'componeer'
 				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
@@ -379,9 +413,13 @@ function typeer(exp)
 			end
 
 			-- is dit "tekst"?
+			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'tekst') then
+				local eltype = typegraaf:paramtype(types[exp.fn], X'lijst')
+				weestype(exp, X'teken', exp.loc) -- TODO loc
+				--weestype(exp[1], X'nat', exp.loc) -- TODO loc
 
 			-- koel doen met lijst indices
-			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'lijst') then
+			elseif #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'lijst') then
 				local eltype = typegraaf:paramtype(types[exp.fn], X'lijst')
 				weestype(exp, eltype, exp.loc) -- TODO loc
 				--weestype(exp[1], X'nat', exp.loc) -- TODO loc
@@ -430,14 +468,21 @@ function typeer(exp)
 		end
 	end
 
-	--end -- for i=1,5
+	end -- for i=1,5
 
 	-- is alles nu getypeerd?
 	for exp in boompairs(exp) do
 		if not types[exp] then
 			if verbozeTypes then
 				if fn(exp) ~= '=' and fn(exp) ~= '=>' and fn(exp) ~= '[]' then
-					print('kon type niet bepalen van '..exp2string(exp))
+					local fout = typeerfout(exp.loc, 'kon type niet bepalen van {code}',
+						combineer(exp)
+					)
+					local a = fout2string(fout)
+					if not fouten[a] then
+						fouten[#fouten+1] = fout
+						fouten[a] = true
+					end
 				end
 			end
 		end

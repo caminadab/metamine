@@ -91,7 +91,7 @@ function controle(exp, maakvar)
 		elseif isfn(exp) then
 			arg = con(exp)
 		else
-			arg = con(exp)
+			arg = (exp)
 		end
 		arg.ref = exp.ref
 		return arg
@@ -170,6 +170,12 @@ function controle(exp, maakvar)
 			for i,arg in ipairs(args) do
 				local argvan = X('_arg', arg)
 				local argnaar = X('_arg'..(i-1))
+
+				local argalt = X(argnaar.v..arg.v)
+
+				-- veilig stellen...
+				--waarde = substitueerzuinig(waarde, argnaar, argalt, maakvar)
+
 				waarde = substitueerzuinig(waarde, argvan, argnaar, maakvar)
 			end
 

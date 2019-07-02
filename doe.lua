@@ -4,11 +4,21 @@ require 'func'
 require 'fout'
 
 local function waarde(a, env, ...)
+	local t = {...}
+	if #t == 1 and type(t[1]) == 'table' then
+		t = t[1]
+	end
+	for i,v in ipairs(t) do
+		local arg = '_arg'..(i-1)
+		--print('ARG', i, arg)
+		env[arg] = v
+	end
 	if isatoom(a) then
 		local w
 		if w == nil then w = tonumber(a.v) end
 		if w == nil then w = env[a.v] end
-		if w == nil then w = (a.v and a.v:sub(1,4) == '_arg' and ({...})[a.v:sub(5,5) + 1]) or nil end
+		if w == nil then
+			w = (a.v and a.v:sub(1,4) == '_arg' and ({...})[a.v:sub(5,5) + 1]) or nil end
 		if w == nil then 
 			error('onbekend: '..tostring(a.v))
 		end
@@ -63,17 +73,20 @@ local function doeblok(blok, env, ...)
 				if not ok then
 					local err = w
 					local f = executiefout(stat.loc, err)
-					print(fout2ansi(f))
+					print(fout2string(f))
 					return
 				end
 
 			elseif type(func) == 'table' then
 				w = func[args[1]]
 
+			elseif type(func) == 'string' then
+				w = func:sub(args[1]+1, args[1]+1)
+
 			else
 				local f = executiefout(stat.loc, 'onbekende index: '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
 				print()
-				print(fout2ansi(f))
+				print(fout2string(f))
 			end
 
 		end

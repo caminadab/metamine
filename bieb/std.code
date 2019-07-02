@@ -41,7 +41,7 @@ sincos :  getal → (getal, getal)
 ;([) : lijst
 ;(=) :  (iets, iets) → bit 
 ;(→) :  (iets,iets) → (iets → iets)
-(||) :  (lijst, lijst) → lijst
+;(||) :  (lijst, lijst) → lijst
 
 ; set!
 set: verzameling
@@ -82,8 +82,7 @@ entier: getal → int
 byte: int
 teken: int
 data: lijst byte
-;tekst: lijst byte
-;tekst: data ;lijst teken
+tekst: lijst teken
 
 looptijd : getal
 tijdstip : getal

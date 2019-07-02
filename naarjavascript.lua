@@ -21,6 +21,8 @@ local function sym(exp, t)
 	local op = f and f:sub(1,-2)
 	if infix[op] then
 		t[#t+1] = exp[1].v .. op .. exp[2].v
+	elseif f == '[]u' then
+		t[#t+1] = '"' .. table.concat(map(exp, string.char)) .. '"'
 	elseif op == '[]' then
 		t[#t+1] = '[' .. table.concat(map(exp, function(sub) return sub.v end), ', ') .. ']'
 	else
@@ -46,6 +48,7 @@ vanaf(A 1)   -> A.splice(1)
 ]]
 local immjs = {
 	['[]'] = '[ARGS]',
+	['[]u'] = 'TARGS',
 	['{}'] = 'new Set(ARGS)',
 	['{}'] = '{}',
 	['_arg0'] = '_arg0',
@@ -113,7 +116,10 @@ local immjs = {
 	['#'] = 'X.length',
 	['som'] = 'X.reduce((a,b) => a + b, 0)',
 	['..'] = 'X < Y ? Array.from(new Array(Y-X), (x,i) => X + i) : Array.from(new Array(Y-X), (x,i) => Y - 1 - i)',
-	['_'] = 'X[Y] != null ? X[Y] : (function() {throw("ongeldige index in lijst");})()',
+	--['_'] = 'X[Y] != null ? X[Y] : (function() {throw("ongeldige index in lijst");})()',
+	--['_u'] = 'X[Y] != null ? X[Y] : (function() {throw("ongeldige index in lijst");})()',
+	['_'] = 'X[Y]',
+	['_u'] = 'X[Y]',
 	['call'] = 'X(Y)',
 	['vanaf'] = 'X.slice(Y, X.length)',
 	['xx'] = 'X.map(x => Y.map(y => [x, y]))',
@@ -124,7 +130,7 @@ local immjs = {
 	
 	-- LIB
 	['vierkant'] = 'context.beginPath();\ncontext.rect(X[0], X[1], Y, Y);\ncontext.fillStyle = "green";\ncontext.fill();',
-	['tekst'] = 'Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b) => a + b) : X.toString()',
+	['tekst'] = 'X.toString()',
 	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; } var r = X(t); requestAnimationFrame(f); return r; })()' --[[({
 	//function f(t) {
 	//	X(t);
@@ -133,7 +139,7 @@ local immjs = {
 	//return requestAnimationFrame(f);
 	return 0;
 })()]],
-	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = Array.isArray(X) ? X.map(String.fromCharCode).reduce((a,b)=>a+b) : X.toString();',
+	['setInnerHtml'] = 'document.getElementById("uit").innerHTML = X.toString();',
 	['consolelog'] = 'console.log(X)',
 }
 
@@ -168,6 +174,7 @@ function naarjavascript(app)
 				cmd = cmd:gsub('X', '_X_')
 				cmd = cmd:gsub('Y', '_Y_')
 				cmd = cmd:gsub('Z', '_Z_')
+				cmd = cmd:gsub('TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
 				cmd = cmd:gsub('ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
 				cmd = a and cmd:gsub('_X_', a) or cmd
 				cmd = b and cmd:gsub('_Y_', b) or cmd

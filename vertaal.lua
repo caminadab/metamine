@@ -7,7 +7,7 @@ require 'optimaliseer'
 require 'oplos'
 
 function vertaal(code, doel)
-	local doel = doel or "lua"
+	local doel = doel or "ifunc"
 	local maakvar = maakvars()
 
 	local asb,syntaxfouten = ontleed(code)
@@ -18,7 +18,7 @@ function vertaal(code, doel)
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)
 
-	local mach = arch_x64(asb, types)
+	local mach = arch[doel](asb, types)
 	local uit,oplosfouten = oplos(mach, "app")
 
 	-- definitieve types
@@ -48,7 +48,7 @@ if test then
 	assert(#f > 0)
 
 	local function test(code, moet)
-		local v,f = vertaal(code, 'ifunc')
+		local v,f = vertaal(code)
 		if not v and #f > 0 then
 			print('tijdens testen van '..code..':')
 			for i,fout in ipairs(f) do
@@ -79,6 +79,14 @@ if test then
 
 	-- als
 	test("als 2 > 1 dan\n\tuit = 2\nanders\n\tuit = 3", 2)
+
+	-- functietjes
+	test([[
+f = (a, b) → a + b
+g = (c, d) → c + d
+
+uit = f(g(2, 3), f(g(1, 8), 2))
+]], 16)
 
 	do return end
 

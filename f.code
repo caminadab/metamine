@@ -1,0 +1,17 @@
+poss = (0..8) × (0..8)
+;uit = pos map kleur
+
+;kleur = (x, y) → kleuren(index)
+;index = (x + y) mod 2
+;kleuren = "OX"
+
+;uit = cat((0..8) map regel)
+;regel = i → cat((0..8) map (x → ". ")) || "\n"
+
+uit = cat((0..8) map regel)
+regelposs = (0..8) × [y]
+regel = y → (regelposs map stuk) || "\n"
+stuk = (z,w) → startpos(z + w · 8)
+
+startpos = "tpldklptiiiiiiii.       .       .       .       IIIIIIIITPLDKLPT"
+;startpos = "♜♞♝♛♚♝♞♜♟♟♟♟♟♟♟♟.       .       .       .        ♙♙♙♙♙♙♙♙♖♘♗♕♔♗♘♖"

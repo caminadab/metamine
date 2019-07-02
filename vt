@@ -105,13 +105,13 @@ end
 --bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
-if opt.j then
-	bronnen[#bronnen+1] = 'bieb/js.code'
-elseif opt.i then
-	bronnen[#bronnen+1] = 'bieb/lua.code'
-else
-	bronnen[#bronnen+1] = 'bieb/unistd.code'
-end
+local doel
+if opt.j then doel = 'js'
+elseif opt.i then doel = 'lua'
+elseif opt.x then doel = 'demo'
+else doel = 'unistd' end
+
+bronnen[#bronnen+1] = 'bieb/'..doel..'.code'
 
 if opt.d or opt.doe then
 	doemeteen = true
@@ -211,7 +211,9 @@ end
 assert(asb, 'syntaxfout')
 
 -- machinespecifieke typechecker
-local mach = arch_x64(asb, typeer(asb))
+local t,fouten = typeer(asb)
+
+local mach = arch.x64(asb, t)
 if opt.R then
 	print('=== ARCH ===')
 	print(e2s(mach))
@@ -219,12 +221,12 @@ end
 
 -- typeer!
 --local function gekleurd(x, kleur)
-local types,fouten = typeer(mach)
+local types,fouten0 = typeer(mach)
 
 if #fouten > 0 then
 	local exit = false
 	for i,fout in ipairs(fouten) do
-		if fout.loc.bron:sub(1,4) ~= 'bieb' then
+		if not fout.loc.bron or fout.loc.bron:sub(1,4) ~= 'bieb' then
 			print(fout2ansi(fout))
 			exit = true
 		end
@@ -258,15 +260,6 @@ if opt.O then
 	uit = optimaliseer(uit)
 	--print(taal2string(uit))
 	--return
-end
-
--- oude hoge JS
-if opt.javascript and false then
-	uit = naarjavascript(uit)
-
-	file('a.js', uit)
-	print(uit)
-	return
 end
 
 -- control flow!
