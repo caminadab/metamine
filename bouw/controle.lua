@@ -88,6 +88,8 @@ function controle(exp, maakvar)
 		end
 		if isfn(exp) and fn(exp) == '[]' then
 			arg = con(exp)
+		elseif isfn(exp) and fn(exp) == '[]u' then
+			arg = exp
 		elseif isfn(exp) then
 			arg = con(exp)
 		else
@@ -268,10 +270,14 @@ function controle(exp, maakvar)
 			if exp[1] and fn(exp[1]) == ',' then
 				exp = exp[1]
 			end
-			for i,v in ipairs(exp) do
-				fw[i] = arg(v)
-				--fw[i].ref = v.ref
-			end
+				for i,v in ipairs(exp) do
+					if fn(exp) == '[]u' then
+						fw[i] = v
+					else
+						fw[i] = arg(v)
+					end
+					--fw[i].ref = v.ref
+				end
 			stat.loc = exp.loc
 
 			--assert(exp.ref, e2s(stat)..' heeft geen referentie')

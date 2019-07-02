@@ -22,7 +22,9 @@ local function sym(exp, t)
 	if infix[op] then
 		t[#t+1] = exp[1].v .. op .. exp[2].v
 	elseif f == '[]u' then
-		t[#t+1] = '"' .. table.concat(map(exp, string.char)) .. '"'
+		t[#t+1] = '"' .. table.concat(map(exp, function(x) return string.char(x, 1) end)) .. '"'
+		print(t[#t], 'was het')
+		error'ok'
 	elseif op == '[]' then
 		t[#t+1] = '[' .. table.concat(map(exp, function(sub) return sub.v end), ', ') .. ']'
 	else

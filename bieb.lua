@@ -387,6 +387,9 @@ bieb = {
 	end;
 
 	['tekst'] = function(a)
+		if type(a) == 'string' then
+			return a
+		end
 		if type(a) == 'table' then
 			return a
 		else
