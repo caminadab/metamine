@@ -310,18 +310,13 @@ canvas {
 `; simpele stopwatch
 uit = looptijd`,
 		'; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind',
-`; cirkel (canvas is 15×10)
-x = 5
-y = 7 + sin(looptijd)
-c = cirkel(x,y,2)
+`; cirkel (canvas is 16×10)
+x = 8
+y = 5
+r = looptijd
+c = cirkel(x,y,r)
 uit = canvas [c]
 `,
-`; spel (veld is 15×10 meter)
-x = 9 + sin(looptijd - 1) / 2
-y = 5
-v = vierkant(x, y, 1)
-c = cirkel(5, 5, 3)
-uit = canvas [v, c]`,
 		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001',
 		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x || " hoi"\nuit = (f^aantal)("groet:")',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
