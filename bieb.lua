@@ -9,6 +9,8 @@ bieb = {
 	log10 = math.log10,
 	puts = true,
 	call = true,
+	tau = math.pi*2,
+	pi = math.pi,
 
 	-- web
 	consolelog =  function(s) print(s) end;
@@ -19,6 +21,13 @@ bieb = {
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
+	muisKlik = true,
+	muisKlikBegin = true,
+	muisKlikEind = true,
+	muisSleep = true, -- (pad = (van, via, naar))
+	muisX = true,
+	muisY = true,
+	regMuis = true, -- X_X
 
 	['_'] = function(a, b)
 		if type(a) == 'string' then
@@ -61,6 +70,8 @@ bieb = {
 	-- tekening
 	rechthoek = true,
 	groen = true,
+	bruin = true,
+	beige = true,
 	rood = true,
 	wit = true,
 	zwart = true,
@@ -92,7 +103,7 @@ bieb = {
 	end) (10),
 	os.time(),
 	['inverteer'] = true; -- sure
-	['wortel'] = function(a) return math.sqrt(a) end;
+	['sqrt'] = function(a) return math.sqrt(a) end;
 	['ja'] = true; 
 	['nee'] = false; 
 	['niets'] = "niets";
@@ -338,7 +349,7 @@ bieb = {
 		return r
 	end;
 
-	['waarvoor'] = function(l,fn)
+	['filter'] = function(l,fn)
 		local r = {fn='[]'}
 		for i,v in ipairs(l) do
 			if fn(v) then
@@ -348,6 +359,15 @@ bieb = {
 		return r
 	end;
 
+	['reduceer'] = function(l,fn)
+		local r = {fn='[]'}
+		for i,v in ipairs(l) do
+			if fn(v) then
+				r[#r+1] = v
+			end
+		end
+		return r
+	end;
 	-- trig
 	['sin'] = math.sin;
 	['asin'] = math.asin;
