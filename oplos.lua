@@ -167,6 +167,7 @@ function oplos(exp,voor)
 		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 		for eq in pairs(eqs) do
 			if eq.fn and eq.fn.v == ':=' then
+			error'OK'
 				--oud[eq] = true
 				local a, b = eq[1], eq[2]
 				--eq.fn,eq[1],eq[2] = sym.altis, a, 

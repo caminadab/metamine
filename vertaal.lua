@@ -83,6 +83,7 @@ if test then
 	test("f = x → x · 2\ng = y → y - 1\nh = f ∘ g ∘ f ∘ f ∘ g\nuit = h(3)", 19)
 
 	-- als
+	opt = {L=true}
 	test("als 2 > 1 dan\n\tuit = 2\nanders\n\tuit = 3\neind", 2)
 
 	-- functietjes
