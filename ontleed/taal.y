@@ -34,7 +34,7 @@
 
 %}
 
-%token '\n' NEWLINE "newline"
+%token '\n' NEWLINE "end of line"
 %token FOUT
 %token NAAM "naam"
 %token TEKST "tekst"

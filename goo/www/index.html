@@ -321,7 +321,7 @@ uit = canvas [c]
 		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x || " hoi"\nuit = (f^aantal)("groet:")',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
 		'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
-		'; als-dan & concatenatie \nantwoord = als 2 > 1 dan "ja" anders "nee"\nuit = "klopt dit: " || antwoord',
+		'; functiecompositie\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)',
 	];
 
 	var vertaalknop = document.getElementById("vertaal");
