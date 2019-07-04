@@ -161,9 +161,9 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 
 '.'					{ *yylval = karakter(yytext[1]); return TEKST; }
 \"([^"])*\"					{ *yylval = tekst(a(yytext)); return TEKST; }
-\n					{ return '\n'; }
+\n					{ return NEWLINE; }
 ;-[^$]*-;			// negeer commentaar
-;[^-][^\n]*\n		{ return '\n'; }
+;[^-][^\n]*\n		{ return NEWLINE; }
 ((\d+)|(\.\d+))(e\d*)? { *yylval = a(yytext); return NAAM; }
 -?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; } /* getal */
 -?[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }

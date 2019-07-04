@@ -1,5 +1,5 @@
 uit = a
-a := "hoi"
+a = ("hoi"
 ;pos = (0..8) × (0..8)
 ;vlak = p → vierkant(p₀, p₁, 1/8)
 ;uit = canvas(pos map vlak)

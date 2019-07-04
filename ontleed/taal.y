@@ -34,7 +34,7 @@
 
 %}
 
-%token '\n' RE "regeleinde"
+%token '\n' NEWLINE "newline"
 %token FOUT
 %token NAAM "naam"
 %token TEKST "tekst"
@@ -119,15 +119,15 @@ block:
 
 stats:
 	%empty						{ $$ = aloc("EN", @$); }
-| stats stat '\n'				{ $$ = appendloc($1, $2, @$); }
-| stats '\n'				{ $$ = $1; }
+| stats stat NEWLINE				{ $$ = appendloc($1, $2, @$); }
+| stats NEWLINE				{ $$ = $1; }
 | stats error							{ $$ = appendloc($1, aloc("?", @1), @$); }
 ;
 
 stat:
 	exp 		{ $$ = $1; }
-|	ALS exp DAN '\n' block EIND	{ $$ = fn3loc(aloc("=>", @1), $2, $5, @$); }
-|	ALS exp DAN '\n' block ANDERS '\n' block EIND	{ $$ = fn4loc(aloc("=>", @1), $2, $5, $8, @$); }
+|	ALS exp DAN NEWLINE block EIND	{ $$ = fn3loc(aloc("=>", @1), $2, $5, @$); }
+|	ALS exp DAN NEWLINE block ANDERS NEWLINE block EIND	{ $$ = fn4loc(aloc("=>", @1), $2, $5, $8, @$); }
 /*|	error 	{ printf("ok"); $$ = aloc("?", @1); yyerrok; }*/
 ;
 
@@ -239,12 +239,6 @@ single:
 |	'{' error '}'				{ $$ = FN2(A("{}"), A("?")); yyerrok; }
 ;
 
-blockline: '\n' TAB exp { $$ = $3; }
-block:
-	blockline						{ $$ = fn2loc(A("co"), $1, @$); }
-| block blockline			{ $$ = APPEND($1, $2); }
-;
-
 exp:
 
 	single '.'																				{ $$ = fn2loc(aloc(".", @2), $1, @$); }
@@ -338,7 +332,7 @@ setitems:
 
 items:
 	exp									{ $$ = FN2(A("[]"), $1); }
-| '\n' TAB exp '\n'		{ $$ = FN2(A("[]"), $3); }
+| NEWLINE TAB exp NEWLINE		{ $$ = FN2(A("[]"), $3); }
 | items ',' exp				{ $$ = APPEND($1, $3); }
-| items TAB exp	'\n'				{ $$ = APPEND($1, $3); }
+| items TAB exp	NEWLINE				{ $$ = APPEND($1, $3); }
 ;
