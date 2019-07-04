@@ -49,105 +49,111 @@ sin(A)   -> Math.sin(A)
 vanaf(A 1)   -> A.splice(1)
 ]]
 local immjs = {
-	['[]'] = '[ARGS]',
-	['[]u'] = 'TARGS',
-	['{}'] = 'new Set(ARGS)',
+	['[]'] = '[$ARGS]',
+	['[]u'] = '$TARGS',
+	['{}'] = 'new Set($ARGS)',
 	['{}'] = '{}',
-	['|'] = 'X || Y',
+	['|'] = '$1 || $2',
 
 	-- arit
-	['%'] = 'X / 100',
-	['+i'] = 'X + Y',
-	['+d'] = 'X + Y',
-	['+'] = 'X + Y',
-	['-'] = 'X - Y',
-	['-i'] = 'X - Y',
-	['-d'] = 'X - Y',
-	['*'] = 'X * Y',
-	['*i'] = 'X * Y',
-	['*d'] = 'X * Y',
-	['/'] = 'X / Y',
-	['/i'] = 'X / Y',
-	['/d'] = 'X / Y',
-	['mod'] = 'X % Y',
-	['modi'] = 'X % Y',
-	['modd'] = 'X % Y',
-	['^'] = 'Math.pow(X, Y)',
-	['^i'] = 'Math.pow(X, Y)',
-	['^d'] = 'Math.pow(X, Y)',
-	['^f'] = 'function(res) { for (var i = 0; i < Y; i++) res = X(res); return res; }',
+	['%'] = '$1 / 100',
+	['+i'] = '$1 + $2',
+	['+d'] = '$1 + $2',
+	['+'] = '$1 + $2',
+	['-'] = '$1 - $2',
+	['-i'] = '$1 - $2',
+	['-d'] = '$1 - $2',
+	['*'] = '$1 * $2',
+	['*i'] = '$1 * $2',
+	['*d'] = '$1 * $2',
+	['/'] = '$1 / $2',
+	['/i'] = '$1 / $2',
+	['/d'] = '$1 / $2',
+	['mod'] = '$1 % $2',
+	['modi'] = '$1 % $2',
+	['modd'] = '$1 % $2',
+	['^'] = 'Math.pow($1, $2)',
+	['^i'] = 'Math.pow($1, $2)',
+	['^d'] = 'Math.pow($1, $2)',
+	['^f'] = 'function(res) { for (var i = 0; i < $2; i++) res = $1(res); return res; }',
+	['sqrt'] = 'Math.sqrt($1)',
 
 	-- cmp
-	['>'] = 'X > Y',
-	['>='] = 'X >= Y',
-	['='] = 'X === Y',
-	['!='] = 'X !=== Y',
-	['<='] = 'X <= Y',
-	['<'] = 'X < Y',
+	['>'] = '$1 > $2',
+	['>='] = '$1 >= $2',
+	['='] = '$1 === $2',
+	['!='] = '$1 !=== $2',
+	['<='] = '$1 <= $2',
+	['<'] = '$1 < $2',
 
 	-- deduct
-	['en'] = 'X && Y', 
-	['of'] = 'X || Y', 
-	['=>'] = 'X ? Y : Z', 
+	['en'] = '$1 && $2', 
+	['of'] = '$1 || $2', 
+	['=>'] = '$1 ? $2 : $3', 
 
 	-- trig
-	['sin'] = 'Math.sin(X)',
-	['cos'] = 'Math.cos(X)',
-	['tan'] = 'Math.tan(X)',
-	['sincos'] = '[Math.sin(X), Math.cos(X)]',
+	['sin'] = 'Math.sin($1)',
+	['cos'] = 'Math.cos($1)',
+	['tan'] = 'Math.tan($1)',
+	['sincos'] = '[Math.sin($1), Math.cos($1)]',
 
 	-- discreet
-	['min'] = 'Math.min(X,Y)',
-	['max'] = 'Math.max(X,Y)',
-	['entier'] = 'Math.floor(X)',
-	['int'] = 'Math.floor(X)',
-	['intd'] = 'Math.floor(X)',
-	['abs'] = 'Math.abs(X)',
-	['absd'] = 'Math.abs(X)',
-	['absi'] = 'Math.abs(X)',
-	['sign'] = '(X > 0 ? 1 : -1)',
+	['min'] = 'Math.min($1,$2)',
+	['max'] = 'Math.max($1,$2)',
+	['entier'] = 'Math.floor($1)',
+	['int'] = 'Math.floor($1)',
+	['intd'] = 'Math.floor($1)',
+	['abs'] = 'Math.abs($1)',
+	['absd'] = 'Math.abs($1)',
+	['absi'] = 'Math.abs($1)',
+	['sign'] = '($1 > 0 ? 1 : -1)',
 
 	-- exp
-	['log10'] = 'Math.log(X, 10)',
-	['||'] = 'X.concat(Y)',
-	['||u'] = 'X + Y',
-	['cat'] = 'X.join(Y)', -- TODO werkt dit?
-	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < X.length; i++) { totaal += Y(X[i]); }; return totaal; })() ', -- TODO werkt dit?
-	['catu'] = 'X.join(Y)',
+	['log10'] = 'Math.log($1, 10)',
+	['||'] = '$1.concat($2)',
+	['||u'] = '$1 + $2',
+	['cat'] = '$1.join($2)', -- TODO werkt dit?
+	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
+	['catu'] = '$1.join($2)',
 
 	-- lijst
-	['#'] = 'X.length',
-	['som'] = 'X.reduce((a,b) => a + b, 0)',
-	['..'] = 'X < Y ? Array.from(new Array(Y-X), (x,i) => X + i) : Array.from(new Array(Y-X), (x,i) => Y - 1 - i)',
-	--['_'] = 'X[Y] != null ? X[Y] : (function() {throw("ongeldige index in lijst");})()',
-	--['_u'] = 'X[Y] != null ? X[Y] : (function() {throw("ongeldige index in lijst");})()',
-	['_'] = 'X[Y]',
-	['_u'] = 'X[Y]',
-	['call'] = 'X(Y)',
-	['vanaf'] = 'X.slice(Y, X.length)',
-	['xx'] = 'X.map(x => Y.map(y => [x, y]))',
+	['#'] = '$1.length',
+	['som'] = '$1.reduce((a,b) => a + b, 0)',
+	['..'] = '$1 < $2 ? Array.from(new Array($2-$1), (x,i) => $1 + i) : Array.from(new Array($2-$1), (x,i) => $2 - 1 - i)',
+	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
+	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
+	['_'] = '$1[$2]',
+	['_u'] = '$1[$2]',
+	['call'] = '$1($2)',
+	['vanaf'] = '$1.slice($2, $1.length)',
+	['xx'] = '$1.map(x => $2.map(y => [x, y]))',
 
 	-- func
-	['map'] = 'X.map(Y)',
-	['@'] = 'function(a, b, c, d, e) { return Y(X(a, b, c, d, e)); }',
+	['map'] = '$1.map($2)',
+	['filter'] = '$1.filter($2)',
+	['reduceer'] = '$1.reduce($2)',
+	['@'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
 	[','] = '[ARGS]',
 	
 	-- LIB
-	['vierkant'] = '(function(x,y,z) {return (function(c){/*console.log(x+" "+y+" "+z);*/\n\t\tc.beginPath();\n\t\tc.rect(x * 72, y * 72, z * 72, z * 72);\n\t\tc.fillStyle = "red";\n\t\tc.fill();\n\t\treturn c;}); })(X,Y,Z)',
-	['cirkel'] = '(function(x,y,z) {return (function(c){/*console.log(x+" "+y+" "+z);*/\n\t\tc.beginPath();\n\t\tc.arc(x * 72, y * 72, z * 72/2, 0, Math.PI * 2);\n\t\tc.fillStyle = "green";\n\t\tc.fill();\n\t\treturn c;}); })(X,Y,Z)',
-	['tekst'] = 'X.toString()',
-	['clearCanvas'] = 'X.clearRect(0,0,1280,720) || X',
-	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; }; var r = X(t); requestAnimationFrame(f); return true; })()' --[[({
+
+	-- muis
+	['regMuis'] = '(function(x) { uit.onmouseup = function(ev) { mouseLeftReleased = true; mouseLeft = false; }; uit.onmousedown = function(ev) { mouseLeftPressed = true; mouseLeft = true; }; uit.onmousemove = function(ev) { var b = uit.getBoundingClientRect(); mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3); mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3); }; return uit; })($1)',
+	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
+	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72/2, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
+	['tekst'] = '$1.toString()',
+	['clearCanvas'] = '$1.clearRect(0,0,1280,720) || $1',
+	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; }; var r = $1(t); mouseLeftPressed = false; mouseLeftReleased = false; requestAnimationFrame(f); return true; })()' --[[({
 	//function f(t) {
-	//	X(t);
+	//	$1(t);
 	//	requestAnimationFrame(f);
 	//}
 	//return requestAnimationFrame(f);
 	return 0;
 })()]],
-	['setInnerHtml'] = '(html == X.toString()) ? uit.children[0] : ((uit.innerHTML = X.toString()) && (html = X.toString()) && uit.children[0])',
+	['setInnerHtml'] = '(html == $1.toString()) ? uit.children[0] : ((uit.innerHTML = $1.toString()) && (html = $1.toString()) && uit.children[0])',
 	['getContext'] = 'uit.children[0].getContext("2d")',
-	['consolelog'] = 'console.log(X)',
+	['consolelog'] = 'console.log($1)',
 }
 
 local immsym = {
@@ -165,6 +171,13 @@ local immsym = {
 	nee = 'false',
 	tau = '(Math.PI * 2)',
 	pi = 'Math.PI',
+	['muisX'] = 'mouseX',
+	['muisY'] = 'mouseY',
+	['muisKlik'] = 'mouseLeft',
+	['muisKlikBegin'] = 'mouseLeftPressed',
+	['muisKlikEind'] = 'mouseLeftReleased',
+	['beige'] = '"#f5f5dc"',
+	['bruin'] = '"#996633"',
 }
 
 function naarjavascript(app)
@@ -188,14 +201,14 @@ function naarjavascript(app)
 			elseif immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
-				cmd = cmd:gsub('X', '_X_')
-				cmd = cmd:gsub('Y', '_Y_')
-				cmd = cmd:gsub('Z', '_Z_')
-				cmd = cmd:gsub('TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
-				cmd = cmd:gsub('ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
-				cmd = a and cmd:gsub('_X_', a) or cmd
-				cmd = b and cmd:gsub('_Y_', b) or cmd
-				cmd = c and cmd:gsub('_Z_', c) or cmd
+				cmd = a and cmd:gsub('$1', a) or cmd
+				cmd = b and cmd:gsub('$2', b) or cmd
+				cmd = c and cmd:gsub('$3', c) or cmd
+				cmd = cmd:gsub('$TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
+				cmd = cmd:gsub('$ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
+				--cmd = a and cmd:gsub('_X_', a) or cmd
+				--cmd = b and cmd:gsub('_Y_', b) or cmd
+				--cmd = c and cmd:gsub('_Z_', c) or cmd
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, cmd)
 			elseif immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
@@ -255,6 +268,11 @@ function naarjavascript(app)
 		end
 	end
 	table.insert(s, 'start = new Date().getTime();\n')
+	table.insert(s, 'mouseLeft = false;\n')
+	table.insert(s, 'mouseLeftPressed = false;\n')
+	table.insert(s, 'mouseLeftReleased = false;\n')
+	table.insert(s, 'mouseX = 0;\n')
+	table.insert(s, 'mouseY = 0;\n')
 	table.insert(s, 'html = "";')
 	table.insert(s, 'uit = document.getElementById("uit");')
 	table.insert(s, 'stop = false;\n')
