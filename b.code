@@ -1,5 +1,4 @@
-uit = 3
-
+uit = canvas(cirkel(2,3,4))
 ;pos = (0..8) × (0..8)
 ;vlak = p → vierkant(p₀, p₁, 1/8)
 ;uit = canvas(pos map vlak)
