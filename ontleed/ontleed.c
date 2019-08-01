@@ -20,6 +20,7 @@ int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int 
 }
 
 int ontleed(char* code, char* buf, int buflen, struct fout* fouten, int maxfouten) {
+	// invoer scanner
 	yyscan_t scanner;
 	yylex_init(&scanner);
 	yy_scan_string(code, scanner);
@@ -30,7 +31,7 @@ int ontleed(char* code, char* buf, int buflen, struct fout* fouten, int maxfoute
 
 	int ok = yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, maxfouten, scanner);
 
-	yylex_destroy(scanner);
+	//yylex_destroy(scanner);
 
 	write_node(wortel, buf, buflen);
 

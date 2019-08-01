@@ -28,6 +28,7 @@ int main() {
 	printf("\n");
 	printf("%d\n", numfouten);
 	assert(numfouten == 1);
+	printf("ok\nok\nok\n");
 		
 	char* tests[][2] = {
 		// als dan
