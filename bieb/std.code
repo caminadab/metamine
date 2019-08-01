@@ -3,6 +3,7 @@ alert: tekst → bit
 consolelog: tekst → bit
 vierkant: (ℝ, ℝ, ℝ) → (canvas → canvas)
 cirkel: (ℝ, ℝ, ℝ) → (canvas → canvas)
+syscall: iets → int
 
 ;uit: bit
 

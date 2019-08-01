@@ -31,6 +31,11 @@ local function combineerR(sexp, tt)
 			end
 			insert(tt, op:sub(2,2))
 
+		-- tekst
+		elseif op == '[]u' then
+			local tekst = string.char(table.unpack(map(sexp, function(x) return x.v end)))
+			insert(tt, string.format('%q', tekst))
+
 		-- navoegsel
 		elseif op == '%' or op == "'" then
 			combineerR(sexp[1], tt)
