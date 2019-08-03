@@ -31,6 +31,11 @@ local function combineerR(sexp, tt)
 			end
 			insert(tt, op:sub(2,2))
 
+		-- tekst
+		elseif op == '[]u' then
+			local tekst = string.char(table.unpack(map(sexp, function(x) return x.v end)))
+			insert(tt, string.format('%q', tekst))
+
 		-- navoegsel
 		elseif op == '%' or op == "'" then
 			combineerR(sexp[1], tt)
@@ -60,6 +65,7 @@ local function combineerR(sexp, tt)
 		elseif #sexp == 2 then
 			for i=1,#sexp do
 				local v = sexp[i]
+if not v.fn and not v.v then see(v); error('geen exp: '..e2s(v)) end
 				local br = isfn(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
 				local br = br or (isfn(sexp.fn) and (lop[fn(sexp.fn)]))-- or (#v == 2 and not binop[fn(sexp[i])]))
 

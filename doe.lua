@@ -33,6 +33,8 @@ local function waarde(a, env, ...)
 	return a
 end
 
+-- doe een continue blok aan instructies
+-- mogelijk met argumenten
 local function doeblok(blok, env, ...)
 	for i,stat in ipairs(blok.stats) do
 		if opt and opt.L then
@@ -63,6 +65,7 @@ local function doeblok(blok, env, ...)
 		elseif exp.fn.v == '_fn' then
 			w = env[fn(exp)]
 
+		-- normale functie
 		else
 			local func = exp.fn.w
 			assert(func ~= nil, "geen functie voor "..e2s(exp.fn))
@@ -88,7 +91,8 @@ local function doeblok(blok, env, ...)
 				w = func:sub(args[1]+1, args[1]+1)
 
 			else
-				local f = executiefout(stat.loc, 'onbekende index: '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
+				print('ASDF', e2s(exp), exp.fn.w, exp.w)
+				local f = executiefout(stat.loc, 'onbekende "functie": '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
 				print()
 				print(fout2string(f))
 			end

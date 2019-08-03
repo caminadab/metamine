@@ -6,8 +6,9 @@ function arch.x64(exp, types)
 	local fops = set('+', '-', '*', '^', 'mod', 'abs', '/')
 	local iops = set('+', '-', '*', '^', 'mod', 'abs')
 	for sub in boompairs(exp) do
-		local isgetal = types[sub[1]] and types[sub[1]].v == 'getal'
-		local isint = types[sub[1]] and types[sub[1]]:issubtype('int')
+		local arg = sub[1]
+		local isgetal = types[arg] and types[arg].v == 'getal'
+		local isint = types[arg] and types[arg]:issubtype('int')
 		if fn(sub) == 'int' then
 			sub.fn = X('intd')
 		elseif types[sub.fn] and types[sub.fn]:issubtype('lijst') then
@@ -17,6 +18,7 @@ function arch.x64(exp, types)
 		elseif isgetal and isfn(sub) and fops[fn(sub)] then
 			sub.fn = X(fn(sub)..'d')
 		elseif isint and iops[fn(sub)] then
+			print('ISINT, want '..tostring(types[arg])..','..tostring(arg)..','..tostring(sub))
 			sub.fn = X(fn(sub)..'i')
 		elseif fn(sub) == '^' then
 			sub.fn = X(fn(sub)..'f')

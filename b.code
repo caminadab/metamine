@@ -7,17 +7,4 @@ y = muisY · t + 7 · (1 - t)
 n = 5
 uit = canvas [(0..n) map (z → f(z/n))]
 
-;pos = (0..8) × (0..8)
-;vlak = p → vierkant(p₀, p₁, 1/8)
-;uit = canvas(pos map vlak)
-
-;-
-venster = glfwMakeContextCurrent(c.glfwCreateWindow(640, 480, "Venster", 0, 0))
-
-zolang niet glfwWindowShouldClose(venster)
-	als ¬ glfwWindowShouldClose dan
-		venster = poll(venster swap clear(venster'))
-anders
-	uit = glfwTerminate
-eind
--;
+uit = canvas(cirkel(2,3,4))

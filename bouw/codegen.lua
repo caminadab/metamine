@@ -22,7 +22,7 @@ local cmp = {
 
 local function inlinetekst(exp, opslag, loc, t)
 	local min,concat = math.min, table.concat
-	assert(fn(exp) == '[]')
+	assert(fn(exp) == '[]u')
 	-- lengte
 	t[#t+1] = fmt('movq %d[rsp], %d', loc-8, #exp)
 	for i=1,#exp,4 do
@@ -548,7 +548,7 @@ xor rax, rdx
 				t[#t+1] = 'mov rax, -8[rbx]'
 				opsla(naam, 'rax', naam)
 
-			elseif f == '[]' then
+			elseif f == '[]u' then
 				--t[#t+0] = fmt('movq %d[rsp], %d', opslag[naam], #exp)
 				-- ptr, len, data...
 				local ptr = opslag[naam] + 16

@@ -307,5 +307,5 @@ if test then
 		assert(res == waarde, 'was '..res..' maar moest zijn '..waarde)
 	end
 
-	moetzijn("uit = 1 + 1", '2')
+	--moetzijn("uit = 1 + 1", '2')
 end

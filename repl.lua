@@ -28,4 +28,7 @@ function repl()
 		end
 	end
 end
-repl()
+
+if not test then
+	repl()
+end

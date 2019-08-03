@@ -94,6 +94,16 @@ g = (c, d) → c + d
 uit = f(g(2, 3), f(g(1, 8), 2))
 ]], 16)
 
+	-- ez
+	test('uit = "hoi"', 'hoi')
+	test('uit = "hoi" || "ja"', 'hoija')
+	test([[
+uit = "fib(20) = " || tekst(x) || [10]
+x = fib 20
+fib = n → (fⁿ[0,1]) 0
+f = [a,b] → [b,a+b]
+]], 6765)
+
 	do return end
 
 	local itoatoitoa = [[
