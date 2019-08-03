@@ -2,6 +2,9 @@ require 'util'
 require 'func'
 require 'symbool'
 require 'combineer'
+require 'bieb'
+
+local bieb = bieb()
 
 local infix = set('*', '/', '+', '-', 'mod')
 

@@ -320,6 +320,15 @@ uit = canvas [c]
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
 		'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
 		'; functiecompositie\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)',
+		`; mooie bullshit\n; cirkel (canvas is 18×10)
+		r = looptijd + n/2 + n/5 + n/9 + n/100
+
+		f = n + sin(looptijd) → cirkel(n/1,g(n),abs(sin(3·r))·abs(2·sin(looptijd/100)))
+		g = y → sin(0.4 · looptijd + y) + 4
+
+		cirkels = (0..40) map f
+		uit = canvas cirkels
+		`,
 	];
 
 	var vertaalknop = document.getElementById("vertaal");
