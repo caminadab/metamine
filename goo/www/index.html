@@ -311,10 +311,8 @@ canvas {
 uit = looptijd`,
 		'; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind',
 `; cirkel (canvas is 18×10)
-x = 9
-y = 5
 r = looptijd
-c = cirkel(x,y,r)
+c = cirkel(muisX,muisY,r)
 uit = canvas [c]
 `,
 		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001',
@@ -343,10 +341,12 @@ uit = canvas [c]
 				onsuccess();
 				try {
 					eval(j.js);
-				} catch (e) {
-					uit.innerHTML = "executiefout: " + e;
+				//} catch (e) {
+				//	uit.innerHTML = "executiefout: " + e + e.stack;
+				//}
+				} finally {
+					setErrors(j.fouten);
 				}
-				setErrors(j.fouten);
 			})
        			//.catch(e => onerror(e));
 	}

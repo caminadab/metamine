@@ -1,5 +1,7 @@
 ;html = (uit/tijd)(moment)
 ;ververs = moment → setInnerHtml(html)
+start.
+
 app = consolelog(tekst(uit))
 
 ;canvasid.

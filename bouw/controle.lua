@@ -177,8 +177,15 @@ function controle(exp, maakvar)
 
 				-- veilig stellen...
 				--waarde = substitueerzuinig(waarde, argnaar, argalt, maakvar)
+				print('JA!', e2s(argvan), e2s(argnaar)) -- PRINT
 
 				waarde = substitueerzuinig(waarde, argvan, argnaar, maakvar)
+			end
+			-- is alles eruit?
+			for exp in boompairs(waarde) do
+				if fn(exp) == '_arg' then
+				print('FOUTE BOEL!', e2s(exp)) -- PRINT
+				end
 			end
 
 			local res = con(waarde)
@@ -294,7 +301,14 @@ function controle(exp, maakvar)
 		al[moes(exp)] = ret
 		return ret
 	end
+
 	con(exp)
+	-- check
+	for r in boompairs(exp) do
+		if fn(r) == '_arg' then
+			error"JAMMER DIT"
+		end
+	end
 
 	graaf.namen = {}
 	for blok in pairs(graaf.punten) do

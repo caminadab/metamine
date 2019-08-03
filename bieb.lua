@@ -3,7 +3,11 @@ require 'util'
 require 'naarlua'
 
 local niets = {}
-bieb = {
+
+function bieb()
+	local inn = {}
+
+	local bieb = {
 		
 	log2 = true,
 	log10 = math.log10,
@@ -11,6 +15,18 @@ bieb = {
 	call = true,
 	tau = math.pi*2,
 	pi = math.pi,
+
+	-- meta
+	var = function (set)
+		for ass in pairs(set) do
+			local moment,exp = ass[1],ass[2]
+			local f = function() return eval(exp) end
+			local k = 'als'..tostring(moment):gsub('(.).*', string.upper)
+			inn[k] = inn[k] or {}
+			inn[k][f] = true
+			error('JA')
+		end
+	end;
 
 	-- web
 	consolelog =  function(s) print(s) end;
@@ -83,7 +99,7 @@ bieb = {
 
 	-- wiskunde
 	co = 3,
-	atoom = function(id) return '###' .. id end;
+	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
 	max = math.max,
 	min = math.min,
 	int = math.floor,
@@ -97,7 +113,7 @@ bieb = {
 		return socket.gettime()
 	end) (10),
 	starttijd = true,
-	['start'] = (function()
+	['start1'] = (function()
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
@@ -201,8 +217,32 @@ bieb = {
 	end;
 	['%'] = function(a) return a / 100 end;
 	['[]u'] = function(...)  return string.char(...) end;
-	['[]'] = function(...)  return {...} end;
+	['[]'] = function(...)
+		local t = {...}
+		return setmetatable(t,{__tostring=function() return '[' .. table.concat(map(t,tostring), ',') .. ']' end})
+	end;
 	['{}'] = function(...)
+		local t = {...}
+		local s = {}
+		for _,v in ipairs(t) do
+			s[v] = true
+		end
+		setmetatable(s, {__tostring=function()
+					local t = {'{'}
+					for k in spairs(s) do
+						t[#t+1] = tostring(k)
+						t[#t+1] = ','
+					end
+					if t[#t] == ',' then t[#t] = nil end
+					t[#t+1] = '}'
+					return table.concat(t)
+				end
+			})
+
+		return s
+	end;
+				
+	['{}1'] = function(...)
 		local t = {...}
 		local s = {is={set=true},set={}}
 		for _,v in pairs(t) do
@@ -598,4 +638,8 @@ bieb = {
 		--return function(waarde)
 			--return doe(substitueer(rec, param, a))
 	end;
-}
+	}
+
+	return bieb
+
+end

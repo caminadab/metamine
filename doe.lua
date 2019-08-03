@@ -97,7 +97,7 @@ local function doeblok(blok, env, ...)
 		assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
 
 		if opt and opt.L then
-			io.write(combineer(w2exp(w)), '\n')
+			io.write(combineer(w2exp(tostring(w))), '\n')
 		end
 
 		env[naam.v] = w
@@ -143,6 +143,7 @@ function doe(cfg)
 	if cfg == nil then
 		return nil
 	end
+	local bieb = bieb()
 	assert(cfg.namen, 'is geen controlegraaf')
 	local env = {}
 	for k,v in pairs(bieb) do env[k] = v end

@@ -8,6 +8,8 @@ require 'rapport'
 
 leed = combineer
 
+local bieb = bieb()
+
 function T(exp)
 	local r = {}
 	local function t(exp)
@@ -164,15 +166,14 @@ function oplos(exp,voor)
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
-		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
+		-- herschrijf (a := b) naar (a := (l → (l=0 ⇒ b)))
 		for eq in pairs(eqs) do
 			if eq.fn and eq.fn.v == ':=' then
-			error'OK'
-				--oud[eq] = true
 				local a, b = eq[1], eq[2]
-				--eq.fn,eq[1],eq[2] = sym.altis, a, 
 
-				local neq = X(sym.altis, a, X(sym.alt, X(sym.dan, sym.start, b), X(sym.oud, a)))
+				-- local neq = 
+				local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
+				print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
 			end
@@ -364,6 +365,30 @@ function oplos(exp,voor)
 				alts = alts[1]
 			end
 			local eq = {fn=X'=', X(naam), alts}
+			eqs[eq] = true
+		end
+
+		-- verzamel :=
+		local map = {} -- k → [v]
+		local oud = {}
+		for eq in pairs(eqs) do
+			-- a ∐= b
+			if isfn(eq) and eq.fn.v == ':=' then
+				local a,b = eq[1],eq[2]
+				map[a.v or a] = map[a.v or a] or {}
+				local v = map[a.v or a]
+				v[#v+1] = b
+				oud[eq] = true
+			end
+		end
+		for eq in pairs(oud) do
+			eqs[eq] = nil
+		end
+		-- maak 'm
+		for naam,alts in pairs(map) do
+			alts.fn = X'var'
+			local eq = {fn=X'=', X(naam), alts}
+			print(e2s(eq))
 			eqs[eq] = true
 		end
 

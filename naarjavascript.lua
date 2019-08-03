@@ -56,6 +56,7 @@ local immjs = {
 	['|'] = '$1 || $2',
 
 	-- arit
+	['atoom'] = 'atoom$1',
 	['%'] = '$1 / 100',
 	['+i'] = '$1 + $2',
 	['+d'] = '$1 + $2',
@@ -134,6 +135,8 @@ local immjs = {
 	['reduceer'] = '$1.reduce($2)',
 	['@'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
 	[','] = '[ARGS]',
+
+	['var'] = '$1.map(f => f((new Date().getTime() - start)/1000)',
 	
 	-- LIB
 
@@ -201,11 +204,12 @@ function naarjavascript(app)
 			elseif immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
-				cmd = a and cmd:gsub('$1', a) or cmd
-				cmd = b and cmd:gsub('$2', b) or cmd
-				cmd = c and cmd:gsub('$3', c) or cmd
+				cmd = a and cmd:gsub('$1', assert(a)) or cmd
+				cmd = b and cmd:gsub('$2', assert(b)) or cmd
+				cmd = c and cmd:gsub('$3', assert(c)) or cmd
 				cmd = cmd:gsub('$TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
 				cmd = cmd:gsub('$ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
+				cmd:gmatch('%$', function(n) error('onbekende var: '..tostring(n)) end)
 				--cmd = a and cmd:gsub('_X_', a) or cmd
 				--cmd = b and cmd:gsub('_Y_', b) or cmd
 				--cmd = c and cmd:gsub('_Z_', c) or cmd
@@ -268,6 +272,7 @@ function naarjavascript(app)
 		end
 	end
 	table.insert(s, 'start = new Date().getTime();\n')
+	table.insert(s, 'if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getClientBoundingRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}')
 	table.insert(s, 'mouseLeft = false;\n')
 	table.insert(s, 'mouseLeftPressed = false;\n')
 	table.insert(s, 'mouseLeftReleased = false;\n')
