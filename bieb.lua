@@ -4,6 +4,11 @@ require 'naarlua'
 
 local niets = {}
 
+local listmeta = {}
+function listmeta:__tostring()
+	return '[' .. table.concat(map(self, function(a) return tostring(a) end), ',') .. ']'
+end
+
 function bieb()
 	local inn = {}
 
@@ -159,9 +164,10 @@ function bieb()
 		local t = {}
 		for i,aa in ipairs(a) do
 			for i,bb in ipairs(b) do
-				t[#t+1] = {aa, bb}
+				t[#t+1] = setmetatable({aa, bb}, getmetatable(a))
 			end
 		end
+		setmetatable(t, listmeta)
 		return t
 	end;
 			
@@ -345,6 +351,7 @@ function bieb()
 				r[#r+1] = i
 			end
 		end
+		setmetatable(r, listmeta)
 		return r
 	end;
 
@@ -359,6 +366,7 @@ function bieb()
 		--if isatoom(b) then b = {b} end
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
 		for i,v in ipairs(b) do t[j] = v; j=j+1 end
+		setmetatable(t, listmeta)
 		return t
 	end;
 
@@ -383,6 +391,7 @@ function bieb()
 				end
 			end
 		end
+		setmetatable(r, listmeta)
 		return r
 	end;
 
@@ -396,6 +405,7 @@ function bieb()
 			--print('B', i, v, r[i])
 			--assert(s)
 		end
+		setmetatable(r, listmeta)
 		return r
 	end;
 

@@ -94,8 +94,8 @@
 %left '<' '>' "<=" ">="
 %left '&' '|'
 %left "||" "::"
-%left ".."
 %left "xx" UNIE INTERSECTIE
+%left ".."
 %left '+' '-'
 %nonassoc CALL
 %left '*' '/'

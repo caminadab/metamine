@@ -1,10 +1,1 @@
-; cirkel (canvas is 18×10)
-r = 1 + sin(looptijd)
-
-f = t → cirkel(x,y,1)
-x = muisX · t + 5 · (1 - t)
-y = muisY · t + 7 · (1 - t)
-n = 5
-uit = canvas [(0..n) map (z → f(z/n))]
-
-uit = canvas(cirkel(2,3,4))
+uit = (0..3 × 0..3) map (a → "hoi")

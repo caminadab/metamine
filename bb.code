@@ -5,8 +5,14 @@ muisKlikBegin: bit
 muisKlikBegin = muisKlik ∧ ¬muisKlik'
 muisKlikEind = ¬muisKlik ∧ muisKlik'
 
-muisKlik/tijd = moment → bit
+muisKlikte(-1s)
 
-muisKlikte = (muisKlik/tijd)
+muisKlikte ∐= nu ↦ muisKlik
+muisKlikte(nu) = muisKlik
 
-(muisKlik/tijd)(nu-1)
+f(x) = y
+f ∐= x ↦ y
+
+als muisKlikte(-1s) dan
+	x = 10
+eind
