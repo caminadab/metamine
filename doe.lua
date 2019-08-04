@@ -33,7 +33,7 @@ local function waarde(a, env, ...)
 	return a
 end
 
--- doe een continue blok aan instructies
+-- doe een continu blok aan instructies
 -- mogelijk met argumenten
 local function doeblok(blok, env, ...)
 	for i,stat in ipairs(blok.stats) do
@@ -101,7 +101,11 @@ local function doeblok(blok, env, ...)
 		assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
 
 		if opt and opt.L then
-			io.write(combineer(w2exp(tostring(w))), '\n')
+			local a = w
+			if type(a) == 'string' then
+				a = string.format('%q', a)
+			end
+			io.write(tostring(a), '\n')
 		end
 
 		env[naam.v] = w

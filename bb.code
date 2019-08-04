@@ -1,1 +1,12 @@
-uit = var { [start, 1] }
+;uit = var { [start, 1], [ }
+muisKlik = bit
+
+muisKlikBegin: bit
+muisKlikBegin = muisKlik ∧ ¬muisKlik'
+muisKlikEind = ¬muisKlik ∧ muisKlik'
+
+muisKlik/tijd = moment → bit
+
+muisKlikte = (muisKlik/tijd)
+
+(muisKlik/tijd)(nu-1)

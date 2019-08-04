@@ -67,7 +67,7 @@ local function optimaliseerO(exp)
 				local D = function (w)
 					local ok, res = pcall(
 						function()
-							return optimaliseer(substitueer(e[1], X('_arg', e[2]), w2exp(w))).w
+							return optimaliseer(substitueerzuinig(e[1], X('_arg', e[2]), w2exp(w))).w
 						end
 					)
 					assert(ok)

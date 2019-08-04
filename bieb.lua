@@ -18,7 +18,7 @@ function bieb()
 
 	-- meta
 	var = function (set)
-		for ass in pairs(set) do
+		--[[for ass in pairs(set) do
 			local moment,exp = ass[1],ass[2]
 			local f = function() return eval(exp) end
 			local k = 'als'..tostring(moment):gsub('(.).*', string.upper)
@@ -26,6 +26,16 @@ function bieb()
 			inn[k][f] = true
 			error('JA')
 		end
+		]]
+		local ret = nil
+		-- start
+		for momexp in pairs(set) do
+			local moment, exp  = table.unpack(momexp)
+			if moment.id == 0 then
+				ret = exp
+			end
+		end
+		return ret
 	end;
 
 	-- web
@@ -450,6 +460,7 @@ function bieb()
 	end;
 
 	['tekst'] = function(a)
+		do return tostring(a) end
 		if type(a) == 'string' then
 			return a
 		end

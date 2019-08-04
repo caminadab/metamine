@@ -1,8 +1,0 @@
-a := 1
-uit = a
-
-;-
-als looptijd = 2 dan
-	a := 2
-eind
--;

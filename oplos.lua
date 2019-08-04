@@ -229,7 +229,7 @@ function oplos(exp,voor)
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
 				if isfn(exp) and exp.fn.v == '.' then
-					exp.fn, exp[1], exp[2] = X'=', exp[1], {fn=X'atoom', X(tostring(i)) }
+					exp.fn, exp[1], exp[2] = X'=', exp[1], {fn=X'atoom', X(tostring(i)), naam=exp[1].v }
 					i = i + 1
 				end
 			end
