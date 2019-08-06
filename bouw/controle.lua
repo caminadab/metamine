@@ -104,7 +104,7 @@ function controle(exp, maakvar)
 		--stat.ref = ret.ref
 		local val = stat[2]
 		if verbozeIntermediair then
-			print('  '..combineer(stat)..'  '..(val.ref and val.ref.v or ''))
+			--print('  '..combineer(stat)..'  '..(val.ref and val.ref.v or ''))
 		end
 		--print(e2s(stat), val.ref)
 		if not val.ref then
@@ -177,7 +177,7 @@ function controle(exp, maakvar)
 
 				-- veilig stellen...
 				--waarde = substitueerzuinig(waarde, argnaar, argalt, maakvar)
-				print('JA!', e2s(argvan), e2s(argnaar)) -- PRINT
+				--print('JA!', e2s(argvan), e2s(argnaar)) -- PRINT
 
 				waarde = substitueerzuinig(waarde, argvan, argnaar, maakvar)
 			end

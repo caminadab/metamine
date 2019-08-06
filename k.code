@@ -1,6 +1,0 @@
-verzoek = tcp.uitgaand("127.0.0.1", 10101)
-verzoek.uit = "hoi"
-stduit = verzoek.in
-
-gasten = tcp.ontvang(0, 10101)
-gasten.uit = "welkom"

@@ -104,7 +104,11 @@ fib = n → (fⁿ[0,1]) 0
 f = [a,b] → [b,a+b]
 ]], 6765)
 
-	do return end
+	test([[
+f = succ ∘ succ ∘ g
+g = x → x · 2
+uit = f(1)
+]], 6)
 
 	local itoatoitoa = [[
 uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))

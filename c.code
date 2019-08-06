@@ -1,9 +1,0 @@
-veld.
-velden = veld^8×8
-pos: (0..8) × (0..8)
-v = velden(pos)
-
-vlak = p → inkleur(vierkant(pos₀, pos₁, 1/8), k)
-iswit = (x,y) → (x + y) mod 2 = 0
-kleur = als iswit dan beige anders bruin
-uit = canvas(v map vlak)

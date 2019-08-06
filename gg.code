@@ -1,2 +1,0 @@
-uit = canvas[f(0), f(2), f(1)]
-f = i → vierkant(i/8, i/8, 1/8)

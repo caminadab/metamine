@@ -1,4 +1,0 @@
-; zeg een aantal keer "hoi"
-aantal = int(looptijd)
-f = x → x || " hoi"
-uit = (f^aantal)("groet:")

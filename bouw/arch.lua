@@ -18,7 +18,6 @@ function arch.x64(exp, types)
 		elseif isgetal and isfn(sub) and fops[fn(sub)] then
 			sub.fn = X(fn(sub)..'d')
 		elseif isint and iops[fn(sub)] then
-			print('ISINT, want '..tostring(types[arg])..','..tostring(arg)..','..tostring(sub))
 			sub.fn = X(fn(sub)..'i')
 		elseif fn(sub) == '^' then
 			sub.fn = X(fn(sub)..'f')
