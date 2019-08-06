@@ -1,0 +1,2 @@
+c = cirkel(10,9,2)
+uit = canvas [ c ]
