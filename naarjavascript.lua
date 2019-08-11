@@ -76,6 +76,7 @@ local immjs = {
 	['mod'] = '$1 % $2',
 	['modi'] = '$1 % $2',
 	['modd'] = '$1 % $2',
+	['aselect'] = 'Math.random()*($2-$1) + $1',
 	['^'] = 'Math.pow($1, $2)',
 	['^i'] = 'Math.pow($1, $2)',
 	['^d'] = 'Math.pow($1, $2)',

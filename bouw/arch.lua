@@ -66,7 +66,7 @@ function arch.js(exp, types)
 			sub.fn = X'_'
 		]]
 		elseif fn(sub) == '^' then
-			sub.fn = X(fn(sub)..'f')
+			sub.fn = X(fn(sub)..'i')
 		end
 	end
 	return exp

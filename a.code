@@ -1,2 +1,10 @@
-c = cirkel(10,9,2)
-uit = canvas [ c ]
+a := 0
+a := 1
+uit = canvas [ cirkel(a,0,1) ]
+
+b := 1
+als toetsRechts dan
+	b := 2
+eind
+
+b := (start, 0)

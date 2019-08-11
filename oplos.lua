@@ -167,13 +167,15 @@ function oplos(exp,voor)
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
 		-- herschrijf (a := b) naar (a := (l → (l=0 ⇒ b)))
+		-- ** (a := b) naar (a := (start, b))
 		for eq in pairs(eqs) do
 			if eq.fn and eq.fn.v == ':=' then
 				local a, b = eq[1], eq[2]
 
 				-- local neq = 
-				local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-				print(e2s(neq))
+				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
+				local neq = X(sym.ass, a, X(',', 'start', b))
+				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
 			end
@@ -386,8 +388,8 @@ function oplos(exp,voor)
 		end
 		-- maak 'm
 		for naam,alts in pairs(map) do
-			alts.fn = X'var'
-			local eq = {fn=X'=', X(naam), alts}
+			alts.fn = X'{}'
+			local eq = {fn=X'=', X(naam), X('var', alts)}
 			print(e2s(eq))
 			eqs[eq] = true
 		end
