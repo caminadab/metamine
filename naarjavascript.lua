@@ -54,8 +54,7 @@ vanaf(A 1)   -> A.splice(1)
 local immjs = {
 	['[]'] = '[$ARGS]',
 	['[]u'] = '$TARGS',
-	['{}'] = 'new Set($ARGS)',
-	['{}'] = '{}',
+	['{}'] = 'new Set([$ARGS])',
 	['|'] = '$1 || $2',
 
 	-- arit
@@ -140,7 +139,19 @@ local immjs = {
 	['@'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
 	[','] = '[ARGS]',
 
-	['var'] = '$1.find(x => x[0])[1]',
+	['var'] = [[ (function(varindex, ass) {
+			var array = Array.from(ass);
+			var ret = vars[varindex];
+			for (var i = 0; i < array.length; i++) {
+				if (array[i] != null) {
+					ret = array[i];
+					console.log(ret);
+				}
+			}
+			vars[varindex] = ret;
+			return ret;
+		})($1, $2)
+	]],
 	
 	-- LIB
 
@@ -277,6 +288,7 @@ function naarjavascript(app)
 		end
 	end
 	table.insert(s, 'start = new Date().getTime();\n')
+	table.insert(s, 'vars = {};')
 	table.insert(s, 'if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getClientBoundingRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}')
 	table.insert(s, 'mouseLeft = false;\n')
 	table.insert(s, 'mouseLeftPressed = false;\n')
