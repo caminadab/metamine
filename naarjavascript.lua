@@ -140,12 +140,12 @@ local immjs = {
 	['@'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
 	[','] = '[ARGS]',
 
-	['var'] = '$1.map(f => f((new Date().getTime() - start)/1000)',
+	['var'] = '$1.find(x => x[0])[1]',
 	
 	-- LIB
 
 	-- muis
-	['regMuis'] = '(function(x) { uit.onmouseup = function(ev) { mouseLeftReleased = true; mouseLeft = false; }; uit.onmousedown = function(ev) { mouseLeftPressed = true; mouseLeft = true; }; uit.onmousemove = function(ev) { var b = uit.getBoundingClientRect(); mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3); mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3); }; return uit; })($1)',
+	['regMuis'] = '(function(x) { init = false; uit.onmouseup = function(ev) { mouseLeftReleased = true; mouseLeft = false; }; uit.onmousedown = function(ev) { mouseLeftPressed = true; mouseLeft = true; }; uit.onmousemove = function(ev) { var b = uit.getBoundingClientRect(); mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3); mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3); }; return uit; })($1)',
 	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
 	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72/2, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
 	['tekst'] = '$1.toString()',
@@ -178,6 +178,7 @@ local immsym = {
 	nee = 'false',
 	tau = '(Math.PI * 2)',
 	pi = 'Math.PI',
+	init = 'init',
 	['muisX'] = 'mouseX',
 	['muisY'] = 'mouseY',
 	['muisKlik'] = 'mouseLeft',
@@ -280,8 +281,9 @@ function naarjavascript(app)
 	table.insert(s, 'mouseLeft = false;\n')
 	table.insert(s, 'mouseLeftPressed = false;\n')
 	table.insert(s, 'mouseLeftReleased = false;\n')
-	table.insert(s, 'mouseX = 0;\n')
-	table.insert(s, 'mouseY = 0;\n')
+	table.insert(s, 'mouseX = 0;')
+	table.insert(s, 'mouseY = 0;')
+	table.insert(s, 'init = true;')
 	table.insert(s, 'html = "";')
 	table.insert(s, 'uit = document.getElementById("uit");')
 	table.insert(s, 'stop = false;\n')

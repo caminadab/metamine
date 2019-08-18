@@ -174,7 +174,7 @@ function oplos(exp,voor)
 
 				-- local neq = 
 				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-				local neq = X(sym.ass, a, X(',', 'start', b))
+				local neq = X('|:=', a, X('[]', 'init', b))
 				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
@@ -243,11 +243,15 @@ function oplos(exp,voor)
 				if fn(eq[2]) == 'EN' then
 					for i,sub in ipairs(eq[2]) do
 						local eq = X('=>', eq[1], sub)--X'niets')
+						if fn(sub) == '|:=' then
+							--eq = X('=>', X('wanneer', eq[1]), 
+							sub = X('[]', sub[1], sub[2])
+						end
 						nieuw[eq] = true
 						--print('BLOK', e2s(eq))
 					end
 				end
-				if fn(eq[3]) == 'EN' then
+				if eq[3] and fn(eq[3]) == 'EN' then
 					for i,sub in ipairs(eq[3]) do
 						local eq = X('=>', X('!', eq[1]), sub)--X'niets')
 						nieuw[eq] = true
@@ -370,12 +374,12 @@ function oplos(exp,voor)
 			eqs[eq] = true
 		end
 
-		-- verzamel :=
+		-- verzamel |:=
 		local map = {} -- k → [v]
 		local oud = {}
 		for eq in pairs(eqs) do
-			-- a ∐= b
-			if isfn(eq) and eq.fn.v == ':=' then
+			-- a |:= b
+			if isfn(eq) and eq.fn.v == '|:=' then
 				local a,b = eq[1],eq[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
@@ -390,7 +394,7 @@ function oplos(exp,voor)
 		for naam,alts in pairs(map) do
 			alts.fn = X'{}'
 			local eq = {fn=X'=', X(naam), X('var', alts)}
-			print(e2s(eq))
+			--print(e2s(eq))
 			eqs[eq] = true
 		end
 

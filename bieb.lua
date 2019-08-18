@@ -20,6 +20,7 @@ function bieb()
 	call = true,
 	tau = math.pi*2,
 	pi = math.pi,
+	init = true,
 
 	-- meta
 	var = function (set)
@@ -36,7 +37,7 @@ function bieb()
 		-- start
 		for momexp in pairs(set) do
 			local moment, exp  = table.unpack(momexp)
-			if moment.id == 0 then
+			if moment == true then
 				ret = exp
 			end
 		end

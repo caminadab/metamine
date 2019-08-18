@@ -9,9 +9,10 @@ local function waarde(a, env, ...)
 		--w = string.char(unpack(map(a, function(x) return tonumber(x) end)))
 		--return a
 	end
-	if #t == 1 and type(t[1]) == 'table' then
-		t = t[1]
-	end
+																		if #t == 1 and type(t[1]) == 'table' then
+																			error('HELP')
+																			t = t[1]
+																		end
 	for i,v in ipairs(t) do
 		local arg = '_arg'..(i-1)
 		--print('ARG', i, arg)

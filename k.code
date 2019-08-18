@@ -1,0 +1,4 @@
+uit = anvas(blokken)
+n = muisX · 10
+blokken = (0..int(n)) map f
+f = i*n/tau => vierkant(9+3*sin(30*i+looptijd), 5*3*cos(i+looptijd*0.7), sin(looptijd))
