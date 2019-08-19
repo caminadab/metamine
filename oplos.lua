@@ -433,6 +433,7 @@ function oplos(exp,voor)
 			eqs[eq] = true
 		end
 
+		--[[
 		S = 0
 		-- herschrijf
 		--   a = f(a')
@@ -453,6 +454,28 @@ function oplos(exp,voor)
 						oud[eq] = true
 						nieuw[eqn] = true
 					end
+				end
+			end
+		end
+		]]
+
+
+		-- herschrijf
+		--   a'
+		-- naar
+		--   var(0)
+		local schaduw = {}
+		local nieuw = {}
+		local oud = {}
+		local maakindex = maakindices()
+		for eq in pairs(eqs) do
+			for exp in boompairs(eq) do
+				if fn(exp) == "'" and exp[1].v then
+					local naam = exp[1].v
+					schaduw[naam] = maakindex() 
+					-- a' ↦ var(0)
+					exp.fn = X('prevvar')
+					exp[1] = X(schaduw[naam])
 				end
 			end
 		end

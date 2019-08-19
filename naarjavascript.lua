@@ -152,6 +152,8 @@ local immjs = {
 			return ret;
 		})($1, $2)
 	]],
+
+	['prevvar'] = 'vars[$1]',
 	
 	-- LIB
 

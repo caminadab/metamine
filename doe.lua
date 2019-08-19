@@ -99,7 +99,7 @@ local function doeblok(blok, env, ...)
 			end
 
 		end
-		assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
+		--assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
 
 		if opt and opt.L then
 			local a = w
