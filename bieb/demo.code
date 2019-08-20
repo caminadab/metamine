@@ -16,6 +16,6 @@ ververs = dt → setInnerHtml(uit)
 el = setInnerHtml("<canvas width='1280' height='720'></canvas>")
 ctx = getContext(el)
 
-a = (clearCanvas(ctx) ⇒ (#(objs map (obj → obj(ctx))) > -1))
-canvas = objs → (a ⇒ "<canvas width='1280' height='720'></canvas>")
+drawCanvas = (clearCanvas(ctx) ⇒ (#(objs map (obj → obj(ctx))) > -1))
+canvas = objs → (drawCanvas ⇒ "<canvas width='1280' height='720'></canvas>")
 ;ververs = dt → obj

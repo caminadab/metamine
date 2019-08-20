@@ -307,6 +307,98 @@ canvas {
 	
 	var demoindex = 0;
 	var demos = [
+`; TUTORIAL speciaal voor janoek
+; je moet altijd 'uit' definieren
+uit = "hoi"`,
+`; je kan variabelen maken
+a = 3
+b = 2
+uit = a + b 
+`,
+`; met '||' plak je tekst aan elkaar
+a = "hoi"
+b = " jan"
+c = "ker"
+
+uit = a || b || c
+`,
+`; met '..' kan je lijsten maken
+; en met 'int(x)' kun je afronden
+; en 'looptijd' is het aantal seconden
+; sinds het programma begon
+
+n = int(looptijd)
+uit = 1 .. n
+`,
+
+`; je kan functies maken
+f = x -> x + 1
+g = y -> y + 2
+
+ft = "f(3) = " || tekst(f(3))
+gt = "g(3) = " || tekst(g(3))
+uit = ft || ", " || gt
+`,
+
+`; met 'map' kun je een functie
+; aanroepen op alles in een lijst
+; "lijst map f" betekent "map(lijst, f)"
+; "^" betekent "tot de macht"
+f = x -> x ^ 2
+lijst = [1,2,3,4]
+uit = lijst map f
+`,
+
+`; 'uit' is tot nu toe alleen maar tekst geweest
+; maar het kan ook een "canvas" (interactief schilderij) zijn.
+;  canvas(objecten) tekent een lijst van objecten
+;  cirkel(x, y, r)  tekent een cirkel op een
+; bepaalde plek met straal r.
+; Het canvas is standaard 20 bij 10 meter.
+
+; cirkel in het midden met straal 1
+c = cirkel(10, 5, 1)
+; vierkant in de hoek
+v = vierkant(0, 0, 1)
+objecten = [ cirkel, vierkant ]
+uit = canvas(objecten)
+`,
+`; 'horizCirkel' is een functie.
+; hij maakt een cirkel, gegeven een getal 'i'
+; 'canvas cirkels' is hetzelfde als 'canvas(cirkels)'
+horizCirkel = i -> cirkel(i + 2, 5, 2)
+cirkels = (1 .. 10) map horizCirkel
+uit = canvas cirkels
+`,
+`; cirkel die de muis volgt (B
+; begin in het midden
+x := 5
+y := 5
+
+; loop naar de muis
+als x > muisX dan
+	x := x' + 0.01
+anders
+	x := x' - 0.01
+eind
+als y > muisY dan
+	y := y' + 0.01
+anders
+	y := y' - 0.01
+eind
+
+c = cirkel(x, y, r)
+uit = canvas [ c ]
+
+; bonus
+dx = muisX - x
+dy = muisY - y
+dst = wortel(dx^2 + dy^2)
+r = 1/dst
+`
+	];
+
+	var demos2 = [
 `; simpele stopwatch
 uit = looptijd`,
 		'; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind',
@@ -328,7 +420,7 @@ uit = canvas [c]
 
 		cirkels = (0..40) map f
 		uit = canvas cirkels
-		`,
+		`
 	];
 
 	var vertaalknop = document.getElementById("vertaal");

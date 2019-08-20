@@ -1,0 +1,11 @@
+#!/usr/bin/luajit
+
+local log = io.open('dienst.log')
+for line in log:lines() do
+			-- HACK
+			line = line:gsub([[\\]], [[\]])
+	local src = 'return '..line
+	local str = load(src)()
+	print(str)
+	print()
+end
