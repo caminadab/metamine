@@ -16,14 +16,6 @@
 
 	
 
-<div>
-	<textarea id="broncode" name="broncode"></textarea> 
-	<div id="uit">
-		<pre id="uit-tekst">
-		</pre>
-	</div>
-</div>
-
 <div class="paneel">
 	<button id="vertaal">▶</button>
 	<div id="laadbalk">
@@ -34,7 +26,13 @@
 	<button id="vim" style="display: none">Vim</button>
 </div>
 
-<br>
+<div>
+	<textarea id="broncode" name="broncode"></textarea> 
+	<div id="uit">
+		<pre id="uit-tekst">
+		</pre>
+	</div>
+</div>
 
 <div id="wat">
 	<h1><i>Wat</i></h1>
@@ -94,14 +92,14 @@
 	}
 	#uit {
 		width: 100%;
-		height: 300px;
+		height: 800px;
 		padding-top: 300px;
 		display: block;
 	}
 }
 
 #uit {
-	min-height: 300px;
+	min-height: 800px;
 	font-width: bold;
 	background: #033;
 }
@@ -111,11 +109,13 @@
 		width: 50%;
 		display: inline;
 		float: right;
+		height: 800px;
 	}
 	textarea {
 		width: 50%;
 		display: inline;
 		float: left;
+		height: 800px;
 	}
 
 	#uit {
@@ -126,7 +126,7 @@
 }
 
 textarea {
-	height: 300px;
+	height: 800px;
 	background: black;
 	border: none;
 	box-sizing: border-box;
@@ -320,7 +320,7 @@ a = "hoi"
 b = " jan"
 c = "ker"
 
-uit = a || b || c
+uit = a ‖ b ‖ c
 `,
 `; met '..' kan je lijsten maken
 ; en met 'int(x)' kun je afronden
@@ -328,29 +328,28 @@ uit = a || b || c
 ; sinds het programma begon
 
 n = int(looptijd)
-uit = 1 .. n
+uit = 0 .. n
 `,
 
 `; je kan functies maken
-f = x -> x + 1
-g = y -> y + 2
+f = x → x + 1
+g = y → y + 2
 
-ft = "f(3) = " || tekst(f(3))
-gt = "g(3) = " || tekst(g(3))
-uit = ft || ", " || gt
+ft = "f(3) = " ‖ tekst(f(3))
+gt = "g(3) = " ‖ tekst(g(3))
+uit = ft ‖ ", " ‖ gt
 `,
 
 `; met 'map' kun je een functie
 ; aanroepen op alles in een lijst
 ; "lijst map f" betekent "map(lijst, f)"
-; "^" betekent "tot de macht"
-f = x -> x ^ 2
+f = x → x + 10
 lijst = [1,2,3,4]
 uit = lijst map f
 `,
 
 `; 'uit' is tot nu toe alleen maar tekst geweest
-; maar het kan ook een "canvas" (interactief schilderij) zijn.
+; maar het kan ook een "canvas" zijn.
 ;  canvas(objecten) tekent een lijst van objecten
 ;  cirkel(x, y, r)  tekent een cirkel op een
 ; bepaalde plek met straal r.
@@ -360,13 +359,22 @@ uit = lijst map f
 c = cirkel(10, 5, 1)
 ; vierkant in de hoek
 v = vierkant(0, 0, 1)
-objecten = [ cirkel, vierkant ]
+objecten = [ c, v ]
 uit = canvas(objecten)
 `,
-`; 'horizCirkel' is een functie.
-; hij maakt een cirkel, gegeven een getal 'i'
+`; het hoeft niet per se een plaatje te zijn
+x = muisX
+y = looptijd
+r = sin(looptijd) + 1
+c = cirkel(x, y, r)
+uit = canvas [ c ]
+`,
+`; 'horizCirkel' is hier een functie
+; die een cirkel maakt, gegeven een getal 'i'
 ; 'canvas cirkels' is hetzelfde als 'canvas(cirkels)'
-horizCirkel = i -> cirkel(i + 2, 5, 2)
+x = i + 2
+y = 5 + sin(looptijd·4 + i/3)
+horizCirkel = i → cirkel(x, y, 1)
 cirkels = (1 .. 10) map horizCirkel
 uit = canvas cirkels
 `,
@@ -413,7 +421,7 @@ cirkels = (0..15) map f
 f = i → cirkel(muisX ^ (i/8), 5, i/4)
 `,
 		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001',
-		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x || " hoi"\nuit = (f^aantal)("groet:")',
+		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x ‖ " hoi"\nuit = (f^aantal)("groet:")',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
 		'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
 		'; functiecompositie\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)',
@@ -532,7 +540,7 @@ f = i → cirkel(muisX ^ (i/8), 5, i/4)
 	//editor.setSize('50%', '300px');
 	editor.setValue(demos[demoindex]);
 
-	// editor.setSize(null, '500px');
+	editor.setSize(null, '800px');
 
 	// zet de codemirror selectie
 	function selecteer(loc) {
@@ -586,6 +594,7 @@ f = i → cirkel(muisX ^ (i/8), 5, i/4)
 		"!": "¬",
 	};
 	var bimagisch = {
+		"||": "‖",
 		"/0": "∅",
 		"0/": "∅",
 		"o/": "∅",

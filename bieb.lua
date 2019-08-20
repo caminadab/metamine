@@ -544,8 +544,6 @@ function bieb()
 		return s
 	end;
 
-	['lijst'] = 'lijst',
-
 	[':'] = function(a,b)
 		if b == bieb.int then
 			return tonumber(a) and tonumber(a)%1==0 or type(a) == 'number'

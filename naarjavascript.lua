@@ -123,7 +123,7 @@ local immjs = {
 	-- lijst
 	['#'] = '$1.length',
 	['som'] = '$1.reduce((a,b) => a + b, 0)',
-	['..'] = '$1 < $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array($2-$1), (x,i) => $2 - 1 - i)',
+	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $2 - 1 - i))',
 	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	['_'] = '$1[$2]',
@@ -161,7 +161,7 @@ local immjs = {
 	['regMuis'] = '(function(x) { init = false; uit.onmouseup = function(ev) { mouseLeftReleased = true; mouseLeft = false; }; uit.onmousedown = function(ev) { mouseLeftPressed = true; mouseLeft = true; }; uit.onmousemove = function(ev) { var b = uit.getBoundingClientRect(); mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3); mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3); }; return uit; })($1)',
 	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
 	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72/2, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
-	['tekst'] = '$1.toSource()',
+	['tekst'] = 'Array.isArray($1) ? $1.toSource() : $1.toString()',
 	['clearCanvas'] = '$1.clearRect(0,0,1280,720) || $1',
 	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; }; var r = $1(t); mouseLeftPressed = false; mouseLeftReleased = false; requestAnimationFrame(f); return true; })()' --[[({
 	//function f(t) {
@@ -171,7 +171,14 @@ local immjs = {
 	//return requestAnimationFrame(f);
 	return 0;
 })()]],
-	['setInnerHtml'] = '(html == $1.toSource()) ? uit.children[0] : ((uit.innerHTML = $1.toSource()) && (html = $1.toSource()) && uit.children[0])',
+	['setInnerHtml'] = [[(function (a) {
+		var t = Array.isArray($1) ? $1.toSource() : $1.toString();
+		if (html != t) {
+			uit.innerHTML = t;
+			html = t;
+		}
+		return uit.children[0];
+	})($1)]],
 	['getContext'] = 'uit.children[0].getContext("2d")',
 	['consolelog'] = 'console.log($1)',
 }

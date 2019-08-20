@@ -5,6 +5,8 @@
 *.gen.*
 *.js
 *.log
+ontleed/taal.c
+ontleed/taal.h
 
 *.output
 bin/

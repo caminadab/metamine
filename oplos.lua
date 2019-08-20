@@ -358,7 +358,7 @@ function oplos(exp,voor)
 		end
 
 		-- verzamel |:=
-		local map = {} -- k → [v]
+		local map = {} -- naam -> waarde[]
 		local oud = {}
 		for eq in pairs(eqs) do
 			-- a |= b
@@ -464,7 +464,7 @@ function oplos(exp,voor)
 		--   a'
 		-- naar
 		--   var(0)
-		local schaduw = {}
+		local schaduw = {} -- naam -> index
 		local nieuw = {}
 		local oud = {}
 		local maakindex = maakindices()

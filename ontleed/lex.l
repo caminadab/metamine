@@ -137,6 +137,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "]"					{ return ']'; }
 
 "->"					{ return TO; }
+"‖"						{ return CAT; }
 "||"					{ return CAT; }
 ".."					{ return TIL; }
 "."						{ return '.'; }
