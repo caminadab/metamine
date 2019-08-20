@@ -11,6 +11,7 @@ end
 
 function bieb()
 	local inn = {}
+	local vars = {}
 
 	local bieb = {
 		
@@ -23,7 +24,7 @@ function bieb()
 	init = true,
 
 	-- meta
-	var = function (set)
+	var = function (index,set)
 		--[[for ass in pairs(set) do
 			local moment,exp = ass[1],ass[2]
 			local f = function() return eval(exp) end
@@ -33,14 +34,14 @@ function bieb()
 			error('JA')
 		end
 		]]
-		local ret = nil
+		local ret = vars[index]
 		-- start
-		for momexp in pairs(set) do
-			local moment, exp  = table.unpack(momexp)
-			if moment == true then
+		for exp in pairs(set) do
+			if exp ~= nil then
 				ret = exp
 			end
 		end
+		vars[index] = ret
 		return ret
 	end;
 

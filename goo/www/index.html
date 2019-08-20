@@ -407,6 +407,11 @@ r = looptijd
 c = cirkel(muisX,muisY,r)
 uit = canvas [c]
 `,
+`; cirkeltoy (gebruik muis/touch)
+uit = canvas cirkels
+cirkels = (0..15) map f
+f = i → cirkel(muisX ^ (i/8), 5, i/4)
+`,
 		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001',
 		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x || " hoi"\nuit = (f^aantal)("groet:")',
 		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
