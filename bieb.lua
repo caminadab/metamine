@@ -25,15 +25,6 @@ function bieb()
 
 	-- meta
 	var = function (index,set)
-		--[[for ass in pairs(set) do
-			local moment,exp = ass[1],ass[2]
-			local f = function() return eval(exp) end
-			local k = 'als'..tostring(moment):gsub('(.).*', string.upper)
-			inn[k] = inn[k] or {}
-			inn[k][f] = true
-			error('JA')
-		end
-		]]
 		local ret = vars[index]
 		-- start
 		for exp in pairs(set) do
@@ -43,6 +34,10 @@ function bieb()
 		end
 		vars[index] = ret
 		return ret
+	end;
+
+	prevvar = function(index)
+		return vars[index]
 	end;
 
 	-- web
@@ -311,8 +306,6 @@ function bieb()
 			end
 		end
 		]]
-		if a == "niets" then a = nil end
-		if b == "niets" then b = nil end
 		if a and b then return 'fout' end
 		return a or b
 	end;

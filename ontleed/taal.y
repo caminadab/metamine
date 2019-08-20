@@ -52,7 +52,7 @@
 %token ICAT "::"
 %token TIL ".."
 %token CART "xx"
-%token END 0 "invoereinde"
+%token END 0 "end of file"
 %token NEG '-'
 %token GDGA ">="
 %token ISB "~="
