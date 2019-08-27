@@ -145,7 +145,6 @@ local immjs = {
 			for (var i = 0; i < array.length; i++) {
 				if (array[i] != null) {
 					ret = array[i];
-					console.log(ret);
 				}
 			}
 			vars[varindex] = ret;
@@ -158,19 +157,66 @@ local immjs = {
 	-- LIB
 
 	-- muis
-	['regMuis'] = '(function(x) { init = false; uit.onmouseup = function(ev) { mouseLeftReleased = true; mouseLeft = false; }; uit.onmousedown = function(ev) { mouseLeftPressed = true; mouseLeft = true; }; uit.onmousemove = function(ev) { var b = uit.getBoundingClientRect(); mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3); mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3); }; return uit; })($1)',
+	['regMuis'] = [[(function(x)
+		{
+			init = false;
+
+			uit.onmouseup = function(ev) {
+				mouseLeftReleased = true;
+				mouseLeft = false;
+			};
+
+			uit.onmousedown = function(ev) {
+				mouseLeftPressed = true;
+				mouseLeft = true;
+			};
+
+			uit.onmousemove = function(ev)
+			{
+				var b = uit.getBoundingClientRect();
+				mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3);
+				mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3);
+			};
+
+			// toetsenbord neer
+			uit.onkeydown = function(ev) {
+				switch (ev.keyCode) {
+					case 37: keyLeft = true; break;
+					case 39: keyRight = true; break;
+					case 38: keyUp = true; break;
+					case 40: keyDown = true; break;
+					case 32: keySpace = true; keySpacePressed = true; break;
+					case 87: keyA = true; break;
+					case 65: keyW = true; break;
+					case 83: keyS = true; break;
+					case 68: keyD = true; break;
+				}
+				return false;
+			};
+
+			// toetsenbord op
+			uit.onkeyup = function(ev) {
+				switch (ev.keyCode) {
+					case 37: keyLeft = false; break;
+					case 38: keyUp = false; break;
+					case 39: keyRight = false; break;
+					case 40: keyDown = false; break;
+					case 32: keySpace = false; keySpaceEnd = true; break;
+					case 87: keyA = false; break;
+					case 65: keyW = false; break;
+					case 83: keyS = false; break;
+					case 68: keyD = false; break;
+				}
+				return false;
+			};
+
+			return uit;
+		}
+	)($1)]],
 	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
 	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72/2, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
 	['tekst'] = 'Array.isArray($1) ? $1.toSource() : $1.toString()',
 	['clearCanvas'] = '$1.clearRect(0,0,1280,720) || $1',
-	['requestAnimationFrame'] = '(function f(t) {if (stop) {stop = false; return; }; var r = $1(t); mouseLeftPressed = false; mouseLeftReleased = false; requestAnimationFrame(f); return true; })()' --[[({
-	//function f(t) {
-	//	$1(t);
-	//	requestAnimationFrame(f);
-	//}
-	//return requestAnimationFrame(f);
-	return 0;
-})()]],
 	['setInnerHtml'] = [[(function (a) {
 		var t = Array.isArray($1) ? $1.toSource() : $1.toString();
 		if (html != t) {
@@ -179,6 +225,15 @@ local immjs = {
 		}
 		return uit.children[0];
 	})($1)]],
+	['requestAnimationFrame'] = [[(function f(t) {
+		if (stop) {stop = false; return; }; var r = $1(t);
+		mouseLeftPressed = false;
+		mouseLeftReleased = false;
+		keySpacePressed = false;
+		keySpaceReleased = false;
+		requestAnimationFrame(f);
+		return true;
+	})()]],
 	['getContext'] = 'uit.children[0].getContext("2d")',
 	['consolelog'] = 'console.log($1)',
 }
@@ -201,11 +256,24 @@ local immsym = {
 	init = 'init',
 	['muisX'] = 'mouseX',
 	['muisY'] = 'mouseY',
+	['beige'] = '"#f5f5dc"',
+	['bruin'] = '"#996633"',
 	['muisKlik'] = 'mouseLeft',
 	['muisKlikBegin'] = 'mouseLeftPressed',
 	['muisKlikEind'] = 'mouseLeftReleased',
-	['beige'] = '"#f5f5dc"',
-	['bruin'] = '"#996633"',
+
+	-- links, rechts
+	['toetsOmhoog'] = 'keyUp',
+	['toetsLinks'] = 'keyLeft',
+	['toetsOmlaag'] = 'keyDown',
+	['toetsRechts'] = 'keyRight',
+	['toetsSpatie'] = 'keySpace',
+	['toetsSpatieBegin'] = 'keySpacePressed',
+	['toetsSpatieEind'] = 'keySpaceReleased',
+	['toetsW'] = 'keyW',
+	['toetsA'] = 'keyA',
+	['toetsS'] = 'keyS',
+	['toetsD'] = 'keyD',
 }
 
 function naarjavascript(app)
@@ -304,9 +372,20 @@ function naarjavascript(app)
 	table.insert(s, 'mouseLeftReleased = false;\n')
 	table.insert(s, 'mouseX = 0;')
 	table.insert(s, 'mouseY = 0;')
+	table.insert(s, 'keyUp = false;\n')
+	table.insert(s, 'keyLeft = false;\n')
+	table.insert(s, 'keyDown = false;\n')
+	table.insert(s, 'keyRight = false;\n')
+	table.insert(s, 'keyW = false;\n')
+	table.insert(s, 'keyA = false;\n')
+	table.insert(s, 'keyS = false;\n')
+	table.insert(s, 'keyD = false;\n')
+	table.insert(s, 'keySpace = false;\n')
+	table.insert(s, 'keySpacePressed = false;\n')
+	table.insert(s, 'keySpaceReleased = false;\n')
 	table.insert(s, 'init = true;')
 	table.insert(s, 'html = "";')
-	table.insert(s, 'uit = document.getElementById("uit");')
+	table.insert(s, 'uit = document.getElementById("uit"); uit.tabIndex = -1;')
 	table.insert(s, 'stop = false;\n')
 	flow(app.start, '')
 
