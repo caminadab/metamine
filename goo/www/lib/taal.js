@@ -75,7 +75,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 	}
 	
 	// string
-    if (ch == "\"" || ch == "'")
+    if (ch == "\"")
       return (state.cur = string(ch))(stream, state);
   
 	// number

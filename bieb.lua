@@ -55,7 +55,21 @@ function bieb()
 	muisSleep = true, -- (pad = (van, via, naar))
 	muisX = true,
 	muisY = true,
+
 	regMuis = true, -- X_X
+
+	-- toetsenbord
+	toetsRechts = true,
+	toetsLinks = true,
+	toetsOmhoog = true,
+	toetsOmlaag = true,
+	toetsSpatie = true,
+	toetsSpatieBegin = true,
+	toetsSpatieEind = true,
+	toetsA = true,
+	toetsW = true,
+	toetsD = true,
+	toetsS = true,
 
 	['_'] = function(a, b)
 		if type(a) == 'string' then
