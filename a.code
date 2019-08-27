@@ -1,2 +1,5 @@
-uit = []
-
+b := 0
+als looptijd > 1 dan
+	b := b' + 1
+eind
+uit = b
