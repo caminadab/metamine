@@ -171,9 +171,9 @@ local immjs = {
 				mouseLeft = true;
 			};
 
+			var b = uit.getBoundingClientRect();
 			uit.onmousemove = function(ev)
 			{
-				var b = uit.getBoundingClientRect();
 				mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3);
 				mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3);
 			};
