@@ -134,7 +134,7 @@ function bieb()
 	['sqrt'] = function(a) return math.sqrt(a) end;
 	['ja'] = true; 
 	['nee'] = false; 
-	['niets'] = "niets";
+	['niets'] = false; --"niets";
 	['min'] = function(a,b) return math.min(a,b) end;
 	['mod'] = function(a,b) return a % b end;
 

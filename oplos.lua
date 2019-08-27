@@ -358,6 +358,7 @@ function oplos(exp,voor)
 		end
 
 		-- verzamel |:=
+		local schaduw = {}
 		local map = {} -- k → [v]
 		local oud = {}
 		for eq in pairs(eqs) do
@@ -379,7 +380,9 @@ function oplos(exp,voor)
 			--if #alts == 1 then
 			--	alts = alts[1]
 			--end
-			local eq = {fn=X'=', X(naam), X('var', maakindex(), alts)}
+			local index = maakindex()
+			schaduw[naam] = index
+			local eq = {fn=X'=', X(naam), X('var', index, alts)}
 			eqs[eq] = true
 		end
 		
@@ -464,7 +467,6 @@ function oplos(exp,voor)
 		--   a'
 		-- naar
 		--   var(0)
-		local schaduw = {}
 		local nieuw = {}
 		local oud = {}
 		local maakindex = maakindices()
@@ -472,9 +474,10 @@ function oplos(exp,voor)
 			for exp in boompairs(eq) do
 				if fn(exp) == "'" and exp[1].v then
 					local naam = exp[1].v
-					schaduw[naam] = maakindex() 
+					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
 					exp.fn = X('prevvar')
+					assert(schaduw[naam], 'onbekende variabele')
 					exp[1] = X(schaduw[naam])
 				end
 			end

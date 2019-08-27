@@ -30,7 +30,7 @@ local function waarde(a, env, ...)
 
 		a.w = w
 	end
-	assert(a.w ~= nil, 'onbekend: '..e2s(a))
+	--assert(a.w ~= nil, 'onbekend: '..e2s(a))
 	return a
 end
 
