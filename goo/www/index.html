@@ -34,10 +34,12 @@
 	</div>
 </div>
 
+<!--
 <div>
 	<p>Dit is de gegenereerde javascript.</p>
 	<pre id="js">(nog niets)</pre>
 </div>
+-->
 
 <div id="wat">
 	<h1><i>Wat</i></h1>
@@ -337,7 +339,7 @@ eind
 
 ; maak schoon met spatie
 als toetsSpatie dan
-	cirkels := []
+	cirkels := cirkels' vanaf 1
 eind
 `,
 `; simpele stopwatch
@@ -388,7 +390,7 @@ f = i → cirkel(muisX ^ (i/8), 5, i/4)
 			.then(j => {
 				onsuccess();
 				try {
-					js.innerHTML = j.js;
+					//js.innerHTML = j.js;
 					eval(j.js);
 				//} catch (e) {
 				//	uit.innerHTML = "executiefout: " + e + e.stack;
