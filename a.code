@@ -1,5 +1,19 @@
-b := 0
-als looptijd > 1 en looptijd < 3 dan
-	b := b' + 1
+; beweegbare cirkel (gebruik pijltjestoetsen)
+x := 10
+y := 0
+
+als toetsRechts en x' < 10 dan x := x' + 0.2 eind
+als toetsLinks en x' > 0 dan x := x' - 0.2 eind
+uit = canvas [ cirkel(x,y,1) ]
+
+als toetsOmhoog en y' = 0 dan
+	sprongStart := looptijd
+	y := 10
 eind
-uit = b
+
+delta = looptijd - sprongStart
+yvel = delta · -0.01
+
+als y' > 0 dan
+	y := y' - 0.1
+eind

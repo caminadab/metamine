@@ -174,8 +174,8 @@ local immjs = {
 			var b = uit.getBoundingClientRect();
 			uit.onmousemove = function(ev)
 			{
-				mouseX = ((ev.clientX - b.left)/b.height*10).toFixed(3);
-				mouseY = ((b.height-1-(ev.clientY - b.top))/b.height*10).toFixed(3);
+				mouseX = ((ev.clientX-b.left)/uit.clientWidth*17.778).toFixed(3);
+				mouseY = ((b.bottom - 340 - ev.clientY)/uit.clientHeight*17.778).toFixed(3);
 			};
 
 			// toetsenbord neer
@@ -297,9 +297,9 @@ function naarjavascript(app)
 			elseif immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
-				cmd = a and cmd:gsub('$1', assert(a)) or cmd
-				cmd = b and cmd:gsub('$2', assert(b)) or cmd
-				cmd = c and cmd:gsub('$3', assert(c)) or cmd
+				cmd = a and cmd:gsub('$1', assert(immsym[a] or a)) or cmd
+				cmd = b and cmd:gsub('$2', assert(immsym[b] or b)) or cmd
+				cmd = c and cmd:gsub('$3', assert(immsym[c] or c)) or cmd
 				cmd = cmd:gsub('$TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
 				cmd = cmd:gsub('$ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
 				cmd:gmatch('%$', function(n) error('onbekende var: '..tostring(n)) end)

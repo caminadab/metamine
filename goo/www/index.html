@@ -34,6 +34,11 @@
 	</div>
 </div>
 
+<div>
+	<p>Dit is de gegenereerde javascript.</p>
+	<pre id="js">(nog niets)</pre>
+</div>
+
 <div id="wat">
 	<h1><i>Wat</i></h1>
 	<p>
@@ -321,6 +326,20 @@ als toetsRechts dan x := x' + 0.1 eind
 als toetsLinks dan x := x' - 0.1 eind
 uit = canvas [ cirkel(x,y,1) ]
 `,
+`; paint programmaatje
+cirkels := []
+uit = canvas cirkels
+
+; zolang de muis klikt, voeg cirkel toe
+als muisKlik dan
+	cirkels := cirkels' ‖ [ cirkel(muisX, muisY, 0.1) ]
+eind
+
+; maak schoon met spatie
+als toetsSpatie dan
+	cirkels := []
+eind
+`,
 `; simpele stopwatch
 uit = looptijd`,
 		'; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind',
@@ -356,6 +375,7 @@ f = i → cirkel(muisX ^ (i/8), 5, i/4)
 	var voortgang = document.getElementById("voortgang");
 	var foutmelding = document.getElementById("foutmelding");
 	var laadbalk = document.getElementById("laadbalk");
+	var js = document.getElementById("js");
 
 	function vertaal() {
 		stop = true; // stop draaiende programma's
@@ -368,6 +388,7 @@ f = i → cirkel(muisX ^ (i/8), 5, i/4)
 			.then(j => {
 				onsuccess();
 				try {
+					js.innerHTML = j.js;
 					eval(j.js);
 				//} catch (e) {
 				//	uit.innerHTML = "executiefout: " + e + e.stack;
