@@ -171,11 +171,12 @@ local immjs = {
 				mouseLeft = true;
 			};
 
-			var b = uit.getBoundingClientRect();
+			var canvas = uit.children[0] || uit;
+			var b = canvas.getBoundingClientRect();
 			uit.onmousemove = function(ev)
 			{
-				mouseX = ((ev.clientX-b.left)/uit.clientWidth*17.778).toFixed(3);
-				mouseY = ((b.bottom - 340 - ev.clientY)/uit.clientHeight*17.778).toFixed(3);
+				mouseX = ((ev.clientX-b.left)/canvas.clientWidth*17.778).toFixed(3);
+				mouseY = ((b.bottom - ev.clientY)/canvas.clientHeight*10).toFixed(3);
 			};
 
 			// toetsenbord neer
@@ -226,7 +227,7 @@ local immjs = {
 		return uit.children[0];
 	})($1)]],
 	['requestAnimationFrame'] = [[(function f(t) {
-		if (stop) {stop = false; return; }; var r = $1(t);
+		if (stop) {stop = false; uit.innerHTML = ''; return; }; var r = $1(t);
 		mouseLeftPressed = false;
 		mouseLeftReleased = false;
 		keySpacePressed = false;

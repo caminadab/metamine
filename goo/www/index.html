@@ -17,13 +17,13 @@
 	
 
 <div class="paneel">
-	<button id="vertaal">▶</button>
-	<div id="laadbalk">
-		<div id="foutmelding"></div>
-		<div id="voortgang"></div>
-	</div>
+	<button id="vorige">⏮</button>
+	<button id="speel">▶</button>
+	<button id="stop">◼</button>
 	<button id="volgende">⏭</button>
-	<button id="vim" style="display: none">Vim</button>
+	<span id="foutmelding"></span>
+	<!--<button id="opnieuw">⟲</button>-->
+	<!--<button id="info">🛈</button>-->
 </div>
 
 <div>
@@ -86,7 +86,6 @@
 .paneel {
 	clear: both;
 	width: 100%;
-	min-height: 100px;
 }
 
 @media (max-width: 800px) {
@@ -108,7 +107,10 @@
 #uit {
 	min-height: 800px;
 	font-width: bold;
-	background: #033;
+	background: #3a2299;
+	font-size: 48px;
+	padding: 24px;
+	box-sizing: border-box;
 }
 
 @media (min-width: 800px) {
@@ -172,7 +174,7 @@ button {
 }
 
 #vertaal { color: #1b1; }
-#volgende { color: #bb0; font-size: 72px; }
+#volgende, #vorige { color: #bb0; font-size: 72px; }
 
 button:hover {
 	background: #0023A1;
@@ -189,21 +191,6 @@ button:active {
 	height: 70px;
 
 	background: #000625;
-}
-
-#voortgang {
-	width: 0%;
-	height: 70px;
-	background: #000E42;
-	white-space: nowrap;
-	line-height: 70px;
-	float: left;
-	display: inline;
-	
-	/* error */
-	color: #000E42;
-	transition: width 1.0s linear, opacity 1.0s linear;
-
 }
 
 #foutmelding {
@@ -262,7 +249,7 @@ p {
 }
 
 canvas {
-	background: #112;
+	background: #000;
 	width: 100%;
 	height: 100%;
 }
@@ -294,6 +281,11 @@ canvas {
 	background-size: 400% 400%;
 	background-repeat: repeat;
 	animation: AnimationName 20s linear infinite;
+}
+
+button {
+	margin-right: 10px;
+	margin-bottom: 10px;
 }
 
 @keyframes AnimationName {
@@ -329,15 +321,16 @@ als toetsLinks dan x := x' - 0.1 eind
 uit = canvas [ cirkel(x,y,1) ]
 `,
 `; paint programmaatje
+; teken met je muis
 cirkels := []
 uit = canvas cirkels
 
-; zolang de muis klikt, voeg cirkel toe
+; stipje bij de muis
 als muisKlik dan
 	cirkels := cirkels' ‖ [ cirkel(muisX, muisY, 0.1) ]
 eind
 
-; maak schoon met spatie
+; haal ze weer weg met spatie
 als toetsSpatie dan
 	cirkels := cirkels' vanaf 1
 eind
@@ -356,34 +349,33 @@ cirkels = (0..15) map f
 f = i → cirkel(muisX ^ (i/8), 5, i/4)
 `,
 		'; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001',
-		'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x ‖ " hoi"\nuit = (f^aantal)("groet:")',
-		'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
-		'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
-		'; functiecompositie\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)',
-		`; mooie bullshit\n; cirkel (canvas is 18×10)
-		r = looptijd + n/2 + n/5 + n/9 + n/100
+		//'; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x ‖ " hoi"\nuit = (f^aantal)("groet:")',
+		//'; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f',
+		//'; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)',
+		//'; functiecompositie\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)',
+		`; mooie cirkels
+r = looptijd + n/2 + n/5 + n/9 + n/100
 
-		f = n + sin(looptijd) → cirkel(n/1,g(n),abs(sin(3·r))·abs(2·sin(looptijd/100)))
-		g = y → sin(0.4 · looptijd + y) + 4
+f = n + sin(looptijd) → cirkel(n/1,g(n),abs(sin(3·r))·abs(2·sin(looptijd/100)))
+g = y → sin(0.4 · looptijd + y) + 4
 
-		cirkels = (0..40) map f
-		uit = canvas cirkels
+cirkels = (0..40) map f
+uit = canvas cirkels
 		`
 	];
 
-	var vertaalknop = document.getElementById("vertaal");
+	var speelknop = document.getElementById("speel");
+	var stopknop = document.getElementById("stop");
+	var vorigeknop = document.getElementById("vorige");
 	var volgendeknop = document.getElementById("volgende");
 	var cknop = '#012ED4';
-	var voortgang = document.getElementById("voortgang");
 	var foutmelding = document.getElementById("foutmelding");
 	var laadbalk = document.getElementById("laadbalk");
 	var js = document.getElementById("js");
 
 	function vertaal() {
 		stop = true; // stop draaiende programma's
-		voortgang.style.width = '100%';
-		voortgang.style.opacity = '1'
-		vertaalknop.style.backgroundColor = '#000E42';
+		speelknop.style.backgroundColor = '#000E42';
 
 		fetch('/vt', {method: "POST", body: editor.getValue()})
 			.then(x => x.json())
@@ -402,20 +394,35 @@ f = i → cirkel(muisX ^ (i/8), 5, i/4)
        			//.catch(e => onerror(e));
 	}
 
-	vertaalknop.addEventListener("mousedown", vertaal);
+	function stopfunc() {
+		stop = true;
+	}
+
+	speelknop.addEventListener("mousedown", vertaal);
+	stopknop.addEventListener("mousedown", stopfunc);
 	volgendeknop.addEventListener("mousedown", function() {
+		stop = true;
 		setErrors([]);
-		editor.setValue(demos[++demoindex]);
+		demoindex++;
+		demoindex = Math.min(demoindex, demos.length-1);
+		editor.setValue(demos[demoindex]);
+		vertaal();
+	});
+	vorigeknop.addEventListener("mousedown", function() {
+		stop = true;
+		setErrors([]);
+		demoindex--;
+		demoindex = Math.max(demoindex, 0);
+		editor.setValue(demos[demoindex]);
+		vertaal();
 	});
 
 	function onsuccess() {
-		voortgang.style.opacity = '0'
 
-		vertaalknop.innerHTML = '▶';
-		vertaalknop.style.background = 'green';
-		vertaalknop.style.transitionDuration = '0.0s';
+		speelknop.innerHTML = '▶';
+		speelknop.style.background = 'green';
+		speelknop.style.transitionDuration = '0.0s';
 
-		voortgang.style.opacity = '0'
 
 		foutmelding.style.opacity = "1.0"
 		foutmelding.style.color = "green"
@@ -424,35 +431,24 @@ f = i → cirkel(muisX ^ (i/8), 5, i/4)
 
 
 		setTimeout(function() {
-			vertaalknop.style.background = cknop;
+			speelknop.style.background = cknop;
 			foutmelding.style.opacity = "0"
-			voortgang.style.opacity = "0"
-			vertaalknop.style.transitionDuration = '1.0s';
-			setTimeout(function() {
-				voortgang.style.transitionDuration = '0.0s';
-				voortgang.style.width = '0'
-				voortgang.style.opacity = "1"
-
-				setTimeout(function() {
-					voortgang.style.transitionDuration = '1.0s';
-				} , 2000);
-			}, 1000);
+			speelknop.style.transitionDuration = '1.0s';
 		}, 100);
 	}
 
 	function onerror(e) {
-		vertaalknop.innerHTML = '▶';
-		vertaalknop.style.background = 'red';
-		vertaalknop.style.transitionDuration = '0.0s';
+		speelknop.innerHTML = '▶';
+		speelknop.style.background = 'red';
+		speelknop.style.transitionDuration = '0.0s';
 		foutmelding.style.color = "red"
 
 		foutmelding.innerHTML = e;
 		foutmelding.style.opacity = "1.0"
 
 		setTimeout(function() {
-			vertaalknop.style.background = cknop;
+			speelknop.style.background = cknop;
 			foutmelding.style.opacity = "0.0"
-			voortgang.style.width = '0%';
 		}, 5000);
 	}
 
