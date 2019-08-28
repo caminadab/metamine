@@ -93,7 +93,8 @@ function controle(exp, maakvar)
 		elseif isfn(exp) then
 			arg = con(exp)
 		else
-			arg = exp --con(exp)
+			arg = con(exp)
+			--arg = exp
 		end
 		arg.ref = exp.ref
 		return arg
