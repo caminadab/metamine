@@ -34,9 +34,11 @@ function file(name, data)
 	end
 end
 
-local a = "als a dan b eind"
-assert(unlisp(ontleed(a)) == '⋀(⇒(a b))', unlisp(ontleed(a)))
-
+local function passert(ok, msg)
+	if not ok then
+		print('ASSERT FAILED: ' .. msg)
+	end
+end
 
 local tests = file('TESTS')
 for code in tests:gmatch('(.-)\n\n') do
@@ -44,7 +46,7 @@ for code in tests:gmatch('(.-)\n\n') do
 	if taal and moet then
 	print(taal, moet)
 	local lisp = unlisp(ontleed(taal))
-	assert(lisp == moet, string.format('ontleed("%s") moet %s zijn maar is %s', taal, moet, lisp))
+	passert(lisp == moet, string.format('ontleed("%s") moet %s zijn maar is %s', taal, moet, lisp))
 end
 end
 

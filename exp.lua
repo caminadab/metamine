@@ -4,7 +4,7 @@ exp |= { loc, val }
 ]]
 require 'lisp'
 
-function fn(exp) if isfn(exp) then return exp.fn.v end end
+function fn(exp) if isfn(exp) then return exp.f.v end end
 function atoom(exp,i) 
 	if not i then
 		return exp.v
@@ -80,9 +80,9 @@ function expmoesR(exp, t)
 	if exp.moes then t[#t+1] = tostring(exp.moes); return end
 	if isatoom(exp) then t[#t+1] = exp.v
 	else
-		if not isatoom(exp.fn) then t[#t+1] = '(' end
-		expmoesR(exp.fn, t)
-		if not isatoom(exp.fn) then t[#t+1] = ')' end
+		if not isatoom(exp.f) then t[#t+1] = '(' end
+		expmoesR(exp.f, t)
+		if not isatoom(exp.f) then t[#t+1] = ')' end
 		t[#t+1] = '('
 		for i, v in ipairs(exp) do
 			expmoesR(v, t)
@@ -99,7 +99,7 @@ function expmoes(exp)
 		exp.moes = exp.v
 	else
 		local t = {}
-		t[#t+1] = expmoes(exp.fn)
+		t[#t+1] = expmoes(exp.f)
 		t[#t+1] = '('
 		for i=1,#exp do
 			t[#t+1] = expmoes(exp[i])
@@ -171,13 +171,22 @@ end
 -- willekeurige volgorde
 function boompairs(exp)
 	local t = {}
-	function r(exp)
+	local function r(exp)
+		if exp == nil then error('OEI') end
 		if isatoom(exp) then
 			t[exp] = true
 		else
 			t[exp] = true
-			r(exp.fn)
+			if exp.f == nil then
+				print('BOVEN::')
+				seerec(exp)
+				error('WEE')
+			end
+			r(exp.f)
 			for i,v in ipairs(exp) do
+				if v == nil then
+					error('WEE')
+				end
 				r(v)
 			end
 		end
@@ -200,7 +209,7 @@ function boompairsdfs(exp)
 		if isatoom(exp) then
 			t[#t+1] = exp
 		else
-			r(exp.fn)
+			r(exp.f)
 			for i,v in ipairs(exp) do
 				r(v)
 			end
@@ -224,7 +233,7 @@ function boompairsbfs(exp)
 			t[#t+1] = exp
 		else
 			t[#t+1] = exp
-			r(exp.fn)
+			r(exp.f)
 			for i,v in ipairs(exp) do
 				r(v)
 			end
@@ -241,7 +250,7 @@ end
 
 function exp2string(self,tabs)
 	if type(self) ~= 'table' then return error('is geen expressie') end
-	if not self.v and not self.fn then error('is geen expressie') end
+	if not self.v and not self.f then error('is geen expressie') end
 
 	do return unlisp(self) end
 	if type(self) == 'string' then return self end
@@ -259,9 +268,9 @@ function exp2string(self,tabs)
 
 	local fn
 	if isfn(self) then
-		fn = '('..expmt.__tostring(params.fn,tabs..'  ')..')'
+		fn = '('..expmt.__tostring(params.f,tabs..'  ')..')'
 	else
-		fn = tostring(params.fn)
+		fn = tostring(params.f)
 	end
 	if len > 30 then
 		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
@@ -282,7 +291,7 @@ function expmt:__eq(ander)
 	local zelf = self
 	if isatoom(zelf) ~= isatoom(ander) then return false end
 	if isatoom(zelf) then return zelf == ander end
-	if zelf.fn ~= ander.fn then return false end
+	if zelf.f ~= ander.f then return false end
 	if #zelf ~= #ander then return false end
 	for i=1,#zelf do
 		if zelf[i] ~= ander[i] then
@@ -294,13 +303,13 @@ end
 
 function bevat(exp, naam)
 	if not exp then error('geen exp') end
-	if not exp.v and not exp.fn then error('geen exp') end
+	if not exp.v and not exp.f then error('geen exp') end
 	if not naam.v then error('naam is geen exp') end
 
 	if exp.v then
 		return exp.v == naam.v
 	else
-		if bevat(exp.fn, naam) then return true end
+		if bevat(exp.f, naam) then return true end
 		for i,v in ipairs(exp) do
 			if bevat(v, naam) then return true end
 		end
@@ -324,10 +333,10 @@ function T(tabs)
 	-- =(a,b)
 
 	local fn
-	if isfn(self.fn) then
-		fn = '('..expmt.__tostring(params.fn,tabs..'  ')..')'
+	if isfn(self.f) then
+		fn = '('..expmt.__tostring(params.f,tabs..'  ')..')'
 	else
-		fn = tostring(params.fn)
+		fn = tostring(params.f)
 	end
 	if len > 30 then
 		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)

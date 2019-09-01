@@ -135,7 +135,7 @@ function controle(exp, maakvar)
 
 	function con(exp,ret)
 		--print('CON', combineer(exp))
-		local fw = {fn=exp.fn}
+		local fw = {f=exp.f}
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 
@@ -147,7 +147,7 @@ function controle(exp, maakvar)
 			return mkstat(stat, ret)
 		
 		-- functie
-		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
+		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.f) == '_fn' then
 			--assert(exp.ref)
 			--al = {}
 			local naam = X(maakfunc())
@@ -155,7 +155,7 @@ function controle(exp, maakvar)
 			local args = {exp[2], exp[3], exp[4]}
 			exp.moes = nil
 			exp.v = naam.v
-			exp.fn = nil
+			exp.f = nil
 			exp[1] = nil
 			exp[2] = nil
 			exp[3] = nil
@@ -259,21 +259,21 @@ function controle(exp, maakvar)
 
 		-- normale statement (TODO sorteer)
 		else
-			local fw = {fn=exp.fn}
+			local fw = {f=exp.f}
 			local ret = ret or X(maakvar())
 			local stat = X(':=', ret, fw)
 
-			if isfn(exp.fn) then
+			if isfn(exp.f) then
 			--error'OK'
-				--al[exp.fn] = fw.fn.ref
-				fw.fn = arg(exp.fn)
-				fw.fn.ref = exp.fn.ref -- assert(exp.fn.ref)
+				--al[exp.f] = fw.f.ref
+				fw.f = arg(exp.f)
+				fw.f.ref = exp.f.ref -- assert(exp.f.ref)
 				--error('OK')
 			else
-				if exp.fn.v:sub(1,1) == '~' then
-					--fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
-					fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
-					--print('jajajaja', fw.fn, exp.fn.v)
+				if exp.f.v:sub(1,1) == '~' then
+					--fw.f = assert(al[exp.f.v], 'onbekende ref: '..exp.f.v)
+					fw.f = assert(al[exp.f.v], 'onbekende ref: '..exp.f.v)
+					--print('jajajaja', fw.f, exp.f.v)
 				end
 			end
 			if exp[1] and fn(exp[1]) == ',' then

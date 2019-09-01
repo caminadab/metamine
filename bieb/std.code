@@ -63,7 +63,7 @@ set: verzameling
 (≤) :  (getal, getal) → bit
 (<) :  (getal, getal) → bit
 (∧) : (bit, bit) → bit
-(⋀) : iets → bit
+;(⋀) : iets → bit
 (⋁) : verzameling bit → bit
 
 ; multi

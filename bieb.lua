@@ -78,8 +78,11 @@ function bieb()
 	['_'] = function(a, b)
 		if type(a) == 'string' then
 			return a:byte(b+1)
+		elseif type(a) == 'table' then
+			return a[b]
+		else
+			return a(b)
 		end
-		return a[b]
 	end;
 
 	['_u'] = function(a, b)
@@ -162,11 +165,11 @@ function bieb()
 		local code,err = naarjavascript(fn)
 		if not code and verboos then print('GEEN JAVASCRIPT: '..err) end
 		local a = table.pack(string.byte(code, 1, #code))
-		a.fn = '[]'
+		a.f = '[]'
 		return a
 	end;
 
-	['!'] = function(n)
+	['¬'] = function(n)
 		local a = 1
 		for i=1,n do
 			a = a * n
@@ -175,7 +178,7 @@ function bieb()
 	end;
 
 	-- linksassociatief
-	['xx'] = function(a,b)
+	['×'] = function(a,b)
 		local t = {}
 		for i,aa in ipairs(a) do
 			for i,bb in ipairs(b) do
@@ -189,7 +192,7 @@ function bieb()
 	['lua'] = function(func)
 		local code = naarlua(func)
 		local a = table.pack(string.byte(code, 1, #code))
-		a.fn = '[]'
+		a.f = '[]'
 		return a
 	end;
 
@@ -232,7 +235,7 @@ function bieb()
 
 	['+'] = function(a,b) return a + b end;
 	['-'] = function(a,b) if b then return a - b else return -a end end;
-	['*'] = function(a,b) return a * b end;
+	['·'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b)
 		if type(a) == 'function' then
@@ -300,7 +303,7 @@ function bieb()
 		return doe0(exp)
 	end;
 
-	['@'] = function(a,b)
+	['∘'] = function(a,b)
 		assert(type(a) == 'function', a)
 		assert(type(b) == 'function', b)
 		return function(...)
@@ -328,7 +331,7 @@ function bieb()
 		return a or b
 	end;
 
-	['->'] = function(param, f)
+	['→'] = function(param, f)
 		return function(a)
 			return doe(substitueer(f, param, a))
 		end
@@ -349,8 +352,8 @@ function bieb()
 	end;
 	['>'] = function(a,b) return tonumber(a) > tonumber(b) end;
 	['<'] = function(a,b) return tonumber(a) < tonumber(b) end;
-	['!='] = function(a,b) return a ~= b end;
-	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
+	['≠'] = function(a,b) return a ~= b end;
+	['≈'] = function(a,b) return math.abs(a-b) < 0.00001 end;
 	['..'] = function(a,b)
 		local r = {}
 		if a > b then
@@ -368,13 +371,12 @@ function bieb()
 		return r
 	end;
 
-	['||'] = function(a,b)
+	['‖'] = function(a,b)
 		if type(a) == 'string' or type(b) == 'string' then
 			return tostring(a) .. tostring(b)
 		end
-		--if isatoom(a) or isatoom(b) or a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
 		local j = 1
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		--if isatoom(a) then a = {a} end
 		--if isatoom(b) then b = {b} end
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
@@ -393,7 +395,7 @@ function bieb()
 
 	-- lib
 	['cat'] = function(a,b)
-		local r = {fn='[]'}
+		local r = {f='[]'}
 		for i,v in ipairs(a) do
 			for i,v in ipairs(v) do
 				r[#r+1] = v
@@ -410,7 +412,7 @@ function bieb()
 
 	-- linq
 	['map'] = function(a,b)
-		local r = {fn='[]'}
+		local r = {f='[]'}
 		for i=1,#a do --i,v in ipairs(a) do
 			local v = a[i]
 			local s = b(v)
@@ -423,7 +425,7 @@ function bieb()
 	end;
 
 	['filter'] = function(l,fn)
-		local r = {fn='[]'}
+		local r = {f='[]'}
 		for i,v in ipairs(l) do
 			if fn(v) then
 				r[#r+1] = v
@@ -433,7 +435,7 @@ function bieb()
 	end;
 
 	['reduceer'] = function(l,fn)
-		local r = {fn='[]'}
+		local r = {f='[]'}
 		for i,v in ipairs(l) do
 			if fn(v) then
 				r[#r+1] = v
@@ -453,16 +455,15 @@ function bieb()
 		end
 	end;
 	['sincos'] = function (a)
-		return {fn=',', math.sin(a), math.cos(a)}
+		return {f=',', math.sin(a), math.cos(a)}
 	end;
 
-	['of'] = function(a,b) return a or b end;
-	['en'] = function(a,b) return a and b end;
-	['OF'] = function(a,b) return a or b end;
-	['EN'] = function(a,b) return a and b end;
-	['!'] = function(a) return not a end;
+	['∨'] = function(a,b) return a or b end;
+	['∧'] = function(a,b) return a and b end;
+	['⋁'] = function(a,b) return a or b end;
+	['⋀'] = function(a,b) return a and b end;
 
-	['som'] = function(a)
+	['Σ'] = function(a)
 		local r = 0
 		for i,v in ipairs(a) do
 			r = r + v
@@ -632,7 +633,7 @@ function bieb()
 	end;
 
 	['vanaf'] = function(a,van)
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		for i=van+1,#a do
 			t[#t+1] = a[i]
 		end
@@ -640,7 +641,7 @@ function bieb()
 	end;
 
 	['tot'] = function(a,tot)
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		for i=1,tot do
 			t[#t+1] = a[i]
 		end
@@ -649,7 +650,7 @@ function bieb()
 
 	['deel'] = function(a,b)
 		local van,tot = b[1],b[2]
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		for i=van+1,tot do
 			t[#t+1] = a[i]
 		end

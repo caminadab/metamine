@@ -7,7 +7,7 @@ function isatoom(exp)
 end
 
 function isfn(exp)
-	return exp.fn ~= nil
+	return exp.f ~= nil
 end
 isexp = isfn
 
@@ -30,15 +30,15 @@ function uitgerold(exp)
 			error('nee!')
 			exp.i, i = i, i + 1
 			t[#t+1] = "s"..exp.i.." :=  "..exp.v
-		elseif exp.fn.v == '->' and false then
+		elseif exp.f.v == '->' and false then
 			exp.i, i = i, i + 1
 			t[#t+1] = "s"..exp.i.." :=  "..uitgerold(exp[2]) --exp2string(exp)
 		else
 			local x = {}
-			if isatoom(exp.fn) then
-				x.fn = exp.fn
+			if isatoom(exp.f) then
+				x.f = exp.f
 			else
-				x.fn = r(exp.fn, t)
+				x.f = r(exp.f, t)
 			end
 			for i,v in ipairs(exp) do
 				if isatoom(exp[i]) then
@@ -77,7 +77,7 @@ function X(fn,...)
 	if #t == 0 then
 		r = fn
 	else
-		r = {loc=nergens,fn=fn}
+		r = {loc=nergens,f=fn}
 		for i,s in ipairs(t) do
 			if type(s) == 'table' then
 				r[i] = s
@@ -100,7 +100,7 @@ function unparse_len(exp)
 
 	if isatoom(exp) then return #(exp.v or '???') end
 
-	len = len + unparse_len(exp.fn)
+	len = len + unparse_len(exp.f)
 	for i,v in ipairs(exp) do
 		len = len + unparse_len(v)
 	end
@@ -115,7 +115,7 @@ function unparse_len0(exp)
 		if not exp.v then error(tostring(exp)) end
     len = #exp.v
   else
-		if exp.fn then len = unparse_len(exp.fn) + 2 end
+		if exp.f then len = unparse_len(exp.f) + 2 end
     len = 2 + #exp-1 -- (A B C)
     for i,sub in ipairs(exp) do
       len = len + unparse_len(sub)
@@ -143,14 +143,14 @@ function unparse_work(sexpr, maxlen, tabs, res)
 		end
 	elseif isfn(sexpr) then
     local split = unparse_len(sexpr) > maxlen
-		if sexpr.fn then
-			if isfn(sexpr.fn) then
+		if sexpr.f then
+			if isfn(sexpr.f) then
 				insert(res, color[(tabs%#color)+1])
 				insert(res, '(')
 				insert(res, color.white)
 			end
-			unparse_work(sexpr.fn, maxlen, tabs+1, res)
-			if isfn(sexpr.fn) then
+			unparse_work(sexpr.f, maxlen, tabs+1, res)
+			if isfn(sexpr.f) then
 				insert(res, color[(tabs%#color)+1])
 				insert(res, ')')
 				insert(res, color.white)

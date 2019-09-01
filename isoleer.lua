@@ -17,7 +17,7 @@ inverteer_def = predef
 -- rewrite (a + b = c, a) -> c - b
 function isoleer(eq,name)
 	if not name.v then error('naam is geen atoom') end
-	if eq.fn.v ~= '=' then return false end
+	if eq.f.v ~= '=' then return false end
 	local flip = false
 	while true do
 		local eq0
@@ -33,7 +33,7 @@ function isoleer(eq,name)
 		if name.v == r.v then return l end
 
 		if isfn(l) and #l == 1 then
-			local fn,f,a,x = l.fn, l.fn.v, l[1], r
+			local fn,f,a,x = l.f, l.f.v, l[1], r
 			local out
 			local n = 0
 			if bevat(a,name) then out = 0; n = n + 1 end
@@ -61,26 +61,26 @@ function isoleer(eq,name)
 			end
 		end
 		-- set
-		if isfn(l) and l.fn.v == '{}' then
+		if isfn(l) and l.f.v == '{}' then
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
-					eq0 = X(':=', el, {fn=r, X(tostring(i-1))}) -- functioneel
+					eq0 = X(':=', el, {f=r, X(tostring(i-1))}) -- functioneel
 					--eq0 = X(':=', el, X(tostring(i-1))) -- definieerened
 					break
 				end
 			end
 		-- lijst
-		elseif isfn(l) and (l.fn.v == '[]' or l.fn.v == ',') then
+		elseif isfn(l) and (l.f.v == '[]' or l.f.v == ',') then
 			-- a = [x,b]
 			for i,el in ipairs(l) do
 				if bevat(el,name) then
-					eq0 = X(':=', el, {fn=r, X(tostring(i-1))})
+					eq0 = X(':=', el, {f=r, X(tostring(i-1))})
 					break
 				end
 			end
 		elseif isfn(l) and #l == 2 then
-			local x,f,a,b = r,l.fn.v,l[1],l[2]
+			local x,f,a,b = r,l.f.v,l[1],l[2]
 			local out
 			local n = 0
 			if bevat(a,name) then out = 0; n = n + 1 end

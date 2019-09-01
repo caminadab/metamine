@@ -56,20 +56,20 @@ local function doeblok(blok, env, ...)
 			else
 				w = exp.w
 			end
-		elseif exp.fn and type(exp.fn.w) == 'table' then
+		elseif exp.f and type(exp.f.w) == 'table' then
 			-- woeps
-			local a = exp.fn.w
+			local a = exp.f.w
 			local i = exp[1].w
 			w = a[i+1]
 			assert(w ~= nil, combineer(w2exp(a)) .. '.' .. combineer(w2exp(b)))
 
-		elseif exp.fn.v == '_fn' then
+		elseif exp.f.v == '_fn' then
 			w = env[fn(exp)]
 
 		-- normale functie
 		else
-			local func = exp.fn.w
-			assert(func ~= nil, "geen functie voor "..e2s(exp.fn))
+			local func = exp.f.w
+			assert(func ~= nil, "geen functie voor "..e2s(exp.f))
 			local args = {}
 			for i,s in ipairs(exp) do
 				args[i] = s.w
@@ -92,7 +92,7 @@ local function doeblok(blok, env, ...)
 				w = func:sub(args[1]+1, args[1]+1)
 
 			else
-				print('ASDF', e2s(exp), exp.fn.w, exp.w)
+				print('ASDF', e2s(exp), exp.f.w, exp.w)
 				local f = executiefout(stat.loc, 'onbekende "functie": '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
 				print()
 				print(fout2string(f))

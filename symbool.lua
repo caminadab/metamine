@@ -40,7 +40,7 @@ function var(exp,c,t)
 	if isatoom(exp) then
 		if not c(exp) then t[exp] = true end
 	else
-		var(exp.fn,c,t)
+		var(exp.f,c,t)
 		for i,v in ipairs(exp) do
 			var(v,c,t)
 		end
@@ -84,7 +84,7 @@ function substitueer(exp, van, naar)
 		end
 		local t = {loc=exp.loc}
 		local n = 0
-		t.fn = substitueer(exp.fn, van, naar)
+		t.f = substitueer(exp.f, van, naar)
 		for i,v in ipairs(exp) do
 			local m
 			t[i],m = substitueer(v, van, naar)
@@ -264,7 +264,7 @@ function substitueerzuinig(exp, van, naar, al, maakvar)
 		end
 		local t = {loc=exp.loc}
 		local n = 0
-		t.fn = substitueerzuinig(exp.fn, van, naar, al, maakvar)
+		t.f = substitueerzuinig(exp.f, van, naar, al, maakvar)
 		for i,v in ipairs(exp) do
 			local m
 			t[i],m = substitueerzuinig(v, van, naar, al, maakvar)

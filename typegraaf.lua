@@ -20,7 +20,7 @@ function maaktype(exp, tg)
 	assert(tg, 'geen typegraaf')
 	if type(exp) == 'string' then exp = ontleedexp(exp) end
 	exp.tg = tg
-	if not exp.fn and not exp.v then error('arg is geen exp') end
+	if not exp.f and not exp.v then error('arg is geen exp') end
 	return setmetatable(exp, typemt)
 end
 
@@ -37,7 +37,7 @@ end
 -- alleen f(...) : f
 function typemt:__lt(other)
 	if isatoom(other) and isfn(self) then
-		if other.v == self.fn.v then
+		if other.v == self.f.v then
 			return true
 		end
 	end
@@ -74,8 +74,8 @@ function metatypegraaf:unie(a, b)
 			return false
 		end
 	end
-	local t = {fn = self:unie(a.fn or a, b.fn or b)}
-	if not t.fn then return false end
+	local t = {f = self:unie(a.f or a, b.f or b)}
+	if not t.f then return false end
 	for i=1,math.max(#a, #b) do
 		if a[i] and b[i] then
 			t[i] = self:unie(a[i], b[i])
@@ -94,7 +94,7 @@ function metatypegraaf:paramtype(type, paramtype)
 		--print('PARAMTYPE', doel, _G.type(doel))
 		local t = self.types[doel]
 		assert(t, 'geen type voor '..doel)
-		if t.fn and moes(t.fn) == moes(paramtype) then
+		if t.f and moes(t.f) == moes(paramtype) then
 			return table.unpack(t)
 		end
 		local nieuwdoel = nil
@@ -127,12 +127,12 @@ function metatypegraaf:issubtype(type, super)
 
 	-- (1..1000) : (..)
 	if isatoom(super) and isfn(type) then
-		if super.v == type.fn.v then
+		if super.v == type.f.v then
 			return true
 		end
 
 	-- moeilijk gaan doen
-	elseif isfn(type) and isfn(super) and self:issubtype(type.fn, super.fn) then -- and moes(type.fn) == moes(super.fn) then
+	elseif isfn(type) and isfn(super) and self:issubtype(type.f, super.f) then -- and moes(type.f) == moes(super.f) then
 		if #super ~= #type then return false end
 		--assert(#type == #super, "Type = "..moes(type)..", Super = "..moes(super))
 		local issub = true
@@ -169,8 +169,9 @@ function metatypegraaf:link(type, super)
 	if not self.types[supermoes] then
 		-- auto
 		if fn(super) == 'lijst' or fn(super) == 'set' then
-			super = self:link(super, super.fn)
+			super = self:link(super, super.f)
 		else
+			--print(supermoes)
 			super = self:link(super, self.iets)
 		end
 	end

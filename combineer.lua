@@ -11,13 +11,13 @@ local function combineerR(sexp, tt)
 	if isatoom(sexp) then
 		insert(tt, sexp.v)
 	else
-		if not sexp.fn then
+		if not sexp.f then
 			see(sexp)
 			print(type(sexp))
 			for k,v in pairs(sexp) do print(k,v) end
 			error'GEEN FN'
 		end
-		local op = sexp.fn.v
+		local op = sexp.f.v
 
 		-- lijst/set
 		if op == '[]' or op == '{}' or op == ',' then
@@ -48,7 +48,7 @@ local function combineerR(sexp, tt)
 			else
 				-- complexe functie
 				insert(tt, '(')
-				combineerR(sexp.fn, tt)
+				combineerR(sexp.f, tt)
 				insert(tt, ')')
 			end
 
@@ -65,9 +65,9 @@ local function combineerR(sexp, tt)
 		elseif #sexp == 2 then
 			for i=1,#sexp do
 				local v = sexp[i]
-if not v.fn and not v.v then see(v); error('geen exp: '..e2s(v)) end
+if not v.f and not v.v then see(v); error('geen exp: '..e2s(v)) end
 				local br = isfn(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
-				local br = br or (isfn(sexp.fn) and (lop[fn(sexp.fn)]))-- or (#v == 2 and not binop[fn(sexp[i])]))
+				local br = br or (isfn(sexp.f) and (lop[fn(sexp.f)]))-- or (#v == 2 and not binop[fn(sexp[i])]))
 
 
 				if br then insert(tt, '(') end
@@ -83,7 +83,7 @@ if not v.fn and not v.v then see(v); error('geen exp: '..e2s(v)) end
 					else
 						-- complexe functie
 						insert(tt, '(')
-						combineerR(sexp.fn, tt)
+						combineerR(sexp.f, tt)
 						insert(tt, ')')
 					end
 					insert(tt, ' ')

@@ -2,6 +2,11 @@
 a = 3
 ⋀(=(a 3))
 
+app = uit
+succ = succa → succa + 1
+looptijd = 0
+⋀(=(app uit) =(succ →(succa +(succa 1))) =(looptijd 0))
+
 a = 3
 b = 2
 ⋀(=(a 3) =(b 2))

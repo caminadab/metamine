@@ -15,7 +15,7 @@ function vertaal(code, doel)
 	local asb,syntaxfouten = ontleed(code)
 	local asb2 = ontleed(file('bieb/'..doel..'.code'))
 	local asb = cat(asb, asb2)
-	asb.fn = X'EN'
+	asb.f = X'⋀'
 
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)

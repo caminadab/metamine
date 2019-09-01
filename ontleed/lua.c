@@ -268,10 +268,12 @@ int lua_ontleedexp(lua_State* L) {
 
 	int ref;
 	yyparse(L, &ref, scanner);
+	lua_rawgeti(L, LREG, ref);
 	yylex_destroy(scanner);
 
 	// file fixen
 	//setfile(wortel, "<EXP>");
+	lua_rawgeti(L, -1, 1);
 	return 1;
 }
 

@@ -33,7 +33,7 @@ function isconstant(v)
 		end
 	else
 		local c = true
-		if not isconstant(v.fn) then
+		if not isconstant(v.f) then
 			c = false
 		end
 		for i,v in ipairs(v) do
@@ -59,7 +59,7 @@ function typeer0(exp)
 end
 
 -- lees biebgraaf
---local bieb,fouten = ontleed(bestand 'bieb/std.code', 'bieb/std.code')
+local bieb,fouten = ontleed(bestand 'bieb/std.code', 'bieb/std.code')
 local bieb = {}
 if fouten then map(fouten, function(fout) print(fout2ansi(fout)) end) end
 
@@ -167,7 +167,7 @@ function typeer(exp)
 
 	-- eigen :)
 	for i, exp in ipairs(exp) do
-		if isfn(exp) and isatoom(exp.fn) and exp.fn.v == ':' then
+		if isfn(exp) and isatoom(exp.f) and exp.f.v == ':' then
 			local val, type = exp[1],exp[2]
 			weestype(val, type, exp.loc)
 		end
@@ -188,7 +188,7 @@ function typeer(exp)
 			--T = X'kommagetal'
 			T = X'getal'
 		elseif isfn(exp) and fn(exp) == '[]u' then
-			weestype(exp.fn, X'tekens')
+			weestype(exp.f, X'tekens')
 			weestype(exp, X('tekst'))
 		elseif isfn(exp) and fn(exp) == '{}' then
 			T = X'set'
@@ -215,8 +215,8 @@ function typeer(exp)
 			T = maaktype(T, typegraaf)
 			local t = oorzaakloc[moes(exp)]
 			local s = '\t(' ..ansi.underline.. (t and loctekst(t) or '')..ansi.normal..')'
-			if verbozeTypes and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then
-				--print(moes(exp), moes(T), s)
+			if verbozeTypes and exp.loc and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then
+				print(moes(exp), moes(T), s)
 			end
 			types[exp] = T
 			typegraaf:link(T, S)
@@ -226,11 +226,11 @@ function typeer(exp)
 
 	-- verkrijg aantal argumenten
 	local function N(exp)
-		assert(exp.fn.v == '->')
+		assert(exp.f.v == '→')
 		if isatoom(exp[1]) and exp[1].v == 'iets' then
 			return math.huge
 		end
-		if isfn(exp[1]) and exp[1].fn.v == ',' then
+		if isfn(exp[1]) and exp[1].f.v == ',' then
 			return #exp[1]
 		end
 		return 1
@@ -246,8 +246,8 @@ function typeer(exp)
 
 	-- verkrijg nde argument van functie
 	local function A0(exp, i)
-		assert(exp.fn.v == '->')
-		if isfn(exp[1]) and exp[1].fn.v == ',' then
+		assert(exp.f.v == '->')
+		if isfn(exp[1]) and exp[1].f.v == ',' then
 			return exp[1][i]
 		end
 		if i ~= 1 then return nil end
@@ -261,13 +261,13 @@ function typeer(exp)
 	for exp in boompairsdfs(exp, to) do
 		if true or not types[exp] then
 
-			local tfn = types[exp.fn]
+			local tfn = types[exp.f]
 
-			if #exp == 1 and isvar(exp.fn) and not types[exp.fn] and types[exp[1]] and types[exp] then
+			if #exp == 1 and isvar(exp.f) and not types[exp.f] and types[exp[1]] and types[exp] then
 				-- typeer de functie zelf
 				-- f(2) = 3 → f = getal → getal
 				local functype = {fn=X'->', types[exp[1]], types[exp]}
-				weestype(exp.fn, functype, exp.loc)
+				weestype(exp.f, functype, exp.loc)
 			end
 
 			-- deze exp heeft al een type
@@ -276,14 +276,14 @@ function typeer(exp)
 				weestype(exp, T, oorzaakloc[moes(exp)])
 
 			elseif isfn(exp) then
-				local fn,f,a,b = exp.fn, exp.fn.v, exp[1], exp[2]
+				local fn,f,a,b = exp.f, exp.f.v, exp[1], exp[2]
 
 				-- speciaal voor 'herhaal'
 				if f == 'herhaal' and types[a] then
 					local ta, tb = types[a], types[b]
-					weestype(tb, X'int', exp.fn.loc)
-					weestype(exp, ta, exp.fn.loc)
-					weestype(exp.fn, X'->')
+					weestype(tb, X'int', exp.f.loc)
+					weestype(exp, ta, exp.f.loc)
+					weestype(exp.f, X'->')
 
 				-- speciaal voor 'map'
 				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
@@ -297,7 +297,7 @@ function typeer(exp)
 					--print('BTYPE', e2s(btype))
 
 				-- speciaal voor 'xx'
-				elseif f == 'xx' and types[a] and types[b] then
+				elseif f == '×' and types[a] and types[b] then
 					local type = X('lijst', X('tupel', types[a]:paramtype('lijst'), types[b]:paramtype('lijst')))
 					weestype(exp, type)
 					weestype(fn, 'dinges')
@@ -326,7 +326,7 @@ function typeer(exp)
 					weestype(exp, T)
 					end
 
-				elseif f == '||' and types[a] and types[b] then
+				elseif f == '‖' and types[a] and types[b] then
 					local asub = types[a]:paramtype('lijst')
 					local bsub = types[a]:paramtype('lijst')
 					local sub = typegraaf:unie(asub, bsub)
@@ -376,13 +376,13 @@ function typeer(exp)
 					elseif types[b] then weestype(a, types[b], exp.loc) ; oorzaakloc[a] = exp.loc
 					end
 					if types[a] and types[b] then
-						weestype(exp, X'bit') ; oorzaakloc[exp] = exp.fn.loc
+						weestype(exp, X'bit') ; oorzaakloc[exp] = exp.f.loc
 					end
 		
 				-- speciaal voor '⇒'
 				elseif f == '=>' then
-					weestype(a, X'bit', exp.fn.loc)
-					weestype(fn, X'ok', exp.fn.loc)
+					weestype(a, X'bit', exp.f.loc)
+					weestype(fn, X'ok', exp.f.loc)
 					if types[b] then weestype(exp, types[b], oorzaakloc[b]) end 
 
 				-- speciaal voor ',' (tupel)
@@ -406,7 +406,7 @@ function typeer(exp)
 				-- speciaal voor '→'
 				if f == '->' then -- (a → b) : (
 					-- argumenten
-					--if isfn(fn) and fn.fn.v = ',' then
+					--if isfn(fn) and fn.f.v = ',' then
 						--for 
 
 					-- functie
@@ -425,23 +425,23 @@ function typeer(exp)
 
 
 			-- nog koeler doen met ranges
-			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'^') then
-				local elmin,elmax = typegraaf:paramtype(types[exp.fn], X'^')
+			if #exp == 1 and types[exp.f] and typegraaf:issubtype(types[exp.f], X'^') then
+				local elmin,elmax = typegraaf:paramtype(types[exp.f], X'^')
 				local bereik = X('..', '0', elmax)
 				typegraaf:link(bereik, X'nat')
-				weestype(exp[1], bereik, oorzaakloc[exp.fn])
+				weestype(exp[1], bereik, oorzaakloc[exp.f])
 				weestype(bereik, X'nat', exp.loc) -- TODO loc
 			end
 
 			-- is dit "tekst"?
-			if #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'tekst') then
-				local eltype = typegraaf:paramtype(types[exp.fn], X'lijst')
+			if #exp == 1 and types[exp.f] and typegraaf:issubtype(types[exp.f], X'tekst') then
+				local eltype = typegraaf:paramtype(types[exp.f], X'lijst')
 				weestype(exp, X'teken', exp.loc) -- TODO loc
 				--weestype(exp[1], X'nat', exp.loc) -- TODO loc
 
 			-- koel doen met lijst indices
-			elseif #exp == 1 and types[exp.fn] and typegraaf:issubtype(types[exp.fn], X'lijst') then
-				local eltype = typegraaf:paramtype(types[exp.fn], X'lijst')
+			elseif #exp == 1 and types[exp.f] and typegraaf:issubtype(types[exp.f], X'lijst') then
+				local eltype = typegraaf:paramtype(types[exp.f], X'lijst')
 				weestype(exp, eltype, exp.loc) -- TODO loc
 				--weestype(exp[1], X'nat', exp.loc) -- TODO loc
 			end
@@ -451,7 +451,7 @@ function typeer(exp)
 				-- niet het gewenste aantal argumenten
 				local nargs = #exp
 				-- local unpacking
-				if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then nargs = #exp[1] end
+				if isfn(exp) and isfn(exp[1]) and exp[1].f.v == ',' then nargs = #exp[1] end
 				if false and N(tfn) ~= nargs and N(tfn) ~= math.huge then
 					local msg = typeerfout(exp.loc, '{code} heeft {int} argumenten ({loc}) maar moet er {int} hebben ({loc})',
 						locsub(code, exp.loc),
@@ -474,16 +474,16 @@ function typeer(exp)
 						--local arg = exp[i] or exp[1][i] or exp[1][1][i]
 						local arg = ARG(exp, i)
 						--print('N', N(tfn), exp2string(tfn))
-						--if isfn(exp) and isfn(exp[1]) and exp[1].fn.v == ',' then arg = exp[1][i] end
+						--if isfn(exp) and isfn(exp[1]) and exp[1].f.v == ',' then arg = exp[1][i] end
 						if arg then
 							assert(arg, i .. ', '..exp2string(exp))
-							weestype(arg, A0(tfn, i), oorzaakloc[moes(exp.fn)] or exp.fn.loc)
+							weestype(arg, A0(tfn, i), oorzaakloc[moes(exp.f)] or exp.f.loc)
 						end
 						--print('  ARG', moes(exp)i]), moes(A)tfn, i)), loctekst(exp[i].loc))
 					end
 				end
 				if false then
-					weestype(exp, tfn[2], oorzaakloc[moes(exp.fn)] or exp.fn.loc)
+					weestype(exp, tfn[2], oorzaakloc[moes(exp.f)] or exp.f.loc)
 				end
 				--print('  RET', moes(tfn)2]))
 

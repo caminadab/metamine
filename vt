@@ -155,7 +155,7 @@ if opt.s or opt.syntaxis then
 end
 
 local codes = {}
-local asb = {fn=X'⋀'}
+local asb = {f=X'⋀'}
 
 if verbozeBroncode then
 	print('=== BRONCODE ===')
@@ -273,7 +273,6 @@ end
 
 if verbozeIntermediair then
 	print('=== INTERMEDIAIRE CODE ===')
-	
 	print(cfg.start)
 	for blok in spairs(cfg.punten) do
 		if blok ~= cfg.start then
