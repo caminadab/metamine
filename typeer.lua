@@ -178,7 +178,7 @@ function typeer(exp)
 		if tonumber(exp.v) and exp.v % 1 == 0 then
 			local n = tonumber(exp.v)
 			--T = exp
-			if n < 256 then
+			if n < 256 and false then
 				T = X'byte'
 			else
 				T = X'int'
@@ -481,7 +481,9 @@ function typeer(exp)
 						--print('  ARG', moes(exp)i]), moes(A)tfn, i)), loctekst(exp[i].loc))
 					end
 				end
-				weestype(exp, tfn[2], oorzaakloc[moes(exp.fn)] or exp.fn.loc)
+				if false then
+					weestype(exp, tfn[2], oorzaakloc[moes(exp.fn)] or exp.fn.loc)
+				end
 				--print('  RET', moes(tfn)2]))
 
 			end

@@ -271,6 +271,7 @@ function controle(exp, maakvar)
 				--error('OK')
 			else
 				if exp.fn.v:sub(1,1) == '~' then
+					--fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
 					fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
 					--print('jajajaja', fw.fn, exp.fn.v)
 				end

@@ -187,8 +187,8 @@ local immjs = {
 					case 38: keyUp = true; break;
 					case 40: keyDown = true; break;
 					case 32: keySpace = true; keySpacePressed = true; break;
-					case 87: keyA = true; break;
-					case 65: keyW = true; break;
+					case 65: keyA = true; break;
+					case 87: keyW = true; break;
 					case 83: keyS = true; break;
 					case 68: keyD = true; break;
 				}
@@ -203,8 +203,8 @@ local immjs = {
 					case 39: keyRight = false; break;
 					case 40: keyDown = false; break;
 					case 32: keySpace = false; keySpaceEnd = true; break;
-					case 87: keyA = false; break;
-					case 65: keyW = false; break;
+					case 65: keyA = false; break;
+					case 87: keyW = false; break;
 					case 83: keyS = false; break;
 					case 68: keyD = false; break;
 				}
@@ -215,7 +215,9 @@ local immjs = {
 		}
 	)($1)]],
 	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
+	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3,$4)',
 	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72/2, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
+	['label'] = '(function(x,y,z) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(z, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })($1,$2,$3)',
 	['tekst'] = 'Array.isArray($1) ? $1.toSource() : $1.toString()',
 	['clearCanvas'] = '$1.clearRect(0,0,1280,720) || $1',
 	['setInnerHtml'] = [[(function (a) {
@@ -235,6 +237,20 @@ local immjs = {
 		requestAnimationFrame(f);
 		return true;
 	})()]],
+	['herhaal'] = [[
+	(function(f, x) {
+		var a = x;
+		while (1) {
+			var b = f(a);
+			if (b) {
+				a = b;
+			} else {
+				break;
+			}
+		}
+		return a;
+	})($1, $2)
+	]],
 	['getContext'] = 'uit.children[0].getContext("2d")',
 	['consolelog'] = 'console.log($1)',
 }
@@ -290,6 +306,7 @@ function naarjavascript(app)
 			local a = exp[1] and exp[1].v
 			local b = exp[2] and exp[2].v
 			local c = exp[3] and exp[3].v
+			local d = exp[4] and exp[4].v
 
 			if isatoom(exp) and immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
@@ -301,6 +318,7 @@ function naarjavascript(app)
 				cmd = a and cmd:gsub('$1', assert(immsym[a] or a)) or cmd
 				cmd = b and cmd:gsub('$2', assert(immsym[b] or b)) or cmd
 				cmd = c and cmd:gsub('$3', assert(immsym[c] or c)) or cmd
+				cmd = d and cmd:gsub('$4', assert(immsym[d] or d)) or cmd
 				cmd = cmd:gsub('$TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
 				cmd = cmd:gsub('$ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
 				cmd:gmatch('%$', function(n) error('onbekende var: '..tostring(n)) end)

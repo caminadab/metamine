@@ -1,0 +1,36 @@
+; PONG 2019
+
+; speler posities
+y1 := 5-h/2 ; ypos rechts
+y2 := 5-h/2 ; ypos links
+w = 1 ; breedte
+h = 3 ; hoogte
+xmin = 0
+xmax = 17.777 - w
+ymax = 10 - h
+
+; bal
+balx := 17.777 / 2
+baly := 5
+balvx := -0.1
+
+als 2 > 1 dan
+	balx := balx' + balvx
+eind
+
+
+; toetsenbord rechts
+als toetsOmhoog en y1' < ymax dan y1 := y1' + 0.2 eind
+als toetsOmlaag en y1' > 0    dan y1 := y1' - 0.2 eind
+
+; toetsenbord links
+als toetsW en y2' < ymax dan y2 := y2' + 0.2 eind
+als toetsS en y2' > 0    dan y2 := y2' - 0.2 eind
+
+; sprites
+links = rechthoek(xmax, y1, 1, 3)
+rechts = rechthoek(xmin, y2, 1, 3)
+bal = cirkel(balx, baly, 1)
+
+; canvas
+uit = canvas [ links, rechts, bal ]

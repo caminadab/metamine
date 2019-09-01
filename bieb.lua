@@ -48,6 +48,8 @@ function bieb()
 	clearCanvas = function () error('niet beschikbaar') end;
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
+	label = function() error('niet beschikbaar') end;
+	rechthoek = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
 	muisKlik = true,
 	muisKlikBegin = true,
