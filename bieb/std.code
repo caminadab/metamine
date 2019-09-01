@@ -33,7 +33,7 @@ sincos :  getal → (getal, getal)
 (+) :  (int, int) → int
 (-) :  (getal, getal) → getal
 (-) :  getal → getal
-(*) :  (getal, getal) → getal
+(·) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
 (/) :  (int, int) → getal
 ;(^) :  (getal, getal) → getal

@@ -1,6 +1,7 @@
 linux: .taal.yy.c lua.c .lex.yy.c
 	mkdir -p bin
 	gcc -Wall -Wno-unused -std=c11 -shared -I/usr/include/lua5.1 -o bin/ontleed.so -fPIC lua.c .taal.yy.c .lex.yy.c -Wno-multichar
+	ln -sf bin/ontleed.so .
 
 test: test.c .taal.yy.h .taal.yy.c .lex.yy.h .lex.yy.c
 	mkdir -p bin

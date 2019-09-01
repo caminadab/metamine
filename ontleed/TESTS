@@ -1,0 +1,89 @@
+; BASIS
+a = 3
+⋀(=(a 3))
+
+a = 3
+b = 2
+⋀(=(a 3) =(b 2))
+
+a =;-commentaar -;3
+⋀(=(a 3))
+
+; ARITH
+a = 2 + 3
+⋀(=(a +(2 3)))
+
+a = 2 - 3 · 7 + 4
+⋀(=(a +(-(2 ·(3 7)) 4)))
+
+a = - (1 / 0)
+⋀(=(a -(/(1 0))))
+
+a = b² + 2
+⋀(=(a +(^(b 2) 2)))
+
+a = sin 3 + 8
+⋀(=(a +(sin(3) 8)))
+
+; FUNC
+f = x → y
+⋀(=(f →(x y)))
+
+f = x → x / 2
+⋀(=(f →(x /(x 2))))
+
+f = a,b,c → x,y,z
+⋀(=(f →(,(,(a b) c) ,(,(x y) z))))
+
+f = x → x + 1
+g = a,b → c+1,2
+⋀(=(f →(x +(x 1))) =(g →(,(a b) ,(+(c 1) 2))))
+
+f = g ∘ h⁻¹
+⋀(=(f ∘(g ^(h -1))))
+
+; ALS - DAN
+als a dan b eind
+⋀(⇒(a b))
+
+als a dan b anders c eind
+⋀(⇒(a b c))
+
+als a dan
+	b
+eind
+⋀(⇒(a ⋀(b)))
+
+als a dan
+	b
+anders
+	c
+eind
+⋀(⇒(a ⋀(b) ⋀(c)))
+
+als a dan
+	b
+andersals c dan
+	d
+eind
+⋀(⇒(a ⋀(b) c ⋀(d)))
+
+als a dan
+	b
+andersals c dan
+	d
+anders
+	e
+eind
+⋀(⇒(a ⋀(b) c ⋀(d) ⋀(e)))
+
+als a dan
+	b
+andersals c dan
+	d
+andersals e dan
+	f
+anders
+	g
+eind
+⋀(⇒(a ⋀(b) c ⋀(d) e ⋀(f) ⋀(g)))

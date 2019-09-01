@@ -5,6 +5,7 @@
 #include "loc.h"
 #include ".taal.yy.h"
 #include ".lex.yy.h"
+#define LREG LUA_REGISTRYINDEX
 
 /*
 	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int maxfouten, void* scanner, const char* yymsg) {
@@ -29,6 +30,116 @@ void lua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_pushinteger(L, loc.last_line + 1); lua_setfield(L, -2, "y2");
 	lua_pushinteger(L, loc.last_column + 1 - 1); lua_setfield(L, -2, "x2");
 	lua_pushstring(L, loc.file); lua_setfield(L, -2, "bron");
+}
+
+int xlua_pushatoom(lua_State* L, char* text) {
+	// =  { v = $1 }
+	lua_createtable(L, 0, 1);
+		lua_pushstring(L, text);
+			lua_setfield(L, -2, "v");
+	return 1;
+}
+
+int xlua_refatoom(lua_State* L, char* text) {
+	// =  { v = $1 }
+	lua_createtable(L, 0, 1);
+		lua_pushstring(L, text);
+			lua_setfield(L, -2, "v");
+	int ref = luaL_ref(L, LREG);
+	return ref;
+}
+
+int xlua_reffn1(lua_State* L, int fid, int aid) {
+	int ref = 0;
+	lua_createtable(L, 0, 1);
+	{
+		lua_rawgeti(L, LREG, fid);
+		{
+			lua_setfield(L, -2, "f");
+		}
+		lua_rawgeti(L, LREG, aid);
+		{
+			lua_rawseti(L, -2, 1);
+		}
+		ref = luaL_ref(L, LREG);
+	}
+	return ref;
+}
+
+int xlua_reffn2(lua_State* L, int fid, int aid, int bid) {
+	int ref = 0;
+	lua_createtable(L, 0, 1);
+	{
+		//lua_pushstring(L, text);
+		lua_rawgeti(L, LREG, fid);
+			lua_setfield(L, -2, "f");
+		lua_rawgeti(L, LREG, aid);
+			lua_rawseti(L, -2, 1);
+		lua_rawgeti(L, LREG, bid);
+			lua_rawseti(L, -2, 2);
+		ref = luaL_ref(L, LREG);
+	}
+	return ref;
+}
+
+int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid) {
+	int ref = 0;
+	lua_createtable(L, 0, 1);
+	{
+		//lua_pushstring(L, text);
+		lua_rawgeti(L, LREG, fid);
+			lua_setfield(L, -2, "f");
+		lua_rawgeti(L, LREG, aid);
+			lua_rawseti(L, -2, 1);
+		lua_rawgeti(L, LREG, bid);
+			lua_rawseti(L, -2, 2);
+		lua_rawgeti(L, LREG, cid);
+			lua_rawseti(L, -2, 3);
+		ref = luaL_ref(L, LREG);
+	}
+	return ref;
+}
+
+int xlua_reffn4(lua_State* L, int fid, int aid, int bid, int cid, int did) {
+	int ref = 0;
+	lua_createtable(L, 0, 1);
+	{
+		//lua_pushstring(L, text);
+		lua_rawgeti(L, LREG, fid);
+			lua_setfield(L, -2, "f");
+		lua_rawgeti(L, LREG, aid);
+			lua_rawseti(L, -2, 1);
+		lua_rawgeti(L, LREG, bid);
+			lua_rawseti(L, -2, 2);
+		lua_rawgeti(L, LREG, cid);
+			lua_rawseti(L, -2, 3);
+		lua_rawgeti(L, LREG, did);
+			lua_rawseti(L, -2, 4);
+		ref = luaL_ref(L, LREG);
+	}
+	return ref;
+}
+
+int xlua_reffn5(lua_State* L, int fid, int aid, int bid, int cid, int did, int eid) {
+	int ref = 0;
+	lua_createtable(L, 0, 1);
+	{
+		//lua_pushstring(L, text);
+		lua_rawgeti(L, LREG, fid);
+			lua_setfield(L, -2, "f");
+		lua_rawgeti(L, LREG, aid);
+			lua_rawseti(L, -2, 1);
+		lua_rawgeti(L, LREG, bid);
+			lua_rawseti(L, -2, 2);
+		lua_rawgeti(L, LREG, cid);
+			lua_rawseti(L, -2, 3);
+		lua_rawgeti(L, LREG, did);
+			lua_rawseti(L, -2, 4);
+		lua_rawgeti(L, LREG, eid);
+			lua_rawseti(L, -2, 5);
+		ref = luaL_ref(L, LREG);
+	}
+	return ref;
 }
 
 /*
@@ -80,8 +191,11 @@ int lua_code(lua_State* L) {
 	return 1;
 }
 
+lua_State* GL;
+
 // ontleed(code [, bron])
 int lua_ontleed(lua_State* L) {
+	GL = L;
 	// voeg '\n' aan het einde toe
 	luaL_checkstring(L, 1);
 	lua_pushvalue(L, 1);
@@ -101,11 +215,17 @@ int lua_ontleed(lua_State* L) {
 	yylex_init(&scanner);
 	yy_scan_string(code, scanner);
 
-	yyparse(L, scanner);
+	int ref;
+	int ok = yyparse(L, &ref, scanner);
+	lua_rawgeti(L, LREG, ref);
+	//luaL_unref(L, LREG, wortel);
 	yylex_destroy(scanner);
+
 
 	// file fixen
 	//setfile(wortel, file);
+
+	lua_createtable(L, 0, 0);
 
 	// fouten pushen
 	/*lua_createtable(L, numfouten, 0);
@@ -131,7 +251,7 @@ int lua_ontleed(lua_State* L) {
 	return 2;
 }
 
-int yyerror(YYLTYPE* loc, lua_State* L, void* scanner, const char* yymsg) {
+int yyerror(YYLTYPE* loc, lua_State* L, int* ref, void* scanner, const char* yymsg) {
 	puts(yymsg);
 	return 0;
 }
@@ -146,7 +266,8 @@ int lua_ontleedexp(lua_State* L) {
 	yylex_init(&scanner);
 	yy_scan_string(str, scanner);
 
-	yyparse(L, scanner);
+	int ref;
+	yyparse(L, &ref, scanner);
 	yylex_destroy(scanner);
 
 	// file fixen

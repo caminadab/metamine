@@ -155,7 +155,7 @@ if opt.s or opt.syntaxis then
 end
 
 local codes = {}
-local asb = {fn=X'EN'}
+local asb = {fn=X'⋀'}
 
 if verbozeBroncode then
 	print('=== BRONCODE ===')

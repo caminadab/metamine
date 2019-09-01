@@ -1,3 +1,4 @@
+#pragma once
 #define YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE  
 {  
