@@ -44,25 +44,25 @@
 %token EIND "eind"
 %token NIN "!:"
 %token SOM "som"
-%token IMPLICEERT "=>"
-%token TO "->"
-%token MAPLET "-->"
-%token ISN "!="
-%token CAT "||"
+%token IMPLICEERT "⇒"
+%token TO "→"
+%token MAPLET "↦"
+%token ISN "≠"
+%token CAT "‖"
 %token ICAT "::"
 %token TIL ".."
-%token CART "xx"
+%token CART "×"
 %token END 0 "end of file"
 %token NEG '-'
-%token GDGA ">="
-%token ISB "~="
-%token KDGA "<="
+%token GDGA "≥"
+%token ISB "≈"
+%token KDGA "≤"
 %token OUD '\''
 %token TAB '\t' "tab"
-%token UNIE "unie"
-%token INTERSECTIE "intersectie"
-%token UNIEE "UNIE"
-%token INTERSECTIEE "INTERSECTIE"
+%token UNIE "∪"
+%token INTERSECTIE "∩"
+%token UNIEE "⋃"
+%token INTERSECTIEE "⋂"
 
 %token ASS ":="
 %token CATASS "||="
@@ -71,30 +71,30 @@
 %token MAALASS "*="
 %token DEELASS "/="
 
-%token EN "en"
-%token OF "of"
-%token ENN "EN"
-%token OFN "OF"
-%token NIET "niet"
-%token JOKER "_"
+%token EN "∧"
+%token OF "∨"
+%token ENN "⋀"
+%token OFN "⋁"
+%token NIET "¬"
+%token JOKER "★"
 %token EXOF "exof"
 %token NOCH "noch"
 
 /* %precedence NAAM TEKST */
 %left ALS DAN ANDERS
-%left "=>"
+%left "⇒"
 %left SOM INTERSECTIEE UNIEE
 %left EN OF EXOF NOCH NIET
-%left '=' "!=" "~="
+%left '=' "≠" "≈"
 %left ":=" "*=" "/=" "+=" "-=" "|=" "&=" "||="
 %left '@'
 %left ':' "!:"
-%left "->" "-->"
+%left "→" "↦"
 %left ','
-%left '<' '>' "<=" ">="
+%left '<' '>' "≤" "≥"
 %left '&' '|'
-%left "||" "::"
-%left "xx" UNIE INTERSECTIE
+%left "‖" "::"
+%left "×" UNIE INTERSECTIE
 %left ".."
 %left '+' '-'
 %nonassoc CALL
@@ -187,26 +187,26 @@ single:
 | '(' UNIE ')'     		{ $$ = A("unie"); }
 | '(' INTERSECTIE ')' { $$ = A("intersectie"); }
 
-| '(' "->" ')'				{ $$ = A("->"); }
-| '(' "-->" ')'				{ $$ = A("-->"); }
-| '(' "||" ')'				{ $$ = A("||"); }
+| '(' "→" ')'				{ $$ = A("->"); }
+| '(' "↦" ')'				{ $$ = A("-->"); }
+| '(' "‖" ')'				{ $$ = A("||"); }
 | '(' "::" ')'				{ $$ = A("::"); }
 | '(' ".." ')'				{ $$ = A(".."); }
-| '(' "xx" ')'				{ $$ = A("xx"); }
-| '(' "=>" ')'				{ $$ = A("=>"); }
+| '(' "×" ')'				{ $$ = A("xx"); }
+| '(' "⇒" ')'				{ $$ = A("=>"); }
 
 | '(' '='	')'					{ $$ = A("="); }
-| '(' "!=" ')'				{ $$ = A("!="); }
-| '(' "~=" ')'				{ $$ = A("~="); }
+| '(' "≠" ')'				{ $$ = A("!="); }
+| '(' "≈" ')'				{ $$ = A("~="); }
 | '(' '>' ')'					{ $$ = A(">"); }
 | '(' '<' ')'					{ $$ = A("<"); }
-| '(' ">=" ')'				{ $$ = A(">="); }
-| '(' "<=" ')'				{ $$ = A("<="); }
+| '(' "≥" ')'				{ $$ = A(">="); }
+| '(' "≤" ')'				{ $$ = A("<="); }
 
-| '(' "en" ')'				{ $$ = A("en"); }
-| '(' "of" ')'				{ $$ = A("of"); }
-| '(' "EN" ')'				{ $$ = A("EN"); }
-| '(' "OF" ')'				{ $$ = A("OF"); }
+| '(' "∧" ')'				{ $$ = A("en"); }
+| '(' "∨" ')'				{ $$ = A("of"); }
+| '(' "⋀" ')'				{ $$ = A("EN"); }
+| '(' "⋁" ')'				{ $$ = A("OF"); }
 | '(' '&' ')'					{ $$ = A("&"); }
 | '(' '|' ')'					{ $$ = A("|"); }
 | '(' '#' ')'       	{ $$ = A("#"); }
@@ -262,25 +262,25 @@ exp:
 | SOM exp			       	{ $$ = fn2loc(aloc("som", @1), $2, @$); }
 | UNIEE exp			     	{ $$ = fn2loc(aloc("UU", @1), $2, @$); }
 | INTERSECTIEE exp	 	{ $$ = fn2loc(aloc("NN", @1), $2, @$); }
-| exp "->" exp				{ $$ = fn3loc(aloc("->", @2), $1, $3, @$); }
-| exp "-->" exp				{ $$ = fn3loc(aloc("-->", @2), $1, $3, @$); }
-| exp "||" exp				{ $$ = fn3loc(aloc("||", @2), $1, $3, @$); }
+| exp "→" exp				{ $$ = fn3loc(aloc("->", @2), $1, $3, @$); }
+| exp "↦" exp				{ $$ = fn3loc(aloc("-->", @2), $1, $3, @$); }
+| exp "‖" exp				{ $$ = fn3loc(aloc("||", @2), $1, $3, @$); }
 | exp "::" exp				{ $$ = fn3loc(aloc("::", @2), $1, $3, @$); }
 | exp ".." exp				{ $$ = fn3loc(aloc("..", @2), $1, $3, @$); }
-| exp "xx" exp				{ $$ = fn3loc(aloc("xx", @2), $1, $3, @$); }
-| exp "=>" exp				{ $$ = fn3loc(aloc("=>", @2), $1, $3, @$); }
+| exp "×" exp				{ $$ = fn3loc(aloc("xx", @2), $1, $3, @$); }
+| exp "⇒" exp				{ $$ = fn3loc(aloc("=>", @2), $1, $3, @$); }
 
 | exp '='	exp					{ $$ = fn3loc(aloc("=", @2), $1, $3, @$); }
-| exp "!=" exp				{ $$ = fn3loc(aloc("!=", @2), $1, $3, @$); }
-| exp "~=" exp				{ $$ = fn3loc(aloc("~=", @2), $1, $3, @$); }
+| exp "≠" exp				{ $$ = fn3loc(aloc("!=", @2), $1, $3, @$); }
+| exp "≈" exp				{ $$ = fn3loc(aloc("~=", @2), $1, $3, @$); }
 | exp '<' exp '<' exp		{ $$ = fn3loc(aloc("en", @2), fn3loc(aloc("<", @2), $1, $3, @$), fn3loc(aloc("<", @4), $3, $5, @$), @$); }
-| exp "<=" exp '<' exp	{ $$ = fn3loc(aloc("en", @2), fn3loc(aloc("<=", @2), $1, $3, @$), fn3loc(aloc("<", @4), $3, $5, @$), @$); }
-| exp "<=" exp "<=" exp	{ $$ = fn3loc(aloc("en", @2), fn3loc(aloc("<=", @2), $1, $3, @$), fn3loc(aloc("<=", @4), $3, $5, @$), @$); }
-| exp '<' exp "<=" exp	{ $$ = fn3loc(aloc("en", @2), fn3loc(aloc("<", @2), $1, $3, @$), fn3loc(aloc("<=", @4), $3, $5, @$), @$); }
+| exp "≤" exp '<' exp	{ $$ = fn3loc(aloc("en", @2), fn3loc(aloc("<=", @2), $1, $3, @$), fn3loc(aloc("<", @4), $3, $5, @$), @$); }
+| exp "<=" exp "≤" exp	{ $$ = fn3loc(aloc("en", @2), fn3loc(aloc("<=", @2), $1, $3, @$), fn3loc(aloc("<=", @4), $3, $5, @$), @$); }
+| exp '<' exp "≤" exp	{ $$ = fn3loc(aloc("en", @2), fn3loc(aloc("<", @2), $1, $3, @$), fn3loc(aloc("<=", @4), $3, $5, @$), @$); }
 | exp '<' exp					{ $$ = fn3loc(aloc("<", @2), $1, $3, @$); }
 | exp '>' exp					{ $$ = fn3loc(aloc(">", @2), $1, $3, @$); }
-| exp ">=" exp				{ $$ = fn3loc(aloc(">=", @2), $1, $3, @$); }
-| exp "<=" exp				{ $$ = fn3loc(aloc("<=", @2), $1, $3, @$); }
+| exp "≥" exp				{ $$ = fn3loc(aloc(">=", @2), $1, $3, @$); }
+| exp "≤" exp				{ $$ = fn3loc(aloc("<=", @2), $1, $3, @$); }
 
 | '#' exp							{ $$ = fn2loc(aloc("#", @1), $2, @$); }
 /*| exp '|' exp				{ $$ = fn3loc(aloc("|", @2), $1, $3, @$); }*/
@@ -288,7 +288,7 @@ exp:
 | exp '&' exp				{ $$ = fn3loc(aloc("&", @2), $1, $3, @$); }
 
 | exp ":=" exp				{ $$ = fn3loc(aloc(":=", @2), $1, $3, @$); }
-| exp "||=" exp				{ $$ = fn3loc(aloc("||=", @2), $1, $3, @$); }
+| exp "‖=" exp				{ $$ = fn3loc(aloc("||=", @2), $1, $3, @$); }
 | exp "*=" exp				{ $$ = fn3loc(aloc("*=", @2), $1, $3, @$); }
 | exp "/=" exp				{ $$ = fn3loc(aloc("/=", @2), $1, $3, @$); }
 | exp "+=" exp				{ $$ = fn3loc(aloc("+=", @2), $1, $3, @$); }
@@ -296,14 +296,14 @@ exp:
 | exp "|=" exp				{ $$ = fn3loc(aloc("|=", @2), $1, $3, @$); }
 | exp "&=" exp				{ $$ = fn3loc(aloc("&=", @2), $1, $3, @$); }
 
-| exp "en" exp				{ $$ = fn3loc(aloc("en", @2), $1, $3, @$); }
-| exp "of" exp				{ $$ = fn3loc(aloc("of", @2), $1, $3, @$); }
+| exp "∧" exp				{ $$ = fn3loc(aloc("∧", @2), $1, $3, @$); }
+| exp "∨" exp				{ $$ = fn3loc(aloc("of", @2), $1, $3, @$); }
 | exp "xof" exp			{ $$ = fn3loc(aloc("xof", @2), $1, $3, @$); }
 | exp "noch" exp			{ $$ = fn3loc(aloc("noch", @2), $1, $3, @$); }
-| "niet" exp					{ $$ = fn2loc(aloc("!", @2), $2, @$); }
+| "¬" exp					{ $$ = fn2loc(aloc("!", @2), $2, @$); }
 
 /*| exp '.' exp       	{ $$ = fn3loc(aloc(".", @2), $1, $3, @$); }*/
-| exp '@' exp       	{ $$ = fn3loc(aloc("@", @2), $1, $3, @$); }
+| exp "∘" exp       	{ $$ = fn3loc(aloc("@", @2), $1, $3, @$); }
 | exp ':' exp       	{ $$ = fn3loc(aloc(":", @2), $1, $3, @$); }
 | exp "!:" exp       	{ $$ = fn2loc(aloc("!", @2), FN3(aloc(":", @2), $1, $3), @$); } // !(:(a b))
 

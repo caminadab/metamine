@@ -64,7 +64,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "₄"					{ *yylval = a("_4"); return I4; }
 
 "×"					{ *yylval = a("xx"); return CART; }
-"→"					{ *yylval = a("->"); return TO; }
+"→"					{ *yylval = a("→"); return TO; }
 "↦"					{ *yylval = a("-->"); return MAPLET; }
 "⇒"					{ *yylval = a("=>"); return IMPLICEERT; }
 "≈"					{ *yylval = a("~="); return ISB; }
