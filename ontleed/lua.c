@@ -2,10 +2,9 @@
 #include <lauxlib.h>
 #include <string.h>
 
-#include "node.h"
+#include "loc.h"
 #include ".taal.yy.h"
 #include ".lex.yy.h"
-#include "ontleed.h"
 
 /*
 	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int maxfouten, void* scanner, const char* yymsg) {
@@ -32,6 +31,7 @@ void lua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_pushstring(L, loc.file); lua_setfield(L, -2, "bron");
 }
 
+/*
 void lua_pushlisp(lua_State* L, node* node) {
 	// waarde
 	lua_newtable(L);
@@ -74,15 +74,10 @@ void lua_pushlisp(lua_State* L, node* node) {
 		lua_settable(L, -3);
 	}
 }
+*/
 
 int lua_code(lua_State* L) {
 	return 1;
-}
-
-void setfile(node* node, char* file) {
-	node->loc.file = file;
-	if (node->next) setfile(node->next, file);
-	if (node->first) setfile(node->first, file);
 }
 
 // ontleed(code [, bron])
@@ -106,23 +101,14 @@ int lua_ontleed(lua_State* L) {
 	yylex_init(&scanner);
 	yy_scan_string(code, scanner);
 
-	node* wortel;
-	int numfouten = 0;
-	struct fout fouten[100];
-
-	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, 100, scanner);
+	yyparse(L, scanner);
 	yylex_destroy(scanner);
 
 	// file fixen
-	setfile(wortel, file);
-
-	if (wortel)
-		lua_pushlisp(L, wortel);
-	else
-		lua_pushnil(L); // !!??
+	//setfile(wortel, file);
 
 	// fouten pushen
-	lua_createtable(L, numfouten, 0);
+	/*lua_createtable(L, numfouten, 0);
 	for (int i = 0; i < numfouten; i++) {
 		// index
 		lua_pushinteger(L, i+1);
@@ -141,7 +127,13 @@ int lua_ontleed(lua_State* L) {
 		}
 		lua_settable(L, -3);
 	}
+	*/
 	return 2;
+}
+
+int yyerror(YYLTYPE* loc, lua_State* L, void* scanner, const char* yymsg) {
+	puts(yymsg);
+	return 0;
 }
 
 int lua_ontleedexp(lua_State* L) {
@@ -154,21 +146,11 @@ int lua_ontleedexp(lua_State* L) {
 	yylex_init(&scanner);
 	yy_scan_string(str, scanner);
 
-	node* wortel;
-	struct fout fouten[100];
-	int numfouten = 0;
-
-	yyparse((void**)&wortel, (void*)&fouten, (void*)&numfouten, 100, scanner);
-	wortel = wortel->first->next;
+	yyparse(L, scanner);
 	yylex_destroy(scanner);
 
 	// file fixen
-	setfile(wortel, "<EXP>");
-
-	if (wortel)
-		lua_pushlisp(L, wortel);
-	else
-		lua_pushnil(L); // !!??
+	//setfile(wortel, "<EXP>");
 	return 1;
 }
 
