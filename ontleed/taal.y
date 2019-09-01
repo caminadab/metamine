@@ -20,7 +20,7 @@
 
 	#include "ontleed.h"
 	#include "node.h"
-	#include "lex.yy.h"
+	#include ".lex.yy.h"
 
 	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int maxfouten, void* scanner, const char* yymsg);
 
