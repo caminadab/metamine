@@ -1,10 +1,5 @@
-; html = (uit/tijd)(moment)
-succ = xy → xy + 1
-
 ververs = moment → regMuis(setInnerHtml(uit))
 app = requestAnimationFrame(ververs)
-
-;cirkel = (x,y,r) → canvasArc(
 
 ;-
 ;app = (requestAnimationFrame(ververs) ⇒ el )

@@ -170,6 +170,9 @@ for i,bron in ipairs(bronnen) do
 	--codes[bron] = code
 
 	local sub,fouten = ontleed(code, bron)
+	print('BEGIN')
+	print(code)
+	print('EINDE')
 	for i,fout in ipairs(fouten) do
 		print(fout2ansi(fout))
 	end

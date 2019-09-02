@@ -80,7 +80,6 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 "]"		{ *yylval = A(GL, "]"); return ']'; }
 "{"		{ *yylval = A(GL, "{"); return '{'; }
 "}"		{ *yylval = A(GL, "}"); return '}'; }
-"★"		{ *yylval = A(GL, "+"); return '+'; }
 "⋀"		{ *yylval = A(GL, "⋀"); return ENN; }
 "∧"		{ *yylval = A(GL, "∧"); return EN; }
 "en"	{ *yylval = A(GL, "∧"); return EN; }
@@ -104,10 +103,9 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 "≤"		{ *yylval = A(GL, "≤"); return KDGA; }
 "<"		{ *yylval = A(GL, "<"); return '<'; }
 "!"		{ *yylval = A(GL, "!"); return '!'; }
-"!"		{ *yylval = A(GL, "!"); return '!'; }
 "Σ"		{ *yylval = A(GL, "Σ"); return SOM; }
+"⇒"		{ *yylval = A(GL, "⇒"); return IMPLICEERT; }
 
-":="		{ *yylval = A(GL, ":="); return ASS; }
 ":="		{ *yylval = A(GL, ":="); return ASS; }
 
 \n		{ return NEWLINE; }
@@ -152,6 +150,6 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 	return NAAM;
 }
 
-.			{ printf("FOUT! %s %d %u\n", yytext, strlen(yytext), (yytext[0]+255)%256); return FOUT; }
+.			{ *yylval = A(GL, yytext); return NAAM; }
 
 %%

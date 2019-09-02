@@ -66,9 +66,9 @@ local immjs = {
 	['-'] = '$1 - $2',
 	['-i'] = '$1 - $2',
 	['-d'] = '$1 - $2',
-	['*'] = '$1 * $2',
-	['*i'] = '$1 * $2',
-	['*d'] = '$1 * $2',
+	['·'] = '$1 * $2',
+	['·i'] = '$1 * $2',
+	['·d'] = '$1 * $2',
 	['/'] = '$1 / $2',
 	['/i'] = '$1 / $2',
 	['/d'] = '$1 / $2',
@@ -84,16 +84,16 @@ local immjs = {
 
 	-- cmp
 	['>'] = '$1 > $2',
-	['>='] = '$1 >= $2',
+	['≥'] = '$1 >= $2',
 	['='] = '$1 === $2',
-	['!='] = '$1 !=== $2',
-	['<='] = '$1 <= $2',
+	['≠'] = '$1 !=== $2',
+	['≤'] = '$1 <= $2',
 	['<'] = '$1 < $2',
 
 	-- deduct
-	['en'] = '$1 && $2', 
-	['of'] = '$1 || $2', 
-	['=>'] = '$1 ? $2 : $3', 
+	['∧'] = '$1 && $2', 
+	['∨'] = '$1 || $2', 
+	['⇒'] = '$1 ? $2 : $3', 
 
 	-- trig
 	['sin'] = 'Math.sin($1)',
@@ -114,29 +114,30 @@ local immjs = {
 
 	-- exp
 	['log10'] = 'Math.log($1, 10)',
-	['||'] = '$1.concat($2)',
-	['||u'] = '$1 + $2',
+	['‖'] = '$1.concat($2)',
+	['‖u'] = '$1 + $2',
 	['cat'] = '$1.join($2)', -- TODO werkt dit?
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
 	['catu'] = '$1.join($2)',
 
 	-- lijst
 	['#'] = '$1.length',
-	['som'] = '$1.reduce((a,b) => a + b, 0)',
+	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $2 - 1 - i))',
 	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
-	['_'] = '$1[$2]',
+	['_2'] = 'Array.isArray($1) ? $1[$2] : $1($2)',
+	['_'] = '$1($2)',
 	['_u'] = '$1[$2]',
 	['call'] = '$1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
-	['xx'] = '$1.map(x => $2.map(y => [x, y]))',
+	['×'] = '$1.map(x => $2.map(y => [x, y]))',
 
 	-- func
 	['map'] = '$1.map($2)',
 	['filter'] = '$1.filter($2)',
 	['reduceer'] = '$1.reduce($2)',
-	['@'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
+	['∘'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
 	[','] = '[ARGS]',
 
 	['var'] = [[ (function(varindex, ass) {
@@ -155,9 +156,79 @@ local immjs = {
 	['prevvar'] = 'vars[$1]',
 	
 	-- LIB
+	['getContext'] = 'uit.children[0].getContext("2d")',
+	['consolelog'] = 'console.log($1)',
+}
 
+local immsym = {
 	-- muis
-	['regMuis'] = [[(function(x)
+	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); }',
+	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = '(function(x,y,z) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(z, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
+	['lijn'] = [[
+	(function(x1,y1,x2,y2) {return (function(c){
+		x1 = x1 * 72;
+		y1 = 720 - y1 * 72;
+		x2 = x2 * 72;
+		y2 = 720 - y2 * 72;
+		c.lineWidth = 4;
+		c.strokeStyle = "white";
+		c.beginPath();
+		c.moveTo(x1,y1);
+		c.lineTo(x2,y2);
+		c.stroke();
+		return c;});
+	})]],
+	['tekst'] = '(function(t) {return Array.isArray(t) ? t.toSource() : t.toString();})',
+	['clearCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
+	['setInnerHtml'] = [[(function (a) {
+		var t = Array.isArray(a) ? a.toSource() : a.toString();
+		if (html != t) {
+			uit.innerHTML = t;
+			html = t;
+		}
+		return uit.children[0];
+	})]],
+	['requestAnimationFrame'] = [[(function f(t) {
+		if (stop) {stop = false; uit.innerHTML = ''; return; };
+		if (!isFinite(t))
+			_G = t;
+		_G();
+		mouseLeftPressed = false;
+		mouseLeftReleased = false;
+		keySpacePressed = false;
+		keySpaceReleased = false;
+		mouseMoving = false;
+		requestAnimationFrame(f);
+		return true;
+	})]],
+	['herhaal'] = [[
+	(function(f, x) {
+		var a = x;
+		while (1) {
+			var b = f(a);
+			if (b) {
+				a = b;
+			} else {
+				break;
+			}
+		}
+		return a;
+	})
+	]],
+
+	['_arg0'] = '_arg0',
+	['_arg1'] = '_arg1',
+	['_arg2'] = '_arg2',
+	['_arg3'] = '_arg3',
+	['_arg4'] = '_arg4',
+	looptijd = '(new Date().getTime() - start)/1000', 
+	sin = 'Math.sin',
+	cos = 'Math.cos',
+	tan = 'Math.tan',
+	niets = 'null',
+	regMuis = [[(function(x)
 		{
 			init = false;
 
@@ -214,78 +285,11 @@ local immjs = {
 
 			return uit;
 		}
-	)($1)]],
-	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
-	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3,$4)',
-	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })($1,$2,$3)',
-	['label'] = '(function(x,y,z) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(z, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })($1,$2,$3)',
-	['lijn'] = [[
-	(function(x1,y1,x2,y2) {return (function(c){
-		x1 = x1 * 72;
-		y1 = 720 - y1 * 72;
-		x2 = x2 * 72;
-		y2 = 720 - y2 * 72;
-		c.lineWidth = 4;
-		c.strokeStyle = "white";
-		c.beginPath();
-		c.moveTo(x1,y1);
-		c.lineTo(x2,y2);
-		c.stroke();
-		return c;});
-	})($1,$2,$3,$4)]],
-	['tekst'] = 'Array.isArray($1) ? $1.toSource() : $1.toString()',
-	['clearCanvas'] = '$1.clearRect(0,0,1280,720) || $1',
-	['setInnerHtml'] = [[(function (a) {
-		var t = Array.isArray($1) ? $1.toSource() : $1.toString();
-		if (html != t) {
-			uit.innerHTML = t;
-			html = t;
-		}
-		return uit.children[0];
-	})($1)]],
-	['requestAnimationFrame'] = [[(function f(t) {
-		if (stop) {stop = false; uit.innerHTML = ''; return; }; var r = $1(t);
-		mouseLeftPressed = false;
-		mouseLeftReleased = false;
-		keySpacePressed = false;
-		keySpaceReleased = false;
-		mouseMoving = false;
-		requestAnimationFrame(f);
-		return true;
-	})()]],
-	['herhaal'] = [[
-	(function(f, x) {
-		var a = x;
-		while (1) {
-			var b = f(a);
-			if (b) {
-				a = b;
-			} else {
-				break;
-			}
-		}
-		return a;
-	})($1, $2)
-	]],
-	['getContext'] = 'uit.children[0].getContext("2d")',
-	['consolelog'] = 'console.log($1)',
-}
-
-local immsym = {
-	['_arg0'] = '_arg0',
-	['_arg1'] = '_arg1',
-	['_arg2'] = '_arg2',
-	['_arg3'] = '_arg3',
-	['_arg4'] = '_arg4',
-	looptijd = '(new Date().getTime() - start)/1000', 
-	sin = 'Math.sin',
-	cos = 'Math.cos',
-	tan = 'Math.tan',
-	niets = 'null',
+	)]],
 	ja = 'true',
 	nee = 'false',
-	tau = '(Math.PI * 2)',
-	pi = 'Math.PI',
+	['τi'] = 'Math.PI * 2',
+	['pi'] = 'Math.PI',
 	init = 'init',
 	['muisX'] = 'mouseX',
 	['muisY'] = 'mouseY',

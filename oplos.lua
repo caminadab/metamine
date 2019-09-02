@@ -106,7 +106,7 @@ function oplos(exp,voor)
 			val = val.v
 			-- functie argumenten
 			--if args[val] then return true end
-			--if val.f == '->' then args[val[1]] = true end
+			--if val.f == '→' then args[val[1]] = true end
 			if type(val) == 'string' and val:sub(1,1) == '_' then -- TODO
 				return true
 			end
@@ -144,7 +144,7 @@ function oplos(exp,voor)
 		if true then
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
-				if isfn(exp) and fn(exp) ~= '->' and exp[1] and fn(exp[1]) == ',' then
+				if isfn(exp) and fn(exp) ~= '→' and exp[1] and fn(exp[1]) == ',' then
 					for i,v in ipairs(exp[1]) do
 						exp[i] = v
 					end
@@ -321,7 +321,7 @@ function oplos(exp,voor)
 				local vrij = var(eq[1])
 				for naam in pairs(vrij) do
 					if bevat(eq[2], naam) then
-						eq[1],eq[2] = eq[1].f, {f=X'->', eq[1][1], eq[2]}
+						eq[1],eq[2] = eq[1].f, {f=X'→', eq[1][1], eq[2]}
 						--print('HERSCHRIJF', exp2string(eq))
 						break
 					end
@@ -453,7 +453,7 @@ function oplos(exp,voor)
 						b = substitueerzuinig(b, node, oude, maakvar)
 						node.f = nil
 						node.v = a.v
-						eqn = X('=', a, X(X('herhaal', X('->', oude, b)), 'niets'))
+						eqn = X('=', a, X(X('herhaal', X('→', oude, b)), 'niets'))
 						oud[eq] = true
 						nieuw[eqn] = true
 					end
@@ -496,7 +496,7 @@ function oplos(exp,voor)
 			for lam in punten(eq) do
 
 				-- 
-				if fn(lam) == '->' then
+				if fn(lam) == '→' then
 					local inn,uit = lam[1],lam[2]
 					local params
 					if fn(inn) == ',' then
@@ -534,7 +534,7 @@ function oplos(exp,voor)
 		for eq in pairs(nieuw) do eqs[eq] = true end
 
 		-- los vergelijkingen op
-		-- -> multimap = lijst(:=(A,B))
+		-- → multimap = lijst(:=(A,B))
 		local subst = {}
 		for eq in pairs(eqs) do
 			if isfn(eq) and eq.f.v == [[=]] then
@@ -697,7 +697,7 @@ function oplos(exp,voor)
 					-- (f x) = g
 					if not isinvoer(fx.f) and not isinvoer(fx[1]) and bevat(val, fx[1]) then
 						eq[1] = fx.f
-						eq[2] = toexp {f='->', fx[1], val}
+						eq[2] = toexp {f='→', fx[1], val}
 					end
 				end
 			end

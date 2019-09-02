@@ -3,27 +3,12 @@
 #include <string.h>
 
 #include "loc.h"
+#include "lua.h"
 #include ".taal.yy.h"
 #include ".lex.yy.h"
 #define LREG LUA_REGISTRYINDEX
 
-/*
-	int yyerror(YYLTYPE* loc, void** root, struct fout* fouten, int* numfouten, int maxfouten, void* scanner, const char* yymsg) {
-		if (*numfouten <= MAXFOUTEN) {
-			struct fout* fout = &fouten[*numfouten];
-			fout->loc = *loc; // loc
-			if (*numfouten < MAXFOUTEN)
-				strcpy(fout->msg, yymsg); //msg
-			else
-				strcpy(fout->msg, "teveel syntaxfouten");
-			*numfouten += 1;
-		}
-
-	return 0;
-}
-*/
-
-void lua_pushloc(lua_State* L, YYLTYPE loc) {
+void xlua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_createtable(L, 0, 5);
 	lua_pushinteger(L, loc.first_line + 1); lua_setfield(L, -2, "y1");
 	lua_pushinteger(L, loc.first_column + 1); lua_setfield(L, -2, "x1");
@@ -54,8 +39,8 @@ int xlua_append(lua_State* L, int lijst, int el) {
 	lua_rawgeti(L, LREG, lijst);
 		int len = lua_objlen(L, -1);
 		lua_rawgeti(L, LREG, el);
-		lua_rawseti(L, -2, len + 1);
-	lua_pop(L, 1);
+			lua_rawseti(L, -2, len + 1);
+		lua_pop(L, 1);
 	return lijst;
 }
 
@@ -283,43 +268,30 @@ int lua_ontleed(lua_State* L) {
 	yy_scan_string(code, scanner);
 
 	int ref;
-	int ok = yyparse(L, &ref, scanner);
-	lua_rawgeti(L, LREG, ref);
-	//luaL_unref(L, LREG, wortel);
-	yylex_destroy(scanner);
-
-
-	// file fixen
-	//setfile(wortel, file);
-
 	lua_createtable(L, 0, 0);
+	int fouten = luaL_ref(L, LREG);
+	int ok = yyparse(L, &ref, &fouten, scanner);
 
-	// fouten pushen
-	/*lua_createtable(L, numfouten, 0);
-	for (int i = 0; i < numfouten; i++) {
-		// index
-		lua_pushinteger(L, i+1);
-		// fout
-		lua_createtable(L, 0, 3);
-		{
-			// type
-			lua_pushstring(L, "syntax");
-			lua_setfield(L, -2, "type");
-			// fmt
-			lua_pushstring(L, fouten[i].msg);
-			lua_setfield(L, -2, "fmt");
-			// loc
-			lua_pushloc(L, fouten[i].loc);
-			lua_setfield(L, -2, "loc");
-		}
-		lua_settable(L, -3);
-	}
-	*/
+	lua_rawgeti(L, LREG, ref);
+	lua_rawgeti(L, LREG, fouten);
+
+	//yylex_destroy(scanner);
+
 	return 2;
 }
 
-int yyerror(YYLTYPE* loc, lua_State* L, int* ref, void* scanner, const char* yymsg) {
-	puts(yymsg);
+int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg) {
+
+	lua_createtable(L, 0, 2);
+		lua_pushliteral(L, "syntax");
+			lua_setfield(L, -2, "type");
+		xlua_pushloc(L, *loc);
+			lua_setfield(L, -2, "loc");
+		lua_pushstring(L, yymsg);
+			lua_setfield(L, -2, "fmt");
+		int fout = luaL_ref(L, LREG);
+	xlua_append(L, *fouten, fout);
+
 	return 0;
 }
 
@@ -334,14 +306,15 @@ int lua_ontleedexp(lua_State* L) {
 	yy_scan_string(str, scanner);
 
 	int ref;
-	yyparse(L, &ref, scanner);
+	lua_createtable(L, 0, 1);
+	int fouten = luaL_ref(L, LREG);
+	yyparse(L, &ref, &fouten, scanner);
 	lua_rawgeti(L, LREG, ref);
-	yylex_destroy(scanner);
+		lua_rawgeti(L, -1, 1);
+			lua_rawgeti(L, LREG, fouten);
+			yylex_destroy(scanner);
 
-	// file fixen
-	//setfile(wortel, "<EXP>");
-	lua_rawgeti(L, -1, 1);
-	return 1;
+			return 2;
 }
 
 #ifdef _WIN32 //defined(_MSC_VER)

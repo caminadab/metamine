@@ -9,6 +9,7 @@
 %lex-param {void* scanner}
 %parse-param {void* L}
 %parse-param {int* ref}
+%parse-param {int* fouten}
 %parse-param {void* scanner}
 
 %{
@@ -25,7 +26,7 @@
 	#define LREG LUA_REGISTRYINDEX
 	typedef struct lua_State lua_State;
 
-	int yyerror(YYLTYPE* loc, lua_State* L, int* ref, void* scanner, const char* yymsg);
+	int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg);
 	int plus(int a, int b) { return a + b; }
 
 	#define A xlua_refatoom
@@ -86,7 +87,6 @@
 %token OF "∨"
 %token ENN "⋀"
 %token OFF "⋁"
-%token NIET "¬"
 %token JOKER "★"
 
 /* %precedence NAAM TEKST */
@@ -241,7 +241,7 @@ op:
 | '[' | ']' | '{' | '}'
 | "→" | "‖" | ".." | "×" | "⇒"
 | '=' | "≠" | "≈" | '>' | '<' | "≥" | "≤"
-| '|' | '&' | '#'
+| '|' | '&'
 | ":=" | "+=" | "-=" | "|=" | "&="
 | "⋂" | "∩" | "∪" | "⋃"
 | "⋀" | "∧" | "∨" | "⋁" | "exof" | "noch" | "¬"
@@ -249,7 +249,7 @@ op:
 ;
 
 unop:
-	'-' | "¬" | '#'
+	"¬" | '#' | "Σ"
 ;
 
 single:
@@ -259,15 +259,11 @@ single:
 | '(' exp ')'							{ $$ = $2; }
 | '|' exp '|'							{ $$ = FN1(L, A(L,"#"), $2); }
 |	NAAM '.'								{
-	lua_createtable(L, 1, 1);
-		lua_rawgeti(L, LREG, $2);
-			lua_setfield(L, -2, "f");
-		lua_rawgeti(L, LREG, $1);
-			lua_rawseti(L, -2, 1);
-	$$ = luaL_ref(L, LREG);
+	$$ = FN1(L, $2, $1);
 }
 |	NAAM '\''								{ $$ = FN1(L, $2, $1); }
 |	'(' op ')'								{ $$ = $2; }
+|	'(' unop ')'								{ $$ = $2; }
 
 /* lijst */
 | '[' items ']'		{
