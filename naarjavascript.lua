@@ -84,16 +84,16 @@ local immjs = {
 
 	-- cmp
 	['>'] = '$1 > $2',
-	['>='] = '$1 >= $2',
+	['≥'] = '$1 >= $2',
 	['='] = '$1 === $2',
-	['!='] = '$1 !=== $2',
-	['<='] = '$1 <= $2',
+	['≠'] = '$1 !=== $2',
+	['≤'] = '$1 <= $2',
 	['<'] = '$1 < $2',
 
 	-- deduct
-	['en'] = '$1 && $2', 
-	['of'] = '$1 || $2', 
-	['=>'] = '$1 ? $2 : $3', 
+	['∧'] = '$1 && $2', 
+	['∨'] = '$1 || $2', 
+	['⇒'] = '$1 ? $2 : $3', 
 
 	-- trig
 	['sin'] = 'Math.sin($1)',
@@ -114,8 +114,8 @@ local immjs = {
 
 	-- exp
 	['log10'] = 'Math.log($1, 10)',
-	['||'] = '$1.concat($2)',
-	['||u'] = '$1 + $2',
+	['‖'] = '$1.concat($2)',
+	['‖u'] = '$1 + $2',
 	['cat'] = '$1.join($2)', -- TODO werkt dit?
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
 	['catu'] = '$1.join($2)',
@@ -126,7 +126,7 @@ local immjs = {
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $2 - 1 - i))',
 	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
-	['_'] = '$1[$2]',
+	['_'] = 'Array.isArray($1) ? $1[$2] : $1($2)',
 	['_u'] = '$1[$2]',
 	['call'] = '$1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
@@ -227,9 +227,10 @@ local immjs = {
 			html = t;
 		}
 		return uit.children[0];
-	})($1)]],
+	})]],
 	['requestAnimationFrame'] = [[(function f(t) {
-		if (stop) {stop = false; uit.innerHTML = ''; return; }; var r = $1(t);
+		if (stop) {stop = false; uit.innerHTML = ''; return; }
+		var r = t && t();
 		mouseLeftPressed = false;
 		mouseLeftReleased = false;
 		keySpacePressed = false;
