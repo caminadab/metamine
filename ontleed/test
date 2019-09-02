@@ -1,7 +1,0 @@
-#!/usr/bin/luajit
-package.path = package.path .. ';../?.lua'
-require 'ontleed'
-require 'util'
-
-a = ontleed('a == ')
-seerec(a)

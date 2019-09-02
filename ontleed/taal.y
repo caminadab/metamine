@@ -47,6 +47,7 @@
 %token EIND "end"
 %token NIN "!:"
 %token SOM "Σ"
+%token NIET "¬"
 %token KWADRAAT "²"
 %token DERDEMACHT "³"
 %token INVERTEER "⁻¹"
@@ -182,6 +183,21 @@ stat:
 }
 
 /*
+als
+	aaa
+	bbb
+dan
+	ccc
+	ddd
+eind
+*/
+
+| ALS NEWLINE block DAN NEWLINE block EIND {
+/* 1     2      3    4     5      6    7   */
+	$$ = FN2(L, A(L,"⇒"), $3, $6);
+}
+
+/*
 als A dan
 	B
 andersals C dan
@@ -306,10 +322,12 @@ exp:
 |	exp KWADRAAT						{ $$ = FN2(L, A(L,"^"), $1, A(L,"2")); }
 |	exp DERDEMACHT						{ $$ = FN2(L, A(L,"^"), $1, A(L,"3")); }
 |	exp INVERTEER						{ $$ = FN2(L, A(L,"^"), $1, A(L,"-1")); }
-|	unop exp  {
-		// op: {v="+"}
-		$$ = FN1(L, $1, $2);
-	}
+|	"¬" exp  { $$ = FN1(L, $1, $2); }
+|	"Σ" exp  { $$ = FN1(L, $1, $2); }
+|	'-' exp  %prec NEG { $$ = FN1(L, $1, $2); }
+|	'#' exp  { $$ = FN1(L, $1, $2); }
+|	exp '!' { $$ = FN1(L, $2, $1); }
+|	exp '%' { $$ = FN1(L, $2, $1); }
 
 /*
 |	exp op exp  { $$ = FN2(L, $2, $1, $3); }
@@ -346,7 +364,6 @@ exp:
 |	exp "∩" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "∪" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "⋃" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "∘" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "∘" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "→" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp ':' exp  { $$ = FN2(L, $2, $1, $3); }
