@@ -57,7 +57,7 @@
 %token ISN "≠"
 %token CAT "‖"
 %token ICAT "::"
-%token TIL ".."
+%token ITOT ".."
 %token CART "×"
 %token END 0 "end of file"
 %token NEG '-'
@@ -145,7 +145,7 @@ stats:
 		luaL_unref(L, LREG, $2);
 }
 			
-| stats error NEWLINE					{ $$ = $1; yyerrok; }
+| stats error NEWLINE				{ $$ = xlua_append(L, $1, A(L, "fout")); yyerrok; }
 ;
 
 stat:
@@ -255,6 +255,7 @@ unop:
 single:
 	NAAM
 | "ℝ"
+| "★"
 | '(' exp ')'							{ $$ = $2; }
 | '|' exp '|'							{ $$ = FN1(L, A(L,"#"), $2); }
 |	NAAM '.'								{
@@ -265,7 +266,7 @@ single:
 			lua_rawseti(L, -2, 1);
 	$$ = luaL_ref(L, LREG);
 }
-|	NAAM '\''								{ $$ = $1; }
+|	NAAM '\''								{ $$ = FN1(L, $2, $1); }
 |	'(' op ')'								{ $$ = $2; }
 
 /* lijst */
@@ -356,6 +357,7 @@ exp:
 |	exp "≥" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp '>' exp  { $$ = FN2(L, $2, $1, $3); }
 
+|	exp "‖" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "⋀" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "∧" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "∨" exp  { $$ = FN2(L, $2, $1, $3); }
@@ -367,6 +369,7 @@ exp:
 |	exp "∘" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp "→" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp ':' exp  { $$ = FN2(L, $2, $1, $3); }
+|	exp ".." exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp ',' exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp ":=" exp  { $$ = FN2(L, $2, $1, $3); }
 |	exp '=' exp  { $$ = FN2(L, $2, $1, $3); }

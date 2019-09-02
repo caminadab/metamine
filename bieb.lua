@@ -385,7 +385,7 @@ function bieb()
 		return t
 	end;
 
-	['||u'] = function(a,b)
+	['‖u'] = function(a,b)
 		return a .. b
 	end;
 

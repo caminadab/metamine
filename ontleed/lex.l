@@ -57,10 +57,12 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 ;-[^$]*-;				// negeer commentaar
 ;[^-][^\n]*\n		{ return NEWLINE; }
 
+"★"		{ *yylval = A(GL, "★"); return JOKER; }
 "¬"		{ *yylval = A(GL, "¬"); return NIET; }
 "#"		{ *yylval = A(GL, "#"); return '#'; }
 "."		{ *yylval = A(GL, "."); return '.'; }
 "→"		{ *yylval = A(GL, "→"); return TO; }
+".."	{ *yylval = A(GL, ".."); return ITOT; }
 "ℝ"		{ *yylval = A(GL, "ℝ"); return RR; }
 "∩"		{ *yylval = A(GL, "∩"); return INTERSECTIE; }
 "∪"		{ *yylval = A(GL, "∪"); return UNIE; }
@@ -146,7 +148,7 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 }
 
 \"([^"])*\" {
-	*yylval = A(GL, yytext); // tekst(a(yytext));
+	*yylval = xlua_reftekst(GL, yytext); // tekst(a(yytext));
 	return NAAM;
 }
 

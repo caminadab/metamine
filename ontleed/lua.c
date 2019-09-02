@@ -32,6 +32,64 @@ void lua_pushloc(lua_State* L, YYLTYPE loc) {
 	lua_pushstring(L, loc.file); lua_setfield(L, -2, "bron");
 }
 
+int utf8len(char* a) {
+	if ((*a & 0x80) == 0x00) return 1;
+	if ((*a & 0xE0) == 0xC0) return 2;
+	if ((*a & 0xF0) == 0xE0) return 3;
+	if ((*a & 0xF8) == 0xF0) return 4;
+	return -1;
+}
+
+int utf8cp(char* a) {
+	int l = utf8len(a);
+	if (l == 1) return a[0] & 0x7F;
+	if (l == 2) return ((a[0] & 0x1F) << 6) | (a[1] & 0x3F);
+	if (l == 3) return ((a[0] & 0x0F) << 12) | ((a[1] & 0x3F) << 6) | (a[2] & 0x3F);
+	if (l == 4) return ((a[0] & 0x07) << 18) | ((a[1] & 0x3F) << 12) | ((a[2] & 0x3F) << 6) | (a[2] & 0x3F);
+	return -1;
+}
+
+int xlua_append(lua_State* L, int lijst, int el) {
+	// =  { v = $1 }
+	lua_rawgeti(L, LREG, lijst);
+		int len = lua_objlen(L, -1);
+		lua_rawgeti(L, LREG, el);
+		lua_rawseti(L, -2, len + 1);
+	lua_pop(L, 1);
+	return lijst;
+}
+
+int xlua_reftekst(lua_State* L, char* str) {
+	int t = xlua_reffn0(L, xlua_refatoom(L, "[]u"));
+
+	int i = 0;
+	int esc = 0;
+	for (char* s = str + 1; *(s + utf8len(s)); s += utf8len(s), i++) {
+		// UTF-8
+		int cp = utf8cp(s);
+		if (esc) {
+			     if (cp == 'n') cp = '\n';
+			else if (cp == 'r') cp = '\r';
+			else if (cp == 'e') cp = 0x31;
+			else if (cp == '0') cp = '\0';
+			esc = 0;
+		}
+		else if (cp == '\\') {
+			esc = 1;
+			continue;
+		}
+
+		char ch[16];
+		sprintf(ch, "%d", cp);
+		//node* tekennode = aloc(ch, t->loc);
+		//tekennode->loc.first_column += i;
+		//tekennode->loc.last_column = tekennode->loc.first_column + 1; // TODO unicode & regeleinden
+		int karakter = xlua_refatoom(L, ch);
+		t = xlua_append(L, t, karakter);
+	}
+	return t;
+}
+
 int xlua_pushatoom(lua_State* L, char* text) {
 	// =  { v = $1 }
 	lua_createtable(L, 0, 1);
@@ -46,6 +104,15 @@ int xlua_refatoom(lua_State* L, char* text) {
 		lua_pushstring(L, text);
 			lua_setfield(L, -2, "v");
 	int ref = luaL_ref(L, LREG);
+	return ref;
+}
+
+int xlua_reffn0(lua_State* L, int fid) {
+	int ref = 0;
+	lua_createtable(L, 0, 1);
+		lua_rawgeti(L, LREG, fid);
+			lua_setfield(L, -2, "f");
+		ref = luaL_ref(L, LREG);
 	return ref;
 }
 

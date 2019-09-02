@@ -6,6 +6,7 @@
 void lua_pushloc(lua_State* L, YYLTYPE loc);
 int xlua_pushatoom(lua_State* L, char* text);
 int xlua_refatoom(lua_State* L, char* text);
+int xlua_reffn0(lua_State* L, int fid);
 int xlua_reffn1(lua_State* L, int fid, int aid);
 int xlua_reffn2(lua_State* L, int fid, int aid, int bid);
 int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid);
