@@ -382,6 +382,7 @@ function oplos(exp,voor)
 			--end
 			local index = maakindex()
 			schaduw[naam] = index
+			print('SCHADUW', naam)
 			local eq = {f=X'=', X(naam), X('var', index, alts)}
 			eqs[eq] = true
 		end
@@ -477,7 +478,7 @@ function oplos(exp,voor)
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
 					exp.f = X('prevvar')
-					assert(schaduw[naam], 'onbekende variabele')
+					assert(schaduw[naam], 'onbekende variabele: '..naam)
 					exp[1] = X(schaduw[naam])
 				end
 			end

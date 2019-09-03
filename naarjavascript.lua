@@ -95,7 +95,6 @@ local immjs = {
 	['∨'] = '$1 || $2', 
 	['⇒'] = '$1 ? $2 : $3', 
 
-	-- trig
 	['sin'] = 'Math.sin($1)',
 	['cos'] = 'Math.cos($1)',
 	['tan'] = 'Math.tan($1)',
@@ -132,14 +131,8 @@ local immjs = {
 	['call'] = '$1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
 	['×'] = '$1.map(x => $2.map(y => [x, y]))',
-
-	-- func
-	['map'] = '$1.map($2)',
-	['filter'] = '$1.filter($2)',
-	['reduceer'] = '$1.reduce($2)',
-	['∘'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
+	['∘'] = '(function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); })',
 	[','] = '[$ARGS]',
-
 	['var'] = [[ (function(varindex, ass) {
 			var array = Array.from(ass);
 			var ret = vars[varindex];
@@ -150,18 +143,39 @@ local immjs = {
 			}
 			vars[varindex] = ret;
 			return ret;
-		})($1, $2)
+		})($1,$2)
 	]],
-
-	['prevvar'] = 'vars[$1]',
-	
-	-- LIB
-	['getContext'] = 'uit.children[0].getContext("2d")',
-	['consolelog'] = 'console.log($1)',
 }
 
 local immsym = {
+	-- func
+	['map'] = '(function(a){return a[0].map(a[1]);})',
+	['filter'] = '(function(a){return x.filter(a[1]);})',
+	['reduceer'] = '(function(a){return x.reduce(a[1]);})',
+	['var'] = [[ (function(a) {
+			var varindex = a[0];
+			var ass = a[1];
+			var array = Array.from(ass);
+			var ret = vars[varindex];
+			for (var i = 0; i < array.length; i++) {
+				if (array[i] != null) {
+					ret = array[i];
+				}
+			}
+			vars[varindex] = ret;
+			return ret;
+		})
+	]],
+
+	['prevvar'] = '(function(a){return vars[a];})',
+	
+	-- LIB
+	['getContext'] = '(function() {return uit.children[0].getContext("2d");})',
+	--['getContext'] = 'uit.children[0].getContext("2d")',
+	['consolelog'] = 'console.log',
+
 	-- muis
+	['getContext'] = '(function(a){return uit.children[0].getContext("2d")})',
 	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); }',
 	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
@@ -190,6 +204,7 @@ local immsym = {
 		}
 		return uit.children[0];
 	})]],
+	['canvas'] = [[uit.getChilden()[0] ]],
 	['requestAnimationFrame'] = [[(function f(t) {
 		if (stop) {stop = false; uit.innerHTML = ''; return; };
 		if (!isFinite(t))
@@ -332,6 +347,7 @@ function naarjavascript(app)
 			if isatoom(exp) and immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
 			elseif isatoom(exp) then
+				--error(e2s(exp))
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, exp.v)
 			elseif immjs[f] then
 				-- a = CMD(a, b)

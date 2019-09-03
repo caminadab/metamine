@@ -194,7 +194,7 @@ function typeer(exp)
 			T = X'set'
 		elseif isfn(exp) and fn(exp) == ',' then
 			--T = X'tupel'
-			local T = {fn=X'tupel'}
+			local T = {f=X'tupel'}
 			local ok = true
 			for i=1,#exp do
 				local t = types[exp[i]]
@@ -246,7 +246,7 @@ function typeer(exp)
 
 	-- verkrijg nde argument van functie
 	local function A0(exp, i)
-		assert(exp.f.v == '->')
+		assert(exp.f.v == '→')
 		if isfn(exp[1]) and exp[1].f.v == ',' then
 			return exp[1][i]
 		end
@@ -266,7 +266,7 @@ function typeer(exp)
 			if #exp == 1 and isvar(exp.f) and not types[exp.f] and types[exp[1]] and types[exp] then
 				-- typeer de functie zelf
 				-- f(2) = 3 → f = getal → getal
-				local functype = {fn=X'->', types[exp[1]], types[exp]}
+				local functype = {f=X'→', types[exp[1]], types[exp]}
 				weestype(exp.f, functype, exp.loc)
 			end
 
@@ -283,7 +283,7 @@ function typeer(exp)
 					local ta, tb = types[a], types[b]
 					weestype(tb, X'int', exp.f.loc)
 					weestype(exp, ta, exp.f.loc)
-					weestype(exp.f, X'->')
+					weestype(exp.f, X'→')
 
 				-- speciaal voor 'map'
 				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
@@ -319,7 +319,7 @@ function typeer(exp)
 						--print('UNIE', e2s(T))
 						if not T then break end
 					end
-					if T and T.v ~= 'iets' then T = {fn=X'lijst', T}
+					if T and T.v ~= 'iets' then T = {f=X'lijst', T}
 					--if true or T and T.v ~= 'iets' then T = X('^', T, #exp)
 					else T = nil end
 					if T ~= nil then
@@ -342,7 +342,7 @@ function typeer(exp)
 				-- [1,2,3] map sin  :  (int^int, int → getal) → getal^int
 				elseif f == '@' and types[a] and types[b] then
 					-- TODO check
-					weestype(exp, X('->', types[a][1], types[b][2]))
+					weestype(exp, X('→', types[a][1], types[b][2]))
 					weestype(fn, X'ok')
 
 				-- speciaal voor '='
@@ -388,7 +388,7 @@ function typeer(exp)
 				-- speciaal voor ',' (tupel)
 				-- ℝ × ℝ
 				elseif f == ',' then
-					T = {fn=X','}
+					T = {f=X','}
 					for i,v in ipairs(exp) do
 						if types[v] then
 							T[i] = types[v]
@@ -404,7 +404,7 @@ function typeer(exp)
 				end
 
 				-- speciaal voor '→'
-				if f == '->' then -- (a → b) : (
+				if f == '→' then -- (a → b) : (
 					-- argumenten
 					--if isfn(fn) and fn.f.v = ',' then
 						--for 
@@ -413,11 +413,11 @@ function typeer(exp)
 					if naamtypes[moes(a)] and types[b] then
 						weestype(a, naamtypes[moes(a)], oorzaakloc[moes(a)])
 						weestype(b, types[b], oorzaakloc[b] or fn.loc)
-						weestype(exp, X('->', naamtypes[moes(a)], types[b]), fn.loc)
+						weestype(exp, X('→', naamtypes[moes(a)], types[b]), fn.loc)
 					elseif types[a] and types[b] then
-						weestype(exp, X('->', types[a], types[b])) ; oorzaakloc[exp] = exp.loc
+						weestype(exp, X('→', types[a], types[b])) ; oorzaakloc[exp] = exp.loc
 					elseif types[b] then
-						--weestype(exp, X('->', 'iets', types[b])) ; oorzaakloc[exp] = b.loc
+						--weestype(exp, X('→', 'iets', types[b])) ; oorzaakloc[exp] = b.loc
 					end
 				end
 
@@ -446,7 +446,7 @@ function typeer(exp)
 				--weestype(exp[1], X'nat', exp.loc) -- TODO loc
 			end
 
-			if tfn and #tfn == 2 and fn(tfn) == '->' then
+			if tfn and #tfn == 2 and fn(tfn) == '→' then
 
 				-- niet het gewenste aantal argumenten
 				local nargs = #exp

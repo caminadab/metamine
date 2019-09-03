@@ -124,11 +124,11 @@ input:
 ;
 
 block:
-	stats			{ $$ = FN1(L, A(L, "⋀"), $1); }
+	stats			{ $$ = $1; } /*FN1(L, A(L, "⋀"), $1); }*/
 ;
 
 stats:
-	%empty							{ $$ = FN0(L, A(L, "[]")); }
+	%empty							{ $$ = FN0(L, A(L, "⋀")); }
 | stats NEWLINE				{ $$ = $1; }
 | stats stat NEWLINE	{ $$ = APPEND(L, $1, $2); }
 | stats error NEWLINE				{ $$ = APPEND(L, $1, A(L, "fout")); yyerrok; }
