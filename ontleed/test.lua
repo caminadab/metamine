@@ -4,7 +4,11 @@ function unlisp(x)
 	local t = {}
 	if not x then return '<niets>' end
 	local function U(y)
-		if y.v then
+		if type(y) ~= 'table' then
+			t[#t+1] = '? '
+			y = nil
+		end
+		if y and y.v then
 			t[#t+1] = y.v
 			return
 		end
@@ -54,8 +58,8 @@ local tests = file('TESTS')
 for code in tests:gmatch('(.-)\n\n') do
 	local taal,moet = code:match('(.*)\n([^n]-)$')
 	if taal and moet then
-	print()
-	print(taal, moet)
+	--print()
+	--print(taal, moet)
 	local lisp = unlisp(ontleed(taal))
 	passert(lisp == moet, string.format('ontleed("%s") moet %s zijn maar is %s', taal, moet, lisp))
 end

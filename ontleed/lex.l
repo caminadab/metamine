@@ -67,7 +67,6 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "∩"		{ *yylval = A(GL, "∩"); return INTERSECTIE; }
 "∪"		{ *yylval = A(GL, "∪"); return UNIE; }
 "‖"		{ *yylval = A(GL, "‖"); return CAT; }
-"'"		{ *yylval = A(GL, "'"); return '\''; }
 ","		{ *yylval = A(GL, ","); return ','; }
 "^"		{ *yylval = A(GL, "^"); return '^'; }
 "²"		{ *yylval = A(GL, "²"); return KWADRAAT; }
@@ -105,8 +104,10 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 "!"		{ *yylval = A(GL, "!"); return '!'; }
 "Σ"		{ *yylval = A(GL, "Σ"); return SOM; }
 "⇒"		{ *yylval = A(GL, "⇒"); return IMPLICEERT; }
-
 ":="		{ *yylval = A(GL, ":="); return ASS; }
+
+"'"		{ *yylval = A(GL, "'"); return '\''; }
+
 
 \n		{ return NEWLINE; }
 \t		// negeer tabs
@@ -123,12 +124,13 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 "eind"			{ return EIND; }
 "end"			{ return EIND; }
 
-'.'		{ 
+'.'		{ /* enkel karakter */
 	char buf[10];
 	sprintf(buf, "%u", yytext[1]);
 	*yylval = A(GL, buf);
-	return FOUT;
+	return NAAM;
 }
+
 -?[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }
 -?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }
 -?[0-9]*e[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }

@@ -124,65 +124,23 @@ input:
 ;
 
 block:
-	stats							{ $$ = $1; }
+	stats			{ $$ = FN1(L, A(L, "⋀"), $1); }
 ;
 
 stats:
-	%empty							{
-		// { f="⋀" }
-		lua_createtable(L, 0, 4);
-			xlua_pushatoom(L, "⋀");
-				lua_setfield(L, -2, "f");
-		$$ = luaL_ref(L, LREG);
-	}
+	%empty							{ $$ = FN0(L, A(L, "[]")); }
 | stats NEWLINE				{ $$ = $1; }
-| stats stat NEWLINE	{
-		lua_rawgeti(L, LREG, $1); // stats
-		lua_rawgeti(L, LREG, $2); // stats, stat
-
-		int len = lua_objlen(L, -2);
-		lua_rawseti(L, -2, len+1); // stats
-		$$ = luaL_ref(L, LREG); // [] :)
-		luaL_unref(L, LREG, $1);
-		luaL_unref(L, LREG, $2);
-}
-			
-| stats error NEWLINE				{ $$ = xlua_append(L, $1, A(L, "fout")); yyerrok; }
+| stats stat NEWLINE	{ $$ = APPEND(L, $1, $2); }
+| stats error NEWLINE				{ $$ = APPEND(L, $1, A(L, "fout")); yyerrok; }
 ;
 
 stat:
 	exp
 
-| ALS exp DAN NEWLINE block EIND {
-	lua_createtable(L, 0, 2);
-		lua_rawgeti(L, LREG, $2);
-			lua_rawseti(L, -2, 1);
-		xlua_pushatoom(L, "⇒");
-			lua_setfield(L, -2, "f");
-		lua_rawgeti(L, LREG, $5);
-			lua_rawseti(L, -2, 2);
-	luaL_unref(L, LREG, $2);
-	luaL_unref(L, LREG, $5);
-	$$ = luaL_ref(L, LREG);
-}
-
-| ALS exp DAN exp EIND {
-	lua_createtable(L, 0, 2);
-		lua_rawgeti(L, LREG, $2);
-			lua_rawseti(L, -2, 1);
-		xlua_pushatoom(L, "⇒");
-			lua_setfield(L, -2, "f");
-		lua_rawgeti(L, LREG, $4);
-			lua_rawseti(L, -2, 2);
-	luaL_unref(L, LREG, $2);
-	luaL_unref(L, LREG, $4);
-	$$ = luaL_ref(L, LREG);
-}
-
-| ALS exp DAN exp ANDERS exp EIND {
+| ALS exp DAN NEWLINE block EIND   { $$ = FN2(L, A(L,"⇒"), $2, $5); }
+| ALS exp DAN exp EIND             { $$ = FN2(L, A(L,"⇒"), $2, $4); }
+| ALS exp DAN exp ANDERS exp EIND  { $$ = FN3(L, A(L,"⇒"), $2, $4, $6); }
 /* 1   2   3   4     5    6  */
-	$$ = FN3(L, A(L,"⇒"), $2, $4, $6);
-}
 
 /*
 als
@@ -193,7 +151,6 @@ dan
 	ddd
 eind
 */
-
 | ALS NEWLINE block DAN NEWLINE block EIND {
 /* 1     2      3    4     5      6    7   */
 	$$ = FN2(L, A(L,"⇒"), $3, $6);
@@ -299,39 +256,9 @@ items: exp;
 
 exp:
 	single
-| single single  %prec CALL{
-		// op: {v="+"}
-		lua_createtable(L, 2, 1);
-			// f(x) = _(f x)
-			xlua_pushatoom(L, "_");
-				lua_setfield(L, -2, "f");
-			lua_rawgeti(L, LREG, $1); // op
-				lua_rawseti(L, -2, 1);
-			lua_rawgeti(L, LREG, $2); // a
-				lua_rawseti(L, -2, 2);
-		luaL_unref(L, LREG, $1);
-		luaL_unref(L, LREG, $2);
-
-		$$ = luaL_ref(L, LREG);
-}
-| single single single  %prec CALL {
-		// op: {v="+"}
-		lua_createtable(L, 2, 1);
-			// x f y = _(f x y)
-			xlua_pushatoom(L, "_");
-				lua_setfield(L, -2, "f");
-			lua_rawgeti(L, LREG, $2); // op
-				lua_rawseti(L, -2, 1);
-			lua_rawgeti(L, LREG, $1); // a
-				lua_rawseti(L, -2, 2);
-			lua_rawgeti(L, LREG, $3); // b
-				lua_rawseti(L, -2, 3);
-		luaL_unref(L, LREG, $1);
-		luaL_unref(L, LREG, $2);
-		luaL_unref(L, LREG, $3);
-
-		$$ = luaL_ref(L, LREG);
-}
+| single single  %prec CALL  { $$ = FN2(L, A(L,"_"), $1, $2); }
+| single single single  %prec CALL  { $$ = FN3(L, A(L,"_"), $2, $1, $3); }
+| single single single single {  $$ = A(L, "fout"); yyerrok; }
 |	exp KWADRAAT						{ $$ = FN2(L, A(L,"^"), $1, A(L,"2")); }
 |	exp DERDEMACHT						{ $$ = FN2(L, A(L,"^"), $1, A(L,"3")); }
 |	exp INVERTEER						{ $$ = FN2(L, A(L,"^"), $1, A(L,"-1")); }

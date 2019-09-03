@@ -103,7 +103,7 @@ int xlua_reffn0(lua_State* L, int fid) {
 
 int xlua_reffn1(lua_State* L, int fid, int aid) {
 	int ref = 0;
-	lua_createtable(L, 0, 1);
+	lua_createtable(L, 1, 1);
 	{
 		lua_rawgeti(L, LREG, fid);
 		{
@@ -120,7 +120,7 @@ int xlua_reffn1(lua_State* L, int fid, int aid) {
 
 int xlua_reffn2(lua_State* L, int fid, int aid, int bid) {
 	int ref = 0;
-	lua_createtable(L, 0, 1);
+	lua_createtable(L, 2, 1);
 	{
 		//lua_pushstring(L, text);
 		lua_rawgeti(L, LREG, fid);
@@ -136,7 +136,7 @@ int xlua_reffn2(lua_State* L, int fid, int aid, int bid) {
 
 int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid) {
 	int ref = 0;
-	lua_createtable(L, 0, 1);
+	lua_createtable(L, 3, 1);
 	{
 		//lua_pushstring(L, text);
 		lua_rawgeti(L, LREG, fid);
@@ -154,7 +154,7 @@ int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid) {
 
 int xlua_reffn4(lua_State* L, int fid, int aid, int bid, int cid, int did) {
 	int ref = 0;
-	lua_createtable(L, 0, 1);
+	lua_createtable(L, 4, 1);
 	{
 		//lua_pushstring(L, text);
 		lua_rawgeti(L, LREG, fid);
@@ -273,26 +273,15 @@ int lua_ontleed(lua_State* L) {
 	int ok = yyparse(L, &ref, &fouten, scanner);
 
 	lua_rawgeti(L, LREG, ref);
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		lua_pushliteral(L, "niets");
+	}
 	lua_rawgeti(L, LREG, fouten);
 
 	//yylex_destroy(scanner);
 
 	return 2;
-}
-
-int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg) {
-
-	lua_createtable(L, 0, 2);
-		lua_pushliteral(L, "syntax");
-			lua_setfield(L, -2, "type");
-		xlua_pushloc(L, *loc);
-			lua_setfield(L, -2, "loc");
-		lua_pushstring(L, yymsg);
-			lua_setfield(L, -2, "fmt");
-		int fout = luaL_ref(L, LREG);
-	xlua_append(L, *fouten, fout);
-
-	return 0;
 }
 
 int lua_ontleedexp(lua_State* L) {
@@ -315,6 +304,20 @@ int lua_ontleedexp(lua_State* L) {
 			yylex_destroy(scanner);
 
 			return 2;
+}
+
+int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg) {
+	lua_createtable(L, 0, 2);
+		lua_pushliteral(L, "syntax");
+			lua_setfield(L, -2, "type");
+		xlua_pushloc(L, *loc);
+			lua_setfield(L, -2, "loc");
+		lua_pushstring(L, yymsg);
+			lua_setfield(L, -2, "fmt");
+		int fout = luaL_ref(L, LREG);
+	xlua_append(L, *fouten, fout);
+
+	return 0;
 }
 
 #ifdef _WIN32 //defined(_MSC_VER)
