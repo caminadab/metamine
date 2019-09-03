@@ -127,7 +127,7 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 	char buf[10];
 	sprintf(buf, "%u", yytext[1]);
 	*yylval = A(GL, buf);
-	return NAAM;
+	return FOUT;
 }
 -?[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }
 -?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }

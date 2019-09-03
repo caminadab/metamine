@@ -30,6 +30,8 @@
 	int plus(int a, int b) { return a + b; }
 
 	#define A xlua_refatoom
+	#define APPEND xlua_append
+	#define FN0 xlua_reffn0
 	#define FN1 xlua_reffn1
 	#define FN2 xlua_reffn2
 	#define FN3 xlua_reffn3
@@ -261,25 +263,39 @@ single:
 |	NAAM '.'								{
 	$$ = FN1(L, $2, $1);
 }
-|	NAAM '\''								{ $$ = FN1(L, $2, $1); }
-|	'(' op ')'								{ $$ = $2; }
-|	'(' unop ')'								{ $$ = $2; }
+|	NAAM '\''						{ $$ = FN1(L, $2, $1); }
+|	'(' op ')'					{ $$ = $2; }
+|	'(' unop ')'				{ $$ = $2; }
 
 /* lijst */
-| '[' items ']'		{
-	// op: {v="[]"}
-	lua_createtable(L, 2, 1);
-		lua_rawgeti(L, LREG, $1); // op
-			lua_setfield(L, -2, "f");
-		lua_rawgeti(L, LREG, $2); // a
-			lua_rawseti(L, -2, 1);
+| '[' exp ']'				{ $$ = $2; }
+| '{' exp '}'				{ $$ = $2; }
 
-	$$ =  luaL_ref(L, LREG);
-}
+/*
+list:
+	%empty							{ $$ = FN0(L, A(L, "[]")); }
+|	items
+;
+
+set:
+	%empty							{ $$ = FN0(L, A(L, "{}")); }
+|	setitems
+;
+
+setitems:
+	exp									{ $$ = FN1(L, A(L, "{}"), $1); }
+| setitems ',' exp		{ $$ = APPEND(L, $1, $3); }
+;
+
+items:
+	exp									{ $$ = FN1(L, A(L, "[]"), $1); }
+| NEWLINE TAB exp NEWLINE		{ $$ = FN1(L, A(L, "[]"), $3); }
+| items ',' exp				{ $$ = APPEND(L, $1, $3); }
+| items TAB exp	NEWLINE				{ $$ = APPEND(L, $1, $3); }
 ;
 
 items: exp;
-
+*/
 
 exp:
 	single

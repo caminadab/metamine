@@ -138,7 +138,7 @@ local immjs = {
 	['filter'] = '$1.filter($2)',
 	['reduceer'] = '$1.reduce($2)',
 	['∘'] = 'function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); }',
-	[','] = '[ARGS]',
+	[','] = '[$ARGS]',
 
 	['var'] = [[ (function(varindex, ass) {
 			var array = Array.from(ass);
@@ -342,6 +342,7 @@ function naarjavascript(app)
 				cmd = d and cmd:gsub('$4', assert(immsym[d] or d)) or cmd
 				cmd = cmd:gsub('$TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
 				cmd = cmd:gsub('$ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
+				cmd = cmd:gsub('$[0-9]', 'null')
 				cmd:gmatch('%$', function(n) error('onbekende var: '..tostring(n)) end)
 				--cmd = a and cmd:gsub('_X_', a) or cmd
 				--cmd = b and cmd:gsub('_Y_', b) or cmd
