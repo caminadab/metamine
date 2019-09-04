@@ -43,8 +43,11 @@ int xlua_reffn5(lua_State* L, int fid, int aid, int bid, int cid, int did, int e
 int main() {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
-	char* str = "require 'ontleed'; require 'util'  ; a = ontleed(file('b.code')) ";
+	char* str = " require 'ontleed'; require 'util'  ; print('ontleden b') ; b = file('b.code') ; print(b); ontleed(b) ;print('hoi');  b = ontleed(file('../bieb/std.code')) ; print('ja!')";
 	luaL_dostring(L, str);
+	if (lua_gettop(L) > 0) {
+		puts(luaL_checkstring(L, 1));
+	}
 
 	test();
 

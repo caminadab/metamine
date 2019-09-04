@@ -60,10 +60,10 @@ end
 
 -- lees biebgraaf
 local bieb,fouten = ontleed(bestand 'bieb/std.code', 'bieb/std.code')
+check(bieb)
 local bieb = {}
-seerec(bieb)
-seerec(fouten)
 if fouten then map(fouten, function(fout) print(fout2ansi(fout)) end) end
+
 
 function typeer(exp)
 	if verbozeTypes then
@@ -83,7 +83,7 @@ function typeer(exp)
 
 	-- bieb
 	for i,v in ipairs(bieb) do
-		local type,super = v[1],v[2]
+		local type,super = v.a[1],v.a[2]
 		typegraaf:link(type, super)
 		naamtypes[moes(type)] = super
 		biebtypes[moes(type)] = super -- types: naam → type

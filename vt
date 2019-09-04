@@ -180,11 +180,17 @@ for i,bron in ipairs(bronnen) do
 		asb[#asb+1] = eq
 	end
 end
-if verbozeBroncode then
+
+if verbozeSyntax then
 	print()
-	seerec(asb)
+	print('=== SYNTAX ===')
 	print(e2s(asb))
+	print()
 end
+
+-- lekker checken
+print(e2s(asb))
+check(asb)
 
 -- annoteer ^_^
 local i = 1

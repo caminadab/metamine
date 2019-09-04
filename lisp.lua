@@ -3,13 +3,11 @@ require 'util'
 
 function isatoom(exp)
 	if type(exp) ~= 'table' then see(exp); print(debug.traceback()) ; return true end
-	assert(exp.v or (exp.f and (exp.a or exp[1])))
 	return exp.v ~= nil
 end
 
 function isfn(exp)
-	assert(exp)
-	assert(exp.v or (exp.f and (exp.a or exp[1])))
+	if exp.f then assert(exp.a ~= nil, 'func '..exp.f.v) end
 	return exp.f ~= nil
 end
 isexp = isfn
@@ -78,14 +76,19 @@ function X(fn,...)
 	local t = {...}
 	local r
 	if #t == 0 then
-		r = fn
+		return fn
+	elseif fn.v == ',' then
+		r = {f=fn,...}
+	elseif #t == 1 then
+		r = {loc=nergens,f=fn,a=t[1]}
 	else
-		r = {loc=nergens,f=fn}
+		r = {loc=nergens,f=fn,a={}}
 		for i,s in ipairs(t) do
+			r.f = X','
 			if type(s) == 'table' then
-				r[i] = s
+				r.a[i] = s
 			else
-				r[i] = {v=tostring(s), loc = nergens}
+				r.a[i] = {v=tostring(s), loc = nergens}
 			end
 		end
 	end
@@ -147,8 +150,8 @@ function unparse_work(sexpr, maxlen, tabs, res)
 
 		-- arg is troubled?
 		local t = sexpr
-		if sexpr.a.f.v == ',' then
-			t = sexpr.a.f
+		if sexpr.a.f and sexpr.a.f.v == ',' then
+			t = sexpr.a
 		else
 			t = {sexpr.a}
 		end

@@ -3,6 +3,7 @@ exp = { fn, 1, 2 } | { v }
 exp |= { loc, val }
 ]]
 require 'lisp'
+require 'util'
 
 function fn(exp) if isfn(exp) then return exp.f.v end end
 function atoom(exp,i) 
@@ -10,6 +11,43 @@ function atoom(exp,i)
 		return exp.v
 	end
 	if exp[i] then return exp[i].v end
+end
+
+-- checkuhh
+local atomen = {}
+local lst, b = file('atomen.lst') or file('../atomen.lst')
+for atoom in lst:gmatch('[^\n]+') do
+	atomen[atoom] = true
+end
+
+function checkr(e)
+	assert(e ~= nil, 'is niets')
+
+	-- atoom
+	if e.v ~= nil then
+		--assert(tonumber(e.v) or atomen[e.v], 'geen getal of atoom: '..e.v)
+
+	-- komma
+	elseif e.f ~= nil and e.f.v == ',' then
+		for i,v in ipairs(e) do
+			check(v)
+		end
+
+	-- normale functie
+	else
+		check(e.f)
+		check(e.a)
+	end
+
+	return e
+end
+
+function check(e)
+	local a,b,c = checkr(e)
+	if not a then
+		print(b)
+		error('check faalde voor '..e2s(e))
+	end
 end
 
 expmt = {}

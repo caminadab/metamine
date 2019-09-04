@@ -8,6 +8,9 @@
 ontleed/taal.c
 ontleed/taal.h
 
+goo/www/index/taal.nl.html
+goo/www/index/taal.en.html
+
 *.output
 bin/
 troep/
