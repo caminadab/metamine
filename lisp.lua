@@ -92,6 +92,7 @@ end
 
 -- {fn='a'}
 function unparse_len(exp)
+	if not exp then return 1 end
 	if exp.len then return exp.len end
 	if exp == nil then return 0 end
 	if type(exp) == 'string' then return #exp end
@@ -189,7 +190,9 @@ function unparse_work(sexpr, maxlen, tabs, res)
 			insert(res, sexpr.ref.v)
 		end
 		insert(res, color.white)
-  end
+  else
+		res[#res+1] = '?'
+	end
   return res
 end
 

@@ -84,7 +84,8 @@ int xlua_pushatoom(lua_State* L, char* text, YYLTYPE loc) {
 			lua_setfield(L, -2, "v");
 		xlua_pushloc(L, loc);
 			lua_setfield(L, -2, "loc");
-	return 1;
+		return 1;
+	//
 }
 
 int xlua_refatoom(lua_State* L, char* text, YYLTYPE loc) {
@@ -92,8 +93,19 @@ int xlua_refatoom(lua_State* L, char* text, YYLTYPE loc) {
 	lua_createtable(L, 0, 1);
 		lua_pushstring(L, text);
 			lua_setfield(L, -2, "v");
-	int ref = luaL_ref(L, LREG);
-	return ref;
+		xlua_pushloc(L, loc);
+			lua_setfield(L, -2, "loc");
+		return luaL_ref(L,-1);
+	//
+}
+
+int xlua_metloc(lua_State* L, int aid, YYLTYPE loc) {
+	//return aid;
+	lua_rawgeti(L, LREG, aid);
+		xlua_pushloc(L, loc);
+			lua_setfield(L, -2, "loc");
+		lua_pop(L, 1);
+	return aid;
 }
 
 int xlua_reffn0(lua_State* L, int fid, YYLTYPE loc) {
@@ -283,13 +295,9 @@ int lua_ontleed(lua_State* L) {
 	int ok = yyparse(L, &ref, &fouten, scanner);
 
 	lua_rawgeti(L, LREG, ref);
-	if (lua_isnil(L, -1)) {
-		lua_pop(L, 1);
-		lua_pushliteral(L, "niets");
-	}
 	lua_rawgeti(L, LREG, fouten);
 
-	//yylex_destroy(scanner);
+	yylex_destroy(scanner);
 
 	return 2;
 }
@@ -317,7 +325,7 @@ int lua_ontleedexp(lua_State* L) {
 }
 
 int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg) {
-	lua_createtable(L, 0, 2);
+	lua_createtable(L, 0, 3);
 		lua_pushliteral(L, "syntax");
 			lua_setfield(L, -2, "type");
 		xlua_pushloc(L, *loc);

@@ -1,4 +1,4 @@
-linux:
+linux: ontleed goo/www/index.html
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
@@ -23,6 +23,16 @@ all:
 	mkdir -p bin	
 	cd ontleed; make
 	cp -r ontleed/bin/* bin/
+
+goo/www/index.en.html: goo/www/index.fmt goo/www/index.en
+	./sjab goo/www/index.fmt goo/www/index.en goo/www/index.en.html
+
+goo/www/index.nl.html: goo/www/index.fmt goo/www/index.nl 
+	./sjab goo/www/index.fmt goo/www/index.nl goo/www/index.nl.html
+
+goo/www/index.html: goo/www/index.nl.html goo/www/index.en.html
+	ln -sf index.nl.html goo/www/index.html
+	ln -sf index.en.html goo/www/en
 
 malloc.o: bieb/malloc.c
 	cc -c -fPIC -DLACKS_STDLIB_H -DNO_MALLOC_STATS bieb/malloc.c -o bieb/malloc.o

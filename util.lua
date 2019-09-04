@@ -70,7 +70,6 @@ end
 function seerec(t,tabs)
 	local tabs = tabs or ''
 	if type(t) == 'table' then
-		print()
 		print(tabs..'{')
 		for k,v in pairs(t) do seerec(k, tabs..'  ') ; seerec(v, tabs..'  ') end
 		print(tabs..'}')

@@ -185,6 +185,7 @@ for i,bron in ipairs(bronnen) do
 end
 if verbozeBroncode then
 	print()
+	print(e2s(asb))
 end
 
 -- annoteer ^_^

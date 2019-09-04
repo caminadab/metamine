@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+	<title>Taal</title>
+</head>
+<body>
+	<div id="intro">
+		<h1><i>Welcome</i></h1>
+		
+		<!--<img class="logo" src="taal.png"></img>-->
+		<p>
+			<i>A new coding language.</i></br>
+			<i>Intuitive and declarative.</i>
+		</p>
+	</div>
+
+<div class="paneel">
+	<button id="vorige">⏮</button>
+	<button id="speel">▶</button>
+	<button id="stop">◼</button>
+	<button id="volgende">⏭</button>
+	<span id="foutmelding"></span>
+	<!--<button id="opnieuw">⟲</button>-->
+	<!--<button id="info">🛈</button>-->
+</div>
+
+<div>
+	<textarea id="broncode" name="broncode"></textarea> 
+	<div id="uit">
+		<pre id="uit-tekst">
+		</pre>
+	</div>
+</div>
+
+<div id="wat">
+	<h1><i>What</i></h1>
+	<p>Taal is a new way of coding. Write declarative code quickly in the form of simple rules and don't worry about difficult frameworks, libraries or other 'modern' technology.</p>
+	<p>Control flow is calculated by the compiler. This makes it much easier to write modular code.</p>
+	<p>As every value is 'live' there is no need for callbacks, hooks or threads: a list of connected clients displayed in a gui window will be automatically kept up to date. </p>
+
+	<h1><i>Q&A</i></h1>
+		<h2>How does it work?</h2>
+		<p>A webservice translates your code to javascript. Your device then runs the javascript.</p>
+		<input id="vraag" placeholder="Ask your question..."></input>
+		<br>
+		<button id="vraagknop" onclick="fetch('/vraag', {method: 'post', body: document.getElementById('vraag').value}).then(x => {document.getElementById('vraagknop').style.backgroundColor='green'; document.getElementById('vraag').value=''; document.getElementById('vraag').placeholder='Question sent';})">Ask!</button>
+		<div id="qena">
+		</div>
+	</p>
+
+</body>
+
+<style>
+
+#vraag {
+	background: black;
+	border: none;
+	padding: 10px;
+	color: white;
+	font-size: 24px;
+	width: 100%;
+}
+
+.paneel {
+	clear: both;
+	width: 100%;
+}
+
+@media (max-width: 800px) {
+	.CodeMirror {
+		width: 100%;
+		display: block;
+	}
+	textarea {
+		width: 100%;
+	}
+	#uit {
+		width: 100%;
+		height: 800px;
+		padding-top: 300px;
+		display: block;
+	}
+}
+
+#uit {
+	min-height: 800px;
+	font-width: bold;
+	background: #3a2299;
+	font-size: 48px;
+	padding: 24px;
+	box-sizing: border-box;
+}
+
+@media (min-width: 800px) {
+	.CodeMirror {
+		width: 50%;
+		display: inline;
+		float: right;
+		height: 800px;
+	}
+	textarea {
+		width: 50%;
+		display: inline;
+		float: left;
+		height: 800px;
+	}
+
+	#uit {
+		width: 50%;
+		display: inline;
+		float: left;
+	}
+}
+
+textarea {
+	height: 800px;
+	background: black;
+	border: none;
+	box-sizing: border-box;
+}
+
+#uit-tekst {
+	transition: width 2.0s linear;
+	margin-left: 24px;
+}
+
+.CodeMirror {
+	float: left;
+	box-sizing: border-box;
+}
+
+button {
+	background: #012ED4;
+
+	color: white;
+	text-decoration: none;
+	border: 0;
+	width: 200px;
+	font-size: 48px;
+	height: 70px;
+	line-height: 30px;
+	display: inline;
+	cursor: pointer;
+	float: left;
+
+	transition-property: background;
+	transition-duration: 0.0s;
+}
+
+#intro {
+	min-height: 250px;
+}
+
+#vertaal { color: #1b1; }
+#volgende, #vorige { color: #bb0; font-size: 72px; }
+
+button:hover {
+	background: #0023A1;
+	transition-duration: 0.0s;
+}
+
+button:active {
+	background: #000E42;
+}
+
+#laadbalk {
+	display: inline;
+	float: left;
+	height: 70px;
+
+	background: #000625;
+}
+
+#foutmelding {
+	opacity: 0;
+	display: inline;
+	width: 0;
+	font-size: 48px;
+	margin-left: 20px;
+	white-space: nowrap;
+	float: left;
+	transition: opacity 2.0s linear;
+	color: red;
+	font-weight: bold;
+}
+
+html, body {
+	background: #050070;
+	color: white;
+	font-family: Impace, Charcoal, sans-serif;
+	font-size: 24px;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+}
+
+h1 {
+	font-size: 72px;
+	margin-left: 80px;
+}
+
+p {
+	margin-left: 60px;
+}
+
+.logo {
+	display: inline;
+	float: right;
+	height: 144px;
+	margin: 30px;
+}
+
+.bar {
+	background: #180D31;
+}
+
+.uit {
+	background: #1400BC;
+}
+
+.volgendeles {
+	position: absolute;
+	left: -100;
+	top: -100;
+	font-size: 96px;
+	color: darkgreen;
+}
+
+canvas {
+	background: #000;
+	width: 100%;
+	height: 100%;
+}
+.syntaxfout { background: #800; color: #A80; }
+.oplosfout { background: #049; color: #AFF; }
+.typeerfout { background: #805; color: #FBF; }
+.fouticoon { background: #800; color: #F88; }
+
+.loc { cursor: pointer; text-decoration: underline; font-weight: bold; }
+
+#speel0 {
+	margin-top: 0.5cm;
+	margin-bottom: 0.5cm;
+	cursor: pointer;
+	font-size: 24px;
+	width: 100%;
+	/* padding: 10px; */
+	/* border: 10px solid black; */
+	transition-property: border;
+}
+
+@keyframes Knipper {
+    0%{background:yellow;color:purple;}
+    100%{background:red;color:green;}
+}
+
+#speel {
+	background: linear-gradient(to right, red, orange, yellow, green, cyan, blue, purple, red);
+	background-size: 400% 400%;
+	background-repeat: repeat;
+	animation: AnimationName 20s linear infinite;
+}
+
+button {
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+@keyframes AnimationName {
+    100%{background-position:0% 50%}
+    0%{background-position:400% 50%}
+}
+
+</style>
+<link rel="stylesheet" href="lib/slang.css">
+<link rel="stylesheet" href="lib/codemirror.css">
+
+<script src="lib/codemirror.js"></script>
+<script src="lib/addon/edit/matchbrackets.js"></script>
+<script src="lib/addon/selection/active-line.js"></script>
+<script src="lib/taal.js"></script>
+<script src="lib/vim.js"></script>
+<script>
+	
+	var demoindex = 0;
+	var demos = [
+		`; every program needs to define 'out'
+out = "hoi"`, `; you can define variables
+a = 3
+b = 2
+out = a + b`, `; movable circle (use the arrow keys)
+x := 10
+y := 5
+if keyRight then x := x' + 0.1 end
+if keyLeft then x := x' - 0.1 end
+out = canvas [ circle(x,y,1) ]`, `; paint app
+; draw with your mouse
+circles := []
+out = canvas circles
+
+; add dot at mouse position
+if mouseClick then
+	circles := circles' ‖ [ circle(mouseX, mousY, 0.1) ]
+end
+
+; remove them with space
+if keySpace then
+	circles := circles' from 1
+end
+`, `; simple stopwatch
+out = runtime
+`,
+		`; create a timer
+timer = 3 - int(runtime)
+if timer > 0 then
+\tout = text(timer)
+else
+\tout = "Boom!"
+end'`, `; circle (canvas is 18×10)
+r = runtime
+c = circle(mouseX,mouseY,r)
+uit = canvas [c]
+
+; circletoy (use mouse/touch)
+out = canvas circles
+circles = (0..15) map f
+f = i → circle(mouseX ^ (i/8), 5, i/4)`, `; PONG 2019
+
+; players
+y1 := 3.5
+y2 := 3.5
+w = 1 ; player width
+h = 3 ; player height
+xmin = 0
+xmax = 17.777 - w
+ymax = 10 - h
+
+; ball
+ballx := 17.777 / 2
+bally := 5
+ballvx := -0.01
+
+if 2 > 1 then
+	ballx := ballx' + ballvx'
+end
+if keySpace then
+	ballx := 10
+end
+
+; keyboard right
+if keyUp and y1' < ymax then y1 := y1' + 0.2 end
+if tkeyDown en y1' > 0    then y1 := y1' - 0.2 end
+
+; keyboard left
+if keyW and y2' < ymax then y2 := y2' + 0.2 end
+if keyS and y2' > 0    then y2 := y2' - 0.2 end
+
+; sprites
+left = rrectangle(xmax, y1, 1, 3)
+right = rectangle(xmin, y2, 1, 3)
+ball = circle(ballx, bally, 1)
+score = label(5, 5, "hoi")
+
+; canvas
+out = canvas [ left, right, ball, score ]`, `; sum the numbers 1 to 1000
+uit = Σ 1 .. 1001'`, `; cool circles
+r = runtime + n/2 + n/5 + n/9 + n/100
+
+f = n + sin(runtime) → circle(n/1,g(n),abs(sin(3·r))·abs(2·sin(runtime/100)))
+g = y → sin(0.4 · runtime + y) + 4
+
+circles = (0..40) map f
+out = canvas circles`,
+		`; function composition
+g = x → x + 1
+h = y → y / 2 ; typ een "→" met "->"
+f = g² ∘ h ∘ g² ; typ met "@" en "^2" 
+uit = f(3)`, `; zeg een aantal keer "hoi"
+aantal = int(runtime)
+f = x → x ‖ " hoi"
+uit = (f^aantal)("groet:")`, `; letters a t/m j
+f(i) = i + \'a\'
+uit = (0 .. 10) map f`, `; neem van elke letter de volgende
+uit = "Iho" map (a → a + 1)`,
+	];
+	var speelknop = document.getElementById("speel");
+	var stopknop = document.getElementById("stop");
+	var vorigeknop = document.getElementById("vorige");
+	var volgendeknop = document.getElementById("volgende");
+	var cknop = '#012ED4';
+	var foutmelding = document.getElementById("foutmelding");
+	var laadbalk = document.getElementById("laadbalk");
+	var js = document.getElementById("js");
+
+	function vertaal() {
+		stop = true; // stop draaiende programma's
+		speelknop.style.backgroundColor = '#000E42';
+
+		fetch('/vt', {method: "POST", body: editor.getValue()})
+			.then(x => x.json())
+			.then(j => {
+				onsuccess();
+				try {
+					//js.innerHTML = j.js;
+					eval(j.js);
+					uit.focus();
+				//} catch (e) {
+				//	uit.innerHTML = "executiefout: " + e + e.stack;
+				//}
+				} finally {
+					setErrors(j.fouten);
+				}
+			})
+       			//.catch(e => onerror(e));
+	}
+
+	function stopfunc() {
+		stop = true;
+	}
+
+	speelknop.addEventListener("mousedown", vertaal);
+	stopknop.addEventListener("mousedown", stopfunc);
+	volgendeknop.addEventListener("mousedown", function() {
+		stop = true;
+		setErrors([]);
+		demoindex++;
+		demoindex = Math.min(demoindex, demos.length-1);
+		editor.setValue(demos[demoindex]);
+		vertaal();
+	});
+	vorigeknop.addEventListener("mousedown", function() {
+		stop = true;
+		setErrors([]);
+		demoindex--;
+		demoindex = Math.max(demoindex, 0);
+		editor.setValue(demos[demoindex]);
+		vertaal();
+	});
+
+	function onsuccess() {
+
+		speelknop.innerHTML = '▶';
+		speelknop.style.background = 'green';
+		speelknop.style.transitionDuration = '0.0s';
+
+
+		foutmelding.style.opacity = "1.0"
+		foutmelding.style.color = "green"
+
+		// uitvoer!
+
+
+		setTimeout(function() {
+			speelknop.style.background = cknop;
+			foutmelding.style.opacity = "0"
+			speelknop.style.transitionDuration = '1.0s';
+		}, 100);
+	}
+
+	function onerror(e) {
+		speelknop.innerHTML = '▶';
+		speelknop.style.background = 'red';
+		speelknop.style.transitionDuration = '0.0s';
+		foutmelding.style.color = "red"
+
+		foutmelding.innerHTML = e;
+		foutmelding.style.opacity = "1.0"
+
+		setTimeout(function() {
+			speelknop.style.background = cknop;
+			foutmelding.style.opacity = "0.0"
+		}, 5000);
+	}
+
+  var editor = CodeMirror.fromTextArea(document.getElementById("broncode"), {
+    lineNumbers: false,
+    matchBrackets: true,
+    mode: "taal",
+		indentUnit: 2,
+		tabSize: 2,
+		indentWithTabs: true,
+		theme: 'slang',
+		styleActiveLine: true,
+		cursorScrollMargin: 10,
+		lineWrapping: true,
+		height: "1200px",
+
+		extraKeys: {
+			"Shift-Enter": function(cm) { vertaal(); },
+			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
+		},
+  });
+	//editor.setSize('50%', '300px');
+	editor.setValue(demos[demoindex]);
+
+	editor.setSize(null, '800px');
+
+	// zet de codemirror selectie
+	function selecteer(loc) {
+		editor.setSelection(loc.anchor, loc.head);
+	}
+
+	// jaja!
+	var oldWidgets = [];
+	var oldLineWidgets = [];
+
+	function setErrors(errors) {
+
+		// verwijder oude
+		for (var i = 0; i < oldWidgets.length; i++)
+			oldWidgets[i].parentNode.removeChild(oldWidgets[i]);
+		oldWidgets = [];
+
+		for (var i = 0; i < oldLineWidgets.length; i++)
+			oldLineWidgets[i].clear();
+		oldLineWidgets = [];
+		
+		for (var i = 0; i < errors.length; i++) {
+			var error = errors[i];
+				var inline = document.createElement("div");
+					inline.innerHTML = '<b>&nbsp;<!--⚠--></b>';
+					inline.classList.add("fouticoon");
+					inline.style.fontFamily = 'Verdana';
+					inline.style.position = 'absolute';
+					inline.style.marginRight = '0px';
+					inline.style.marginTop = '-18px';
+					//inline.style.zIndex	= '9';
+			oldWidgets.push(inline);
+			var a = editor.addWidget(error.loc.anchor, inline, {above: true});
+				var message = document.createElement("div");
+					message.classList.add(error.type+"fout");
+					message.classList.add("fout");
+					message.innerHTML = error.html;
+
+			var line = error.loc.anchor.line;
+			if (line > editor.lineCount() || line < 0)
+				line = 0;
+			var b = editor.addLineWidget(line, message);
+			oldLineWidgets.push(b);
+		}
+	}
+
+	// magische symbolen
+	var magisch = {
+		"*": "·",
+		"@": "∘",
+		"!": "¬",
+	};
+	var bimagisch = {
+		"||": "‖",
+		"/0": "∅",
+		"0/": "∅",
+		"o/": "∅",
+		"/o": "∅",
+		"ooo": "∞",
+		"tau": "τ",
+		"som": "Σ",
+		"->": "→",
+		"-->": "↦",
+		">=": "≥",
+		"<=": "≤",
+		"=<": "≤",
+		"=/": "≠",
+		"/=": "≠",
+		"=>": "⇒",
+		"xx": "×",
+		"^2": "²",
+		"^3": "³",
+		"_0": "₀",
+		"_1": "₁",
+		"_2": "₂",
+		"^-1": "⁻¹",
+		"RR": "ℝ",
+		"NN": "ℕ",
+		"ZZ": "ℤ",
+		"BB": "𝔹",
+		"QQ": "ℚ",
+		"HH": "ℍ",
+	};
+	editor.on("beforeChange", (cm,change) => {
+		if (magisch[change.text]) {
+			//cm.replaceRange(magisch[change.text], change.from, change.to);
+			//return true;
+			change.update(change.from,change.to,magisch[change.text]);
+		}
+		var ch = change.from.ch;
+		var line = change.from.line;
+
+		var zin = cm.doc.getLine(line);
+
+		var l2 = zin.substr(Math.max(ch-1, 0), 1) + change.text;
+		var l3 = zin.substr(Math.max(ch-2, 0), 2) + change.text;
+		var l4 = zin.substr(Math.max(ch-3, 0), 3) + change.text;
+		var l5 = zin.substr(Math.max(ch-4, 0), 4) + change.text;
+
+		var a;
+		var len;
+		if (bimagisch[l2]) { len = 2; a = bimagisch[l2]; }
+		if (bimagisch[l3]) { len = 3; a = bimagisch[l3]; }
+		if (bimagisch[l4]) { len = 4; a = bimagisch[l4]; }
+		if (bimagisch[l5]) { len = 5; a = bimagisch[l5]; }
+	
+		if (a)
+		{
+			change.update({ch:ch-len+1,line:line}, {ch:change.to.ch,line:change.to.line}, a);
+		}
+	});
+
+	var vim = document.getElementById("vim");
+	vim.addEventListener("click", function() { editor.setOption('keyMap', 'vim'); });
+
+
+</script>
+</html>

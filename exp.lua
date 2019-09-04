@@ -172,6 +172,8 @@ end
 function boompairs(exp)
 	local t = {}
 	local function r(exp)
+		if not exp.v and not exp.f then error('GEEN EXP!') end
+		print(e2s(exp or X'a'))
 		if exp == nil then error('OEI') end
 		if isatoom(exp) then
 			t[exp] = true
