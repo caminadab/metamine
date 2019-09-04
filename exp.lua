@@ -173,7 +173,6 @@ function boompairs(exp)
 	local t = {}
 	local function r(exp)
 		if not exp.v and not exp.f then error('GEEN EXP!') end
-		print(e2s(exp or X'a'))
 		if exp == nil then error('OEI') end
 		if isatoom(exp) then
 			t[exp] = true
@@ -253,8 +252,10 @@ end
 function exp2string(self,tabs)
 	if type(self) ~= 'table' then return error('is geen expressie') end
 	if not self.v and not self.f then error('is geen expressie') end
+	return unlisp(self)
+end
 
-	do return unlisp(self) end
+function exp2stringidk(self,tabs)
 	if type(self) == 'string' then return self end
 	local tabs = (tabs or '') .. '  '
 	local params = {}
@@ -275,7 +276,7 @@ function exp2string(self,tabs)
 		fn = tostring(params.f)
 	end
 	if len > 30 then
-		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
+		local a = fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
 	else
 		return fn..'('..table.concat(params,sep)..')'
 	end

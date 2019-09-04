@@ -90,12 +90,12 @@ int xlua_pushatoom(lua_State* L, char* text, YYLTYPE loc) {
 
 int xlua_refatoom(lua_State* L, char* text, YYLTYPE loc) {
 	// =  { v = $1 }
-	lua_createtable(L, 0, 1);
+	lua_createtable(L, 0, 2);
 		lua_pushstring(L, text);
 			lua_setfield(L, -2, "v");
 		xlua_pushloc(L, loc);
 			lua_setfield(L, -2, "loc");
-		return luaL_ref(L,-1);
+		return luaL_ref(L, LREG);
 	//
 }
 

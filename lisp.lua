@@ -126,15 +126,6 @@ function unparse_len0(exp)
 end
 
 function unparse_work(sexpr, maxlen, tabs, res)
-	--[[
-	if type(sexpr) == 'boolean' then
-		if sexpr then sexpr = color.cyan .. 'ja' .. color.white
-		else sepxr = color.cyan .. 'nee' .. color.white end
-	end
-	if type(sexpr) == 'number' then sexpr = tostring(math.floor(sexpr)) end
-	if type(sexpr) == 'function' then sexpr = color.cyan..tostring('fn')..color.white end
-	]]
-
   tabs = tabs or 0
   res = res or {}
   if isatoom(sexpr) then
@@ -142,21 +133,11 @@ function unparse_work(sexpr, maxlen, tabs, res)
 		if sexpr.ref then
 			insert(res, sexpr.ref.v)
 		end
+	elseif isfn(sexpr) and sexpr.f.v == '[]u' then
+		insert(res, '[]u(...)')
 	elseif isfn(sexpr) then
     local split = unparse_len(sexpr) > maxlen
-		if sexpr.f then
-			if isfn(sexpr.f) then
-				insert(res, color[(tabs%#color)+1])
-				insert(res, '(')
-				insert(res, color.white)
-			end
-			unparse_work(sexpr.f, maxlen, tabs+1, res)
-			if isfn(sexpr.f) then
-				insert(res, color[(tabs%#color)+1])
-				insert(res, ')')
-				insert(res, color.white)
-			end
-		end
+		unparse_work(sexpr.f, maxlen, tabs+1, res)
 		insert(res, color[(tabs%#color)+1])
 		insert(res, '(')
 		insert(res, color.white)

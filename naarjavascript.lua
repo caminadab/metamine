@@ -122,7 +122,7 @@ local immjs = {
 	-- lijst
 	['#'] = '$1.length',
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
-	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $2 - 1 - i))',
+	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$1-$2)), (x,i) => $1 - 1 - i))',
 	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	['_2'] = 'Array.isArray($1) ? $1[$2] : $1($2)',
@@ -168,6 +168,17 @@ local immsym = {
 	]],
 
 	['prevvar'] = '(function(a){return vars[a];})',
+
+	-- discreet
+	['min'] = 'Math.min',
+	['max'] = 'Math.max',
+	['entier'] = 'Math.floor',
+	['int'] = 'Math.floor',
+	['intd'] = 'Math.floor',
+	['abs'] = 'Math.abs',
+	['absd'] = 'Math.abs',
+	['absi'] = 'Math.abs',
+	['sign'] = '($1 > 0 ? 1 : -1)',
 	
 	-- LIB
 	['getContext'] = '(function() {return uit.children[0].getContext("2d");})',

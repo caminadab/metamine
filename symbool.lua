@@ -200,30 +200,30 @@ end
 sym = {
 	plus = X'+',
 	min = X'-',
-	keer = X'*',
+	keer = X'·',
 	deel = X'/',
 	plusis = X'+=',
 	minis = X'-=',
-	keeris = X'*=',
+	keeris = X'·=',
 	deelis = X'/=',
 
 	alt = X'|',
 	altis = X'|=',
 	call = X'call',
-	cat = X'||',
-	catass = X'||=',
-	co = X'co',
-	cois = X'co=',
-	dan = X'=>',
-	als = X'=>',
-	niet = X'!',
+	cat = X'‖',
+	catass = X'‖=',
+	co = X'∐',
+	cois = X'∐=',
+	dan = X'⇒',
+	als = X'⇒',
+	niet = X'¬',
 	niets = X'niets',
 	lijst = X'[]',
 	is = X'=',
 	oud = X"'",
 	ass = X':=',
-	map = X'->',
-	maplet = X'-->',
+	map = X'→',
+	maplet = X'↦',
 	start = X'start',
 	set = X'{}',
 	stop = X'stop',
@@ -237,79 +237,3 @@ if test then
 	assert(tel == 1, moes(b))
 	--assert(b[2].exp == s, e2s(b))
 end
---[[
-=======
-function substitueerzuinig(exp, van, naar, al, maakvar)
-	--do return substitueer(exp, van, naar) end
-	local al = al or {}
-	local maakvar = maakvar or maakvars()
-	if al[moes(exp)] then
-		local resnum = al[moes(exp)]
-		local ref, num = resnum[1], resnum[2]
-		ref.exp.ref = assert(ref.v)
-		return ref, num
-	end
-	local res,num
-	if isatoom(exp) then
-		if exp.v == van.v then
-			res, num = naar, 1
-		else
-			res, num = exp, 0
-		end
-	else
-		if isexp(van) then
-			if expmoes(exp) == expmoes(van) then
-				res, num = naar, 1
-			end
-		end
-		local t = {loc=exp.loc}
-		local n = 0
-		t.f = substitueerzuinig(exp.f, van, naar, al, maakvar)
-		for i,v in ipairs(exp) do
-			local m
-			t[i],m = substitueerzuinig(v, van, naar, al, maakvar)
-			n = n + m
-		end
-		res, num = t, n
-	end
-	local ref = X('~'..maakvar())
-	ref.exp = res
-	if isfn(exp) then
-		al[moes(exp)] = {ref, num}
-	end
-	return res, num
-end
-
-sym = {}
-
-sym.plus = X'+'
-sym.min = X'-'
-sym.keer = X'*'
-sym.deel = X'/'
-sym.plusis = X'+='
-sym.minis = X'-='
-sym.keeris = X'*='
-sym.deelis = X'/='
-
-sym.alt = X'|'
-sym.altis = X'|='
-sym.call = X'call'
-sym.cat = X'||'
-sym.catass = X'||='
-sym.co = X'co'
-sym.cois = X'co='
-sym.dan = X'=>'
-sym.als = X'=>'
-sym.niet = X'!'
-sym.niets = X'niets'
-sym.lijst = X'[]'
-sym.is = X'='
-sym.oud = X"'"
-sym.ass = X':='
-sym.map = X'->'
-sym.maplet = X'-->'
-sym.start = X'start'
-sym.set = X'{}'
-sym.stop = X'stop'
->>>>>>> Stashed changes
-]]

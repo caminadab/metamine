@@ -172,15 +172,15 @@ function controle(exp, maakvar)
 			local nargs = #waarde - 1
 			for i,arg in ipairs(args) do
 				local argvan = X('_arg', arg)
-				local argnaar = X('_arg'..(i-1))
+				--local argnaar = X('_arg'..(i-1))
 
-				local argalt = X(argnaar.v..arg.v)
+				--local argalt = X(argnaar.v..arg.v)
 
 				-- veilig stellen...
 				--waarde = substitueerzuinig(waarde, argnaar, argalt, maakvar)
 				--print('JA!', e2s(argvan), e2s(argnaar)) -- PRINT
 
-				waarde = substitueerzuinig(waarde, argvan, argnaar, maakvar)
+				--waarde = substitueerzuinig(waarde, argvan, argnaar, maakvar)
 			end
 			-- is alles eruit?
 			for exp in boompairs(waarde) do
@@ -201,7 +201,7 @@ function controle(exp, maakvar)
 			mkstat(stat, ret)
 
 		-- alsdan!
-		elseif fn(exp) == '=>' then
+		elseif fn(exp) == '⇒' then
 			local blok0 = blok
 			local eals, edan, eanders = exp[1], exp[2], exp[3]
 			
@@ -236,7 +236,7 @@ function controle(exp, maakvar)
 				randers = con(eanders,rdan)
 			end
 
-			-- daadwerkelijke '=>'
+			-- daadwerkelijke 'g'
 			local stat = X(':=', ret, rdan)
 			stat[2].ref = exp.ref
 			al[ret.v] = rdan

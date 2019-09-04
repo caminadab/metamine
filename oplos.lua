@@ -174,7 +174,7 @@ function oplos(exp,voor)
 
 				-- local neq = 
 				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-				local neq = X('|:=', a, X('=>', 'init', b, 'niets'))
+				local neq = X('|:=', a, X('⇒', 'init', b, 'niets'))
 				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
@@ -239,12 +239,12 @@ function oplos(exp,voor)
 
 		-- pak blokken uit
 		for eq in pairs(eqs) do
-			if fn(eq) == '=>' then
+			if fn(eq) == '⇒' then
 				if fn(eq[2]) == '⋀' then
 					for i,sub in ipairs(eq[2]) do
-						local neq = X('=>', eq[1], sub)--X'niets')
+						local neq = X('⇒', eq[1], sub)--X'niets')
 						if fn(sub) == '|:=' then
-							--eq = X('=>', X('wanneer', eq[1]), 
+							--eq = X('⇒', X('wanneer', eq[1]), 
 							sub = X('[]', sub[1], sub[2])
 						end
 						nieuw[neq] = true
@@ -255,7 +255,7 @@ function oplos(exp,voor)
 				end
 				if eq[3] and fn(eq[3]) == '⋀' then
 					for i,sub in ipairs(eq[3]) do
-						local eq = X('=>', X('!', eq[1]), sub)--X'niets')
+						local eq = X('⇒', X('!', eq[1]), sub)--X'niets')
 						nieuw[eq] = true
 						--print('BLOK', e2s(eq))
 					end
@@ -277,7 +277,7 @@ function oplos(exp,voor)
 		--   x |= (¬d ⇒ y)
 		--   y |= (¬d ⇒ x)
 		for eq in pairs(eqs) do
-			if fn(eq) == '=>' and (fn(eq[2]) == '=' or fn(eq[2]) == '|=' or fn(eq[2]) == ':=') then
+			if fn(eq) == '⇒' and (fn(eq[2]) == '=' or fn(eq[2]) == '|=' or fn(eq[2]) == ':=') then
 				--error('OK')
 				
 				eq.f.v = '|='
@@ -493,6 +493,7 @@ function oplos(exp,voor)
 		local aantal = 0
 		local nieuw = {}
 		local afval = {}
+		-- herschrijf a→a+1 naar _fn(0 +(_arg(0) 1))
 		for eq in pairs(eqs) do
 			for lam in punten(eq) do
 
