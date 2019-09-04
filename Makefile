@@ -2,17 +2,17 @@ linux:
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
-	ln -sf ../bin/ontleed.so goo/ontleed.so
-	ln -sf bin/ontleed.so ontleed.so
-	ln -sf ../vt bin/vt
-	ln -sf ../doe bin/doe
+	ln -sf ../bin/ontleed.so goo/
+	ln -sf bin/ontleed.so .
+	ln -sf ../vt bin/
+	ln -sf ../doe bin/
 	
 windows:
 	mkdir -p bin
 	cd ontleed; make windows
 	cp -r ontleed/bin/* bin/
-	ln -sf ../vt bin/vt
-	ln -sf ../doe bin/doe
+	ln -sf ../vt bin/
+	ln -sf ../doe bin/
 
 deploy:
 	scp -r goo/www/* metamine.nl:/var/www/html/

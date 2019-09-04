@@ -126,7 +126,7 @@ local immjs = {
 	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	['_2'] = 'Array.isArray($1) ? $1[$2] : $1($2)',
-	['_'] = '$1($2)',
+	['_'] = '$1($2, $3, $4)',
 	['_u'] = '$1[$2]',
 	['call'] = '$1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
@@ -233,11 +233,7 @@ local immsym = {
 	})
 	]],
 
-	['_arg0'] = '_arg0',
-	['_arg1'] = '_arg1',
-	['_arg2'] = '_arg2',
-	['_arg3'] = '_arg3',
-	['_arg4'] = '_arg4',
+	['_arg'] = '_arg',
 	looptijd = '(new Date().getTime() - start)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
@@ -416,7 +412,7 @@ function naarjavascript(app)
 	for blok in spairs(app.punten) do
 		local naam = blok.naam.v
 		if blok.naam.v:sub(1,2) == 'fn' then
-			t[#t+1] = 'function '..naam..'(_arg0, _arg1, _arg2, _arg3, _arg4) {'
+			t[#t+1] = 'function '..naam..'(_arg) {'
 			flow(blok, '  ')
 			t[#t+1] = '}'
 		end
