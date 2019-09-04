@@ -182,6 +182,7 @@ for i,bron in ipairs(bronnen) do
 end
 if verbozeBroncode then
 	print()
+	seerec(asb)
 	print(e2s(asb))
 end
 

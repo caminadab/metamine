@@ -15,6 +15,9 @@ int xlua_reffn2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc);
 int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid, YYLTYPE loc);
 int xlua_reffn4(lua_State* L, int fid, int aid, int bid, int cid, int did, YYLTYPE loc);
 int xlua_reffn5(lua_State* L, int fid, int aid, int bid, int cid, int did, int eid, YYLTYPE loc);
+int xlua_reftup2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc);
+
+#define TN2 xlua_reftup2
 
 int lua_code(lua_State* L);
 int lua_ontleed(lua_State* L);

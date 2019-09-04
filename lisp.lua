@@ -3,10 +3,13 @@ require 'util'
 
 function isatoom(exp)
 	if type(exp) ~= 'table' then see(exp); print(debug.traceback()) ; return true end
+	assert(exp.v or (exp.f and (exp.a or exp[1])))
 	return exp.v ~= nil
 end
 
 function isfn(exp)
+	assert(exp)
+	assert(exp.v or (exp.f and (exp.a or exp[1])))
 	return exp.f ~= nil
 end
 isexp = isfn
@@ -141,7 +144,16 @@ function unparse_work(sexpr, maxlen, tabs, res)
 		insert(res, color[(tabs%#color)+1])
 		insert(res, '(')
 		insert(res, color.white)
-    for i,sub in ipairs(sexpr) do
+
+		-- arg is troubled?
+		local t = sexpr
+		if sexpr.a.f.v == ',' then
+			t = sexpr.a.f
+		else
+			t = {sexpr.a}
+		end
+			
+    for i,sub in ipairs(t) do
 			if type(sub) == 'boolean' then
 				sub = tostring(sub)
 			end

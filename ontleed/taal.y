@@ -40,6 +40,7 @@
 	#define FN3 xlua_reffn3
 	#define FN4 xlua_reffn4
 	#define FN5 xlua_reffn5
+	#define TN2 xlua_reftup2
 %}
 
 %token '\n' NEWLINE "end of line"
@@ -218,18 +219,16 @@ single:
 	NAAM										{ $$ = LOC(L, $1, @1); }
 | "ℝ"
 | "★"
-| '(' exp ')'							{ $$ = $2; }
+| '(' exp ')'							{ $$ = LOC(L, $2, @$); }
 | '|' exp '|'							{ $$ = FN1(L, A(L,"#", @$), $2, @$); }
-|	NAAM '.'								{
-	$$ = FN1(L, $2, $1, @$);
-}
+|	NAAM '.'								{ $$ = FN1(L, $2, $1, @$); }
 |	NAAM '\''						{ $$ = FN1(L, $2, $1, @$); }
 |	'(' op ')'					{ $$ = $2; }
 |	'(' unop ')'				{ $$ = $2; }
 
 /* lijst */
-| '[' exp ']'				{ $$ = $2; }
-| '{' exp '}'				{ $$ = $2; }
+| '[' exp ']'				{ $$ = LOC(L, $2, @$); }
+| '{' exp '}'				{ $$ = LOC(L, $2, @$); }
 
 /*
 list:
@@ -312,7 +311,7 @@ exp:
 |	exp "→" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ':' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ".." exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-|	exp ',' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp ',' exp  { $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ":=" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '=' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '-' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
