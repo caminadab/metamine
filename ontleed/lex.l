@@ -46,9 +46,15 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 
 	#define LREG LUA_REGISTRYINDEX
 	#define A xlua_refatoom
+	#define APPEND xlua_append
 	#define FN1 xlua_reffn1
+	#define FN2 xlua_reffn2
+	#define FN3 xlua_reffn3
+	#define FN4 xlua_reffn4
+	#define FN5 xlua_reffn5
 
 	extern lua_State* GL;
+	extern YYLTYPE nergens;
 %}
 
 
@@ -57,56 +63,56 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 ;-[^$]*-;				// negeer commentaar
 ;[^-][^\n]*\n		{ return NEWLINE; }
 
-"★"		{ *yylval = A(GL, "★"); return JOKER; }
-"¬"		{ *yylval = A(GL, "¬"); return NIET; }
-"#"		{ *yylval = A(GL, "#"); return '#'; }
-"."		{ *yylval = A(GL, "."); return '.'; }
-"→"		{ *yylval = A(GL, "→"); return TO; }
-".."	{ *yylval = A(GL, ".."); return ITOT; }
-"ℝ"		{ *yylval = A(GL, "ℝ"); return RR; }
-"∩"		{ *yylval = A(GL, "∩"); return INTERSECTIE; }
-"∪"		{ *yylval = A(GL, "∪"); return UNIE; }
-"‖"		{ *yylval = A(GL, "‖"); return CAT; }
-","		{ *yylval = A(GL, ","); return ','; }
-"^"		{ *yylval = A(GL, "^"); return '^'; }
-"²"		{ *yylval = A(GL, "²"); return KWADRAAT; }
-"³"		{ *yylval = A(GL, "²"); return DERDEMACHT; }
-"⁻¹"		{ *yylval = A(GL, "⁻¹"); return INVERTEER; }
-_		{ *yylval = A(GL, "_"); return '_'; }
-"("		{ *yylval = A(GL, "("); return '('; }
-")"		{ *yylval = A(GL, ")"); return ')'; }
-"["		{ *yylval = A(GL, "["); return '['; }
-"]"		{ *yylval = A(GL, "]"); return ']'; }
-"{"		{ *yylval = A(GL, "{"); return '{'; }
-"}"		{ *yylval = A(GL, "}"); return '}'; }
-"⋀"		{ *yylval = A(GL, "⋀"); return ENN; }
-"∧"		{ *yylval = A(GL, "∧"); return EN; }
-"en"	{ *yylval = A(GL, "∧"); return EN; }
-"and"	{ *yylval = A(GL, "∧"); return EN; }
-"∨"		{ *yylval = A(GL, "∨"); return OF; }
-"of"	{ *yylval = A(GL, "∨"); return OF; }
-"or"	{ *yylval = A(GL, "∨"); return OF; }
-"⋁"		{ *yylval = A(GL, "⋁"); return OFF; }
-"%"		{ *yylval = A(GL, "%"); return '%'; }
-"+"		{ *yylval = A(GL, "+"); return '+'; }
-"-"		{ *yylval = A(GL, "-"); return '-'; }
-"·"		{ *yylval = A(GL, "·"); return KEER; }
-"/"		{ *yylval = A(GL, "/"); return '/'; }
-"∘"		{ *yylval = A(GL, "∘"); return COMP; }
-":"		{ *yylval = A(GL, ":"); return ':'; }
-">"		{ *yylval = A(GL, ">"); return '>'; }
-"≥"		{ *yylval = A(GL, "≥"); return GDGA; }
-"="		{ *yylval = A(GL, "="); return '='; }
-"≈"		{ *yylval = A(GL, "≈"); return ISB; }
-"≠"		{ *yylval = A(GL, "≠"); return ISN; }
-"≤"		{ *yylval = A(GL, "≤"); return KDGA; }
-"<"		{ *yylval = A(GL, "<"); return '<'; }
-"!"		{ *yylval = A(GL, "!"); return '!'; }
-"Σ"		{ *yylval = A(GL, "Σ"); return SOM; }
-"⇒"		{ *yylval = A(GL, "⇒"); return IMPLICEERT; }
-":="		{ *yylval = A(GL, ":="); return ASS; }
+"★"		{ *yylval = A(GL, "★", nergens); return JOKER; }
+"¬"		{ *yylval = A(GL, "¬", nergens); return NIET; }
+"#"		{ *yylval = A(GL, "#", nergens); return '#'; }
+"."		{ *yylval = A(GL, ".", nergens); return '.'; }
+"→"		{ *yylval = A(GL, "→", nergens); return TO; }
+".."	{ *yylval = A(GL, "..", nergens); return ITOT; }
+"ℝ"		{ *yylval = A(GL, "ℝ", nergens); return RR; }
+"∩"		{ *yylval = A(GL, "∩", nergens); return INTERSECTIE; }
+"∪"		{ *yylval = A(GL, "∪", nergens); return UNIE; }
+"‖"		{ *yylval = A(GL, "‖", nergens); return CAT; }
+","		{ *yylval = A(GL, ",", nergens); return ','; }
+"^"		{ *yylval = A(GL, "^", nergens); return '^'; }
+"²"		{ *yylval = A(GL, "²", nergens); return KWADRAAT; }
+"³"		{ *yylval = A(GL, "²", nergens); return DERDEMACHT; }
+"⁻¹"		{ *yylval = A(GL, "⁻¹", nergens); return INVERTEER; }
+_		{ *yylval = A(GL, "_", nergens); return '_'; }
+"("		{ *yylval = A(GL, "(", nergens); return '('; }
+")"		{ *yylval = A(GL, ")", nergens); return ')'; }
+"["		{ *yylval = A(GL, "[", nergens); return '['; }
+"]"		{ *yylval = A(GL, "]", nergens); return ']'; }
+"{"		{ *yylval = A(GL, "{", nergens); return '{'; }
+"}"		{ *yylval = A(GL, "}", nergens); return '}'; }
+"⋀"		{ *yylval = A(GL, "⋀", nergens); return ENN; }
+"∧"		{ *yylval = A(GL, "∧", nergens); return EN; }
+"en"	{ *yylval = A(GL, "∧", nergens); return EN; }
+"and"	{ *yylval = A(GL, "∧", nergens); return EN; }
+"∨"		{ *yylval = A(GL, "∨", nergens); return OF; }
+"of"	{ *yylval = A(GL, "∨", nergens); return OF; }
+"or"	{ *yylval = A(GL, "∨", nergens); return OF; }
+"⋁"		{ *yylval = A(GL, "⋁", nergens); return OFF; }
+"%"		{ *yylval = A(GL, "%", nergens); return '%'; }
+"+"		{ *yylval = A(GL, "+", nergens); return '+'; }
+"-"		{ *yylval = A(GL, "-", nergens); return '-'; }
+"·"		{ *yylval = A(GL, "·", nergens); return KEER; }
+"/"		{ *yylval = A(GL, "/", nergens); return '/'; }
+"∘"		{ *yylval = A(GL, "∘", nergens); return COMP; }
+":"		{ *yylval = A(GL, ":", nergens); return ':'; }
+">"		{ *yylval = A(GL, ">", nergens); return '>'; }
+"≥"		{ *yylval = A(GL, "≥", nergens); return GDGA; }
+"="		{ *yylval = A(GL, "=", nergens); return '='; }
+"≈"		{ *yylval = A(GL, "≈", nergens); return ISB; }
+"≠"		{ *yylval = A(GL, "≠", nergens); return ISN; }
+"≤"		{ *yylval = A(GL, "≤", nergens); return KDGA; }
+"<"		{ *yylval = A(GL, "<", nergens); return '<'; }
+"!"		{ *yylval = A(GL, "!", nergens); return '!'; }
+"Σ"		{ *yylval = A(GL, "Σ", nergens); return SOM; }
+"⇒"		{ *yylval = A(GL, "⇒", nergens); return IMPLICEERT; }
+":="		{ *yylval = A(GL, ":=", nergens); return ASS; }
 
-"'"		{ *yylval = A(GL, "'"); return '\''; }
+"'"		{ *yylval = A(GL, "'", nergens); return '\''; }
 
 
 \n		{ return NEWLINE; }
@@ -127,14 +133,14 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 '.'		{ /* enkel karakter */
 	char buf[10];
 	sprintf(buf, "%u", yytext[1]);
-	*yylval = A(GL, buf);
+	*yylval = A(GL, buf, nergens);
 	return NAAM;
 }
 
--?[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }
--?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }
--?[0-9]*e[0-9]*			{ *yylval = A(GL, yytext); return NAAM; }
--?[0-9]*\.[0-9]+	{ *yylval = A(GL, yytext); return NAAM; }
+-?[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
+-?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
+-?[0-9]*e[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
+-?[0-9]*\.[0-9]+	{ *yylval = A(GL, yytext, nergens); return NAAM; }
 
 ((\d+)|(\.\d+))(e\d*)? { /* getal */
 	lua_pushstring(GL, yytext);
@@ -143,15 +149,15 @@ _		{ *yylval = A(GL, "_"); return '_'; }
 }
 
 [a-zA-Z_][a-zA-Z0-9_]* { /* naam */
-	*yylval = A(GL, yytext);
+	*yylval = A(GL, yytext, nergens);
 	return NAAM;
 }
 
 \"([^"])*\" {
-	*yylval = xlua_reftekst(GL, yytext); // tekst(a(yytext));
+	*yylval = xlua_reftekst(GL, yytext, nergens); // tekst(a(yytext));
 	return NAAM;
 }
 
-.			{ *yylval = A(GL, yytext); return NAAM; }
+.			{ *yylval = A(GL, yytext, nergens); return NAAM; }
 
 %%

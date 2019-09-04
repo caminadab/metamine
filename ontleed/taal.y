@@ -27,7 +27,9 @@
 	typedef struct lua_State lua_State;
 
 	int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg);
-	int plus(int a, int b) { return a + b; }
+	int yylex(void* val, YYLTYPE* loc, void* scanner);
+
+	YYLTYPE nergens = {-1, -1, -1, -1};
 
 	#define A xlua_refatoom
 	#define APPEND xlua_append
@@ -128,18 +130,18 @@ block:
 ;
 
 stats:
-	%empty							{ $$ = FN0(L, A(L, "⋀")); }
+	%empty							{ $$ = FN0(L, A(L, "⋀", @$), @$); }
 | stats NEWLINE				{ $$ = $1; }
-| stats stat NEWLINE	{ $$ = APPEND(L, $1, $2); }
-| stats error NEWLINE				{ $$ = APPEND(L, $1, A(L, "fout")); yyerrok; }
+| stats stat NEWLINE	{ $$ = APPEND(L, $1, $2, @$); }
+| stats error NEWLINE				{ $$ = APPEND(L, $1, A(L, "fout", @$), @$); yyerrok; }
 ;
 
 stat:
 	exp
 
-| ALS exp DAN NEWLINE block EIND   { $$ = FN2(L, A(L,"⇒"), $2, $5); }
-| ALS exp DAN exp EIND             { $$ = FN2(L, A(L,"⇒"), $2, $4); }
-| ALS exp DAN exp ANDERS exp EIND  { $$ = FN3(L, A(L,"⇒"), $2, $4, $6); }
+| ALS exp DAN NEWLINE block EIND   { $$ = FN2(L, A(L,"⇒", @$), $2, $5, @$); }
+| ALS exp DAN exp EIND             { $$ = FN2(L, A(L,"⇒", @$), $2, $4, @$); }
+| ALS exp DAN exp ANDERS exp EIND  { $$ = FN3(L, A(L,"⇒", @$), $2, $4, $6, @$); }
 /* 1   2   3   4     5    6  */
 
 /*
@@ -153,7 +155,7 @@ eind
 */
 | ALS NEWLINE block DAN NEWLINE block EIND {
 /* 1     2      3    4     5      6    7   */
-	$$ = FN2(L, A(L,"⇒"), $3, $6);
+	$$ = FN2(L, A(L,"⇒", @$), $3, $6, @$);
 }
 
 /*
@@ -167,7 +169,7 @@ eind
 */
 | ALS exp DAN NEWLINE block ANDERSALS exp DAN NEWLINE block ANDERS NEWLINE block EIND {
 /* 1   2   3     4      5      6       7   8     9     10    11      12     13  14 */
-	$$ = FN5(L, A(L,"⇒"), $2, $5, $7, $10, $13);
+	$$ = FN5(L, A(L,"⇒", @$), $2, $5, $7, $10, $13, @$);
 }
 
 /*
@@ -179,7 +181,7 @@ eind
 */
 | ALS exp DAN NEWLINE block ANDERSALS exp DAN NEWLINE block EIND {
 /* 1   2   3     4      5      6       7   8     9     10    11  */
-	$$ = FN4(L, A(L,"⇒"), $2, $5, $7, $10);
+	$$ = FN4(L, A(L,"⇒", @$), $2, $5, $7, $10, @$);
 }
 
 /*
@@ -191,7 +193,7 @@ eind
 */
 | ALS exp DAN NEWLINE block ANDERS NEWLINE block EIND {
 /* 1   2   3     4      5      6      7      8    9   */
-	$$ = FN3(L, A(L,"⇒"), $2, $5, $8);
+	$$ = FN3(L, A(L,"⇒", @$), $2, $5, $8, @$);
 }
 ;
 
@@ -216,11 +218,11 @@ single:
 | "ℝ"
 | "★"
 | '(' exp ')'							{ $$ = $2; }
-| '|' exp '|'							{ $$ = FN1(L, A(L,"#"), $2); }
+| '|' exp '|'							{ $$ = FN1(L, A(L,"#", @$), $2, @$); }
 |	NAAM '.'								{
-	$$ = FN1(L, $2, $1);
+	$$ = FN1(L, $2, $1, @$);
 }
-|	NAAM '\''						{ $$ = FN1(L, $2, $1); }
+|	NAAM '\''						{ $$ = FN1(L, $2, $1, @$); }
 |	'(' op ')'					{ $$ = $2; }
 |	'(' unop ')'				{ $$ = $2; }
 
@@ -256,18 +258,18 @@ items: exp;
 
 exp:
 	single
-| single single  %prec CALL  { $$ = FN2(L, A(L,"_"), $1, $2); }
-| single single single  %prec CALL  { $$ = FN3(L, A(L,"_"), $2, $1, $3); }
-| single single single single {  $$ = A(L, "fout"); yyerrok; }
-|	exp KWADRAAT						{ $$ = FN2(L, A(L,"^"), $1, A(L,"2")); }
-|	exp DERDEMACHT						{ $$ = FN2(L, A(L,"^"), $1, A(L,"3")); }
-|	exp INVERTEER						{ $$ = FN2(L, A(L,"^"), $1, A(L,"-1")); }
-|	"¬" exp  { $$ = FN1(L, $1, $2); }
-|	"Σ" exp  { $$ = FN1(L, $1, $2); }
-|	'-' exp  %prec NEG { $$ = FN1(L, $1, $2); }
-|	'#' exp  { $$ = FN1(L, $1, $2); }
-|	exp '!' { $$ = FN1(L, $2, $1); }
-|	exp '%' { $$ = FN1(L, $2, $1); }
+| single single  %prec CALL  { $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
+| single single single  %prec CALL  { $$ = FN3(L, A(L,"_", @$), $2, $1, $3, @$); }
+| single single single single {  $$ = A(L, "fout", @$); yyerrok; }
+|	exp KWADRAAT						{ $$ = FN2(L, A(L,"^", @$), $1, A(L,"2", @$), @$); }
+|	exp DERDEMACHT						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"3",@2), @$); }
+|	exp INVERTEER						{ $$ = FN2(L, A(L,"^", @$), $1, A(L,"-1", @$), @$); }
+|	"¬" exp  { $$ = FN1(L, $1, $2, @$); }
+|	"Σ" exp  { $$ = FN1(L, $1, $2, @$); }
+|	'-' exp  %prec NEG { $$ = FN1(L, $1, $2, @$); }
+|	'#' exp  { $$ = FN1(L, $1, $2, @$); }
+|	exp '!' { $$ = FN1(L, $2, $1, @$); }
+|	exp '%' { $$ = FN1(L, $2, $1, @$); }
 
 /*
 |	exp op exp  { $$ = FN2(L, $2, $1, $3); }
@@ -289,36 +291,36 @@ exp:
 |	exp op exp  { $$ = FN2(L, $2, $1, $3); }
 */
 
-|	exp '<' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "≤" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "≈" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "≠" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "≥" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp '>' exp  { $$ = FN2(L, $2, $1, $3); }
+|	exp '<' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "≤" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "≈" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "≠" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "≥" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp '>' exp  { $$ = FN2(L, $2, $1, $3, @$); }
 
-|	exp "‖" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "⋀" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "∧" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "∨" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "⋁" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "⋂" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "∩" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "∪" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "⋃" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "∘" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "→" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp ':' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp ".." exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp ',' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp ":=" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp '=' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp '-' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp '+' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp '/' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "·" exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp '_' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp '^' exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp "⇒" exp  { $$ = FN2(L, $2, $1, $3); }
+|	exp "‖" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "⋀" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "∧" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "∨" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "⋁" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "⋂" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "∩" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "∪" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "⋃" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "∘" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "→" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp ':' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp ".." exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp ',' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp ":=" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp '=' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp '-' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp '+' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp '/' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "·" exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp '_' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp '^' exp  { $$ = FN2(L, $2, $1, $3, @$); }
+|	exp "⇒" exp  { $$ = FN2(L, $2, $1, $3, @$); }
 
 ;
 

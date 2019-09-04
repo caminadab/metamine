@@ -303,10 +303,12 @@ function typeer(exp)
 					weestype(fn, 'dinges')
 
 				-- speciaal voor '_'
-				elseif f == '_' and types[a] and types[b] then
-					local type = types[a]:paramtype('lijst')
-					weestype(exp, type)
-					weestype(b, X'nat')
+				-- (f _ a)  ⇒  (a: f₂,  f
+				elseif f == '_' and types[a] then
+					weestype(b, types[a][2])
+					--local type = types[a]:paramtype('lijst')
+					--weestype(exp, type)
+					--weestype(b, X'nat')
 					--weestype(a, X'lijst')
 
 				elseif isfn(exp) and f == '[]' then
