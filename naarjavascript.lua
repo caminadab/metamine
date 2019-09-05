@@ -6,38 +6,11 @@ require 'bieb'
 
 local bieb = bieb()
 
-local infix = set('*', '/', '+', '-', 'mod')
-
-local aliases = {
-	['..'] = '_toti',
-}
-
 local jsbiebbron = file('bieb/bieb.js')
 
 local jsbieb = {}
 for waarde, naam in jsbiebbron:gmatch('(var ([^ ]*) = .-\n)\n') do
 	jsbieb[naam] = waarde
-end
-
-local function sym(exp, t)
-	local f = fn(exp)
-	local op = f and f:sub(1,-2)
-	if infix[op] then
-		t[#t+1] = exp[1].v .. op .. exp[2].v
-	elseif f == '[]u' then
-		t[#t+1] = '"' .. table.concat(map(exp, function(x) return string.char(x, 1) end)) .. '"'
-		print(t[#t], 'was het')
-		error'ok'
-	elseif op == '[]' then
-		t[#t+1] = '[' .. table.concat(map(exp, function(sub) return sub.v end), ', ') .. ']'
-	else
-		if isatoom(exp) then
-			t[#t+1] = exp.v
-		else
-			--t[#t+1] = f .. '(' .. exp[1].v .. ')' --table.concat(map(exp, function(sub) return sub.v end), ', ') .. ')'
-			t[#t+1] = f .. '(' .. table.concat(map(exp, function(sub) return sub.v end), ', ') .. ')'
-		end
-	end
 end
 
 --[[
@@ -227,10 +200,10 @@ local immjs = {
 			html = t;
 		}
 		return uit.children[0];
-	})]],
+	})($1)]],
 	['requestAnimationFrame'] = [[(function f(t) {
-		if (stop) {stop = false; uit.innerHTML = ''; return; }
-		var r = t && t();
+		if (stop) {stop = false; uit.innerHTML = ''; return; };
+		var r = $1(t);
 		mouseLeftPressed = false;
 		mouseLeftReleased = false;
 		keySpacePressed = false;
