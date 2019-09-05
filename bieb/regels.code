@@ -1,0 +1,16 @@
+(a := b) ⇒ (start ⇒ b) | a'
+(f(a) = b) ⇒ (f ∐= a → b)
+(b = f(a)) ⇒ (f ∐= a → b)
+(a ||= b) ⇒ ( a |= a' || b)
+(a < b) → (a: (b..∞) ∧ b: (-∞ .. a))
+
+VAR	⇒ _naam(AUTOINC)
+a. ⇒ (a = _atomen(AUTOINC))
+
+(c ⇒ (a = b))  ⇒  (a |= (c ⇒ b) ∧ b |= (c ⇒ a))
+(⇒)(c, d, (x = y))  ⇒  (x |= (¬d ⇒ y) ∧ y |= (¬d ⇒ x))
+
+a = (|)( VOORALLE ((a |= b), b) )
+a = _var( VOORALLE ((a |:= b), b) )
+
+(a = f(a'))  ⇒  (a = (herhaal(a' → a)) ???
