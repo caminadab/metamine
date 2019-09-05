@@ -2,13 +2,6 @@ require 'set'
 
 if not table.unpack then table.unpack = unpack end
 
-function LOG(...)
-	local verboos = _G.verboos
-	_G.verboos = true
-	log(...)
-	_G.verboos = verboos
-end
-
 function taal2string(tt)
 	return string.char(table.unpack(tt))
 end
@@ -93,19 +86,6 @@ function file(name, data)
 	end
 end
 bestand = file
-
-function kopie(t)
-	if type(t) == 'table' then
-		local c = {}
-		for i,v in pairs(t) do
-			c[i] = kopie(v)
-		end
-		return c
-	else
-		return t
-	end
-end
-kopieer = kopie
 
 function push(t,v) t[#t+1] = v end
 function pop(t)
