@@ -1,8 +1,7 @@
 #!/usr/bin/luajit
 package.path = package.path..';../?.lua'
 
-require 'naarlua'
-require 'naarweb'
+require 'bouw.genjs'
 require 'vertaal'
 require 'combineer'
 require 'rapporteer-syntax'
@@ -47,7 +46,7 @@ function vt(code)
 	local icode,fouten = vertaal(code, "demo")
 	local js = ''
 	if icode then
-		js = naarjavascript(icode)
+		js = genjs(icode)
 	end
 	local fouten = map(fouten, fout2json)
 

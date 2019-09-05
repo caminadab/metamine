@@ -1,6 +1,5 @@
 require 'exp'
 require 'util'
-require 'naarlua'
 
 local niets = {}
 
@@ -48,6 +47,8 @@ function bieb()
 	clearCanvas = function () error('niet beschikbaar') end;
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
+	label = function() error('niet beschikbaar') end;
+	rechthoek = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
 	muisKlik = true,
 	muisKlikBegin = true,
@@ -59,17 +60,10 @@ function bieb()
 	regMuis = true, -- X_X
 
 	-- toetsenbord
-	toetsRechts = true,
-	toetsLinks = true,
-	toetsOmhoog = true,
-	toetsOmlaag = true,
-	toetsSpatie = true,
-	toetsSpatieBegin = true,
-	toetsSpatieEind = true,
-	toetsA = true,
-	toetsW = true,
-	toetsD = true,
-	toetsS = true,
+	toetsNeer = true,
+	toetsNeerBegin = true,
+	toetsNeerEind = true,
+
 
 	['_'] = function(a, b)
 		if type(a) == 'string' then
@@ -152,16 +146,6 @@ function bieb()
 	['min'] = function(a,b) return math.min(a,b) end;
 	['mod'] = function(a,b) return a % b end;
 
-	['jslib'] = jslibtaal,
-	['javascript'] = function(fn) 
-		require 'naarjavascript'
-		local code,err = naarjavascript(fn)
-		if not code and verboos then print('GEEN JAVASCRIPT: '..err) end
-		local a = table.pack(string.byte(code, 1, #code))
-		a.fn = '[]'
-		return a
-	end;
-
 	['!'] = function(n)
 		local a = 1
 		for i=1,n do
@@ -182,13 +166,6 @@ function bieb()
 		return t
 	end;
 			
-	['lua'] = function(func)
-		local code = naarlua(func)
-		local a = table.pack(string.byte(code, 1, #code))
-		a.fn = '[]'
-		return a
-	end;
-
 	['kortsluit'] = function(a,b)
 		-- a = origineel
 		-- b = verbeterd

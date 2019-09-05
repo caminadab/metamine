@@ -4,18 +4,39 @@ succ = xy → xy + 1
 ververs = moment → regMuis(setInnerHtml(uit))
 app = requestAnimationFrame(ververs)
 
-;cirkel = (x,y,r) → canvasArc(
-
-;-
-;app = (requestAnimationFrame(ververs) ⇒ el )
-;ververs = dt → uit
-app = requestAnimationFrame(ververs)
-ververs = dt → setInnerHtml(uit)
--;
-
 el = setInnerHtml("<canvas width='1280' height='720'></canvas>")
 ctx = getContext(el)
 
 drawCanvas = (clearCanvas(ctx) ⇒ (#(objs map (obj → obj(ctx))) > -1))
 canvas = objs → (drawCanvas ⇒ "<canvas width='1280' height='720'></canvas>")
-;ververs = dt → obj
+
+; toetsenbord
+toetsSpatie = toetsNeer(32)
+toetsLinks = toetsNeer(37)
+toetsOmhoog = toetsNeer(38)
+toetsRechts = toetsNeer(39)
+toetsOmlaag = toetsNeer(40)
+toetsA = toetsNeer(97)
+toetsW = toetsNeer(119)
+toetsD = toetsNeer(100)
+toetsS = toetsNeer(115)
+
+toetsSpatieBegin = toetsNeerBegin(32)
+toetsLinksBegin = toetsNeerBegin(37)
+toetsOmhoogBegin = toetsNeerBegin(38)
+toetsRechtsBegin = toetsNeerBegin(39)
+toetsOmlaagBegin = toetsNeerBegin(40)
+toetsABegin = toetsNeerBegin(97)
+toetsDBegin = toetsNeerBegin(100)
+toetsSBegin = toetsNeerBegin(115)
+toetsWBegin = toetsNeerBegin(119)
+
+toetsSpatieEind = toetsNeerEind(32)
+toetsLinksEind = toetsNeerEind(37)
+toetsOmhoogEind = toetsNeerEind(38)
+toetsRechtsEind = toetsNeerEind(39)
+toetsOmlaagEind = toetsNeerEind(40)
+toetsAEind = toetsNeerEind(97)
+toetsDEind = toetsNeerEind(100)
+toetsSEind = toetsNeerEind(115)
+toetsWEind = toetsNeerEind(119)

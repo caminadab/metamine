@@ -1,0 +1,87 @@
+[]			[$ARGS]
+[]u			$TARGS
+{}			new Set([$ARGS])
+|				$1 || $2
+
+atoom		atoom$1
+%				$1 / 100
++				$1 + $2
+-				$1 - $2
+·				$1 * $2
+/				$1 / $2
+√				Math.sqrt($1)
+
++d			$1 + $2
+-d			$1 - $2
+·d			$1 * $2
+/d			$1 / $2
+
+/i			$1 / $2
+-i			$1 - $2
+·i			$1 * $2
+
+mod			$1 % $2
+modi		$1 % $2
+modd		$1 % $2
+
+^				Math.pow($1, $2)
+^i			Math.pow($1, $2)
+^d			Math.pow($1, $2)
+^f			function(res) { for (var i = 0; i < $2; i++) res = $1(res); return res; }
+
+willekeurigTussen	Math.random()*($2-$1) + $1
+
+>				$1 > $2
+≥				$1 >= $2
+=				$1 === $2
+≠				$1 !=== $2
+≤				$1 <= $2
+<				$1 < $2
+
+∧				$1 && $2'
+∨				$1 || $2'
+⇒				$1 ? $2 : $3'
+
+; trig
+sin			Math.sin($1)
+cos			Math.cos($1)
+tan			Math.tan($1)
+sincos	[Math.sin($1), Math.cos($1)]
+
+	-- discreet
+min			Math.min($1,$2)
+max			Math.max($1,$2)
+entier	Math.floor($1)
+int			Math.floor($1)
+intd		Math.floor($1)
+abs			Math.abs($1)
+absd		Math.abs($1)
+absi		Math.abs($1)
+sign		($1 > 0 ? 1 : -1)
+
+	-- exp
+log10		Math.log($1, 10)
+‖				$1.join($2)
+‖u			$1 + $2
+mapuu		(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })()
+
+	-- lijst
+#				$1.length
+Σ				$1.reduce((a,b) => a + b, 0)
+..			$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $2 - 1 - i))
+_				$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()
+_u			$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()
+_				Array.isArray($1) ? $1[$2] : $1($2)
+_u			$1[$2]
+vanaf		$1.slice($2, $1.length)
+×				$1.map(x => $2.map(y => [x, y]))
+
+map			$1.map($2)
+filter	$1.filter($2)
+reduceer	$1.reduce($2)
+∘				(function() { return $1.apply($2.apply(arguments)); }
+,				[$ARGS]
+
+prevvar	vars[$1]
+var			(function(varindex, ass) {\n var array = Array.from(ass);\n var ret = vars[varindex];\n for (var i = 0; i < array.length; i++) {\n if (array[i] != null) {\n ret = array[i];\n }\n } \n vars[varindex] = ret;\n return ret;\n })($1, $2)
+	
