@@ -13,7 +13,9 @@ function assembleer(asm, naam)
 	local obj = file(onaam)
 
 	-- troep opruimen
-	os.remove(snaam)
+	if not ontkever then
+		os.remove(snaam)
+	end
 	os.remove(onaam)
 
 	return obj

@@ -56,7 +56,7 @@ local immasm = {
 	['/i'] = 'mov rax, X\nmov rbx, Y\nidiv rbx\nmov R, rax',
 	['+d'] = 'fldd X\nfldd Y\nfadd\nfstpd R',
 	['-d'] = 'fldd X\nfldd Y\nfsub\nfstpd R',
-	['*d'] = 'fldd X\nfldd Y\nfmul\nfstpd R',
+	['*d'] = 'fldd X\nfldd Y\nfmulp\nfstpd R',
 	['/d'] = 'fldd X\nfldd Y\nfdiv\nfstpd R',
 }
 
@@ -586,7 +586,7 @@ xor rax, rdx
 
 			-- index
 			-- = a[b]
-			elseif opslag[f] then
+			elseif opslag[f] and exp[2].v == nil then
 				-- TODO bounds check
 				local a = f
 				local b = exp[1].v

@@ -72,7 +72,7 @@ Opties:
     -S                genereer assembly-code
     -R                genereer uitgebreid rapport
 
-    -A                print syntaxinformatie
+    -B                print syntaxinformatie
     -R                print architectuurspecifieke boom
     -G                print kennisgraaf
     -K                print voorgekauwde (opgeloste) kennis
@@ -91,7 +91,7 @@ Opties:
     -L                print elke uitgevoerde instructie
 
     -F                print uitvoer na kijkgatoptimalisaties
-    -G                print assemblycode
+    -A                print assemblycode
     -H                print linker info
     -M                print geheugenallocatie info
     -B                print broncode
