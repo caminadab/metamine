@@ -29,6 +29,7 @@ local immjs = {
 	['[]u'] = '$TARGS',
 	['{}'] = 'new Set([$ARGS])',
 	['|'] = '$1 || $2',
+	['en'] = '$1 && $2',
 
 	-- arit
 	['atoom'] = 'atoom$1',
@@ -87,8 +88,8 @@ local immjs = {
 
 	-- exp
 	['log10'] = 'Math.log($1, 10)',
-	['‖'] = '$1.concat($2)',
-	['‖u'] = '$1 + $2',
+	['||'] = '$1.concat($2)',
+	['||u'] = '$1 + $2',
 	['cat'] = '$1.join($2)', -- TODO werkt dit?
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
 	['catu'] = '$1.join($2)',
@@ -154,33 +155,16 @@ local immjs = {
 
 			// toetsenbord neer
 			uit.onkeydown = function(ev) {
-				switch (ev.keyCode) {
-					case 37: keyLeft = true; break;
-					case 39: keyRight = true; break;
-					case 38: keyUp = true; break;
-					case 40: keyDown = true; break;
-					case 32: keySpace = true; keySpacePressed = true; break;
-					case 65: keyA = true; break;
-					case 87: keyW = true; break;
-					case 83: keyS = true; break;
-					case 68: keyD = true; break;
-				}
-				return false;
+				if (!_keys[ev.keyCode])
+					_keysPressed.add(ev.keyCode);
+				_keys[ev.keyCode] = true;
+				return (ev.keyCode >= 111);
 			};
 
 			// toetsenbord op
 			uit.onkeyup = function(ev) {
-				switch (ev.keyCode) {
-					case 37: keyLeft = false; break;
-					case 38: keyUp = false; break;
-					case 39: keyRight = false; break;
-					case 40: keyDown = false; break;
-					case 32: keySpace = false; keySpaceEnd = true; break;
-					case 65: keyA = false; break;
-					case 87: keyW = false; break;
-					case 83: keyS = false; break;
-					case 68: keyD = false; break;
-				}
+				_keys[ev.keyCode] = false;
+				_keysReleased.add(ev.keyCode);
 				return false;
 			};
 
@@ -206,8 +190,8 @@ local immjs = {
 		var r = $1(t);
 		mouseLeftPressed = false;
 		mouseLeftReleased = false;
-		keySpacePressed = false;
-		keySpaceReleased = false;
+		_keysPressed.clear();
+		_keysReleased.clear();
 		requestAnimationFrame(f);
 		return true;
 	})()]],
@@ -227,6 +211,12 @@ local immjs = {
 	]],
 	['getContext'] = 'uit.children[0].getContext("2d")',
 	['consolelog'] = 'console.log($1)',
+
+	-- toetsen
+	['toetsNeer']  = '!!_keys[$1]',
+	['toetsNeerBegin']  = '!!_keysPressed.has($1)',
+	['toetsNeerEind']  = '!!_keysReleased.has($1)',
+
 }
 
 local immsym = {
@@ -252,22 +242,9 @@ local immsym = {
 	['muisKlik'] = 'mouseLeft',
 	['muisKlikBegin'] = 'mouseLeftPressed',
 	['muisKlikEind'] = 'mouseLeftReleased',
-
-	-- links, rechts
-	['toetsOmhoog'] = 'keyUp',
-	['toetsLinks'] = 'keyLeft',
-	['toetsOmlaag'] = 'keyDown',
-	['toetsRechts'] = 'keyRight',
-	['toetsSpatie'] = 'keySpace',
-	['toetsSpatieBegin'] = 'keySpacePressed',
-	['toetsSpatieEind'] = 'keySpaceReleased',
-	['toetsW'] = 'keyW',
-	['toetsA'] = 'keyA',
-	['toetsS'] = 'keyS',
-	['toetsD'] = 'keyD',
 }
 
-function naarjavascript(app)
+function genjs(app)
 	local s = {}
 	local t = {}
 	local maakvar = maakvars()
@@ -324,7 +301,7 @@ function naarjavascript(app)
 		blokjs(blok, tabs)
 		local epi = blok.epiloog
 		if fn(epi) == 'ga' and #epi == 3 then
-			t[#t+1] = tabs .. 'if ('..epi[1].v..') {'
+			t[#t+1] = string.format('%sif (%s) {', tabs, epi[1].v)
 			local b = blokken[epi[2].v]
 			flow(b, tabs..'  ')
 			t[#t+1] = tabs .. '} else {'
@@ -339,14 +316,12 @@ function naarjavascript(app)
 		elseif fn(epi) == 'ga' and #epi == 1 then
 			--flow(blokken[epi[1].v], tabs..'  ')
 		elseif fn(epi) == 'ret' then
-			t[#t+1] = tabs..'return '..epi[1].v..';'
+			t[#t+1] = string.format('%sreturn %s;', tabs, epi[1].v)
 		elseif epi.v == 'stop' then
 			-- niets
 		else
 			error('foute epiloog: '..combineer(epi))
 		end
-		--print('KLAAR')
-		--t[#t+1] = 
 	end
 
 	for blok in spairs(app.punten) do
@@ -357,36 +332,30 @@ function naarjavascript(app)
 			t[#t+1] = '}'
 		end
 	end
-	table.insert(s, 'start = new Date().getTime();\n')
-	table.insert(s, 'vars = {};')
-	table.insert(s, 'if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getClientBoundingRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}')
-	table.insert(s, 'mouseLeft = false;\n')
-	table.insert(s, 'mouseLeftPressed = false;\n')
-	table.insert(s, 'mouseLeftReleased = false;\n')
-	table.insert(s, 'mouseX = 0;')
-	table.insert(s, 'mouseY = 0;')
-	table.insert(s, 'keyUp = false;\n')
-	table.insert(s, 'keyLeft = false;\n')
-	table.insert(s, 'keyDown = false;\n')
-	table.insert(s, 'keyRight = false;\n')
-	table.insert(s, 'keyW = false;\n')
-	table.insert(s, 'keyA = false;\n')
-	table.insert(s, 'keyS = false;\n')
-	table.insert(s, 'keyD = false;\n')
-	table.insert(s, 'keySpace = false;\n')
-	table.insert(s, 'keySpacePressed = false;\n')
-	table.insert(s, 'keySpaceReleased = false;\n')
-	table.insert(s, 'init = true;')
-	table.insert(s, 'html = "";')
-	table.insert(s, 'uit = document.getElementById("uit"); uit.tabIndex = -1;')
-	table.insert(s, 'stop = false;\n')
+	table.insert(s, [[
+start = new Date().getTime();
+vars = {};
+if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getClientBoundingRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}
+mouseLeft = false;
+mouseLeftPressed = false;
+mouseLeftReleased = false;
+mouseX = 0;
+mouseY = 0;
+_keys = {};
+_keysPressed = new Set();
+_keysReleased = new Set();
+init = true;
+html = "";
+uit = document.getElementById("uit"); uit.tabIndex = -1;
+stop = false;
+]])
 	flow(app.start, '')
 
 	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
 end
 
 if test then
-	require 'bouw.controle'
+	require 'bouw.codegen'
 	require 'bouw.arch'
 	require 'ontleed'
 	require 'oplos'
@@ -400,7 +369,7 @@ if test then
 				print(fout2ansi(fout))
 			end
 		end
-		local js = naarjavascript(icode)
+		local js = genjs(icode)
 		local res = doejs(js)
 
 		assert(res == waarde, 'was '..res..' maar moest zijn '..waarde)

@@ -9,16 +9,15 @@ require 'lisp'
 require 'vertolk'
 
 require 'naarlua'
-require 'naarweb'
-require 'naarjavascript'
 require 'rapport'
 require 'typeer'
 require 'doe'
 require 'optimaliseer'
 require 'oplos'
 
-require 'bouw.controle'
---require 'bouw.kijkgat'
+require 'bouw.genjs'
+require 'bouw.genx64'
+
 require 'bouw.arch'
 require 'bouw.codegen'
 require 'bouw.assembleer'
@@ -263,7 +262,7 @@ end
 
 -- control flow!
 local maakvar = maakvars()
-local cfg = controle(uit, maakvar)
+local cfg = codegen(uit, maakvar)
 
 if verbozeControle then
 	print('=== CONTROLEGRAAF ===')
@@ -285,7 +284,7 @@ end
 
 -- nieuwe lage JS
 if opt.javascript then
-	uit = naarjavascript(cfg)
+	uit = genjs(cfg)
 	debug.sethook()
 	local t = {}
 	for i=1,10 do
@@ -336,7 +335,7 @@ if verbozeKijkgat then
 	print()
 end
 
-local asm = codegen(cfg)
+local asm = genx64(cfg)
 if opt.S then
 	--file('a.s', asm)
 end
