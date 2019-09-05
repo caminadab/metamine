@@ -15,6 +15,8 @@ function bieb()
 
 	local bieb = {
 		
+	['⊤'] = true,
+	['⊥'] = false,
 	log2 = true,
 	log10 = math.log10,
 	puts = true,
