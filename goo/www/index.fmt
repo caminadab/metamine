@@ -7,13 +7,13 @@
 </head>
 <body>
 	<div id="intro">
+		<a id="vlag" href="{taallink}"><img id="vlag" src="{taalvlag}"></a>
 		<h1><i>{welkom}</i></h1>
-		
-		<!--<img class="logo" src="taal.png"></img>-->
 		<p>
 			<i>{kop1}</i></br>
 			<i>{kop2}</i>
 		</p>
+		</div>
 	</div>
 
 <div class="paneel">
@@ -53,6 +53,13 @@
 </body>
 
 <style>
+
+
+#vlag {
+	width: 100px;
+	float: right;
+	display: inline;
+}
 
 #vraag {
 	background: black;

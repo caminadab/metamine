@@ -8,8 +8,11 @@
 ontleed/taal.c
 ontleed/taal.h
 
-goo/www/index/taal.nl.html
-goo/www/index/taal.en.html
+goo/www/index.nl.html
+goo/www/index.en.html
+goo/www/index.html
+goo/www/en
+goo/www/nl
 
 *.output
 bin/

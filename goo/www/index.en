@@ -1,6 +1,8 @@
 welkom		Welcome
 kop1			A new coding language.
 kop2			Intuitive and declarative.
+taalvlag	nl.svg
+taallink	/nl
 overkop		What
 over1			Taal is a new way of coding. Write declarative code quickly in the form of simple rules and don't worry about difficult frameworks, libraries or other 'modern' technology.
 over2			Control flow is calculated by the compiler. This makes it much easier to write modular code.

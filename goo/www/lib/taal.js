@@ -28,15 +28,26 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 
   // long list of standard functions from lua manual
   var builtins = wordRE([
-    "niets", "tekening", "uit", "ja", "nee", "fout", "uit", "∅",
+    "niets", "canvas", "uit", "ja", "nee", "fout", "∅",
 		"tekst", "int", "getal", "cijfer", "letter", "witruimte",
+
+		// engels
+		"none", "canvas", "out", "yes", "no", "error",
+		"text", "int", "number", "digit", "letter", "whitespace",
 
 		// tekening
 		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "beige", "bruin", "geel", "cyaan",
-		"cirkel", "rechthoek", "schrijf", "taart", "polygoon", "map", "succ", "sin", "cos", "tan", "abs"
+		"cirkel", "rechthoek", "vierkant", "lijn", "label", "boog", "polygoon", "map", "sin", "cos", "tan", "abs",
+
+		// drawing
+		"red", "green", "blue", "orange", "purple", "black", "white", "grey", "beige", "brown", "yellow", "cyan",
+		"circle", "rectangle", "square", "line", "label", "arc", "polygon", "map", "sin", "cos", "tan", "abs",
   ]);
-	var keywords = wordRE(["als","dan","andersals", "anders","eind","if","then","elseif","else","end","herhaal","repeat","fout","error",
-		"en", "of", "and", "or", "xof", "noch"]);
+	var keywords = wordRE([
+		"als","dan","andersals", "anders","eind",
+		"if","then","elseif","else","end","herhaal","repeat","fout","error",
+		"en", "of", "and", "or", "xof", "noch",
+	]);
 
   var indentTokens = wordRE(["dan", "then"]);//"function", "if","repeat","do", "\\(", "{", "\\["]);
 	var dedentTokens = wordRE(["anders", "andersals", "eind", "else", "elseif", "end"]);//"end", "until", "\\)", "}"]);

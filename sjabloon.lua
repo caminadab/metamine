@@ -1,6 +1,5 @@
 function sjabloon(fmt, dict)
 	local function vervang(naam)
-		print('VERVANG', naam, dict[naam])
 		local waarde = assert(dict[naam], 'ongedefinieerd: '..naam)
 		return waarde
 	end

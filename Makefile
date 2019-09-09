@@ -1,4 +1,4 @@
-linux: ontleed goo/www/index.html
+linux: ontleed goo/www/index.html goo/www/nl
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
@@ -14,7 +14,7 @@ windows:
 	ln -sf ../vt bin/
 	ln -sf ../doe bin/
 
-deploy:
+deploy: goo/www/index.html goo/www/nl
 	scp -r goo/www/* metamine.nl:/var/www/html/
 
 #scp -r goo/* pi:/var/www/blog/taal-0.1.1
@@ -30,9 +30,11 @@ goo/www/index.en.html: goo/www/index.fmt goo/www/index.en
 goo/www/index.nl.html: goo/www/index.fmt goo/www/index.nl 
 	./sjab goo/www/index.fmt goo/www/index.nl goo/www/index.nl.html
 
-goo/www/index.html: goo/www/index.nl.html goo/www/index.en.html
-	ln -sf index.nl.html goo/www/index.html
-	ln -sf index.en.html goo/www/en
+goo/www/index.html: goo/www/index.en.html
+	ln -sf index.en.html goo/www/index.html
+
+goo/www/nl: goo/www/index.nl.html
+	ln -sf index.nl.html goo/www/nl
 
 malloc.o: bieb/malloc.c
 	cc -c -fPIC -DLACKS_STDLIB_H -DNO_MALLOC_STATS bieb/malloc.c -o bieb/malloc.o
