@@ -139,14 +139,12 @@ function oplos(exp,voor)
 
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 		for eq in pairs(eqs) do
-			--if isfn(eq) and isfn(eq[1]) --[[and isatoom(eq[1].f)]] and isatoom(eq[1][1]) and #eq[1] == 1 then
 			if isfn(eq) and isfn(eq.a[1]) and false then --TODO and #eq[1] == 1 then
 				local a, b, c  = eq.a[1].f, eq.a[1].a[1], eq.a[2]
 				local neq = X(sym.cois, a, X(sym.map, b, c))
 				local meq = X(sym.cois, a, X(sym.map, b, c))
 				oud[eq] = true
 				nieuw[neq] = true
-				--error(exp2string(neq))
 			end
 
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
@@ -174,8 +172,8 @@ function oplos(exp,voor)
 				eq.f.v,fn,eq.a[2],eq.a[1] = '<',eq.a[1],eq.a[2]
 			end
 			if isfn(eq) and eq.f.v == '<' then
-				local fa = X(X':', eq.a[1], X(X'..', eq.a[2], X'oneindig'))
-				local fb = X(X':', eq.a[2], X(X'..', X(X'-', X'oneindig'), eq.a[1]))
+				local fa = X(':', eq.a[1], X(X'..', eq.a[2], X'oneindig'))
+				local fb = X(':', eq.a[2], X(X'..', X('-', X'oneindig'), eq.a[1]))
 				nieuw[fa] = true
 				nieuw[fb] = true
 				oud[eq] = true
@@ -187,7 +185,7 @@ function oplos(exp,voor)
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
 				if isfn(exp) and exp.f.v == '.' then
-					exp.f, exp.a.a[2] = X'=', {f=X'atoom', X(tostring(i)), naam=exp.a[1].v }
+					exp.f, exp.a.a[2] = X'=', {f=X'atoom', X(tostring(i)), naam=exp.a.v }
 					i = i + 1
 				end
 			end

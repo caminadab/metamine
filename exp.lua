@@ -6,6 +6,8 @@ require 'lisp'
 require 'util'
 
 function fn(exp) if isfn(exp) then return exp.f.v end end
+function arg(exp) if isfn(exp) then return exp.f.a end end
+function obj(exp) if isobj(exp) then return exp.o.v end end
 function atoom(exp,i) 
 	if not i then
 		return exp.v
@@ -20,7 +22,7 @@ for atoom in lst:gmatch('[^\n]+') do
 	atomen[atoom] = true
 end
 
-local objs = set(',', '{}', '[]')
+local objs = set(',', '{}', '[]', '[]u')
 
 -- itereer kinderen
 function subs(exp)
@@ -144,53 +146,13 @@ function locsub(code, loc)
 	return string.sub(code, apos, bpos-1)
 end
 
-function expmoesR(exp, t)
-	if exp.moes then t[#t+1] = tostring(exp.moes); return end
-	if isatoom(exp) then t[#t+1] = exp.v
-	else
-		if not isatoom(exp.f) then t[#t+1] = '(' end
-		expmoesR(exp.f, t)
-		if not isatoom(exp.f) then t[#t+1] = ')' end
-		t[#t+1] = '('
-		for i, v in ipairs(exp) do
-			expmoesR(v, t)
-			if i ~= #exp then t[#t+1] = ' ' end
-		end
-		t[#t+1] = ')'
-	end
-end
-
 function expmoes(exp)
 	if exp.moes then
 		-- niets...
-	elseif isatoom(exp) then
-		exp.moes = exp.v
 	else
-		local t = {}
-		t[#t+1] = expmoes(exp.f)
-		t[#t+1] = '('
-		for i=1,#exp do
-			t[#t+1] = expmoes(exp[i])
-			if i ~= #exp then
-				t[#t+1] = ' '
-			end
-		end
-		t[#t+1] = ')'
-		exp.moes = table.concat(t)
+		exp.moes = e2s(exp)
 	end
 	return exp.moes
-end
-
-
-function expmoes0(exp)
-	---if moezen[exp] then
-		---return moezen[exp]
-	---end
-	local t = {}
-	expmoesR(exp, t)
-	local moes = table.concat(t)
-	---moezen[exp] = moes
-	return moes
 end
 moes = expmoes
 
@@ -236,57 +198,14 @@ function maakindices()
 	end
 end
 
--- willekeurige volgorde
-function boompairs(exp)
-	local t = {}
-	local function r(exp)
-		if not exp.v and not exp.f then error('GEEN EXP!') end
-		if exp == nil then error('OEI') end
-		if isatoom(exp) then
-			t[exp] = true
-		else
-			t[exp] = true
-			if exp.f == nil then
-				print('BOVEN::')
-				seerec(exp)
-				error('WEE')
-			end
-			r(exp.f)
-			for i,v in ipairs(exp) do
-				if v == nil then
-					error('WEE')
-				end
-				r(v)
-			end
-		end
-	end
-	r(exp)
-	
-	local k = nil
-	return function()
-		if next(t,k) then
-			k = next(t,k)
-			return k
-		end
-	end
-end
-
 -- depth first search
-function boompairsdfs(exp)
-	local t = {}
-	function r(exp)
-		if isatoom(exp) then
-			t[#t+1] = exp
-		else
-			r(exp.f)
-			for i,v in ipairs(exp) do
-				r(v)
-			end
-			t[#t+1] = exp
-		end
+function boompairsdfs(exp, t)
+	local t = t or {}
+	for sub in subs(exp) do
+		boompairsdfs(sub, t)
 	end
-	r(exp)
-	
+	t[#t+1] = exp
+
 	local i = 1
 	return function()
 		i = i + 1
@@ -295,27 +214,21 @@ function boompairsdfs(exp)
 end
 
 -- breadth first search
-function boompairsbfs(exp)
-	local t = {}
-	function r(exp)
-		if isatoom(exp) then
-			t[#t+1] = exp
-		else
-			t[#t+1] = exp
-			r(exp.f)
-			for i,v in ipairs(exp) do
-				r(v)
-			end
-		end
+function boompairsbfs(exp, t)
+	local t = t or {}
+	for sub in subs(exp) do
+		boompairsdfs(sub, t)
 	end
-	r(exp)
-	
+	t[#t+1] = exp
+
 	local i = 1
 	return function()
 		i = i + 1
 		return t[i-1]
 	end
 end
+
+boompairs = boompairsbfs
 
 function bevat(exp, naam)
 	if not exp then error('geen exp') end

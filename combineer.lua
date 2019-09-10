@@ -108,7 +108,7 @@ if not v.f and not v.v then see(v); error('geen exp: '..e2s(v)) end
 
 	-- plet
 	for i,v in ipairs(tt) do
-		if isexp(v) then
+		if isfn(v) then
 			tt[i] = unlisp(tt[i])
 		end
 	end

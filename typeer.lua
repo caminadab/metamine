@@ -46,18 +46,6 @@ function isconstant(v)
 	return false
 end
 
-function typeer0(exp)
-	local t = {}
-	-- type = boom | set van types
-	--   gebruikt set van types
-	-- t = exp → type
-	for v in boompairsdfs(exp) do
-		if isconstant(v) then
-			v.val = doe(v)
-		end
-	end
-end
-
 -- lees biebgraaf
 local bieb,fouten = ontleed(bestand 'bieb/std.code', 'bieb/std.code')
 
@@ -83,7 +71,7 @@ function typeer(exp)
 	-- collisie: { bericht = "'a' moet zijn 'int', maar is 'tekst', exp = {bronpos, waarde}, fout = {bronpos, type}, moet = {bronpos, type} }
 
 	-- bieb
-	for i,v in ipairs(bieb) do
+	for i,v in ipairs(bieb.a) do
 		local type,super = v.a[1],v.a[2]
 		typegraaf:link(type, super)
 		naamtypes[moes(type)] = super
@@ -169,9 +157,9 @@ function typeer(exp)
 	end
 
 	-- eigen :)
-	for i, exp in ipairs(exp) do
+	for i, exp in ipairs(exp.a) do
 		if isfn(exp) and isatoom(exp.f) and exp.f.v == ':' then
-			local val, type = exp[1],exp[2]
+			local val, type = exp.a[1],exp.a[2]
 			weestype(val, type, exp.loc)
 		end
 	end
@@ -195,9 +183,9 @@ function typeer(exp)
 			weestype(exp, X('tekst'))
 		elseif isfn(exp) and fn(exp) == '{}' then
 			T = X'set'
-		elseif isfn(exp) and fn(exp) == ',' then
+		elseif isobj(exp) and obj(exp) == ',' then
 			--T = X'tupel'
-			local T = {f=X'tupel'}
+			local T = {o=X','}
 			local ok = true
 			for i=1,#exp do
 				local t = types[exp[i]]
@@ -279,7 +267,7 @@ function typeer(exp)
 				weestype(exp, T, oorzaakloc[moes(exp)])
 
 			elseif isfn(exp) then
-				local fn,f,a,b = exp.f, exp.f.v, exp[1], exp[2]
+				local fn,f,a,b = exp.f, exp.f.v, exp.a[1], exp.a[2]
 
 				-- speciaal voor 'herhaal'
 				if f == 'herhaal' and types[a] then
@@ -293,7 +281,7 @@ function typeer(exp)
 				-- map: (T:collectie)(A), (A → B) → T(B)
 				elseif f == 'map' and types[a] and types[b] then
 					local atype =X('verzameling', types[a]:paramtype('verzameling'))
-					local btype = X('verzameling', types[b[2]])
+					local btype = X('verzameling', types[b.a[2]])
 					weestype(a, atype)
 					weestype(exp, btype)
 					--print('ATYPE', e2s(atype))
@@ -308,7 +296,7 @@ function typeer(exp)
 				-- speciaal voor '_'
 				-- (f _ a)  ⇒  (a: f₂,  f
 				elseif f == '_' and types[a] then
-					weestype(b, types[a][2])
+					weestype(b, types[a].a[2])
 					--local type = types[a]:paramtype('lijst')
 					--weestype(exp, type)
 					--weestype(b, X'nat')

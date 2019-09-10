@@ -23,10 +23,10 @@ function isoleer(eq,name)
 		local eq0
 		local l,r
 		if not flip then
-			l,r = eq[1],eq[2]
+			l,r = eq.a[1],eq.a[2]
 			flip = true
 		else
-			r,l = eq[1],eq[2]
+			r,l = eq.a[1],eq.a[2]
 			flip = false
 		end
 		if name.v == l.v then return r end
