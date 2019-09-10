@@ -1,4 +1,3 @@
-2 + 3
 ; webspecifiek
 consolelog: tekst → bit
 vierkant: (ℝ, ℝ, ℝ) → (canvas → canvas)

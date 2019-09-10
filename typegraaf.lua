@@ -19,8 +19,8 @@ local typemt = {}
 function maaktype(exp, tg)
 	assert(tg, 'geen typegraaf')
 	if type(exp) == 'string' then exp = ontleedexp(exp) end
+	check(exp)
 	exp.tg = tg
-	if not exp.f and not exp.v then see(exp); error('arg is geen exp: '..tostring(exp)) end
 	return setmetatable(exp, typemt)
 end
 

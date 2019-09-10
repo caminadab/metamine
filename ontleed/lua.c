@@ -173,7 +173,7 @@ int xlua_reffn2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc) {
 int xlua_reftup2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc) {
 	lua_createtable(L, 2, 1);
 		lua_rawgeti(L, LREG, fid);
-			lua_setfield(L, -2, "f");
+			lua_setfield(L, -2, "o");
 		xlua_pushloc(L, loc);
 			lua_setfield(L, -2, "loc");
 		lua_rawgeti(L, LREG, aid);
@@ -185,7 +185,6 @@ int xlua_reftup2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc) {
 }
 
 int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid, YYLTYPE loc) {
-	int ref = 0;
 	lua_createtable(L, 3, 1);
 		lua_rawgeti(L, LREG, fid);
 			lua_setfield(L, -2, "f");
@@ -203,14 +202,12 @@ int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid, YYLTYPE loc) {
 			lua_rawgeti(L, LREG, cid);
 				lua_rawseti(L, -2, 3);
 			lua_setfield(L, -2, "a");
-		ref = luaL_ref(L, LREG);
-	return ref;
+		return luaL_ref(L, LREG);
+	//
 }
 
 int xlua_reffn4(lua_State* L, int fid, int aid, int bid, int cid, int did, YYLTYPE loc) {
-	int ref = 0;
 	lua_createtable(L, 4, 1);
-		//lua_pushstring(L, text);
 		lua_rawgeti(L, LREG, fid);
 			lua_setfield(L, -2, "f");
 		xlua_pushloc(L, loc);
@@ -229,12 +226,11 @@ int xlua_reffn4(lua_State* L, int fid, int aid, int bid, int cid, int did, YYLTY
 			lua_rawgeti(L, LREG, did);
 				lua_rawseti(L, -2, 4);
 			lua_setfield(L, -2, "a");
-		ref = luaL_ref(L, LREG);
-	return ref;
+		return luaL_ref(L, LREG);
+	//
 }
 
 int xlua_reffn5(lua_State* L, int fid, int aid, int bid, int cid, int did, int eid, YYLTYPE loc) {
-	int ref = 0;
 	lua_createtable(L, 0, 1);
 		lua_rawgeti(L, LREG, fid);
 			lua_setfield(L, -2, "f");
@@ -256,8 +252,8 @@ int xlua_reffn5(lua_State* L, int fid, int aid, int bid, int cid, int did, int e
 			lua_rawgeti(L, LREG, eid);
 				lua_rawseti(L, -2, 5);
 			lua_setfield(L, -2, "a");
-		ref = luaL_ref(L, LREG);
-	return ref;
+		return luaL_ref(L, LREG);
+	//
 }
 
 /*
@@ -361,11 +357,13 @@ int lua_ontleedexp(lua_State* L) {
 	int fouten = luaL_ref(L, LREG);
 	yyparse(L, &ref, &fouten, scanner);
 	lua_rawgeti(L, LREG, ref);
-		lua_rawgeti(L, -1, 1);
-			lua_rawgeti(L, LREG, fouten);
+		lua_getfield(L, -1, "a");
+			lua_rawgeti(L, -1, 1);
+				lua_rawgeti(L, LREG, fouten);
 			yylex_destroy(scanner);
-
 			return 2;
+		//
+	//
 }
 
 int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg) {

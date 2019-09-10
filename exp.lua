@@ -60,45 +60,24 @@ function subs(exp)
 
 end
 
-function checkr2(e, p, t)
-	local t = t or '  '
-	--print(t..(e.v or (e.f and e.f.v) or '?'))
-	--assert(e ~= nil, 'is niets (in '..lenc(p)..')')
-	--if e.v then print(t..e.v) else print('F=', e.f and e.f.v) end
-
-	-- atoom
-	if e.v ~= nil then
-		--assert(tonumber(e.v) or atomen[e.v], 'geen getal of atoom: '..e.v)
-
-	-- komma
-	elseif e.f ~= nil and objs[e.f.v] then
-		checkr(e.f, e, t .. '  ')
-		for i,v in ipairs(e) do
-			checkr(v, e, t .. '  ')
-		end
-
-	-- normale functie
-	else
-		checkr(e.f, e, t .. '  ')
-		checkr(e.a, e, t .. '  ')
+function checkr(e, p1, p2)
+	assert(e, e2s(p2))
+	local n = 0
+	if isatoom(e) then n = n + 1 end
+	if isfn(e) then n = n + 1 end
+	if isobj(e) then n = n + 1 end
+	if n ~= 1 then
+		print('FAAL!')
+		see(p1)
+		error'check faalde'
 	end
-
-	return e
-end
-
-function checkr(e)
-	assert(e)
 	for sub in subs(e) do
-		checkr(sub)
+		checkr(sub, e, p1)
 	end
 end
 
 function check(e)
-	local a,b,c = checkr(e, e)
-	if not a then
-		print(b)
-		error('check faalde voor '..e2s(e))
-	end
+	checkr(e, e, e)
 end
 
 expmt = {}
@@ -373,7 +352,7 @@ function exp2string(exp)
 		t[#t] = ')'
 		return table.concat(t)
 	end
-	error 'HOORT NIET'
+	return '?'
 end
 e2s = exp2string
 

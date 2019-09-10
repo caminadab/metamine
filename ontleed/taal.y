@@ -136,7 +136,7 @@ stats:
 	%empty							{ $$ = O(L, A(L,"[]",@$), @$); }
 | stats NEWLINE				{ $$ = $1; }
 | stats stat NEWLINE	{ $$ = APPEND(L, $1, $2, @$); }
-| stats error NEWLINE				{ $$ = APPEND(L, $1, A(L, "fout", @2), @$); yyerrok; }
+| stats error NEWLINE	{ $$ = APPEND(L, $1, A(L, "fout", @2), @$); yyerrok; }
 ;
 
 stat:

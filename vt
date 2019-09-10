@@ -45,7 +45,6 @@ for i,bron in pairs(bronnen) do
 	if bron:sub(-5) ~= '.code' then
 		bronnen[i] = bron .. '.code'
 	end
-	print('BRON', bron)
 end
 
 if #bronnen == 0 then
@@ -101,7 +100,6 @@ Opties:
 	return
 end
 
-
 --bronnen[#bronnen+1] = 'bieb/wisk.code'
 --bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
@@ -156,7 +154,7 @@ if opt.s or opt.syntaxis then
 end
 
 local codes = {}
-local asb = {f=X'⋀',a={f=','}}
+local asb = {f=X'⋀',a={o=X'[]'}}
 
 if verbozeBroncode then
 	print('=== BRONCODE ===')
