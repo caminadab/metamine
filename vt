@@ -45,6 +45,7 @@ for i,bron in pairs(bronnen) do
 	if bron:sub(-5) ~= '.code' then
 		bronnen[i] = bron .. '.code'
 	end
+	print('BRON', bron)
 end
 
 if #bronnen == 0 then
@@ -155,7 +156,7 @@ if opt.s or opt.syntaxis then
 end
 
 local codes = {}
-local asb = {f=X'⋀'}
+local asb = {f=X'⋀',a={f=','}}
 
 if verbozeBroncode then
 	print('=== BRONCODE ===')
@@ -174,10 +175,10 @@ for i,bron in ipairs(bronnen) do
 	for i,fout in ipairs(fouten) do
 		print(fout2ansi(fout))
 	end
-	for i,eq in ipairs(sub) do
+	for i,eq in ipairs(sub.a) do
 		eq.bron = bronnen[1]
 		eq.code = code
-		asb[#asb+1] = eq
+		asb.a[#asb.a+1] = eq
 	end
 end
 
@@ -189,7 +190,6 @@ if verbozeSyntax then
 end
 
 -- lekker checken
-print(e2s(asb))
 check(asb)
 
 -- annoteer ^_^

@@ -39,6 +39,26 @@ function emap(exp, fn, ...)
 	return s
 end
 
+function lenc(t)
+	if type(t) == 'number' then
+		return t
+	elseif type(t) == 'string' then
+		return string.format('%q', t)
+	elseif type(t) == 'table' then
+		local r = {}
+		r[#r+1] = '{'
+		for k,v in pairs(t) do
+			r[#r+1] = lenc(k)..'='..lenc(v)
+			r[#r+1] = ','
+		end
+		r[#r] = nil
+		r[#r+1] = '}'
+		return table.concat(r)
+	else
+		return tostring(t)
+	end
+end
+
 function set2lijst(s, volgorde)
 	local t = {}
 	for k in pairs(s) do

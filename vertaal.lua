@@ -32,7 +32,6 @@ function vertaal(code, doel)
 		--return nil, cat(syntaxfouten, typeerfouten)
 	end
 
-
 	local fouten = cat(syntaxfouten, typeerfouten, oplosfouten)
 
 	if not uit then

@@ -32,7 +32,9 @@
 	YYLTYPE nergens = {-1, -1, -1, -1};
 
 	#define A xlua_refatoom
-	#define APPEND xlua_appenda
+	#define O xlua_refobj
+	#define APPEND xlua_append
+	#define APPENDA xlua_appenda
 	#define LOC xlua_metloc
 	#define FN0 xlua_reffn0
 	#define FN1 xlua_reffn1
@@ -128,11 +130,11 @@ input:
 ;
 
 block:
-	stats			{ $$ = $1; } /*FN1(L, A(L, "⋀"), $1); }*/
+	stats			{ $$ = FN1(L, A(L,"⋀",@$), $1, @$); }
 ;
 
 stats:
-	%empty							{ $$ = FN0(L, A(L, "⋀", @$), @$); }
+	%empty							{ $$ = O(L, A(L,"[]",@$), @$); }
 | stats NEWLINE				{ $$ = $1; }
 | stats stat NEWLINE	{ $$ = APPEND(L, $1, $2, @$); }
 | stats error NEWLINE				{ $$ = APPEND(L, $1, A(L, "fout", @2), @$); yyerrok; }

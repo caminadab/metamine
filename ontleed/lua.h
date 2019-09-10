@@ -3,6 +3,7 @@
 
 #include "loc.h"
 
+// exp = atoom | fn | obj
 int xlua_append(lua_State* L, int aid, int bid, YYLTYPE loc);
 int xlua_appenda(lua_State* L, int aid, int bid, YYLTYPE loc);
 int xlua_metloc(lua_State* L, int aid, YYLTYPE loc);
@@ -10,6 +11,7 @@ void xlua_pushloc(lua_State* L, YYLTYPE loc);
 int xlua_pushatoom(lua_State* L, char* text, YYLTYPE loc);
 int xlua_reftekst(lua_State* L, char* str, YYLTYPE loc);
 int xlua_refatoom(lua_State* L, char* text, YYLTYPE loc);
+int xlua_refobj(lua_State* L, int fid, YYLTYPE loc);
 int xlua_reffn0(lua_State* L, int fid, YYLTYPE loc);
 int xlua_reffn1(lua_State* L, int fid, int aid, YYLTYPE loc);
 int xlua_reffn2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc);

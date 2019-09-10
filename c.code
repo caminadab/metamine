@@ -1,1 +1,2 @@
-uit = 3
+a = 2
+consolelog : tekst → bit

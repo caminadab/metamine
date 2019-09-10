@@ -20,30 +20,35 @@ for atoom in lst:gmatch('[^\n]+') do
 	atomen[atoom] = true
 end
 
-function checkr(e)
-	assert(e ~= nil, 'is niets')
+local objs = set(',', '{}', '[]')
+function checkr(e, p, t)
+	local t = t or '  '
+	--print(t..(e.v or (e.f and e.f.v) or '?'))
+	assert(e ~= nil, 'is niets (in '..lenc(p)..')')
+	if e.v then print(t..e.v) else print('F=', e.f.v) end
 
 	-- atoom
 	if e.v ~= nil then
 		--assert(tonumber(e.v) or atomen[e.v], 'geen getal of atoom: '..e.v)
 
 	-- komma
-	elseif e.f ~= nil and e.f.v == ',' then
+	elseif e.f ~= nil and objs[e.f.v] then
+		checkr(e.f, e, t .. '  ')
 		for i,v in ipairs(e) do
-			check(v)
+			checkr(v, e, t .. '  ')
 		end
 
 	-- normale functie
 	else
-		check(e.f)
-		check(e.a)
+		checkr(e.f, e, t .. '  ')
+		checkr(e.a, e, t .. '  ')
 	end
 
 	return e
 end
 
 function check(e)
-	local a,b,c = checkr(e)
+	local a,b,c = checkr(e, e)
 	if not a then
 		print(b)
 		error('check faalde voor '..e2s(e))

@@ -2,6 +2,8 @@
 consolelog: tekst → bit
 vierkant: (ℝ, ℝ, ℝ) → (canvas → canvas)
 cirkel: (ℝ, ℝ, ℝ) → (canvas → canvas)
+rechthoek: (ℝ, ℝ, ℝ, ℝ) → (canvas → canvas)
+lijn: (ℝ, ℝ, ℝ, ℝ) → (canvas → canvas)
 syscall: iets → int
 
 ;uit: bit
@@ -100,28 +102,6 @@ deel : (lijst, (int, int)) → lijst
 ;herhaal : ((→), int) → (→)
 waarvoor : (verzameling, (iets → bit)) → verzameling
 mod : (getal, getal) → getal
-
-; tekening!
-;-
-vorm: iets
-tekening: lijst(vorm)
-cirkel: vorm
-cirkel: ((getal, getal), getal, kleur) → cirkel
-rechthoek: vorm
-rechthoek: ((getal, getal), (getal, getal), kleur) → rechthoek
-;schrijf: ((getal, getal), tekst, kleur) → rechthoek
-genormaliseerd : getal ; tussen 0 en 1
-kleur: (genormaliseerd, genormaliseerd, genormaliseerd)
-;kleur: (getal, getal, getal)
-rood: kleur
-oranje: kleur
-groen: kleur
-blauw: kleur
-geel: kleur
-paars: kleur
-zwart: kleur
-wit: kleur
--;
 kommagetal : getal
 
 ;-

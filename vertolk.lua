@@ -21,7 +21,6 @@ function vertolk(asb)
 	return asb
 end
 
-
 if test then
 	require 'ontleed'
 	local a = ontleedexp("a = sqrt(3)")

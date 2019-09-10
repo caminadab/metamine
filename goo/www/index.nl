@@ -2,7 +2,7 @@ welkom		Welkom
 kop1			Een nieuwe programmeertaal.
 kop2			Niet voor machines maar voor mensen.
 taalvlag	en.svg
-taallink	/
+taallink	/en
 overkop		Wat
 over1			Taal is een nieuwe manier van ontwikkelen. Schrijf snel declaratieve code in de vorm van simpele vergelijkingen en maak je geen zorgen meer over moeilijke libraries, frameworks of andere standaard programmeerbeslommeringen.
 over2			Control flow wordt door de compiler berekent. Hierdoor kun je modulairdere code schrijven, die bovendien veilig en snel is.

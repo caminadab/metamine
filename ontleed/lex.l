@@ -120,14 +120,15 @@ _		{ *yylval = A(GL, "_", nergens); return '_'; }
 " "		// negeer spaties
 
 "als"					{ return ALS; }
-"if"					{ return ALS; }
 "dan"					{ return DAN; }
-"then"					{ return DAN; }
 "andersals"			{ return ANDERSALS; }
-"elseif"			{ return ANDERSALS; }
 "anders"			{ return ANDERS; }
-"else"			{ return ANDERS; }
 "eind"			{ return EIND; }
+
+"if"					{ return ALS; }
+"then"					{ return DAN; }
+"elseif"			{ return ANDERSALS; }
+"else"			{ return ANDERS; }
 "end"			{ return EIND; }
 
 '.'		{ /* enkel karakter */
