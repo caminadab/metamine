@@ -36,7 +36,6 @@
 	#define APPEND xlua_append
 	#define APPENDA xlua_appenda
 	#define LOC xlua_metloc
-	#define FN0 xlua_reffn0
 	#define FN1 xlua_reffn1
 	#define FN2 xlua_reffn2
 	#define FN3 xlua_reffn3

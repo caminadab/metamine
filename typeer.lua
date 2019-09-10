@@ -60,6 +60,7 @@ end
 
 -- lees biebgraaf
 local bieb,fouten = ontleed(bestand 'bieb/std.code', 'bieb/std.code')
+print(e2s(bieb))
 check(bieb)
 local bieb = {}
 if fouten then map(fouten, function(fout) print(fout2ansi(fout)) end) end

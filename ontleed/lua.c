@@ -61,7 +61,7 @@ int xlua_appenda(lua_State* L, int lijst, int el, YYLTYPE loc) {
 }
 
 int xlua_reftekst(lua_State* L, char* str, YYLTYPE loc) {
-	int t = xlua_reffn0(L, xlua_refatoom(L, "[]u", loc), loc);
+	int t = xlua_refobj(L, xlua_refatoom(L, "[]u", loc), loc);
 
 	int i = 0;
 	int esc = 0;
@@ -128,27 +128,11 @@ int xlua_pushkomma(lua_State* L);
 // maak nieuw (leeg) object
 // {loc=loc, o=fid}
 int xlua_refobj(lua_State* L, int fid, YYLTYPE loc) {
-	lua_createtable(L, 0, 1);
+	lua_createtable(L, 0, 2);
 		xlua_pushloc(L, loc);
 			lua_setfield(L, -2, "loc");
 		lua_rawgeti(L, LREG, fid);
-			lua_setfield(L, -2, "f");
-		return luaL_ref(L, LREG);
-	//
-}
-
-int xlua_reffn0(lua_State* L, int fid, YYLTYPE loc) {
-	lua_createtable(L, 0, 1);
-		xlua_pushloc(L, loc);
-			lua_setfield(L, -2, "loc");
-		lua_rawgeti(L, LREG, fid);
-			lua_setfield(L, -2, "f");
-		lua_createtable(L, 0, 2);
-			xlua_pushatoom(L, ",", loc);
-				lua_setfield(L, -2, "f");
-			xlua_pushloc(L, loc);
-				lua_setfield(L, -2, "loc");
-			lua_setfield(L, -2, "a");
+			lua_setfield(L, -2, "o");
 		return luaL_ref(L, LREG);
 	//
 }
@@ -174,7 +158,7 @@ int xlua_reffn2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc) {
 			lua_setfield(L, -2, "loc");
 		lua_createtable(L, 2, 1);
 			xlua_pushatoom(L, ",", loc);
-				lua_setfield(L, -2, "f");
+				lua_setfield(L, -2, "o");
 			xlua_pushloc(L, loc);
 				lua_setfield(L, -2, "loc");
 			lua_rawgeti(L, LREG, aid);
@@ -209,7 +193,7 @@ int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid, YYLTYPE loc) {
 			lua_setfield(L, -2, "loc");
 		lua_createtable(L, 3, 1);
 			xlua_pushatoom(L, ",", loc);
-				lua_setfield(L, -2, "f");
+				lua_setfield(L, -2, "o");
 			xlua_pushloc(L, loc);
 				lua_setfield(L, -2, "loc");
 			lua_rawgeti(L, LREG, aid);
@@ -233,7 +217,7 @@ int xlua_reffn4(lua_State* L, int fid, int aid, int bid, int cid, int did, YYLTY
 			lua_setfield(L, -2, "loc");
 		lua_createtable(L, 4, 1);
 			xlua_pushatoom(L, ",", loc);
-				lua_setfield(L, -2, "f");
+				lua_setfield(L, -2, "o");
 			xlua_pushloc(L, loc);
 				lua_setfield(L, -2, "loc");
 			lua_rawgeti(L, LREG, aid);
@@ -258,7 +242,7 @@ int xlua_reffn5(lua_State* L, int fid, int aid, int bid, int cid, int did, int e
 			lua_setfield(L, -2, "loc");
 		lua_createtable(L, 5, 1);
 			xlua_pushatoom(L, ",", loc);
-				lua_setfield(L, -2, "f");
+				lua_setfield(L, -2, "o");
 			xlua_pushloc(L, loc);
 				lua_setfield(L, -2, "loc");
 			lua_rawgeti(L, LREG, aid);

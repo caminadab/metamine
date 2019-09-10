@@ -21,11 +21,50 @@ for atoom in lst:gmatch('[^\n]+') do
 end
 
 local objs = set(',', '{}', '[]')
-function checkr(e, p, t)
+
+-- itereer kinderen
+function subs(exp)
+
+	if isatoom(exp) then
+		return function() return nil end
+	end
+
+	if isfn(exp) then
+		local a = 2
+		return function()
+			if a == 2 then
+				a = 1
+				return exp.f
+			elseif a == 1 then
+				a = 0
+				return exp.a
+			else
+				return nil
+			end
+		end
+	end
+
+	if isobj(exp) then
+		local a = true
+		local i = 0
+		return function()
+			if a then
+				a = false
+				return exp.o
+			else
+				i = i + 1
+				return exp[i]
+			end
+		end
+	end
+
+end
+
+function checkr2(e, p, t)
 	local t = t or '  '
 	--print(t..(e.v or (e.f and e.f.v) or '?'))
-	assert(e ~= nil, 'is niets (in '..lenc(p)..')')
-	if e.v then print(t..e.v) else print('F=', e.f.v) end
+	--assert(e ~= nil, 'is niets (in '..lenc(p)..')')
+	--if e.v then print(t..e.v) else print('F=', e.f and e.f.v) end
 
 	-- atoom
 	if e.v ~= nil then
@@ -45,6 +84,13 @@ function checkr(e, p, t)
 	end
 
 	return e
+end
+
+function checkr(e)
+	assert(e)
+	for sub in subs(e) do
+		checkr(sub)
+	end
 end
 
 function check(e)
@@ -292,107 +338,59 @@ function boompairsbfs(exp)
 	end
 end
 
-function exp2string(self,tabs)
-	if type(self) ~= 'table' then return error('is geen expressie') end
-	if not self.v and not self.f then error('is geen expressie') end
-	return unlisp(self)
-end
-
-function exp2stringidk(self,tabs)
-	if type(self) == 'string' then return self end
-	local tabs = (tabs or '') .. '  '
-	local params = {}
-	local len = 2 -- '(' & ')'
-	for k,param in pairs(self) do
-		if type(param) == 'function' then
-			param = 'FUNC'
-		end
-		params[k] = tostring(param,tabs..'  ')
-		len = len + #params[k] + 1 -- ' '
-	end
-	-- =(a,b)
-
-	local fn
-	if isfn(self) then
-		fn = '('..expmt.__tostring(params.f,tabs..'  ')..')'
-	else
-		fn = tostring(params.f)
-	end
-	if len > 30 then
-		local a = fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
-	else
-		return fn..'('..table.concat(params,sep)..')'
-	end
-end
-e2s = exp2string
-
-
-expmt.__tostring = exp2string
-
-function expmt:__eq(ander)
-	do
-		return self:moes() == ander:moes()
-	end
-
-	local zelf = self
-	if isatoom(zelf) ~= isatoom(ander) then return false end
-	if isatoom(zelf) then return zelf == ander end
-	if zelf.f ~= ander.f then return false end
-	if #zelf ~= #ander then return false end
-	for i=1,#zelf do
-		if zelf[i] ~= ander[i] then
-			return false
-		end
-	end
-	return true
-end
-
 function bevat(exp, naam)
 	if not exp then error('geen exp') end
-	if not exp.v and not exp.f then error('geen exp') end
+	if not exp.v and not exp.f and not exp.o then error('geen exp') end
 	if not naam.v then error('naam is geen exp') end
 
 	if exp.v then
 		return exp.v == naam.v
 	else
-		if bevat(exp.f, naam) then return true end
-		for i,v in ipairs(exp) do
-			if bevat(v, naam) then return true end
+		for sub in subs(exp) do
+			if bevat(sub, naam) then return true end
 		end
 		return false
 	end
 end
 
-function T(tabs)
-	do return unlisp(self) end
-	if type(self) == 'string' then return self end
-	local tabs = (tabs or '') .. '  '
-	local params = {}
-	local len = 2 -- '(' & ')'
-	for k,param in pairs(self) do
-		if type(param) == 'function' then
-			param = 'FUNC'
+-- a
+-- f(a)
+-- f(,(1 2))
+function exp2string(exp)
+	if not exp then return '?' end
+	if isatoom(exp) then
+		return exp.v
+	elseif isfn(exp) then
+		return string.format('%s(%s)', exp2string(exp.f), exp2string(exp.a))
+	elseif isobj(exp) then
+		local t = {}
+		t[#t+1] = exp2string(exp.o)
+		t[#t+1] = '('
+		for i,v in ipairs(exp) do
+			t[#t+1] = exp2string(v)
+			t[#t+1] = ' '
 		end
-		params[k] = tostring(param,tabs..'  ')
-		len = len + #params[k] + 1 -- ' '
+		t[#t] = ')'
+		return table.concat(t)
 	end
-	-- =(a,b)
-
-	local fn
-	if isfn(self.f) then
-		fn = '('..expmt.__tostring(params.f,tabs..'  ')..')'
-	else
-		fn = tostring(params.f)
-	end
-	if len > 30 then
-		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
-	else
-		return fn..'('..table.concat(params,sep)..')'
-	end
+	error 'HOORT NIET'
 end
+e2s = exp2string
 
 if test then
 	-- bevat
 	local a = X('+', 'a', '2')
 	assert(bevat(a, X'a'), exp2string(a))
+
+	-- subs
+	local a = X(',', '1', '2')
+
+	local e = subs(a)
+	local a,b,c = e(),e(),e()
+	assert(a)
+	assert(b)
+	assert(c)
+	assert(a.v == ',', e2s(a))
+	assert(b.v == '1', e2s(b))
+	assert(c.v == '2', e2s(c))
 end
