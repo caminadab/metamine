@@ -1,51 +1,43 @@
-/*
-is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
-%option reentrant
-%option bison-bridge
-%option bison-locations
-%option noyywrap nodefault
-%option yylineno
-*/
-%option header-file=".lex.yy.h"
-%option bison-bridge
-%option bison-locations
-%option ecs
-%option nodefault
-%option noyywrap
-%option reentrant
-%option stack
-%option warn
-%option yylineno
-%option never-interactive
+fout
+naam
+tekst "
+als ⇒
+nin
+som Σ
+to →
+maplet
+isn ≠
+cat ‖
+icat
+til
+cart ×
+neg
+gdga ≥
+isb ≈
+kdga ≤
+oud '
+tab
+unie ∪
+intersectie ∩
+uniee ⋃
+intersectiee ⋂
 
-%{
-	#include "node.h"
+ass :=
+catass
+plusass
+minass
+maalass
+deelass
 
-	#define YY_USER_ACTION2 {yylloc->first_line = yylineno; \
-        yylloc->first_column = yycolumn;                 \
-        yycolumn=yycolumn+yyleng;                         \
-        yylloc->last_column = yycolumn;                    \
-        yylloc->last_line = yylineno;}
+en ∧
+of ∨
+enn ⋀
+ofn ⋁
+niet ¬
+joker ★
+exof
+noch
 
-	#define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
-
-	typedef struct YYLTYPE YYLTYPE;
-	#include ".taal.yy.h"
-%}
-
-
-%%
 "∈"					{ *yylval = a("zitin"); return NAAM; }
 "∋"					{ *yylval = a("bevat"); return NAAM; }
 "∉"					{ *yylval = a("!:"); return NIN; }
@@ -159,21 +151,28 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "eind"			{ return EIND; }
 "end"			{ return END; }
 
-'\''					{ return OUD; }
+/* naam
+als
 
-'.'					{ *yylval = karakter(yytext[1]); return TEKST; }
-\"([^"])*\"					{ *yylval = tekst(a(yytext)); return TEKST; }
-\n					{ return NEWLINE; }
-;-[^$]*-;			// negeer commentaar
-;[^-][^\n]*\n		{ return NEWLINE; }
-((\d+)|(\.\d+))(e\d*)? { *yylval = a(yytext); return NAAM; }
--?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; } /* getal */
--?[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*\.[0-9]+			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*			{ *yylval = a(yytext); return NAAM; }
-[a-zA-Z_][a-zA-Z0-9_]*	{ *yylval = a(yytext); return NAAM; }
-0x[0-9A-Fa-f]+			{ *yylval = a(yytext); return NAAM; }
+%LEFT
+en
+'='
+":="
 
-.						{ *yylval = a(yytext); return FOUT; }
+%LEFT
+"->"
 
-%%
+%LEFT
+'&'
+"||"
+"XX"
+
+%LEFT
+
+%LEFT
+neg
+'^'
+oud
+%LEFT '.'
+%NONASSOC '%' '\'' inv m0 m1 m2 m3 m4 mn i0 i1 i2 i3 i4
+%LEFT naam tekst

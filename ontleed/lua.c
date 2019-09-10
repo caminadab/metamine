@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "node.h"
-#include "taal.yy.h"
-#include "lex.yy.h"
+#include ".taal.yy.h"
+#include ".lex.yy.h"
 #include "ontleed.h"
 
 /*

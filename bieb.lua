@@ -50,12 +50,14 @@ function bieb()
 	label = function() error('niet beschikbaar') end;
 	rechthoek = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
+	lijn = function() error('niet beschikbaar') end;
 	muisKlik = true,
 	muisKlikBegin = true,
 	muisKlikEind = true,
 	muisSleep = true, -- (pad = (van, via, naar))
 	muisX = true,
 	muisY = true,
+	muisBeweegt = true,
 
 	regMuis = true, -- X_X
 
