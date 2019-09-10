@@ -8,7 +8,6 @@ require 'getopt'
 require 'lisp'
 require 'vertolk'
 
-require 'naarlua'
 require 'rapport'
 require 'typeer'
 require 'doe'
