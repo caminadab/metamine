@@ -2,7 +2,7 @@ require 'util'
 require 'ontleed'
 require 'typeer'
 require 'bouw.arch'
-require 'bouw.controle'
+require 'bouw.codegen'
 require 'optimaliseer'
 require 'oplos'
 
@@ -39,7 +39,7 @@ function vertaal(code, doel)
 	end
 
 	--local uit = optimaliseer(uit)
-	local app = controle(uit, maakvar)
+	local app = codegen(uit, maakvar)
 
 	return app, fouten
 end
