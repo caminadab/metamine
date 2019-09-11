@@ -44,10 +44,10 @@ function arch.js(exp, types)
 			sub.f = X('intd')
 		--elseif types[sub.f] and types[sub.f]:issubtype('[]u') then
 			--sub.f = X('tekst')
-		elseif fn(sub) == '||' and types[sub] and types[sub]:issubtype('tekst') then
-			sub.f = X('||u')
-		elseif fn(sub) == '||' and types[a] and types[b] and types[a]:issubtype('tekst') and types[a]:issubtype('tekst') then
-			sub.f = X('||u')
+		elseif fn(sub) == '‖' and types[sub] and types[sub]:issubtype('tekst') then
+			sub.f = X('‖u')
+		elseif fn(sub) == '‖' and types[a] and types[b] and types[a]:issubtype('tekst') and types[a]:issubtype('tekst') then
+			sub.f = X('‖u')
 		elseif fn(sub) == 'cat' and types[a] and types[b] and types[a]:issubtype('tekst') and types[b]:issubtype('tekst') then
 			sub.f = X('catu')
 		elseif fn(sub) == 'map' and types[a] and types[b] and types[exp] and types[a]:issubtype('tekst') and types[b]:issubtype('tekst') and types[exp]:issubtype('tekst') then

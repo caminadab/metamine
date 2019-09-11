@@ -25,7 +25,7 @@ function bieb()
 	init = true,
 
 	-- meta
-	var = function (index,set)
+	_var = function (index,set)
 		local ret = vars[index]
 		-- start
 		for exp in pairs(set) do
@@ -37,7 +37,7 @@ function bieb()
 		return ret
 	end;
 
-	prevvar = function(index)
+	_prevvar = function(index)
 		return vars[index]
 	end;
 

@@ -155,7 +155,7 @@ _		{ *yylval = A(GL, "_", nergens); return '_'; }
 }
 
 \"([^"])*\" {
-	*yylval = xlua_reftekst(GL, yytext, nergens); // tekst(a(yytext));
+	*yylval = xlua_reftekst(GL, yytext, *yylloc); // tekst(a(yytext));
 	return NAAM;
 }
 

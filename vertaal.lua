@@ -95,9 +95,9 @@ uit = f(g(2, 3), f(g(1, 8), 2))
 
 	-- ez
 	test('uit = "hoi"', 'hoi')
-	test('uit = "hoi" || "ja"', 'hoija')
+	test('uit = "hoi" ‖ "ja"', 'hoija')
 	test([[
-uit = "fib(20) = " || tekst(x) || [10]
+uit = "fib(20) = " ‖ tekst(x) ‖ [10]
 x = fib 20
 fib = n → (fⁿ[0,1]) 0
 f = [a,b] → [b,a+b]
@@ -110,7 +110,7 @@ uit = f(1)
 ]], 6)
 
 	local itoatoitoa = [[
-uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
+uit = "looptijd: " ‖ itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
 
 ; tekst -> integer
 atoi = b → i
@@ -134,7 +134,7 @@ atoi = b → i
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
   neg = als x < 0 dan "-" anders ""
-  a = neg || ((n .. 0) map cijfer)
+  a = neg ‖ ((n .. 0) map cijfer)
   geschaald = (abs x)/10^m
   cijfer = m → '0' + (entier geschaald) mod 10
 ]]

@@ -32,7 +32,15 @@ function emap(exp, fn, ...)
 		return fn(exp, ...)
 	end
 	local s = {}
-	s.f = fn(exp.f, ...)
+	if exp.f then
+		s.f = fn(exp.f, ...)
+	end
+	if exp.a then
+		s.a = fn(exp.a, ...)
+	end
+	if exp.a then
+		s.a = fn(exp.a, ...)
+	end
 	for i,v in ipairs(exp) do
 		s[i] = fn(v, ...)
 	end

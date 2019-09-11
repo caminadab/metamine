@@ -254,7 +254,7 @@ function typeer(exp)
 
 			local tfn = types[exp.f]
 
-			if #exp == 1 and isvar(exp.f) and not types[exp.f] and types[exp[1]] and types[exp] then
+			if false then --#exp == 1 and isvar(exp.f) and not types[exp.f] and types[exp[1]] and types[exp] then
 				-- typeer de functie zelf
 				-- f(2) = 3 → f = getal → getal
 				local functype = {f=X'→', types[exp[1]], types[exp]}

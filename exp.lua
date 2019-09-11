@@ -36,10 +36,10 @@ function subs(exp)
 		return function()
 			if a == 2 then
 				a = 1
-				return exp.f
+				return "f", exp.f
 			elseif a == 1 then
 				a = 0
-				return exp.a
+				return "a", exp.a
 			else
 				return nil
 			end
@@ -52,18 +52,20 @@ function subs(exp)
 		return function()
 			if a then
 				a = false
-				return exp.o
+				return "o", exp.o
 			else
 				i = i + 1
-				return exp[i]
+				return (exp[i] and i), exp[i]
 			end
 		end
 	end
 
 end
 
-function checkr(e, p1, p2)
-	assert(e, e2s(p2))
+function checkr(e, p, k)
+	if not e then
+		error(string.format('%s[%s] = nil', e2s(p), k))
+	end
 	local n = 0
 	if isatoom(e) then n = n + 1 end
 	if isfn(e) then n = n + 1 end
@@ -73,13 +75,13 @@ function checkr(e, p1, p2)
 		see(p1)
 		error'check faalde'
 	end
-	for sub in subs(e) do
-		checkr(sub, e, p1)
+	for k,sub in subs(e) do
+		checkr(sub, e, k)
 	end
 end
 
 function check(e)
-	checkr(e, e, e)
+	checkr(e, '?', '?')
 end
 
 expmt = {}
@@ -114,15 +116,15 @@ end
 
 function loctekst(loc)
 	if not loc then loc = nergens end
-	local bron = loc.bron or '?.code'
-	bron = bron:sub(1, -6)
+	local bron = ''
+	if loc.bron then bron = loc.bron:sub(1,-6) .. '@' end
 
 	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
-		return string.format("%s@%d:%d", bron, loc.y1, loc.x1)
+		return string.format("%s%d:%d", bron, loc.y1, loc.x1)
 	elseif loc.y1 == loc.y2 then
-		return string.format("%s@%d:%d-%d", bron, loc.y1, loc.x1, loc.x2)
+		return string.format("%s%d:%d-%d", bron, loc.y1, loc.x1, loc.x2)
 	else
-		return string.format("%s@%d:%d-%d:%d", bron, loc.y1, loc.x1, loc.y2, loc.x2)
+		return string.format("%s%d:%d-%d:%d", bron, loc.y1, loc.x1, loc.y2, loc.x2)
 	end
 end
 
@@ -201,7 +203,7 @@ end
 -- depth first search
 function boompairsdfs(exp, t)
 	local t = t or {}
-	for sub in subs(exp) do
+	for k,sub in subs(exp) do
 		boompairsdfs(sub, t)
 	end
 	t[#t+1] = exp
@@ -216,7 +218,7 @@ end
 -- breadth first search
 function boompairsbfs(exp, t)
 	local t = t or {}
-	for sub in subs(exp) do
+	for k,sub in subs(exp) do
 		boompairsdfs(sub, t)
 	end
 	t[#t+1] = exp
@@ -238,7 +240,7 @@ function bevat(exp, naam)
 	if exp.v then
 		return exp.v == naam.v
 	else
-		for sub in subs(exp) do
+		for k,sub in subs(exp) do
 			if bevat(sub, naam) then return true end
 		end
 		return false
@@ -278,7 +280,9 @@ if test then
 	local a = X(',', '1', '2')
 
 	local e = subs(a)
-	local a,b,c = e(),e(),e()
+	local _,a = e()
+	local _,b = e()
+	local _,c = e()
 	assert(a)
 	assert(b)
 	assert(c)

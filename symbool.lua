@@ -40,9 +40,8 @@ function var(exp,c,t)
 	if isatoom(exp) then
 		if not c(exp) then t[exp] = true end
 	else
-		var(exp.f,c,t)
-		for i,v in ipairs(exp) do
-			var(v,c,t)
+		for k, sub in subs(exp) do
+			var(sub,c,t)
 		end
 	end
 	return t
@@ -95,7 +94,6 @@ function substitueer(exp, van, naar)
 	end
 end
 
---<<<<<<< Updated upstream
 Al = {}
 function substitueerzuinig(exp, van, naar, maakvar, al)
 	al = Al or al or {}
@@ -194,7 +192,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		--print('EXP' ,e2s(exp))
 	end
 		--print('RET' ,e2s(exp))
-	return exp
+	return exp, 0
 end
 
 sym = {

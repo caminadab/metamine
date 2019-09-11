@@ -60,12 +60,35 @@ int xlua_appenda(lua_State* L, int lijst, int el, YYLTYPE loc) {
 	return lijst;
 }
 
+YYLTYPE locincrement(YYLTYPE loc, char* str) {
+	int len = utf8len(str);
+	loc.first_line = loc.last_line;
+	loc.first_column = loc.last_column;
+
+	if (*str == '\n') {
+		loc.last_line ++;
+		loc.last_column = 0;
+	}
+	else {
+		int len = utf8len(str);
+		loc.last_column += len;
+	}
+	return loc;
+}
+
 int xlua_reftekst(lua_State* L, char* str, YYLTYPE loc) {
 	int t = xlua_refobj(L, xlua_refatoom(L, "[]u", loc), loc);
 
 	int i = 0;
 	int esc = 0;
-	for (char* s = str + 1; *(s + utf8len(s)); s += utf8len(s), i++) {
+
+	// karakter locatie
+	YYLTYPE chloc = loc;
+	chloc.last_line = chloc.first_line;
+	chloc.last_column = chloc.first_column;
+	printf("FIRST COL %d\n", loc.first_column);
+
+	for (char* s = str + 1; *(s + utf8len(s)); chloc = locincrement(chloc, s), s += utf8len(s), i++) {
 		// UTF-8
 		int cp = utf8cp(s);
 		if (esc) {
@@ -83,10 +106,9 @@ int xlua_reftekst(lua_State* L, char* str, YYLTYPE loc) {
 
 		char ch[16];
 		sprintf(ch, "%d", cp);
-		//node* tekennode = aloc(ch, t->loc);
-		//tekennode->loc.first_column += i;
-		//tekennode->loc.last_column = tekennode->loc.first_column + 1; // TODO unicode & regeleinden
-		int karakter = xlua_refatoom(L, ch, loc);
+
+		int karakter = xlua_refatoom(L, ch, chloc);
+		printf("LOCCC %d\n", chloc.first_column);
 		t = xlua_append(L, t, karakter, loc);
 	}
 	return t;

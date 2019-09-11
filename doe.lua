@@ -45,17 +45,23 @@ local function doeblok(blok, env, ...)
 		end
 		-- naam := exp
 		-- naam := f(a,b)
-		local naam,exp = stat[1],stat[2]
+		local naam,exp = stat.a[1],stat.a[2]
 		local uit
 	
 		local exp = emap(exp, waarde, env, ...)
 		local w
+
 		if isatoom(exp) then
 			if exp.v == '[]' then
 				w = {}
 			else
 				w = exp.w
 			end
+
+		-- TODO obj
+		elseif isobj(exp) then
+			w = "ok"
+
 		elseif exp.f and type(exp.f.w) == 'table' then
 			-- woeps
 			local a = exp.f.w

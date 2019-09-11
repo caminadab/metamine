@@ -6,35 +6,12 @@ require 'vhgraaf'
 require 'bieb'
 require 'rapport'
 
-leed = combineer
-
 local bieb = bieb()
-
-function T(exp)
-	local r = {}
-	local function t(exp)
-		if isatoom(exp) then
-			r[#r+1] = exp.v
-		else
-			t(exp.f)
-			r[#r+1] = '('
-			for i,v in ipairs(exp) do
-				t(v)
-				if exp[i+1] then
-					r[#r+1] = ' '
-				end
-			end
-			r[#r+1] = ')'
-		end
-	end
-	t(exp)
-	return table.concat(r)
-end
 
 local function pakpunten(exp,r)
 	local r = r or {}
 	r[#r+1] = exp
-	if isexp(exp) then
+	if isfn(exp) then
 		pakpunten(exp.f,r)
 		for i,v in ipairs(exp) do
 			pakpunten(v,r)
@@ -90,13 +67,8 @@ function oplos(exp,voor)
 	local maakvar = maakvars()
 	local fouten = {}
 	if isatoom(exp) then return X'ZWARE FOUT',fouten end -- KAN NIET
-	if exp.f.v == [[=]] or exp.f.v == [[⋀]] then
-		local eqs
-		if exp.f.v == [[=]] then
-			eqs = set(exp)
-		else
-			eqs = set(table.unpack(exp))
-		end
+	if fn(exp) == "⋀" then
+		local eqs = set(table.unpack(exp.a))
 
 		-- invoer ??
 		local args = {}
@@ -139,7 +111,7 @@ function oplos(exp,voor)
 
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 		for eq in pairs(eqs) do
-			if isfn(eq) and isfn(eq.a[1]) and false then --TODO and #eq[1] == 1 then
+			if false and isfn(eq) and isfn(eq.a[1]) and false then --TODO and #eq[1] == 1 then
 				local a, b, c  = eq.a[1].f, eq.a[1].a[1], eq.a[2]
 				local neq = X(sym.cois, a, X(sym.map, b, c))
 				local meq = X(sym.cois, a, X(sym.map, b, c))
@@ -184,9 +156,10 @@ function oplos(exp,voor)
 		-- vind atomen
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
-				if isfn(exp) and exp.f.v == '.' then
-					exp.f, exp.a.a[2] = X'=', {f=X'atoom', X(tostring(i)), naam=exp.a.v }
+				if fn(exp) == '.' then
+					local eq = X('=', exp.a, X('atoom', tostring(i)))
 					i = i + 1
+					nieuw[eq] = true
 				end
 			end
 		end
@@ -207,8 +180,8 @@ function oplos(exp,voor)
 						--print('BLOK', e2s(eq))
 					end
 				end
-				if eq[3] and fn(eq[3]) == '⋀' then
-					for i,sub in ipairs(eq[3]) do
+				if eq.a[3] and fn(eq.a[3]) == '⋀' then
+					for i,sub in ipairs(eq.a[3]) do
 						local eq = X('⇒', X('¬', eq.a[1]), sub)--X'niets')
 						nieuw[eq] = true
 						--print('BLOK', e2s(eq))
@@ -294,7 +267,7 @@ function oplos(exp,voor)
 			if #alts == 1 then
 				alts = alts[1]
 			end
-			local eq = {f=X'=', X(naam), alts}
+			local eq = X('=', X(naam), alts)
 			eqs[eq] = true
 		end
 
@@ -306,7 +279,7 @@ function oplos(exp,voor)
 			-- a |= b
 			if isfn(eq) and eq.f.v == '|:=' then
 				print(e2s(eq))
-				local a,b = eq.a[1],eq.a[2]
+				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
 				v[#v+1] = b
@@ -325,7 +298,7 @@ function oplos(exp,voor)
 			local index = maakindex()
 			schaduw[naam] = index
 			print('SCHADUW', naam)
-			local eq = {f=X'=', X(naam), X('var', index, alts)}
+			local eq = X('=', X(naam), X('var', index, alts))
 			eqs[eq] = true
 		end
 		
@@ -350,7 +323,7 @@ function oplos(exp,voor)
 			if #alts == 1 then
 				alts = alts.a[1]
 			end
-			local eq = {f=X'=', X(naam), alts}
+			local eq = X('=', X(naam), alts)
 			eqs[eq] = true
 		end
 
@@ -361,9 +334,9 @@ function oplos(exp,voor)
 			-- a ∐= b
 			if isfn(eq) and (eq.f.v == 'bevat' or eq.f.v == 'zitin') then
 				if eq.f.v == 'zitin' then
-					eq.f,eq.a[1],eq.a[2] = X'bevat',eq.a[2],eq.a[1]
+					eq.f, eq.a[1], eq.a[2] = X'bevat', eq.a[2], eq.a[1]
 				end
-				local a,b = eq.a[1],eq.a[2]
+				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
 				v[#v+1] = b
@@ -374,8 +347,8 @@ function oplos(exp,voor)
 			eqs[eq] = nil
 		end
 		for naam,alts in pairs(map) do
-			alts.f = X'UNIE'
-			local eq = {f=X'=', X(naam), alts}
+			alts.f = X'∪'
+			local eq = X('=', X(naam), alts)
 			eqs[eq] = true
 		end
 
@@ -419,8 +392,8 @@ function oplos(exp,voor)
 					local naam = exp.a.v
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
-					exp.f = X('prevvar')
 					assert(schaduw[naam], 'onbekende variabele: '..naam)
+					exp.f = X('_prevvar')
 					exp.a = X(schaduw[naam])
 				end
 			end
@@ -450,9 +423,8 @@ function oplos(exp,voor)
 					lam.a = uit
 
 					-- complexe parameters
-					local paramhulp = {f=X'=', naam, inn}
+					local paramhulp = X('=', naam, inn)
 					nieuw[paramhulp] = true -- HIER!
-
 				end
 			end
 		end
@@ -462,14 +434,16 @@ function oplos(exp,voor)
 		-- → multimap = lijst(:=(A,B))
 		local subst = {}
 		for eq in pairs(eqs) do
-			if isfn(eq) and eq.f.v == [[=]] then
+			--print('JA', e2s(eq))
+			if fn(eq) == "=" then
 				for naam in pairs(var(eq,invoer)) do
 					--if naam ~= eq[1] and naam ~= eq.a[2] then
 					if bieb[naam] == nil then
 						--if verboos then print('Probeer', naam, toexp(eq)) end
-						local waarde = isoleer(eq,naam)
+						--print('NAAM', e2s(naam))
+						local waarde = isoleer(eq, naam)
 						if waarde then
-							local eq = {f=X':=', naam, waarde}
+							local eq = X(':=', naam, waarde)
 							subst[eq] = true
 							--if verbozeOplos then print('SUBST', exp2string(eq)) end
 						end
@@ -491,7 +465,7 @@ function oplos(exp,voor)
 		local pijl2subst = {}
 		local bron2def = {}
 		for subst in pairs(subst) do
-			local naam,waarde = subst[1],subst.a[2]
+			local naam,waarde = subst.a[1],subst.a[2]
 			local bron0 = var(waarde,invoer)
 			local bron = {}
 			for k in pairs(bron0) do -- alleen naam is nodig
@@ -560,7 +534,7 @@ function oplos(exp,voor)
 		-- O(diepte · sz)
 		for i=#substs,1,-1 do
 			local sub = pijl2subst[substs[i]]
-			local naam,exp = sub[1],sub.a[2]
+			local naam,exp = sub.a[1],sub.a[2]
 			local val0 = val
 			local n
 			naam2exp[naam] = naam2exp[naam] or {}
@@ -618,7 +592,7 @@ function oplos(exp,voor)
 			if eq.f == [[=]] then
 				local fx,val = eq[1],eq.a[2]
 				-- (...) = f
-				if isexp(fx) then
+				if isfn(fx) then
 					-- (f x) = g
 					if not isinvoer(fx.f) and not isinvoer(fx[1]) and bevat(val, fx[1]) then
 						eq[1] = fx.f
