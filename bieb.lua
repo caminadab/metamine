@@ -217,57 +217,23 @@ function bieb()
 		end
 	end;
 
-	['+'] = function(a,b) return a + b end;
+	['+'] = function(a) return a[1] + a[2] end;
 	['-'] = function(a) return -a end;
-	['·'] = function(a,b) return a * b end;
-	['/'] = function(a,b) return a / b end;
-	['^'] = function(a,b)
-		if type(a) == 'function' then
+	['·'] = function(a) return a[1] * a[2] end;
+	['/'] = function(a) return a[1] / a[2] end;
+	['^'] = function(a)
+		if type(a[1]) == 'function' then
 			return function (x)
-				for i=1,b do
-					x = a(x)
+				for i=1,a[2] do
+					x = (a[1])(x)
 				end
 				return x
 			end
 		else
-			return a ^ b
+			return a[1] ^ a[2]
 		end
 	end;
 	['%'] = function(a) return a / 100 end;
-	['[]u'] = function(...)  return string.char(...) end;
-	['[]'] = function(...)
-		local t = {...}
-		return setmetatable(t,{__tostring=function() return '[' .. table.concat(map(t,tostring), ',') .. ']' end})
-	end;
-	['{}'] = function(...)
-		local t = {...}
-		local s = {}
-		for _,v in ipairs(t) do
-			s[v] = true
-		end
-		setmetatable(s, {__tostring=function()
-					local t = {'{'}
-					for k in spairs(s) do
-						t[#t+1] = tostring(k)
-						t[#t+1] = ','
-					end
-					if t[#t] == ',' then t[#t] = nil end
-					t[#t+1] = '}'
-					return table.concat(t)
-				end
-			})
-
-		return s
-	end;
-				
-	['{}1'] = function(...)
-		local t = {...}
-		local s = {is={set=true},set={}}
-		for _,v in pairs(t) do
-			s.set[v] = true
-		end
-		return s
-	end,
 
 	['ontleed'] = function(a)
 		--local code = string.char(table.unpack(a))
@@ -287,15 +253,16 @@ function bieb()
 		return doe0(exp)
 	end;
 
-	['∘'] = function(a,b)
-		assert(type(a) == 'function', a)
-		assert(type(b) == 'function', b)
+	['∘'] = function(a)
+		assert(type(a[1]) == 'function', a)
+		assert(type(a[2]) == 'function', b)
 		return function(...)
-			return b(a(...))
+			return a[2](a[1](...))
 		end
 	end;
 
-	['|'] = function(a,b)
+	['|'] = function(a)
+		local a,b = a[1],a[2]
 		local fa = type(a) == 'function'
 		local fb = type(b) == 'function'
 		--if fa ~= fb then return 'fout' end
@@ -328,17 +295,19 @@ function bieb()
 	end;
 
 	['#'] = function(a) return #a end;
-	['='] = function(a,b)
-		if tonumber(a) and tonumber(b) then
+	['='] = function(a)
+		if tonumber(a[1]) and tonumber(a[2]) then
 			return a == b
 		end
-		return unlisp(a)==unlisp(b)
+		return lenc(a) == lenc(b)
 	end;
-	['>'] = function(a,b) return tonumber(a) > tonumber(b) end;
-	['<'] = function(a,b) return tonumber(a) < tonumber(b) end;
-	['≠'] = function(a,b) return a ~= b end;
-	['≈'] = function(a,b) return math.abs(a-b) < 0.00001 end;
-	['..'] = function(a,b)
+	['>'] = function(a) return tonumber(a[1]) > tonumber(b[1]) end;
+	['<'] = function(a) return tonumber(a[1]) < tonumber(b[1]) end;
+	['≠'] = function(a) return a[1] ~= b[1] end;
+	['≈'] = function(a) return math.abs(a[1]-b[1]) < 0.00001 end;
+
+	['..'] = function(a)
+		local a,b = a[1], a[2]
 		local r = {}
 		if a > b then
 			for i=a-1,b,-1 do
@@ -355,7 +324,8 @@ function bieb()
 		return r
 	end;
 
-	['‖'] = function(a,b)
+	['‖'] = function(a)
+		local a,b = a[1], a[2]
 		if type(a) == 'string' or type(b) == 'string' then
 			return tostring(a) .. tostring(b)
 		end
@@ -369,7 +339,8 @@ function bieb()
 		return t
 	end;
 
-	['‖u'] = function(a,b)
+	['‖u'] = function(a)
+		local a,b = a[1], a[2]
 		return a .. b
 	end;
 

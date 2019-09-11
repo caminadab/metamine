@@ -31,6 +31,112 @@ local function waarde(a, env, ...)
 	return a
 end
 
+local function doeatoom(exp, env)
+	if tonumber(exp.v) then
+		return tonumber(exp.v)
+	elseif env[exp.v] then
+		return env[exp.v]
+	else
+		error('onbekend: '..combineer(exp))
+	end
+end
+
+
+local function doestat(stat, env)
+	assert(env)
+	local cmd = stat.a[2]
+	if isobj(cmd) then
+		local o = obj(cmd)
+		if true or o == ',' then
+			local r = {}
+			for i,v in ipairs(cmd) do
+				r[i] = doeatoom(v, env)
+			end
+			return r
+			--return map(cmd, doeatoom, env)
+		end
+	
+	elseif isatoom(cmd) then
+		return doeatoom(cmd, env)
+
+	elseif isfn(cmd) then
+		local fn = env[fn(cmd)]
+		local arg = doeatoom(arg(cmd), env)
+		return fn(arg)
+	
+	else
+		error('wat is dit: '..combineer(stat))
+
+	end
+end
+
+local function doestat0(stat, env)
+	-- naam := exp
+	-- naam := f(a,b)
+	local naam,exp = stat.a[1],stat.a[2]
+	local uit
+	local w
+
+	-- verkrijg waardes van argumenten enzo
+	--exp = emap(exp, waarde, env, ...)
+
+	--print(lenc(exp))
+	--check(exp)
+
+	if isatoom(exp) then
+		if exp.v == '[]' then
+			w = {}
+		else
+			w = exp.w
+		end
+
+	elseif exp.f and type(exp.f.w) == 'table' then
+		-- woeps
+		local a = exp.f.w
+		local i = exp[1].w
+		w = a[i+1]
+		assert(w ~= nil, combineer(w2exp(a)) .. '.' .. combineer(w2exp(b)))
+
+	elseif exp.f.v == '_fn' then
+		w = env[fn(exp)]
+
+	-- normale functie
+	else
+		local func = exp.f.w
+		assert(func ~= nil, "geen functie voor "..e2s(exp.f))
+		local args = {}
+		for i,s in ipairs(exp) do
+			args[i] = s.w
+		end
+		if type(func) == 'function' then
+			--w = func(able.unpack(args))
+			local ok
+			ok, w = xpcall(func, function(f) return f ..'\n' .. debug.traceback() end, table.unpack(args))
+			if not ok then
+				local err = w
+				local f = executiefout(stat.loc, err)
+				print(fout2string(f))
+				return
+			end
+
+		elseif type(func) == 'table' then
+			w = func[args[1]]
+
+		elseif type(func) == 'string' then
+			w = func:sub(args[1]+1, args[1]+1)
+
+		else
+			print('ASDF', e2s(exp), exp.f.w, exp.w)
+			local f = executiefout(stat.loc, 'onbekende "functie": '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
+			print()
+			print(fout2string(f))
+		end
+
+	end
+	--assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
+	return w
+end
+
 -- doe een continu blok aan instructies
 -- mogelijk met argumenten
 local function doeblok(blok, env, ...)
@@ -40,74 +146,14 @@ local function doeblok(blok, env, ...)
 			io.write('  ', combineer(stat), '\t', loctekst(stat.loc), '\t\t' )
 			io.flush()
 		end
-		-- naam := exp
-		-- naam := f(a,b)
-		local naam,exp = stat.a[1],stat.a[2]
-		local uit
-	
-		-- verkrijg waardes van argumenten enzo
-		exp = emap(exp, waarde, env, ...)
 
-		--print(lenc(exp))
-		--check(exp)
-
-		if isatoom(exp) then
-			if exp.v == '[]' then
-				w = {}
-			else
-				w = exp.w
-			end
-
-		elseif exp.f and type(exp.f.w) == 'table' then
-			-- woeps
-			local a = exp.f.w
-			local i = exp[1].w
-			w = a[i+1]
-			assert(w ~= nil, combineer(w2exp(a)) .. '.' .. combineer(w2exp(b)))
-
-		elseif exp.f.v == '_fn' then
-			w = env[fn(exp)]
-
-		-- normale functie
-		else
-			local func = exp.f.w
-			assert(func ~= nil, "geen functie voor "..e2s(exp.f))
-			local args = {}
-			for i,s in ipairs(exp) do
-				args[i] = s.w
-			end
-			if type(func) == 'function' then
-				--w = func(able.unpack(args))
-				local ok
-				ok, w = xpcall(func, function(f) return f ..'\n' .. debug.traceback() end, table.unpack(args))
-				if not ok then
-					local err = w
-					local f = executiefout(stat.loc, err)
-					print(fout2string(f))
-					return
-				end
-
-			elseif type(func) == 'table' then
-				w = func[args[1]]
-
-			elseif type(func) == 'string' then
-				w = func:sub(args[1]+1, args[1]+1)
-
-			else
-				print('ASDF', e2s(exp), exp.f.w, exp.w)
-				local f = executiefout(stat.loc, 'onbekende "functie": '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
-				print()
-				print(fout2string(f))
-			end
-
-		end
-		--assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
+		local w = doestat(stat, env)
 
 		if opt and opt.L then
 			io.write(lenc(w), '\n')
 		end
 
-		env[naam.v] = w
+		env[stat.a[1].v] = w
 	end
 	local epi = blok.epiloog
 	if fn(epi) == 'ret' then
@@ -115,7 +161,7 @@ local function doeblok(blok, env, ...)
 		if opt and opt.L then print('ret '..tostring(a)) end
 		return a
 	elseif epi.v == 'stop' then
-		local a =  env[blok.stats[#blok.stats][1].v]
+		local a =  env[blok.stats[#blok.stats].a[1].v]
 		if opt and opt.L then print('stop') end
 		return a
 	elseif fn(epi) == 'ga' then

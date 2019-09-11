@@ -19,9 +19,9 @@ function curry(a,b)
 	return nil
 end
 
-function map(v, fn)
+function map(v, fn, ...)
 	local r = {}
-	for k,v in pairs(v) do r[k] = fn(v) end
+	for k,v in pairs(v) do r[k] = fn(v, ...) end
 	return r
 end
 
@@ -89,12 +89,10 @@ function staart(lijst)
 end
 
 func = {
-	['+'] = function(a,b) return a + b end;
-	['-'] = function(a,b) if b then return a - b else return a end end;
-	['*'] = function(a,b) return a * b end;
-	['/'] = function(a,b) return a / b end;
-	['^'] = function(a,b) return a ^ b end;
-	['[]'] = function(...) return table.pack(...) end;
+	['-'] = function(A) if b then return a - b else return a end end;
+	['·'] = function(A) return a * b end;
+	['/'] = function(A) return a / b end;
+	['^'] = function(A) return a ^ b end;
 
 	['..'] = function(a,b)
 		local t = {}

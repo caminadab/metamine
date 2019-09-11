@@ -6,7 +6,7 @@ require 'lisp'
 require 'util'
 
 function fn(exp) if isfn(exp) then return exp.f.v end end
-function arg(exp) if isfn(exp) then return exp.f.a end end
+function arg(exp) if isfn(exp) then return exp.a end end
 function obj(exp) if isobj(exp) then return exp.o.v end end
 function atoom(exp,i) 
 	if not i then
