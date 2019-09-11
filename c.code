@@ -1,4 +1,15 @@
-uit = (f ∘ g)(2,3)
+uit = (0..8) cart (0..8)
 
-f = (x,y) → (x + y, x - y)
-g = (z,w) → (z + w)
+; map!
+
+
+cart = a,b → (0..#a) map f
+f = ai → (0..#b) map g
+g = bi → (ai, bi)
+
+;f = [(+), sincos, (·)]
+;g = f vouw (∘)
+
+;-
+cart = lijst(a), lijst(b) → lijst(a,b)
+-;

@@ -93,9 +93,10 @@ function codegen(exp, maakvar)
 			arg = con(exp)
 		elseif isfn(exp) then
 			arg = con(exp)
-		else
+		elseif isobj(exp) then
 			arg = con(exp)
-			--arg = exp
+		else
+			arg = exp
 		end
 		arg.ref = exp.ref
 		return arg
@@ -265,12 +266,15 @@ function codegen(exp, maakvar)
 			if not exp.f and not exp.o then error(e2s(exp)) end
 
 			if exp.f and exp.f.v:sub(1,1) == '~' then
-				--fw.f = assert(al[exp.f.v], 'onbekende ref: '..exp.f.v)
 				fw.f = assert(al[exp.f.v], 'onbekende ref: '..exp.f.v)
-				--print('jajajaja', fw.f, exp.f.v)
 			end
 
-			for k,v in subs(exp) do
+			local e = exp
+			if isfn(exp) and isobj(exp.a) then
+				--e = exp.a
+			end
+
+			for k,v in subs(e) do
 				if k == 'f' or k == 'o' then
 					fw[k] = v
 				elseif fn(exp) == '[]u' then

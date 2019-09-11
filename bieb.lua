@@ -87,6 +87,10 @@ function bieb()
 
 	-- io
 	['stduitSchrijf'] = function(a)
+		do
+			print(combineer(w2exp(a)))
+			return 0
+		end
 		if type(a) == 'table' and #a > 1 then
 			local txt = true
 			for i,v in ipairs(a) do
@@ -121,7 +125,7 @@ function bieb()
 	wit = true,
 	zwart = true,
 
-	-- willekeurig
+	-- willekeurig ×
 	aselect = function (a, b)
 		return math.random(a, b-1)
 	end,
@@ -149,8 +153,6 @@ function bieb()
 	os.time(),
 	['inverteer'] = true; -- sure
 	['sqrt'] = function(a) return math.sqrt(a) end;
-	['ja'] = true; 
-	['nee'] = false; 
 	['niets'] = false; --"niets";
 	['min'] = function(a,b) return math.min(a,b) end;
 	['mod'] = function(a,b) return a % b end;
@@ -168,7 +170,9 @@ function bieb()
 	end;
 
 	-- linksassociatief
-	['×'] = function(a,b)
+	-- cartesisch product
+	['×'] = function(a)
+		local a,b = a[1],a[2]
 		local t = {}
 		for i,aa in ipairs(a) do
 			for i,bb in ipairs(b) do
