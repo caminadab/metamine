@@ -96,7 +96,7 @@
 %token OFF "⋁"
 %token JOKER "★"
 
-/* %precedence NAAM TEKST */
+/* precedenties! */
 %left ALS DAN ANDERS
 %left "⇒"
 %left SOM INTERSECTIEE UNIEE
@@ -110,10 +110,12 @@
 %left ','
 %left '&' '|'
 %left "‖" "::"
+
+%nonassoc CALL
+
 %left "×" UNIE INTERSECTIE
 %left ".."
 %left '+' '-'
-%nonassoc CALL
 %left "·" '/'
 %left NEG '#'
 %right '^' '_'
@@ -314,7 +316,7 @@ exp:
 |	exp ',' exp  { $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ":=" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '=' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-|	exp '-' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp '-' exp  { $$ = FN2(L, A(L,"+",@1), $1, FN1(L, A(L,"-",@1), $3, @3), @$); }
 |	exp '+' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '/' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "·" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }

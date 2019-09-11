@@ -307,13 +307,13 @@ function genjs(app)
 
 	local function blokjs(blok, tabs)
 		for i,stat in ipairs(blok.stats) do
-			local naam, exp = stat[1], stat[2]
+			local naam, exp = stat.a[1], stat.a[2]
 			local var = maakvar()
 			local f = fn(exp)
-			local a = exp[1] and exp[1].v
-			local b = exp[2] and exp[2].v
-			local c = exp[3] and exp[3].v
-			local d = exp[4] and exp[4].v
+			local a = exp.a[1] and exp.a[1].v
+			local b = exp.a[2] and exp.a[2].v
+			local c = exp.a[3] and exp.a[3].v
+			local d = exp.a[4] and exp.a[4].v
 
 			if isatoom(exp) and immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
@@ -340,7 +340,7 @@ function genjs(app)
 			elseif bieb[f] then
 				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			elseif true then -- TODO check lijst
-				print(f, f.ref)
+				--print(f, f.ref)
 				t[#t+1] = string.format('%s%s = %s(%s);', tabs, naam.v, f, table.concat(map(exp, function(a) return a.v end), ','))
 			else
 				t[#t+1] = string.format(tabs .. "throw 'onbekende functie: ' + " .. f .. ";")
@@ -359,14 +359,14 @@ function genjs(app)
 		blokjs(blok, tabs)
 		local epi = blok.epiloog
 		if fn(epi) == 'ga' and #epi == 3 then
-			t[#t+1] = string.format('%sif (%s) {', tabs, epi[1].v)
-			local b = blokken[epi[2].v]
+			t[#t+1] = string.format('%sif (%s) {', tabs, epi.a[1].v)
+			local b = blokken[epi.a[2].v]
 			flow(b, tabs..'  ')
 			t[#t+1] = tabs .. '} else {'
-			flow(blokken[epi[3].v], tabs..'  ')
+			flow(blokken[epi.a[3].v], tabs..'  ')
 			t[#t+1] = tabs .. '}'
 			
-			local phi = blokken[b.epiloog[1].v]
+			local phi = blokken[b.epiloog.a[1].v]
 			if phi then
 				flow(phi, tabs)
 			end
@@ -374,7 +374,7 @@ function genjs(app)
 		elseif fn(epi) == 'ga' and #epi == 1 then
 			--flow(blokken[epi[1].v], tabs..'  ')
 		elseif fn(epi) == 'ret' then
-			t[#t+1] = string.format('%sreturn %s;', tabs, epi[1].v)
+			t[#t+1] = string.format('%sreturn %s;', tabs, epi.a[1].v)
 		elseif epi.v == 'stop' then
 			-- niets
 		else

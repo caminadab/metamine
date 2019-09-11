@@ -86,7 +86,6 @@ int xlua_reftekst(lua_State* L, char* str, YYLTYPE loc) {
 	YYLTYPE chloc = loc;
 	chloc.last_line = chloc.first_line;
 	chloc.last_column = chloc.first_column;
-	printf("FIRST COL %d\n", loc.first_column);
 
 	for (char* s = str + 1; *(s + utf8len(s)); chloc = locincrement(chloc, s), s += utf8len(s), i++) {
 		// UTF-8
@@ -108,7 +107,6 @@ int xlua_reftekst(lua_State* L, char* str, YYLTYPE loc) {
 		sprintf(ch, "%d", cp);
 
 		int karakter = xlua_refatoom(L, ch, chloc);
-		printf("LOCCC %d\n", chloc.first_column);
 		t = xlua_append(L, t, karakter, loc);
 	}
 	return t;

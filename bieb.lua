@@ -23,6 +23,7 @@ function bieb()
 	tau = math.pi*2,
 	pi = math.pi,
 	init = true,
+	fout = true,
 
 	-- meta
 	_var = function (index,set)
@@ -69,7 +70,9 @@ function bieb()
 	toetsNeerEind = true,
 
 
-	['_'] = function(a, b)
+	['_'] = function(a)
+		local a,b = a[1],a[2]
+		print(a,b)
 		if type(a) == 'string' then
 			return a:byte(b+1)
 		elseif type(a) == 'table' then
@@ -83,8 +86,8 @@ function bieb()
 		return a:byte(b)
 	end;
 
-	-- lua
-	['print'] = function(a)
+	-- io
+	['stduitSchrijf'] = function(a)
 		if type(a) == 'table' and #a > 1 then
 			local txt = true
 			for i,v in ipairs(a) do
@@ -215,7 +218,7 @@ function bieb()
 	end;
 
 	['+'] = function(a,b) return a + b end;
-	['-'] = function(a,b) if b then return a - b else return -a end end;
+	['-'] = function(a) return -a end;
 	['·'] = function(a,b) return a * b end;
 	['/'] = function(a,b) return a / b end;
 	['^'] = function(a,b)

@@ -11,11 +11,8 @@ local bieb = bieb()
 local function pakpunten(exp,r)
 	local r = r or {}
 	r[#r+1] = exp
-	if isfn(exp) then
-		pakpunten(exp.f,r)
-		for i,v in ipairs(exp) do
-			pakpunten(v,r)
-		end
+	for k,sub in subs(exp) do
+		pakpunten(sub,r)
 	end
 	return r
 end
@@ -278,7 +275,7 @@ function oplos(exp,voor)
 		for eq in pairs(eqs) do
 			-- a |= b
 			if isfn(eq) and eq.f.v == '|:=' then
-				print(e2s(eq))
+				print(combineer(eq))
 				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
@@ -412,7 +409,6 @@ function oplos(exp,voor)
 		-- herschrijf a→a+1 naar _fn(0 +(_arg(0) 1))
 		for eq in pairs(eqs) do
 			for lam in punten(eq) do
-
 				-- 
 				if fn(lam) == '→' then
 					local inn,uit = lam.a[1],lam.a[2]
@@ -580,7 +576,7 @@ function oplos(exp,voor)
 		-- opgelost
 		if verbozeWaarde then
 			print('=== WAARDE ===')
-			print(exp2string(val))
+			print(combineer(val))
 			print()
 		end
 

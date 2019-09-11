@@ -104,7 +104,7 @@ end
 
 local doel
 if opt.j then doel = 'demo'
-elseif opt.i then doel = 'lua'
+elseif opt.i then doel = 'im'
 elseif opt.x then doel = 'demo'
 else doel = 'unistd' end
 

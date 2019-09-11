@@ -33,7 +33,7 @@ function isoleer(eq,naam)
 		if naam.v == R.v then return L end
 
 		if isfn(L) and not isobj(L.a) then
-			local fn,f,a,x = L.f, L.f.v, L.a[1], R
+			local fn,f,a,x = L.f, L.f.v, L.a, R
 			local out
 			local n = 0
 			if bevat(a,naam) then out = 0; n = n + 1 end
@@ -147,7 +147,7 @@ function isoleer(eq,naam)
 
 		if not eq0 and not flip then break end
 		if eq0 then
-			if verboos or true then print(exp2string(eq) .. ' → '..exp2string(eq0)) end 
+			if verboos then print(exp2string(eq) .. ' → '..exp2string(eq0)) end 
 			eq = eq0
 			flip = false
 		end

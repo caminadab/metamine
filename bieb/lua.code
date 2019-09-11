@@ -1,4 +1,1 @@
-app = print(tekst(uit))
-succ = succA → succA + 1
-looptijd = 0
-start.
+app = stduitSchrijf(tekst(uit))

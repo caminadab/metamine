@@ -5,31 +5,28 @@ require 'fout'
 
 local function waarde(a, env, ...)
 	local t = {...}
-	if fn(a) == '[]u' then
-		--w = string.char(unpack(map(a, function(x) return tonumber(x) end)))
-		--return a
+	env['_arg'] = t
+
+	if atoom(a) == '[]u' then
 	end
-																		if #t == 1 and type(t[1]) == 'table' then
-																			error('HELP')
-																			t = t[1]
-																		end
-	for i,v in ipairs(t) do
-		local arg = '_arg'..(i-1)
-		--print('ARG', i, arg)
-		env[arg] = v
-	end
+
 	if isatoom(a) then
 		local w
 		if w == nil then w = tonumber(a.v) end
 		if w == nil then w = env[a.v] end
 		if w == nil then
-			w = (a.v and a.v:sub(1,4) == '_arg' and ({...})[a.v:sub(5,5) + 1]) or nil end
+			w = (isatoom(a) and atoom(a) == '_arg' and t or nil)
+		end
 		if w == nil then 
 			--error('onbekend: '..tostring(a.v))
 		end
-
 		a.w = w
+	
+	elseif isobj(a) then
+		print('OBJ', a.f.v)
+		a.w = env[a.f.v]
 	end
+
 	--assert(a.w ~= nil, 'onbekend: '..e2s(a))
 	return a
 end
@@ -48,8 +45,11 @@ local function doeblok(blok, env, ...)
 		local naam,exp = stat.a[1],stat.a[2]
 		local uit
 	
-		local exp = emap(exp, waarde, env, ...)
-		local w
+		-- verkrijg waardes van argumenten enzo
+		exp = emap(exp, waarde, env, ...)
+
+		--print(lenc(exp))
+		--check(exp)
 
 		if isatoom(exp) then
 			if exp.v == '[]' then
@@ -57,10 +57,6 @@ local function doeblok(blok, env, ...)
 			else
 				w = exp.w
 			end
-
-		-- TODO obj
-		elseif isobj(exp) then
-			w = "ok"
 
 		elseif exp.f and type(exp.f.w) == 'table' then
 			-- woeps
@@ -108,11 +104,7 @@ local function doeblok(blok, env, ...)
 		--assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
 
 		if opt and opt.L then
-			local a = w
-			if type(a) == 'string' then
-				a = string.format('%q', a)
-			end
-			io.write(tostring(a), '\n')
+			io.write(lenc(w), '\n')
 		end
 
 		env[naam.v] = w

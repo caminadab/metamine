@@ -38,8 +38,8 @@ function emap(exp, fn, ...)
 	if exp.a then
 		s.a = fn(exp.a, ...)
 	end
-	if exp.a then
-		s.a = fn(exp.a, ...)
+	if exp.o then
+		s.o = fn(exp.o, ...)
 	end
 	for i,v in ipairs(exp) do
 		s[i] = fn(v, ...)

@@ -72,7 +72,7 @@ function checkr(e, p, k)
 	if isobj(e) then n = n + 1 end
 	if n ~= 1 then
 		print('FAAL!')
-		see(p1)
+		see(p)
 		error'check faalde'
 	end
 	for k,sub in subs(e) do

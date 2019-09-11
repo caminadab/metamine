@@ -89,6 +89,7 @@ function codegen(exp, maakvar)
 		if fn(exp) == '[]' then
 			arg = con(exp)
 		elseif fn(exp) == '[]u' then
+			error'OK'
 			arg = con(exp)
 		elseif isfn(exp) then
 			arg = con(exp)
@@ -151,8 +152,8 @@ function codegen(exp, maakvar)
 			--assert(exp.ref)
 			--al = {}
 			local naam = X(maakfunc())
-			local waarde = exp.a[1]
-			local arg = exp.a[2]
+			local waarde = exp.a --exp.a[1]
+			local arg = X'_arg' --exp.a[2]
 			local keys = {}
 			for k in pairs(exp) do keys[keys] = true end
 			for k in pairs(keys) do exp[k] = nil end
@@ -194,7 +195,7 @@ function codegen(exp, maakvar)
 			blok = b
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
-			stat[2].ref = exp.ref --naam
+			stat.a[2].ref = exp.ref --naam
 			al[ret.v] = naam
 			--table.insert(blok.stats, stat)
 			mkstat(stat, ret)
