@@ -3,34 +3,6 @@ require 'bieb'
 require 'func'
 require 'fout'
 
-local function waarde(a, env, ...)
-	local t = {...}
-	env['_arg'] = t
-
-	if atoom(a) == '[]u' then
-	end
-
-	if isatoom(a) then
-		local w
-		if w == nil then w = tonumber(a.v) end
-		if w == nil then w = env[a.v] end
-		if w == nil then
-			w = (isatoom(a) and atoom(a) == '_arg' and t or nil)
-		end
-		if w == nil then 
-			--error('onbekend: '..tostring(a.v))
-		end
-		a.w = w
-	
-	elseif isobj(a) then
-		print('OBJ', a.f.v)
-		a.w = env[a.f.v]
-	end
-
-	--assert(a.w ~= nil, 'onbekend: '..e2s(a))
-	return a
-end
-
 local function doeatoom(exp, env)
 	if tonumber(exp.v) then
 		return tonumber(exp.v)
@@ -40,7 +12,6 @@ local function doeatoom(exp, env)
 		error('onbekend: '..combineer(exp))
 	end
 end
-
 
 local function doestat(stat, env)
 	assert(env)
@@ -62,7 +33,16 @@ local function doestat(stat, env)
 	elseif isfn(cmd) then
 		local fn = env[fn(cmd)]
 		local arg = doeatoom(arg(cmd), env)
-		return fn(arg)
+		env['_arg'] = arg
+
+		local ok, w = xpcall(fn, function(f) return f ..'\n' .. debug.traceback() end, arg)
+		if not ok then
+			local err = w
+			local f = executiefout(stat.loc, err)
+			print(fout2string(f))
+			return
+		end
+		return w
 	
 	else
 		error('wat is dit: '..combineer(stat))
@@ -157,7 +137,7 @@ local function doeblok(blok, env, ...)
 	end
 	local epi = blok.epiloog
 	if fn(epi) == 'ret' then
-		local a = env[blok.stats[#blok.stats][1].v]
+		local a = env[blok.stats[#blok.stats].a[1].v]
 		if opt and opt.L then print('ret '..tostring(a)) end
 		return a
 	elseif epi.v == 'stop' then
@@ -165,7 +145,7 @@ local function doeblok(blok, env, ...)
 		if opt and opt.L then print('stop') end
 		return a
 	elseif fn(epi) == 'ga' then
-		local a,d,e = epi[1], epi[2], epi[3]
+		local a,d,e = epi.a[1], epi.a[2], epi.a[3]
 		if #epi == 3 then
 			local b = env[a.v]
 			local doel = b and d.v or e.v
@@ -201,13 +181,14 @@ function doe(cfg)
 	local env = {}
 	for k,v in pairs(bieb) do env[k] = v end
 	for k,v in pairs(cfg.namen) do
-		env[k] = function(...)
+		env[k] = function(arg)
 			local isf = k:sub(1,2) == 'fn'
-			if isf and opt and opt.L then print('...') ; print('call '..k..' '..table.concat(map({...}, function(x) return combineer(w2exp(x)) end), ' ')); end
-			local ret = doeblok(v, env, ...)
+			if isf and opt and opt.L then print('...\ncall '..k..' '..combineer(w2exp(arg))) end
+			env['_arg'] = arg
+			local ret = doeblok(v, env, arg)
 			if opt and opt.L then 
-				if isf then io.write('\n...') end
-				io.flush()
+				--if isf then io.write('\n...') end
+				----io.flush()
 			end
 			return ret
 		end

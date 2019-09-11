@@ -7,7 +7,9 @@ local binop  = set("+","·","/^"," ","∨","∧","×","..","→","∘","_"," ","
 local unop   = set("-","#","¬")
 
 local function combineerR(exp, t, kind)
-	if isatoom(exp) then
+	if not exp then
+		t[#t+1] = '?'
+	elseif isatoom(exp) then
 		t[#t+1] = exp.v
 	elseif obj(exp) == '[]u' then
 		local const = true
@@ -57,7 +59,7 @@ local function combineerR(exp, t, kind)
 			if not isobj(exp.a[2]) then
 				t[#t+1] = '('
 			end
-			combineerR(exp.a[2], t, true)
+			combineerR(exp.a[2], t, false)
 			if not isobj(exp.a[2]) then
 				t[#t+1] = ')'
 			end
@@ -85,7 +87,7 @@ local function combineerR(exp, t, kind)
 			if not isobj(exp.a) then
 				t[#t+1] = '('
 			end
-			combineerR(exp.a, t, true)
+			combineerR(exp.a, t, false)
 			if not isobj(exp.a) then
 				t[#t+1] = ')'
 			end

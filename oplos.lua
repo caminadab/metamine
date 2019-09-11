@@ -411,16 +411,23 @@ function oplos(exp,voor)
 			for lam in punten(eq) do
 				-- 
 				if fn(lam) == '→' then
-					local inn,uit = lam.a[1],lam.a[2]
+					local inn,uit = lam.a[1], lam.a[2]
 
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
 					lam.f = X'_fn'
 					lam.a = uit
+					naam = '_arg'
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
 					nieuw[paramhulp] = true -- HIER!
+					if isobj(inn) then
+						for i,v in ipairs(inn) do
+							local arghulp = X('=', v, X('_','_arg',tostring(i-1)))
+							nieuw[arghulp] = true -- HIER!
+						end
+					end
 				end
 			end
 		end
