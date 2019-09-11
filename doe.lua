@@ -33,7 +33,7 @@ local function doestat(stat, env)
 	elseif isfn(cmd) then
 		local fn = env[fn(cmd)]
 		local arg = doeatoom(arg(cmd), env)
-		env['_arg'] = arg
+		--env['_arg'] = arg
 
 		local ok, w = xpcall(fn, function(f) return f ..'\n' .. debug.traceback() end, arg)
 		if not ok then

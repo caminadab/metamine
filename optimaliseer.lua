@@ -4,9 +4,9 @@ require 'bieb'
 function w2exp(w)
 	local uit
 	if w == true then
-		uit = X'ja'
+		uit = X'⊤'
 	elseif w == false then
-		uit = X'nee'
+		uit = X'⊥'
 	elseif type(w) == 'function' then
 		uit = X'functie'
 	elseif tonumber(w) then
@@ -16,10 +16,10 @@ function w2exp(w)
 			uit = X('{}', table.unpack(map(w, w2exp)))
 		else
 			uit = {}
+			uit.o = X'[]'
 			for i,v in ipairs(w) do
 				uit[i] = w2exp(v)
 			end
-			uit.fn = X'[]'
 		end
 	else
 		uit = X(tostring(w))

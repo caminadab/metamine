@@ -1,3 +1,4 @@
-uit = f(1,2)
+uit = (f ∘ g)(2,3)
 
-f = (x,y) → x + y
+f = (x,y) → (x + y, x - y)
+g = (z,w) → (z + w)

@@ -75,7 +75,7 @@ function bieb()
 		if type(a) == 'string' then
 			return a:byte(b+1)
 		elseif type(a) == 'table' then
-			return a[b]
+			return a[b+1]
 		else
 			return a(b)
 		end
