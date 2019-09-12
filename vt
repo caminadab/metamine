@@ -181,7 +181,7 @@ end
 if verbozeSyntax then
 	print()
 	print('=== SYNTAX ===')
-	print(e2s(asb))
+	print(combineer(asb))
 	print()
 end
 
@@ -201,11 +201,6 @@ if opt.lang == 'en' then
 	asb = vertolk(asb)
 end
 
-if verbozeSyntax then
-	print('=== SYNTAXBOOM ===')
-	print(exp2string(asb))
-	print()
-end
 for exp in boompairs(asb) do
 	if exp == 'fout' then
 		print('syntaxfout')

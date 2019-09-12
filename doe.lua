@@ -119,7 +119,7 @@ end
 
 -- doe een continu blok aan instructies
 -- mogelijk met argumenten
-local function doeblok(blok, env, ...)
+local function doeblok(blok, env, arg)
 	for i,stat in ipairs(blok.stats) do
 		if opt and opt.L then
 			-- locsub(exp.code, stat.loc), 
@@ -130,7 +130,11 @@ local function doeblok(blok, env, ...)
 		local w = doestat(stat, env)
 
 		if opt and opt.L then
-			io.write(lenc(w), '\n')
+			local exp = stat.a[2]
+			local skip = fn(exp) == '_' and env[exp.a.v] ~= env.stduitSchrijf
+			if not skip then
+				io.write(lenc(w), '\n')
+			end
 		end
 
 		env[stat.a[1].v] = w
@@ -151,10 +155,10 @@ local function doeblok(blok, env, ...)
 			local doel = b and d.v or e.v
 			if opt and opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
 			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi))
-			return env[doel](...)
+			return env[doel](arg)
 		else
 			if opt and opt.L then print('ga '..a.v) end
-			return env[a.v](...) -- sws jmp
+			return env[a.v](arg) -- sws jmp
 		end
 	else
 		error('slechte epiloog: '..combineer(epi))

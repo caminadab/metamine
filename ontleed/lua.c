@@ -17,6 +17,16 @@ void xlua_pushloc(lua_State* L, YYLTYPE loc) {
 	//lua_pushstring(L, loc.file); lua_setfield(L, -2, "bron");
 }
 
+int xlua_isobj(lua_State* L, int ref) {
+	lua_rawgeti(L, LREG, ref);
+		lua_getfield(L, -1, "o");
+			int res = ! lua_isnil(L, -1);
+			lua_pop(L, 2);
+		//
+	//
+	return res;
+}
+
 int utf8len(char* a) {
 	if ((*a & 0x80) == 0x00) return 1;
 	if ((*a & 0xE0) == 0xC0) return 2;

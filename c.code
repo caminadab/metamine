@@ -1,14 +1,13 @@
-uit = 0..8 cart 0..8
+;cart = a,b → (0..#a) map f
+;f = ai → (0..#b) map g
+;g = bi → (ai, bi)
 
-; map!
-
-
-cart = a,b → (0..#a) map f
-f = ai → (0..#b) map g
-g = bi → (ai, bi)
+som = x → x vouw (+)
+uit = som [1,2,3]
 
 ;f = [(+), sincos, (·)]
 ;g = f vouw (∘)
+;uit = g(2)
 
 ;-
 cart = lijst(a), lijst(b) → lijst(a,b)

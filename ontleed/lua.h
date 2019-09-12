@@ -4,6 +4,7 @@
 #include "loc.h"
 
 // exp = atoom | fn | obj
+int xlua_isobj(lua_State* L, int ref);
 int xlua_append(lua_State* L, int aid, int bid, YYLTYPE loc);
 int xlua_appenda(lua_State* L, int aid, int bid, YYLTYPE loc);
 int xlua_metloc(lua_State* L, int aid, YYLTYPE loc);

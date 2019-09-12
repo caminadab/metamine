@@ -112,7 +112,6 @@
 %left "‖" "::"
 
 %nonassoc CALL
-
 %left "×" UNIE INTERSECTIE
 %left ".."
 %left '+' '-'
@@ -261,7 +260,7 @@ items: exp;
 exp:
 	single
 | single single  %prec CALL  { $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
-| single single single  %prec CALL  { $$ = FN3(L, A(L,"_", @$), $2, $1, $3, @$); }
+| single single single  %prec CALL  { $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @2), @$); }
 | single single single single {  $$ = A(L, "fout", @$); yyerrok; }
 |	exp KWADRAAT						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"2", @2), @$); }
 |	exp DERDEMACHT						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"3",@2), @$); }
@@ -314,7 +313,7 @@ exp:
 |	exp ':' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ".." exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "×" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-|	exp ',' exp  { $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp ',' exp  { if (xlua_isobj(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ":=" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '=' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '-' exp  { $$ = FN2(L, A(L,"+",@1), $1, FN1(L, A(L,"-",@1), $3, @3), @$); }

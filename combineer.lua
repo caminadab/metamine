@@ -9,6 +9,10 @@ local unop   = set("-","#","¬")
 local function combineerR(exp, t, kind)
 	if not exp then
 		t[#t+1] = '?'
+	elseif isatoom(exp) and postop[exp.v] or binop[exp.v] or unop[exp.v] then
+		t[#t+1] = '('
+		t[#t+1] = exp.v
+		t[#t+1] = ')'
 	elseif isatoom(exp) then
 		t[#t+1] = exp.v
 	elseif obj(exp) == '[]u' then
@@ -51,6 +55,12 @@ local function combineerR(exp, t, kind)
 			combineerR(v, t, true)
 		end
 		t[#t+1] = di:sub(2,2)
+
+	elseif fn(exp) == '⋀' then
+		for i,v in ipairs(exp.a) do
+			combineerR(v, t, false)
+			t[#t+1] = '\n'
+		end
 	elseif isfn(exp) then
 		local op = fn(exp)
 		if op == '_' and isobj(exp.a) then

@@ -89,7 +89,7 @@ function bieb()
 	['stduitSchrijf'] = function(a)
 		do
 			print(combineer(w2exp(a)))
-			return 0
+			return true
 		end
 		if type(a) == 'table' and #a > 1 then
 			local txt = true
@@ -258,7 +258,7 @@ function bieb()
 
 	['∘'] = function(a)
 		assert(type(a[1]) == 'function', a)
-		assert(type(a[2]) == 'function', b)
+		assert(type(a[2]) == 'function', a)
 		return function(...)
 			return a[2](a[1](...))
 		end
@@ -369,8 +369,18 @@ function bieb()
 	end;
 
 	-- linq
-	['map'] = function(a,b)
-		local r = {f='[]'}
+	['vouw'] = function(a)
+		local lijst, func = a[1],a[2]
+		local aggr = lijst[1]
+		for i = 2,#lijst do
+			aggr = func{aggr, lijst[i]}
+		end
+		return aggr
+	end;
+
+	['map'] = function(a)
+		local a,b = a[1],a[2]
+		local r = {}
 		for i=1,#a do --i,v in ipairs(a) do
 			local v = a[i]
 			local s = b(v)
