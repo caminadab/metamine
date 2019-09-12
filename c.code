@@ -1,4 +1,4 @@
-uit = (0..8) cart (0..8)
+uit = 0..8 cart 0..8
 
 ; map!
 
