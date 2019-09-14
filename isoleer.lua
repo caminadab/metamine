@@ -63,18 +63,18 @@ function isoleer(eq,naam)
 		if fn(L) == '{}' then
 			-- a = [x,b]
 			for i,el in ipairs(L) do
-				if bevat(el,name) then
+				if bevat(el,naam) then
 					eq0 = X(':=', el, X(R, tostring(i-1))) -- functioneel
 					--eq0 = X(':=', el, X(tostring(i-1))) -- definieerened
 					break
 				end
 			end
 		-- lijst
-		elseif fn(L) and (fn(L) == '[]' or fn(L) == ',') then
+		elseif isobj(L) then
 			-- a = [x,b]
-			for i,el in ipairs(l) do
-				if bevat(el,name) then
-					eq0 = X(':=', el, X(R, tostring(i-1)))
+			for i,el in ipairs(L) do
+				if bevat(el,naam) then
+					eq0 = X('=', el, X('_', R, tostring(i-1)))
 					break
 				end
 			end
@@ -92,13 +92,13 @@ function isoleer(eq,naam)
 
 			if f == '+' then
 				-- x = a + b
-				if out == 0 then eq0 = X(':=', a, X('-', x, b)) end -- a = x - b
-				if out == 1 then eq0 = X(':=', b, X('-', x, a)) end -- b = x - a
+				if out == 0 then eq0 = X(':=', a, X('+', x, X('-', b))) end -- a = x - b
+				if out == 1 then eq0 = X(':=', b, X('-', x, X('-', a))) end -- b = x - a
 				--if out == 2 then eq0 = {'=', x, {'+', a, b)) end -- x = a + b
 			elseif f == '-' then
 				-- x = a - b
 				if out == 0 then eq0 = X(':=', a, X('+', x, b)) end -- a = x - b
-				if out == 1 then eq0 = X(':=', b, X('-', x, a)) end -- b = x + a
+				if out == 1 then eq0 = X(':=', b, X('+', x, X('-', b))) end -- b = x + a
 				--if out == 2 then eq0 = {'=', x, {'-', a, b}} end -- x = a - b
 			elseif f == '·' then
 				-- x = a * b
@@ -117,8 +117,8 @@ function isoleer(eq,naam)
 				--if out == 2 then eq0 = {'=', x, {'^', a, b}} end -- x = a ^ b
 			elseif f == '|' then
 				-- x = a | b
-				if out == 0 then eq0 = X(':=', a, X('⇒', X('!', b), x)) end -- a = (¬b ⇒ x)
-				if out == 1 then eq0 = X(':=', b, X('⇒', X('!', a), x)) end -- b = (¬a ⇒ x)
+				if out == 0 then eq0 = X(':=', a, X('⇒', X('¬', b), x)) end -- a = (¬b ⇒ x)
+				if out == 1 then eq0 = X(':=', b, X('⇒', X('¬', a), x)) end -- b = (¬a ⇒ x)
 				--if out == 2 then eq0 = {'=', x, {'^', a, b)} end -- x = a ^ b
 			elseif f == '::' then
 				-- x = a :: b

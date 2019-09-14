@@ -121,14 +121,22 @@ function oplos(exp,voor)
 			local arg = arg(eq) -- .a[1], .a[2]
 			if isobj(arg) and fn(arg[1]) == '_' then
 				local ab,c = arg[1].a, arg[2]
+				local A,B = ab[1], ab[2]
 				local naam = ab[2].v
+				if not naam then
+					naam = '_arg'
+				end
 				local meer = naam..maakvar()
 				local hulp = X('=', meer, naam..'Meer')
+				local arghulp = X('=', naam, B)
 				local neq = X('=', ab[1], X('map', meer, X('→', naam, c)))
 				--print('HULP', combineer(hulp))
 				--print('NEQ', combineer(neq))
 				nieuw[hulp] = true
 				nieuw[neq] = true
+				if naam ~= atoom(B) then
+					nieuw[arghulp] = true
+				end
 			end
 		end
 		for eq in pairs(eqs) do

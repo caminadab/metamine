@@ -1,3 +1,3 @@
 i: 0..8 × 0..8
-lijst(i) = 'A'
+lijst(x,y) = x+y
 uit = lijst
