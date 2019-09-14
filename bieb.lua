@@ -164,7 +164,7 @@ function bieb()
 	['!'] = function(n)
 		local a = 1
 		for i=1,n do
-			a = a * n
+			a = a * i
 		end
 		return a
 	end;

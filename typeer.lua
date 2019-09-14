@@ -296,7 +296,7 @@ function typeer(exp)
 				-- speciaal voor '_'
 				-- (f _ a)  ⇒  (a: f₂,  f
 				elseif f == '_' and types[a] then
-					weestype(b, types[a].a[2])
+					--weestype(b, types[a].a[2])
 					--local type = types[a]:paramtype('lijst')
 					--weestype(exp, type)
 					--weestype(b, X'nat')

@@ -40,7 +40,20 @@ local function doestat(stat, env)
 			local err = w
 			local f = executiefout(stat.loc, err)
 			print(fout2string(f))
-			return
+			while true do
+				io.write('> ')
+				io.flush()
+				local source = io.read('*l')
+				if source == '' or source == '\x13' or source == 'exit' or source == 'quit' then
+					break
+				end
+				local fn = load(source)
+				env.print = function(a) print(combineer(w2exp(a))) end
+				env._G = env
+				setfenv(fn, env)
+				local ok, msg = pcall(fn)
+				if not ok then print(msg) end
+			end
 		end
 		return w
 	
@@ -131,9 +144,9 @@ local function doeblok(blok, env, arg)
 
 		if opt and opt.L then
 			local exp = stat.a[2]
-			local skip = fn(exp) == '_' and env[exp.a.v] ~= env.stduitSchrijf
+			local skip = fn(exp) == '_' and env[exp.a.v] == env.stduitSchrijf
 			if not skip then
-				io.write(lenc(w), '\n')
+				io.write(combineer(w2exp(w)), '\n')
 			end
 		end
 
@@ -183,7 +196,15 @@ function doe(cfg)
 	local bieb = bieb()
 	assert(cfg.namen, 'is geen controlegraaf')
 	local env = {}
-	for k,v in pairs(bieb) do env[k] = v end
+
+	-- vul bieb
+	for k,v in pairs(bieb) do
+		env[k] = v
+	end
+
+	-- magie
+	--env['als'] 
+
 	for k,v in pairs(cfg.namen) do
 		env[k] = function(arg)
 			local isf = k:sub(1,2) == 'fn'
@@ -198,7 +219,10 @@ function doe(cfg)
 		end
 	end
 
+
+
 	-- GA
 	local ret = doeblok(cfg.start, env)
+
 	return ret
 end

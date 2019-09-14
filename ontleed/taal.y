@@ -120,7 +120,7 @@
 %right '^' '_'
 %left OUD
 %left '.'
-%nonassoc '%' '\'' INVERTEER M0 M1 KWADRAAT DERDEMACHT M4 MN I0  I2 I3 I4
+%nonassoc '%' '!' '\'' INVERTEER M0 M1 KWADRAAT DERDEMACHT M4 MN I0  I2 I3 I4
 %left NAAM TEKST
 
 %%

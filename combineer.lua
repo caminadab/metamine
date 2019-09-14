@@ -3,7 +3,7 @@ require 'func'
 require 'set'
 
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/^"," ","∨","∧","×","..","→","∘","_"," ","⇒","|"," ",">","≥","=","≠","≈","≤","<",":=","+=","|:=")
+local binop  = set("+","·","/^"," ","∨","∧","×","..","→","∘","_"," ","⇒","|"," ",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈")
 local unop   = set("-","#","¬")
 
 local function combineerR(exp, t, kind)
@@ -51,6 +51,10 @@ local function combineerR(exp, t, kind)
 		for i,v in ipairs(exp) do
 			if i ~= 1 then
 				t[#t+1] = ', '
+			end
+			if i > 20 then
+				t[#t+1] = '...'
+				break
 			end
 			combineerR(v, t, true)
 		end

@@ -27,3 +27,4 @@ demo11		; function composition\ng = x → x + 1\nh = y → y / 2 ; typ een "→"
 demo12		; zeg een aantal keer "hoi"\naantal = int(runtime)\nf = x → x ‖ " hoi"\nuit = (f^aantal)("groet:")
 demo13		; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f
 demo14		; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)
+demo15		; lekker functioneel\nfuncties = [(·), (-), sin]\ng = functies vouw (∘)\nuit = g(2, 3)

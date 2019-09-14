@@ -137,7 +137,7 @@ function codegen(exp, maakvar)
 
 	function con(exp,ret)
 		--print('CON', combineer(exp))
-		local fw = {f=exp.f}
+		local fw = {} --f=exp.f}
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 

@@ -106,7 +106,31 @@ function oplos(exp,voor)
 			end
 		end
 
-		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
+		-- herschrijf types
+		for eq in pairs(eqs) do
+			if fn(eq) == ':' then
+				local neq = X('=', eq.a[1].v ..'Meer', eq.a[2])--X('alle', eq.a[2]))
+				nieuw[neq] = true
+			end
+		end
+
+		-- herschrijf (a(b) = c) naar
+		-- bMeer = alle(b)
+		-- a = b map (bMeer → c)
+		for eq in pairs(eqs) do
+			local arg = arg(eq) -- .a[1], .a[2]
+			if isobj(arg) and fn(arg[1]) == '_' then
+				local ab,c = arg[1].a, arg[2]
+				local naam = ab[2].v
+				local meer = naam..maakvar()
+				local hulp = X('=', meer, naam..'Meer')
+				local neq = X('=', ab[1], X('map', meer, X('→', naam, c)))
+				--print('HULP', combineer(hulp))
+				--print('NEQ', combineer(neq))
+				nieuw[hulp] = true
+				nieuw[neq] = true
+			end
+		end
 		for eq in pairs(eqs) do
 			if false and isfn(eq) and isfn(eq.a[1]) and false then --TODO and #eq[1] == 1 then
 				local a, b, c  = eq.a[1].f, eq.a[1].a[1], eq.a[2]
@@ -415,9 +439,10 @@ function oplos(exp,voor)
 
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
-					lam.f = X'_fn'
+					local var = maakvar()
+					lam.f = X('_fn')--..var)
 					lam.a = uit
-					naam = '_arg'
+					local naam = '_arg'--..var
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
