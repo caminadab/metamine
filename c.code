@@ -1,1 +1,4 @@
-uit = canvas [ cirkel(1,2,3) ]
+;c = cirkel(3,2,1)
+;b = [c,c]
+;uit = canvas(b)
+uit = 2 + 3 · 4

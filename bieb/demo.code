@@ -4,8 +4,8 @@ app = requestAnimationFrame(ververs)
 el = setInnerHtml("<canvas width='1280' height='720'></canvas>")
 ctx = getContext(el)
 
-drawCanvas = (clearCanvas(ctx) ⇒ (#(objs map (obj → obj(ctx))) > -1))
-canvas = objs → (drawCanvas ⇒ "<canvas width='1280' height='720'></canvas>")
+drawCanvas = clearCanvas ∘ (objs map (∘))
+canvas = objs → (drawCanvas(ctx) ⇒ "<canvas width='1280' height='720'></canvas>")
 
 ; toetsenbord
 toetsSpatie = toetsNeer(32)

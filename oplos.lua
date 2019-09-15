@@ -444,6 +444,7 @@ function oplos(exp,voor)
 				-- 
 				if fn(lam) == '→' then
 					local inn,uit = lam.a[1], lam.a[2]
+					local index = maakindex()
 
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
@@ -456,10 +457,10 @@ function oplos(exp,voor)
 					local paramhulp = X('=', naam, inn)
 					nieuw[paramhulp] = true -- HIER!
 					if isobj(inn) then
-						for i,v in ipairs(inn) do
-							local arghulp = X('=', v, X('_','_arg',tostring(i-1)))
-							nieuw[arghulp] = true -- HIER!
-						end
+						--for i,v in ipairs(inn) do
+						--	local arghulp = X('=', v, X('_','_arg',tostring(i-1)))
+						--	nieuw[arghulp] = true -- HIER!
+						--end
 					end
 				end
 			end

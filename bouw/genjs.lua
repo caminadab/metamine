@@ -33,6 +33,7 @@ local immjs = {
 
 	-- arit
 	['map'] = '$1.map($2)',
+	['vouw'] = '$1.reduce($2, x => x)',
 	['atoom'] = 'atoom$1',
 	['%'] = '$1 / 100',
 	['+i'] = '$1 + $2',
@@ -100,13 +101,11 @@ local immjs = {
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$1-$2)), (x,i) => $1 - 1 - i))',
 	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
-	['_'] = '$1($2)',
 	['_u'] = '$1[$2]',
 	['call'] = '$1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
 	['×'] = '$1.map(x => $2.map(y => [x, y]))',
-	['∘'] = '(function(a, b, c, d, e) { return $2($1(a, b, c, d, e)); })',
-	[','] = '[$ARGS]',
+	['∘'] = '(function(a) { return $2($1(a)); })',
 	['var'] = [[ (function(varindex, ass) {
 			var array = Array.from(ass);
 			var ret = vars[varindex];
@@ -130,19 +129,22 @@ for k,v in pairs(immjs) do
 		v = v:gsub('$3', '_arg[2]')
 		v = v:gsub('$4', '_arg[3]')
 	else
-		v = v:gsub('$1', '_arg[3]')
+		v = v:gsub('$1', '_arg')
 	end
 	v = 'function(_arg) { return ' .. v .. '; }'
 
 	immjs0[k] = v
 end
-immjs = immjs0
+--immjs = immjs0
 
 local immsym = {
+	['_2'] = '(function(_fn, _nieuwArg) { _oudArg = _arg || null; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
+	['_'] = '(function(a) { return a[0](a[1]); })',
+
 	-- func
-	['map'] = '(function(a){return a[0].map(a[1]);})',
-	['filter'] = '(function(a){return x.filter(a[1]);})',
-	['reduceer'] = '(function(a){return x.reduce(a[1]);})',
+	['map'] = '(function(a){if (!Array.isArray(a[0])) a[0] = [a[0]]; return a[0].map(a[1]);})',
+	['filter'] = '(function(a){return a[0].filter(a[1]);})',
+	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 	['var'] = [[ (function(a) {
 			var varindex = a[0];
 			var ass = a[1];
@@ -177,11 +179,11 @@ local immsym = {
 	['consolelog'] = 'console.log',
 
 	-- muis
-	['getContext'] = '(function(a) {return uit.children[0].getContext("2d")})',
+	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
 	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); }',
 	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(x,y,z) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(z, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 72, 720 - (xyz[1] * 72) - 1);\n\t\treturn c;}); })',
 	['lijn'] = [[
 	(function(x1,y1,x2,y2) {return (function(c){
 		x1 = x1 * 72;
@@ -196,7 +198,7 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['tekst'] = '(function(t) {return Array.isArray(t) ? t.toSource() : t.toString();})',
+	['tekst'] = '(function(t) { return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['clearCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 	['setInnerHtml'] = [[(function (a) {
 		var t = Array.isArray(a) ? a.toSource() : a.toString();
@@ -290,9 +292,6 @@ local immsym = {
 	['toetsNeerBegin']  = '!!_keysPressed.has($1)',
 	['toetsNeerEind']  = '!!_keysReleased.has($1)',
 
-}
-
-local immsym2 = {
 	['_arg0'] = '_arg0',
 	['_arg1'] = '_arg1',
 	['_arg2'] = '_arg2',
@@ -331,8 +330,21 @@ function genjs(app)
 
 			if isatoom(exp) and immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
-			elseif isatoom(exp) and immjs[exp.v] then
-				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immjs[exp.v])
+			elseif immjs[fn(exp)] then
+				local f = fn(exp)
+				local multi = f:match('$2')
+				local o = f
+				if multi then
+					o = o:gsub('$1', exp.a[1].v)
+					o = o:gsub('$2', exp.a[2].v)
+					o = o:gsub('$3', exp.a[3].v)
+					o = o:gsub('$4', exp.a[4].v)
+				else
+					o = o:gsub('$1', exp.a.v)
+				end
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, o)
+			elseif isatoom(exp) and immjs0[exp.v] then
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immjs0[exp.v])
 			elseif isatoom(exp) then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, exp.v)
 			elseif isobj(exp) then
@@ -343,13 +355,15 @@ function genjs(app)
 				elseif o == '{}' then
 					fmt = '%s%s = new Set(['.. table.concat(map(exp, function(e) return e.v end), ', ') .. ');'
 				elseif o == '[]' then
-					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
+					fmt = 'alert("LIJST!"); %s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
 				elseif o == '[]u' then
 					fmt = '%s%s = String.fromCodePoint('.. table.concat(map(exp, function(e) return e.v end), ', ') .. ');'
 				else
 					error'OBJ'
 				end
 				t[#t+1] = string.format(fmt, tabs, naam.v)
+			elseif immsym[f] then
+				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immsym[f], arg(exp).v)
 			elseif immjs[f] then
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs[f], arg(exp).v)
 			elseif false and immjs[f] then

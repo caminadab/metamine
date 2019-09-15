@@ -8,6 +8,12 @@ local function doeatoom(exp, env)
 		return tonumber(exp.v)
 	elseif env[exp.v] then
 		return env[exp.v]
+	elseif isobj(exp) then
+		local t = {}
+		for i,sub in ipairs(exp) do
+			t[i] = doeatoom(sub, env)
+		end
+		return t
 	else
 		error('onbekend: '..combineer(exp))
 	end
