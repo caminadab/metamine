@@ -60,6 +60,7 @@ function subs(exp)
 		end
 	end
 
+	error('onbekend: '..lenc(exp))
 end
 
 function checkr(e, p, k)

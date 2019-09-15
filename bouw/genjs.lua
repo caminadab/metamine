@@ -32,6 +32,7 @@ local immjs = {
 	['en'] = '$1 && $2',
 
 	-- arit
+	['map'] = '$1.map($2)',
 	['atoom'] = 'atoom$1',
 	['%'] = '$1 / 100',
 	['+i'] = '$1 + $2',
@@ -87,7 +88,7 @@ local immjs = {
 
 	-- exp
 	['log10'] = 'Math.log($1, 10)',
-	['‖'] = '$1.concat($2)',
+	['‖'] = '$1 + $2',--.concat($2)',
 	['‖u'] = '$1 + $2',
 	['cat'] = '$1.join($2)', -- TODO werkt dit?
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
@@ -119,6 +120,23 @@ local immjs = {
 		})($1,$2)
 	]],
 }
+
+local immjs0 = {}
+for k,v in pairs(immjs) do
+	local multi = v:match('$2')
+	if multi then
+		v = v:gsub('$1', '_arg[0]')
+		v = v:gsub('$2', '_arg[1]')
+		v = v:gsub('$3', '_arg[2]')
+		v = v:gsub('$4', '_arg[3]')
+	else
+		v = v:gsub('$1', '_arg[3]')
+	end
+	v = 'function(_arg) { return ' .. v .. '; }'
+
+	immjs0[k] = v
+end
+immjs = immjs0
 
 local immsym = {
 	-- func
@@ -159,7 +177,7 @@ local immsym = {
 	['consolelog'] = 'console.log',
 
 	-- muis
-	['getContext'] = '(function(a){return uit.children[0].getContext("2d")})',
+	['getContext'] = '(function(a) {return uit.children[0].getContext("2d")})',
 	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); }',
 	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['cirkel'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, z * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
@@ -264,7 +282,7 @@ local immsym = {
 			return uit;
 		}
 	)]],
-	['getContext'] = 'uit.children[0].getContext("2d")',
+	['getContext'] = 'function(a) { if (uit.children.length == 0) alert("geen canvas gevonden"); return uit.children[0].getContext("2d"); }',
 	['consolelog'] = 'console.log($1)',
 
 	-- toetsen
@@ -274,7 +292,7 @@ local immsym = {
 
 }
 
-local immsym = {
+local immsym2 = {
 	['_arg0'] = '_arg0',
 	['_arg1'] = '_arg1',
 	['_arg2'] = '_arg2',
@@ -310,17 +328,31 @@ function genjs(app)
 			local naam, exp = stat.a[1], stat.a[2]
 			local var = maakvar()
 			local f = fn(exp)
-			local a = exp.a[1] and exp.a[1].v
-			local b = exp.a[2] and exp.a[2].v
-			local c = exp.a[3] and exp.a[3].v
-			local d = exp.a[4] and exp.a[4].v
 
 			if isatoom(exp) and immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
+			elseif isatoom(exp) and immjs[exp.v] then
+				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immjs[exp.v])
 			elseif isatoom(exp) then
-				--error(e2s(exp))
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, exp.v)
+			elseif isobj(exp) then
+				local o = obj(exp)
+				local fmt
+				if o == ',' then
+					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
+				elseif o == '{}' then
+					fmt = '%s%s = new Set(['.. table.concat(map(exp, function(e) return e.v end), ', ') .. ');'
+				elseif o == '[]' then
+					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
+				elseif o == '[]u' then
+					fmt = '%s%s = String.fromCodePoint('.. table.concat(map(exp, function(e) return e.v end), ', ') .. ');'
+				else
+					error'OBJ'
+				end
+				t[#t+1] = string.format(fmt, tabs, naam.v)
 			elseif immjs[f] then
+				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs[f], arg(exp).v)
+			elseif false and immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
 				cmd = a and cmd:gsub('$1', assert(immsym[a] or a)) or cmd
@@ -358,7 +390,7 @@ function genjs(app)
 	local function flow(blok, tabs)
 		blokjs(blok, tabs)
 		local epi = blok.epiloog
-		if fn(epi) == 'ga' and #epi == 3 then
+		if fn(epi) == 'ga' and #epi.a == 3 then
 			t[#t+1] = string.format('%sif (%s) {', tabs, epi.a[1].v)
 			local b = blokken[epi.a[2].v]
 			flow(b, tabs..'  ')
@@ -366,12 +398,12 @@ function genjs(app)
 			flow(blokken[epi.a[3].v], tabs..'  ')
 			t[#t+1] = tabs .. '}'
 			
-			local phi = blokken[b.epiloog.a[1].v]
+			local phi = blokken[b.epiloog.a.v]
 			if phi then
 				flow(phi, tabs)
 			end
 			--flow(blokken[b.epiloog[1].v])
-		elseif fn(epi) == 'ga' and #epi == 1 then
+		elseif fn(epi) == 'ga' and isatoom(arg(epi)) then
 			--flow(blokken[epi[1].v], tabs..'  ')
 		elseif fn(epi) == 'ret' then
 			t[#t+1] = string.format('%sreturn %s;', tabs, epi.a[1].v)

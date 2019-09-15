@@ -608,6 +608,8 @@ function bieb()
 		return t
 	end;
 
+	['[]u'] = false,
+
 	['tot'] = function(a,tot)
 		local t = {f='[]'}
 		for i=1,tot do

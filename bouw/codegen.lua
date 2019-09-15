@@ -96,7 +96,7 @@ function codegen(exp, maakvar)
 		elseif isobj(exp) then
 			arg = con(exp)
 		else
-			arg = exp
+			arg = con(exp)
 		end
 		arg.ref = exp.ref
 		return arg

@@ -39,10 +39,11 @@ function leesblok(tekst)
 end
 
 function maakblok(naam, stats, epiloog)
-	assert(atoom(epiloog) == 'eind' or atoom(epiloog) == 'stop' or fn(epiloog) == 'ga' or fn(epiloog) == 'ret', 'foute epiloog: '..combineer(epiloog))
-	if fn(epiloog) == 'ga' and fn(epiloog[1]) == ',' then
-		assert(#epiloog[1] == 3 or #epiloog[1] == 4, 'onjuiste sprong')
-	end
+	--assert(atoom(epiloog) == 'eind' or atoom(epiloog) == 'stop' or fn(epiloog) == 'ga' or fn(epiloog) == 'ret', 'foute epiloog: '..combineer(epiloog))
+	--print('EPI', combineer(epiloog))
+	--if isfn(epiloog) and isobj(epiloog.a) then
+		--assert(#epiloog.a == 3 or #epiloog.a == 4, 'onjuiste sprong')
+	--end
 
 	local blok = {
 		naam = naam,

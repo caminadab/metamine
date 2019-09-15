@@ -1,3 +1,1 @@
-i: 0..8 × 0..8
-lijst(x,y) = x+y
-uit = lijst
+uit = canvas [ cirkel(1,2,3) ]

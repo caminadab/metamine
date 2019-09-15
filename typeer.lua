@@ -79,7 +79,7 @@ function typeer(exp)
 		oorzaakloc[moes(type)] = v.loc
 	end
 
-	local code = exp.a[1].code
+	local code = exp.a and exp.a[1].code or '?'
 
 	-- verenigt types
 	local function weestype(exp, type, typeoorzaakloc)

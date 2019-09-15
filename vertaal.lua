@@ -9,19 +9,21 @@ require 'oplos'
 function vertaal(code, doel)
 	--opt = {T=true,L=true}
 	--verbozeTypes = true
-	local doel = doel or "ifunc"
+	local doel = doel or "im"
 	local maakvar = maakvars()
 
+	local code = code ..'\n' .. file('bieb/'..doel..'.code')
+
 	local asb,syntaxfouten = ontleed(code)
-	local asb2 = ontleed(file('bieb/'..doel..'.code'))
-	local asb = cat(asb, asb2)
-	asb.f = X'⋀'
+
+	--local asb = cat(asb, asb2)
 
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)
 	if #typeerfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
+	--local typeerfouten = {}
 
 	local mach = arch[doel](asb, types)
 	local uit,oplosfouten = oplos(mach, "app")

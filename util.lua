@@ -59,7 +59,7 @@ function lenc(t)
 			r[#r+1] = lenc(k)..'='..lenc(v)
 			r[#r+1] = ','
 		end
-		r[#r] = nil
+		if r[#r] == ',' then r[#r] = nil end
 		r[#r+1] = '}'
 		return table.concat(r)
 	else

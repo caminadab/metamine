@@ -119,7 +119,7 @@ function oplos(exp,voor)
 		-- a = b map (bMeer → c)
 		for eq in pairs(eqs) do
 			local arg = arg(eq) -- .a[1], .a[2]
-			if isobj(arg) and fn(arg[1]) == '_' then
+			if arg and isobj(arg) and arg[1] and fn(arg[1]) == '_' then
 				local ab,c = arg[1].a, arg[2]
 				local A,B = ab[1], ab[2]
 				local naam = ab[2].v
@@ -306,8 +306,8 @@ function oplos(exp,voor)
 		local oud = {}
 		for eq in pairs(eqs) do
 			-- a |= b
-			if isfn(eq) and eq.f.v == '|:=' then
-				print(combineer(eq))
+			if fn(eq) == '|:=' then
+				--print(combineer(eq))
 				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
