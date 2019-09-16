@@ -204,10 +204,10 @@ function oplos(exp,voor)
 							--sub = X('[]', sub.a[1], sub.a[2])
 						end
 						local neq = X('⇒', eq.a[1], sub)--X'niets')
-						print('NEQ', combineer(neq))
 						nieuw[neq] = true
 						oud[eq] = true
 
+						--print('NEQ', combineer(neq))
 						--print('BLOK', e2s(eq))
 					end
 				end
@@ -294,19 +294,14 @@ function oplos(exp,voor)
 			eqs[eq] = false
 		end
 		for naam,alts in pairs(map) do
-			local altexp = {
-				f = X'|',
-				a = alts
-			}
-			altexp.a.o = ','
-			if #altexp.a.o == 1 then
-				altext.a = altexp.a.o[1]
-			end
-			local eq = X('=', X(naam), alts)
-			eqs[eq] = true
+			alts.o = X','
+			local eq = X('=', naam, X('|', alts))
+			--print('OK', combineer(eq))
+			--eqs[eq] = true
 		end
 
 		-- verzamel |:=
+		local maakindex = maakindices()
 		local schaduw = {}
 		local map = {} -- k → [v]
 		local oud = {}
@@ -324,16 +319,10 @@ function oplos(exp,voor)
 		for eq in pairs(oud) do
 			eqs[eq] = false
 		end
-		local maakindex = maakindices()
 		for naam,alts in pairs(map) do
 			alts.o = X'{}'
-			--if #alts == 1 then
-			--	alts = alts[1]
-			--end
 			local index = maakindex()
 			schaduw[naam] = index
-			--print('SCHADUW', naam)
-			--print('ALTS', combineer(alts))
 			local eq = X('=', naam, X('_var', index, alts))
 			eqs[eq] = true
 		end

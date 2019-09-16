@@ -295,7 +295,7 @@ local immsym = {
 	['consolelog'] = 'console.log($1)',
 
 	-- toetsen
-	['toetsNeer']  = '!!_keys[$1]',
+	--['toetsNeer']  = '!!_keys[$1]',
 	['toetsNeerBegin']  = '!!_keysPressed.has($1)',
 	['toetsNeerEind']  = '!!_keysReleased.has($1)',
 
