@@ -17,14 +17,18 @@ void xlua_pushloc(lua_State* L, YYLTYPE loc) {
 	//lua_pushstring(L, loc.file); lua_setfield(L, -2, "bron");
 }
 
-int xlua_isobj(lua_State* L, int ref) {
+int xlua_istupel(lua_State* L, int ref) {
 	lua_rawgeti(L, LREG, ref);
 		lua_getfield(L, -1, "o");
-			int res = ! lua_isnil(L, -1);
-			lua_pop(L, 2);
+			if (!lua_isnil(L, -1)) {
+			lua_getfield(L, -1, "v");
+				return !strcmp(lua_tostring(L, -1), ",");
+				lua_pop(L, 3);
+			//
+			}
 		//
 	//
-	return res;
+	return 0;
 }
 
 int utf8len(char* a) {

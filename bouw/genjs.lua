@@ -33,7 +33,7 @@ local immjs = {
 
 	-- arit
 	['map'] = '$1.map($2)',
-	['vouw'] = '$1.reduce($2, x => x)',
+	['vouw'] = '$1.slice(1).reduce((x,y) => $2([x,y]),$1[0])',
 	['atoom'] = 'atoom$1',
 	['%'] = '$1 / 100',
 	['+i'] = '$1 + $2',
@@ -99,14 +99,15 @@ local immjs = {
 	['#'] = '$1.length',
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$1-$2)), (x,i) => $1 - 1 - i))',
-	--['_'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
-	--['_u'] = '$1[$2] != null ? $1[$2] : (function() {throw("ongeldige index in lijst");})()',
 	['_u'] = '$1[$2]',
-	['call'] = '$1($2)',
+	['_'] = 'Array.isArray($1) ? alert($1[$2]) || $1[$2] : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
-	['×'] = '$1.map(x => $2.map(y => [x, y]))',
-	['∘'] = '(function(a) { return $2($1(a)); })',
-	['var'] = [[ (function(varindex, ass) {
+	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => [x, y])))',
+	['∘'] = 'function (a) { return $2($1(a)); }',
+	['_prevvar'] = '(function(a){return vars[a];})',
+	['_var'] = [[ (function(a) {
+			var varindex = a[0];
+			var ass = a[1];
 			var array = Array.from(ass);
 			var ret = vars[varindex];
 			for (var i = 0; i < array.length; i++) {
@@ -116,9 +117,11 @@ local immjs = {
 			}
 			vars[varindex] = ret;
 			return ret;
-		})($1,$2)
+		})($1)
 	]],
 }
+
+-- Shift-K
 
 local immjs0 = {}
 for k,v in pairs(immjs) do
@@ -135,17 +138,17 @@ for k,v in pairs(immjs) do
 
 	immjs0[k] = v
 end
---immjs = immjs0
 
 local immsym = {
 	['_2'] = '(function(_fn, _nieuwArg) { _oudArg = _arg || null; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
-	['_'] = '(function(a) { return a[0](a[1]); })',
+	--['_'] = '(function(a) { return a[0](a[1]); })',
 
 	-- func
 	['map'] = '(function(a){if (!Array.isArray(a[0])) a[0] = [a[0]]; return a[0].map(a[1]);})',
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
-	['var'] = [[ (function(a) {
+
+	['_var'] = [[ (function(a) {
 			var varindex = a[0];
 			var ass = a[1];
 			var array = Array.from(ass);
@@ -160,7 +163,7 @@ local immsym = {
 		})
 	]],
 
-	['prevvar'] = '(function(a){return vars[a];})',
+	['_prevvar'] = '(function(a){return vars[a];})',
 
 	-- discreet
 	['min'] = 'Math.min',
@@ -185,7 +188,11 @@ local immsym = {
 	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 72, 720 - (xyz[1] * 72) - 1);\n\t\treturn c;}); })',
 	['lijn'] = [[
-	(function(x1,y1,x2,y2) {return (function(c){
+	(function(_args) {return (function(c){
+		var x1 = _args[0];
+		var y1 = _args[1];
+		var x2 = _args[2];
+		var y2 = _args[3];
 		x1 = x1 * 72;
 		y1 = 720 - y1 * 72;
 		x2 = x2 * 72;
@@ -309,6 +316,7 @@ local immsym = {
 	init = 'init',
 	['muisX'] = 'mouseX',
 	['muisY'] = 'mouseY',
+	['muisPos'] = '[mouseX, mouseY]',
 	['muisBeweegt'] = 'mouseMoving',
 	['beige'] = '"#f5f5dc"',
 	['bruin'] = '"#996633"',
@@ -330,19 +338,24 @@ function genjs(app)
 
 			if isatoom(exp) and immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
-			elseif immjs[fn(exp)] then
+
+			-- inline js
+			elseif immjs[fn(exp)] and isobj(exp.a) then
+				local imm = immjs[fn(exp)]
 				local f = fn(exp)
-				local multi = f:match('$2')
-				local o = f
+				local multi = imm:match('$2')
+				local o = imm
 				if multi then
-					o = o:gsub('$1', exp.a[1].v)
-					o = o:gsub('$2', exp.a[2].v)
-					o = o:gsub('$3', exp.a[3].v)
-					o = o:gsub('$4', exp.a[4].v)
+					o = exp.a[1] and o:gsub('$1', immsym[exp.a[1].v] or exp.a[1].v) or o
+					o = exp.a[2] and o:gsub('$2', immsym[exp.a[2].v] or exp.a[2].v) or o
+					o = exp.a[3] and o:gsub('$3', immsym[exp.a[3].v] or exp.a[3].v) or o
+					o = exp.a[4] and o:gsub('$4', immsym[exp.a[4].v] or exp.a[4].v) or o
 				else
+					if not exp.a.v then error(o) end
 					o = o:gsub('$1', exp.a.v)
 				end
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, o)
+
 			elseif isatoom(exp) and immjs0[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immjs0[exp.v])
 			elseif isatoom(exp) then
@@ -353,19 +366,26 @@ function genjs(app)
 				if o == ',' then
 					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
 				elseif o == '{}' then
-					fmt = '%s%s = new Set(['.. table.concat(map(exp, function(e) return e.v end), ', ') .. ');'
+					fmt = '%s%s = new Set(['.. table.concat(map(exp, function(e) return e.v end), ', ') .. ']);'
 				elseif o == '[]' then
 					fmt = 'alert("LIJST!"); %s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
 				elseif o == '[]u' then
-					fmt = '%s%s = String.fromCodePoint('.. table.concat(map(exp, function(e) return e.v end), ', ') .. ');'
+					local const = true
+					--for k,sub in subs(exp) do if tonumber(k) and not isatoom(sub) or not tonumber(sub.v) then const = false end end
+					if const then
+						local str = string.char(table.unpack(map(exp, function(sub) return tonumber(sub.v) end)))
+						fmt = '%s%s = '.. string.format('%q',str) .. ';'
+					else
+						fmt = '%s%s = String.fromCodePoint('.. table.concat(map(exp, function(e) return e.v end), ', ') .. ');'
+					end
 				else
 					error'OBJ'
 				end
 				t[#t+1] = string.format(fmt, tabs, naam.v)
 			elseif immsym[f] then
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immsym[f], arg(exp).v)
-			elseif immjs[f] then
-				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs[f], arg(exp).v)
+			elseif immjs0[f] then
+				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs0[f], arg(exp).v)
 			elseif false and immjs[f] then
 				-- a = CMD(a, b)
 				local cmd = immjs[f]
@@ -439,7 +459,7 @@ function genjs(app)
 	table.insert(s, [[
 start = new Date().getTime();
 vars = {};
-if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getClientBoundingRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}
+if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getBoundingClientRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}
 mouseLeft = false;
 mouseLeftPressed = false;
 mouseLeftReleased = false;

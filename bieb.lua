@@ -26,7 +26,8 @@ function bieb()
 	fout = true,
 
 	-- meta
-	_var = function (index,set)
+	['_var'] = function (a)
+		local index, set = a[1], a[2]
 		local ret = vars[index]
 		-- start
 		for exp in pairs(set) do
@@ -54,13 +55,14 @@ function bieb()
 	rechthoek = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
 	lijn = function() error('niet beschikbaar') end;
-	muisKlik = true,
-	muisKlikBegin = true,
-	muisKlikEind = true,
-	muisSleep = true, -- (pad = (van, via, naar))
-	muisX = true,
-	muisY = true,
-	muisBeweegt = true,
+	muisKlik = false,
+	muisKlikBegin = false,
+	muisKlikEind = false,
+	muisSleep = false, -- (pad = (van, via, naar))
+	muisX = false,
+	muisY = false,
+	muisPos = false,
+	muisBeweegt = false,
 
 	regMuis = true, -- X_X
 

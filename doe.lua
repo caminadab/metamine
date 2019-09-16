@@ -15,7 +15,8 @@ local function doeatoom(exp, env)
 		end
 		return t
 	else
-		error('onbekend: '..combineer(exp))
+		--error('onbekend: '..combineer(exp))
+		return nil
 	end
 end
 
@@ -169,15 +170,15 @@ local function doeblok(blok, env, arg)
 		return a
 	elseif fn(epi) == 'ga' then
 		local a,d,e = epi.a[1], epi.a[2], epi.a[3]
-		if #epi == 3 then
+		if #epi.a == 3 then
 			local b = env[a.v]
 			local doel = b and d.v or e.v
 			if opt and opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
 			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi))
 			return env[doel](arg)
 		else
-			if opt and opt.L then print('ga '..a.v) end
-			return env[a.v](arg) -- sws jmp
+			if opt and opt.L then print('ga '..epi.a.v) end
+			return env[epi.a.v](arg) -- sws jmp
 		end
 	else
 		error('slechte epiloog: '..combineer(epi))

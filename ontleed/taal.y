@@ -313,7 +313,7 @@ exp:
 |	exp ':' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ".." exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "×" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-|	exp ',' exp  { if (xlua_isobj(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp ',' exp  { if (xlua_istupel(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ":=" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '=' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '-' exp  { $$ = FN2(L, A(L,"+",@1), $1, FN1(L, A(L,"-",@1), $3, @3), @$); }

@@ -1,4 +1,7 @@
-;c = cirkel(3,2,1)
-;b = [c,c]
-;uit = canvas(b)
-uit = 2 + 3 · 4
+x := 0
+
+als muisKlik dan
+	x := x' + 1
+eind
+
+uit = x

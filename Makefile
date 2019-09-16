@@ -62,7 +62,7 @@ web:
 
 clean:
 	rm -rf bin/
-	rm goo/www/index.html goo/www/en goo/www/nl goo/www/index.*.html
+	rm -rf goo/www/index.html goo/www/en goo/www/nl goo/www/index.*.html
 
 objects := $(patsubst %.lua,%.o,$(wildcard *.lua))
 

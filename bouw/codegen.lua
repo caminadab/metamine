@@ -56,6 +56,10 @@ local function peil(waarde)
 	return diepte
 end
 
+local postop = set("%","!",".","'")
+local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_"," ","⇒","|"," ",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈")
+local unop   = set("-","#","¬")
+
 function codegen(exp, maakvar)
 	local graaf = maakgraaf()
 	local maakvar = maakvar or maakvars()
@@ -94,6 +98,10 @@ function codegen(exp, maakvar)
 		elseif isfn(exp) then
 			arg = con(exp)
 		elseif isobj(exp) then
+			arg = con(exp)
+		elseif exp.v == string.upper(exp.v) and not tonumber(exp.v) then
+			arg = con(exp)
+		elseif not tonumber(exp.v) then
 			arg = con(exp)
 		else
 			arg = (exp)
@@ -269,10 +277,11 @@ function codegen(exp, maakvar)
 				fw.f = assert(al[exp.f.v], 'onbekende ref: '..exp.f.v)
 			end
 
-			if fn(exp) == '+' then
+			if binop[fn(exp)] then
 				fw.f = exp.f
-				fw.a[1] = arg(exp.a[1])
-				fw.a[2] = arg(exp.a[2])
+				fw.a = X(',', arg(exp.a[1]), arg(exp.a[2]))
+				--print('ARGS', combineer(exp.a))
+				--print('FW', combineer(fw))
 
 			elseif fn(exp) == '_' then
 				fw.f = exp.f

@@ -66,6 +66,7 @@ local function combineerR(exp, t, kind)
 			t[#t+1] = '\n'
 		end
 	elseif isfn(exp) then
+		if not exp.a then return '?' end
 		local op = fn(exp)
 		if op == '_' and isobj(exp.a) then
 			combineerR(exp.a[1], t, true)
@@ -98,7 +99,7 @@ local function combineerR(exp, t, kind)
 			t[#t+1] = '('
 			t[#t+1] = op
 			t[#t+1] = ')'
-			if not isobj(exp.a) then
+			if exp.a and not isobj(exp.a) then
 				t[#t+1] = '('
 			end
 			combineerR(exp.a, t, false)
@@ -107,7 +108,8 @@ local function combineerR(exp, t, kind)
 			end
 		end
 	else
-		error('ongeldige exp '..e2s(exp))
+		--error('ongeldige exp '..e2s(exp))
+		t[#t+1] = '?'
 	end
 end
 
