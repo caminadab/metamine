@@ -52,6 +52,7 @@ function bieb()
 	clearCanvas = function () error('niet beschikbaar') end;
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
+	boog = function() error('niet beschikbaar') end;
 	label = function() error('niet beschikbaar') end;
 	rechthoek = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
@@ -139,8 +140,8 @@ function bieb()
 	-- wiskunde
 	co = 3,
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
-	max = math.max,
-	min = math.min,
+	max = function(args) return math.max(args[1], args[2]) end,
+	min = function(args) return math.min(args[1], args[2]) end,
 	int = math.floor,
 	abs = math.abs,
 	absd = math.abs,

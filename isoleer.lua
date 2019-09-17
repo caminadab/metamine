@@ -51,7 +51,7 @@ function isoleer(eq,naam)
 				if out == 0 then eq0 = X(':=', a, X(predef[f], x)) end
 			elseif f == '%' then
 				-- x = a%
-				if out == 0 then eq0 = X(':=', a, X('*', x, 100)) end -- a = x * 100
+				if out == 0 then eq0 = X(':=', a, X('·', x, 100)) end -- a = x * 100
 				if out == 1 then eq0 = X(':=', x, X('/', a, 100)) end -- x = a / 100  (gewoon procent)
 			else
 				-- x = f(a)
@@ -93,7 +93,7 @@ function isoleer(eq,naam)
 			if f == '+' then
 				-- x = a + b
 				if out == 0 then eq0 = X(':=', a, X('+', x, X('-', b))) end -- a = x - b
-				if out == 1 then eq0 = X(':=', b, X('-', x, X('-', a))) end -- b = x - a
+				if out == 1 then eq0 = X(':=', b, X('+', x, X('-', a))) end -- b = x - a
 				--if out == 2 then eq0 = {'=', x, {'+', a, b)) end -- x = a + b
 			elseif f == '-' then
 				-- x = a - b
@@ -101,7 +101,7 @@ function isoleer(eq,naam)
 				if out == 1 then eq0 = X(':=', b, X('+', x, X('-', b))) end -- b = x + a
 				--if out == 2 then eq0 = {'=', x, {'-', a, b}} end -- x = a - b
 			elseif f == '·' then
-				-- x = a * b
+				-- x = a · b
 				if out == 0 then eq0 = X(':=', a, X('/', x, b)) end -- a = x / b
 				if out == 1 then eq0 = X(':=', b, X('/', x, a)) end -- b = x / a
 				--if out == 2 then eq0 = {'=', x, {'*', a, b}} end -- x = a * b
@@ -131,7 +131,7 @@ function isoleer(eq,naam)
 			elseif f == '‖' then
 				-- x = a ‖ b
 				-- a = x (0..(#x-#b))
-				if out == 0 then eq0 = X(':=', a, X('deel', x, X('[]', '0', X('-', X('#', x), X('#',b))))) end
+				if out == 0 then eq0 = X(':=', a, X('deel', x, X('[]', '0', X('+', X('#', x), X('-', X('#',b)))))) end
 				 -- b = x (#a..#x)
 				if out == 1 then eq0 = X(':=', b, X('deel', x, X('[]', X('#', a), X('#', x)))) end
 				--??? if out == 2 then eq0 = {'=', x, {'‖', a, b}} end -- x = a ‖ b

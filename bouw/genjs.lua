@@ -74,7 +74,7 @@ local immjs = {
 	['sin'] = 'Math.sin($1)',
 	['cos'] = 'Math.cos($1)',
 	['tan'] = 'Math.tan($1)',
-	['sincos'] = '[Math.sin($1), Math.cos($1)]',
+	['sincos'] = '[Math.cos($1), Math.sin($1)]',
 
 	-- discreet
 	['min'] = 'Math.min($1,$2)',
@@ -157,7 +157,7 @@ local immsym = {
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 
-	['_prevvar'] = '(function(a){alert(a + ", " + vars[a]); return vars[a];})',
+	['_prevvar'] = '(function(a){return vars[a];})',
 	['_var'] = [[ (function(a) {
 			var varindex = a[0];
 			var ass = a[1];
@@ -193,19 +193,16 @@ local immsym = {
 
 	-- muis
 	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
-	--[[
-	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
 	['vierkant'] = '(function(xyr) {return (function(c){\n\n\tvar x = xyr[0][0]; var y = xyr[0][1]; var r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+r) * 72) - 1, r * 72, r * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0]; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[0][1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1];\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, r * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, r * 72, a1, a2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 72, 720 - (xyz[1] * 72) - 1);\n\t\treturn c;}); })',
-	['lijn'] = [[
 	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
-	]]
-	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+r) * 72) - 1, r * 72, r * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
+	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+
 	['lijn'] = [[
 	(function(_args) {return (function(c){
 		var x1 = _args[0][0];
@@ -268,6 +265,7 @@ local immsym = {
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
+	atan = '(function(a) { return Math.atan2(a[1], a[0]); })',
 	niets = 'null',
 	regMuis = [[(function(x)
 		{
@@ -331,8 +329,7 @@ local immsym = {
 	['⊤'] = 'true',
 	['⊥'] = 'false',
 	['τ'] = 'Math.PI * 2',
-	[''] = 'Math.PI * 2',
-	['pi'] = 'Math.PI',
+	['π'] = 'Math.PI',
 	['init'] = 'init',
 	['schermVerverst'] = 'true',
 	['muisX'] = 'mouseX',
@@ -372,7 +369,7 @@ function genjs(app)
 					o = exp.a[3] and o:gsub('$3', immsym[exp.a[3].v] or exp.a[3].v) or o
 					o = exp.a[4] and o:gsub('$4', immsym[exp.a[4].v] or exp.a[4].v) or o
 				else
-					if not exp.a.v then error(o) end
+					if not exp.a or not exp.a.v then error(o) end
 					o = o:gsub('$1', exp.a.v)
 				end
 				if o:match('%$') then error('niet alle argumenten gevonden: '..o..', exp = '..e2s(exp)) end
@@ -408,21 +405,6 @@ function genjs(app)
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immsym[f], arg(exp).v)
 			elseif immjs0[f] then
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs0[f], arg(exp).v)
-			elseif false and immjs[f] then
-				-- a = CMD(a, b)
-				local cmd = immjs[f]
-				cmd = a and cmd:gsub('$1', assert(immsym[a] or a)) or cmd
-				cmd = b and cmd:gsub('$2', assert(immsym[b] or b)) or cmd
-				cmd = c and cmd:gsub('$3', assert(immsym[c] or c)) or cmd
-				cmd = d and cmd:gsub('$4', assert(immsym[d] or d)) or cmd
-				cmd = cmd:gsub('$TARGS', function() return string.format('%q', table.concat(map(exp, function(e) if tonumber(e.v) then return string.char(tonumber(e.v)) else return '" + String.fromCharCode(' .. e.v .. ') + "' end end)))end)
-				cmd = cmd:gsub('$ARGS', function() return table.concat(map(exp, function(e) return e.v end), ', ') end)
-				cmd = cmd:gsub('$[0-9]', 'null')
-				cmd:gmatch('%$', function(n) error('onbekende var: '..tostring(n)) end)
-				--cmd = a and cmd:gsub('_X_', a) or cmd
-				--cmd = b and cmd:gsub('_Y_', b) or cmd
-				--cmd = c and cmd:gsub('_Z_', c) or cmd
-				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, cmd)
 			elseif immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
 			elseif bieb[f] then

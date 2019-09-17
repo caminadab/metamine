@@ -329,7 +329,8 @@ function oplos(exp,voor)
 			alts.o = X'{}'
 			local index = maakindex()
 			schaduw[naam] = index
-			local eq = X('=', naam, X('_var', index, alts))
+			assert(index and alts)
+			local eq = X('=', naam, X('_', '_var', X(',', index, alts)))
 			eqs[eq] = true
 		end
 		
@@ -425,10 +426,10 @@ function oplos(exp,voor)
 					local naam = exp.a.v
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
-					--assert(schaduw[naam], 'onbekende variabele: '..naam)
+					assert(schaduw[naam], 'onbekende variabele: '..naam)
 					if schaduw[naam] then
-						exp.f = X('_prevvar')
-						exp.a = X(schaduw[naam])
+						exp.f = X('_')
+						exp.a = X(',', '_prevvar', schaduw[naam])
 					end
 				end
 			end

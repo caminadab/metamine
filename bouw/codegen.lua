@@ -283,11 +283,23 @@ function codegen(exp, maakvar)
 				--print('ARGS', combineer(exp.a))
 				--print('FW', combineer(fw))
 
-			elseif fn(exp) == '_' then
+			elseif unop[fn(exp)] then
 				fw.f = exp.f
 				fw.a = arg(exp.a)
 
+			elseif fn(exp) == '_' then
+				fw.f = arg(exp.f)
+				fw.a = arg(exp.a)
+
+			elseif isobj(exp) then
+				fw.o = exp.o
+				for i,v in ipairs(exp) do
+					fw[i] = arg(v)
+				end
+
 			else
+
+				error('IDK' .. e2s(exp))
 
 				for k,v in subs(exp) do
 					if k == 'f' or k == 'o' then
@@ -299,7 +311,7 @@ function codegen(exp, maakvar)
 					else
 						fw[k] = arg(v)
 					end
-					--fw[i].ref = v.ref
+					--fw[k].ref = v.ref
 				end
 
 			end

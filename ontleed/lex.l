@@ -130,6 +130,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "nee"		{ *yylval = A(GL, "⊥", nergens); return NAAM; }
 "⊤"			{ *yylval = A(GL, "⊤", nergens); return NAAM; }
 "⊥"			{ *yylval = A(GL, "⊥", nergens); return NAAM; }
+"τ"			{ *yylval = A(GL, "τ", nergens); return NAAM; }
 
 "als"					{ return ALS; }
 "dan"					{ return DAN; }
@@ -154,12 +155,6 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 -?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
 -?[0-9]*e[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
 -?[0-9]*\.[0-9]+	{ *yylval = A(GL, yytext, nergens); return NAAM; }
-
-((\d+)|(\.\d+))(e\d*)? { /* getal */
-	lua_pushstring(GL, yytext);
-	luaL_ref(GL, LREG);
-	return NAAM;
-}
 
 [a-zA-Z_][a-zA-Z0-9_]* { /* naam */
 	*yylval = A(GL, yytext, nergens);

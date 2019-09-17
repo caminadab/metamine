@@ -1,1 +1,6 @@
-uit = canvas [ vierkant((1,2), 3) ]
+w = 2
+sr = 3
+lx := 0
+als toetsD en lx' < w/2-sr dan
+	uit = 3
+eind

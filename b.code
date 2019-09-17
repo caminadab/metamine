@@ -1,5 +1,72 @@
-x := 10
-y := 5
-als toetsRechts dan x := x' + 0.1 eind
-als toetsLinks dan x := x' - 0.1 eind
-uit = canvas [ cirkel(x,y,1) ]
+w = 18 - 1/5
+sr = 3/2
+netBreedte = 2/5
+netHoogte = 2+1/5
+spelerRadius = 3/2
+balRadius = 1
+
+lx := 4+1/2
+ly := 0
+lvy := 0
+rx := 13+1/2
+ry := 0
+rvy := 0
+
+balpos := (w/2, 5)
+balvel := (1/10, 1/100)
+
+vplus = u,v → u₀+v₀,u₁+v₁
+vdist = U,V → ((U₀-V₀)²+(U₁-V₁)²)^0.5
+
+lpos = (lx, ly)
+rpos = (rx, ry)
+
+uit = canvas [ links, rechts, bal, net ]
+links = boog((lx,ly), spelerRadius, τ/2, τ, lvy)
+rechts = boog((rx,ry), spelerRadius, τ/2, τ, rvy)
+bal = cirkel(balpos, 1, balvel)
+net = rechthoek((w/2 - netBreedte/2, 0), (w/2+netBreedte/2, netHoogte))
+
+; bal
+als schermVerverst en balpos' en balvel' dan
+	balpos := balpos' vplus balvel'
+eind
+als schermVerverst en balpos'₀ > w dan
+	balvel := (-abs(balvel'₀), balvel'₁)
+eind
+als schermVerverst en balpos'₀ < 0 dan
+	balvel := (abs(balvel'₀), balvel'₁)
+eind
+
+; linker speler
+als toetsA en lx' > 0 dan
+	lx := lx' - 1/10
+eind
+als toetsD en lx' < w/2-sr dan
+	lx := lx' + 1/10
+eind
+als toetsW en ly' ≤ 0 dan
+	lvy := 3/10
+	ly := lvy'
+eind
+als schermVerverst en ly' > 0 dan
+	ly := ly' + lvy'
+	lvy := lvy' - 1/100
+eind
+
+; rechter speler
+als toetsLinks en rx' > w/2+sr dan
+	rx := rx' - 1/10
+eind
+als toetsRechts en rx' < w dan
+	rx := rx' + 1/10
+eind
+als toetsOmhoog en ry' ≤ 0 dan
+	rvy := 3/10
+	ry := rvy'
+eind
+als schermVerverst en ry' > 0 dan
+	ry := ry' + rvy'
+	rvy := rvy' - 1/100
+eind
+
