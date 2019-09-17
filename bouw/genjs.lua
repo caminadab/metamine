@@ -193,10 +193,10 @@ local immsym = {
 
 	-- muis
 	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
-	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); }',
-	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 72, 720 - (xyz[1] * 72) - 1);\n\t\treturn c;}); })',
+	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+r) * 72) - 1, r * 72, r * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); }',
+	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0][0] * 72, 720 - (xyz[0][1] * 72) - 1, xyz[1] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[1], xyz[0][0] * 72, 720 - (xyz[0][1] * 72) - 1);\n\t\treturn c;}); })',
 	['lijn'] = [[
 	(function(_args) {return (function(c){
 		var x1 = _args[0];
@@ -259,6 +259,7 @@ local immsym = {
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
+	atan = '(function(a) { return Math.atan2(a[1], a[0]); })',
 	niets = 'null',
 	regMuis = [[(function(x)
 		{

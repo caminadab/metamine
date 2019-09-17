@@ -39,7 +39,25 @@ int xlua_reflijst(lua_State*L, int oid, int aid, YYLTYPE loc) {
 			return luaL_ref(L, LREG);
 	}
 }
-		
+
+int xlua_sluit(lua_State* L, int ref) {
+	lua_rawgeti(L, LREG, ref);
+		lua_pushnil(L);
+			lua_setfield(L, -2, "open");
+		lua_pop(L, 1);
+	return ref;
+}
+
+int xlua_isopen(lua_State* L, int ref) {
+	lua_rawgeti(L, LREG, ref);
+		lua_getfield(L, -1, "open");
+			int res = !lua_isnil(L, -1);
+			lua_pop(L, 2);
+		//
+	//
+	return res;
+}
+
 
 int xlua_istupel(lua_State* L, int ref) {
 	lua_rawgeti(L, LREG, ref);
@@ -252,6 +270,9 @@ int xlua_reftup2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc) {
 			lua_rawseti(L, -2, 1);
 		lua_rawgeti(L, LREG, bid);
 			lua_rawseti(L, -2, 2);
+		// open
+		lua_pushboolean(L, 1);
+			lua_setfield(L, -2, "open");
 		return luaL_ref(L, LREG);
 	//
 }

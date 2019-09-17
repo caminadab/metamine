@@ -218,17 +218,11 @@ unop:
 	"¬" | '#' | "Σ"
 ;
 
-items:
-	items ',' exp  %prec ALS 	{ $$ = APPEND(L, $1, $3, @$); }
-|	single     { $$ = OBJ1(L, A(L,"[]",@1), $1, @$); }
-|	%empty     { $$ = O(L, A(L,"[]",@$), @$); }
-;
-
 single:
 	NAAM										{ $$ = LOC(L, $1, @1); }
 | "ℝ"
 | "★"
-| '(' exp ')'							{ $$ = LOC(L, $2, @$); }
+| '(' exp ')'							{ $$ = xlua_sluit(L, LOC(L, $2, @$)); }
 | '|' exp '|'							{ $$ = FN1(L, A(L,"#", @$), $2, @$); }
 |	NAAM '.'								{ $$ = FN1(L, $2, $1, @$); }
 |	NAAM '\''						{ $$ = FN1(L, $2, $1, @$); }
@@ -241,36 +235,10 @@ single:
 | '{' '}'							{ $$ = O(L, A(L,"{}",@$), @$); }
 | '{' exp '}'					{ $$ = LIJST(L, A(L,"{}",@$), $2, @$); }
 
-/*
-list:
-	%empty							{ $$ = FN0(L, A(L, "[]")); }
-|	items
-;
-
-set:
-	%empty							{ $$ = FN0(L, A(L, "{}")); }
-|	setitems
-;
-
-setitems:
-	exp									{ $$ = FN1(L, A(L, "{}"), $1); }
-| setitems ',' exp		{ $$ = APPEND(L, $1, $3); }
-;
-
-items:
-	exp									{ $$ = FN1(L, A(L, "[]"), $1); }
-| NEWLINE TAB exp NEWLINE		{ $$ = FN1(L, A(L, "[]"), $3); }
-| items ',' exp				{ $$ = APPEND(L, $1, $3); }
-| items TAB exp	NEWLINE				{ $$ = APPEND(L, $1, $3); }
-;
-
-items: exp;
-*/
-
 
 exp:
 	single
-| exp ',' exp  	{ if (xlua_istupel(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
+| exp ',' exp  	{ if (xlua_isopen(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 | single single  %prec CALL  { $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
 | single single single  %prec CALL  { $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @2), @$); }
 | single single single single {  $$ = A(L, "fout", @$); yyerrok; }
