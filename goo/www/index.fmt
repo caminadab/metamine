@@ -299,6 +299,14 @@ button {
 		`{demo1}`, `{demo2}`, `{demo3}`, `{demo4}`, `{demo5}`,
 		`{demo6}`, `{demo7}`, `{demo8}`, `{demo9}`, `{demo10}`,
 		`{demo11}`, `{demo12}`, `{demo13}`, `{demo14}`,
+		`{demo15}`, `{demo16}`, `{demo17}`, `{demo18}`,
+		`{demo19}`, `{demo20}`, `{demo21}`, `{demo22}`,
+		`{demo23}`, `{demo24}`, `{demo25}`, `{demo26}`,
+		`{demo27}`, `{demo28}`, `{demo29}`, `{demo30}`,
+		`{demo31}`, `{demo32}`, `{demo33}`, `{demo34}`,
+		`{demo35}`, `{demo36}`, `{demo37}`, `{demo38}`,
+		`{demo39}`, `{demo40}`, `{demo41}`,
+		// Vyp4l.l.l.lVy
 	];
 	var speelknop = document.getElementById("speel");
 	var stopknop = document.getElementById("stop");
@@ -343,7 +351,6 @@ button {
 		demoindex++;
 		demoindex = Math.min(demoindex, demos.length-1);
 		editor.setValue(demos[demoindex]);
-		vertaal();
 	});
 	vorigeknop.addEventListener("mousedown", function() {
 		stop = true;
@@ -351,7 +358,6 @@ button {
 		demoindex--;
 		demoindex = Math.max(demoindex, 0);
 		editor.setValue(demos[demoindex]);
-		vertaal();
 	});
 
 	function onsuccess() {

@@ -24,6 +24,7 @@ function bieb()
 	pi = math.pi,
 	init = true,
 	fout = true,
+	schermVerverst = true,
 
 	-- meta
 	['_var'] = function (a)

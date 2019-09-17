@@ -1,0 +1,28 @@
+planeten := []
+zonnen := [ zon ]
+zon = ((9, 5), 0.3)
+
+; planeet = (pos,rad,vel)
+nieuweplaneet = (muisPos, 0.13, (0,0.01))
+
+als muisKlikBegin dan
+	planeten := planeten' ‖ [nieuweplaneet]
+eind
+
+als planeten' en ¬ muisKlikBegin dan
+	planeten := planeten' map beweeg
+eind
+
+vplus = v1,v2 → v1₀+v2₀,v1₁+v2₁
+vmin = w1,w2 → w1₀-w2₀,w1₁-w2₁
+vafstand = a,b → ((a₀-b₀)²+(a₁-b₁)²)^0.5
+
+; zwaartekracht
+g = 0.1 / r²
+r = vafstand(pos, zon₀)
+
+richting = atan (pos vmin zon₀)
+grav = sincos(richting)
+
+beweeg = (pos,rad,vel) → (pos vplus vel),rad,vel
+uit = canvas((planeten ‖ zonnen) map cirkel)

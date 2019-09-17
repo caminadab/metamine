@@ -1,2 +1,1 @@
-a = [0,1]
-uit = a₀
+uit = canvas [ vierkant((1,2), 3) ]

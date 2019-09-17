@@ -193,16 +193,25 @@ local immsym = {
 
 	-- muis
 	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
-	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); }',
-	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	--[[
+	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
+	['vierkant'] = '(function(xyr) {return (function(c){\n\n\tvar x = xyr[0][0]; var y = xyr[0][1]; var r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+r) * 72) - 1, r * 72, r * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0]; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[0][1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 72, 720 - (xyz[1] * 72) - 1);\n\t\treturn c;}); })',
 	['lijn'] = [[
+	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
+	]]
+	['vierkant'] = '(function(x,y,z) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+z) * 72) - 1, z * 72, z * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['rechthoek'] = '(function(x,y,w,h) {return (function(c){\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tc.beginPath();\n\t\tc.arc(xyz[0] * 72, 720 - (xyz[1] * 72) - 1, xyz[2] * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
+	['lijn'] = [[
 	(function(_args) {return (function(c){
-		var x1 = _args[0];
-		var y1 = _args[1];
-		var x2 = _args[2];
-		var y2 = _args[3];
+		var x1 = _args[0][0];
+		var y1 = _args[0][1];
+		var x2 = _args[1][0];
+		var y2 = _args[1][1];
 		x1 = x1 * 72;
 		y1 = 720 - y1 * 72;
 		x2 = x2 * 72;
@@ -325,6 +334,7 @@ local immsym = {
 	[''] = 'Math.PI * 2',
 	['pi'] = 'Math.PI',
 	['init'] = 'init',
+	['schermVerverst'] = 'true',
 	['muisX'] = 'mouseX',
 	['muisY'] = 'mouseY',
 	['muisPos'] = '[mouseX, mouseY]',
