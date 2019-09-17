@@ -300,7 +300,7 @@ function oplos(exp,voor)
 		for naam,alts in pairs(map) do
 			alts.o = X'{}'
 			local eq = X('=', naam, X('|', alts))
-			print('SAMEN', combineer(eq))
+			--print('SAMEN', combineer(eq))
 			--print('OK', combineer(eq))
 			eqs[eq] = true
 			--nieuw[eq] = true

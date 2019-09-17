@@ -122,7 +122,7 @@
 %right '^' '_'
 %left OUD
 %left '.'
-%nonassoc '%' '!' '\'' INVERTEER M0 M1 KWADRAAT DERDEMACHT M4 MN I0  I2 I3 I4
+%nonassoc '%' '!' '\'' INVERTEER M0 M1 KWADRAAT DERDEMACHT M4 MN I0 I1 I2 I3 I4
 %left NAAM TEKST
 
 %%
@@ -277,6 +277,11 @@ exp:
 |	exp KWADRAAT						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"2", @2), @$); }
 |	exp DERDEMACHT						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"3",@2), @$); }
 |	exp INVERTEER						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"-1", @2), @$); }
+|	exp I0						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"0", @2), @$); }
+|	exp I1						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"1", @2), @$); }
+|	exp I2						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"2", @2), @$); }
+|	exp I3						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"3", @2), @$); }
+|	exp I4						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"4", @2), @$); }
 |	"¬" exp  { $$ = FN1(L, $1, $2, @$); }
 |	"Σ" exp  { $$ = FN1(L, $1, $2, @$); }
 |	'-' exp  %prec NEG { $$ = FN1(L, LOC(L,$1,@1), $2, @$); }

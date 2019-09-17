@@ -79,6 +79,11 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "²"		{ *yylval = A(GL, "²", nergens); return KWADRAAT; }
 "³"		{ *yylval = A(GL, "²", nergens); return DERDEMACHT; }
 "⁻¹"	{ *yylval = A(GL, "⁻¹", nergens); return INVERTEER; }
+"₀"		{ return I0; }
+"₁"		{ return I1; }
+"₂"		{ return I2; }
+"₃"		{ return I3; }
+"₄"		{ return I4; }
 _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "("		{ *yylval = A(GL, "(", nergens); return '('; }
 ")"		{ *yylval = A(GL, ")", nergens); return ')'; }

@@ -1,5 +1,2 @@
-a := 0
-als toetsRechts dan
-	a := a' + 0.1
-eind
-uit = a
+a = [0,1]
+uit = a₀
