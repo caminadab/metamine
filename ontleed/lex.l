@@ -121,6 +121,11 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 \t		// negeer tabs
 " "		// negeer spaties
 
+"ja"		{ *yylval = A(GL, "⊤", nergens); return NAAM; }
+"nee"		{ *yylval = A(GL, "⊥", nergens); return NAAM; }
+"⊤"			{ *yylval = A(GL, "⊤", nergens); return NAAM; }
+"⊥"			{ *yylval = A(GL, "⊥", nergens); return NAAM; }
+
 "als"					{ return ALS; }
 "dan"					{ return DAN; }
 "andersals"			{ return ANDERSALS; }

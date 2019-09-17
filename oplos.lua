@@ -212,10 +212,9 @@ function oplos(exp,voor)
 					end
 				end
 				if eq.a[3] and fn(eq.a[3]) == '⋀' then
-					for i,sub in ipairs(eq.a[3]) do
+					for i,sub in ipairs(eq.a[3].a) do
 						local eq = X('⇒', X('¬', eq.a[1]), sub)--X'niets')
 						nieuw[eq] = true
-						--print('BLOK', e2s(eq))
 					end
 				end
 			end
@@ -238,12 +237,13 @@ function oplos(exp,voor)
 			if fn(eq) == '⇒' and (fn(eq.a[2]) == '=' or fn(eq.a[2]) == '|=' or fn(eq.a[2]) == ':=') then
 				--error('OK')
 				
-				eq.f.v = '|='
-				if fn(eq.a[2]) == ':=' then
-					eq.f.v = '|:='
-				end
+				--eq.f.v = '|='
+				--if fn(eq.a[2]) == ':=' then
+					--eq.f.v = '|:='
+				--end
 				local alt = eq.f
 				local c = eq.a[1]
+				local f = fn(eq.a[2])
 				local a = eq.a[2].a[1]
 				local b = eq.a[2].a[2]
 
@@ -251,19 +251,22 @@ function oplos(exp,voor)
 				local ae = eq[3] and eq[3].a[1] or X'niets'
 				local be = eq[3] and eq[3].a[2] or X'niets'
 				--assert(ae and be)
-				local eqa = X(alt, a, X(sym.dan, c, b, be))
-				local eqb = X(alt, b, X(sym.dan, c, a, ae))
-				nieuw[eqa] = true
-				nieuw[eqb] = true
+				local eqa = X('|'..f, a, X(sym.dan, c, b, be))
+				local eqb = X('|'..f, b, X(sym.dan, c, a, ae))
 
-				if false and eq[3] and (fn(eq[3]) == '=' or fn(eq[3]) == '|=') then
+				if isvar(a) then nieuw[eqa] = true end
+				if isvar(b) then nieuw[eqb] = true end
+
+				if eq[3] and (fn(eq[3]) == '=' or fn(eq[3]) == '|=' or fn(eq[3]) == ':=') then
 					local e = {f=sym.niet, c}
+					local fe = fn(eq.a[3])
 					local ae = eq[3].a[1]
 					local be = eq[3].a[2]
-					local eqa = {f=alt, ae, {f=sym.dan, e, be}}
-					local eqb = {f=alt, be, {f=sym.dan, e, ae}}
-					nieuw[eqa] = true
-					nieuw[eqb] = true
+					local eqa = X('|'..fe, ae, X(sym.dan, e, be))
+					local eqb = X('|'..fe, be, X(sym.dan, e, ae))
+					if isvar(a) then nieuw[eqa] = true end
+					if isvar(b) then nieuw[eqb] = true end
+					error'a'
 				end
 			end
 		end
@@ -283,10 +286,11 @@ function oplos(exp,voor)
 		for eq in pairs(eqs) do
 			-- a |= b
 			if fn(eq) == '|=' then
-				local a,b = eq.a[1],eq.a[2]
-				map[a.v or a] = map[a.v or a] or {}
-				local v = map[a.v or a]
-				v[#v+1] = b
+				local naam,alt = eq.a[1],eq.a[2]
+				local key = e2s(naam)
+				map[key] = map[key] or {}
+				local alts = map[key]
+				alts[#alts+1] = alt
 				oud[eq] = true
 			end
 		end
@@ -294,10 +298,12 @@ function oplos(exp,voor)
 			eqs[eq] = false
 		end
 		for naam,alts in pairs(map) do
-			alts.o = X','
+			alts.o = X'{}'
 			local eq = X('=', naam, X('|', alts))
+			print('SAMEN', combineer(eq))
 			--print('OK', combineer(eq))
-			--eqs[eq] = true
+			eqs[eq] = true
+			--nieuw[eq] = true
 		end
 
 		-- verzamel |:=
@@ -308,7 +314,7 @@ function oplos(exp,voor)
 		for eq in pairs(eqs) do
 			-- a |:= b
 			if fn(eq) == '|:=' then
-				print('VERZAMEL', combineer(eq))
+				--print('VERZAMEL', combineer(eq))
 				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
@@ -419,9 +425,11 @@ function oplos(exp,voor)
 					local naam = exp.a.v
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
-					assert(schaduw[naam], 'onbekende variabele: '..naam)
-					exp.f = X('_prevvar')
-					exp.a = X(schaduw[naam])
+					--assert(schaduw[naam], 'onbekende variabele: '..naam)
+					if schaduw[naam] then
+						exp.f = X('_prevvar')
+						exp.a = X(schaduw[naam])
+					end
 				end
 			end
 		end

@@ -78,7 +78,7 @@ function isoleer(eq,naam)
 					break
 				end
 			end
-		elseif isfn(L) and isobj(L.a) then
+		elseif isfn(L) and isobj(L.a) and #L.a == 2 then
 			local x,f,a,b = R, fn(L), L.a[1],L.a[2]
 			local out
 			local n = 0

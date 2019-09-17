@@ -87,6 +87,9 @@ function bieb()
 		return a:byte(b)
 	end;
 
+	['⊤'] = true;
+	['⊥'] = false;
+
 	-- io
 	['stduitSchrijf'] = function(a)
 		do
@@ -267,24 +270,11 @@ function bieb()
 	end;
 
 	['|'] = function(a)
-		local a,b = a[1],a[2]
-		local fa = type(a) == 'function'
-		local fb = type(b) == 'function'
-		--if fa ~= fb then return 'fout' end
-		--[[
-		if fa and fb then
-			return function(...)
-				local ta = a(...)
-				local tb = b(...)
-				if not ta == not tb then
-					return nil
-				end
-				return ta or tb
+		for i,v in pairs(a) do
+			if v ~= nil and v ~= false then
+				return v
 			end
 		end
-		]]
-		if a and b then return 'fout' end
-		return a or b
 	end;
 
 	['→'] = function(param, f)
@@ -302,14 +292,14 @@ function bieb()
 	['#'] = function(a) return #a end;
 	['='] = function(a)
 		if tonumber(a[1]) and tonumber(a[2]) then
-			return a == b
+			return a[1] == a[2]
 		end
-		return lenc(a) == lenc(b)
+		return lenc(a[1]) == lenc(a[2])
 	end;
-	['>'] = function(a) return tonumber(a[1]) > tonumber(b[1]) end;
-	['<'] = function(a) return tonumber(a[1]) < tonumber(b[1]) end;
-	['≠'] = function(a) return a[1] ~= b[1] end;
-	['≈'] = function(a) return math.abs(a[1]-b[1]) < 0.00001 end;
+	['>'] = function(a) return tonumber(a[1]) > tonumber(a[2]) end;
+	['<'] = function(a) return tonumber(a[1]) < tonumber(a[2]) end;
+	['≠'] = function(a) return a[1] ~= a[2] end;
+	['≈'] = function(a) return math.abs(a[1]-a[2]) < 0.00001 end;
 
 	['..'] = function(a)
 		local a,b = a[1], a[2]

@@ -73,6 +73,9 @@ function checkr(e, p, k)
 	if isobj(e) then n = n + 1 end
 	if n ~= 1 then
 		print('FAAL!')
+		print('Exp:')
+		see(e)
+		print('Parent:')
 		see(p)
 		error'check faalde'
 	end

@@ -96,7 +96,7 @@
 	font-width: bold;
 	background: #3a2299;
 	font-size: 48px;
-	padding: 24px;
+	padding: 12px;
 	box-sizing: border-box;
 }
 
@@ -122,7 +122,7 @@
 }
 
 textarea {
-	font-size: 24px;
+	font-size: 20px;
 	padding: 14px;
 	height: 800px;
 	color: white;
@@ -200,7 +200,7 @@ html, body {
 	background: #050070;
 	color: white;
 	font-family: Impace, Charcoal, sans-serif;
-	font-size: 24px;
+	font-size: 20px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -407,6 +407,7 @@ button {
 			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
 		},
   });
+
 	//editor.setSize('50%', '300px');
 	editor.setValue(demos[demoindex]);
 

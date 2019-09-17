@@ -28,20 +28,20 @@ local immjs = {
 	['[]'] = '[$ARGS]',
 	['[]u'] = '$TARGS',
 	['{}'] = 'new Set([$ARGS])',
-	['|'] = '$1 || $2',
-	['en'] = '$1 && $2',
 
 	-- arit
 	['map'] = '$1.map($2)',
-	['vouw'] = '$1.slice(1).reduce((x,y) => $2([x,y]),$1[0])',
+	['vouw'] = '$1.length == 0 ? (x => x) : $1.length == 1 ? $1[0] : $1.slice(1).reduce((x,y) => $2([x,y]),$1[0])',
 	['atoom'] = 'atoom$1',
 	['%'] = '$1 / 100',
 	['+i'] = '$1 + $2',
 	['+d'] = '$1 + $2',
 	['+'] = '$1 + $2',
-	['-'] = '$1 - $2',
-	['-i'] = '$1 - $2',
-	['-d'] = '$1 - $2',
+
+	['¬'] = '! $1',
+	['-'] = '- $1',
+	['-i'] = '- $2',
+	['-d'] = '- $2',
 	['·'] = '$1 * $2',
 	['·i'] = '$1 * $2',
 	['·d'] = '$1 * $2',
@@ -89,7 +89,7 @@ local immjs = {
 
 	-- exp
 	['log10'] = 'Math.log($1, 10)',
-	['‖'] = '$1 + $2',--.concat($2)',
+	['‖'] = 'Array.isArray($1) ? $1.concat($2) : $1 + $2',
 	['‖u'] = '$1 + $2',
 	['cat'] = '$1.join($2)', -- TODO werkt dit?
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
@@ -100,11 +100,10 @@ local immjs = {
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$1-$2)), (x,i) => $1 - 1 - i))',
 	['_u'] = '$1[$2]',
-	['_'] = 'Array.isArray($1) ? alert($1[$2]) || $1[$2] : $1($2)',
+	['_'] = 'Array.isArray($1) ? $1[$2] : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
 	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => [x, y])))',
 	['∘'] = 'function (a) { return $2($1(a)); }',
-	['_prevvar'] = '(function(a){return vars[a];})',
 	['_var'] = [[ (function(a) {
 			var varindex = a[0];
 			var ass = a[1];
@@ -142,12 +141,23 @@ end
 local immsym = {
 	['_2'] = '(function(_fn, _nieuwArg) { _oudArg = _arg || null; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
 	--['_'] = '(function(a) { return a[0](a[1]); })',
+	['|'] = [[ (function(conds) {
+		const it = conds.entries();
+		for (let entry of it) {
+			if (entry[1] != null && entry[1] != false) {
+				return entry[1];
+			}
+		}
+		alert("Lege waarde");
+		throw new Exception(":(");
+	}) ]],
 
 	-- func
-	['map'] = '(function(a){if (!Array.isArray(a[0])) a[0] = [a[0]]; return a[0].map(a[1]);})',
+	['map'] = '(function(a){ return a[0].map(a[1]); })',
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 
+	['_prevvar'] = '(function(a){alert(a + ", " + vars[a]); return vars[a];})',
 	['_var'] = [[ (function(a) {
 			var varindex = a[0];
 			var ass = a[1];
@@ -205,10 +215,10 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['tekst'] = '(function(t) { return Array.isArray(t) ? t.toSource() : t.toString();})',
+	['tekst'] = '(function(t) { if (!t && t !== false) return "niets"; return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['clearCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 	['setInnerHtml'] = [[(function (a) {
-		var t = Array.isArray(a) ? a.toSource() : a.toString();
+		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
 			html = t;
@@ -268,8 +278,8 @@ local immsym = {
 			var b = canvas.getBoundingClientRect();
 			uit.onmousemove = function(ev)
 			{
-				mouseX = ((ev.clientX-b.left)/canvas.clientWidth*17.778).toFixed(3);
-				mouseY = ((b.bottom - ev.clientY)/canvas.clientHeight*10).toFixed(3);
+				mouseX = +((ev.clientX-b.left)/canvas.clientWidth*17.778).toFixed(3);
+				mouseY = +((b.bottom - ev.clientY)/canvas.clientHeight*10).toFixed(3);
 				mouseMoving = true;
 			};
 
@@ -295,9 +305,9 @@ local immsym = {
 	['consolelog'] = 'console.log($1)',
 
 	-- toetsen
-	--['toetsNeer']  = '!!_keys[$1]',
-	['toetsNeerBegin']  = '!!_keysPressed.has($1)',
-	['toetsNeerEind']  = '!!_keysReleased.has($1)',
+	['toetsNeer']  = 'function(keyCode) { return !!_keys[keyCode]; }',
+	['toetsNeerBegin']  = 'function(keyCode) { return !!_keysPressed.has(keyCode); }',
+	['toetsNeerEind']  = 'function(keyCode) { return !!_keysReleased.has(keyCode); }',
 
 	['_arg0'] = '_arg0',
 	['_arg1'] = '_arg1',
@@ -309,11 +319,12 @@ local immsym = {
 	cos = 'Math.cos',
 	tan = 'Math.tan',
 	niets = 'null',
-	ja = 'true',
-	nee = 'false',
-	['τi'] = 'Math.PI * 2',
+	['⊤'] = 'true',
+	['⊥'] = 'false',
+	['τ'] = 'Math.PI * 2',
+	[''] = 'Math.PI * 2',
 	['pi'] = 'Math.PI',
-	init = 'init',
+	['init'] = 'init',
 	['muisX'] = 'mouseX',
 	['muisY'] = 'mouseY',
 	['muisPos'] = '[mouseX, mouseY]',
@@ -340,7 +351,7 @@ function genjs(app)
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
 
 			-- inline js
-			elseif immjs[fn(exp)] and isobj(exp.a) then
+			elseif immjs[fn(exp)] and not (immjs[fn(exp)]:match('$2') and not exp.a[2]) then
 				local imm = immjs[fn(exp)]
 				local f = fn(exp)
 				local multi = imm:match('$2')
@@ -354,6 +365,7 @@ function genjs(app)
 					if not exp.a.v then error(o) end
 					o = o:gsub('$1', exp.a.v)
 				end
+				if o:match('%$') then error('niet alle argumenten gevonden: '..o..', exp = '..e2s(exp)) end
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, o)
 
 			elseif isatoom(exp) and immjs0[exp.v] then
@@ -364,11 +376,11 @@ function genjs(app)
 				local o = obj(exp)
 				local fmt
 				if o == ',' then
-					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
+					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v or 'alert("fout")' end), ', ') .. '];'
 				elseif o == '{}' then
 					fmt = '%s%s = new Set(['.. table.concat(map(exp, function(e) return e.v end), ', ') .. ']);'
 				elseif o == '[]' then
-					fmt = 'alert("LIJST!"); %s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
+					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v end), ', ') .. '];'
 				elseif o == '[]u' then
 					local const = true
 					--for k,sub in subs(exp) do if tonumber(k) and not isatoom(sub) or not tonumber(sub.v) then const = false end end

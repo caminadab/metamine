@@ -35,7 +35,9 @@
 	#define O xlua_refobj
 	#define APPEND xlua_append
 	#define APPENDA xlua_appenda
+	#define LIJST xlua_reflijst
 	#define LOC xlua_metloc
+	#define OBJ1 xlua_refobj1
 	#define FN1 xlua_reffn1
 	#define FN2 xlua_reffn2
 	#define FN3 xlua_reffn3
@@ -216,6 +218,12 @@ unop:
 	"¬" | '#' | "Σ"
 ;
 
+items:
+	items ',' exp  %prec ALS 	{ $$ = APPEND(L, $1, $3, @$); }
+|	single     { $$ = OBJ1(L, A(L,"[]",@1), $1, @$); }
+|	%empty     { $$ = O(L, A(L,"[]",@$), @$); }
+;
+
 single:
 	NAAM										{ $$ = LOC(L, $1, @1); }
 | "ℝ"
@@ -228,8 +236,10 @@ single:
 |	'(' unop ')'				{ $$ = $2; }
 
 /* lijst */
-| '[' exp ']'				{ $$ = LOC(L, $2, @$); }
-| '{' exp '}'				{ $$ = LOC(L, $2, @$); }
+| '[' ']'							{ $$ = O(L, A(L,"[]",@$), @$); }
+| '[' exp ']'					{ $$ = LIJST(L, A(L,"[]",@$), $2, @$); }
+| '{' '}'							{ $$ = O(L, A(L,"{}",@$), @$); }
+| '{' exp '}'					{ $$ = LIJST(L, A(L,"{}",@$), $2, @$); }
 
 /*
 list:
@@ -257,8 +267,10 @@ items:
 items: exp;
 */
 
+
 exp:
 	single
+| exp ',' exp  	{ if (xlua_istupel(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 | single single  %prec CALL  { $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
 | single single single  %prec CALL  { $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @2), @$); }
 | single single single single {  $$ = A(L, "fout", @$); yyerrok; }
@@ -271,26 +283,6 @@ exp:
 |	'#' exp  { $$ = FN1(L, LOC(L,$1,@1), $2, @$); }
 |	exp '!' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
 |	exp '%' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
-
-/*
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-|	exp op exp  { $$ = FN2(L, $2, $1, $3); }
-*/
 
 |	exp '<' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "≤" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
@@ -313,7 +305,6 @@ exp:
 |	exp ':' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ".." exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "×" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-|	exp ',' exp  { if (xlua_istupel(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp ":=" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '=' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '-' exp  { $$ = FN2(L, A(L,"+",@1), $1, FN1(L, A(L,"-",@1), $3, @3), @$); }

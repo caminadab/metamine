@@ -6,7 +6,7 @@ require 'fout'
 local function doeatoom(exp, env)
 	if tonumber(exp.v) then
 		return tonumber(exp.v)
-	elseif env[exp.v] then
+	elseif env[exp.v] ~= nil then
 		return env[exp.v]
 	elseif isobj(exp) then
 		local t = {}
@@ -172,6 +172,7 @@ local function doeblok(blok, env, arg)
 		local a,d,e = epi.a[1], epi.a[2], epi.a[3]
 		if #epi.a == 3 then
 			local b = env[a.v]
+			print('B = '..tostring(b))
 			local doel = b and d.v or e.v
 			if opt and opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
 			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi))

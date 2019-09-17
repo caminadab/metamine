@@ -1,7 +1,5 @@
-x := 0
-
-als muisKlik dan
-	x := x' + 1
+a := 0
+als toetsRechts dan
+	a := a' + 0.1
 eind
-
-uit = x
+uit = a
