@@ -138,6 +138,7 @@ function typeer(exp)
 			T,ol = type,exp.loc
 		end
 		-- ECHT TYPEREN!
+		print('OK', combineer(exp), combineer(T))
 		if T and not types[exp] or moes(types[exp]) ~= moes(T) then
 			types[exp] = T
 			naamtypes[moes(exp)] = T
@@ -148,7 +149,7 @@ function typeer(exp)
 				local t = typeoorzaakloc or ol or exploc
 				local s = t and '\t(' ..ansi.underline.. (loctekst(t) or '')..ansi.normal..')' or ''
 
-				--print('TYPEER', moes(exp)..': '..moes(T))
+				print('TYPEER', moes(exp)..': '..moes(T))
 				if exp.loc and exp.loc.bron and exp.loc.bron:sub(1,5) ~= 'bieb/' then
 					print(combineer(exp)..'\t: '..combineer(T)..s)
 				end

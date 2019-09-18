@@ -1,4 +1,1 @@
-a = 1
-b = a
-c = b + b
-uit = c
+uit = 1 + "hoi"
