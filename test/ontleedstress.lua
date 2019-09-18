@@ -26,7 +26,6 @@ local moetlijnen = #bron
 local lang = table.concat(bron, '\n')
 len = len + #bron[#bron]
 
-
 -- ontleed
 require 'ontleed'
 local socket = require 'socket'
