@@ -24,7 +24,7 @@ int xlua_reflijst(lua_State*L, int oid, int aid, YYLTYPE loc) {
 			lua_rawgeti(L, LREG, oid);
 				lua_setfield(L, -2, "o");
 			lua_pop(L, 1);
-		//
+		luaL_unref(L, LREG, oid);
 		return aid;
 	}
 	// [](1)
@@ -36,7 +36,10 @@ int xlua_reflijst(lua_State*L, int oid, int aid, YYLTYPE loc) {
 				lua_rawseti(L, -2, 1);
 			xlua_pushloc(L, loc);
 				lua_setfield(L, -2, "loc");
+			luaL_unref(L, LREG, oid);
+			luaL_unref(L, LREG, aid);
 			return luaL_ref(L, LREG);
+		//
 	}
 }
 
@@ -99,7 +102,7 @@ int xlua_append(lua_State* L, int lijst, int el, YYLTYPE loc) {
 		xlua_pushloc(L, loc);
 			lua_setfield(L, -2, "loc");
 		lua_pop(L, 1);
-	//
+	luaL_unref(L, LREG, el);
 	return lijst;
 }
 
@@ -237,6 +240,8 @@ int xlua_reffn1(lua_State* L, int fid, int aid, YYLTYPE loc) {
 		lua_rawgeti(L, LREG, aid);
 			lua_setfield(L, -2, "a");
 		ref = luaL_ref(L, LREG);
+	luaL_unref(L, LREG, fid);
+	luaL_unref(L, LREG, aid);
 	return ref;
 }
 
@@ -256,6 +261,9 @@ int xlua_reffn2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc) {
 			lua_rawgeti(L, LREG, bid);
 				lua_rawseti(L, -2, 2);
 			lua_setfield(L, -2, "a");
+		luaL_unref(L, LREG, fid);
+		luaL_unref(L, LREG, aid);
+		luaL_unref(L, LREG, bid);
 		return luaL_ref(L, LREG);
 	//
 }
@@ -273,6 +281,9 @@ int xlua_reftup2(lua_State* L, int fid, int aid, int bid, YYLTYPE loc) {
 		// open
 		lua_pushboolean(L, 1);
 			lua_setfield(L, -2, "open");
+		luaL_unref(L, LREG, fid);
+		luaL_unref(L, LREG, aid);
+		luaL_unref(L, LREG, bid);
 		return luaL_ref(L, LREG);
 	//
 }
@@ -295,6 +306,10 @@ int xlua_reffn3(lua_State* L, int fid, int aid, int bid, int cid, YYLTYPE loc) {
 			lua_rawgeti(L, LREG, cid);
 				lua_rawseti(L, -2, 3);
 			lua_setfield(L, -2, "a");
+		luaL_unref(L, LREG, fid);
+		luaL_unref(L, LREG, aid);
+		luaL_unref(L, LREG, bid);
+		luaL_unref(L, LREG, cid);
 		return luaL_ref(L, LREG);
 	//
 }
@@ -319,6 +334,11 @@ int xlua_reffn4(lua_State* L, int fid, int aid, int bid, int cid, int did, YYLTY
 			lua_rawgeti(L, LREG, did);
 				lua_rawseti(L, -2, 4);
 			lua_setfield(L, -2, "a");
+		luaL_unref(L, LREG, fid);
+		luaL_unref(L, LREG, aid);
+		luaL_unref(L, LREG, bid);
+		luaL_unref(L, LREG, cid);
+		luaL_unref(L, LREG, did);
 		return luaL_ref(L, LREG);
 	//
 }
@@ -345,6 +365,12 @@ int xlua_reffn5(lua_State* L, int fid, int aid, int bid, int cid, int did, int e
 			lua_rawgeti(L, LREG, eid);
 				lua_rawseti(L, -2, 5);
 			lua_setfield(L, -2, "a");
+		luaL_unref(L, LREG, fid);
+		luaL_unref(L, LREG, aid);
+		luaL_unref(L, LREG, bid);
+		luaL_unref(L, LREG, cid);
+		luaL_unref(L, LREG, did);
+		luaL_unref(L, LREG, eid);
 		return luaL_ref(L, LREG);
 	//
 }
