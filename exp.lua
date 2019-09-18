@@ -3,13 +3,89 @@ exp = { fn, 1, 2 } | { v }
 exp |= { loc, val }
 ]]
 require 'lisp'
+require 'util'
 
-function fn(exp) if isfn(exp) then return exp.fn.v end end
+function fn(exp) if isfn(exp) then return exp.f.v end end
+function arg(exp) if isfn(exp) then return exp.a end end
+function obj(exp) if isobj(exp) then return exp.o.v end end
 function atoom(exp,i) 
 	if not i then
 		return exp.v
 	end
 	if exp[i] then return exp[i].v end
+end
+
+-- checkuhh
+local atomen = {}
+local lst, b = file('atomen.lst') or file('../atomen.lst')
+for atoom in lst:gmatch('[^\n]+') do
+	atomen[atoom] = true
+end
+
+local objs = set(',', '{}', '[]', '[]u')
+
+-- itereer kinderen
+function subs(exp)
+
+	if isatoom(exp) then
+		return function() return nil end
+	end
+
+	if isfn(exp) then
+		local a = 2
+		return function()
+			if a == 2 then
+				a = 1
+				return "f", exp.f
+			elseif a == 1 then
+				a = 0
+				return "a", exp.a
+			else
+				return nil
+			end
+		end
+	end
+
+	if isobj(exp) then
+		local a = true
+		local i = 0
+		return function()
+			if a then
+				a = false
+				return "o", exp.o
+			else
+				i = i + 1
+				return (exp[i] and i), exp[i]
+			end
+		end
+	end
+
+	error('onbekend: '..lenc(exp))
+end
+
+function checkr(e, p, k)
+	if not e then
+		error(string.format('%s[%s] = nil', e2s(p), k))
+	end
+	local n = 0
+	if isatoom(e) then n = n + 1 end
+	if isfn(e) then n = n + 1 end
+	if isobj(e) then n = n + 1 end
+	if n ~= 1 then
+		print('FAAL!')
+		print('Exp:')
+		see(e)
+		print('Parent:')
+		see(p)
+		error'check faalde'
+	end
+	for k,sub in subs(e) do
+		checkr(sub, e, k)
+	end
+end
+
+function check(e)
+	checkr(e, '?', '?')
 end
 
 expmt = {}
@@ -44,15 +120,15 @@ end
 
 function loctekst(loc)
 	if not loc then loc = nergens end
-	local bron = loc.bron or '?.code'
-	bron = bron:sub(1, -6)
+	local bron = ''
+	if loc.bron then bron = loc.bron:sub(1,-6) .. '@' end
 
 	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
-		return string.format("%s@%d:%d", bron, loc.y1, loc.x1)
+		return string.format("%s%d:%d", bron, loc.y1, loc.x1)
 	elseif loc.y1 == loc.y2 then
-		return string.format("%s@%d:%d-%d", bron, loc.y1, loc.x1, loc.x2)
+		return string.format("%s%d:%d-%d", bron, loc.y1, loc.x1, loc.x2)
 	else
-		return string.format("%s@%d:%d-%d:%d", bron, loc.y1, loc.x1, loc.y2, loc.x2)
+		return string.format("%s%d:%d-%d:%d", bron, loc.y1, loc.x1, loc.y2, loc.x2)
 	end
 end
 
@@ -76,53 +152,13 @@ function locsub(code, loc)
 	return string.sub(code, apos, bpos-1)
 end
 
-function expmoesR(exp, t)
-	if exp.moes then t[#t+1] = tostring(exp.moes); return end
-	if isatoom(exp) then t[#t+1] = exp.v
-	else
-		if not isatoom(exp.fn) then t[#t+1] = '(' end
-		expmoesR(exp.fn, t)
-		if not isatoom(exp.fn) then t[#t+1] = ')' end
-		t[#t+1] = '('
-		for i, v in ipairs(exp) do
-			expmoesR(v, t)
-			if i ~= #exp then t[#t+1] = ' ' end
-		end
-		t[#t+1] = ')'
-	end
-end
-
 function expmoes(exp)
 	if exp.moes then
 		-- niets...
-	elseif isatoom(exp) then
-		exp.moes = exp.v
 	else
-		local t = {}
-		t[#t+1] = expmoes(exp.fn)
-		t[#t+1] = '('
-		for i=1,#exp do
-			t[#t+1] = expmoes(exp[i])
-			if i ~= #exp then
-				t[#t+1] = ' '
-			end
-		end
-		t[#t+1] = ')'
-		exp.moes = table.concat(t)
+		exp.moes = e2s(exp)
 	end
 	return exp.moes
-end
-
-
-function expmoes0(exp)
-	---if moezen[exp] then
-		---return moezen[exp]
-	---end
-	local t = {}
-	expmoesR(exp, t)
-	local moes = table.concat(t)
-	---moezen[exp] = moes
-	return moes
 end
 moes = expmoes
 
@@ -168,47 +204,14 @@ function maakindices()
 	end
 end
 
--- willekeurige volgorde
-function boompairs(exp)
-	local t = {}
-	function r(exp)
-		if isatoom(exp) then
-			t[exp] = true
-		else
-			t[exp] = true
-			r(exp.fn)
-			for i,v in ipairs(exp) do
-				r(v)
-			end
-		end
-	end
-	r(exp)
-	
-	local k = nil
-	return function()
-		if next(t,k) then
-			k = next(t,k)
-			return k
-		end
-	end
-end
-
 -- depth first search
-function boompairsdfs(exp)
-	local t = {}
-	function r(exp)
-		if isatoom(exp) then
-			t[#t+1] = exp
-		else
-			r(exp.fn)
-			for i,v in ipairs(exp) do
-				r(v)
-			end
-			t[#t+1] = exp
-		end
+function boompairsdfs(exp, t)
+	local t = t or {}
+	for k,sub in subs(exp) do
+		boompairsdfs(sub, t)
 	end
-	r(exp)
-	
+	t[#t+1] = exp
+
 	local i = 1
 	return function()
 		i = i + 1
@@ -217,21 +220,13 @@ function boompairsdfs(exp)
 end
 
 -- breadth first search
-function boompairsbfs(exp)
-	local t = {}
-	function r(exp)
-		if isatoom(exp) then
-			t[#t+1] = exp
-		else
-			t[#t+1] = exp
-			r(exp.fn)
-			for i,v in ipairs(exp) do
-				r(v)
-			end
-		end
+function boompairsbfs(exp, t)
+	local t = t or {}
+	for k,sub in subs(exp) do
+		boompairsdfs(sub, t)
 	end
-	r(exp)
-	
+	t[#t+1] = exp
+
 	local i = 1
 	return function()
 		i = i + 1
@@ -239,105 +234,63 @@ function boompairsbfs(exp)
 	end
 end
 
-function exp2string(self,tabs)
-	if type(self) ~= 'table' then return error('is geen expressie') end
-	if not self.v and not self.fn then error('is geen expressie') end
-
-	do return unlisp(self) end
-	if type(self) == 'string' then return self end
-	local tabs = (tabs or '') .. '  '
-	local params = {}
-	local len = 2 -- '(' & ')'
-	for k,param in pairs(self) do
-		if type(param) == 'function' then
-			param = 'FUNC'
-		end
-		params[k] = tostring(param,tabs..'  ')
-		len = len + #params[k] + 1 -- ' '
-	end
-	-- =(a,b)
-
-	local fn
-	if isfn(self) then
-		fn = '('..expmt.__tostring(params.fn,tabs..'  ')..')'
-	else
-		fn = tostring(params.fn)
-	end
-	if len > 30 then
-		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
-	else
-		return fn..'('..table.concat(params,sep)..')'
-	end
-end
-e2s = exp2string
-
-
-expmt.__tostring = exp2string
-
-function expmt:__eq(ander)
-	do
-		return self:moes() == ander:moes()
-	end
-
-	local zelf = self
-	if isatoom(zelf) ~= isatoom(ander) then return false end
-	if isatoom(zelf) then return zelf == ander end
-	if zelf.fn ~= ander.fn then return false end
-	if #zelf ~= #ander then return false end
-	for i=1,#zelf do
-		if zelf[i] ~= ander[i] then
-			return false
-		end
-	end
-	return true
-end
+boompairs = boompairsbfs
 
 function bevat(exp, naam)
 	if not exp then error('geen exp') end
-	if not exp.v and not exp.fn then error('geen exp') end
+	if not exp.v and not exp.f and not exp.o then error('geen exp') end
 	if not naam.v then error('naam is geen exp') end
 
 	if exp.v then
 		return exp.v == naam.v
 	else
-		if bevat(exp.fn, naam) then return true end
-		for i,v in ipairs(exp) do
-			if bevat(v, naam) then return true end
+		for k,sub in subs(exp) do
+			if bevat(sub, naam) then return true end
 		end
 		return false
 	end
 end
 
-function T(tabs)
-	do return unlisp(self) end
-	if type(self) == 'string' then return self end
-	local tabs = (tabs or '') .. '  '
-	local params = {}
-	local len = 2 -- '(' & ')'
-	for k,param in pairs(self) do
-		if type(param) == 'function' then
-			param = 'FUNC'
+-- a
+-- f(a)
+-- f(,(1 2))
+function exp2string(exp)
+	if not exp then return '?' end
+	if isatoom(exp) then
+		return exp.v
+	elseif isfn(exp) then
+		return string.format('%s(%s)', exp2string(exp.f), exp2string(exp.a))
+	elseif isobj(exp) then
+		local t = {}
+		t[#t+1] = exp2string(exp.o)
+		t[#t+1] = '('
+		for i,v in ipairs(exp) do
+			t[#t+1] = exp2string(v)
+			t[#t+1] = ' '
 		end
-		params[k] = tostring(param,tabs..'  ')
-		len = len + #params[k] + 1 -- ' '
+		t[#t] = ')'
+		return table.concat(t)
 	end
-	-- =(a,b)
-
-	local fn
-	if isfn(self.fn) then
-		fn = '('..expmt.__tostring(params.fn,tabs..'  ')..')'
-	else
-		fn = tostring(params.fn)
-	end
-	if len > 30 then
-		return fn .. '\n' .. tabs .. table.concat(params, '\n'..tabs)
-	else
-		return fn..'('..table.concat(params,sep)..')'
-	end
+	return '?'
 end
+e2s = exp2string
 
 if test then
 	-- bevat
 	local a = X('+', 'a', '2')
 	assert(bevat(a, X'a'), exp2string(a))
+
+	-- subs
+	local a = X(',', '1', '2')
+
+	local e = subs(a)
+	local _,a = e()
+	local _,b = e()
+	local _,c = e()
+	assert(a)
+	assert(b)
+	assert(c)
+	assert(a.v == ',', e2s(a))
+	assert(b.v == '1', e2s(b))
+	assert(c.v == '2', e2s(c))
 end

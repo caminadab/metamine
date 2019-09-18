@@ -22,7 +22,7 @@ local bestanden = io.popen('ls *.lua ; ls bouw/*.lua')
 local gehad = {test=true}
 for bestand in bestanden:lines() do
 	local kort = bestand:sub(1,-5)
-	print(kort)
+	--print(kort)
 	if kort ~= 'test' then
 		require(kort)
 	end

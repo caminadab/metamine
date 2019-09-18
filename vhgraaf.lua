@@ -93,7 +93,7 @@ local function sorteer(hgraaf, van, naar)
 
 		if van(punt) then
 			for pijl in hgraaf:van(punt) do
-				LOG('  Nieuw! ' .. pijl2tekst(pijl))
+				--LOG('  Nieuw! ' .. pijl2tekst(pijl))
 				nieuw[pijl] = true
 			end
 		end

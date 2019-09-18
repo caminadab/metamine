@@ -2,125 +2,119 @@ require 'lisp'
 require 'func'
 require 'set'
 
-local insert = table.insert
+local postop = set("%","!",".","'")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈")
+local unop   = set("-","#","¬","Σ","|")
 
-local binop = set('+', '-', '*', '/', '^', 'en', 'of', '@', '=>')
-local lop = set('=', '!=', '=>', '>', '<', '>=', '<=')
-
-local function combineerR(sexp, tt)
-	if isatoom(sexp) then
-		insert(tt, sexp.v)
-	else
-		if not sexp.fn then
-			see(sexp)
-			print(type(sexp))
-			for k,v in pairs(sexp) do print(k,v) end
-			error'GEEN FN'
+local function combineerR(exp, t, kind)
+	if not exp then
+		t[#t+1] = '?'
+	elseif isatoom(exp) and postop[exp.v] or binop[exp.v] or unop[exp.v] then
+		t[#t+1] = '('
+		t[#t+1] = exp.v
+		t[#t+1] = ')'
+	elseif isatoom(exp) then
+		t[#t+1] = exp.v
+	elseif obj(exp) == '[]u' then
+		local const = true
+		for i,sub in ipairs(exp) do
+			if not tonumber(atoom(sub)) then
+				const = false
+			end
 		end
-		local op = sexp.fn.v
-
-		-- lijst/set
-		if op == '[]' or op == '{}' or op == ',' then
-			if op == ',' then op = '()' end
-			insert(tt, op:sub(1,1))
-			for i=1,#sexp do
-				combineerR(sexp[i], tt)
-				if i ~= #sexp then
-					insert(tt, ', ')
-				end
+		if const then
+			local r = {}
+			for i,sub in ipairs(exp) do
+				r[#r+1] = tonumber(sub.v)
 			end
-			insert(tt, op:sub(2,2))
+			local tekst = string.char(table.unpack(r))
+			t[#t+1] = string.format('%q', tekst)
 
-		-- tekst
-		elseif op == '[]u' then
-			local tekst = string.char(table.unpack(map(sexp, function(x) return x.v end)))
-			insert(tt, string.format('%q', tekst))
-
-		-- navoegsel
-		elseif op == '%' or op == "'" then
-			combineerR(sexp[1], tt)
-			insert(tt, op)
-
-		-- unop
-		elseif #sexp == 1 then
-			if op then
-				insert(tt, op)
-			else
-				-- complexe functie
-				insert(tt, '(')
-				combineerR(sexp.fn, tt)
-				insert(tt, ')')
-			end
-
-			if isatoom(sexp[1]) then
-				insert(tt, ' ')
-				insert(tt, sexp[1].v)
-			else
-				insert(tt, ' (')
-				combineerR(sexp[1], tt)
-				insert(tt, ')')
-			end
-
-		-- binop
-		elseif #sexp == 2 then
-			for i=1,#sexp do
-				local v = sexp[i]
-if not v.fn and not v.v then see(v); error('geen exp: '..e2s(v)) end
-				local br = isfn(v) and binop[v[1]] and binop[op] and binop[v[1]] <= binop[op]
-				local br = br or (isfn(sexp.fn) and (lop[fn(sexp.fn)]))-- or (#v == 2 and not binop[fn(sexp[i])]))
-
-
-				if br then insert(tt, '(') end
-
-				combineerR(sexp[i], tt)
-
-				if br then insert(tt, ')') end
-
-				if i ~= #sexp then
-					insert(tt, ' ')
-					if op then
-						insert(tt, op)
-					else
-						-- complexe functie
-						insert(tt, '(')
-						combineerR(sexp.fn, tt)
-						insert(tt, ')')
-					end
-					insert(tt, ' ')
-				end
-
-			end
-
-		-- n-air
 		else
-			if binop[op] then insert(tt, '(') end
-			insert(tt, op)
-			if binop[op] then insert(tt, ')') end
-			insert(tt, '(')
 
-			for i=1,#sexp do
-				combineerR(sexp[i], tt)
-				if i~=#sexp then insert(tt, ', ') end
+			t[#t+1] = "utf8 ["
+			for i,v in ipairs(exp) do
+				if i ~= 1 then
+					t[#t+1] = ', '
+				end
+				combineerR(v, t, true)
 			end
-			insert(tt, ')')
+			t[#t+1] = "]"
 		end
-	end
 
-	-- plet
-	for i,v in ipairs(tt) do
-		if isexp(v) then
-			tt[i] = unlisp(tt[i])
+	elseif isobj(exp) then
+		local di = obj(exp)
+		if di == ',' then
+			di = '()'
 		end
+		t[#t+1] = di:sub(1,1)
+		for i,v in ipairs(exp) do
+			if i ~= 1 then
+				t[#t+1] = ', '
+			end
+			if i > 20 then
+				t[#t+1] = '...'
+				break
+			end
+			combineerR(v, t, true)
+		end
+		t[#t+1] = di:sub(2,2)
+
+	elseif fn(exp) == '⋀' then
+		for i,v in ipairs(exp.a) do
+			combineerR(v, t, false)
+			t[#t+1] = '\n'
+		end
+	elseif isfn(exp) then
+		if not exp.a then return '?' end
+		local op = fn(exp)
+		if op == '_' and isobj(exp.a) then
+			combineerR(exp.a[1], t, true)
+			t[#t+1] = ' '
+			if not isobj(exp.a[2]) then
+				t[#t+1] = '('
+			end
+			combineerR(exp.a[2], t, false)
+			if not isobj(exp.a[2]) then
+				t[#t+1] = ')'
+			end
+
+		-- a + b 
+		elseif binop[op] and isobj(exp.a) then
+			if kind then t[#t+1] = '(' end
+			combineerR(exp.a[1], t, true)
+			t[#t+1] = ' '
+			t[#t+1] = op
+			t[#t+1] = ' '
+			combineerR(exp.a[2], t, true)
+			if kind then t[#t+1] = ')' end
+
+		elseif unop[op] then
+			t[#t+1] = op
+			combineerR(exp.a, t, true)
+		elseif postop[op] then
+			combineerR(exp.a, t, true)
+			t[#t+1] = op
+		else
+			t[#t+1] = '('
+			t[#t+1] = op
+			t[#t+1] = ')'
+			if exp.a and not isobj(exp.a) then
+				t[#t+1] = '('
+			end
+			combineerR(exp.a, t, false)
+			if not isobj(exp.a) then
+				t[#t+1] = ')'
+			end
+		end
+	else
+		--error('ongeldige exp '..e2s(exp))
+		t[#t+1] = '?'
 	end
-	return tt
 end
 
-function combineer(sexp)
-	if not sexp then
-		return '<niets>'
-		--error('ongeldige s-exp')
-	end
-
-	local tt = combineerR(sexp, {})
-	return table.concat(tt)
+function combineer(exp)
+	local t = {}
+	combineerR(exp, t, false)
+	return table.concat(t)
 end

@@ -1,0 +1,5 @@
+x := 10
+y := 5
+als toetsRechts dan x := x' + 0.1 eind
+als toetsLinks dan x := x' - 0.1 eind
+uit = canvas [ cirkel(x,y,1) ]

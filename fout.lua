@@ -20,6 +20,7 @@ function oplosfout(...) return fout("oplos", ...) end
 function typeerfout(...) return fout("typeer", ...) end
 
 function jsloc(loc)
+	loc = loc or nergens
 	local jloc = {
 		anchor = {
 			ch = loc.x1 - 1,

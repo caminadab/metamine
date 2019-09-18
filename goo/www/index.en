@@ -1,0 +1,56 @@
+welkom		Welcome
+kop1			A new coding language.
+kop2			Intuitive and declarative.
+taalvlag	nl.svg
+taallink	/
+overkop		What
+over1			Taal is a new way of coding. Write declarative code quickly in the form of simple rules and don't worry about difficult frameworks, libraries or other 'modern' technology.
+over2			Control flow is calculated by the compiler. This makes it much easier to write modular code.
+over3			As every value is 'live' there is no need for callbacks, hooks or threads: a list of connected clients displayed in a gui window will be automatically kept up to date. 
+qena			Q&A
+q1hoe			How does it work?
+a1web			A webservice translates your code to javascript. Your device then runs the javascript.
+vraag			Ask!
+vraagverz	Question sent
+stelvraag	Ask your question...
+demo1			; every program needs to define 'out'\nout = "hoi"
+demo2			; you can define variables\na = 3\nb = 2\nout = a + b
+demo3			; movable circle (use the arrow keys)\nx := 10\ny := 5\nif keyRight then x := x' + 0.1 end\nif keyLeft then x := x' - 0.1 end\nout = canvas [ circle(x,y,1) ]
+demo4			; paint app\n; draw with your mouse\ncircles := []\nout = canvas circles\n\n; add dot at mouse position\nif mouseClick then\n	circles := circles' ‖ [ circle(mouseX, mousY, 0.1) ]\nend\n\n; remove them with space\nif keySpace then\n	circles := circles' from 1\nend\n
+demo5			; simple stopwatch\nout = runtime\n
+demo6			; create a timer\ntimer = 3 - int(runtime)\nif timer > 0 then\n\tout = text(timer)\nelse\n\tout = "Boom!"\nend'
+demo7			; circle (canvas is 18×10)\nr = runtime\nc = circle(mouseX,mouseY,r)\nuit = canvas [c]\n\n; circletoy (use mouse/touch)\nout = canvas circles\ncircles = (0..15) map f\nf = i → circle(mouseX ^ (i/8), 5, i/4)
+demo8			; PONG 2019\n\n; players\ny1 := 3.5\ny2 := 3.5\nw = 1 ; player width\nh = 3 ; player height\nxmin = 0\nxmax = 17.777 - w\nymax = 10 - h\n\n; ball\nballx := 17.777 / 2\nbally := 5\nballvx := -0.01\n\nif 2 > 1 then\n	ballx := ballx' + ballvx'\nend\nif keySpace then\n	ballx := 10\nend\n\n; keyboard right\nif keyUp and y1' < ymax then y1 := y1' + 0.2 end\nif tkeyDown en y1' > 0    then y1 := y1' - 0.2 end\n\n; keyboard left\nif keyW and y2' < ymax then y2 := y2' + 0.2 end\nif keyS and y2' > 0    then y2 := y2' - 0.2 end\n\n; sprites\nleft = rrectangle(xmax, y1, 1, 3)\nright = rectangle(xmin, y2, 1, 3)\nball = circle(ballx, bally, 1)\nscore = label(5, 5, "hoi")\n\n; canvas\nout = canvas [ left, right, ball, score ]
+demo9			; sum the numbers 1 to 1000\nuit = Σ 1 .. 1001'
+demo10		; cool circles\nr = runtime + n/2 + n/5 + n/9 + n/100\n\nf = n + sin(runtime) → circle(n/1,g(n),abs(sin(3·r))·abs(2·sin(runtime/100)))\ng = y → sin(0.4 · runtime + y) + 4\n\ncircles = (0..40) map f\nout = canvas circles
+demo11		; function composition\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)
+demo12		; zeg een aantal keer "hoi"\naantal = int(runtime)\nf = x → x ‖ " hoi"\nuit = (f^aantal)("groet:")
+demo13		; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f
+demo14		; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)
+demo15		; lekker functioneel\nfuncties = [(·), (-), sin]\ng = functies vouw (∘)\nuit = g(2, 3)
+demo16		; hierzo wordt +1 eerst toegepast,\n; daarna ·2, dan nog een keer ·2.\n; Dus van links naar rechts.\n; dit is hetzelfde als\n; uit = plus(mul(mul(2))).\nmul = x → x · 2\nplus = y → y + 1\nf = plus ∘ mul ∘ mul\nuit = f(2)
+demo17		; De standaardfuncties kun je gebruiken\n; door er haakjes omheen te zetten.\n; f = (+) is de plusfunctie\n; van het type (getal,getal) → getal.\n; (getal,getal) is een tupel met\n; twee getallen erin.\na = (1,2)\nuit = (+) a
+demo18		; Je kan ze ook aan elkaar linken\nf = (+) ∘ (-)\nuit = f(1,2)
+demo19		; 1.3 --- Functioneel\n; Sla dit hoofdstuk over als je geen\n; programmeerkennis hebt.\n; De functie "vouw" maakt een enkel\n; element van een lijst door ze \n; met een functie met elkaar samen te\n; voegen, van links naar rechts.\ngetallen = 1 .. 10\nuit = getallen vouw (+)
+demo20		; je kan vouw gebruiken met (∘) om een lijst van\n; functies te linken:\nf = [(+), sincos, (·)]\ng = f vouw (∘)\nuit = g(2,3)
+demo21		; De functie "map" voert een functie\n; op alle elementen van een collectie uit.\nlijst = [1,2,3]\nfn = x → x² ; typ met ^2\nuit = lijst map fn
+demo22		; 1.3 --- Sets\n; Net als lijsten zijn sets objecten.\n; in een set kan elk object maar 1x voorkomen.\n; Schrijf als {1,2,3}\nuit = {1,2,3}
+demo23		; Sets kun je samenvoegen met UNIE.\n; a UU b bevat alle elementen uit a en uit b.\na = {1,2}\nb = {2,3}\nuit = a UU b
+demo24		; Om de doorsnede (gemeenschappelijke objecten)\n; te krijgen gebruik je "ℕ"\na = {1,2}\nb = {2,3}\nuit = a ℕ b
+demo25		\n; 1.3 --- Tekst\n; Tekst is in taal een object als elk ander,\n; geschreven als "tekst".\nuit = "hoi"
+demo26		; Tekst is een lijst van letters.\n; Losse letters schrijf je met 'x'.\nuit = 'x'
+demo27		; Je kunt dus ook tekst te maken als volgt\nh = 'h'\no = 'o'\ni = 'i'\nuit = [h, o, i, i, i]
+demo28		; met tekst(i) kun je bij de i'de letter\na = "hoi"\nuit = a(1)
+demo29		; Met ‖ kon je lijsten samenvoegen:\n; dit werkt evengoed op tekst.\na = "euro"\nb = "pa"\nuit = a ‖ b
+demo30		; met de functie "tekst" kun je andere objecten\n; naar tekst omzetten. "tekst(3)" is dus\n; "3" als tekst.\na = 2\nuit = "a=" ‖ tekst(a)
+demo31		\n; 1.3 --- Liveheid\n; Sommige objecten veranderen tijdens de duur\n; van het programma.\n; "looptijd" is bijvoorbeeld het aantal seconden\n; sinds het programma is gestart.\nuit = looptijd
+demo32		; je kunt deze waarden gewoon als elke andere waarde\na = 3 + looptijd · 2\nuit = tekst(a)
+demo33		; "int" rond een getal af naar beneden\nn = int(looptijd)\ni: 0..n\nuit(i) = i²
+demo34		; andere live waarden zijn beschikbaar met\n; "toetsLinks", "toetsRechts",\n; "toetsOmhoog", "toetsOmlaag",\n; "toetsW" etcetera.\n; Deze representeren je toetsenbord\n; toetsen: aan of uit.\nuit = [toetsLinks, toetsRechts]
+demo35		; je kan ook met "toetsLinksBegin" alleen\n; het moment opvragen dat de toets ingedrukt\n; wordt\nuit = toetsLinksBegin
+demo36		; 1.7 -- Variabelen\n; Tot nu toe hebben we functies en live waarden\n; gezien, maar nog geen makkelijke manier om\n; complexe variabelen te maken (zoals mario's\n; positie in Super Mario).\n;\n; Met "a := 0" maak je a variabel: aan het begin\n; wordt a eenmalig op nul gezet.\na := looptijd\nuit = a
+demo37		; In if-statements kan je variabelen ook veranderen.\na := 0\nals toetsSpatieBegin dan\n	a := 1\neind\nuit = a
+demo38		; Je kan naar een vorige kopie van een variabele\n; refereren met een enkele quote (a').\na := 0\nals toetsSpatieBegin dan\n	a := a' + 1\neind\nuit = a
+demo39		; 1.9 --- Canvas\n; De functie "canvas" toont een canvas (interactief\n; gebied) met vormen erin getekend.\n; Hij neemt als argument een lijst van figuren.\n; De functie cirkel(positie, straal) is zo'n figuur.\n;\n; De standaardgrootte van het canvas is 17 7/9 × 10\npos = (9,5)\nstraal = 1\ncirk = cirkel(pos, straal)\nfiguren = [cirk]  ; lijst met 2 element\nuit = canvas(figuren)
+demo40		; Geleerde technieken combinerende kunnen we nu makkelijk\n; tien cirkels tekenen\ni: 0..10\nfiguren(i) = cirkel((i,i), 0.5)\nuit = canvas(figuren)
+demo41		; of tien cirkels naar de muis laten richten\ni: 0..10\nfiguren(i) = cirkel((muisX/i,muisY/i), 0.5/i)\nuit = canvas(figuren)\n

@@ -98,14 +98,13 @@ Opties:
 	return
 end
 
-
 --bronnen[#bronnen+1] = 'bieb/wisk.code'
 --bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
 local doel
 if opt.j then doel = 'demo'
-elseif opt.i then doel = 'lua'
+elseif opt.i then doel = 'im'
 elseif opt.x then doel = 'demo'
 else doel = 'unistd' end
 
@@ -153,7 +152,7 @@ if opt.s or opt.syntaxis then
 end
 
 local codes = {}
-local asb = {fn=X'EN'}
+local asb = {f=X'⋀',a={o=X'[]'}}
 
 if verbozeBroncode then
 	print('=== BRONCODE ===')
@@ -168,18 +167,26 @@ for i,bron in ipairs(bronnen) do
 	--codes[bron] = code
 
 	local sub,fouten = ontleed(code, bron)
+	sub = sub or X'nee'
 	for i,fout in ipairs(fouten) do
 		print(fout2ansi(fout))
 	end
-	for i,eq in ipairs(sub) do
+	for i,eq in ipairs(sub.a) do
 		eq.bron = bronnen[1]
 		eq.code = code
-		asb[#asb+1] = eq
+		asb.a[#asb.a+1] = eq
 	end
 end
-if verbozeBroncode then
+
+if verbozeSyntax then
+	print()
+	print('=== SYNTAX ===')
+	print(combineer(asb))
 	print()
 end
+
+-- lekker checken
+check(asb)
 
 -- annoteer ^_^
 local i = 1
@@ -192,14 +199,8 @@ end
 -- vertolk
 if opt.lang == 'en' then
 	asb = vertolk(asb)
-	print(e2s(asb))
 end
 
-if verbozeSyntax then
-	print('=== SYNTAXBOOM ===')
-	print(exp2string(asb))
-	print()
-end
 for exp in boompairs(asb) do
 	if exp == 'fout' then
 		print('syntaxfout')
@@ -271,7 +272,6 @@ end
 
 if verbozeIntermediair then
 	print('=== INTERMEDIAIRE CODE ===')
-	
 	print(cfg.start)
 	for blok in spairs(cfg.punten) do
 		if blok ~= cfg.start then

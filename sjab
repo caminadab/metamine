@@ -1,0 +1,23 @@
+#!/usr/bin/lua
+require 'util'
+local fmt,lst,uit = ...
+local gebruik = "gebruik: sjab [SJABLOON] [LIJST] [UITVOER]\n\tDe lijst moet zijn in formaat:\n\ttitel [TAB] Terminator\n\tgenre [TAB] tragikomedie"
+assert(fmt, gebruik)
+assert(lst, gebruik)
+assert(uit, gebruik)
+
+fmt = assert(file(fmt), 'niet gevonden: '..fmt)
+lst = assert(file(lst), 'niet gevonden: '..lst)
+
+require 'sjabloon'
+
+local dict = {}
+
+for naam, tekst in lst:gmatch('(%w+)\t+(.-)\n') do
+	local str = tekst:gsub('\\n', '\n')
+	dict[naam] = str
+end
+
+local res = sjabloon(fmt, dict)
+assert(res, 'fout!')
+file(uit, res)

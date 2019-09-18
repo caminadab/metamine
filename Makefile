@@ -1,20 +1,20 @@
-linux:
+linux: ontleed goo/www/index.html goo/www/en
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
-	ln -sf ../bin/ontleed.so goo/ontleed.so
-	ln -sf bin/ontleed.so ontleed.so
-	ln -sf ../vt bin/vt
-	ln -sf ../doe bin/doe
+	ln -sf ../bin/ontleed.so goo/
+	ln -sf bin/ontleed.so .
+	ln -sf ../vt bin/
+	ln -sf ../doe bin/
 	
 windows:
 	mkdir -p bin
 	cd ontleed; make windows
 	cp -r ontleed/bin/* bin/
-	ln -sf ../vt bin/vt
-	ln -sf ../doe bin/doe
+	ln -sf ../vt bin/
+	ln -sf ../doe bin/
 
-deploy:
+deploy: goo/www/index.html goo/www/en
 	scp -r goo/www/* metamine.nl:/var/www/html/
 
 #scp -r goo/* pi:/var/www/blog/taal-0.1.1
@@ -23,6 +23,18 @@ all:
 	mkdir -p bin	
 	cd ontleed; make
 	cp -r ontleed/bin/* bin/
+
+goo/www/index.en.html: goo/www/index.fmt goo/www/index.en
+	./sjab goo/www/index.fmt goo/www/index.en goo/www/index.en.html
+
+goo/www/index.nl.html: goo/www/index.fmt goo/www/index.nl 
+	./sjab goo/www/index.fmt goo/www/index.nl goo/www/index.nl.html
+
+goo/www/index.html: goo/www/index.nl.html
+	ln -sf index.nl.html goo/www/index.html
+
+goo/www/en: goo/www/index.en.html
+	ln -sf index.en.html goo/www/en
 
 malloc.o: bieb/malloc.c
 	cc -c -fPIC -DLACKS_STDLIB_H -DNO_MALLOC_STATS bieb/malloc.c -o bieb/malloc.o
@@ -49,14 +61,13 @@ web:
 	lua2js uitrol.lua > bin/uitrol.js
 
 clean:
-	rm -r bin/
-
+	rm -rf bin/
+	rm -rf goo/www/index.html goo/www/en goo/www/nl goo/www/index.*.html
 
 objects := $(patsubst %.lua,%.o,$(wildcard *.lua))
 
 main.o: main.s
 	as main.s -o main.o
-
 
 
 %.o: %.lua

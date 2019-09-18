@@ -1,0 +1,9 @@
+cirkel: (pos, radius)
+pos: getal, getal
+
+vierkant: (lo, hi)
+vierkant: (x, y, w, h)
+
+pos: (2,3) ∧ (4,5)
+
+vierkant(x,y,w,h)

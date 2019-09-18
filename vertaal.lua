@@ -9,19 +9,21 @@ require 'oplos'
 function vertaal(code, doel)
 	--opt = {T=true,L=true}
 	--verbozeTypes = true
-	local doel = doel or "ifunc"
+	local doel = doel or "im"
 	local maakvar = maakvars()
 
+	local code = code ..'\n' .. file('bieb/'..doel..'.code')
+
 	local asb,syntaxfouten = ontleed(code)
-	local asb2 = ontleed(file('bieb/'..doel..'.code'))
-	local asb = cat(asb, asb2)
-	asb.fn = X'EN'
+
+	--local asb = cat(asb, asb2)
 
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)
 	if #typeerfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
+	--local typeerfouten = {}
 
 	local mach = arch[doel](asb, types)
 	local uit,oplosfouten = oplos(mach, "app")
@@ -31,7 +33,6 @@ function vertaal(code, doel)
 	if #typeerfouten > 0 then
 		--return nil, cat(syntaxfouten, typeerfouten)
 	end
-
 
 	local fouten = cat(syntaxfouten, typeerfouten, oplosfouten)
 
@@ -96,9 +97,9 @@ uit = f(g(2, 3), f(g(1, 8), 2))
 
 	-- ez
 	test('uit = "hoi"', 'hoi')
-	test('uit = "hoi" || "ja"', 'hoija')
+	test('uit = "hoi" ‖ "ja"', 'hoija')
 	test([[
-uit = "fib(20) = " || tekst(x) || [10]
+uit = "fib(20) = " ‖ tekst(x) ‖ [10]
 x = fib 20
 fib = n → (fⁿ[0,1]) 0
 f = [a,b] → [b,a+b]
@@ -111,7 +112,7 @@ uit = f(1)
 ]], 6)
 
 	local itoatoitoa = [[
-uit = "looptijd: " || itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
+uit = "looptijd: " ‖ itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
 
 ; tekst -> integer
 atoi = b → i
@@ -135,7 +136,7 @@ atoi = b → i
 itoa = x → a
   n = 1 + entier(log10(max(abs x, 1)))
   neg = als x < 0 dan "-" anders ""
-  a = neg || ((n .. 0) map cijfer)
+  a = neg ‖ ((n .. 0) map cijfer)
   geschaald = (abs x)/10^m
   cijfer = m → '0' + (entier geschaald) mod 10
 ]]

@@ -19,7 +19,6 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 %option never-interactive
 
 %{
-	#include "node.h"
 
 	#define YY_USER_ACTION2 {yylloc->first_line = yylineno; \
         yylloc->first_column = yycolumn;                 \
@@ -40,140 +39,133 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
         } \
     }
 
-	typedef struct YYLTYPE YYLTYPE;
+	#include "loc.h"
 	#include ".taal.yy.h"
+	#include <lua.h>
+	#include "lua.h"
+
+	#define LREG LUA_REGISTRYINDEX
+	#define A xlua_refatoom
+	#define APPEND xlua_append
+	#define FN1 xlua_reffn1
+	#define FN2 xlua_reffn2
+	#define FN3 xlua_reffn3
+	#define FN4 xlua_reffn4
+	#define FN5 xlua_reffn5
+
+	extern lua_State* GL;
+	extern YYLTYPE nergens;
 %}
 
 
 %%
-"∈"					{ *yylval = a("zitin"); return NAAM; }
-"∋"					{ *yylval = a("bevat"); return NAAM; }
-"∉"					{ *yylval = a("!:"); return NIN; }
-"⁻¹"				{ *yylval = a("^-1"); return INV; }
 
-"⁰"					{ *yylval = a("^0"); return M0; }
-"¹"					{ *yylval = a("^1"); return M1; }
-"²"					{ return M2; }
-"³"					{ *yylval = a("^3"); return M3; }
-"⁴"					{ *yylval = a("^4"); return M4; }
-"ⁿ"					{ *yylval = a("^n"); return MN; }
-"₀"					{ *yylval = a("_0"); return I0; }
-"₁"					{ *yylval = a("_1"); return I1; }
-"₂"					{ *yylval = a("_2"); return I2; }
-"₃"					{ *yylval = a("_3"); return I3; }
-"₄"					{ *yylval = a("_4"); return I4; }
+;-[^$]*-;				// negeer commentaar
+;[^-][^\n]*\n		{ return NEWLINE; }
 
-"×"					{ *yylval = a("xx"); return CART; }
-"→"					{ *yylval = a("->"); return TO; }
-"↦"					{ *yylval = a("-->"); return MAPLET; }
-"⇒"					{ *yylval = a("=>"); return IMPLICEERT; }
-"≈"					{ *yylval = a("~="); return ISB; }
-"≥"					{ *yylval = a(">="); return GDGA; }
-"≤"					{ *yylval = a("<="); return KDGA; }
-"≠"					{ *yylval = a("!="); return ISN; }
-"∘"					{ *yylval = a("@"); return '@'; }
-"∆"					{ *yylval = a("delta"); return NAAM; }
-"τ"					{ *yylval = a("tau"); return NAAM; }
-"∞"					{ *yylval = a("oneindig"); return NAAM; }
-"∑"					{ return SOM; }
-"Σ"					{ return SOM; }
-"⋂"					{ *yylval = a("INTERSECTIE"); return INTERSECTIEE; }
-"⋃"					{ *yylval = a("UNIE"); return UNIEE; }
-"∩"					{ *yylval = a("intersectie"); return INTERSECTIE; }
-"∪"					{ *yylval = a("unie"); return UNIE; }
-"∅"					{ *yylval = a("leeg"); return NAAM; }
-"∧"					{ *yylval = a("en"); return EN; }
-"en"				{ *yylval = a("en"); return EN; }
-"∨"					{ *yylval = a("of"); return OF; }
-"of"				{ *yylval = a("of"); return OF; }
-"⋀"					{ *yylval = a("EN"); return ENN; }
-"⋁"					{ *yylval = a("OF"); return OFN; }
-"√"					{ *yylval = a("wortel"); return NAAM; }
-"∛"					{ *yylval = a("derdemachtswortel"); return NAAM; }
-"∜"					{ *yylval = a("vierdemachtswortel"); return NAAM; }
-"∐"					{ *yylval = a("co"); return NAAM; }
-"∏"					{ *yylval = a("prod"); return NAAM; }
-"¬"					{ *yylval = a("niet"); return NIET; }
-"★"					{ *yylval = a("_"); return NAAM; }
-"☆"					{ *yylval = a("__"); return NAAM; }
-"ℝ"					{ *yylval = a("getal"); return NAAM; }
-"ℕ"					{ *yylval = a("nat"); return NAAM; }
-"ℤ"					{ *yylval = a("int"); return NAAM; }
-"·"					{ *yylval = a("*"); return '*'; }
+"★"		{ *yylval = A(GL, "★", nergens); return JOKER; }
+"¬"		{ *yylval = A(GL, "¬", nergens); return NIET; }
+"#"		{ *yylval = A(GL, "#", nergens); return '#'; }
+"."		{ *yylval = A(GL, ".", nergens); return '.'; }
+"→"		{ *yylval = A(GL, "→", nergens); return TO; }
+".."	{ *yylval = A(GL, "..", nergens); return ITOT; }
+"ℝ"		{ *yylval = A(GL, "ℝ", nergens); return RR; }
+"∩"		{ *yylval = A(GL, "∩", nergens); return INTERSECTIE; }
+"∪"		{ *yylval = A(GL, "∪", nergens); return UNIE; }
+"‖"		{ *yylval = A(GL, "‖", nergens); return CAT; }
+"×"		{ *yylval = A(GL, "×", nergens); return CART; }
+","		{ *yylval = A(GL, ",", nergens); return ','; }
+"^"		{ *yylval = A(GL, "^", nergens); return '^'; }
+"²"		{ *yylval = A(GL, "²", nergens); return KWADRAAT; }
+"³"		{ *yylval = A(GL, "²", nergens); return DERDEMACHT; }
+"⁻¹"	{ *yylval = A(GL, "⁻¹", nergens); return INVERTEER; }
+"₀"		{ return I0; }
+"₁"		{ return I1; }
+"₂"		{ return I2; }
+"₃"		{ return I3; }
+"₄"		{ return I4; }
+_			{ *yylval = A(GL, "_", nergens); return '_'; }
+"("		{ *yylval = A(GL, "(", nergens); return '('; }
+")"		{ *yylval = A(GL, ")", nergens); return ')'; }
+"["		{ *yylval = A(GL, "[", nergens); return '['; }
+"]"		{ *yylval = A(GL, "]", nergens); return ']'; }
+"{"		{ *yylval = A(GL, "{", nergens); return '{'; }
+"}"		{ *yylval = A(GL, "}", nergens); return '}'; }
+"⋀"		{ *yylval = A(GL, "⋀", nergens); return ENN; }
+"∧"		{ *yylval = A(GL, "∧", nergens); return EN; }
+"en"	{ *yylval = A(GL, "∧", nergens); return EN; }
+"and"	{ *yylval = A(GL, "∧", nergens); return EN; }
+"∨"		{ *yylval = A(GL, "∨", nergens); return OF; }
+"of"	{ *yylval = A(GL, "∨", nergens); return OF; }
+"or"	{ *yylval = A(GL, "∨", nergens); return OF; }
+"⋁"		{ *yylval = A(GL, "⋁", nergens); return OFF; }
+"%"		{ *yylval = A(GL, "%", nergens); return '%'; }
+"+"		{ *yylval = A(GL, "+", nergens); return '+'; }
+"-"		{ *yylval = A(GL, "-", nergens); return '-'; }
+"·"		{ *yylval = A(GL, "·", nergens); return KEER; }
+"/"		{ *yylval = A(GL, "/", nergens); return '/'; }
+"∘"		{ *yylval = A(GL, "∘", nergens); return COMP; }
+":"		{ *yylval = A(GL, ":", nergens); return ':'; }
+"∈"		{ *yylval = A(GL, ":", nergens); return ':'; }
+">"		{ *yylval = A(GL, ">", nergens); return '>'; }
+"≥"		{ *yylval = A(GL, "≥", nergens); return GDGA; }
+"="		{ *yylval = A(GL, "=", nergens); return '='; }
+"≈"		{ *yylval = A(GL, "≈", nergens); return ISB; }
+"≠"		{ *yylval = A(GL, "≠", nergens); return ISN; }
+"≤"		{ *yylval = A(GL, "≤", nergens); return KDGA; }
+"<"		{ *yylval = A(GL, "<", nergens); return '<'; }
+"!"		{ *yylval = A(GL, "!", nergens); return '!'; }
+"Σ"		{ *yylval = A(GL, "Σ", nergens); return SOM; }
+"⇒"		{ *yylval = A(GL, "⇒", nergens); return IMPLICEERT; }
+":="		{ *yylval = A(GL, ":=", nergens); return ASS; }
 
-[ ]					// negeer spaties
-"ASSSASAL:KJ" { return TAB; } // negeer tabs voor nu
-[\t]				 // negeer tabs voor nu
-":="				{ return ASS; }
-"||="				{ return CATASS; }
-"+="				{ return PLUSASS; }
-"-="				{ return MINASS; }
-"·="				{ return MAALASS; }
-"/="				{ return DEELASS; }
-"¬="				{ return ISN; }
-"="					{ return '='; }
-">"					{ return '>'; }
-"<"					{ return '<'; }
-"+"					{ return '+'; }
-"-"					{ return '-'; }
-"*"					{ return '*'; }
-"/"					{ return '/'; }
-"^"					{ return '^'; }
-"%"					{ return '%'; }
-"!"					{ return '!'; }
-"|"					{ return '|'; }
-"&"					{ return '&'; }
-"#"					{ return '#'; }
-"@"					{ return '@'; }
-","					{ return ','; }
-":"					{ return ':'; }
-"'"					{ return '\''; }
+"'"		{ *yylval = A(GL, "'", nergens); return '\''; }
 
-"("					{ return '('; }
-")"					{ return ')'; }
-"{"					{ return '{'; }
-"}"					{ return '}'; }
-"["					{ return '['; }
-"]"					{ return ']'; }
 
-"→"					{ return TO; }
-"->"					{ return TO; }
-"‖"						{ return CAT; }
-"||"					{ return CAT; }
-".."					{ return TIL; }
-"."						{ return '.'; }
-"xx"					{ return CART; }
-"::"					{ return ICAT; }
-">="					{ return GDGA; }
-"=<"					{ return KDGA; }
-"<="					{ return KDGA; }
-"=>"					{ return IMPLICEERT; }
-"!="					{ return ISN; }
+\n		{ return NEWLINE; }
+\t		// negeer tabs
+" "		// negeer spaties
+
+"ja"		{ *yylval = A(GL, "⊤", nergens); return NAAM; }
+"nee"		{ *yylval = A(GL, "⊥", nergens); return NAAM; }
+"⊤"			{ *yylval = A(GL, "⊤", nergens); return NAAM; }
+"⊥"			{ *yylval = A(GL, "⊥", nergens); return NAAM; }
+"τ"			{ *yylval = A(GL, "τ", nergens); return NAAM; }
 
 "als"					{ return ALS; }
-"if"					{ return ALS; }
 "dan"					{ return DAN; }
-"then"					{ return DAN; }
+"andersals"			{ return ANDERSALS; }
 "anders"			{ return ANDERS; }
-"else"			{ return ANDERS; }
 "eind"			{ return EIND; }
-"end"			{ return END; }
 
-'\''					{ return OUD; }
+"if"					{ return ALS; }
+"then"					{ return DAN; }
+"elseif"			{ return ANDERSALS; }
+"else"			{ return ANDERS; }
+"end"			{ return EIND; }
 
-'.'					{ *yylval = karakter(yytext[1]); return TEKST; }
-\"([^"])*\"					{ *yylval = tekst(a(yytext)); return TEKST; }
-\n					{ return NEWLINE; }
-;-[^$]*-;			// negeer commentaar
-;[^-][^\n]*\n		{ return NEWLINE; }
-((\d+)|(\.\d+))(e\d*)? { *yylval = a(yytext); return NAAM; }
--?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; } /* getal */
--?[0-9]*e[0-9]*			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*\.[0-9]+			{ *yylval = a(yytext); return NAAM; }
--?[0-9]*			{ *yylval = a(yytext); return NAAM; }
-[a-zA-Z_][a-zA-Z0-9_]*	{ *yylval = a(yytext); return NAAM; }
-0x[0-9A-Fa-f]+			{ *yylval = a(yytext); return NAAM; }
+'.'		{ /* enkel karakter */
+	char buf[10];
+	sprintf(buf, "%u", yytext[1]);
+	*yylval = A(GL, buf, nergens);
+	return NAAM;
+}
 
-.						{ *yylval = a(yytext); return FOUT; }
+-?[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
+-?[0-9]*\.[0-9]*e[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
+-?[0-9]*e[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
+-?[0-9]*\.[0-9]+	{ *yylval = A(GL, yytext, nergens); return NAAM; }
+
+[a-zA-Z_][a-zA-Z0-9_]* { /* naam */
+	*yylval = A(GL, yytext, nergens);
+	return NAAM;
+}
+
+\"([^"])*\" {
+	*yylval = xlua_reftekst(GL, yytext, *yylloc); // tekst(a(yytext));
+	return NAAM;
+}
+
+.			{ *yylval = A(GL, yytext, nergens); return NAAM; }
 
 %%

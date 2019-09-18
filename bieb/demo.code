@@ -1,14 +1,11 @@
-; html = (uit/tijd)(moment)
-succ = xy → xy + 1
-
 ververs = moment → regMuis(setInnerHtml(uit))
 app = requestAnimationFrame(ververs)
 
 el = setInnerHtml("<canvas width='1280' height='720'></canvas>")
 ctx = getContext(el)
 
-drawCanvas = (clearCanvas(ctx) ⇒ (#(objs map (obj → obj(ctx))) > -1))
-canvas = objs → (drawCanvas ⇒ "<canvas width='1280' height='720'></canvas>")
+drawCanvas = clearCanvas ∘ (objs vouw (∘))
+canvas = objs → (drawCanvas(ctx) ⇒ "<canvas width='1280' height='720'></canvas>")
 
 ; toetsenbord
 toetsSpatie = toetsNeer(32)
@@ -16,10 +13,10 @@ toetsLinks = toetsNeer(37)
 toetsOmhoog = toetsNeer(38)
 toetsRechts = toetsNeer(39)
 toetsOmlaag = toetsNeer(40)
-toetsA = toetsNeer(97)
-toetsW = toetsNeer(119)
-toetsD = toetsNeer(100)
-toetsS = toetsNeer(115)
+toetsA = toetsNeer(65)
+toetsW = toetsNeer(87)
+toetsD = toetsNeer(68)
+toetsS = toetsNeer(83)
 
 toetsSpatieBegin = toetsNeerBegin(32)
 toetsLinksBegin = toetsNeerBegin(37)

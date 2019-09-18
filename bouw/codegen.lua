@@ -56,6 +56,10 @@ local function peil(waarde)
 	return diepte
 end
 
+local postop = set("%","!",".","'")
+local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈", "^i", "^f")
+local unop   = set("-","#","¬","Σ","|")
+
 function codegen(exp, maakvar)
 	local graaf = maakgraaf()
 	local maakvar = maakvar or maakvars()
@@ -86,15 +90,21 @@ function codegen(exp, maakvar)
 			--print('ARG AL', exp.v)
 			return al[exp.v]
 		end
-		if isfn(exp) and fn(exp) == '[]' then
+		if fn(exp) == '[]' then
 			arg = con(exp)
-		elseif isfn(exp) and fn(exp) == '[]u' then
+		elseif fn(exp) == '[]u' then
+			error'OK'
 			arg = con(exp)
 		elseif isfn(exp) then
 			arg = con(exp)
-		else
+		elseif isobj(exp) then
 			arg = con(exp)
-			--arg = exp
+		elseif exp.v == string.upper(exp.v) and not tonumber(exp.v) then
+			arg = con(exp)
+		elseif not tonumber(exp.v) then
+			arg = con(exp)
+		else
+			arg = (exp)
 		end
 		arg.ref = exp.ref
 		return arg
@@ -103,7 +113,7 @@ function codegen(exp, maakvar)
 	function mkstat(stat, ret)
 		stat.loc = exp.loc
 		--stat.ref = ret.ref
-		local val = stat[2]
+		local val = stat.a[2]
 		if verbozeIntermediair then
 			--print('  '..combineer(stat)..'  '..(val.ref and val.ref.v or ''))
 		end
@@ -119,9 +129,9 @@ function codegen(exp, maakvar)
 			--print('REF', val.ref.v, e2s(stat[1]))
 			--error(val.ref)
 			--al[ret.v] = val.ref
-			al[val.ref.v] = stat[1]
+			al[val.ref.v] = stat.a[1]
 			--print(debug.traceback())
-				assert(isatoom(stat[1]))
+			assert(isatoom(stat.a[1]))
 			--print(e2s(stat), e2s(stat[1]))
 			--print('REG:', val.ref.v, e2s(stat[1]))
 			--al[ret.v] = assert(stat[2].ref, 'statement heeft geen referentiecode: '..e2s(stat))
@@ -135,7 +145,7 @@ function codegen(exp, maakvar)
 
 	function con(exp,ret)
 		--print('CON', combineer(exp))
-		local fw = {fn=exp.fn}
+		local fw = {} --f=exp.f}
 		local ret = ret or X(maakvar())
 		local stat = X(':=', ret, fw)
 
@@ -147,19 +157,16 @@ function codegen(exp, maakvar)
 			return mkstat(stat, ret)
 		
 		-- functie
-		elseif fn(exp) == '_fn' then --isfn(exp) and fn(exp.fn) == '_fn' then
+		elseif fn(exp) == '_fn' then
 			--assert(exp.ref)
 			--al = {}
 			local naam = X(maakfunc())
-			local waarde = exp[1]
-			local args = {exp[2], exp[3], exp[4]}
-			exp.moes = nil
+			local waarde = exp.a --exp.a[1]
+			local arg = X'_arg' --exp.a[2]
+			local keys = {}
+			for k in pairs(exp) do keys[keys] = true end
+			for k in pairs(keys) do exp[k] = nil end
 			exp.v = naam.v
-			exp.fn = nil
-			exp[1] = nil
-			exp[2] = nil
-			exp[3] = nil
-			exp[4] = nil
 			local bfn = maakblok(naam, {}, X('ret', '9999999'))
 			local b = blok
 			blok = bfn
@@ -168,6 +175,7 @@ function codegen(exp, maakvar)
 			--print('FN AL', ret.v, e2s(stat))
 			--stat[2].ref = assert(exp.ref)
 
+			--[[
 			-- argumenten
 			local nargs = #waarde - 1
 			for i,arg in ipairs(args) do
@@ -188,22 +196,23 @@ function codegen(exp, maakvar)
 				print('FOUTE BOEL!', e2s(exp)) -- PRINT
 				end
 			end
+			]]
 
 			local res = con(waarde)
-			blok.epiloog[1] = res
+			blok.epiloog.a[1] = res
 			graaf:punt(bfn)
 			blok = b
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
-			stat[2].ref = exp.ref --naam
+			stat.a[2].ref = exp.ref --naam
 			al[ret.v] = naam
 			--table.insert(blok.stats, stat)
 			mkstat(stat, ret)
 
 		-- alsdan!
-		elseif fn(exp) == '=>' then
+		elseif fn(exp) == '⇒' then
 			local blok0 = blok
-			local eals, edan, eanders = exp[1], exp[2], exp[3]
+			local eals, edan, eanders = exp.a[1], exp.a[2], exp.a[3]
 			
 			-- procnamen
 			local dan = X(maakproc())
@@ -238,55 +247,75 @@ function codegen(exp, maakvar)
 
 			-- daadwerkelijke '=>'
 			local stat = X(':=', ret, rdan)
-			stat[2].ref = exp.ref
+			stat.a[2].ref = exp.ref
 			al[ret.v] = rdan
 			blok = bphi
 			mkstat(stat, ret)
 
 		elseif tonumber(exp) then
-			stat[2] = X(tostring(exp))
+			stat.a[2] = X(tostring(exp))
 			stat.loc = exp.loc
 			mkstat(stat, ret)
-			stat[2].ref = exp.ref
+			stat.a[2].ref = exp.ref
 
 		-- a := b
 		elseif isatoom(exp) then
-			stat[2] = exp
+			stat.a[2] = exp
 			stat.loc = exp.loc
 			--al[exp] = stat[2]
-			stat[2].ref = exp.ref
+			stat.a[2].ref = exp.ref
 			mkstat(stat, ret)
 
 		-- normale statement (TODO sorteer)
 		else
-			local fw = {fn=exp.fn}
+			local fw = {f=exp.f}
 			local ret = ret or X(maakvar())
 			local stat = X(':=', ret, fw)
+			if not exp.f and not exp.o then error(e2s(exp)) end
 
-			if isfn(exp.fn) then
-			--error'OK'
-				--al[exp.fn] = fw.fn.ref
-				fw.fn = arg(exp.fn)
-				fw.fn.ref = exp.fn.ref -- assert(exp.fn.ref)
-				--error('OK')
-			else
-				if exp.fn.v:sub(1,1) == '~' then
-					--fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
-					fw.fn = assert(al[exp.fn.v], 'onbekende ref: '..exp.fn.v)
-					--print('jajajaja', fw.fn, exp.fn.v)
-				end
+			if exp.f and exp.f.v:sub(1,1) == '~' then
+				fw.f = assert(al[exp.f.v], 'onbekende ref: '..exp.f.v)
 			end
-			if exp[1] and fn(exp[1]) == ',' then
-				exp = exp[1]
-			end
+
+			if binop[fn(exp)] then
+				fw.f = exp.f
+				fw.a = X(',', arg(exp.a[1]), arg(exp.a[2]))
+				--print('ARGS', combineer(exp.a))
+				--print('FW', combineer(fw))
+
+			elseif unop[fn(exp)] then
+				fw.f = exp.f
+				fw.a = arg(exp.a)
+
+			elseif fn(exp) == '_' then
+				fw.f = arg(exp.f)
+				fw.a = arg(exp.a)
+
+			elseif isobj(exp) then
+				fw.o = exp.o
 				for i,v in ipairs(exp) do
-					if fn(exp) == '[]u' then
-						fw[i] = v
-					else
-						fw[i] = arg(v)
-					end
-					--fw[i].ref = v.ref
+					fw[i] = arg(v)
 				end
+
+			else
+
+				error('IDK' .. e2s(exp))
+
+				for k,v in subs(exp) do
+					if k == 'f' or k == 'o' then
+						fw[k] = v
+					elseif fn(exp) == '[]u' then
+						fw[k] = v
+					elseif fn(exp) == '+' or fn(exp) == '_' then
+						fw[k] = arg(v)
+					else
+						fw[k] = arg(v)
+					end
+					--fw[k].ref = v.ref
+				end
+
+			end
+			
 			stat.loc = exp.loc
 
 			--assert(exp.ref, e2s(stat)..' heeft geen referentie')

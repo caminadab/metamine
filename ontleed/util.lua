@@ -2,6 +2,13 @@ require 'set'
 
 if not table.unpack then table.unpack = unpack end
 
+function LOG(...)
+	local verboos = _G.verboos
+	_G.verboos = true
+	log(...)
+	_G.verboos = verboos
+end
+
 function taal2string(tt)
 	return string.char(table.unpack(tt))
 end
@@ -32,39 +39,11 @@ function emap(exp, fn, ...)
 		return fn(exp, ...)
 	end
 	local s = {}
-	if exp.f then
-		s.f = fn(exp.f, ...)
-	end
-	if exp.a then
-		s.a = fn(exp.a, ...)
-	end
-	if exp.o then
-		s.o = fn(exp.o, ...)
-	end
+	s.fn = fn(exp.fn, ...)
 	for i,v in ipairs(exp) do
 		s[i] = fn(v, ...)
 	end
 	return s
-end
-
-function lenc(t)
-	if type(t) == 'number' then
-		return t
-	elseif type(t) == 'string' then
-		return string.format('%q', t)
-	elseif type(t) == 'table' then
-		local r = {}
-		r[#r+1] = '{'
-		for k,v in pairs(t) do
-			r[#r+1] = lenc(k)..'='..lenc(v)
-			r[#r+1] = ','
-		end
-		if r[#r] == ',' then r[#r] = nil end
-		r[#r+1] = '}'
-		return table.concat(r)
-	else
-		return tostring(t)
-	end
 end
 
 function set2lijst(s, volgorde)
@@ -91,6 +70,7 @@ end
 function seerec(t,tabs)
 	local tabs = tabs or ''
 	if type(t) == 'table' then
+		print()
 		print(tabs..'{')
 		for k,v in pairs(t) do seerec(k, tabs..'  ') ; seerec(v, tabs..'  ') end
 		print(tabs..'}')
@@ -114,6 +94,19 @@ function file(name, data)
 	end
 end
 bestand = file
+
+function kopie(t)
+	if type(t) == 'table' then
+		local c = {}
+		for i,v in pairs(t) do
+			c[i] = kopie(v)
+		end
+		return c
+	else
+		return t
+	end
+end
+kopieer = kopie
 
 function push(t,v) t[#t+1] = v end
 function pop(t)

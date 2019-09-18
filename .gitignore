@@ -8,6 +8,12 @@
 ontleed/taal.c
 ontleed/taal.h
 
+goo/www/index.nl.html
+goo/www/index.en.html
+goo/www/index.html
+goo/www/en
+goo/www/nl
+
 *.output
 bin/
 troep/

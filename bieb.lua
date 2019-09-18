@@ -14,6 +14,8 @@ function bieb()
 
 	local bieb = {
 		
+	['⊤'] = true,
+	['⊥'] = false,
 	log2 = true,
 	log10 = math.log10,
 	puts = true,
@@ -21,9 +23,12 @@ function bieb()
 	tau = math.pi*2,
 	pi = math.pi,
 	init = true,
+	fout = true,
+	schermVerverst = true,
 
 	-- meta
-	var = function (index,set)
+	['_var'] = function (a)
+		local index, set = a[1], a[2]
 		local ret = vars[index]
 		-- start
 		for exp in pairs(set) do
@@ -35,7 +40,7 @@ function bieb()
 		return ret
 	end;
 
-	prevvar = function(index)
+	_prevvar = function(index)
 		return vars[index]
 	end;
 
@@ -47,17 +52,19 @@ function bieb()
 	clearCanvas = function () error('niet beschikbaar') end;
 	looptijd = 0;
 	vierkant = function() error('niet beschikbaar') end;
+	boog = function() error('niet beschikbaar') end;
 	label = function() error('niet beschikbaar') end;
 	rechthoek = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
 	lijn = function() error('niet beschikbaar') end;
-	muisKlik = true,
-	muisKlikBegin = true,
-	muisKlikEind = true,
-	muisSleep = true, -- (pad = (van, via, naar))
-	muisX = true,
-	muisY = true,
-	muisBeweegt = true,
+	muisKlik = false,
+	muisKlikBegin = false,
+	muisKlikEind = false,
+	muisSleep = false, -- (pad = (van, via, naar))
+	muisX = false,
+	muisY = false,
+	muisPos = false,
+	muisBeweegt = false,
 
 	regMuis = true, -- X_X
 
@@ -67,19 +74,30 @@ function bieb()
 	toetsNeerEind = true,
 
 
-	['_'] = function(a, b)
+	['_'] = function(a)
+		local a,b = a[1],a[2]
 		if type(a) == 'string' then
 			return a:byte(b+1)
+		elseif type(a) == 'table' then
+			return a[b+1]
+		else
+			return a(b)
 		end
-		return a[b]
 	end;
 
 	['_u'] = function(a, b)
 		return a:byte(b)
 	end;
 
-	-- lua
-	['print'] = function(a)
+	['⊤'] = true;
+	['⊥'] = false;
+
+	-- io
+	['stduitSchrijf'] = function(a)
+		do
+			print(combineer(w2exp(a)))
+			return true
+		end
 		if type(a) == 'table' and #a > 1 then
 			local txt = true
 			for i,v in ipairs(a) do
@@ -114,7 +132,7 @@ function bieb()
 	wit = true,
 	zwart = true,
 
-	-- willekeurig
+	-- willekeurig ×
 	aselect = function (a, b)
 		return math.random(a, b-1)
 	end,
@@ -122,8 +140,8 @@ function bieb()
 	-- wiskunde
 	co = 3,
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
-	max = math.max,
-	min = math.min,
+	max = function(args) return math.max(args[1], args[2]) end,
+	min = function(args) return math.min(args[1], args[2]) end,
 	int = math.floor,
 	abs = math.abs,
 	absd = math.abs,
@@ -142,22 +160,26 @@ function bieb()
 	os.time(),
 	['inverteer'] = true; -- sure
 	['sqrt'] = function(a) return math.sqrt(a) end;
-	['ja'] = true; 
-	['nee'] = false; 
 	['niets'] = false; --"niets";
 	['min'] = function(a,b) return math.min(a,b) end;
 	['mod'] = function(a,b) return a % b end;
 
+	['¬'] = function(b)
+		return not b
+	end;
+
 	['!'] = function(n)
 		local a = 1
 		for i=1,n do
-			a = a * n
+			a = a * i
 		end
 		return a
 	end;
 
 	-- linksassociatief
-	['xx'] = function(a,b)
+	-- cartesisch product
+	['×'] = function(a)
+		local a,b = a[1],a[2]
 		local t = {}
 		for i,aa in ipairs(a) do
 			for i,bb in ipairs(b) do
@@ -205,57 +227,23 @@ function bieb()
 		end
 	end;
 
-	['+'] = function(a,b) return a + b end;
-	['-'] = function(a,b) if b then return a - b else return -a end end;
-	['*'] = function(a,b) return a * b end;
-	['/'] = function(a,b) return a / b end;
-	['^'] = function(a,b)
-		if type(a) == 'function' then
+	['+'] = function(a) return a[1] + a[2] end;
+	['-'] = function(a) return -a end;
+	['·'] = function(a) return a[1] * a[2] end;
+	['/'] = function(a) return a[1] / a[2] end;
+	['^'] = function(a)
+		if type(a[1]) == 'function' then
 			return function (x)
-				for i=1,b do
-					x = a(x)
+				for i=1,a[2] do
+					x = (a[1])(x)
 				end
 				return x
 			end
 		else
-			return a ^ b
+			return a[1] ^ a[2]
 		end
 	end;
 	['%'] = function(a) return a / 100 end;
-	['[]u'] = function(...)  return string.char(...) end;
-	['[]'] = function(...)
-		local t = {...}
-		return setmetatable(t,{__tostring=function() return '[' .. table.concat(map(t,tostring), ',') .. ']' end})
-	end;
-	['{}'] = function(...)
-		local t = {...}
-		local s = {}
-		for _,v in ipairs(t) do
-			s[v] = true
-		end
-		setmetatable(s, {__tostring=function()
-					local t = {'{'}
-					for k in spairs(s) do
-						t[#t+1] = tostring(k)
-						t[#t+1] = ','
-					end
-					if t[#t] == ',' then t[#t] = nil end
-					t[#t+1] = '}'
-					return table.concat(t)
-				end
-			})
-
-		return s
-	end;
-				
-	['{}1'] = function(...)
-		local t = {...}
-		local s = {is={set=true},set={}}
-		for _,v in pairs(t) do
-			s.set[v] = true
-		end
-		return s
-	end,
 
 	['ontleed'] = function(a)
 		--local code = string.char(table.unpack(a))
@@ -275,35 +263,23 @@ function bieb()
 		return doe0(exp)
 	end;
 
-	['@'] = function(a,b)
-		assert(type(a) == 'function', a)
-		assert(type(b) == 'function', b)
+	['∘'] = function(a)
+		assert(type(a[1]) == 'function', a)
+		assert(type(a[2]) == 'function', a)
 		return function(...)
-			return b(a(...))
+			return a[2](a[1](...))
 		end
 	end;
 
-	['|'] = function(a,b)
-		local fa = type(a) == 'function'
-		local fb = type(b) == 'function'
-		--if fa ~= fb then return 'fout' end
-		--[[
-		if fa and fb then
-			return function(...)
-				local ta = a(...)
-				local tb = b(...)
-				if not ta == not tb then
-					return nil
-				end
-				return ta or tb
+	['|'] = function(a)
+		for i,v in pairs(a) do
+			if v ~= nil and v ~= false then
+				return v
 			end
 		end
-		]]
-		if a and b then return 'fout' end
-		return a or b
 	end;
 
-	['->'] = function(param, f)
+	['→'] = function(param, f)
 		return function(a)
 			return doe(substitueer(f, param, a))
 		end
@@ -316,17 +292,19 @@ function bieb()
 	end;
 
 	['#'] = function(a) return #a end;
-	['='] = function(a,b)
-		if tonumber(a) and tonumber(b) then
-			return a == b
+	['='] = function(a)
+		if tonumber(a[1]) and tonumber(a[2]) then
+			return a[1] == a[2]
 		end
-		return unlisp(a)==unlisp(b)
+		return lenc(a[1]) == lenc(a[2])
 	end;
-	['>'] = function(a,b) return tonumber(a) > tonumber(b) end;
-	['<'] = function(a,b) return tonumber(a) < tonumber(b) end;
-	['!='] = function(a,b) return a ~= b end;
-	['~='] = function(a,b) return math.abs(a-b) < 0.00001 end;
-	['..'] = function(a,b)
+	['>'] = function(a) return tonumber(a[1]) > tonumber(a[2]) end;
+	['<'] = function(a) return tonumber(a[1]) < tonumber(a[2]) end;
+	['≠'] = function(a) return a[1] ~= a[2] end;
+	['≈'] = function(a) return math.abs(a[1]-a[2]) < 0.00001 end;
+
+	['..'] = function(a)
+		local a,b = a[1], a[2]
 		local r = {}
 		if a > b then
 			for i=a-1,b,-1 do
@@ -343,13 +321,13 @@ function bieb()
 		return r
 	end;
 
-	['||'] = function(a,b)
+	['‖'] = function(a)
+		local a,b = a[1], a[2]
 		if type(a) == 'string' or type(b) == 'string' then
 			return tostring(a) .. tostring(b)
 		end
-		--if isatoom(a) or isatoom(b) or a.fn ~= '[]' or b.fn ~= '[]' then return "fout" end
 		local j = 1
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		--if isatoom(a) then a = {a} end
 		--if isatoom(b) then b = {b} end
 		for i,v in ipairs(a) do t[j] = v; j=j+1 end
@@ -358,7 +336,8 @@ function bieb()
 		return t
 	end;
 
-	['||u'] = function(a,b)
+	['‖u'] = function(a)
+		local a,b = a[1], a[2]
 		return a .. b
 	end;
 
@@ -368,7 +347,7 @@ function bieb()
 
 	-- lib
 	['cat'] = function(a,b)
-		local r = {fn='[]'}
+		local r = {f='[]'}
 		for i,v in ipairs(a) do
 			for i,v in ipairs(v) do
 				r[#r+1] = v
@@ -384,8 +363,18 @@ function bieb()
 	end;
 
 	-- linq
-	['map'] = function(a,b)
-		local r = {fn='[]'}
+	['vouw'] = function(a)
+		local lijst, func = a[1],a[2]
+		local aggr = lijst[1]
+		for i = 2,#lijst do
+			aggr = func{aggr, lijst[i]}
+		end
+		return aggr
+	end;
+
+	['map'] = function(a)
+		local a,b = a[1],a[2]
+		local r = {}
 		for i=1,#a do --i,v in ipairs(a) do
 			local v = a[i]
 			local s = b(v)
@@ -398,7 +387,7 @@ function bieb()
 	end;
 
 	['filter'] = function(l,fn)
-		local r = {fn='[]'}
+		local r = {f='[]'}
 		for i,v in ipairs(l) do
 			if fn(v) then
 				r[#r+1] = v
@@ -408,7 +397,7 @@ function bieb()
 	end;
 
 	['reduceer'] = function(l,fn)
-		local r = {fn='[]'}
+		local r = {f='[]'}
 		for i,v in ipairs(l) do
 			if fn(v) then
 				r[#r+1] = v
@@ -428,16 +417,15 @@ function bieb()
 		end
 	end;
 	['sincos'] = function (a)
-		return {fn=',', math.sin(a), math.cos(a)}
+		return {f=',', math.sin(a), math.cos(a)}
 	end;
 
-	['of'] = function(a,b) return a or b end;
-	['en'] = function(a,b) return a and b end;
-	['OF'] = function(a,b) return a or b end;
-	['EN'] = function(a,b) return a and b end;
-	['!'] = function(a) return not a end;
+	['∨'] = function(a,b) return a or b end;
+	['∧'] = function(a,b) return a and b end;
+	['⋁'] = function(a,b) return a or b end;
+	['⋀'] = function(a,b) return a and b end;
 
-	['som'] = function(a)
+	['Σ'] = function(a)
 		local r = 0
 		for i,v in ipairs(a) do
 			r = r + v
@@ -569,7 +557,7 @@ function bieb()
 		if not b.buf then b.buf = b.fd:read(1024) end
 		return b.buf
 	end;
-	['=>'] = function(a,b,c)
+	['⇒'] = function(a,b,c)
 		if a then return b
 		else return c or niets end
 	end;
@@ -607,15 +595,17 @@ function bieb()
 	end;
 
 	['vanaf'] = function(a,van)
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		for i=van+1,#a do
 			t[#t+1] = a[i]
 		end
 		return t
 	end;
 
+	['[]u'] = false,
+
 	['tot'] = function(a,tot)
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		for i=1,tot do
 			t[#t+1] = a[i]
 		end
@@ -624,7 +614,7 @@ function bieb()
 
 	['deel'] = function(a,b)
 		local van,tot = b[1],b[2]
-		local t = {fn='[]'}
+		local t = {f='[]'}
 		for i=van+1,tot do
 			t[#t+1] = a[i]
 		end

@@ -6,39 +6,13 @@ require 'vhgraaf'
 require 'bieb'
 require 'rapport'
 
-leed = combineer
-
 local bieb = bieb()
-
-function T(exp)
-	local r = {}
-	local function t(exp)
-		if isatoom(exp) then
-			r[#r+1] = exp.v
-		else
-			t(exp.fn)
-			r[#r+1] = '('
-			for i,v in ipairs(exp) do
-				t(v)
-				if exp[i+1] then
-					r[#r+1] = ' '
-				end
-			end
-			r[#r+1] = ')'
-		end
-	end
-	t(exp)
-	return table.concat(r)
-end
 
 local function pakpunten(exp,r)
 	local r = r or {}
 	r[#r+1] = exp
-	if isexp(exp) then
-		pakpunten(exp.fn,r)
-		for i,v in ipairs(exp) do
-			pakpunten(v,r)
-		end
+	for k,sub in subs(exp) do
+		pakpunten(sub,r)
 	end
 	return r
 end
@@ -57,7 +31,6 @@ function punten(exp)
 end
 
 		-- fix dubbele args: f(,(2 3))
-		-- herschrijf (a.b) naar (b(a))
 		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
@@ -91,13 +64,8 @@ function oplos(exp,voor)
 	local maakvar = maakvars()
 	local fouten = {}
 	if isatoom(exp) then return X'ZWARE FOUT',fouten end -- KAN NIET
-	if exp.fn.v == [[=]] or exp.fn.v == [[EN]] then
-		local eqs
-		if exp.fn.v == [[=]] then
-			eqs = set(exp)
-		else
-			eqs = set(table.unpack(exp))
-		end
+	if fn(exp) == "⋀" then
+		local eqs = set(table.unpack(exp.a))
 
 		-- invoer ??
 		local args = {}
@@ -106,7 +74,7 @@ function oplos(exp,voor)
 			val = val.v
 			-- functie argumenten
 			--if args[val] then return true end
-			--if val.fn == '->' then args[val[1]] = true end
+			--if val.f == '→' then args[val[1]] = true end
 			if type(val) == 'string' and val:sub(1,1) == '_' then -- TODO
 				return true
 			end
@@ -114,88 +82,76 @@ function oplos(exp,voor)
 			if type(val) == 'table' then return false end
 			return (tonumber(val) and true)
 				or string.upper(val or '???')==val
-				or val == 'standaardinvoer' -- kuch...
 				or val == '_arg'
 				or val == '_fn'
 				or bieb[val] ~= nil -- KUCH KUCH
-		end
-
-		-- lange reeksen "+" naar "Σ"
-		for eq in pairs(eqs) do
-			local plus = {}
-			for exp in boompairsdfs(eq) do
-				if fn(exp) == '+' then
-					plus[exp] = 1 + (plus[exp[1]] or 0)
-
-					--local function r(exp)
-						--if exp[
-
-					--if plus[exp] > 4 then
-						--exp.fn = 'som'
-				elseif exp[1] and fn(exp[1]) == '+' then
-					if plus[exp[1]] > 4 then
-						exp[1] = X('som', exp[1])
-					end
-				end
-			end
-		end
-
-		-- fix dubbele args: f(,(2 3))
-		if true then
-		for eq in pairs(eqs) do
-			for exp in boompairs(eq) do
-				if isfn(exp) and fn(exp) ~= '->' and exp[1] and fn(exp[1]) == ',' then
-					for i,v in ipairs(exp[1]) do
-						exp[i] = v
-					end
-				end
-			end
-		end
-		end
-
-		-- herschrijf a.b naar b(a)
-		for eq in pairs(eqs) do
-			for node in boompairs(eq) do
-				if fn(node) == '.' and #node == 2 then
-					node.fn,node[1],node[2] = node[2],node[1],nil
-				end
-			end
 		end
 
 		local nieuw, oud = {}, {}
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
-		-- herschrijf (a := b) naar (a := (l → (l=0 ⇒ b)))
+		-- herschrijf (a := b) naar (a := (init ⇒ b))
 		-- ** (a := b) naar (a := (start, b))
 		for eq in pairs(eqs) do
-			if eq.fn and eq.fn.v == ':=' then
-				local a, b = eq[1], eq[2]
+			if fn(eq) == ':=' then
+				local a, b = eq.a[1], eq.a[2]
 
 				-- local neq = 
 				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-				local neq = X('|:=', a, X('=>', 'init', b, 'niets'))
+				local neq = X('|:=', a, X('⇒', 'init', b, 'niets'))
 				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
 			end
 		end
 
-		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
+		-- herschrijf types
 		for eq in pairs(eqs) do
-			--if isfn(eq) and isfn(eq[1]) --[[and isatoom(eq[1].fn)]] and isatoom(eq[1][1]) and #eq[1] == 1 then
-			if isfn(eq) and isfn(eq[1]) and false then --TODO and #eq[1] == 1 then
-				local a, b, c  = eq[1].fn, eq[1][1], eq[2]
+			if fn(eq) == ':' then
+				local neq = X('=', eq.a[1].v ..'Meer', eq.a[2])--X('alle', eq.a[2]))
+				nieuw[neq] = true
+			end
+		end
+
+		-- herschrijf (a(b) = c) naar
+		-- bMeer = alle(b)
+		-- a = b map (bMeer → c)
+		for eq in pairs(eqs) do
+			local arg = arg(eq) -- .a[1], .a[2]
+			if arg and isobj(arg) and arg[1] and fn(arg[1]) == '_' then
+				local ab,c = arg[1].a, arg[2]
+				local A,B = ab[1], ab[2]
+				local naam = ab[2].v
+				if not naam then
+					naam = '_arg'
+				end
+				local meer = naam..maakvar()
+				local hulp = X('=', meer, naam..'Meer')
+				local arghulp = X('=', naam, B)
+				local neq = X('=', ab[1], X('map', meer, X('→', naam, c)))
+				--print('NEQ', combineer(neq))
+				--print('HULP', combineer(hulp))
+				--print('ARGHULP', combineer(arghulp))
+				nieuw[hulp] = true
+				nieuw[neq] = true
+				if naam ~= atoom(B) then
+					nieuw[arghulp] = true
+				end
+			end
+		end
+		for eq in pairs(eqs) do
+			if false and isfn(eq) and isfn(eq.a[1]) and false then --TODO and #eq[1] == 1 then
+				local a, b, c  = eq.a[1].f, eq.a[1].a[1], eq.a[2]
 				local neq = X(sym.cois, a, X(sym.map, b, c))
 				local meq = X(sym.cois, a, X(sym.map, b, c))
 				oud[eq] = true
 				nieuw[neq] = true
-				--error(exp2string(neq))
 			end
 
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
-			if false and isfn(eq) and eq[2] and isfn(eq[2]) --[[and isatoom(eq[2].fn)]] and isatoom(eq[2][1]) and #eq[2] == 1 then
-				local a, b, c  = eq[2].fn, eq[2][1], eq[1]
+			if false and isfn(eq) and eq.a[2] and isfn(eq.a[2]) --[[and isatoom(eq.a[2].f)]] and isatoom(eq.a.a[2].a[1]) and #eq.a[2] == 1 then
+				local a, b, c  = eq.a[2].f, eq.a[2].a[1], eq.a[1]
 				local neq = X(sym.cois, a, X(sym.map, b, c))
 				--oud[eq] = true
 				nieuw[neq] = true
@@ -205,21 +161,21 @@ function oplos(exp,voor)
 		-- herschrijf (a ||= b) naar (a |= a' || b)
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
-				if exp.fn and exp.fn.v == "||=" then --== sym.catass then
-					local a, b = exp[1], exp[2]
-					exp.fn, exp[1], exp[2] = sym.altis, a, X(sym.cat, X(sym.oud, a), b)
+				if exp.f and exp.f.v == "||=" then --== sym.catass then
+					local a, b = exp.a[1], exp.a[2]
+					exp.f, exp.a[1], exp.a[2] = sym.altis, a, X(sym.cat, X(sym.oud, a), b)
 				end
 			end
 		end
 
 		-- herschrijf (a < b) → (a: (b..∞) ∧ b: (-∞ .. a))
 		for eq in pairs(eqs) do
-			if isfn(eq) and eq.fn.v == '>' then
-				eq.fn.v,fn,eq[2],eq[1] = '<',eq[1],eq[2]
+			if isfn(eq) and eq.f.v == '>' then
+				eq.f.v,fn,eq.a[2],eq.a[1] = '<',eq.a[1],eq.a[2]
 			end
-			if isfn(eq) and eq.fn.v == '<' then
-				local fa = X(X':', eq[1], X(X'..', eq[2], X'oneindig'))
-				local fb = X(X':', eq[2], X(X'..', X(X'-', X'oneindig'), eq[1]))
+			if isfn(eq) and eq.f.v == '<' then
+				local fa = X(':', eq.a[1], X(X'..', eq.a[2], X'oneindig'))
+				local fb = X(':', eq.a[2], X(X'..', X('-', X'oneindig'), eq.a[1]))
 				nieuw[fa] = true
 				nieuw[fb] = true
 				oud[eq] = true
@@ -230,34 +186,35 @@ function oplos(exp,voor)
 		-- vind atomen
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
-				if isfn(exp) and exp.fn.v == '.' then
-					exp.fn, exp[1], exp[2] = X'=', exp[1], {fn=X'atoom', X(tostring(i)), naam=exp[1].v }
+				if fn(exp) == '.' then
+					local eq = X('=', exp.a, X('atoom', tostring(i)))
 					i = i + 1
+					nieuw[eq] = true
 				end
 			end
 		end
 
 		-- pak blokken uit
 		for eq in pairs(eqs) do
-			if fn(eq) == '=>' then
-				if fn(eq[2]) == 'EN' then
-					for i,sub in ipairs(eq[2]) do
-						local neq = X('=>', eq[1], sub)--X'niets')
+			if fn(eq) == '⇒' then
+				if fn(eq.a[2]) == '⋀' then
+					for i,sub in ipairs(eq.a[2].a) do
 						if fn(sub) == '|:=' then
-							--eq = X('=>', X('wanneer', eq[1]), 
-							sub = X('[]', sub[1], sub[2])
+							--eq = X('⇒', X('wanneer', eq.a[1]), 
+							--sub = X('[]', sub.a[1], sub.a[2])
 						end
+						local neq = X('⇒', eq.a[1], sub)--X'niets')
 						nieuw[neq] = true
 						oud[eq] = true
 
+						--print('NEQ', combineer(neq))
 						--print('BLOK', e2s(eq))
 					end
 				end
-				if eq[3] and fn(eq[3]) == 'EN' then
-					for i,sub in ipairs(eq[3]) do
-						local eq = X('=>', X('!', eq[1]), sub)--X'niets')
+				if eq.a[3] and fn(eq.a[3]) == '⋀' then
+					for i,sub in ipairs(eq.a[3].a) do
+						local eq = X('⇒', X('¬', eq.a[1]), sub)--X'niets')
 						nieuw[eq] = true
-						--print('BLOK', e2s(eq))
 					end
 				end
 			end
@@ -277,35 +234,39 @@ function oplos(exp,voor)
 		--   x |= (¬d ⇒ y)
 		--   y |= (¬d ⇒ x)
 		for eq in pairs(eqs) do
-			if fn(eq) == '=>' and (fn(eq[2]) == '=' or fn(eq[2]) == '|=' or fn(eq[2]) == ':=') then
+			if fn(eq) == '⇒' and (fn(eq.a[2]) == '=' or fn(eq.a[2]) == '|=' or fn(eq.a[2]) == ':=') then
 				--error('OK')
 				
-				eq.fn.v = '|='
-				if fn(eq[2]) == ':=' then
-					eq.fn.v = '|:='
-				end
-				local alt = eq.fn
-				local c = eq[1]
-				local a = eq[2][1]
-				local b = eq[2][2]
+				--eq.f.v = '|='
+				--if fn(eq.a[2]) == ':=' then
+					--eq.f.v = '|:='
+				--end
+				local alt = eq.f
+				local c = eq.a[1]
+				local f = fn(eq.a[2])
+				local a = eq.a[2].a[1]
+				local b = eq.a[2].a[2]
 
 				-- twee nieuwe
-				local ae = eq[3] and eq[3][1] or X'niets'
-				local be = eq[3] and eq[3][2] or X'niets'
+				local ae = eq.a[3] and eq.a[3].a[1] or X'niets'
+				local be = eq.a[3] and eq.a[3].a[2] or X'niets'
 				--assert(ae and be)
-				local eqa = X{fn=alt, a, {fn=sym.dan, c, b, be}}
-				local eqb = X{fn=alt, b, {fn=sym.dan, c, a, ae}}
-				nieuw[eqa] = true
-				nieuw[eqb] = true
+				local eqa = X('|'..f, a, X(sym.dan, c, b, be))
+				local eqb = X('|'..f, b, X(sym.dan, c, a, ae))
 
-				if false and eq[3] and (fn(eq[3]) == '=' or fn(eq[3]) == '|=') then
-					local e = {fn=sym.niet, c}
-					local ae = eq[3][1]
-					local be = eq[3][2]
-					local eqa = {fn=alt, ae, {fn=sym.dan, e, be}}
-					local eqb = {fn=alt, be, {fn=sym.dan, e, ae}}
-					nieuw[eqa] = true
-					nieuw[eqb] = true
+				if isvar(a) then nieuw[eqa] = true end
+				if isvar(b) then nieuw[eqb] = true end
+
+				if eq.a[3] and (fn(eq.a[3]) == '=' or fn(eq.a[3]) == '|=' or fn(eq.a[3]) == ':=') then
+					local e = X(sym.niet, c)
+					local fe = fn(eq.a[3])
+					local ae = eq.a[3].a[1]
+					local be = eq.a[3].a[2]
+					local eqa = X('|'..fe, ae, X(sym.dan, e, be))
+					local eqb = X('|'..fe, be, X(sym.dan, e, ae))
+					if isvar(a) then nieuw[eqa] = true end
+					if isvar(b) then nieuw[eqb] = true end
+					error'a'
 				end
 			end
 		end
@@ -313,21 +274,8 @@ function oplos(exp,voor)
 		eqs = unie(eqs, nieuw)
 		nieuw = {}
 		oud = {}
-
-		-- herschrijf  f(a) = a + 1
-		-- naar        f ∐= a → a + 1
-		for eq in pairs(eqs) do
-			if true and isfn(eq) and isfn(eq[1]) and #eq[1] == 1 then
-				local vrij = var(eq[1])
-				for naam in pairs(vrij) do
-					if bevat(eq[2], naam) then
-						eq[1],eq[2] = eq[1].fn, {fn=X'->', eq[1][1], eq[2]}
-						--print('HERSCHRIJF', exp2string(eq))
-						break
-					end
-				end
-			end
-		end
+		
+		-- TODO f(x) = x + 2  →  f = x → x + 2
 
 		eqs = complement(eqs, oud)
 		eqs = unie(eqs, nieuw)
@@ -337,11 +285,12 @@ function oplos(exp,voor)
 		local oud = {}
 		for eq in pairs(eqs) do
 			-- a |= b
-			if isfn(eq) and eq.fn.v == '|=' then
-				local a,b = eq[1],eq[2]
-				map[a.v or a] = map[a.v or a] or {}
-				local v = map[a.v or a]
-				v[#v+1] = b
+			if fn(eq) == '|=' then
+				local naam,alt = eq.a[1],eq.a[2]
+				local key = e2s(naam)
+				map[key] = map[key] or {}
+				local alts = map[key]
+				alts[#alts+1] = alt
 				oud[eq] = true
 			end
 		end
@@ -349,22 +298,24 @@ function oplos(exp,voor)
 			eqs[eq] = false
 		end
 		for naam,alts in pairs(map) do
-			alts.fn = X'|'
-			if #alts == 1 then
-				alts = alts[1]
-			end
-			local eq = {fn=X'=', X(naam), alts}
+			alts.o = X'{}'
+			local eq = X('=', naam, X('|', alts))
+			--print('SAMEN', combineer(eq))
+			--print('OK', combineer(eq))
 			eqs[eq] = true
+			--nieuw[eq] = true
 		end
 
 		-- verzamel |:=
+		local maakindex = maakindices()
 		local schaduw = {}
 		local map = {} -- k → [v]
 		local oud = {}
 		for eq in pairs(eqs) do
-			-- a |= b
-			if isfn(eq) and eq.fn.v == '|:=' then
-				local a,b = eq[1],eq[2]
+			-- a |:= b
+			if fn(eq) == '|:=' then
+				--print('VERZAMEL', combineer(eq))
+				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
 				v[#v+1] = b
@@ -374,15 +325,12 @@ function oplos(exp,voor)
 		for eq in pairs(oud) do
 			eqs[eq] = false
 		end
-		local maakindex = maakindices()
 		for naam,alts in pairs(map) do
-			alts.fn = X'{}'
-			--if #alts == 1 then
-			--	alts = alts[1]
-			--end
+			alts.o = X'{}'
 			local index = maakindex()
 			schaduw[naam] = index
-			local eq = {fn=X'=', X(naam), X('var', index, alts)}
+			assert(index and alts)
+			local eq = X('=', naam, X('_', '_var', X(',', index, alts)))
 			eqs[eq] = true
 		end
 		
@@ -391,8 +339,8 @@ function oplos(exp,voor)
 		local oud = {}
 		for eq in pairs(eqs) do
 			-- a ∐= b
-			if isfn(eq) and eq.fn.v == 'co=' then
-				local a,b = eq[1],eq[2]
+			if isfn(eq) and eq.f.v == 'co=' then
+				local a,b = eq.a[1],eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
 				v[#v+1] = b
@@ -403,11 +351,11 @@ function oplos(exp,voor)
 			eqs[eq] = nil
 		end
 		for naam,alts in pairs(map) do
-			alts.fn = X'co'
+			alts.f = X'co'
 			if #alts == 1 then
-				alts = alts[1]
+				alts = alts.a[1]
 			end
-			local eq = {fn=X'=', X(naam), alts}
+			local eq = X('=', X(naam), alts)
 			eqs[eq] = true
 		end
 
@@ -416,11 +364,11 @@ function oplos(exp,voor)
 		local oud = {}
 		for eq in pairs(eqs) do
 			-- a ∐= b
-			if isfn(eq) and (eq.fn.v == 'bevat' or eq.fn.v == 'zitin') then
-				if eq.fn.v == 'zitin' then
-					eq.fn,eq[1],eq[2] = X'bevat',eq[2],eq[1]
+			if isfn(eq) and (eq.f.v == 'bevat' or eq.f.v == 'zitin') then
+				if eq.f.v == 'zitin' then
+					eq.f, eq.a[1], eq.a[2] = X'bevat', eq.a[2], eq.a[1]
 				end
-				local a,b = eq[1],eq[2]
+				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
 				v[#v+1] = b
@@ -431,8 +379,8 @@ function oplos(exp,voor)
 			eqs[eq] = nil
 		end
 		for naam,alts in pairs(map) do
-			alts.fn = X'UNIE'
-			local eq = {fn=X'=', X(naam), alts}
+			alts.f = X'∪'
+			local eq = X('=', X(naam), alts)
 			eqs[eq] = true
 		end
 
@@ -445,15 +393,15 @@ function oplos(exp,voor)
 		local nieuw = {}
 		local oud = {}
 		for eq in pairs(eqs) do
-			if isfn(eq) and isatoom(eq[1]) and eq.fn.v == '=' then
-				local a,b = eq[1],eq[2]
+			if isfn(eq) and isatoom(eq.a[1]) and eq.f.v == '=' then
+				local a,b = eq.a[1],eq.a[2]
 				for node in boompairs(b) do
-					if isfn(node) and node.fn.v == "'" and node[1].v == a.v then
+					if isfn(node) and node.f.v == "'" and node[1].v == a.v then
 						local oude = X(node[1].v .. '_oud')
 						b = substitueerzuinig(b, node, oude, maakvar)
-						node.fn = nil
+						node.f = nil
 						node.v = a.v
-						eqn = X('=', a, X(X('herhaal', X('->', oude, b)), 'niets'))
+						eqn = X('=', a, X(X('herhaal', X('→', oude, b)), 'niets'))
 						oud[eq] = true
 						nieuw[eqn] = true
 					end
@@ -471,14 +419,18 @@ function oplos(exp,voor)
 		local oud = {}
 		local maakindex = maakindices()
 		for eq in pairs(eqs) do
+			--print('COMB')
+			--print(combineer(eq))
 			for exp in boompairs(eq) do
-				if fn(exp) == "'" and exp[1].v then
-					local naam = exp[1].v
+				if fn(exp) == "'" and exp.a.v then
+					local naam = exp.a.v
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
-					exp.fn = X('prevvar')
-					assert(schaduw[naam], 'onbekende variabele')
-					exp[1] = X(schaduw[naam])
+					assert(schaduw[naam], 'onbekende variabele: '..naam)
+					if schaduw[naam] then
+						exp.f = X('_')
+						exp.a = X(',', '_prevvar', schaduw[naam])
+					end
 				end
 			end
 		end
@@ -489,44 +441,33 @@ function oplos(exp,voor)
 		-- uit = (start ⇒ "ok") | (looptijd = 1 ⇒ uit' || "ok")
 
 		-- functies
-		local aantal = 0
+		local maakindex = maakindices()
 		local nieuw = {}
 		local afval = {}
+
+		-- herschrijf a→a+1 naar _fn(0 +(_arg(0) 1))
 		for eq in pairs(eqs) do
 			for lam in punten(eq) do
-
 				-- 
-				if fn(lam) == '->' then
-					local inn,uit = lam[1],lam[2]
-					local params
-					if fn(inn) == ',' then
-						params = inn
-					else
-						params = {inn}
-					end
+				if fn(lam) == '→' then
+					local inn,uit = lam.a[1], lam.a[2]
+					local index = maakindex()
 
 					-- pas vergelijking aan
-					for i in ipairs(lam) do lam[i] = nil end
-					lam.fn = X'_fn'
-					lam[1] = uit
+					for i in pairs(lam) do lam[i] = nil end
+					local var = maakvar()
+					lam.f = X('_fn')--..var)
+					lam.a = uit
+					local naam = '_arg'--..var
 
 					-- complexe parameters
-					for i,param in ipairs(params) do
-						if not isatoom(param) or true then
-							--local naam = X('_'..varnaam(aantal))
-							local naam = X('_arg', tostring(aantal))
-							params[i] = naam
-							lam[#lam+1] = X(tostring(aantal))
-							local paramhulp = {fn=X'=', naam, param}
-							nieuw[paramhulp] = true -- HIER!
-
-							-- pas vergelijking aan
-							--lam[1] = naam
-							--for i,v in ipairs(lam) do lam[i] = nil end
-							--for k,v in pairs(uit) do lam[k] = v end
-
-						end
-						aantal = aantal + 1
+					local paramhulp = X('=', naam, inn)
+					nieuw[paramhulp] = true -- HIER!
+					if isobj(inn) then
+						--for i,v in ipairs(inn) do
+						--	local arghulp = X('=', v, X('_','_arg',tostring(i-1)))
+						--	nieuw[arghulp] = true -- HIER!
+						--end
 					end
 				end
 			end
@@ -534,23 +475,29 @@ function oplos(exp,voor)
 		for eq in pairs(nieuw) do eqs[eq] = true end
 
 		-- los vergelijkingen op
-		-- -> multimap = lijst(:=(A,B))
+		-- → multimap = lijst(:=(A,B))
 		local subst = {}
 		for eq in pairs(eqs) do
-			if isfn(eq) and eq.fn.v == [[=]] then
+			--print('JA', e2s(eq))
+			if fn(eq) == "=" then
 				for naam in pairs(var(eq,invoer)) do
-					--if naam ~= eq[1] and naam ~= eq[2] then
+					--if naam ~= eq[1] and naam ~= eq.a[2] then
 					if bieb[naam] == nil then
 						--if verboos then print('Probeer', naam, toexp(eq)) end
-						local waarde = isoleer(eq,naam)
+						--print('NAAM', e2s(naam))
+						local waarde = isoleer(eq, naam)
 						if waarde then
-							local eq = {fn=X':=', naam, waarde}
+							local eq = X(':=', naam, waarde)
 							subst[eq] = true
 							--if verbozeOplos then print('SUBST', exp2string(eq)) end
 						end
 					end
 				end
 			end
+		end
+
+		for sub in pairs(subst) do
+			check(sub)
 		end
 
 		if verbozeKennis then
@@ -566,7 +513,7 @@ function oplos(exp,voor)
 		local pijl2subst = {}
 		local bron2def = {}
 		for subst in pairs(subst) do
-			local naam,waarde = subst[1],subst[2]
+			local naam,waarde = subst.a[1],subst.a[2]
 			local bron0 = var(waarde,invoer)
 			local bron = {}
 			for k in pairs(bron0) do -- alleen naam is nodig
@@ -635,7 +582,7 @@ function oplos(exp,voor)
 		-- O(diepte · sz)
 		for i=#substs,1,-1 do
 			local sub = pijl2subst[substs[i]]
-			local naam,exp = sub[1],sub[2]
+			local naam,exp = sub.a[1],sub.a[2]
 			local val0 = val
 			local n
 			naam2exp[naam] = naam2exp[naam] or {}
@@ -664,10 +611,10 @@ function oplos(exp,voor)
 		-- functies toepassen
 		--error(exp2string(val))
 		for exp in boompairs(val) do
-			if isfn(exp) and fn(exp.fn) == '_fn' then
-				local waarde = exp.fn[1]
-				for i=2,#exp.fn do
-					local narg = exp.fn[i]
+			if isfn(exp) and fn(exp.f) == '_fn' then
+				local waarde = exp.f[1]
+				for i=2,#exp.f do
+					local narg = exp.f[i]
 					local arg = X('_arg', narg)
 					local param = exp[i-1]
 				--error('sjaakpot')
@@ -681,7 +628,7 @@ function oplos(exp,voor)
 		-- opgelost
 		if verbozeWaarde then
 			print('=== WAARDE ===')
-			print(exp2string(val))
+			print(combineer(val))
 			print()
 		end
 
@@ -690,14 +637,14 @@ function oplos(exp,voor)
 		-- functie ontleding
 		--[=[
 		for eq in pairs(eqs) do
-			if eq.fn == [[=]] then
-				local fx,val = eq[1],eq[2]
+			if eq.f == [[=]] then
+				local fx,val = eq[1],eq.a[2]
 				-- (...) = f
-				if isexp(fx) then
+				if isfn(fx) then
 					-- (f x) = g
-					if not isinvoer(fx.fn) and not isinvoer(fx[1]) and bevat(val, fx[1]) then
-						eq[1] = fx.fn
-						eq[2] = toexp {fn='->', fx[1], val}
+					if not isinvoer(fx.f) and not isinvoer(fx[1]) and bevat(val, fx[1]) then
+						eq[1] = fx.f
+						eq.a[2] = toexp {f='→', fx[1], val}
 					end
 				end
 			end
