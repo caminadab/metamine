@@ -53,13 +53,32 @@ local function opspoor(exp, tcs)
 				ins(tcs, exp)
 				tcs[#tcs].code = exp.code
 			end
-			local fntype = std[fn(exp)]
-			assert(fntype, 'onbekende standaardfunctie '..fn(exp))
-			if fntype.a then
-				ins(tcs, X(':', exp.a, fntype.a[1]))
-				tcs[#tcs].code = exp.code
-				ins(tcs, X(':', exp, fntype.a[2]))
-				tcs[#tcs].code = exp.code
+			local fntype = fn(exp) == '_' and isatoom(exp.a[1]) and std[atoom(exp.a[1])]
+
+			if fntype then
+
+				--print('FNTYPE', fntype and combineer(fntype))
+
+				if fntype.a then
+					ins(tcs, X(':', exp.a[2], fntype.a[1]))
+					tcs[#tcs].code = exp.code
+					ins(tcs, X(':', exp, fntype.a[2]))
+					tcs[#tcs].code = exp.code
+					--ins(tcs, X(':', exp.f, fntype.f))
+					--tcs[#tcs].code = exp.code
+				end
+
+			else
+
+				fntype = fntype or std[fn(exp)]
+				assert(fntype, 'onbekende standaardfunctie '..fn(exp))
+				if fntype.a then
+					ins(tcs, X(':', exp.a, fntype.a[1]))
+					tcs[#tcs].code = exp.code
+					ins(tcs, X(':', exp, fntype.a[2]))
+					tcs[#tcs].code = exp.code
+				end
+
 			end
 		end
 	end
@@ -79,6 +98,9 @@ end
 function verwerk(cons, typegraaf, types, fouten)
 	local ncons = {}
 	for i, con in ipairs(cons) do
+		if verbozeTypes then
+			print('typeer', combineer(con))
+		end
 		if fn(con) == ':' then
 			local exp,type = con.a[1], con.a[2]
 			--local ok = typegraaf:link(type)
@@ -108,12 +130,12 @@ function verwerk(cons, typegraaf, types, fouten)
 					end
 				end
 			else
-				if verbozeTypes then
-					print('typeer', combineer(exp), combineer(type))
-				end
 				typegraaf:link(type)
 				types[moes(exp)] = type
 			end
+		
+		elseif fn(con) == '=' then
+			--error'OK'
 		end
 	end
 	return ncons

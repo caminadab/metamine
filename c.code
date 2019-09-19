@@ -1,2 +1,2 @@
-uit = f "hoi"
-f = x → x + 1
+uit = cirkel(a, 3)
+a = (1,"hoi")
