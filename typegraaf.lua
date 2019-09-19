@@ -94,7 +94,7 @@ function metatypegraaf:paramtype(type, paramtype)
 		--print('PARAMTYPE', doel, _G.type(doel))
 		local t = self.types[doel]
 		assert(t, 'geen type voor '..doel)
-		if t.f and moes(t.f) == moes(paramtype) then
+		if paramtype and t.f and moes(t.f) == moes(paramtype) then
 			return table.unpack(t)
 		end
 		local nieuwdoel = nil
@@ -166,10 +166,18 @@ function metatypegraaf:link(type, super)
 		self.types[supermoes] = super
 		return
 	end
+	if not self.types[typemoes] and fn(super) == '_' then
+		self:link(super, super.a[1])
+		--print('LINK', combineer(super), combineer(super.a[1]))
+		self.types[typemoes] = type
+		self.types[supermoes] = super
+		self:link(type, super)
+	end
 	if not self.types[supermoes] then
 		-- auto
-		if fn(super) == 'lijst' or fn(super) == 'set' then
-			super = self:link(super, super.f)
+		if fn(super) == '_' then -- and (fn(super.a[1]) == 'lijst' or fn(super.a[1]) == 'set' or fn(super.a[1]) == 'tupel') then
+			super = self:link(super, super.a[1])
+			--print('LINK', combineer(super), combineer(super.a[1]))
 		else
 			--print(supermoes)
 			super = self:link(super, self.iets)

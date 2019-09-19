@@ -38,6 +38,13 @@
 	#define LIJST xlua_reflijst
 	#define LOC xlua_metloc
 	#define OBJ1 xlua_refobj1
+	/*
+	#define FN1(L,f,a,l) xlua_reffn1(L,f,a,nergens)
+	#define FN2(L,f,a,b,l) xlua_reffn2(L,f,a,b,nergens)
+	#define FN3(L,f,a,b,c,l) xlua_reffn3(L,f,a,b,c,nergens)
+	#define FN4(L,f,a,b,c,d,l) xlua_reffn4(L,f,a,b,c,d,nergens)
+	#define FN5(L,f,a,b,c,d,e,l) xlua_reffn5(L,f,a,b,c,d,e,nergens)
+	*/
 	#define FN1 xlua_reffn1
 	#define FN2 xlua_reffn2
 	#define FN3 xlua_reffn3
@@ -112,7 +119,6 @@
 %left ','
 %left '&' '|'
 %left "‖" "::"
-
 %nonassoc CALL
 %left "×" UNIE INTERSECTIE
 %left ".."
@@ -143,7 +149,7 @@ stats:
 ;
 
 stat:
-	exp
+	exp { $$ = LOC(L, $1, @1); }
 | ALS exp DAN NEWLINE block EIND   { $$ = FN2(L, A(L,"⇒", @1), $2, $5, @$); }
 | ALS exp DAN exp EIND             { $$ = FN2(L, A(L,"⇒", @1), $2, $4, @$); }
 | ALS exp DAN exp ANDERS exp EIND  { $$ = FN3(L, A(L,"⇒", @1), $2, $4, $6, @$); }
@@ -204,18 +210,18 @@ eind
 
 op:
 	'^' | '_' | "·" | '/' | '+' | '-'
-| '[' | ']' | '{' | '}'
+| "[]" | "{}"
 | "→" | "‖" | ".." | "×" | "⇒"
 | '=' | "≠" | "≈" | '>' | '<' | "≥" | "≤"
 | '|' | '&'
 | ":=" | "+=" | "-=" | "|=" | "&="
 | "⋂" | "∩" | "∪" | "⋃"
-| "⋀" | "∧" | "∨" | "⋁" | "exof" | "noch" | "¬"
+| "∧" | "∨" | "exof" | "noch" | "¬"
 | '.' | "∘" | ':' | "!:" | ">>" | "<<" | ','
 ;
 
 unop:
-	"¬" | '#' | "Σ"
+	"¬" | '#' | "Σ" | "⋀" | "⋁"
 ;
 
 single:

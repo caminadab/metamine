@@ -220,7 +220,7 @@ end
 
 -- typeer!
 --local function gekleurd(x, kleur)
-local types,fouten0 = typeer(mach)
+--local types,fouten0 = typeer(mach)
 
 if #fouten > 0 then
 	local exit = false
@@ -232,7 +232,7 @@ if #fouten > 0 then
 	end
 	-- TODO print
 	if exit then
-		--return
+		return
 	end
 end
 

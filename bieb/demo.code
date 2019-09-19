@@ -7,6 +7,12 @@ ctx = getContext(el)
 drawCanvas = clearCanvas ∘ (objs vouw (∘))
 canvas = objs → (drawCanvas(ctx) ⇒ "<canvas width='1280' height='720'></canvas>")
 
+; EN
+muisBeweegt = mouseMoves
+schermVerverst = screenRefreshes
+keyRight = toetsRechts
+out = uit
+
 ; toetsenbord
 toetsSpatie = toetsNeer(32)
 toetsLinks = toetsNeer(37)

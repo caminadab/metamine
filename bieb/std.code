@@ -1,12 +1,10 @@
 ; webspecifiek
 consolelog: tekst → bit
-vierkant: (ℝ, ℝ, ℝ) → (canvas → canvas)
-cirkel: (ℝ, ℝ, ℝ) → (canvas → canvas)
-rechthoek: (ℝ, ℝ, ℝ, ℝ) → (canvas → canvas)
-lijn: (ℝ, ℝ, ℝ, ℝ) → (canvas → canvas)
+vierkant: ((ℝ, ℝ), ℝ) → (canvas → canvas)
+cirkel: ((ℝ, ℝ), ℝ) → (canvas → canvas)
+rechthoek: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
+lijn: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 syscall: iets → int
-
-;uit: bit
 
 ; getal
 getal: iets
@@ -23,7 +21,6 @@ lijst: verzameling
 tupel: verzameling
 zak: verzameling
 (→): iets
-(,): tupel
 
 succ: nat → nat
 sin :  getal → getal
@@ -42,10 +39,9 @@ sincos :  getal → (getal, getal)
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
 (#) :  verzameling → int
-;([) : lijst
-;(=) :  (iets, iets) → bit 
+(=) :  (iets, iets) → bit 
+(‖) :  lijst, lijst → lijst
 ;(→) :  (iets,iets) → (iets → iets)
-;(||) :  (lijst, lijst) → lijst
 
 ; set!
 set: verzameling
@@ -64,7 +60,7 @@ set: verzameling
 (≤) :  (getal, getal) → bit
 (<) :  (getal, getal) → bit
 (∧) : (bit, bit) → bit
-;(⋀) : iets → bit
+(⋀) : lijst → bit
 (⋁) : verzameling bit → bit
 
 ; multi
@@ -82,6 +78,9 @@ entier: getal → int
 
 (iets → iets) : iets
 (iets → int) : iets
+
+(_) :  ((→), iets) → iets
+map: (lijst(a), (a → b)) → lijst(b)
 
 byte: int
 teken: int
