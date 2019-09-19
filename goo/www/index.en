@@ -13,6 +13,7 @@ a1web			A webservice translates your code to javascript. Your device then runs t
 vraag			Ask!
 vraagverz	Question sent
 stelvraag	Ask your question...
+episch1		; TODO
 demo1			; every program needs to define 'out'\nout = "hoi"
 demo2			; you can define variables\na = 3\nb = 2\nout = a + b
 demo3			; movable circle (use the arrow keys)\nx := 10\ny := 5\nif keyRight then x := x' + 0.1 end\nif keyLeft then x := x' - 0.1 end\nout = canvas [ circle(x,y,1) ]

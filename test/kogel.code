@@ -1,0 +1,8 @@
+kogel: getal,getal
+
+kogelpos = (k₀+1/10, k₁)
+kogelstraal = (i → k₀/4/i)
+tekenkogel = k → (0..10) map (i → cirkel(kogelpos, kogelstraal))
+
+a = tekenkogel(2,3)
+uit = canvas [a]
