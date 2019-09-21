@@ -6,6 +6,8 @@ rechthoek: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 lijn: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 syscall: iets → int
 
+stduitSchrijf: tekst → int
+
 ; getal
 getal: iets
 int: getal
@@ -34,12 +36,13 @@ sincos :  getal → (getal, getal)
 (·) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
 (/) :  (int, int) → getal
-;(^) :  (getal, getal) → getal
+(^) :  (getal, getal) → getal
 ;(^) :  (int, int) → int
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
 (#) :  verzameling → int
 (=) :  (iets, iets) → bit 
+(:=) :  (iets, iets) → bit 
 (‖) :  lijst, lijst → lijst
 ;(→) :  (iets,iets) → (iets → iets)
 
@@ -54,7 +57,8 @@ set: verzameling
 ;(⋃) : (aantal set) → set
 
 ; logica
-;(⇒) : (bit, iets) → iets
+(⇒) : (bit, iets) → iets
+(') : iets → iets
 (>) :  (getal, getal) → bit
 (≥) :  (getal, getal) → bit
 (≤) :  (getal, getal) → bit
@@ -85,7 +89,7 @@ map: (lijst(a), (a → b)) → lijst(b)
 byte: int
 teken: int
 data: lijst byte
-;tekst: lijst teken
+tekst: iets → tekst
 
 looptijd : getal
 tijdstip : getal

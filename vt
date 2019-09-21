@@ -212,10 +212,10 @@ assert(asb, 'syntaxfout')
 -- machinespecifieke typechecker
 local t,fouten = typeer(asb)
 
-local mach = arch.x64(asb, t)
+--local mach = arch.x64(asb, t)
 if opt.R then
 	print('=== ARCH ===')
-	print(e2s(mach))
+--	print(e2s(mach))
 end
 
 -- typeer!
@@ -240,7 +240,7 @@ end
 if opt.O then
 	mach = optimaliseer(mach)
 end
-local uit,fouten,exp2naam = oplos(mach, "app")
+local uit,fouten,exp2naam = oplos(asb, "app")
 
 if not uit then
 	if not fouten[1] then

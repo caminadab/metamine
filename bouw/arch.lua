@@ -2,7 +2,7 @@ require 'typeer'
 
 arch = {}
 
-function arch.x64(exp, types)
+function arch.x64(exp, types, typegraaf)
 	local fops = set('+', '-', '*', '^', 'mod', 'abs', '/')
 	local iops = set('+', '-', '*', '^', 'mod', 'abs')
 	for sub in boompairs(exp) do

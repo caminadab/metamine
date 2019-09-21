@@ -47,7 +47,7 @@ function subs(exp)
 	end
 
 	if isobj(exp) then
-		local a = true
+		local a = false --true
 		local i = 0
 		return function()
 			if a then

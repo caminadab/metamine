@@ -1,1 +1,1 @@
-app = stduitSchrijf(uit)
+app = stduitSchrijf(tekst(uit))
