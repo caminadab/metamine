@@ -44,7 +44,7 @@ sincos :  getal → (getal, getal)
 (=) :  (iets, iets) → bit 
 (:=) :  (iets, iets) → bit 
 (‖) :  lijst, lijst → lijst
-;(→) :  (iets,iets) → (iets → iets)
+(→) :  (iets, iets) → (iets → iets)
 
 ; set!
 set: verzameling
@@ -84,7 +84,7 @@ entier: getal → int
 (iets → int) : iets
 
 (_) :  ((→), iets) → iets
-map: (lijst(a), (a → b)) → lijst(b)
+map: (lijst(A), (A → B)) → lijst(B)
 
 byte: int
 teken: int

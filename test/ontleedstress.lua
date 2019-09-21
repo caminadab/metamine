@@ -42,4 +42,9 @@ local voor = socket.gettime()
 local na = socket.gettime()
 local dt = na - voor
 print(string.format('%s feiten getypeerd in %d ms (%.1f kfeit/s, %.1f MB/s)', leeslijnen, dt*1000, leeslijnen/dt/1000, #code/1024/1024/dt))
+for i = 1,math.min(#fouten, 10) do
+	print(fout2ansi(fouten[i]))
+	error'OK'
+end
+
 print('Klaar!')

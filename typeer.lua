@@ -287,9 +287,9 @@ function typeer(exp)
 	-- kijk of ze alleen getypeerd zijn
 	for moes,exps in pairs(permoes) do
 		if not types[moes] and not typegraaf.types[moes] then
-			print(moes)
+			local exp = exps[1]
 			local fout = typeerfout(exp.loc or nergens,
-				"kon type niet bepalen van {code} "..moes,
+				"kon type niet bepalen van {code} ",
 					locsub(exp.code, exp.loc)
 			)
 			fouten[#fouten+1] = fout
