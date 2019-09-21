@@ -126,10 +126,10 @@ function typeerExp(exp, type, typegraaf, types, fouten, cons, permoes)
 
 		else
 			local fout = typeerfout(exp.loc,
-				"{code} is {exp} ({loc}) maar moet {exp} zijn ({loc})",
+				"{code} is {exp} maar moet {exp} zijn",
 				locsub(exp.code, exp.loc),
-				moet, moet.loc,
-				type, type.loc
+				moet,
+				type
 			)
 			fouten[#fouten+1] = fout
 		end
@@ -180,10 +180,10 @@ function verwerk(cons, typegraaf, types, fouten, permoes)
 
 					else
 						local fout = typeerfout(exp.loc,
-							"{code} is {exp} ({loc}) maar moet {exp} zijn ({loc})",
+							"{code} is {exp} maar moet {exp} zijn",
 							locsub(exp.code, exp.loc),
-							moettype, moettype.loc,
-							type, type.loc
+							type,
+							moettype
 						)
 						fouten[#fouten+1] = fout
 					end
