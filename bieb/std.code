@@ -6,6 +6,12 @@ rechthoek: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 lijn: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 syscall: iets → int
 
+schermVerverst: bit
+muisBeweegt: bit
+
+screenRefreshes: bit
+mouseMoves: bit
+
 stduitSchrijf: tekst → int
 
 ; getal
@@ -46,6 +52,10 @@ sincos :  getal → (getal, getal)
 (‖) :  lijst, lijst → lijst
 (→) :  (iets, iets) → (iets → iets)
 
+; functie
+(∘) : ((→), (→)) → (→)
+(_fn) : (→),iets → iets
+
 ; set!
 set: verzameling
 ({) : set
@@ -58,6 +68,8 @@ set: verzameling
 
 ; logica
 (⇒) : (bit, iets) → iets
+(|) : iets,iets → iets
+(¬) : bit → bit
 (') : iets → iets
 (>) :  (getal, getal) → bit
 (≥) :  (getal, getal) → bit
@@ -67,10 +79,11 @@ set: verzameling
 (⋀) : lijst → bit
 (⋁) : verzameling bit → bit
 
-; multi
+; lijst
 (Σ) : (verzameling getal) → getal
 ;(∫) : (ontelbaar getal) → getal
-(..) : (int, int) → lijst int
+(..) : (int, int) → lijst
+(×) : lijst, lijst → lijst
 
 ; util
 abs: getal → getal

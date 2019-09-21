@@ -127,16 +127,13 @@ function metatypegraaf:issubtype(type, super)
 
 	if obj(type) == ',' and obj(super) == ',' then
 		local alle = true
-		for i,sub in ipairs(type) do
-			if not self:issubtype(sub, super[i]) then
+		for i=1,#type do
+			if not self:issubtype(type[i], super[i]) then
 				alle = false
 				break
 			end
 		end
-		if alle then
-		end
-		return alle
-
+		return true --alle
 	end
 
 	-- (1..1000) : (..)

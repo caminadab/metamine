@@ -182,8 +182,8 @@ function verwerk(cons, typegraaf, types, fouten, permoes)
 						local fout = typeerfout(exp.loc,
 							"{code} is {exp} ({loc}) maar moet {exp} zijn ({loc})",
 							locsub(exp.code, exp.loc),
-							type, type.loc,
-							moettype, moettype.loc
+							moettype, moettype.loc,
+							type, type.loc
 						)
 						fouten[#fouten+1] = fout
 					end
@@ -286,7 +286,7 @@ function typeer(exp)
 	-- check
 	-- kijk of ze alleen getypeerd zijn
 	for moes,exps in pairs(permoes) do
-		if not types[moes] and not typegraaf.types[moes] then
+		if false and not types[moes] and not typegraaf.types[moes] then
 			local exp = exps[1]
 			local fout = typeerfout(exp.loc or nergens,
 				"kon type niet bepalen van {code} ",

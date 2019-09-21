@@ -25,7 +25,8 @@ function vertaal(code, doel)
 	end
 	--local typeerfouten = {}
 
-	local mach = arch[doel](asb, types)
+	--local mach = arch[doel](asb, types)
+	local mach = asb
 	local uit,oplosfouten = oplos(mach, "app")
 
 	-- definitieve types
