@@ -195,6 +195,13 @@ for t in boompairs(asb) do
 	i = i + 1
 	--io.write(t.i..': '..exp2string(t), ' ')
 end
+function r(exp)
+	for i,sub in subs(exp) do
+		sub.super = exp
+		r(sub)
+	end
+end
+r(asb)
 
 -- vertolk
 if opt.lang == 'en' then

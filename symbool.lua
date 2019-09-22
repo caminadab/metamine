@@ -225,7 +225,15 @@ sym = {
 	start = X'start',
 	set = X'{}',
 	stop = X'stop',
+
+	int = X'int',
+	getal = X'getal',
+	lijst = X'lijst',
+	set = X'set',
+	tupe = X'tupel',
+	tekst = X'tekst',
 }
+symbool = sym
 
 if test then
 	local a = X('+', 'a', 'a')

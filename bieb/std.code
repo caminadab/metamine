@@ -5,6 +5,7 @@ cirkel: ((ℝ, ℝ), ℝ) → (canvas → canvas)
 rechthoek: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 lijn: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 syscall: iets → int
+canvas: lijst → canvas
 
 schermVerverst: bit
 muisBeweegt: bit
@@ -13,6 +14,7 @@ screenRefreshes: bit
 mouseMoves: bit
 
 stduitSchrijf: tekst → int
+app: int
 
 ; getal
 getal: iets
@@ -28,7 +30,20 @@ verzameling: iets
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
-(→): iets
+functie: iets
+(→): functie
+;(→): (iets, iets) → (→)
+
+; functie
+(×) : lijst, lijst → lijst
+(∘) : ((→), (→)) → (→)
+(⇒) : (bit, iets) → iets
+(|) : iets,iets → iets
+(_fn) : (→),iets → iets
+(_) :  ((→), iets) → iets
+map: lijst, (→) → lijst
+(=) :  (iets, iets) → bit 
+(→) :  (iets, iets) → (iets → iets)
 
 succ: nat → nat
 sin :  getal → getal
@@ -47,18 +62,12 @@ sincos :  getal → (getal, getal)
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
 (#) :  verzameling → int
-(=) :  (iets, iets) → bit 
 (:=) :  (iets, iets) → bit 
 (‖) :  lijst, lijst → lijst
-(→) :  (iets, iets) → (iets → iets)
-
-; functie
-(∘) : ((→), (→)) → (→)
-(_fn) : (→),iets → iets
 
 ; set!
 set: verzameling
-({) : set
+({}) : set
 (∩) : (set, set) → set
 (∪) : (set, set) → set
 ;(-) : (set, set) → set
@@ -67,8 +76,6 @@ set: verzameling
 ;(⋃) : (aantal set) → set
 
 ; logica
-(⇒) : (bit, iets) → iets
-(|) : iets,iets → iets
 (¬) : bit → bit
 (') : iets → iets
 (>) :  (getal, getal) → bit
@@ -83,7 +90,6 @@ set: verzameling
 (Σ) : (verzameling getal) → getal
 ;(∫) : (ontelbaar getal) → getal
 (..) : (int, int) → lijst
-(×) : lijst, lijst → lijst
 
 ; util
 abs: getal → getal
@@ -95,9 +101,6 @@ entier: getal → int
 
 (iets → iets) : iets
 (iets → int) : iets
-
-(_) :  ((→), iets) → iets
-map: (lijst(A), (A → B)) → lijst(B)
 
 byte: int
 teken: int

@@ -152,6 +152,10 @@ function locsub(code, loc)
 	return string.sub(code, apos, bpos-1)
 end
 
+function bron(exp)
+	return locsub(exp.code, exp.loc)
+end
+
 function expmoes(exp)
 	if exp.moes then
 		-- niets...
@@ -274,6 +278,21 @@ function exp2string(exp)
 	return '?'
 end
 e2s = exp2string
+
+local function permoesR(exp, moezen)
+	local m = moes(exp)
+	moezen[m] = moezen[m] or {}
+	moezen[m][#moezen[m]+1] = exp
+	for k,sub in subs(exp) do
+		permoesR(sub, moezen)
+	end
+end
+
+function permoes(exp)
+	local moezen = {}
+	permoesR(exp,  moezen)
+	return moezen
+end
 
 if test then
 	-- bevat
