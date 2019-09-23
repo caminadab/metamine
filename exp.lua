@@ -153,6 +153,9 @@ function locsub(code, loc)
 end
 
 function bron(exp)
+	if exp.super and obj(exp) == ',' and loctekst(exp.loc) == loctekst(exp.super.loc) then
+		return combineer(exp)
+	end
 	return locsub(exp.code, exp.loc)
 end
 

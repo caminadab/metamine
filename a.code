@@ -6,7 +6,7 @@ als toetsRechts en x' < 10 dan x := x' + 0.2 eind
 als toetsLinks en x' > 0 dan x := x' - 0.2 eind
 uit = canvas [ cirkel(x,y,1) ]
 
-canvas = a → a
+;canvas = canvasA → canvasB
 
 als toetsOmhoog en y' = 0 dan
 	sprongStart := looptijd

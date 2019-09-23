@@ -2,6 +2,7 @@
 Typegraaf
 	link
 	unie
+	intersectie
 	issubtype
 	issupertype
 	=
@@ -64,7 +65,41 @@ function typemt.__index:paramtype(ander)
 end
 local metatypegraaf = {}
 
+function metatypegraaf:maaktype(exp)
+	if type(exp) == 'string' then exp = ontleedexp(exp) end
+	check(exp)
+	exp.tg = self
+	return setmetatable(exp, typemt)
+end
+	
+
+-- superset
 function metatypegraaf:unie(a, b)
+	if isatoom(a) and isatoom(b) then
+		if self:issubtype(a, b) then
+			return a
+		elseif self:issubtype(b, a) then
+			return b
+		else
+			return self:maaktype(X'fout', self)
+		end
+	end
+	if isobj(a) and isobj(b) then
+		if obj(a) ~= obj(b) then
+			return maaktype(X'verzameling', self)
+		else
+			local t = {o = a.o}
+			for i=1,#a do
+				t[i] = self:unie(a[i], b[i])
+			end
+			return t
+		end
+	end
+	return maaktype(X'fout', self)
+end
+
+-- subset
+function metatypegraaf:intersectie(a, b)
 	if isatoom(a) and isatoom(b) then
 		if self:issubtype(a, b) then
 			return a
@@ -74,11 +109,11 @@ function metatypegraaf:unie(a, b)
 			return false
 		end
 	end
-	local t = {f = self:unie(a.f or a, b.f or b)}
+	local t = {f = self:intersectie(a.f or a, b.f or b)}
 	if not t.f then return false end
 	for i=1,math.max(#a, #b) do
 		if a[i] and b[i] then
-			t[i] = self:unie(a[i], b[i])
+			t[i] = self:intersectie(a[i], b[i])
 			if not t[i] then return false end
 		else
 			t[i] = a[i] or b[i]
@@ -110,6 +145,7 @@ end
 
 function metatypegraaf:issubtype(type, super)
 	if moes(type) == moes(super) then return true end
+
 	if self.graaf:stroomopwaarts(moes(super), moes(type)) then
 		return true
 	end
@@ -133,7 +169,7 @@ function metatypegraaf:issubtype(type, super)
 				break
 			end
 		end
-		return true --alle
+		return alle
 	end
 
 	-- (1..1000) : (..)

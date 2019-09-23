@@ -1,3 +1,10 @@
+; getal
+getal: iets
+int: getal
+nat: int ; natuurlijk getal (≥ 0)
+byte: nat ; nat < 256
+kommagetal: getal
+
 ; webspecifiek
 consolelog: tekst → bit
 vierkant: ((ℝ, ℝ), ℝ) → (canvas → canvas)
@@ -15,12 +22,6 @@ mouseMoves: bit
 
 stduitSchrijf: tekst → int
 app: int
-
-; getal
-getal: iets
-int: getal
-nat: int ; natuurlijk getal (≥ 0)
-byte: nat
 
 bit: iets
 ja: bit
@@ -51,12 +52,11 @@ cos :  getal → getal
 tan :  getal → getal
 sincos :  getal → (getal, getal)
 (+) :  (getal, getal) → getal
-(+) :  (int, int) → int
-(-) :  (getal, getal) → getal
+;(+) :  (int, int) → int
 (-) :  getal → getal
 (·) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
-(/) :  (int, int) → getal
+;(/) :  (int, int) → getal
 (^) :  (getal, getal) → getal
 ;(^) :  (int, int) → int
 ;(^) :  (int, int) → int
@@ -121,7 +121,6 @@ deel : (lijst, (int, int)) → lijst
 ;herhaal : ((→), int) → (→)
 waarvoor : (verzameling, (iets → bit)) → verzameling
 mod : (getal, getal) → getal
-kommagetal : getal
 
 ;-
 pos : (kommagetal, kommagetal)
