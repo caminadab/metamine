@@ -1,6 +1,7 @@
 require 'typegraaf'
 require 'ontleed'
 require 'symbool'
+require 'fout'
 
 local std = ontleed(file('bieb/std.code'), 'bieb/std.code')
 
@@ -42,7 +43,8 @@ function eztype(exp)
 end
 
 -- vind gave types
-local function ziektype(exp, types)
+-- (en vul constraints)
+local function ziektype(exp, types, todo, cons)
 	if isobj(exp) and obj(exp) == ',' then
 		local T = {o = exp.o}
 		for i,sub in ipairs(exp) do
@@ -54,6 +56,20 @@ local function ziektype(exp, types)
 			T[i] = zt
 		end
 		return T
+	end
+	if fn(exp) == '∘' then
+		local a,b = exp.a[1], exp.a[2]
+		local ta,tb = types[a], types[b]
+		if ta and tb then
+			cons[#cons+1] = X('=', ta.a[2], tb.a[1])
+			error'OK'
+			return X('→', ta.a[1], tb.a[2])
+		elseif false and ta then
+			cons[#cons+1] = X('=', ta.a[2], ta.a[1])
+		else
+			print("JOECHEI", combineer(exp))
+			todo[#todo+1] = exp
+		end
 	end
 end
 
@@ -76,12 +92,13 @@ function typeer(exp)
 	linkbieb(typegraaf)
 
 	function weestype(exp, type)
+		assert(type)
 		if types[moes(exp)] then
 			-- oude
 			local moet = types[moes(exp)]
 
 			-- nieuwe info!
-			if moes(type) == moes(moet) then
+			if moet and moes(type) == moes(moet) then
 				return
 
 			-- nieuwe info!
@@ -120,6 +137,7 @@ function typeer(exp)
 
 		-- her-evalueer de supers
 		for i,alt in ipairs(permoes[moes(exp)]) do
+			--print('her-eval', combineer(alt.super), alt.super and loctekst(alt.super.loc))
 			todo[#todo+1] = alt.super
 			--print('todo', combineer(todo[#todo]))
 		end
@@ -140,6 +158,14 @@ function typeer(exp)
 				weestype(exp, type.a[2]) -- res
 			end
 
+			-- constraints
+			if fn(exp) == '=' then
+				cons[#cons+1] = exp
+			elseif fn(exp) == '∘' then
+				--cons[#cons+1] = exp
+				--;error'OK'
+			end
+
 			-- recurseer
 			for k,sub in subs(exp) do
 				rec(sub)
@@ -149,16 +175,66 @@ function typeer(exp)
 	end
 	makkelijk(exp)
 
-	-- todo's
-	for i,exp in ipairs(todo) do
-		--print('todo', combineer(exp))
-		local ziek = ziektype(exp, types)
-		if ziek then
-			--print('ziek', combineer(ziek))
-			typegraaf:link(ziek)
-			weestype(exp, ziek)
+
+	-- itereren
+	local it = 1
+	local maxit = 10
+	while #cons > 0 and it <= maxit do
+
+		-- todo's
+		for i,exp in ipairs(todo) do
+			--print('todo', combineer(exp))
+			local ziek = ziektype(exp, types, cons)
+			if ziek then
+				print('ziek', combineer(ziek))
+				typegraaf:link(ziek)
+				weestype(exp, ziek)
+			end
 		end
+
+		local ncons = {}
+
+		-- constraints
+		for i,con in ipairs(cons) do
+			local a, b = con.a[1], con.a[2]
+			local ta, tb = types[moes(a)], types[moes(b)]
+			local type
+
+			if ta and tb then
+				local samen = typegraaf:intersectie(ta, tb)
+				if samen then
+					weestype(a, samen)
+					weestype(b, samen)
+				else
+					local exp = a
+					local fout = typeerfout(exp.loc or nergens,
+						"{code} moet {exp} zijn maar moet ook {exp} zijn, wat niet kan",
+						bron(exp),
+						ta, tb
+					)
+					fouten[#fouten+1] = fout
+				end
+			elseif ta then
+				weestype(b, ta)
+			elseif tb then
+				weestype(a, tb)
+			else
+				--ncons[#ncons+1] = con
+			end
+
+			ncons[#ncons+1] = con
+			it = it + 1
+		end
+
+		cons = ncons
 	end
+
+	--[[
+	if it > 2 then
+		local fout = typeerfout(nergens, "types te complex")
+		fouten[#fouten+1] = fout
+	end
+	]]
 
 	-- is alles getypeerd?
 	for moes,exps in pairs(permoes) do
@@ -176,6 +252,7 @@ function typeer(exp)
 		print()
 		print('# TYPEGRAAF')
 		print(typegraaf)
+		print()
 	end
 
 	return types, fouten

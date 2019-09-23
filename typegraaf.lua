@@ -77,9 +77,9 @@ end
 function metatypegraaf:unie(a, b)
 	if isatoom(a) and isatoom(b) then
 		if self:issubtype(a, b) then
-			return a
-		elseif self:issubtype(b, a) then
 			return b
+		elseif self:issubtype(b, a) then
+			return a
 		else
 			return self:maaktype(X'fout', self)
 		end
@@ -91,6 +91,9 @@ function metatypegraaf:unie(a, b)
 			local t = {o = a.o}
 			for i=1,#a do
 				t[i] = self:unie(a[i], b[i])
+				if not t[i] then
+					t[i] = X'iets'
+				end
 			end
 			return t
 		end
@@ -100,6 +103,9 @@ end
 
 -- subset
 function metatypegraaf:intersectie(a, b)
+	assert(a)
+	assert(b)
+	print('intersectie', combineer(a), combineer(b))
 	if isatoom(a) and isatoom(b) then
 		if self:issubtype(a, b) then
 			return a
@@ -109,14 +115,23 @@ function metatypegraaf:intersectie(a, b)
 			return false
 		end
 	end
-	local t = {f = self:intersectie(a.f or a, b.f or b)}
-	if not t.f then return false end
-	for i=1,math.max(#a, #b) do
-		if a[i] and b[i] then
-			t[i] = self:intersectie(a[i], b[i])
-			if not t[i] then return false end
+	if isfn(a) and isfn(b) and fn(a) == fn(b) then
+		local arg = self:intersectie(a.a, b.a)
+		return X(fn(a), arg)
+	end
+	if isobj(a) and isobj(b) then
+		if obj(a) ~= obj(b) or #a ~= #b then
+			return false
 		else
-			t[i] = a[i] or b[i]
+			local t = {o = a.o}
+			for i=1,#a do
+				t[i] = self:intersectie(a[i], b[i])
+				if not t[i] then
+					return false
+				end
+			end
+			print('merge', combineer(t))
+			return t
 		end
 	end
 	return t

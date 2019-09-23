@@ -1,2 +1,2 @@
-app = 1 + b
-b = []
+b = sin ∘ cos
+uit = b("hoi")
