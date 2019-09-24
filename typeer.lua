@@ -44,7 +44,7 @@ end
 
 -- vind gave types
 -- (en vul constraints)
-local function ziektype(exp, types, todo, cons)
+local function ziektype(exp, types, cons, typegraaf)
 	if isobj(exp) and obj(exp) == ',' then
 		local T = {o = exp.o}
 		for i,sub in ipairs(exp) do
@@ -57,17 +57,59 @@ local function ziektype(exp, types, todo, cons)
 		end
 		return T
 	end
-	if fn(exp) == '∘' then
+
+	-- (a → b)(a) = b
+	-- TA = (a → b)(a)
+	-- TB = b
+	-- FNA = (a → b)
+	-- ARGA = a
+	if fn(exp) == '_' then
+		local f,a = exp.a[1], exp.a[2]
+		local tf,ta = types[moes(f)], types[moes(a)]
+
+		-- compound functietype
+		if isfn(tf) and tf.a[1] and tf.a[2] and ta then
+			if tf.a[1] and moes(ta) ~= 'iets' and moes(tf.a[1]) ~= 'iets' then
+				if moes(ta) ~= moes(tf.a[1]) then
+					cons[#cons+1] = X(':', a, tf.a[1])
+					--print('constraint', combineer(cons[#cons]))
+				end
+			end
+			--assert(tf.a[2])
+			return tf.a[2]
+		end
+
+	elseif fn(exp) == '→' then
 		local a,b = exp.a[1], exp.a[2]
-		local ta,tb = types[a], types[b]
+		local ta,tb = types[moes(a)], types[moes(b)]
 		if ta and tb then
-			cons[#cons+1] = X('=', ta.a[2], tb.a[1])
-			error'OK'
+			return X('→', ta, tb)
+		end
+		
+
+	-- (ℝ → ℕ) ∘ (ℕ → ℝ) :  ℝ → ℝ
+	elseif fn(exp) == '∘' then
+		local a,b = exp.a[1], exp.a[2]
+		local ta,tb = types[moes(a)], types[moes(b)]
+		if ta and tb then
+
+			--if ta.a[2], tb.a[1] then
+			--	local imm = typegraaf
+			cons[#cons+1] = X(':', a, X('→', ta.a[2], tb.a[1]))
+			--cons[#cons+1] = X(':', b, X('→', tb.a[1], ta.a[2]))
+
+			--local immuit = ta.a[2]
+			--local immin = tb.a[1]
+			--if immuit and immin then
+
+			print('cons', combineer(cons[#cons]))
 			return X('→', ta.a[1], tb.a[2])
-		elseif false and ta then
+
+		elseif ta then
 			cons[#cons+1] = X('=', ta.a[2], ta.a[1])
+
 		else
-			print("JOECHEI", combineer(exp))
+			--print("JOECHEI", combineer(exp))
 			todo[#todo+1] = exp
 		end
 	end
@@ -136,6 +178,7 @@ function typeer(exp)
 		end
 
 		-- her-evalueer de supers
+		assert(permoes[moes(exp)], moes(exp))
 		for i,alt in ipairs(permoes[moes(exp)]) do
 			--print('her-eval', combineer(alt.super), alt.super and loctekst(alt.super.loc))
 			todo[#todo+1] = alt.super
@@ -186,7 +229,7 @@ function typeer(exp)
 			--print('todo', combineer(exp))
 			local ziek = ziektype(exp, types, cons)
 			if ziek then
-				print('ziek', combineer(ziek))
+				--print('ziek', combineer(ziek))
 				typegraaf:link(ziek)
 				weestype(exp, ziek)
 			end
@@ -200,6 +243,10 @@ function typeer(exp)
 			local ta, tb = types[moes(a)], types[moes(b)]
 			local type
 
+			if fn(con) == ':' then
+				weestype(con.a[1], con.a[2])
+			else
+
 			if ta and tb then
 				local samen = typegraaf:intersectie(ta, tb)
 				if samen then
@@ -208,7 +255,7 @@ function typeer(exp)
 				else
 					local exp = a
 					local fout = typeerfout(exp.loc or nergens,
-						"{code} moet {exp} zijn maar moet ook {exp} zijn, wat niet kan",
+						"{code} moet {exp} zijn maar moet ook {exp} zijn",
 						bron(exp),
 						ta, tb
 					)
@@ -220,6 +267,8 @@ function typeer(exp)
 				weestype(a, tb)
 			else
 				--ncons[#ncons+1] = con
+			end
+		
 			end
 
 			ncons[#ncons+1] = con

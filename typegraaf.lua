@@ -105,7 +105,7 @@ end
 function metatypegraaf:intersectie(a, b)
 	assert(a)
 	assert(b)
-	print('intersectie', combineer(a), combineer(b))
+	--print('intersectie', combineer(a), combineer(b))
 	if isatoom(a) and isatoom(b) then
 		if self:issubtype(a, b) then
 			return a
@@ -115,8 +115,11 @@ function metatypegraaf:intersectie(a, b)
 			return false
 		end
 	end
+	if isfn(a) and atoom(b) == '→' then return a end
+	if isfn(b) and atoom(a) == '→' then return b end
 	if isfn(a) and isfn(b) and fn(a) == fn(b) then
 		local arg = self:intersectie(a.a, b.a)
+		error(combineer( X(fn(a), arg)))
 		return X(fn(a), arg)
 	end
 	if isobj(a) and isobj(b) then
@@ -130,7 +133,6 @@ function metatypegraaf:intersectie(a, b)
 					return false
 				end
 			end
-			print('merge', combineer(t))
 			return t
 		end
 	end

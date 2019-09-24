@@ -1,2 +1,2 @@
-b = sin ∘ cos
-uit = b("hoi")
+g = sin ∘ (¬)
+uit = g(3) + 8
