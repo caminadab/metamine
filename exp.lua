@@ -15,9 +15,17 @@ function atoom(exp,i)
 	if exp[i] then return exp[i].v end
 end
 
+function kopieer(exp)
+	local t = {}
+	for k,v in pairs(exp) do
+		t[k] = v
+	end
+	return t
+end
+
 -- checkuhh
 local atomen = {}
-local lst, b = file('atomen.lst') or file('../atomen.lst')
+local lst, fout = file('atomen.lst') or file('../atomen.lst')
 for atoom in lst:gmatch('[^\n]+') do
 	atomen[atoom] = true
 end
@@ -60,7 +68,7 @@ function subs(exp)
 		end
 	end
 
-	error('onbekend: '..lenc(exp))
+	error('geen exp: '..lenc(exp))
 end
 
 function checkr(e, p, k)
@@ -169,12 +177,22 @@ function expmoes(exp)
 end
 moes = expmoes
 
-function assign(b, a)
-	b.moes = nil
+function a(exp)
+	return exp.a and exp.a[1]
+end
+
+function b(exp)
+	return exp.a and exp.a[2]
+end
+
+function assign(a, b)
+	if a == b then return a end
 	local keys = {}
-	for k in pairs(b) do keys[k] = true end
-	for k in pairs(keys) do b[k] = nil end
-	for k,v in pairs(a) do b[k] = v end
+	for k in pairs(a) do keys[k] = true end
+	for k in pairs(keys) do a[k] = nil end
+	for k,v in pairs(b) do a[k] = v end
+	for k,v in pairs(b) do a[k] = v end
+	return a
 end
 
 -- 1-gebaseerd

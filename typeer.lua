@@ -1,9 +1,9 @@
 require 'typegraaf'
 require 'ontleed'
 require 'symbool'
+require 'func'
 require 'fout'
-
-local std = ontleed(file('bieb/std.code'), 'bieb/std.code')
+require 'exp'
 
 local obj2sym = {
 	[','] = symbool.tupel,
@@ -12,297 +12,153 @@ local obj2sym = {
 	['[]u'] = symbool.tekst,
 }
 
+local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
+local supers = {}
+local std = {}
+
+for i,feit in ipairs(stdbron.a) do
+	if fn(feit) == ':' then
+		local t,s = a(feit), b(feit)
+		supers[t] = s
+		std[moes(t)] = s
+	end
+end
+
 function linkbieb(typegraaf)
-	for i,feit in ipairs(std.a) do
-		--print('FEIT', combineer(feit))
-		if fn(feit) == ':' then
-			local type, super = feit.a[1],feit.a[2]
-			typegraaf:link(type, super)
-			std[moes(feit.a[1])] = super
-		end
+	for t,s in pairs(supers) do
+		typegraaf:link(t, s)
 	end
 	return typegraaf
 end
 
-local typegraaf
-function eztype(exp)
+function eztypeer(exp)
 	if isatoom(exp) then
 		if tonumber(exp.v) then
 			if exp.v % 1 == 0 then
-				return symbool.int
+				return kopieer(symbool.int)
 			else
-				return symbool.getal
+				return kopieer(symbool.getal)
 			end
-		elseif std[exp.v] then
-			return std[exp.v]
+		elseif std[moes(exp)] then
+			--print('std', combineer(std[moes(exp)]))
+			return kopieer(std[moes(exp)])
 		end
-	end
-	if isobj(exp) then
+	elseif std[fn(exp)] then
+		--print('std fn', combineer(std[fn(exp)]))
+		local B = std[fn(exp)]
+		return kopieer(b(B))
+	elseif isobj(exp) then
 		return obj2sym[obj(exp)]
 	end
 end
 
--- vind gave types
--- (en vul constraints)
-local function ziektype(exp, types, cons, typegraaf)
-	if isobj(exp) and obj(exp) == ',' then
-		local T = {o = exp.o}
-		for i,sub in ipairs(exp) do
-			local zt = types[moes(sub)]
-			if not zt then
-				T = nil
-				break
-			end
-			T[i] = zt
-		end
-		return T
-	end
-
-	-- (a → b)(a) = b
-	-- TA = (a → b)(a)
-	-- TB = b
-	-- FNA = (a → b)
-	-- ARGA = a
-	if fn(exp) == '_' then
-		local f,a = exp.a[1], exp.a[2]
-		local tf,ta = types[moes(f)], types[moes(a)]
-
-		-- compound functietype
-		if isfn(tf) and tf.a[1] and tf.a[2] and ta then
-			if tf.a[1] and moes(ta) ~= 'iets' and moes(tf.a[1]) ~= 'iets' then
-				if moes(ta) ~= moes(tf.a[1]) then
-					cons[#cons+1] = X(':', a, tf.a[1])
-					--print('constraint', combineer(cons[#cons]))
-				end
-			end
-			--assert(tf.a[2])
-			return tf.a[2]
-		end
-
-	elseif fn(exp) == '→' then
-		local a,b = exp.a[1], exp.a[2]
-		local ta,tb = types[moes(a)], types[moes(b)]
-		if ta and tb then
-			return X('→', ta, tb)
-		end
-		
-
-	-- (ℝ → ℕ) ∘ (ℕ → ℝ) :  ℝ → ℝ
-	elseif fn(exp) == '∘' then
-		local a,b = exp.a[1], exp.a[2]
-		local ta,tb = types[moes(a)], types[moes(b)]
-		if ta and tb then
-
-			--if ta.a[2], tb.a[1] then
-			--	local imm = typegraaf
-			cons[#cons+1] = X(':', a, X('→', ta.a[2], tb.a[1]))
-			--cons[#cons+1] = X(':', b, X('→', tb.a[1], ta.a[2]))
-
-			--local immuit = ta.a[2]
-			--local immin = tb.a[1]
-			--if immuit and immin then
-
-			print('cons', combineer(cons[#cons]))
-			return X('→', ta.a[1], tb.a[2])
-
-		elseif ta then
-			cons[#cons+1] = X('=', ta.a[2], ta.a[1])
-
-		else
-			--print("JOECHEI", combineer(exp))
-			todo[#todo+1] = exp
-		end
-	end
-end
-
---[[
-zelfde moes = zelfde type
-eerst ez types & cons
-dan herhaal:
-	pas constraints toe
-	verwerk type ass
-]]
 function typeer(exp)
-	local types = {}
-	local todo = {} -- moezen
-	local cons = {} -- type constraints! (lijst equalities)
-	
-	local permoes = permoes(exp)
+	local typegraaf = linkbieb(maaktypegraaf())
+	local types = {} -- moes → type
+	local permoes = permoes(exp) -- moes → moezen
 	local fouten = {}
+	local maakvar = maakvars()
 
-	typegraaf = maaktypegraaf()
-	linkbieb(typegraaf)
-
-	function weestype(exp, type)
-		assert(type)
-		if types[moes(exp)] then
-			-- oude
-			local moet = types[moes(exp)]
-
-			-- nieuwe info!
-			if moet and moes(type) == moes(moet) then
-				return
-
-			-- nieuwe info!
-			elseif typegraaf:issubtype(type, moet) then
-				--todo[#todo+1] = X(':', exp, type)
-				--print(combineer(type) .. ' :: ' .. combineer(moet))
-				todo[#todo+1] = exp
-
-			-- voegt niets nieuws toe
-			elseif typegraaf:issubtype(moet, type) then
-				return
-
+	function moetzijn(ta, tb, exp)
+		if not ta then
+			if not tb then
+				ta = X'iets'
 			else
-				local fout = typeerfout(exp.loc,
-					"{code} is {exp} maar moet {exp} zijn",
-					bron(exp), type, moet
-				)
-				-- meer fouten krijgen
-				--type = typegraaf:unie(type, moet)
-				type = moet
-				fouten[#fouten+1] = fout
+				return tb
 			end
 		end
+		ta.var = ta.var or maakvar()
+		local tb = tb or ta
 
-		-- DESTRUCTUREER KOMMA's
-		if type and obj(type) == ',' and obj(exp) == ',' then
-			for i,sub in ipairs(exp) do
-				weestype(sub, type[i])
-			end
-		end
+		local intersectie = typegraaf:intersectie(ta, tb)
 
-		types[moes(exp)] = type
-		if verbozeTypes then
-			print('typeer', combineer(exp), combineer(type))
+		if not intersectie then
+			fouten[#fouten+1] = typeerfout(tb.loc,
+				'{code} is {exp} maar moet {exp} zijn',
+				bron(exp), ta, tb)
+			intersectie = tb
 		end
-
-		-- her-evalueer de supers
-		assert(permoes[moes(exp)], moes(exp))
-		for i,alt in ipairs(permoes[moes(exp)]) do
-			--print('her-eval', combineer(alt.super), alt.super and loctekst(alt.super.loc))
-			todo[#todo+1] = alt.super
-			--print('todo', combineer(todo[#todo]))
-		end
+		--print('ASSIGN', ta.var, combineer(exp), combineer(ta))
+		assign(ta, intersectie)
+		assign(tb, intersectie)
+		return ta
 	end
 
-	function makkelijk(exp)
-		function rec(exp)
-			-- makkelijke atomen
-			local type = eztype(exp)
-			if type then
-				weestype(exp, type)
-			end
+	function typeerrec(exp)
+		local ez = eztypeer(exp)
 
-			-- standaardfuncties
-			if isfn(exp) and std[fn(exp)] then
-				local type = std[fn(exp)]
-				weestype(exp.a, type.a[1]) -- arg
-				weestype(exp, type.a[2]) -- res
-			end
-
-			-- constraints
-			if fn(exp) == '=' then
-				cons[#cons+1] = exp
-			elseif fn(exp) == '∘' then
-				--cons[#cons+1] = exp
-				--;error'OK'
-			end
-
-			-- recurseer
-			for k,sub in subs(exp) do
-				rec(sub)
-			end
-		end
-		rec(exp)
-	end
-	makkelijk(exp)
-
-
-	-- itereren
-	local it = 1
-	local maxit = 10
-	while #cons > 0 and it <= maxit do
-
-		-- todo's
-		for i,exp in ipairs(todo) do
-			--print('todo', combineer(exp))
-			local ziek = ziektype(exp, types, cons)
-			if ziek then
-				--print('ziek', combineer(ziek))
-				typegraaf:link(ziek)
-				weestype(exp, ziek)
-			end
+		for k,sub in subs(exp) do
+			typeerrec(sub)
 		end
 
-		local ncons = {}
+		if fn(exp) == '=' then
+			local A = moes(a(exp))
+			local B = moes(b(exp))
+			-- verandert types[A] -- bewust!! dit voorkomt substitutie
+			local T = moetzijn(types[A], types[B], a(exp))
+			types[A] = T
+			types[B] = T
 
-		-- constraints
-		for i,con in ipairs(cons) do
-			local a, b = con.a[1], con.a[2]
-			local ta, tb = types[moes(a)], types[moes(b)]
-			local type
+		elseif std[fn(exp)] then
+			local type = std[fn(exp)]
+			local f,a = a(type), b(type)
 
-			if fn(con) == ':' then
-				weestype(con.a[1], con.a[2])
-			else
+			--moetzijn(exp.f, f
 
-			if ta and tb then
-				local samen = typegraaf:intersectie(ta, tb)
-				if samen then
-					weestype(a, samen)
-					weestype(b, samen)
-				else
-					local exp = a
-					local fout = typeerfout(exp.loc or nergens,
-						"{code} moet {exp} zijn maar moet ook {exp} zijn",
-						bron(exp),
-						ta, tb
-					)
-					fouten[#fouten+1] = fout
-				end
-			elseif ta then
-				weestype(b, ta)
-			elseif tb then
-				weestype(a, tb)
-			else
-				--ncons[#ncons+1] = con
-			end
-		
-			end
+		elseif fn(exp) == '∘' then
+			local f = a(exp)
+			local g = b(exp)
+			local F = moes(f)
+			local G = moes(g)
+			types[F] = types[F] or kopieer(std['∘'])
+			types[G] = types[G] or kopieer(std['∘'])
 
-			ncons[#ncons+1] = con
-			it = it + 1
+			-- tf : A → B
+			-- tg : B → C
+			local tf = types[F]
+			local tg = types[G]
+
+			local compositie = X('→', a(tf), b(tg))
+			print('Compositie Voor  '.. combineer(compositie))
+			moetzijn(b(tf), a(tg), exp)
+			moetzijn(types[moes(exp)], compositie, exp)
+			print('Compositie Na  '.. combineer(compositie))
+
+		elseif fn(exp) == '→' then
+			local f = a(exp)
+			local a = b(exp)
+			local F = moes(f)
+			local A = moes(a)
+
+			types[F] = types[F] or kopieer(std['→'])
+			types[A] = types[A] or kopieer(std['→'])
+
+			-- tf : A → B
+			-- tg : B → C
+			local tf = types[F]
+			local ta = types[A]
+			
+			-- a → b
+			local ftype = X('→', tf, ta)
+			moetzijn(types[moes(exp)], ftype, exp)
+
+
+		elseif ez then
+			--print('ezVoor', combineer(ez), combineer(types[moes(exp)]))
+			moetzijn(ez, types[moes(exp)], exp)
+			types[moes(exp)] = ez
+			--print('ez', combineer(exp)..' : '..combineer(ez)..'#', ez.var)
+
 		end
 
-		cons = ncons
 	end
 
-	--[[
-	if it > 2 then
-		local fout = typeerfout(nergens, "types te complex")
-		fouten[#fouten+1] = fout
-	end
-	]]
-
-	-- is alles getypeerd?
-	for moes,exps in pairs(permoes) do
-		if (not types[moes] or _G.moes(types[moes]) == 'iets') and not std[moes] and not typegraaf.types[moes] then
-			local exp = exps[1]
-			local fout = typeerfout(exp.loc or nergens,
-				"kon type niet bepalen van {code}",
-				isobj(exp) and combineer(exp) or locsub(exp.code, exp.loc)
-			)
-			fouten[#fouten+1] = fout
-		end
-	end
-
-	if verbozeTypegraaf then
-		print()
-		print('# TYPEGRAAF')
-		print(typegraaf)
-		print()
+	typeerrec(exp)
+	
+	for k,v in pairs(types) do
+		print(k .. ' : '.. combineer(v), '', v.var)
 	end
 
 	return types, fouten
 end
+

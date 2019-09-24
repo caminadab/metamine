@@ -119,7 +119,6 @@ function metatypegraaf:intersectie(a, b)
 	if isfn(b) and atoom(a) == '→' then return b end
 	if isfn(a) and isfn(b) and fn(a) == fn(b) then
 		local arg = self:intersectie(a.a, b.a)
-		error(combineer( X(fn(a), arg)))
 		return X(fn(a), arg)
 	end
 	if isobj(a) and isobj(b) then
@@ -136,7 +135,7 @@ function metatypegraaf:intersectie(a, b)
 			return t
 		end
 	end
-	return t
+	return a
 end
 
 -- paramtype('tekst', 'lijst') = 'teken'
