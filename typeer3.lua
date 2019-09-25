@@ -57,7 +57,7 @@ local function opspoor(exp, tcs)
 		elseif o == '{}' then
 			ins(tcs, X(':', exp, 'set'))
 		end
-		typeerExp(exp, 
+		--typeerExp(exp, 
 		tcs[#tcs].code = exp.code
 		tcs[#tcs].loc = exp.loc
 	else
@@ -358,12 +358,15 @@ function typeer(exp)
 	local prev = 1
 	types[moes(exp)] = X'⊤'
 	repeat
+		--[[
 		print()
 		print('Ronde #'..ronde)
 		print(#cons .. ' constraints')
 		for i = 1, #cons do
 			print("constraint", combineer(cons[i]))--, cons[i].loc and loctekst(cons[i].loc))
 		end
+		]]
+		]]
 
 		cons,conflicten = verwerk(cons, typegraaf, types, fouten, permoes)
 		--print(#cons..' over')

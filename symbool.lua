@@ -226,6 +226,7 @@ sym = {
 	set = X'{}',
 	stop = X'stop',
 
+	bit = X'bit',
 	int = X'int',
 	getal = X'getal',
 	lijst = X'lijst',

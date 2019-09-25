@@ -37,7 +37,7 @@ functie: iets
 
 ; functie
 (×) : lijst, lijst → lijst
-(∘) : ((→), (→)) → (→)
+(∘) : ((iets → iets), (iets → iets)) → (iets → iets)
 (⇒) : (bit, iets) → iets
 (|) : iets,iets → iets
 (_fn) : (→),iets → iets

@@ -221,7 +221,7 @@ function typeer(exp)
 	makkelijk(exp)
 
 	-- 
-	moeilijk(exp)
+	--moeilijk(exp)
 
 	-- itereren
 	local it = 1

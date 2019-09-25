@@ -31,6 +31,7 @@ function linkbieb(typegraaf)
 	return typegraaf
 end
 
+-- makkelijk type (int, atoomfunc)
 function eztypeer(exp)
 	if isatoom(exp) then
 		if tonumber(exp.v) then
@@ -40,11 +41,9 @@ function eztypeer(exp)
 				return kopieer(symbool.getal)
 			end
 		elseif std[moes(exp)] then
-			--print('std', combineer(std[moes(exp)]))
 			return kopieer(std[moes(exp)])
 		end
 	elseif std[fn(exp)] then
-		--print('std fn', combineer(std[fn(exp)]))
 		local B = std[fn(exp)]
 		return kopieer(b(B))
 	elseif isobj(exp) then
@@ -75,10 +74,11 @@ function typeer(exp)
 		if not intersectie then
 			fouten[#fouten+1] = typeerfout(tb.loc,
 				'{code} is {exp} maar moet {exp} zijn',
-				bron(exp), ta, tb)
+				bron(exp), kopieer(tb), kopieer(ta))
 			intersectie = tb
 		end
-		--print('ASSIGN', ta.var, combineer(exp), combineer(ta))
+
+		-- TODO wrm twee
 		assign(ta, intersectie)
 		assign(tb, intersectie)
 		return ta
@@ -98,12 +98,10 @@ function typeer(exp)
 			local T = moetzijn(types[A], types[B], a(exp))
 			types[A] = T
 			types[B] = T
+			types[moes(exp)] = symbool.bit
 
-		elseif std[fn(exp)] then
-			local type = std[fn(exp)]
-			local f,a = a(type), b(type)
-
-			--moetzijn(exp.f, f
+		elseif fn(exp) == '⋀' then
+			types[moes(exp)] = symbool.bit
 
 		elseif fn(exp) == '∘' then
 			local f = a(exp)
@@ -130,8 +128,8 @@ function typeer(exp)
 			local F = moes(f)
 			local A = moes(a)
 
-			types[F] = types[F] or kopieer(std['→'])
-			types[A] = types[A] or kopieer(std['→'])
+			types[F] = types[F] or X'iets'
+			types[A] = types[A] or X'iets'
 
 			-- tf : A → B
 			-- tg : B → C
@@ -140,24 +138,44 @@ function typeer(exp)
 			
 			-- a → b
 			local ftype = X('→', tf, ta)
+			--error('ftype '..combineer(ftype))
+
 			moetzijn(types[moes(exp)], ftype, exp)
 
-
 		elseif ez then
-			--print('ezVoor', combineer(ez), combineer(types[moes(exp)]))
 			moetzijn(ez, types[moes(exp)], exp)
 			types[moes(exp)] = ez
-			--print('ez', combineer(exp)..' : '..combineer(ez)..'#', ez.var)
+
+		elseif std[fn(exp)] then
+			local type = std[fn(exp)]
+			local f,a = a(type), b(type)
 
 		end
 
 	end
 
 	typeerrec(exp)
-	
-	for k,v in pairs(types) do
-		print(k .. ' : '.. combineer(v), '', v.var)
+
+	do return types, fouten end
+
+	-- is alles getypeerd?
+	for moes,exps in pairs(permoes) do
+		if (not types[moes] or _G.moes(types[moes]) == 'iets')
+				and not std[moes]
+				and not typegraaf.types[moes]
+				and moes:sub(1,1) ~= ',' then
+			local exp = exps[1]
+			local fout = typeerfout(exp.loc or nergens,
+				"kon type niet bepalen van {code}",
+				isobj(exp) and combineer(exp) or locsub(exp.code, exp.loc)
+			)
+			fouten[#fouten+1] = fout
+		end
 	end
+
+	--for k,v in pairs(types) do
+		--print(k .. ' : '.. combineer(v), '', v.var)
+	--end
 
 	return types, fouten
 end
