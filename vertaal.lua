@@ -7,16 +7,12 @@ require 'optimaliseer'
 require 'oplos'
 
 function vertaal(code, doel)
-	--opt = {T=true,L=true}
-	--verbozeTypes = true
 	local doel = doel or "im"
 	local maakvar = maakvars()
 
 	local code = code ..'\n' .. file('bieb/'..doel..'.code')
 
 	local asb,syntaxfouten = ontleed(code)
-
-	--local asb = cat(asb, asb2)
 
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)

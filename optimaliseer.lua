@@ -142,7 +142,7 @@ function optimaliseer(exp)
 	return ok and nexp or exp
 end
 
-if test then
+if test and false then
 	require 'ontleed'
 	require 'combineer'
 

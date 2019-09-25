@@ -1,16 +1,9 @@
-require 'util'
+require 'ontleed'
 require 'isoleer'
 require 'symbool'
 require 'vhgraaf'
 require 'lisp'
-
-local bieb = lisp [[
-(
-	(: getal in)
-	(: std-uit uit)
-	(: std-in in)
-)
-]]
+require 'util'
 
 -- herschrijft vergelijkingen
 function deduceer(feiten)
@@ -32,9 +25,6 @@ function deduceer(feiten)
 			end
 		end
 	end
-
-	-- extra toevoegen
-	local f = cat(f, bieb)
 
 	--[[
 	f[#f+1] = {':', 'cat', 'in'}

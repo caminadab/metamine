@@ -1,30 +1,49 @@
-package.path = package.path .. ';../?.lua'
+package.path = package.path ..';../?.lua'
 require 'util'
 require 'exp'
+require 'combineer'
+require 'test.langecode'
 
-local maakvar = maakvars()
+-- 1 MB
+local code,numlijnen = langecode(10 * 1024)
 
-local n = 1e4
-local t = {}
+-- ontleed
+require 'ontleed'
+local socket = require 'socket'
 
--- voor C
-t[#t+1] = '#include <stdio.h>'
-t[#t+1] = ''
-t[#t+1] = 'int main() {'
-t[#t+1] = '\tint v1 = 2;'
-t[#t+1] = '\tint v2 = 4;'
-t[#t+1] = '\tint v3 = 8;'
-t[#t+1] = '\tint v4 = 16;'
+ do return end
 
-for i=5,n do
-	t[#t+1] = string.format('\tint v%s = v%s + v%s - v%s + v%s;', i, i-1, i-2, i-3, i-4)
+
+
+--------------------- ONTLEED
+-- ⋀([](...))
+local voor = socket.gettime()
+local lang = ontleed(code)
+local na = socket.gettime()
+local dt = na - voor
+
+local snelheid = #code / 1000 / dt
+
+local leeslijnen = #lang.a
+print(string.format('%s lijnen (%.1f kB) ontleed in %d ms (%1.f klijnen/s, %.1f kB/s)',
+		leeslijnen, #code/1000, dt*1000, leeslijnen/dt/1000, snelheid))
+
+if numlijnen ~= leeslijnen then
+	print('FOUT!', leeslijnen..' lijnen ontleed, maar moeten er '..numlijnen..' zijn')
+	local feiten = lang.a
+	print(combineer(feiten[#feiten]))
 end
 
-t[#t+1] = '\tprintf("%d\\n", v'..n..');'
-t[#t+1] = '\treturn 0;'
-t[#t+1] = '}'
 
-local code = table.concat(t, '\n')
-file('groot.gen.c', code)
 
--- is 1030159046
+--------------------- TYPEER
+require 'typeer'
+
+local voor = socket.gettime()
+	local types,fouten = typeer(lang)
+local na = socket.gettime()
+local dt = na - voor
+print(string.format('%s feiten getypeerd in %d ms (%.1f kfeit/s, %.1f kB/s)', leeslijnen, dt*1000, leeslijnen/dt/1000, #code/1000/dt))
+for i = 1,math.min(#fouten, 10) do
+	print(fout2ansi(fouten[i]))
+end

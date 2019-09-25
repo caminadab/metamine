@@ -32,7 +32,7 @@ function linkbieb(typegraaf)
 end
 
 -- makkelijk type (int, atoomfunc)
-function eztypeer(exp)
+local function eztypeer(exp)
 	if isatoom(exp) then
 		if tonumber(exp.v) then
 			if exp.v % 1 == 0 then
@@ -43,7 +43,7 @@ function eztypeer(exp)
 		elseif std[moes(exp)] then
 			return kopieer(std[moes(exp)])
 		end
-	elseif std[fn(exp)] then
+	elseif false and std[fn(exp)] then
 		local B = std[fn(exp)]
 		return kopieer(b(B))
 	elseif isobj(exp) then
@@ -51,6 +51,7 @@ function eztypeer(exp)
 	end
 end
 
+-- exp → type, fouten
 function typeer(exp)
 	local typegraaf = linkbieb(maaktypegraaf())
 	local types = {} -- moes → type
@@ -71,16 +72,20 @@ function typeer(exp)
 
 		local intersectie = typegraaf:intersectie(ta, tb)
 
+		if intersectie and moes(intersectie) ~= moes(ta) then
+			print('nieuwe info', combineer(exp) .. ': '.. combineer(intersectie))
+		end
+
 		if not intersectie then
 			fouten[#fouten+1] = typeerfout(tb.loc,
 				'{code} is {exp} maar moet {exp} zijn',
 				bron(exp), kopieer(tb), kopieer(ta))
-			intersectie = tb
+			intersectie = ta
 		end
 
 		-- TODO wrm twee
 		assign(ta, intersectie)
-		assign(tb, intersectie)
+		--assign(tb, intersectie)
 		return ta
 	end
 
@@ -91,10 +96,21 @@ function typeer(exp)
 			typeerrec(sub)
 		end
 
-		if fn(exp) == '=' then
+		if obj(exp) == ',' then
+			local m = moes(exp)
+			local t = {o=X','}
+			for i,sub in ipairs(exp) do
+				local subtype = assert(types[moes(sub)])
+				t[i] = t[i] or subtype
+			end
+			types[m] = t
+			print('Tuple Type', combineer(t))
+
+		elseif fn(exp) == '=' then
 			local A = moes(a(exp))
 			local B = moes(b(exp))
 			-- verandert types[A] -- bewust!! dit voorkomt substitutie
+			types[A] = types[A] or X'iets'
 			local T = moetzijn(types[A], types[B], a(exp))
 			types[A] = T
 			types[B] = T
@@ -108,8 +124,8 @@ function typeer(exp)
 			local g = b(exp)
 			local F = moes(f)
 			local G = moes(g)
-			types[F] = types[F] or kopieer(std['∘'])
-			types[G] = types[G] or kopieer(std['∘'])
+			types[F] = types[F] or kopieer(a(a(std['∘'])))
+			types[G] = types[G] or kopieer(b(a(std['∘'])))
 
 			-- tf : A → B
 			-- tg : B → C
@@ -117,6 +133,8 @@ function typeer(exp)
 			local tg = types[G]
 
 			local compositie = X('→', a(tf), b(tg))
+			types[moes(exp)] = types[moes(exp)] or kopieer(b(std['∘']))
+
 			moetzijn(b(tf), a(tg), exp)
 			moetzijn(types[moes(exp)], compositie, exp)
 
@@ -136,25 +154,37 @@ function typeer(exp)
 			
 			-- a → b
 			local ftype = X('→', tf, ta)
-			--error('ftype '..combineer(ftype))
-
-			moetzijn(types[moes(exp)], ftype, exp)
+			--types[moes(exp)] = types[moes(exp)] or kopieer(b(std['→']))
+			--moetzijn(types[moes(exp)], ftype, exp)
+			types[moes(exp)] = ftype
 
 		elseif ez then
 			moetzijn(ez, types[moes(exp)], exp)
 			types[moes(exp)] = ez
 
+		-- standaardtypes
 		elseif std[fn(exp)] then
-			local type = std[fn(exp)]
-			local f,a = a(type), b(type)
+			local stdtype = std[fn(exp)]
+			local argtype = types[moes(exp.a)]
+			local inn, uit = a(stdtype), b(stdtype)
 
+			-- typeer arg
+			--types[moes(exp.a)] = types[moes(exp.a)] or inn
+			moetzijn(argtype, inn, exp.a)
+
+			-- typeer exp
+			types[moes(exp)] = uit
+
+		else
+			local m = moes(exp)
+			types[m] = types[m] or X'iets'
 		end
 
 	end
 
 	typeerrec(exp)
 
-	do return types, fouten end
+	do return types[moes(exp)], fouten, types end
 
 	-- is alles getypeerd?
 	for moes,exps in pairs(permoes) do

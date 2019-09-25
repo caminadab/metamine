@@ -118,3 +118,5 @@ function combineer(exp)
 	combineerR(exp, t, false)
 	return table.concat(t)
 end
+
+C = combineer

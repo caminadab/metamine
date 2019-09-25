@@ -1,14 +1,3 @@
---[[
-Typegraaf
-	link
-	unie
-	intersectie
-	issubtype
-	issupertype
-	=
-	<
-	tostring
-]]
 require 'stroom'
 require 'exp'
 
@@ -324,25 +313,4 @@ function maaktypegraaf()
 	t = setmetatable(t, {__index=metatypegraaf,__tostring=__tostring})
 
 	return t
-end
-
-if test then
-	require 'ontleed'
-	local O = ontleedexp
-
-	local g = maaktypegraaf()
-	--[[
-	g:link(maaktype('int → int'))
-	g:link(maaktype('getal → int'))
-	g:link(maaktype('getal → iets'))
-	]]
-	--g:link(maaktype('lijst int'))
-	--g:link(maaktype('lijst getal'))
-	local getal = g:link(maaktype('getal', g))
-	g:link(maaktype('int', g), getal)
-	local verzameling = maaktype('verzameling', g)
-	g:link(maaktype('lijst', g), verzameling)
-	g:link(maaktype('lijst int', g))
-	g:link(maaktype('lijst getal', g))
-	--g:link(maaktype('verzameling getal'))
 end

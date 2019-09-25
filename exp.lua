@@ -326,11 +326,8 @@ if test then
 	local e = subs(a)
 	local _,a = e()
 	local _,b = e()
-	local _,c = e()
 	assert(a)
 	assert(b)
-	assert(c)
-	assert(a.v == ',', e2s(a))
-	assert(b.v == '1', e2s(b))
-	assert(c.v == '2', e2s(c))
+	assert(a.v == '1', e2s(a))
+	assert(b.v == '2', e2s(b))
 end
