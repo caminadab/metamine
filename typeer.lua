@@ -117,10 +117,8 @@ function typeer(exp)
 			local tg = types[G]
 
 			local compositie = X('→', a(tf), b(tg))
-			print('Compositie Voor  '.. combineer(compositie))
 			moetzijn(b(tf), a(tg), exp)
 			moetzijn(types[moes(exp)], compositie, exp)
-			print('Compositie Na  '.. combineer(compositie))
 
 		elseif fn(exp) == '→' then
 			local f = a(exp)
@@ -172,10 +170,6 @@ function typeer(exp)
 			fouten[#fouten+1] = fout
 		end
 	end
-
-	--for k,v in pairs(types) do
-		--print(k .. ' : '.. combineer(v), '', v.var)
-	--end
 
 	return types, fouten
 end
