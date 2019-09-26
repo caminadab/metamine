@@ -8,9 +8,8 @@ local metastroom = {}
 function metastroom:stroomopwaarts(van, naar)
 	--print()
 	--print('# start')
-	--print(graaf:tekst())
 
-	--print(tostring(van)..' ?-> '..tostring(naar))
+	--print(tostring(naar)..' ?-> '..tostring(van))
 
 	if type(van) ~= 'table' then
 		van = {[van] = true}
@@ -45,7 +44,7 @@ function metastroom:stroomopwaarts(van, naar)
 end
 
 function metastroom:stroomafwaarts(naar, van)
-	return metastroom:stroomopwaarts(van, naar)
+	return self:stroomopwaarts(van, naar)
 end
 
 function pijl2tekst(pijl)

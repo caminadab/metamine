@@ -37,6 +37,7 @@ function metatypegraaf:unie(a, b)
 end
 
 -- subset
+-- destructief voor a (dat moet!)
 function metatypegraaf:intersectie(a, b)
 	assert(a)
 	assert(b)
@@ -44,32 +45,34 @@ function metatypegraaf:intersectie(a, b)
 		if self:issubtype(a, b) then
 			return a
 		elseif self:issubtype(b, a) then
-			return b
+			assign(a, b)
+			return a
 		else
-			print('atoom mismatch')
+			--print('atoom mismatch')
 			return false
 		end
 	end
-	if isfn(a) and atoom(b) == '→' then return a end
-	if isfn(b) and atoom(a) == '→' then assign(a, b) ; return a end
-	if fn(a) == fn(b) then
-		local arg = self:intersectie(a.a, b.a)
-		return X(fn(a), arg)
+	if fn(a) == '→' and atoom(b) == '→' then return a end
+	if fn(b) == '→' and atoom(a) == '→' then assign(a, b) ; return a end
+	if fn(a) and fn(a) == fn(b) then
+		a.a = self:intersectie(a.a, b.a)
+		return a
 	end
 	if isobj(a) and isobj(b) then
 		if obj(a) ~= obj(b) or #a ~= #b then
-			print('OBJ mismatch')
+			--print('OBJ mismatch')
 			return false
 		else
-			local t = {o = a.o}
 			for i=1,#a do
-				t[i] = self:intersectie(a[i], b[i])
-				if not t[i] then
-					print('geen intersectie tussen '..combineer(a[i])..' en '..combineer(b[i]))
-					return false
+				print(combineer(a[i]), combineer(b[i]))
+				a[i] = self:intersectie(a[i], b[i])
+				if not a[i] then
+					--print('geen intersectie tussen '..combineer(a[i])..' en '..combineer(b[i]))
+					a[i] = X'huh'
+					--return false
 				end
 			end
-			return t
+			return a
 		end
 	end
 	return a
@@ -96,12 +99,22 @@ function metatypegraaf:paramtype(type, paramtype)
 	error('geen param gevonden voor type '..exp2string(paramtype))
 end
 
+-- impropere subtype
 function metatypegraaf:issubtype(type, super)
-	assert(type)
-	assert(super)
 	if moes(type) == moes(super) then return true end
 
-	if self.graaf:stroomopwaarts(moes(super), moes(type)) then
+	-- ontologisch
+	if atoom(type) == 'iets' then
+		if atoom(super) == 'iets' then
+			return true
+		else
+			return false
+		end
+	elseif atoom(super) == 'iets' then
+		return true
+	end
+
+	if self.graaf:stroomafwaarts(moes(type), moes(super)) then
 		return true
 	end
 
@@ -117,6 +130,9 @@ function metatypegraaf:issubtype(type, super)
 	end
 
 	if obj(type) == ',' and obj(super) == ',' then
+		if #type ~= #super then
+			return false
+		end
 		local alle = true
 		for i=1,#type do
 			if not self:issubtype(type[i], super[i]) then
@@ -130,36 +146,19 @@ function metatypegraaf:issubtype(type, super)
 	-- (1..1000) : (..)
 	if isatoom(super) and isfn(type) then
 		if super.v == type.f.v then
-			return true
+			--return true
 		end
 
 	-- moeilijk gaan doen
 	elseif isfn(type) and isfn(super) and self:issubtype(type.f, super.f) then -- and moes(type.f) == moes(super.f) then
-		if #super ~= #type then return false end
-		--assert(#type == #super, "Type = "..moes(type)..", Super = "..moes(super))
-		local issub = true
-		for i=1,#type do
-			local skind = super[i]
-			local tkind = type[i]
-			if moes(skind) ~= moes(tkind) and not self.graaf:stroomopwaarts(moes(skind), moes(tkind)) then
-				--print('NIET, vanwege '..moes(skind)..' < '..moes(tkind))
-				issub = false
-			end
-		end
-		return issub
+		return self:issubtype(type.a, super.a)
 	end
 
 	return false
 end
 
-local typemeta = {}
-function typemeta:__eq(a, b)
-	return moes(a) == moes(b)
-end
-
 function metatypegraaf:maaktype(type, super)
 	assert(type)
-	assert(super)
 	if _G.type(type) == 'string' then type = ontleedexp(type) end
 	if _G.type(super) == 'string' then super = ontleedexp(super) end
 	if self.types[moes(type)] then return self.types[moes(type)] end
@@ -169,7 +168,7 @@ function metatypegraaf:maaktype(type, super)
 	typemoes = moes(type)
 	supermoes = moes(super)
 	if self.types[typemoes] then
-		self.graaf:link(set(typemoes), supermoes)
+		self.graaf:link(set(supermoes), typemoes)
 		self.types[typemoes] = type
 		self.types[supermoes] = super
 		return self.types[typemoes]

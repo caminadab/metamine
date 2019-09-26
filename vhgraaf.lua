@@ -1,5 +1,5 @@
-require 'stroom'
 require 'symbool'
+require 'stroom'
 require 'set'
 local print = function () end
 
@@ -67,7 +67,7 @@ local function sorteer(hgraaf, van, naar)
 		van = function(a) return not not van0[a] end
 	end
 	local maakstroom = stroom
-	local stroom = maakmaakstroom()
+	local stroom = maakstroom()
 	local nieuw = {}
 	local bekend = {}
 	local nuttig = {} -- gebruikte punten

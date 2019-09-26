@@ -101,8 +101,6 @@ function graaf2js(graaf, id, layout, map)
 			pseudo = next(pijl.van)
 		end
 
-		print('PSEUDO', pseudo, pijl.naar)
-
 		-- pijl (pseudo -> naar)
 		d[#d+1] = [[
 			{
@@ -196,7 +194,6 @@ function graaf2html(graaf, naam)
 	local typetabel = tabel(tt)
 
 	]]
-	seerec(graaf.pijlen)
 
 	local deel = tag('div', nil, {class='deel'})
 
@@ -232,7 +229,7 @@ function graaf2html(graaf, naam)
 			--div('infostroom', {class='deel'}),
 			--deel { typetabel },
 			div('afh', {class='deel'}),
-			js (graaf2js(graaf, 'afh', nil, map)),
+			js (graaf2js(graaf, 'afh', 'dagre', map)),
 			--js (graaf2js(vt.infostroom, 'infostroom', 'dagre', map)),
 			js [[
 				infostroom.on('mouseover', 'node', function(event) {

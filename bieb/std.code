@@ -1,9 +1,11 @@
 ; getal
-getal: iets
+supergetal: iets
+getal: supergetal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
+iets → iets: iets
 
 ; webspecifiek
 consolelog: tekst → bit
