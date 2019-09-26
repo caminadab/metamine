@@ -1,6 +1,6 @@
 require 'combineer'
 
-function tag(naam,id,props,autoclose)
+local function tag(naam,id,props,autoclose)
 	if type(id) == 'table' then
 		props = id
 		id = nil
@@ -98,7 +98,7 @@ function graaf2js(graaf, id, layout, map)
 			local exp = '' --unparseInfix(map[pijl])
 			d[#d+1] = "{ data: {id: '"..pseudo.."', exp: '"..exp.."'}, classes: 'hyper' },"
 		else
-			pseudo = next(pijl.van).v
+			pseudo = next(pijl.van)
 		end
 
 		-- pijl (pseudo -> naar)
@@ -172,7 +172,7 @@ function graaf2js(graaf, id, layout, map)
 end
 
 -- vt: (code, kennisgraaf, infostroom)
-function rapport(vt)
+function graaf2html(graaf)
 	--[[
 	local feiten = ontleed(code)
 	--local dfeiten = ontrafel(feiten)
@@ -229,7 +229,7 @@ function rapport(vt)
 			--div('infostroom', {class='deel'}),
 			--deel { typetabel },
 			div('afh', {class='deel'}),
-			js (graaf2js(vt.kennisgraaf, 'afh', nil, map)),
+			js (graaf2js(graaf, 'afh', nil, map)),
 			--js (graaf2js(vt.infostroom, 'infostroom', 'dagre', map)),
 			js [[
 				infostroom.on('mouseover', 'node', function(event) {

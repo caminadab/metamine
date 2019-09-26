@@ -1,9 +1,15 @@
-require 'ontleed'
 require 'typegraaf'
+require 'rapport'
+require 'ontleed'
+require 'util'
+
 
 local g = maaktypegraaf()
 
 local int = g:maaktype('getal')
 local getal = g:maaktype('int', 'getal')
 
-assert(g:issubtype(int, getal), '"int" is geen subset van "getal"')
+if not g:issubtype(int, getal) then
+	print('"int" is geen subset van "getal"))')
+	file('graaf.html', graaf2html(g))
+end
