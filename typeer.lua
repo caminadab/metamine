@@ -18,7 +18,7 @@ local std = {}
 
 for i,feit in ipairs(stdbron.a) do
 	if fn(feit) == ':' then
-		local t,s = a(feit), b(feit)
+		local t,s = arg0(feit), arg1(feit)
 		supers[t] = s
 		std[moes(t)] = s
 	end
@@ -31,7 +31,7 @@ function linkbieb(typegraaf)
 	return typegraaf
 end
 
--- makkelijk type (int, atoomfunc)
+-- makkelijke types (getallen & standaardatomen)
 local function eztypeer(exp)
 	if isatoom(exp) then
 		if tonumber(exp.v) then
@@ -59,18 +59,14 @@ function typeer(exp)
 	local fouten = {}
 	local maakvar = maakvars()
 
+	-- ta := ta ∩ tb
 	function moetzijn(ta, tb, exp)
-		if not ta then
-			if not tb then
-				ta = X'iets'
-			else
-				return tb
-			end
-		end
+		assert(ta)
+		assert(tb)
 		ta.var = ta.var or maakvar()
-		local tb = tb or ta
 
 		local intersectie = typegraaf:intersectie(ta, tb)
+		print('INTERSECTIE', combineer(ta), combineer(tb), combineer(intersectie))
 
 		if intersectie and moes(intersectie) ~= moes(ta) then
 			print('nieuwe info', combineer(exp) .. ': '.. combineer(intersectie))
@@ -100,18 +96,17 @@ function typeer(exp)
 			local m = moes(exp)
 			local t = {o=X','}
 			for i,sub in ipairs(exp) do
-				local subtype = assert(types[moes(sub)])
+				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
 				t[i] = t[i] or subtype
 			end
 			types[m] = t
-			print('Tuple Type', combineer(t))
 
 		elseif fn(exp) == '=' then
-			local A = moes(a(exp))
-			local B = moes(b(exp))
+			local A = moes(arg0(exp))
+			local B = moes(arg1(exp))
 			-- verandert types[A] -- bewust!! dit voorkomt substitutie
 			types[A] = types[A] or X'iets'
-			local T = moetzijn(types[A], types[B], a(exp))
+			local T = moetzijn(types[A], types[B], arg0(exp))
 			types[A] = T
 			types[B] = T
 			types[moes(exp)] = symbool.bit
@@ -120,27 +115,29 @@ function typeer(exp)
 			types[moes(exp)] = symbool.bit
 
 		elseif fn(exp) == '∘' then
-			local f = a(exp)
-			local g = b(exp)
-			local F = moes(f)
-			local G = moes(g)
-			types[F] = types[F] or kopieer(a(a(std['∘'])))
-			types[G] = types[G] or kopieer(b(a(std['∘'])))
+			local A = types[moes(arg0(exp))]
+			local B = types[moes(arg1(exp))]
 
-			-- tf : A → B
-			-- tg : B → C
-			local tf = types[F]
-			local tg = types[G]
+			print('voor', combineer(A), combineer(B))
+			moetzijn(A, std['→'], arg0(exp))
+			moetzijn(B, std['→'], arg1(exp))
+			print('na  ', combineer(A), combineer(B))
+			print('was', combineer(std['→']))
 
-			local compositie = X('→', a(tf), b(tg))
-			types[moes(exp)] = types[moes(exp)] or kopieer(b(std['∘']))
+			local  inA = arg0(A)
+			local uitA = arg1(A)
+			local  inB = arg0(B)
+			local uitB = arg1(B)
 
-			moetzijn(b(tf), a(tg), exp)
-			moetzijn(types[moes(exp)], compositie, exp)
+			-- compo
+			local compositie = X('→', inA, uitB)
+
+			moetzijn(uitA, inB, exp)
+			types[moes(exp)] = compositie
 
 		elseif fn(exp) == '→' then
-			local f = a(exp)
-			local a = b(exp)
+			local f = arg0(exp)
+			local a = arg1(exp)
 			local F = moes(f)
 			local A = moes(a)
 
@@ -159,14 +156,13 @@ function typeer(exp)
 			types[moes(exp)] = ftype
 
 		elseif ez then
-			moetzijn(ez, types[moes(exp)], exp)
 			types[moes(exp)] = ez
 
 		-- standaardtypes
 		elseif std[fn(exp)] then
 			local stdtype = std[fn(exp)]
 			local argtype = types[moes(exp.a)]
-			local inn, uit = a(stdtype), b(stdtype)
+			local inn, uit = arg0(stdtype), arg1(stdtype)
 
 			-- typeer arg
 			--types[moes(exp.a)] = types[moes(exp.a)] or inn

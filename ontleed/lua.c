@@ -510,24 +510,41 @@ int lua_ontleed(lua_State* L) {
 	return 2;
 }
 
+// ontleed(code [, bron])
 int lua_ontleedexp(lua_State* L) {
+	GL = L;
+	// voeg '\n' aan het einde toe
 	luaL_checkstring(L, 1);
+	lua_pushvalue(L, 1);
 	lua_pushliteral(L, "\n");
 	lua_concat(L, 2);
-	const char* str = lua_tostring(L, -1);
+	lua_replace(L, 1);
+
+	// code
+	const char* code = luaL_checkstring(L, 1);
+
+	lua_pushvalue(L, 1);
+		lua_setfield(L, LREG, "code");
+	//
 
 	yyscan_t scanner;
 	yylex_init(&scanner);
-	yy_scan_string(str, scanner);
+	yy_scan_string(code, scanner);
 
 	int ref;
-	lua_createtable(L, 0, 1);
+	lua_createtable(L, 0, 0);
 	int fouten = luaL_ref(L, LREG);
-	yyparse(L, &ref, &fouten, scanner);
+	int ok = yyparse(L, &ref, &fouten, scanner);
+
+	lua_pushnil(L);
+		lua_setfield(L, LREG, "code");
+
 	lua_rawgeti(L, LREG, ref);
 		lua_getfield(L, -1, "a");
 			lua_rawgeti(L, -1, 1);
-				lua_rawgeti(L, LREG, fouten);
+				lua_remove(L, -2);
+			lua_remove(L, -2);
+		lua_rawgeti(L, LREG, fouten);
 			yylex_destroy(scanner);
 			return 2;
 		//

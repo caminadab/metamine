@@ -167,7 +167,7 @@ function bron(exp)
 	return locsub(exp.code, exp.loc)
 end
 
-function expmoes(exp)
+function moes(exp)
 	if exp.moes then
 		-- niets...
 	else
@@ -175,13 +175,12 @@ function expmoes(exp)
 	end
 	return exp.moes
 end
-moes = expmoes
 
-function a(exp)
+function arg0(exp)
 	return exp.a and exp.a[1]
 end
 
-function b(exp)
+function arg1(exp)
 	return exp.a and exp.a[2]
 end
 

@@ -1,62 +1,10 @@
 require 'stroom'
 require 'exp'
 
-local moes = expmoes
-
-local typemt = {}
-
--- maak nieuw type!
-function maaktype(exp, tg)
-	assert(tg, 'geen typegraaf')
+-- exp
+function metatypegraaf:maaktype(exp, super)
 	if type(exp) == 'string' then exp = ontleedexp(exp) end
-	check(exp)
-	exp.tg = tg
-	return setmetatable(exp, typemt)
-end
-
-
-function typemt:__eq(other)
-	return moes(self) == moes(other)
-end
-
-function typemt:__tostring()
-	return exp2string(self)
-end
-
--- is subtype?
--- alleen f(...) : f
-function typemt:__lt(other)
-	if isatoom(other) and isfn(self) then
-		if other.v == self.f.v then
-			return true
-		end
-	end
-end
-
-typemt.__index = {}
-
-function typemt.__index:issubtype(ander)
-	if type(ander) == 'string' then
-		ander = maaktype(X(ander), self.tg)
-	elseif not ander.tg then
-		ander.tg = self.tg
-	end
-	return self.tg:issubtype(self, ander)
-end
-
-function typemt.__index:paramtype(ander)
-	if type(ander) == 'string' then
-		ander = maaktype(X(ander), self.tg)
-	elseif not ander.tg then
-		ander.tg = self.tg
-	end
-	return self.tg:paramtype(self, ander)
-end
-local metatypegraaf = {}
-
-function metatypegraaf:maaktype(exp)
-	if type(exp) == 'string' then exp = ontleedexp(exp) end
-	check(exp)
+	if type(super) == 'string' then exp = ontleedexp(exp) end
 	exp.tg = self
 	return setmetatable(exp, typemt)
 end
@@ -94,7 +42,6 @@ end
 function metatypegraaf:intersectie(a, b)
 	assert(a)
 	assert(b)
-	--print('intersectie', combineer(a), combineer(b))
 	if isatoom(a) and isatoom(b) then
 		if self:issubtype(a, b) then
 			return a
@@ -208,7 +155,7 @@ function metatypegraaf:link(type, super)
 		type = maaktype(type, self)
 	end
 	--print('LINK', type)
-	local super = super or self.iets
+	local super = super or kopieer(self.iets)
 	local supermoes, typemoes
 	typemoes = moes(type)
 	supermoes = moes(super)
