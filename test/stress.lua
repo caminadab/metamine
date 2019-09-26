@@ -11,10 +11,6 @@ local code,numlijnen = langecode(10 * 1024)
 require 'ontleed'
 local socket = require 'socket'
 
- do return end
-
-
-
 --------------------- ONTLEED
 -- ⋀([](...))
 local voor = socket.gettime()

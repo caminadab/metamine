@@ -4,15 +4,6 @@ require 'exp'
 -- protometatypegraaf
 metatypegraaf = {}
 
--- exp
-function metatypegraaf:maaktype(exp, super)
-	if type(exp) == 'string' then exp = ontleedexp(exp) end
-	if type(super) == 'string' then exp = ontleedexp(exp) end
-	exp.tg = self
-	return exp
-end
-
-
 -- superset
 function metatypegraaf:unie(a, b)
 	if isatoom(a) and isatoom(b) then
@@ -26,7 +17,7 @@ function metatypegraaf:unie(a, b)
 	end
 	if isobj(a) and isobj(b) then
 		if obj(a) ~= obj(b) then
-			return maaktype(X'verzameling', self)
+			return self:maaktype(X'verzameling')
 		else
 			local t = {o = a.o}
 			for i=1,#a do
@@ -57,7 +48,7 @@ function metatypegraaf:intersectie(a, b)
 	end
 	if isfn(a) and atoom(b) == '→' then return a end
 	if isfn(b) and atoom(a) == '→' then return b end
-	if isfn(a) and isfn(b) and fn(a) == fn(b) then
+	if fn(a) == fn(b) then
 		local arg = self:intersectie(a.a, b.a)
 		return X(fn(a), arg)
 	end
@@ -155,13 +146,19 @@ function metatypegraaf:issubtype(type, super)
 	return false
 end
 
-function metatypegraaf:link(type, super)
+local typemeta = {}
+function typemeta:__eq(a, b)
+	return moes(a) == moes(b)
+end
+
+function metatypegraaf:maaktype(type, super)
+	if _G.type(type) == 'string' then type = ontleedexp(type) end
+	if _G.type(super) == 'string' then super = ontleedexp(super) end
+	setmetatable(type, typemeta)
+	setmetatable(super, typemeta)
 	if self.types[moes(type)] then return end
-	if not getmetatable(type) then
-		type = self:maaktype(type, self)
-	end
 	--print('LINK', type)
-	local super = super or kopieer(self.iets)
+	local super = super or self.iets
 	local supermoes, typemoes
 	typemoes = moes(type)
 	supermoes = moes(super)
@@ -172,20 +169,20 @@ function metatypegraaf:link(type, super)
 		return
 	end
 	if not self.types[typemoes] and fn(super) == '_' then
-		self:link(super, super.a[1])
+		self:maaktype(super, super.a[1])
 		--print('LINK', combineer(super), combineer(super.a[1]))
 		self.types[typemoes] = type
 		self.types[supermoes] = super
-		self:link(type, super)
+		self:maaktype(type, super)
 	end
 	if not self.types[supermoes] then
 		-- auto
 		if fn(super) == '_' then -- and (fn(super.a[1]) == 'lijst' or fn(super.a[1]) == 'set' or fn(super.a[1]) == 'tupel') then
-			super = self:link(super, super.a[1])
+			super = self:maaktype(super, super.a[1])
 			--print('LINK', combineer(super), combineer(super.a[1]))
 		else
 			--print(supermoes)
-			super = self:link(super, self.iets)
+			super = self:maaktype(super, self.iets)
 		end
 	end
 	super = assert(self.types[supermoes], supermoes)
@@ -254,14 +251,16 @@ end
 --   graaf: stroom(moes)
 function maaktypegraaf()
 	local function tostring(t)
-		return t.graaf.tekst
+		return t.graaf:tekst()
 	end
-	local t = setmetatable({}, {__index=metatypegraaf,__tostring=tostring})
-	t.graaf = maakstroom()
-	t.iets = t:maaktype('iets', t)
-	t.niets = t:maaktype('niets', t)
-	t.types = {iets = t.iets, niets = t.niets}
 
+	local t = setmetatable({}, {__index=metatypegraaf,__tostring=tostring})
+	t.types = {iets = X'iets', niets = X'niets'}
+	t.iets = t.types.iets
+	t.niets = t.types.niets
+	t.graaf = maakstroom()
+	t.graaf:punt('iets')
+	t.graaf:punt('niets')
 
 	return t
 end
