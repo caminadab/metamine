@@ -76,7 +76,7 @@ function substitueer(exp, van, naar)
 		end
 	else
 		if isexp(van) then
-			if expmoes(exp) == expmoes(van) then
+			if moes(exp) == moes(van) then
 				naar.ref = van.ref
 				return naar, 1
 			end

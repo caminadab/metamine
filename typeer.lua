@@ -81,7 +81,8 @@ function typeer(exp)
 
 		-- TODO wrm twee
 		assign(ta, intersectie)
-		--assign(tb, intersectie)
+		assign(tb, intersectie)
+
 		return ta
 	end
 

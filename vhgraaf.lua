@@ -27,7 +27,7 @@ end
 
 -- deze wordt van achter (doel) naar voor (bron) opgebouwd
 local function traceerhalfnaar(hgraaf, halfvan, naar)
-	local halfnaar = stroom()
+	local halfnaar = maakstroom()
 	local nieuwe = {}
 
 	-- doel
@@ -67,7 +67,7 @@ local function sorteer(hgraaf, van, naar)
 		van = function(a) return not not van0[a] end
 	end
 	local maakstroom = stroom
-	local stroom = maakstroom()
+	local stroom = maakmaakstroom()
 	local nieuw = {}
 	local bekend = {}
 	local nuttig = {} -- gebruikte punten
@@ -100,7 +100,7 @@ local function sorteer(hgraaf, van, naar)
 	end
 	
 	if not next(nieuw) then
-		local halfvan = maakstroom()
+		local halfvan = maakmaakstroom()
 		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
 		return false, halfvan, halfnaar -- TODO werk terug
 	end

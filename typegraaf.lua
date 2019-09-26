@@ -1,14 +1,17 @@
 require 'stroom'
 require 'exp'
 
+-- protometatypegraaf
+metatypegraaf = {}
+
 -- exp
 function metatypegraaf:maaktype(exp, super)
 	if type(exp) == 'string' then exp = ontleedexp(exp) end
 	if type(super) == 'string' then exp = ontleedexp(exp) end
 	exp.tg = self
-	return setmetatable(exp, typemt)
+	return exp
 end
-	
+
 
 -- superset
 function metatypegraaf:unie(a, b)
@@ -48,6 +51,7 @@ function metatypegraaf:intersectie(a, b)
 		elseif self:issubtype(b, a) then
 			return b
 		else
+			print('atoom mismatch')
 			return false
 		end
 	end
@@ -59,12 +63,14 @@ function metatypegraaf:intersectie(a, b)
 	end
 	if isobj(a) and isobj(b) then
 		if obj(a) ~= obj(b) or #a ~= #b then
+			print('OBJ mismatch')
 			return false
 		else
 			local t = {o = a.o}
 			for i=1,#a do
 				t[i] = self:intersectie(a[i], b[i])
 				if not t[i] then
+					print('geen intersectie tussen '..combineer(a[i])..' en '..combineer(b[i]))
 					return false
 				end
 			end
@@ -152,7 +158,7 @@ end
 function metatypegraaf:link(type, super)
 	if self.types[moes(type)] then return end
 	if not getmetatable(type) then
-		type = maaktype(type, self)
+		type = self:maaktype(type, self)
 	end
 	--print('LINK', type)
 	local super = super or kopieer(self.iets)
@@ -247,17 +253,15 @@ end
 --   types: moes → type
 --   graaf: stroom(moes)
 function maaktypegraaf()
-	local t = {}
-	t.graaf = stroom()
-	t.iets = maaktype('iets', t)
-	t.niets = maaktype('niets', t)
+	local function tostring(t)
+		return t.graaf.tekst
+	end
+	local t = setmetatable({}, {__index=metatypegraaf,__tostring=tostring})
+	t.graaf = maakstroom()
+	t.iets = t:maaktype('iets', t)
+	t.niets = t:maaktype('niets', t)
 	t.types = {iets = t.iets, niets = t.niets}
 
-	function __tostring(t)
-		return t.graaf:tekst()
-	end
-
-	t = setmetatable(t, {__index=metatypegraaf,__tostring=__tostring})
 
 	return t
 end

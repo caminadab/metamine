@@ -667,23 +667,23 @@ if test then
 
 	local v,f = oplos(ontleed'a = (x → x + 1)(2)', 'a')
 	assert(v)
-	assert(expmoes(v) == '+(2 1)' or expmoes(v) == '+(_arg(0) 1)',
-		'v.b = '..expmoes(v)..' ≠ +(2 1)')
+	assert(moes(v) == '+(2 1)' or moes(v) == '+(_arg(0) 1)',
+		'v.b = '..moes(v)..' ≠ +(2 1)')
 
 	assert(oplos(ontleed('a = 2'), 'a').v == '2')
 
 	-- b = 2 + 2
 	local v = oplos(ontleed('a = 2\na + 2 = b'), 'b')
 	assert(v)
-	assert(expmoes(v) == '+(2 2)',
-		'v.b = '..expmoes(v)..' ≠ +(2 2)')
+	assert(moes(v) == '+(2 2)',
+		'v.b = '..moes(v)..' ≠ +(2 2)')
 
 	do return end
 
 	local v = oplos(ontleed('f(a) = f(b)\na = 2', 'b'))
 	assert(v)
-	assert(expmoes(v.b) == '2',
-		'v.b = '..expmoes(v.b)..' ≠ 2')
+	assert(moes(v.b) == '2',
+		'v.b = '..moes(v.b)..' ≠ 2')
 
 	local v = oplos(toexp(ontleed('f(a + 1) = f(b + 1)\na = 2')), 'b')
 	assert(v)

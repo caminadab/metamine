@@ -39,7 +39,7 @@ function plan(moet)
 			print('Onbekend tijdstip: '..moment)
 		end
 	end
-	local planning = stroom()
+	local planning = maakstroom()
 	planning:link(set(), start)
 	return planning
 end

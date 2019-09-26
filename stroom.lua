@@ -385,7 +385,7 @@ local stroommeta = {
 	__index = metastroom,
 }
 
-function stroom()
+function maakstroom()
 	local stroom = {
 		punten = {},
 		pijlen = {},
@@ -401,7 +401,7 @@ end
 
 if test then
 	-- bereikbaar disj
-	local graaf = stroom()
+	local graaf = maakstroom()
 	graaf:punt('a')
 	graaf:punt('b')
 	assert(not graaf:stroomopwaarts('a', 'b'))
@@ -409,7 +409,7 @@ if test then
 	assert(graaf:stroomopwaarts('a', 'b'))
 
 	-- link
-	local graaf = stroom()
+	local graaf = maakstroom()
 	graaf:punt('a')
 	graaf:punt('b')
 	assert(graaf:link({a=true}, 'b'))
@@ -417,7 +417,7 @@ if test then
 
 	-- superlink
 	-- a->b  a,b->c
-	local graaf = stroom()
+	local graaf = maakstroom()
 	graaf:punt('a')
 	graaf:punt('b')
 	graaf:punt('c')

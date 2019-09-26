@@ -181,7 +181,7 @@ function rapport(vt)
 	local afh,map = berekenbaarheid(dfeiten)
 	local infostroom, fout, half = afh:sorteer('in', 'uit')
 	infostroom = infostroom or half
-	if not infostroom then _G.print('OEPS'); infostroom = stroom() end
+	if not infostroom then _G.print('OEPS'); infostroom = maakstroom() end
 	-- types
 	local types = typeer(dfeiten)
 	local tt = {}
