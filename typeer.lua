@@ -26,7 +26,7 @@ end
 
 function linkbieb(typegraaf)
 	for t,s in pairs(supers) do
-		typegraaf:link(t, s)
+		typegraaf:maaktype(t, s)
 	end
 	return typegraaf
 end

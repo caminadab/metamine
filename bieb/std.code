@@ -77,7 +77,7 @@ set: verzameling
 
 ; logica
 (¬) : bit → bit
-(') : iets → iets
+;(') : iets → iets
 (>) :  (getal, getal) → bit
 (≥) :  (getal, getal) → bit
 (≤) :  (getal, getal) → bit

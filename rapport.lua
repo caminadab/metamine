@@ -85,7 +85,7 @@ function graaf2js(graaf, id, layout, map)
 	-- punten
 	local d = {}
 	for punt in spairs(graaf.punten) do
-		d[#d+1] = "{ data: {id: '"..tostring(punt).."'}, classes: 'waarde' },"
+		d[#d+1] = "{ data: {id: "..string.format('%q', punt).."}, classes: 'waarde' },"
 	end
 
 	-- pijlen
@@ -96,18 +96,20 @@ function graaf2js(graaf, id, layout, map)
 			-- pseudo punt
 			pseudo = rid()
 			local exp = '' --unparseInfix(map[pijl])
-			d[#d+1] = "{ data: {id: '"..pseudo.."', exp: '"..exp.."'}, classes: 'hyper' },"
+			d[#d+1] = "{ data: {id: " .. string.format('%q',pseudo) .. ", exp: 'ok'}, classes: 'hyper' },"
 		else
 			pseudo = next(pijl.van)
 		end
+
+		print('PSEUDO', pseudo, pijl.naar)
 
 		-- pijl (pseudo -> naar)
 		d[#d+1] = [[
 			{
 				data: {
 					id: ']]..rid()..[[',
-					source: ']] .. tostring(pseudo) .. [[',
-					target: ']] .. tostring(pijl.naar) .. [[',
+					source: ]] .. string.format('%q', pseudo) .. [[,
+					target: ]] .. string.format('%q', pijl.naar) .. [[,
 				}
 			},
 		]]
@@ -119,8 +121,8 @@ function graaf2js(graaf, id, layout, map)
 					{
 						data: {
 							id: ']]..id..[[',
-							source: ']] .. tostring(van) .. [[',
-							target: ']] .. tostring(pseudo) .. [[',
+							source: ]] .. string.format('%q', van) .. [[,
+							target: ]] .. string.format('%q', pseudo) .. [[,
 						}
 					},
 				]]
@@ -172,7 +174,7 @@ function graaf2js(graaf, id, layout, map)
 end
 
 -- vt: (code, kennisgraaf, infostroom)
-function graaf2html(graaf)
+function graaf2html(graaf, naam)
 	--[[
 	local feiten = ontleed(code)
 	--local dfeiten = ontrafel(feiten)
@@ -194,13 +196,14 @@ function graaf2html(graaf)
 	local typetabel = tabel(tt)
 
 	]]
+	seerec(graaf.pijlen)
 
 	local deel = tag('div', nil, {class='deel'})
 
 	return html {
 		head {
 			meta_charset(),
-			title 'Rapport',
+			title(naam),
 			css [[
 				.deel {
 					width: calc(100% - 50px);
