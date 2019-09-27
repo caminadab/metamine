@@ -55,15 +55,17 @@ function subs(exp)
 	end
 
 	if isobj(exp) then
-		local a = false --true
+		local a = nil --true
 		local i = 0
 		return function()
 			if a then
-				a = false
+				a = nil
 				return "o", exp.o
 			else
 				i = i + 1
-				return (exp[i] and i), exp[i]
+				if exp[i] then
+					return i, exp[i]
+				end
 			end
 		end
 	end
@@ -72,6 +74,7 @@ function subs(exp)
 end
 
 function checkr(e, p, k)
+assert(k)
 	if not e then
 		error(string.format('%s[%s] = nil', e2s(p), k))
 	end

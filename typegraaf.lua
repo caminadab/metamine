@@ -1,5 +1,6 @@
 require 'combineer'
 require 'stroom'
+require 'fout'
 require 'exp'
 
 -- ∘_∘
@@ -7,97 +8,6 @@ local moes = combineer
 
 -- protometatypegraaf
 local metatypegraaf = {}
-
--- superset
-function metatypegraaf:unie(a, b)
-	if isatoom(a) and isatoom(b) then
-		if self:issubtype(a, b) then
-			return b
-		elseif self:issubtype(b, a) then
-			return a
-		else
-			return self:maaktype('fout')
-		end
-	end
-	if isobj(a) and isobj(b) then
-		if obj(a) ~= obj(b) then
-			return self:maaktype(X'verzameling')
-		else
-			local t = {o = a.o}
-			for i=1,#a do
-				t[i] = self:unie(a[i], b[i])
-				if not t[i] then
-					t[i] = X'iets'
-				end
-			end
-			return t
-		end
-	end
-	return self:maaktype('fout')
-end
-
--- subset
--- destructief voor a (dat moet!)
-function metatypegraaf:intersectie(a, b)
-	assert(a)
-	assert(b)
-	if isatoom(a) and isatoom(b) then
-		if self:issubtype(a, b) then
-			return a
-		elseif self:issubtype(b, a) then
-			assign(a, b)
-			return a
-		else
-			--print('atoom mismatch')
-			return false
-		end
-	end
-	if fn(a) == '→' and atoom(b) == '→' then return a end
-	if fn(b) == '→' and atoom(a) == '→' then assign(a, b) ; return a end
-	if fn(a) and fn(a) == fn(b) then
-		a.a = self:intersectie(a.a, b.a)
-		return a
-	end
-	if isobj(a) and isobj(b) then
-		if obj(a) ~= obj(b) or #a ~= #b then
-			--print('OBJ mismatch')
-			return false
-		else
-			for i=1,#a do
-				print(combineer(a[i]), combineer(b[i]))
-				a[i] = self:intersectie(a[i], b[i])
-				if not a[i] then
-					--print('geen intersectie tussen '..combineer(a[i])..' en '..combineer(b[i]))
-					a[i] = X'huh'
-					--return false
-				end
-			end
-			return a
-		end
-	end
-	return a
-end
-
--- paramtype('tekst', 'lijst') = 'teken'
-function metatypegraaf:paramtype(type, paramtype)
-	local doel = moes(type)
-	while doel do
-		--print('PARAMTYPE', doel, _G.type(doel))
-		local t = self.types[doel]
-		assert(t, 'geen type voor '..doel)
-		if paramtype and t.f and moes(t.f) == moes(paramtype) then
-			return table.unpack(t)
-		end
-		local nieuwdoel = nil
-		for pijl in self.graaf:naar(doel) do
-			local bron = next(pijl.van)
-			nieuwdoel = bron
-		end
-		doel = nieuwdoel
-	end
-	do return X'iets' end
-	error('geen param gevonden voor type '..exp2string(paramtype))
-end
 
 -- impropere subtype
 function metatypegraaf:issubtype(type, super)
@@ -163,7 +73,13 @@ function metatypegraaf:maaktype(type, super)
 	if _G.type(super) == 'string' then super = ontleedexp(super) end
 	if self.types[moes(type)] then return self.types[moes(type)] end
 	--print('LINK', type)
-	local super = super or self.iets
+
+	if not super and fn(type) == '→' then super = X'functie' end
+	if not super and obj(type) == ',' then super = X'tupel' end
+	if not super and obj(type) == '[]' then super = X'lijst' end
+	if not super and obj(type) == '{}' then super = X'set' end
+  
+	local super = super or X'iets' --self.iets
 	local supermoes, typemoes
 	typemoes = moes(type)
 	supermoes = moes(super)
@@ -249,6 +165,116 @@ function metatypegraaf:maaktype(type, super)
 	--end
 
 	return type
+end
+
+-- superset
+function metatypegraaf:unie(a, b)
+	if isatoom(a) and isatoom(b) then
+		if self:issubtype(a, b) then
+			return b
+		elseif self:issubtype(b, a) then
+			return a
+		else
+			return self:maaktype('fout')
+		end
+	end
+	if isobj(a) and isobj(b) then
+		if obj(a) ~= obj(b) then
+			return self:maaktype(X'verzameling')
+		else
+			local t = {o = a.o}
+			for i=1,#a do
+				t[i] = self:unie(a[i], b[i])
+				if not t[i] then
+					t[i] = X'iets'
+				end
+			end
+			return t
+		end
+	end
+	return self:maaktype('fout')
+end
+
+-- subset
+-- destructief voor a (dat moet!)
+function metatypegraaf:intersectie(a, b, exp)
+	assert(a)
+	assert(b)
+	local exp = exp or X'?'
+
+	if isatoom(a) and isatoom(b) then
+		if self:issubtype(a, b) then
+			return a
+		elseif self:issubtype(b, a) then
+			assign(a, b)
+			return a
+		else
+			--print('atoom mismatch')
+			return false
+		end
+	end
+
+	-- functie
+	if fn(a) == '→' and atoom(b) == 'functie' then return a end
+	if fn(b) == '→' and atoom(a) == 'functie' then assign(a, b) ; return a end
+	if fn(a) and fn(a) == fn(b) then
+		a.a = self:intersectie(a.a, b.a, exp.a)
+		return a
+	end
+
+	-- triviaal
+	if self:issubtype(a, b) then return a end
+	if self:issubtype(b, a) then assign(a, b); return a end
+
+	if isobj(a) and isobj(b) then
+		if obj(a) ~= obj(b) or #a ~= #b then
+			print('OBJ mismatch')
+			return false
+
+		else
+			for i=1,#a do
+				assert(a[i])
+				assert(b[i])
+				print(combineer(a[i]), combineer(b[i]))
+				local preva = kopieer(a[i])
+				local ins = self:intersectie(a[i], b[i], exp[i])
+
+				if not ins then
+					local fout = typeerfout(exp[i].loc,
+						'{code} is {exp} maar moet {exp} zijn',
+						bron(exp[i]), a[i], b[i])
+					intersectie = a[i]
+
+					return false, fout
+				end
+				a[i] = ins
+			end
+			return a
+		end
+
+	end
+	return false
+end
+
+-- paramtype('tekst', 'lijst') = 'teken'
+function metatypegraaf:paramtype(type, paramtype)
+	local doel = moes(type)
+	while doel do
+		--print('PARAMTYPE', doel, _G.type(doel))
+		local t = self.types[doel]
+		assert(t, 'geen type voor '..doel)
+		if paramtype and t.f and moes(t.f) == moes(paramtype) then
+			return table.unpack(t)
+		end
+		local nieuwdoel = nil
+		for pijl in self.graaf:naar(doel) do
+			local bron = next(pijl.van)
+			nieuwdoel = bron
+		end
+		doel = nieuwdoel
+	end
+	do return X'iets' end
+	error('geen param gevonden voor type '..exp2string(paramtype))
 end
 
 -- typegraaf:

@@ -1,11 +1,8 @@
 ; getal
-supergetal: iets
-getal: supergetal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
-iets → iets: iets
 
 ; webspecifiek
 consolelog: tekst → bit
@@ -29,22 +26,23 @@ bit: iets
 ja: bit
 nee: bit
 
+functie: iets
 verzameling: iets
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
-functie: iets
-(→): functie
-;(→): (iets, iets) → (→)
 
 ; functie
+iets → iets: functie
+(_fn) : (iets→iets),iets → iets
+(_) :  ((iets→iets), iets) → iets
+map: lijst, (iets→iets) → lijst
+
+; lijst
 (×) : lijst, lijst → lijst
 (∘) : ((iets → iets), (iets → iets)) → (iets → iets)
 (⇒) : (bit, iets) → iets
 (|) : iets,iets → iets
-(_fn) : (→),iets → iets
-(_) :  ((→), iets) → iets
-map: lijst, (→) → lijst
 (=) :  (iets, iets) → bit 
 (→) :  (iets, iets) → (iets → iets)
 

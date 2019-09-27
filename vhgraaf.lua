@@ -66,7 +66,6 @@ local function sorteer(hgraaf, van, naar)
 		local van0 = van
 		van = function(a) return not not van0[a] end
 	end
-	local maakstroom = stroom
 	local stroom = maakstroom()
 	local nieuw = {}
 	local bekend = {}
@@ -100,7 +99,7 @@ local function sorteer(hgraaf, van, naar)
 	end
 	
 	if not next(nieuw) then
-		local halfvan = maakmaakstroom()
+		local halfvan = maakstroom()
 		local halfnaar = traceerhalfnaar(hgraaf, halfvan, naar)
 		return false, halfvan, halfnaar -- TODO werk terug
 	end

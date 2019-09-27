@@ -7,7 +7,7 @@ require 'typeer'
 -- laat graaf zien in browser
 function laatzien(graaf, naam)
 	file('.graaf.html', graaf2html(graaf, naam or 'Graaf'))
-	os.execute('chromium .graaf.html')
+	os.execute('chromium .graaf.html >/dev/null 2>/dev/null')
 	os.remove('.graaf.html')
 end
 
@@ -60,11 +60,11 @@ do
 	local ii = g:maaktype('(int,   int)')
 
 	function passert(cnd, msg)
-		if not cnd then laatzien(g.graaf, 'Diamanttest') end
+		if not cnd then laatzien(g.graaf, msg) end
 		assert(cnd, msg)
 	end
 
-	passert(not g:issubtype(ii, gg), 'Diamanttest faalde')
+	passert(g:issubtype(ii, gg), 'Diamanttest')
 	-- TODO :)
 	--[[
 	passert(g:issubtype(ig, gg))
@@ -73,5 +73,49 @@ do
 	passert(not g:issubtype(ig, gi), combineer(ig)..' : '..combineer(gi))
 	passert(not g:issubtype(gi, ig), combineer(gi)..' : '..combineer(ig))
 	]]
+end
 
+-- functietype
+do
+	local g = maaktypegraaf()
+	local getal = g:maaktype 'getal'
+	local int = g:maaktype ('int', 'getal')
+	local fn = g:maaktype 'iets → iets'
+	local ii = g:maaktype 'int → int'
+	local gg = g:maaktype 'getal → getal'
+	assert(g:issubtype(ii, fn))
+	assert(g:issubtype(gg, fn))
+	assert(g:issubtype(ii, gg))
+end
+
+
+-- intersectie
+do
+	local g = maaktypegraaf()
+	local ii = g:maaktype 'iets → iets'
+	local ins = g:intersectie(g.iets, ii)
+	assert(moes(ins) == moes(ii), moes(ins)..' ≠ '..moes(ii))
+end
+
+-- functie basistype
+do
+	local g = maaktypegraaf()
+	local fn = g:maaktype 'functie'
+	local getal = g:maaktype 'getal'
+	local int = g:maaktype ('int', 'getal')
+	local uu = g:maaktype ('iets → iets', 'functie')
+	local gu = g:maaktype ('getal → iets')
+	local gu = g:maaktype ('int → int')
+	local gu = g:maaktype ('getal → int')
+	laatzien(g.graaf)
+	assert(g:issubtype(uu, fn))
+	assert(g:issubtype(gu, uu))
+	assert(g:issubtype(gu, fn))
+end
+
+-- lol
+if false then
+	local g = maaktypegraaf()
+	linkbieb(g)
+	laatzien(g.graaf)
 end

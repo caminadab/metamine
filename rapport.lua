@@ -171,30 +171,12 @@ function graaf2js(graaf, id, layout, map)
 	]]
 end
 
+function stroom2html(stroom, naam)
+	return graaf2html(stroom, naam, 'dagre')
+end
+
 -- vt: (code, kennisgraaf, infostroom)
-function graaf2html(graaf, naam)
-	--[[
-	local feiten = ontleed(code)
-	--local dfeiten = ontrafel(feiten)
-	local dfeiten = deduceer(feiten)
-	--local dfeiten = ontrafel(feiten)
-	local afh,map = berekenbaarheid(dfeiten)
-	local infostroom, fout, half = afh:sorteer('in', 'uit')
-	infostroom = infostroom or half
-	if not infostroom then _G.print('OEPS'); infostroom = maakstroom() end
-	-- types
-	local types = typeer(dfeiten)
-	local tt = {}
-	for exp,type in spairs(types) do
-		tt[#tt+1] = tr {
-			td( leed(type) ),
-			td( leed(exp) ),
-		}
-	end
-	local typetabel = tabel(tt)
-
-	]]
-
+function graaf2html(graaf, naam, type)
 	local deel = tag('div', nil, {class='deel'})
 
 	return html {
@@ -229,7 +211,7 @@ function graaf2html(graaf, naam)
 			--div('infostroom', {class='deel'}),
 			--deel { typetabel },
 			div('afh', {class='deel'}),
-			js (graaf2js(graaf, 'afh', 'dagre', map)),
+			js (graaf2js(graaf, 'afh', type, map)),
 			--js (graaf2js(vt.infostroom, 'infostroom', 'dagre', map)),
 			js [[
 				infostroom.on('mouseover', 'node', function(event) {

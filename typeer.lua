@@ -43,9 +43,9 @@ local function eztypeer(exp)
 		elseif std[moes(exp)] then
 			return kopieer(std[moes(exp)])
 		end
-	elseif false and std[fn(exp)] then
-		local B = std[fn(exp)]
-		return kopieer(b(B))
+	elseif std[fn(exp)] then
+		--local B = std[fn(exp)]
+		--return kopieer(arg1(B))
 	elseif isobj(exp) then
 		return obj2sym[obj(exp)]
 	end
@@ -59,25 +59,29 @@ function typeer(exp)
 	local fouten = {}
 	local maakvar = maakvars()
 
+	-- track
+	local _types = {}
+	setmetatable(types, {
+		__index = function(t,k) return _types[k] end;
+		__newindex = function(t,k,v) v.var = v.var or maakvar(); print('Typeer', k, combineer(v), v.var); _types[k] = v end;
+	})
+
 	-- ta := ta ∩ tb
 	function moetzijn(ta, tb, exp)
 		assert(ta)
 		assert(tb)
+		print('moetzijn', combineer(ta), combineer(tb), combineer(exp))
 		ta.var = ta.var or maakvar()
 
-		local intersectie = typegraaf:intersectie(ta, tb)
-		print('INTERSECTIE', combineer(ta), combineer(tb), combineer(intersectie))
+		local intersectie,fout = typegraaf:intersectie(ta, tb, exp)
 
-		if intersectie and moes(intersectie) ~= moes(ta) then
+		if not intersectie then
+			fouten[#fouten+1] = fout
+		elseif intersectie and moes(intersectie) ~= moes(ta) then
 			print('nieuwe info', combineer(exp) .. ': '.. combineer(intersectie))
 		end
 
-		if not intersectie then
-			fouten[#fouten+1] = typeerfout(tb.loc,
-				'{code} is {exp} maar moet {exp} zijn',
-				bron(exp), kopieer(tb), kopieer(ta))
-			intersectie = ta
-		end
+		print('INTERSECTIE', combineer(ta), combineer(tb), ' = ', combineer(intersectie))
 
 		return ta
 	end
@@ -116,10 +120,10 @@ function typeer(exp)
 			local B = types[moes(arg1(exp))]
 
 			print('voor', combineer(A), combineer(B))
-			moetzijn(A, std['→'], arg0(exp))
-			moetzijn(B, std['→'], arg1(exp))
+			moetzijn(A, std.functie, arg0(exp))
+			moetzijn(B, std.functie, arg1(exp))
 			print('na  ', combineer(A), combineer(B))
-			print('was', combineer(std['→']))
+			print('was', combineer(std.functie))
 
 			local  inA = arg0(A)
 			local uitA = arg1(A)
@@ -131,6 +135,19 @@ function typeer(exp)
 
 			moetzijn(uitA, inB, exp)
 			types[moes(exp)] = compositie
+
+		-- a _ b ⇒ ((X→Y) _ X) : Y
+		elseif fn(exp) == '_' then
+			local functype = types[moes(arg0(exp))]
+			local argtype = types[moes(arg1(exp))]
+			assert(functype)
+			assert(argtype)
+
+			local functype = moetzijn(functype, std.functie)
+			local X = moetzijn(argtype, arg0(functype), exp)
+			local Y = arg1(functype)
+
+			types[moes(exp)] = Y
 
 		elseif fn(exp) == '→' then
 			local f = arg0(exp)
@@ -148,7 +165,7 @@ function typeer(exp)
 			
 			-- a → b
 			local ftype = X('→', tf, ta)
-			--types[moes(exp)] = types[moes(exp)] or kopieer(b(std['→']))
+			--types[moes(exp)] = types[moes(exp)] or kopieer(arg1(std.functie))
 			--moetzijn(types[moes(exp)], ftype, exp)
 			types[moes(exp)] = ftype
 
@@ -177,14 +194,15 @@ function typeer(exp)
 
 	typeerrec(exp)
 
-	do return types[moes(exp)], fouten, types end
+	--do return types[moes(exp)], fouten, types end
 
 	-- is alles getypeerd?
 	for moes,exps in pairs(permoes) do
 		if (not types[moes] or _G.moes(types[moes]) == 'iets')
 				and not std[moes]
 				and not typegraaf.types[moes]
-				and moes:sub(1,1) ~= ',' then
+				then
+				--and moes:sub(1,1) ~= ',' then
 			local exp = exps[1]
 			local fout = typeerfout(exp.loc or nergens,
 				"kon type niet bepalen van {code}",
