@@ -134,6 +134,7 @@ function typeer(exp)
 			local B = types[moes(arg1(exp))]
 
 			moetzijn(A, symbool.iets, arg0(exp)) -- TODO bit
+			types[moes(fn(exp))] = X'functie'
 			types[moes(exp)] = B
 
 		elseif fn(exp) == "'" then
