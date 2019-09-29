@@ -1,21 +1,7 @@
-; beweegbare cirkel (gebruik pijltjestoetsen)
-x := 10
-y := 0
+;i: 1 .. 10
+;cirkels(i) = cirkel((i,5), 1)
+uit = canvas cirkels
 
-als toetsRechts en x' < 10 dan x := x' + 0.2 eind
-als toetsLinks en x' > 0 dan x := x' - 0.2 eind
-uit = canvas [ cirkel((x,y),1) ]
-
-;canvas = canvasA → canvasB
-
-als toetsOmhoog en y' = 0 dan
-	sprongStart := looptijd
-	y := 10
-eind
-
-delta = looptijd - sprongStart
-yvel = delta · -0.01
-
-als y' > 0 dan
-	y := y' - 0.1
+als muisBeweegt dan
+ cirkels := cirkels' ‖ [cirkel(muisPos, 1)]
 eind

@@ -209,6 +209,8 @@ function metatypegraaf:intersectie(a, b, exp)
 			assign(a, b)
 			return a
 		else
+			--print(self)
+			--error(combineer(a)..','..combineer(b))
 			local fout = typeerfout(exp.loc,
 					'{code} is {exp} maar moet {exp} zijn',
 					bron(exp), b, a)

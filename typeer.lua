@@ -57,7 +57,8 @@ function typeer(exp)
 	local maakvar = maakvars()
 
 	-- track
-	if false then
+	local track = true
+	if track then
 	local _types = {}
 	setmetatable(types, {
 		__index = function(t,k) return _types[k] end;
@@ -108,7 +109,7 @@ function typeer(exp)
 				lijsttype = moetzijn(lijsttype, subtype, sub)
 				types[moes(sub)] = lijsttype
 			end
-			local type = typegraaf:maaktype(X('lijst', lijsttype))
+			local type = typegraaf:maaktype(X('_', 'lijst', lijsttype))
 			if atoom(lijsttype) == 'iets' then
 				assign(type, X'lijst')
 			end
@@ -134,7 +135,7 @@ function typeer(exp)
 			local B = types[moes(arg1(exp))]
 
 			moetzijn(A, symbool.iets, arg0(exp)) -- TODO bit
-			types[moes(fn(exp))] = X'functie'
+			types[fn(exp)] = X'functie'
 			types[moes(exp)] = B
 
 		elseif fn(exp) == "'" then
@@ -306,6 +307,9 @@ function typeer(exp)
 		for moes,type in pairs(types) do
 			print(type.var, moes, combineer(type))
 		end
+	end
+	if track then
+		types = _types or types
 	end
 
 	return types[moes(exp)], fouten, types

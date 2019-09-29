@@ -17,9 +17,12 @@ consoleLog: tekst → bit
 
 vierkant: (ℝ, ℝ), ℝ → vorm
 cirkel: (ℝ, ℝ), ℝ → vorm
+ovaal: (ℝ, ℝ), (ℝ, ℝ) → vorm
 rechthoek: (ℝ, ℝ), (ℝ, ℝ) → vorm
 lijn: (ℝ, ℝ), (ℝ, ℝ) → vorm
 teken: lijst(vorm) → canvas
+label: (ℝ, ℝ), tekst → vorm
+draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
 
 requestAnimationFrame: (getal → tekst) → int
@@ -30,6 +33,9 @@ regMuis: tekst → tekst
 ; hardware
 schermVerverst: bit
 muisBeweegt: bit
+muisPos: getal, getal
+muisX: getal
+muisY: getal
 screenRefreshes: bit
 mouseMoves: bit
 toetsNeer: int → bit
@@ -125,7 +131,7 @@ entier: getal → int
 byte: int
 data: lijst byte
 letter: int
-tekst: iets → tekst
+;tekst: iets → tekst
 
 looptijd : getal
 nu : moment

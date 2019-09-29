@@ -1,0 +1,2 @@
+stukken = " ♜♞♝♛♚♝♞♜ ♟♟♟♟♟♟♟♟   ♙♙♙♙♙♙♙♙ ♖♘♗♕♔♗♘♖ "
+uit = teken [ label((5,5), stukken) ]
