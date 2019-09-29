@@ -114,7 +114,7 @@ do
 end
 
 -- lol
-if false then
+if true then
 	local g = maaktypegraaf()
 	linkbieb(g)
 	laatzien(g.graaf)

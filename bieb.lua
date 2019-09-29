@@ -264,8 +264,8 @@ function bieb()
 	end;
 
 	['∘'] = function(a)
-		assert(type(a[1]) == 'function', a)
-		assert(type(a[2]) == 'function', a)
+		assert(type(a[1]) == 'function', '@1 is geen functie')
+		assert(type(a[2]) == 'function', '@2 is geen functie')
 		return function(...)
 			return a[2](a[1](...))
 		end

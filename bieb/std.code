@@ -9,12 +9,14 @@ byte: nat ; nat < 256
 kommagetal: getal
 
 ; webspecifiek
+vorm: canvas → canvas
 consolelog: tekst → bit
-vierkant: ((ℝ, ℝ), ℝ) → (canvas → canvas)
-cirkel: ((ℝ, ℝ), ℝ) → (canvas → canvas)
-rechthoek: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
-lijn: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
-canvas: lijst → canvas
+vierkant: ((ℝ, ℝ), ℝ) → vorm
+cirkel: ((ℝ, ℝ), ℝ) → vorm
+rechthoek: (ℝ, ℝ), (ℝ, ℝ) → vorm
+lijn: (ℝ, ℝ), (ℝ, ℝ) → vorm
+teken: lijst(vorm) → canvas
+;vouw: (lijst(A), (A → B)) → lijst(B)
 
 ; hardware
 schermVerverst: bit
@@ -47,7 +49,8 @@ map: lijst, (iets→iets) → lijst
 
 ; lijst
 (×) : lijst, lijst → lijst
-(∘) : ((iets → iets), (iets → iets)) → (iets → iets)
+;(∘) : ((iets → iets), (iets → iets)) → (iets → iets)
+(∘) : functie, functie → functie
 (⇒) : (bit, iets) → iets
 (|) : iets,iets → iets
 (=) :  (iets, iets) → bit 
@@ -111,8 +114,8 @@ entier: getal → int
 (iets → int) : iets
 
 byte: int
-teken: int
 data: lijst byte
+letter: int
 tekst: iets → tekst
 
 looptijd : getal
@@ -135,7 +138,7 @@ pos : (kommagetal, kommagetal)
 pos : (int, int)
 pos : (getal, int)
 pos : (int, getal)
-tekening : lijst
+teken : lijst
 straal : kommagetal
 cirkel : (pos,straal,(getal, getal, getal)) → (int, pos, straal, (getal, getal, getal))
 rechthoek : (pos,pos,(getal, getal, getal)) → (int, pos, pos, (getal, getal, getal))
