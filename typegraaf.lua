@@ -220,8 +220,11 @@ function metatypegraaf:intersectie(a, b, exp)
 	if fn(a) == '→' and atoom(b) == 'functie' then return a end
 	if fn(b) == '→' and atoom(a) == 'functie' then assign(a, b) ; return a end
 	if fn(a) and fn(a) == fn(b) then
-		a.a = self:intersectie(a.a, b.a, exp.a)
-		return a
+		local aa, fout = self:intersectie(a.a, b.a, exp.a or exp)
+		if aa then
+			assign(a.a, aa)
+		end
+		return aa, fout
 	end
 
 	-- triviaal
@@ -239,14 +242,14 @@ function metatypegraaf:intersectie(a, b, exp)
 			for i=1,#a do
 				assert(a[i])
 				assert(b[i])
-				print(combineer(a[i]), combineer(b[i]))
+				local expi = exp[i] or exp
 				local preva = kopieer(a[i])
-				local ins = self:intersectie(a[i], b[i], exp[i])
+				local ins = self:intersectie(a[i], b[i], expi)
 
 				if not ins then
-					local fout = typeerfout(exp[i].loc,
+					local fout = typeerfout(expi.loc,
 						'{code} is {exp} maar moet {exp} zijn',
-						bron(exp[i]), a[i], b[i])
+						bron(expi), a[i], b[i])
 					intersectie = a[i]
 
 					return false, fout
@@ -260,8 +263,8 @@ function metatypegraaf:intersectie(a, b, exp)
 	end
 
 	local fout = typeerfout(exp.loc,
-		'kon type niet vinden van {code}',
-		bron(exp))
+		'{code} is {exp} maar moet {exp} zijn',
+		bron(exp), a, b)
 
 	return false, fout
 end

@@ -72,18 +72,16 @@ function typeer(exp)
 	function moetzijn(ta, tb, exp)
 		assert(ta)
 		assert(tb)
-		print('moetzijn', combineer(ta), combineer(tb), combineer(exp))
+
 		ta.var = ta.var or maakvar()
 
 		local intersectie,fout = typegraaf:intersectie(ta, tb, exp)
 
 		if not intersectie then
 			fouten[#fouten+1] = fout
-		elseif intersectie and moes(intersectie) ~= moes(ta) then
-			print('nieuwe info', combineer(exp) .. ': '.. combineer(intersectie))
+		elseif intersectie then
+			--print('nieuwe info', combineer(exp) .. ': '.. combineer(intersectie), intersectie.var)
 		end
-
-		print('INTERSECTIE', combineer(ta), combineer(tb), ' = ', combineer(intersectie))
 
 		return ta
 	end
@@ -131,24 +129,33 @@ function typeer(exp)
 		elseif fn(exp) == '∘' then
 			local A = types[moes(arg0(exp))]
 			local B = types[moes(arg1(exp))]
+			local anyfunc = X('→', 'iets', 'iets')
 
-			print('voor', combineer(A), combineer(B))
-			moetzijn(A, std.functie, arg0(exp))
-			moetzijn(B, std.functie, arg1(exp))
-			print('na  ', combineer(A), combineer(B))
-			print('was', combineer(std.functie))
+			moetzijn(A, anyfunc, arg0(exp))
+			moetzijn(B, anyfunc, arg1(exp))
 
 			local  inA = arg0(A)
 			local uitA = arg1(A)
 			local  inB = arg0(B)
 			local uitB = arg1(B)
+				
+			if not (inA and uitA and inB and uitB) then
+				local fout = typeerfout(exp.loc or nergens,
+					"compositiefout in {code}: kan {exp} en {exp} niet componeren",
+					bron(exp), A, B)
+				fouten[#fouten+1] = fout
+				types[moes(exp)] = kopieer(symbool.iets)
+				return
+			end
 
 			-- compo
 			local compositie = X('→', inA, uitB)
 
-			moetzijn(uitA, inB, exp)
+			local inter = moetzijn(uitA, inB, exp)
+			assign(A.a[2], inter)
+			assign(B.a[1], inter)
+
 			types[moes(exp)] = compositie
-			--error(combineer(compositie))
 
 		-- a _ b ⇒ ((X→Y) _ X) : Y
 		elseif fn(exp) == '_' then
@@ -229,9 +236,11 @@ function typeer(exp)
 		end
 	end
 
-	print 'moes : type'
-	for moes,type in pairs(types) do
-		print(moes, combineer(type))
+	if verbozeTypes then
+		print 'moes : type'
+		for moes,type in pairs(types) do
+			print(type.var, moes, combineer(type))
+		end
 	end
 
 	return types[moes(exp)], fouten, types

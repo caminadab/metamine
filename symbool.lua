@@ -215,6 +215,7 @@ sym = {
 	dan = X'⇒',
 	als = X'⇒',
 	niet = X'¬',
+	iets = X'iets',
 	niets = X'niets',
 	lijst = X'[]',
 	is = X'=',

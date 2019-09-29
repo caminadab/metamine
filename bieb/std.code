@@ -2,6 +2,7 @@
 lijst: verzameling
 
 ; getal
+getal: supergetal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
