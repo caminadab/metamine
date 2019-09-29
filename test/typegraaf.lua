@@ -93,7 +93,7 @@ end
 do
 	local g = maaktypegraaf()
 	local ii = g:maaktype 'iets → iets'
-	local ins = g:intersectie(g.iets, ii)
+	local ins = g:intersectie(g.iets, ii, X'TEST, X'TEST'')
 	assert(moes(ins) == moes(ii), moes(ins)..' ≠ '..moes(ii))
 end
 

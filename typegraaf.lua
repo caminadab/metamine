@@ -200,7 +200,7 @@ end
 function metatypegraaf:intersectie(a, b, exp)
 	assert(a)
 	assert(b)
-	local exp = exp or X'?'
+	assert(exp)
 
 	if isatoom(a) and isatoom(b) then
 		if self:issubtype(a, b) then

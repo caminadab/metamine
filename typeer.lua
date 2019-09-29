@@ -36,7 +36,7 @@ local function eztypeer(exp)
 	if isatoom(exp) then
 		if tonumber(exp.v) then
 			if exp.v % 1 == 0 then
-				return kopieer(symbool.int)
+				return kopieer(symbool.getal)
 			else
 				return kopieer(symbool.getal)
 			end
@@ -105,7 +105,7 @@ function typeer(exp)
 			local lijsttype = X'iets'
 			for i,sub in ipairs(exp) do
 				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
-				lijsttype = moetzijn(lijsttype, subtype)
+				lijsttype = moetzijn(lijsttype, subtype, sub)
 				types[moes(sub)] = lijsttype
 			end
 			local type = typegraaf:maaktype(X('lijst', lijsttype))
@@ -133,7 +133,7 @@ function typeer(exp)
 			local A = types[moes(arg0(exp))]
 			local B = types[moes(arg1(exp))]
 
-			moetzijn(A, symbool.bit)
+			moetzijn(A, symbool.iets, arg0(exp)) -- TODO bit
 			types[moes(exp)] = B
 
 		elseif fn(exp) == "'" then
@@ -179,7 +179,7 @@ function typeer(exp)
 		-- vouw: lijst(A), (A,A → B) → lijst(B)
 		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
 			local expargs = types[moes(arg1(exp))]
-			print('expargs1', combineer(expargs))
+			--print('expargs1', combineer(expargs))
 			local anya = X'iets'
 			local anyb = X'iets'
 			local lijsta = X('lijst', anya)
@@ -193,7 +193,7 @@ function typeer(exp)
 
 			-- (A,A → B), lijst(A)   ⇒   lijst(A) = A, lijst(B) = B
 			-- lijst, fn
-			print('expargs2', combineer(expargs))
+			--print('expargs2', combineer(expargs))
 
 		-- vouw: lijst(A), (A,A → B)
 			local lijst = expargs[1]
@@ -201,14 +201,14 @@ function typeer(exp)
 			local funcargs = arg0(func)
 
 			--funcargs.a[1] = moetzijn(funcargs.a[1], expargs
-			print(combineer(arg(lijst)), combineer((funcargs)))
-			lijst.a = moetzijn(arg(lijst), funcargs[1])
-			print('HIER')
-			print(combineer(funcargs[1]))
-			print(combineer(funcargs[2]))
-			print(combineer(lijst.a))
-			funcargs[1] = moetzijn(funcargs[1], lijst.a)
-			funcargs[2] = moetzijn(funcargs[2], funcargs[1])
+			--print(combineer(arg(lijst)), combineer((funcargs)))
+			lijst.a = moetzijn(arg(lijst), funcargs[1], exp)
+			--print('HIER')
+			--print(combineer(funcargs[1]))
+			--print(combineer(funcargs[2]))
+			--print(combineer(lijst.a))
+			funcargs[1] = moetzijn(funcargs[1], lijst.a, exp)
+			funcargs[2] = moetzijn(funcargs[2], funcargs[1], exp)
 			moetzijn(arg(lijsta), anya, exp)
 			--moetzijn(arg(lijstb), anyb, exp)
 
@@ -227,7 +227,7 @@ function typeer(exp)
 
 			local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
 			local functype = moetzijn(functype, anyfunc, exp.a)
-			local X = moetzijn(argtype, arg0(functype), exp.a or exp)
+			local X = moetzijn(argtype, arg0(functype), exp.a) -- TODO
 			functype.a[1] = X
 			local Y = arg1(functype)
 

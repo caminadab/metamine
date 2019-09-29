@@ -4,7 +4,7 @@ y := 0
 
 als toetsRechts en x' < 10 dan x := x' + 0.2 eind
 als toetsLinks en x' > 0 dan x := x' - 0.2 eind
-uit = canvas [ cirkel(x,y,1) ]
+uit = canvas [ cirkel((x,y),1) ]
 
 ;canvas = canvasA → canvasB
 

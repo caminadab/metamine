@@ -1,4 +1,4 @@
-ververs = moment → regMuis(schrijfHtml(uit))
+ververs = moment → regMuis(html(tekst(uit)))
 app = requestAnimationFrame(ververs)
 
 el = html "<canvas width='1280' height='720'></canvas>"

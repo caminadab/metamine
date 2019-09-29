@@ -21,7 +21,7 @@ end
 moettypezijn('x → x + 1', 'getal → getal')
 
 -- begin makkelijk
-moettypezijn('0.0', 'int')
+--moettypezijn('0', 'int')
 moettypezijn('1.5', 'getal')
 moettypezijn('sin', 'getal → getal')
 

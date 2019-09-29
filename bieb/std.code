@@ -12,7 +12,7 @@ kommagetal: getal
 
 ; webspecifiek
 vorm: canvas → canvas
-html: tekst → int
+html: tekst → tekst
 consoleLog: tekst → bit
 
 vierkant: ((ℝ, ℝ), ℝ) → vorm
@@ -22,7 +22,7 @@ lijn: (ℝ, ℝ), (ℝ, ℝ) → vorm
 teken: lijst(vorm) → canvas
 ;vouw: (lijst(A), (A → B)) → lijst(B)
 
-requestAnimationFrame: (getal → tekst) → bit
+requestAnimationFrame: (getal → tekst) → int
 contextVan: tekst → canvas
 wisCanvas: canvas → canvas
 
@@ -31,10 +31,10 @@ schermVerverst: bit
 muisBeweegt: bit
 screenRefreshes: bit
 mouseMoves: bit
-toetsNeer: int → bit
-toetsNeerBegin: int → bit
-toetsNeerEind: int → bit
-toetsOp: int → bit
+toetsNeer: getal → bit
+toetsNeerBegin: getal → bit
+toetsNeerEind: getal → bit
+toetsOp: getal → bit
 
 syscall: iets → int
 
@@ -129,9 +129,7 @@ letter: int
 tekst: iets → tekst
 
 looptijd : getal
-tijdstip : getal
-int : getal
-nu : tijdstip
+nu : moment
 ;cijfer : iets → bit
 vind : (lijst, lijst) → int
 tot : (lijst, int) → lijst
