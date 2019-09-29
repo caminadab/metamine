@@ -209,8 +209,10 @@ function metatypegraaf:intersectie(a, b, exp)
 			assign(a, b)
 			return a
 		else
-			--print('atoom mismatch')
-			return false
+			local fout = typeerfout(exp.loc,
+					'{code} is {exp} maar moet {exp} zijn',
+					bron(exp), a, b)
+			return false, fout
 		end
 	end
 
@@ -228,8 +230,10 @@ function metatypegraaf:intersectie(a, b, exp)
 
 	if isobj(a) and isobj(b) then
 		if obj(a) ~= obj(b) or #a ~= #b then
-			print('OBJ mismatch')
-			return false
+			local fout = typeerfout(exp.loc,
+					'{code} is {exp} maar moet {exp} zijn',
+					bron(exp), a, b)
+			return false, fout
 
 		else
 			for i=1,#a do
@@ -248,12 +252,18 @@ function metatypegraaf:intersectie(a, b, exp)
 					return false, fout
 				end
 				a[i] = ins
+				b[i] = ins
 			end
 			return a
 		end
 
 	end
-	return false
+
+	local fout = typeerfout(exp.loc,
+		'kon type niet vinden van {code}',
+		bron(exp))
+
+	return false, fout
 end
 
 -- paramtype('tekst', 'lijst') = 'teken'

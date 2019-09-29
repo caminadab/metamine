@@ -1,3 +1,6 @@
+; basisobjecten
+lijst: verzameling
+
 ; getal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)
@@ -10,14 +13,17 @@ vierkant: ((ℝ, ℝ), ℝ) → (canvas → canvas)
 cirkel: ((ℝ, ℝ), ℝ) → (canvas → canvas)
 rechthoek: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
 lijn: (ℝ, ℝ), (ℝ, ℝ) → (canvas → canvas)
-syscall: iets → int
 canvas: lijst → canvas
 
+; hardware
 schermVerverst: bit
 muisBeweegt: bit
-
 screenRefreshes: bit
 mouseMoves: bit
+toetsNeer: int → bit
+toetsOp: int → bit
+
+syscall: iets → int
 
 stduitSchrijf: tekst → int
 app: int
@@ -82,8 +88,9 @@ set: verzameling
 (≥) :  (getal, getal) → bit
 (≤) :  (getal, getal) → bit
 (<) :  (getal, getal) → bit
+(⋀) : verzameling bit → bit
 (∧) : (bit, bit) → bit
-(⋀) : lijst → bit
+(∨) : (bit, bit) → bit
 (⋁) : verzameling bit → bit
 
 ; lijst

@@ -60,11 +60,13 @@ function typeer(exp)
 	local maakvar = maakvars()
 
 	-- track
+	if false then
 	local _types = {}
 	setmetatable(types, {
 		__index = function(t,k) return _types[k] end;
 		__newindex = function(t,k,v) v.var = v.var or maakvar(); print('Typeer', k, combineer(v), v.var); _types[k] = v end;
 	})
+	end
 
 	-- ta := ta ∩ tb
 	function moetzijn(ta, tb, exp)
@@ -102,7 +104,7 @@ function typeer(exp)
 			end
 			types[m] = t
 
-		elseif fn(exp) == '=' then
+		elseif fn(exp) == '=' or fn(exp) == ':=' then
 			local A = moes(arg0(exp))
 			local B = moes(arg1(exp))
 			-- verandert types[A] -- bewust!! dit voorkomt substitutie
@@ -114,6 +116,17 @@ function typeer(exp)
 
 		elseif fn(exp) == '⋀' then
 			types[moes(exp)] = symbool.bit
+
+		elseif fn(exp) == '⇒' then
+			local A = types[moes(arg0(exp))]
+			local B = types[moes(arg1(exp))]
+
+			moetzijn(A, symbool.bit)
+			types[moes(exp)] = B
+
+		elseif fn(exp) == "'" then
+			local A = types[moes(exp.a)]
+			types[moes(exp)] = A
 
 		elseif fn(exp) == '∘' then
 			local A = types[moes(arg0(exp))]
@@ -135,6 +148,7 @@ function typeer(exp)
 
 			moetzijn(uitA, inB, exp)
 			types[moes(exp)] = compositie
+			--error(combineer(compositie))
 
 		-- a _ b ⇒ ((X→Y) _ X) : Y
 		elseif fn(exp) == '_' then
@@ -143,8 +157,11 @@ function typeer(exp)
 			assert(functype)
 			assert(argtype)
 
-			local functype = moetzijn(functype, std.functie)
+			local functype = moetzijn(functype, typegraaf:maaktype('iets → iets'), exp)
 			local X = moetzijn(argtype, arg0(functype), exp)
+			--print('C', combineer(functype))
+			--print(combineer(argtype), combineer(arg0(functype), combineer(X)))
+			functype.a[1] = X
 			local Y = arg1(functype)
 
 			types[moes(exp)] = Y
@@ -212,6 +229,11 @@ function typeer(exp)
 		end
 	end
 
-	return types, fouten
+	print 'moes : type'
+	for moes,type in pairs(types) do
+		print(moes, combineer(type))
+	end
+
+	return types[moes(exp)], fouten, types
 end
 

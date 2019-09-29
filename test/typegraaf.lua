@@ -6,7 +6,7 @@ require 'typeer'
 
 -- laat graaf zien in browser
 function laatzien(graaf, naam)
-	file('.graaf.html', graaf2html(graaf, naam or 'Graaf'))
+	file('.graaf.html', stroom2html(graaf, naam or 'Graaf'))
 	os.execute('chromium .graaf.html >/dev/null 2>/dev/null')
 	os.remove('.graaf.html')
 end
@@ -107,7 +107,7 @@ do
 	local gu = g:maaktype ('getal → iets')
 	local gu = g:maaktype ('int → int')
 	local gu = g:maaktype ('getal → int')
-	laatzien(g.graaf)
+	--laatzien(g.graaf)
 	assert(g:issubtype(uu, fn))
 	assert(g:issubtype(gu, uu))
 	assert(g:issubtype(gu, fn))
