@@ -292,10 +292,12 @@ function exp2string(exp)
 		t[#t+1] = exp2string(exp.o)
 		t[#t+1] = '('
 		for i,v in ipairs(exp) do
+			if i > 1 then
+				t[#t+1] = ' '
+			end
 			t[#t+1] = exp2string(v)
-			t[#t+1] = ' '
 		end
-		t[#t] = ')'
+		t[#t+1] = ')'
 		return table.concat(t)
 	end
 	return '?'

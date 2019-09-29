@@ -47,10 +47,12 @@ function bieb()
 	-- web
 	consolelog =  function(s) print(s) end;
 	requestAnimationFrame = function () error('niet beschikbaar') end;
-	setInnerHtml = function () error('niet beschikbaar') end;
-	getContext = function () error('niet beschikbaar') end;
-	clearCanvas = function () error('niet beschikbaar') end;
+	html = function () error('niet beschikbaar') end;
+
+	contextVan = function () error('niet beschikbaar') end;
+	wis = function () error('niet beschikbaar') end;
 	looptijd = 0;
+
 	vierkant = function() error('niet beschikbaar') end;
 	boog = function() error('niet beschikbaar') end;
 	label = function() error('niet beschikbaar') end;
@@ -446,28 +448,15 @@ function bieb()
 	end;
 
 	['tekst'] = function(a)
-		do return tostring(a) end
-		if type(a) == 'string' then
-			return a
-		end
-		if type(a) == 'table' then
-			return a
-		else
-			a = tostring(a)
-			return {string.byte(a,1,#a)}
-		end
-		--[[
 		local t
 		if a == true then t = 'ja' end 
 		if a == false then t = 'nee' end 
 		if tonumber(a) then t = tostring(a) end
+		if type(a) == 'string' then return a end
 		if type(a) == 'table' then
-			t = tostring(toexp(a))
+			return string.char(table.unpack(a))
 		end
-		local t = table.pack(string.byte(tostring(t),1,#tostring(t)))
-		t.fn = '[]'
-		return t
-		]]
+		return tostring(a)
 	end;
 
 	['getal'] = function(a)

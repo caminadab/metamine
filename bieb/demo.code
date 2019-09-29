@@ -2,16 +2,8 @@ ververs = moment → regMuis(schrijfHtml(uit))
 app = requestAnimationFrame(ververs)
 
 el = html "<canvas width='1280' height='720'></canvas>"
-ctx = contextVan(el)
-
 tekenCanvas = wisCanvas ∘ (vormen vouw (∘))
-canvas = vormen → (tekenCanvas(ctx) ⇒ "<canvas width='1280' height='720'></canvas>")
-
-; EN
-muisBeweegt = mouseMoves
-schermVerverst = screenRefreshes
-keyRight = toetsRechts
-out = uit
+canvas = vormen → (tekenCanvas(contextVan(el)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
 ; toetsenbord
 toetsSpatie = toetsNeer(32)

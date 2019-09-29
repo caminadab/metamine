@@ -70,7 +70,7 @@ function typeer(exp)
 		assert(ta)
 		assert(tb)
 
-		if ta == tb then return ta end
+		--if ta == tb then return ta end
 
 		ta.var = ta.var or maakvar()
 
@@ -79,7 +79,7 @@ function typeer(exp)
 		if not intersectie then
 			fouten[#fouten+1] = fout
 		elseif intersectie then
-			--print('nieuwe info', combineer(exp) .. ': '.. combineer(intersectie), intersectie.var)
+			--ta = intersectie
 		end
 
 		return ta
@@ -109,6 +109,9 @@ function typeer(exp)
 				types[moes(sub)] = lijsttype
 			end
 			local type = typegraaf:maaktype(X('lijst', lijsttype))
+			if atoom(lijsttype) == 'iets' then
+				assign(type, X'lijst')
+			end
 			types[moes(exp)] = type
 
 		elseif fn(exp) == '=' or fn(exp) == ':=' then
@@ -118,7 +121,6 @@ function typeer(exp)
 			assert(types[B])
 			-- verandert types[A] -- bewust!! dit voorkomt substitutie
 			local T = moetzijn(types[A], types[B], arg0(exp))
-			print('merge', combineer(exp), combineer(T), combineer(types[A]), combineer(types[B]))
 			types[A] = T
 			types[B] = T
 			types[moes(exp)] = symbool.bit
@@ -138,6 +140,7 @@ function typeer(exp)
 			local A = types[moes(exp.a)]
 			types[moes(exp)] = A
 
+		-- compositie
 		elseif fn(exp) == '∘' then
 			local A = types[moes(arg0(exp))]
 			local B = types[moes(arg1(exp))]
@@ -152,7 +155,7 @@ function typeer(exp)
 			local uitB = arg1(B)
 				
 			if not (inA and uitA and inB and uitB) then
-				local fout = typeerfout(exp.loc or nergens,
+				local fout = typeerfout(exp.loc,
 					"compositiefout in {code}: kan {exp} en {exp} niet componeren",
 					bron(exp), A, B)
 				fouten[#fouten+1] = fout
@@ -164,8 +167,10 @@ function typeer(exp)
 			local compositie = X('→', inA, uitB)
 
 			local inter = moetzijn(uitA, inB, exp)
-			assign(A.a[2], inter)
-			assign(B.a[1], inter)
+			--assign(A.a[2], inter)
+			--assign(B.a[1], inter)
+			A.a[2] = inter
+			B.a[1] = inter
 
 			types[moes(exp)] = compositie
 
@@ -204,39 +209,14 @@ function typeer(exp)
 			print(combineer(lijst.a))
 			funcargs[1] = moetzijn(funcargs[1], lijst.a)
 			funcargs[2] = moetzijn(funcargs[2], funcargs[1])
-			--moetzijn(arg(lijsta), anya, exp)
+			moetzijn(arg(lijsta), anya, exp)
 			--moetzijn(arg(lijstb), anyb, exp)
 
 			-- A,A → B  ⇒ arg₀ = arg₁ 
 			--moetzijn(arg0(anyfunc)[1], arg0(anyfunc)[2], exp)
 
 			types['vouw'] = X'functie'
-			types[moes(exp)] = lijstb
-
-			--[[
-			local  inA = arg0(A)
-			local uitA = arg1(A)
-			local  inB = arg0(B)
-			local uitB = arg1(B)
-				
-			if not (inA and uitA and inB and uitB) then
-				local fout = typeerfout(exp.loc or nergens,
-					"compositiefout in {code}: kan {exp} en {exp} niet componeren",
-					bron(exp), A, B)
-				fouten[#fouten+1] = fout
-				types[moes(exp)] = kopieer(symbool.iets)
-				return
-			end
-
-			-- compo
-			local gemapt = X('→', inA, uitB)
-
-			local inter = moetzijn(uitA, inB, exp)
-			assign(A.a[2], inter)
-			assign(B.a[1], inter)
-			]]
-
-			types[moes(exp)] = symbool.int --lijstb
+			types[moes(exp)] = anyb
 
 		-- a _ b ⇒ ((X→Y) _ X) : Y
 		elseif fn(exp) == '_' then
@@ -247,7 +227,6 @@ function typeer(exp)
 
 			local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
 			local functype = moetzijn(functype, anyfunc, exp.a)
-			print('functype', combineer(anyfunc))
 			local X = moetzijn(argtype, arg0(functype), exp.a or exp)
 			functype.a[1] = X
 			local Y = arg1(functype)
@@ -287,7 +266,9 @@ function typeer(exp)
 
 			-- typeer arg
 			--types[moes(exp.a)] = types[moes(exp.a)] or inn
+			--print('ARGTYPE voor', combineer(argtype), combineer(inn), combineer(exp.a))
 			moetzijn(argtype, inn, exp.a)
+			--print('ARGTYPE na', combineer(argtype))
 
 			-- typeer exp
 			types[moes(exp)] = uit
@@ -311,7 +292,7 @@ function typeer(exp)
 				then
 				--and moes:sub(1,1) ~= ',' then
 			local exp = exps[1]
-			local fout = typeerfout(exp.loc or nergens,
+			local fout = typeerfout(exp.loc,
 				"kon type niet bepalen van {code}",
 				isobj(exp) and combineer(exp) or locsub(exp.code, exp.loc)
 			)

@@ -236,10 +236,6 @@ function metatypegraaf:intersectie(a, b, exp)
 		return a
 	end
 
-	-- triviaal
-	if self:issubtype(a, b) then return a end
-	if self:issubtype(b, a) then assign(a, b); return a end
-
 	if isobj(a) and isobj(b) then
 		if obj(a) ~= obj(b) or #a ~= #b then
 			local fout = typeerfout(exp.loc,
@@ -251,7 +247,9 @@ function metatypegraaf:intersectie(a, b, exp)
 			for i=1,#a do
 				assert(a[i])
 				assert(b[i])
-				local expi = exp[i] or exp
+				local expi = exp[i] or (exp.a and exp.a[i]) or exp
+				--print(combineer(a), combineer(b))
+				--assert(exp[i], 'geen exp['..i..'] voor '..combineer(exp))
 				local preva = kopieer(a[i])
 				local ins = self:intersectie(a[i], b[i], expi)
 
@@ -271,10 +269,13 @@ function metatypegraaf:intersectie(a, b, exp)
 
 	end
 
+	-- triviaal
+	if self:issubtype(a, b) then return a end
+	if self:issubtype(b, a) then assign(a, b) ; return a end
+
 	local fout = typeerfout(exp.loc,
 		'{code} is {exp} maar moet {exp} zijn',
 		bron(exp), a, b)
-		assert(false)
 
 	return false, fout
 end

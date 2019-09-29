@@ -5,9 +5,9 @@ require 'exp'
 function fout(type, loc, fmt, ...)
 	-- Typefout: a is int (loc1) maar moet tekst zijn (loc2)
 	local t = {
-		loc = loc,
-		type = type,
-		fmt = fmt,
+		loc = assert(loc),
+		type = assert(type),
+		fmt = assert(fmt),
 		args = {...},
 	}
 	return t

@@ -113,7 +113,7 @@ do
 	assert(g:issubtype(gu, fn))
 end
 
--- lol
+-- false
 if true then
 	local g = maaktypegraaf()
 	linkbieb(g)

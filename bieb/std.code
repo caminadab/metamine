@@ -1,17 +1,20 @@
 ; basisobjecten
+verzameling: iets
 lijst: verzameling
 
 ; getal
-supergetal: iets
-getal: supergetal
+getal: iets
 int: getal
+moment: getal
 nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
 
 ; webspecifiek
 vorm: canvas → canvas
-consolelog: tekst → bit
+html: tekst → int
+consoleLog: tekst → bit
+
 vierkant: ((ℝ, ℝ), ℝ) → vorm
 cirkel: ((ℝ, ℝ), ℝ) → vorm
 rechthoek: (ℝ, ℝ), (ℝ, ℝ) → vorm
@@ -19,18 +22,24 @@ lijn: (ℝ, ℝ), (ℝ, ℝ) → vorm
 teken: lijst(vorm) → canvas
 ;vouw: (lijst(A), (A → B)) → lijst(B)
 
+requestAnimationFrame: (getal → tekst) → bit
+contextVan: tekst → canvas
+wisCanvas: canvas → canvas
+
 ; hardware
 schermVerverst: bit
 muisBeweegt: bit
 screenRefreshes: bit
 mouseMoves: bit
 toetsNeer: int → bit
+toetsNeerBegin: int → bit
+toetsNeerEind: int → bit
 toetsOp: int → bit
 
 syscall: iets → int
 
 stduitSchrijf: tekst → int
-app: int
+app: iets
 
 bit: iets
 ja: bit
