@@ -211,7 +211,7 @@ function metatypegraaf:intersectie(a, b, exp)
 		else
 			local fout = typeerfout(exp.loc,
 					'{code} is {exp} maar moet {exp} zijn',
-					bron(exp), a, b)
+					bron(exp), b, a)
 			return false, fout
 		end
 	end
@@ -224,7 +224,16 @@ function metatypegraaf:intersectie(a, b, exp)
 		if aa then
 			assign(a.a, aa)
 		end
-		return aa, fout
+		return a, fout
+	end
+
+	-- lijst_int  &  lijst  →  lijst_int
+	if isfn(a) and fn(a) == atoom(b) then
+		return a
+	end
+	if isfn(b) and atoom(a) == fn(b) then
+		assign(a, b)
+		return a
 	end
 
 	-- triviaal
@@ -235,7 +244,7 @@ function metatypegraaf:intersectie(a, b, exp)
 		if obj(a) ~= obj(b) or #a ~= #b then
 			local fout = typeerfout(exp.loc,
 					'{code} is {exp} maar moet {exp} zijn',
-					bron(exp), a, b)
+					bron(exp), b, a)
 			return false, fout
 
 		else
@@ -249,7 +258,7 @@ function metatypegraaf:intersectie(a, b, exp)
 				if not ins then
 					local fout = typeerfout(expi.loc,
 						'{code} is {exp} maar moet {exp} zijn',
-						bron(expi), a[i], b[i])
+						bron(expi), b[i], a[i])
 					intersectie = a[i]
 
 					return false, fout
@@ -265,6 +274,7 @@ function metatypegraaf:intersectie(a, b, exp)
 	local fout = typeerfout(exp.loc,
 		'{code} is {exp} maar moet {exp} zijn',
 		bron(exp), a, b)
+		assert(false)
 
 	return false, fout
 end

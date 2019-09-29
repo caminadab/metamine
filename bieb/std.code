@@ -2,6 +2,7 @@
 lijst: verzameling
 
 ; getal
+supergetal: iets
 getal: supergetal
 int: getal
 nat: int ; natuurlijk getal (≥ 0)

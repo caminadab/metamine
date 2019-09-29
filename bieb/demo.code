@@ -1,11 +1,11 @@
-ververs = moment → regMuis(setInnerHtml(uit))
+ververs = moment → regMuis(schrijfHtml(uit))
 app = requestAnimationFrame(ververs)
 
-el = setInnerHtml("<canvas width='1280' height='720'></canvas>")
-ctx = getContext(el)
+el = html "<canvas width='1280' height='720'></canvas>"
+ctx = contextVan(el)
 
-drawCanvas = clearCanvas ∘ (objs vouw (∘))
-canvas = objs → (drawCanvas(ctx) ⇒ "<canvas width='1280' height='720'></canvas>")
+tekenCanvas = wisCanvas ∘ (vormen vouw (∘))
+canvas = vormen → (tekenCanvas(ctx) ⇒ "<canvas width='1280' height='720'></canvas>")
 
 ; EN
 muisBeweegt = mouseMoves
