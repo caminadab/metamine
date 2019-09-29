@@ -273,7 +273,7 @@ function metatypegraaf:intersectie(a, b, exp)
 	if self:issubtype(a, b) then return a end
 	if self:issubtype(b, a) then assign(a, b) ; return a end
 
-	local fout = typeerfout(exp.loc,
+	local fout = typeerfout(exp.loc or nergens,
 		'{code} is {exp} maar moet {exp} zijn',
 		bron(exp), a, b)
 

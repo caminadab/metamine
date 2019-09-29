@@ -25,6 +25,7 @@ function bieb()
 	init = true,
 	fout = true,
 	schermVerverst = true,
+	teken = true,
 
 	-- meta
 	['_var'] = function (a)

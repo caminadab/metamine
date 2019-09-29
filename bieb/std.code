@@ -1,9 +1,9 @@
 ; basisobjecten
 verzameling: iets
-lijst: verzameling
-
-; getal
+functie: iets
 getal: iets
+
+; getallen
 int: getal
 moment: getal
 nat: int ; natuurlijk getal (≥ 0)
@@ -15,8 +15,8 @@ vorm: canvas → canvas
 html: tekst → tekst
 consoleLog: tekst → bit
 
-vierkant: ((ℝ, ℝ), ℝ) → vorm
-cirkel: ((ℝ, ℝ), ℝ) → vorm
+vierkant: (ℝ, ℝ), ℝ → vorm
+cirkel: (ℝ, ℝ), ℝ → vorm
 rechthoek: (ℝ, ℝ), (ℝ, ℝ) → vorm
 lijn: (ℝ, ℝ), (ℝ, ℝ) → vorm
 teken: lijst(vorm) → canvas
@@ -25,16 +25,17 @@ teken: lijst(vorm) → canvas
 requestAnimationFrame: (getal → tekst) → int
 contextVan: tekst → canvas
 wisCanvas: canvas → canvas
+regMuis: tekst → tekst
 
 ; hardware
 schermVerverst: bit
 muisBeweegt: bit
 screenRefreshes: bit
 mouseMoves: bit
-toetsNeer: getal → bit
-toetsNeerBegin: getal → bit
-toetsNeerEind: getal → bit
-toetsOp: getal → bit
+toetsNeer: int → bit
+toetsNeerBegin: int → bit
+toetsNeerEind: int → bit
+toetsOp: int → bit
 
 syscall: iets → int
 
@@ -45,8 +46,7 @@ bit: iets
 ja: bit
 nee: bit
 
-functie: iets
-verzameling: iets
+; verz
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
@@ -61,9 +61,9 @@ map: lijst, (iets→iets) → lijst
 (×) : lijst, lijst → lijst
 ;(∘) : ((iets → iets), (iets → iets)) → (iets → iets)
 (∘) : functie, functie → functie
-(⇒) : (bit, iets) → iets
 (|) : iets,iets → iets
 (=) :  (iets, iets) → bit 
+(:=) : (iets, iets) → bit
 (→) :  (iets, iets) → (iets → iets)
 
 succ: nat → nat
@@ -82,35 +82,34 @@ sincos :  getal → (getal, getal)
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
 (#) :  verzameling → int
-(:=) :  (iets, iets) → bit 
 (‖) :  lijst, lijst → lijst
 
 ; set!
 set: verzameling
 ({}) : set
-(∩) : (set, set) → set
-(∪) : (set, set) → set
-;(-) : (set, set) → set
-;(∖) : (set, set) → set
-;(⋂) : (aantal set) → set
-;(⋃) : (aantal set) → set
+(⋂) : verzameling(set) → set
+(⋃) : verzameling(set) → set
+(∩) : set, set → set
+(∪) : set, set → set
+;(-) : set, set → set
+;(∖) : set, set → set
 
 ; logica
 (¬) : bit → bit
 ;(') : iets → iets
-(>) :  (getal, getal) → bit
-(≥) :  (getal, getal) → bit
-(≤) :  (getal, getal) → bit
-(<) :  (getal, getal) → bit
+(>) : getal, getal → bit
+(≥) : getal, getal → bit
+(≤) : getal, getal → bit
+(<) : getal, getal → bit
 (⋀) : verzameling bit → bit
-(∧) : (bit, bit) → bit
-(∨) : (bit, bit) → bit
+(∧) : bit, bit → bit
+(∨) : bit, bit → bit
 (⋁) : verzameling bit → bit
 
 ; lijst
-(Σ) : (verzameling getal) → getal
+(Σ) : verzameling getal → getal
 ;(∫) : (ontelbaar getal) → getal
-(..) : (int, int) → lijst
+(..) : int, int → lijst
 
 ; util
 abs: getal → getal
@@ -139,15 +138,4 @@ deel : (lijst, (int, int)) → lijst
 ;herhaal : ((→) → (→))
 ;herhaal : ((→), int) → (→)
 waarvoor : (verzameling, (iets → bit)) → verzameling
-mod : (getal, getal) → getal
-
-;-
-pos : (kommagetal, kommagetal)
-pos : (int, int)
-pos : (getal, int)
-pos : (int, getal)
-teken : lijst
-straal : kommagetal
-cirkel : (pos,straal,(getal, getal, getal)) → (int, pos, straal, (getal, getal, getal))
-rechthoek : (pos,pos,(getal, getal, getal)) → (int, pos, pos, (getal, getal, getal))
--;
+mod : getal, getal → getal

@@ -222,8 +222,8 @@ local immsym = {
 		return c;});
 	})]],
 	['tekst'] = '(function(t) { if (!t && t !== false) return "niets"; return Array.isArray(t) ? t.toSource() : t.toString();})',
-	['clearCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
-	['setInnerHtml'] = [[(function (a) {
+	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
+	['html'] = [[(function (a) {
 		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
@@ -231,7 +231,7 @@ local immsym = {
 		}
 		return uit.children[0];
 	})]],
-	['canvas'] = [[uit.getChilden()[0] ]],
+	['teken'] = [[uit.getChildren()[0] ]],
 	['requestAnimationFrame'] = [[(function f(t) {
 		if (stop) {stop = false; uit.innerHTML = ''; return; };
 		if (!isFinite(t))

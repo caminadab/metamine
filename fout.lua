@@ -4,7 +4,6 @@ require 'exp'
 -- fmt: {rood} is {exp} maar moet {cyaan} zijn
 function fout(type, loc, fmt, ...)
 	-- Typefout: a is int (loc1) maar moet tekst zijn (loc2)
-	assert(loc.x1 ~= -1, combineer(loc))
 	local t = {
 		loc = assert(loc),
 		type = assert(type),

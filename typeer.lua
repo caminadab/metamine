@@ -36,7 +36,7 @@ local function eztypeer(exp)
 	if isatoom(exp) then
 		if tonumber(exp.v) then
 			if exp.v % 1 == 0 then
-				return kopieer(symbool.getal)
+				return kopieer(symbool.int)
 			else
 				return kopieer(symbool.getal)
 			end
@@ -260,7 +260,7 @@ function typeer(exp)
 
 		-- standaardtypes
 		elseif std[fn(exp)] then
-			local stdtype = std[fn(exp)]
+			local stdtype = kopieer(std[fn(exp)])
 			local argtype = types[moes(exp.a)]
 			local inn, uit = arg0(stdtype), arg1(stdtype)
 
@@ -292,7 +292,7 @@ function typeer(exp)
 				then
 				--and moes:sub(1,1) ~= ',' then
 			local exp = exps[1]
-			local fout = typeerfout(exp.loc,
+			local fout = typeerfout(exp.loc or nergens,
 				"kon type niet bepalen van {code}",
 				isobj(exp) and combineer(exp) or locsub(exp.code, exp.loc)
 			)
