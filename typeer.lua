@@ -29,9 +29,6 @@ function linkbieb(typegraaf)
 			local t,s = arg0(feit), arg1(feit)
 			local t = kopieer(t)
 			local s = kopieer(s)
-			if moes(t) == '+' then
-				print('BIEB', combineer(t), combineer(s))
-			end
 			typegraaf:maaktype(t, s)
 		end
 	end
@@ -48,7 +45,7 @@ local function eztypeer(exp)
 				return kopieer(symbool.getal)
 			end
 		elseif std[moes(exp)] then
-			return kopieer(std[moes(exp)])
+			return kloon(std[moes(exp)])
 		end
 	elseif isobj(exp) then
 		return obj2sym[obj(exp)]
@@ -65,11 +62,12 @@ function typeer(exp)
 
 	-- track
 	local track = verbozeTypes
+	local _types
 	if track then
-	local _types = {}
+	_types = {}
 	setmetatable(types, {
 		__index = function(t,k) return _types[k] end;
-		__newindex = function(t,k,v) v.var = v.var or maakvar(); print('Typeer', k, combineer(v), v.var); if k == '+' then assert(false) end;  _types[k] = v end;
+		__newindex = function(t,k,v) v.var = v.var or maakvar(); print('Typeer', k, combineer(v), v.var); if k == '+' then assert(true) end;  _types[k] = v end;
 	})
 	end
 
@@ -207,7 +205,6 @@ function typeer(exp)
 			local anya = X'iets'
 			local anyb = X'iets'
 			local lijsta = X('_', 'lijst', anya)
-			local lijstb = X('_', 'lijst', anyb)
 			local anyfunc = X('→', X(',', anya, anya), anyb)
 
 			-- A,A → B
@@ -219,7 +216,7 @@ function typeer(exp)
 			-- lijst, fn
 			--print('expargs2', combineer(expargs))
 
-		-- vouw: lijst(A), (A,A → B)
+			-- vouw: lijst(A), (A,A → B)
 			local lijst = expargs[1]
 			local func  = expargs[2]
 			local funcargs = arg0(func)
@@ -227,20 +224,25 @@ function typeer(exp)
 			--funcargs.a[1] = moetzijn(funcargs.a[1], expargs
 			--print(combineer(arg(lijst)), combineer((funcargs)))
 			lijst.a = moetzijn(arg(lijst), funcargs[1], exp)
-			--print('HIER')
-			--print(combineer(funcargs[1]))
-			--print(combineer(funcargs[2]))
-			--print(combineer(lijst.a))
-			funcargs[1] = moetzijn(funcargs[1], lijst.a, exp)
+
+			--[[
+			print('VOUW')
+			print(combineer(funcargs[1]))
+			print(combineer(funcargs[2]))
+			print(combineer(lijst.a[2]))
+			]]
+
+			funcargs[1] = moetzijn(funcargs[1], arg1(lijst), exp)
 			funcargs[2] = moetzijn(funcargs[2], funcargs[1], exp)
+			lijst.a[2] = funcargs[1]
 			moetzijn(arg(lijsta), anya, exp)
-			--moetzijn(arg(lijstb), anyb, exp)
 
 			-- A,A → B  ⇒ arg₀ = arg₁ 
-			--moetzijn(arg0(anyfunc)[1], arg0(anyfunc)[2], exp)
+			moetzijn(arg0(anyfunc)[1], arg0(anyfunc)[2], exp)
 
 			types['vouw'] = X'functie'
-			types[moes(exp)] = anyb
+			--error(combineer(arg1(func)))
+			types[moes(exp)] = arg1(func)
 
 		-- a _ b ⇒ ((X→Y) _ X) : Y
 		elseif fn(exp) == '_' then
@@ -252,12 +254,27 @@ function typeer(exp)
 			local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
 			local functype = moetzijn(functype, anyfunc, exp.a)
 			--print('____', combineer(argtype), combineer(functype), combineer(exp))
-			-- gaat fout met lijsten
-			local X = moetzijn(argtype, arg0(functype), exp.a) -- TODO
-			functype.a[1] = X
-			local Y = arg1(functype)
 
-			types[moes(exp)] = Y
+			local funcarg
+			if fn(functype) == '→' then
+				funcarg = moetzijn(argtype, arg0(functype), exp.a)
+				functype.a[1] = funcarg
+			elseif obj(functype) == ',' then
+				funcarg = X('|', '?')
+				funcarg = {f=X'|', a = functype}
+			elseif obj(functype) == '[]' then
+				funcarg = moetzijn(argtype, arg1(functype), exp)
+			else
+				funcarg = X'iets'
+				local fout = typeerfout(exp.loc,
+					"ongeldig functieargument {exp} voor {exp}",
+					argtype, functype
+				)
+			error'OK'
+				fouten[#fouten+1] = fout
+			end
+
+			types[moes(exp)] = funcarg
 
 		elseif fn(exp) == '→' then
 			local f = arg0(exp)
@@ -286,7 +303,7 @@ function typeer(exp)
 
 		-- standaardtypes
 		elseif std[fn(exp)] then
-			local stdtype = kopieer(std[fn(exp)])
+			local stdtype = kloon(std[fn(exp)])
 			local argtype = types[moes(exp.a)]
 			local inn, uit = arg0(stdtype), arg1(stdtype)
 
@@ -327,11 +344,12 @@ function typeer(exp)
 	end
 
 	if verbozeTypes then
-		print 'moes : type'
-		for moes,type in pairs(types) do
-			print(type.var, moes, combineer(type))
+		print '# Eindtypes'
+		for moes,type in pairs(_types or types) do
+			print('EINDTYPE', type.var, moes, combineer(type))
 		end
 	end
+
 	if track then
 		types = _types or types
 	end

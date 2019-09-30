@@ -3,9 +3,6 @@ require 'stroom'
 require 'fout'
 require 'exp'
 
--- ∘_∘
-local moes = combineer
-
 -- protometatypegraaf
 local metatypegraaf = {}
 

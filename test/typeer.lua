@@ -6,16 +6,19 @@ require 'fout'
 function moettypezijn(code, typecode)
 	local moettype = ontleedexp(typecode)
 	local type,fouten = typeer(ontleedexp(code))
-	if false and #fouten > 0 then
-		for i,fout in ipairs(fouten) do
-			print(fout2ansi(fout))
-		end
-		error('typefouten gevonden')
-	end
 	local istype = type
 
-	assert(moes(istype) == moes(moettype), string.format('type van "%s" is "%s" maar moet "%s" zijn',
+	if moes(istype) ~= moes(moettype) then
+		print(string.format('type van "%s" is "%s" maar moet "%s" zijn',
 			code, combineer(istype), combineer(moettype)))
+		print('typefouten:')
+		if #fouten > 0 then
+			for i,fout in ipairs(fouten) do
+				print(fout2ansi(fout))
+			end
+		end
+		assert(false)
+	end
 end
 
 moettypezijn('1 + 2', 'getal')
@@ -28,10 +31,9 @@ moettypezijn('sin', 'getal → getal')
 moettypezijn('a + b', 'getal')
 moettypezijn('a ∧ b', 'bit')
 
-verbozeTypes = true
 moettypezijn('x → x', 'iets → iets')
 moettypezijn('x → x + 1', 'getal → getal')
-verbozeTypes = false
+moettypezijn('[1,2,3] vouw (+)', 'getal')
 
 
 -- kijk of exp's gelijk worden

@@ -23,6 +23,15 @@ function kopieer(exp)
 	return t
 end
 
+function kloon(exp)
+	if type(exp) ~= 'table' then return exp end
+	local t = {}
+	for k,sub in pairs(exp) do
+		t[k] = kloon(sub)
+	end
+	return t
+end
+
 -- checkuhh
 local atomen = {}
 local lst, fout = file('atomen.lst') or file('../atomen.lst')

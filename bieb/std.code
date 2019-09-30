@@ -11,7 +11,8 @@ byte: nat ; nat < 256
 kommagetal: getal
 
 ; verz
-;lijst: int → iets
+lijst: int → iets
+tupel: int → iets
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
