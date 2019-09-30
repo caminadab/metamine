@@ -13,7 +13,6 @@ local obj2sym = {
 }
 
 local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
-local supers = {}
 local std = {}
 
 for i,feit in ipairs(stdbron.a) do
@@ -24,19 +23,18 @@ for i,feit in ipairs(stdbron.a) do
 end
 
 function linkbieb(typegraaf)
-
+	local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
 	for i,feit in ipairs(stdbron.a) do
 		if fn(feit) == ':' then
 			local t,s = arg0(feit), arg1(feit)
-			--print('BIEB', combineer(t), combineer(s))
+			local t = kopieer(t)
+			local s = kopieer(s)
+			if moes(t) == '+' then
+				print('BIEB', combineer(t), combineer(s))
+			end
 			typegraaf:maaktype(t, s)
 		end
 	end
-
-	local int = typegraaf.types.int
-	local getal = typegraaf.types.getal
-	assert(typegraaf:issubtype(int, getal), tostring(typegraaf))
-	assert(moes(typegraaf:intersectie(int, getal, X'LINKBIEB')) == 'int')
 	return typegraaf
 end
 
@@ -66,12 +64,12 @@ function typeer(exp)
 	local maakvar = maakvars()
 
 	-- track
-	local track = false
+	local track = verbozeTypes
 	if track then
 	local _types = {}
 	setmetatable(types, {
 		__index = function(t,k) return _types[k] end;
-		__newindex = function(t,k,v) v.var = v.var or maakvar(); print('Typeer', k, combineer(v), v.var); _types[k] = v end;
+		__newindex = function(t,k,v) v.var = v.var or maakvar(); print('Typeer', k, combineer(v), v.var); if k == '+' then assert(false) end;  _types[k] = v end;
 	})
 	end
 
@@ -80,7 +78,7 @@ function typeer(exp)
 		assert(ta)
 		assert(tb)
 
-		--if ta == tb then return ta end
+		if ta == tb then return ta end
 
 		ta.var = ta.var or maakvar()
 

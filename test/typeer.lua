@@ -18,15 +18,20 @@ function moettypezijn(code, typecode)
 			code, combineer(istype), combineer(moettype)))
 end
 
-moettypezijn('x → x + 1', 'getal → getal')
+moettypezijn('1 + 2', 'getal')
 
 -- begin makkelijk
---moettypezijn('0', 'int')
+moettypezijn('0', 'int')
 moettypezijn('1.5', 'getal')
 moettypezijn('sin', 'getal → getal')
 
 moettypezijn('a + b', 'getal')
 moettypezijn('a ∧ b', 'bit')
+
+verbozeTypes = true
+moettypezijn('x → x', 'iets → iets')
+moettypezijn('x → x + 1', 'getal → getal')
+verbozeTypes = false
 
 
 -- kijk of exp's gelijk worden

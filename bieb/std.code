@@ -11,7 +11,7 @@ byte: nat ; nat < 256
 kommagetal: getal
 
 ; verz
-lijst: int → iets
+;lijst: int → iets
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
@@ -66,7 +66,6 @@ map: lijst, (iets→iets) → lijst
 
 ; lijst
 (×) : lijst, lijst → lijst
-;(∘) : ((iets → iets), (iets → iets)) → (iets → iets)
 (∘) : functie, functie → functie
 (|) : iets,iets → iets
 (=) :  (iets, iets) → bit 
@@ -77,9 +76,9 @@ succ: nat → nat
 sin :  getal → getal
 cos :  getal → getal
 tan :  getal → getal
-sincos :  getal → (getal, getal)
-(+) :  (getal, getal) → getal
-;(+) :  (int, int) → int
+sincos :  getal → getal, getal
+(+) :  getal, getal → getal
+;(+) :  int, int → getal
 (-) :  getal → getal
 (·) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
