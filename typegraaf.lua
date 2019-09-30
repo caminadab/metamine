@@ -168,6 +168,7 @@ function metatypegraaf:maaktype(type, super)
 end
 
 -- superset
+-- destructief voor a (dat moet!)
 function metatypegraaf:unie(a, b)
 	if isatoom(a) and isatoom(b) then
 		if self:issubtype(a, b) then
@@ -192,7 +193,12 @@ function metatypegraaf:unie(a, b)
 			return t
 		end
 	end
-	return self:maaktype('fout')
+	if fn(a) == fn(b) then
+		a.a = self:unie(a.a, b.a)
+		return a
+	end
+		
+	return self:maaktype('iets')
 end
 
 -- subset

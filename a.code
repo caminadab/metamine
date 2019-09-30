@@ -2,6 +2,11 @@
 ;cirkels(i) = cirkel((i,5), 1)
 uit = canvas cirkels
 
+;-
+a = [1,2,3]
+a
+-;
+
 als muisBeweegt dan
  cirkels := cirkels' ‖ [cirkel(muisPos, 1)]
 eind

@@ -6,7 +6,7 @@ require 'typeer'
 
 -- laat graaf zien in browser
 function laatzien(graaf, naam)
-	file('.graaf.html', stroom2html(graaf, naam or 'Graaf'))
+	file('.graaf.html', graaf2html(graaf, naam or 'Graaf'))
 	os.execute('chromium .graaf.html >/dev/null 2>/dev/null')
 	os.remove('.graaf.html')
 end
@@ -114,7 +114,7 @@ do
 end
 
 -- false
-if true then
+if false then
 	local g = maaktypegraaf()
 	linkbieb(g)
 	laatzien(g.graaf)

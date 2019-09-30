@@ -19,15 +19,24 @@ local std = {}
 for i,feit in ipairs(stdbron.a) do
 	if fn(feit) == ':' then
 		local t,s = arg0(feit), arg1(feit)
-		supers[t] = s
 		std[moes(t)] = s
 	end
 end
 
 function linkbieb(typegraaf)
-	for t,s in pairs(supers) do
-		typegraaf:maaktype(t, s)
+
+	for i,feit in ipairs(stdbron.a) do
+		if fn(feit) == ':' then
+			local t,s = arg0(feit), arg1(feit)
+			--print('BIEB', combineer(t), combineer(s))
+			typegraaf:maaktype(t, s)
+		end
 	end
+
+	local int = typegraaf.types.int
+	local getal = typegraaf.types.getal
+	assert(typegraaf:issubtype(int, getal), tostring(typegraaf))
+	assert(moes(typegraaf:intersectie(int, getal, X'LINKBIEB')) == 'int')
 	return typegraaf
 end
 
@@ -57,7 +66,7 @@ function typeer(exp)
 	local maakvar = maakvars()
 
 	-- track
-	local track = true
+	local track = false
 	if track then
 	local _types = {}
 	setmetatable(types, {
@@ -103,10 +112,10 @@ function typeer(exp)
 			types[m] = t
 
 		elseif obj(exp) == '[]' then
-			local lijsttype = X'iets'
+			local lijsttype = exp[1] and types[moes(exp[1])] or X'iets'
 			for i,sub in ipairs(exp) do
 				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
-				lijsttype = moetzijn(lijsttype, subtype, sub)
+				lijsttype = typegraaf:unie(lijsttype, subtype, sub) --moetzijn(lijsttype, subtype, sub)
 				types[moes(sub)] = lijsttype
 			end
 			local type = typegraaf:maaktype(X('_', 'lijst', lijsttype))
@@ -114,6 +123,21 @@ function typeer(exp)
 				assign(type, X'lijst')
 			end
 			types[moes(exp)] = type
+
+		elseif fn(exp) == '‖' then
+			local A = moes(arg0(exp))
+			local B = moes(arg1(exp))
+
+			moetzijn(types[A], X'lijst', arg0(exp))
+			moetzijn(types[B], X'lijst', arg1(exp))
+
+			local lijsttypeA = types[A]
+			local lijsttypeB = types[B]
+			local lijsttype = typegraaf:unie(lijsttypeA, lijsttypeB)
+
+			--print("CAT", combineer(lijsttypeA), combineer(lijsttypeB), combineer(lijsttype))
+
+			types[moes(exp)] = lijsttype
 
 		elseif fn(exp) == '=' or fn(exp) == ':=' then
 			local A = moes(arg0(exp))
@@ -184,8 +208,8 @@ function typeer(exp)
 			--print('expargs1', combineer(expargs))
 			local anya = X'iets'
 			local anyb = X'iets'
-			local lijsta = X('lijst', anya)
-			local lijstb = X('lijst', anyb)
+			local lijsta = X('_', 'lijst', anya)
+			local lijstb = X('_', 'lijst', anyb)
 			local anyfunc = X('→', X(',', anya, anya), anyb)
 
 			-- A,A → B
@@ -229,6 +253,8 @@ function typeer(exp)
 
 			local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
 			local functype = moetzijn(functype, anyfunc, exp.a)
+			--print('____', combineer(argtype), combineer(functype), combineer(exp))
+			-- gaat fout met lijsten
 			local X = moetzijn(argtype, arg0(functype), exp.a) -- TODO
 			functype.a[1] = X
 			local Y = arg1(functype)

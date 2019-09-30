@@ -4,7 +4,7 @@ require 'typeer'
 require 'fout'
 
 function moettypezijn(code, typecode)
-	local moettype = typecode
+	local moettype = ontleedexp(typecode)
 	local type,fouten = typeer(ontleedexp(code))
 	if false and #fouten > 0 then
 		for i,fout in ipairs(fouten) do
@@ -12,10 +12,10 @@ function moettypezijn(code, typecode)
 		end
 		error('typefouten gevonden')
 	end
-	local istype = combineer(type)
+	local istype = type
 
-	assert(istype == moettype, string.format('type van "%s" is "%s" maar moet "%s" zijn',
-			code, istype, moettype))
+	assert(moes(istype) == moes(moettype), string.format('type van "%s" is "%s" maar moet "%s" zijn',
+			code, combineer(istype), combineer(moettype)))
 end
 
 moettypezijn('x → x + 1', 'getal → getal')
@@ -52,3 +52,7 @@ moettypezijn('x → x', 'iets → iets')
 moettypezijn('x → x + 1', 'getal → getal')
 moettypezijn('sin ∘ cos', 'getal → getal')
 moettypezijn('sin 3', 'getal')
+
+-- moeilijke lijsten
+moettypezijn('[1,2,3] || [4,5,6]', 'lijst int')
+moettypezijn('[1, 2, 0.5] || [1]', 'lijst getal')

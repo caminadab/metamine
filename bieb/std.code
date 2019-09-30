@@ -10,6 +10,12 @@ nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
 
+; verz
+lijst: int → iets
+lijst: verzameling
+tupel: verzameling
+zak: verzameling
+
 ; webspecifiek
 vorm: canvas → canvas
 html: tekst → tekst
@@ -52,11 +58,6 @@ bit: iets
 ja: bit
 nee: bit
 
-; verz
-lijst: verzameling
-tupel: verzameling
-zak: verzameling
-
 ; functie
 iets → iets: functie
 (_fn) : (iets→iets),iets → iets
@@ -92,9 +93,8 @@ sincos :  getal → (getal, getal)
 
 ; set!
 set: verzameling
-({}) : set
-(⋂) : verzameling(set) → set
-(⋃) : verzameling(set) → set
+(⋂) : verzameling set → set
+(⋃) : verzameling set → set
 (∩) : set, set → set
 (∪) : set, set → set
 ;(-) : set, set → set
@@ -107,9 +107,9 @@ set: verzameling
 (≥) : getal, getal → bit
 (≤) : getal, getal → bit
 (<) : getal, getal → bit
-(⋀) : verzameling bit → bit
 (∧) : bit, bit → bit
 (∨) : bit, bit → bit
+(⋀) : verzameling bit → bit
 (⋁) : verzameling bit → bit
 
 ; lijst
