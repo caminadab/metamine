@@ -67,7 +67,13 @@ function typeer(exp)
 	_types = {}
 	setmetatable(types, {
 		__index = function(t,k) return _types[k] end;
-		__newindex = function(t,k,v) v.var = v.var or maakvar(); print('Typeer', k, combineer(v), v.var); if k == '+' then assert(true) end;  _types[k] = v end;
+		__newindex = function(t,k,v)
+			v.var = v.var or maakvar()
+			print('Typeer', k, combineer(v), v.var)
+			if false and k == 'uit' and moes(v) ~= 'iets' then
+				assert(false)
+			end
+			_types[k] = v end
 	})
 	end
 
@@ -103,7 +109,7 @@ function typeer(exp)
 			local t = {o=X','}
 			for i,sub in ipairs(exp) do
 				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
-				t[i] = t[i] or subtype
+				t[i] = subtype
 			end
 			types[m] = t
 
@@ -141,11 +147,13 @@ function typeer(exp)
 			assert(types[A])
 			assert(types[B])
 			-- verandert types[A] -- bewust!! dit voorkomt substitutie
+			--error(C(exp))
 			local T = moetzijn(types[A], types[B], arg0(exp))
 			types[A] = T
 			types[B] = T
 			types[moes(exp)] = symbool.bit
 			types[moes(arg(exp))] = typegraaf:maaktype(X(',', T, T))
+			types[fn(exp)] = X'ja'
 
 		elseif fn(exp) == '⋀' then
 			types[moes(exp)] = symbool.bit
@@ -196,11 +204,15 @@ function typeer(exp)
 
 			types[moes(exp)] = compositie
 
-		---------- linq
+		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
+			types['vouw'] = X'functie'
+			types[moes(exp)] = X'iets'
 
+		---------- linq
 		-- vouw: lijst(A), (A,A → B) → lijst(B)
 		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
 			local expargs = types[moes(arg1(exp))]
+
 			--print('expargs1', combineer(expargs))
 			local anya = X'iets'
 			local anyb = X'iets'
@@ -229,7 +241,7 @@ function typeer(exp)
 			print('VOUW')
 			print(combineer(funcargs[1]))
 			print(combineer(funcargs[2]))
-			print(combineer(lijst.a[2]))
+			print(combineer(lijst))
 			]]
 
 			funcargs[1] = moetzijn(funcargs[1], arg1(lijst), exp)
@@ -241,8 +253,8 @@ function typeer(exp)
 			moetzijn(arg0(anyfunc)[1], arg0(anyfunc)[2], exp)
 
 			types['vouw'] = X'functie'
-			--error(combineer(arg1(func)))
 			types[moes(exp)] = arg1(func)
+
 
 		-- a _ b ⇒ ((X→Y) _ X) : Y
 		elseif fn(exp) == '_' then
@@ -251,39 +263,39 @@ function typeer(exp)
 			assert(functype)
 			assert(argtype)
 
-			local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
-			local functype = moetzijn(functype, anyfunc, exp.a)
-			--print('____', combineer(argtype), combineer(functype), combineer(exp))
+			--print('____', combineer(argtype), combineer(functype), combineer(exp), combineer(argtype))
 
-			local funcarg
-			if fn(functype) == '→' then
+			local funcarg, returntype
+
+			if true or fn(functype) == '→' then
+				local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
+				local functype = moetzijn(functype, anyfunc, exp.a)
+
 				funcarg = moetzijn(argtype, arg0(functype), exp.a)
 				functype.a[1] = funcarg
+				returntype = functype.a[2]
+
 			elseif obj(functype) == ',' then
-				funcarg = X('|', '?')
-				funcarg = {f=X'|', a = functype}
+				returntype = {f=X'|', a=functype}
 			elseif obj(functype) == '[]' then
-				funcarg = moetzijn(argtype, arg1(functype), exp)
+				returntype = moetzijn(argtype, arg1(functype), exp)
 			else
-				funcarg = X'iets'
 				local fout = typeerfout(exp.loc,
 					"ongeldig functieargument {exp} voor {exp}",
 					argtype, functype
 				)
-			error'OK'
 				fouten[#fouten+1] = fout
+				returntype = typegraaf:maaktype(X'fout')
 			end
 
-			types[moes(exp)] = funcarg
+			types[moes(exp)] = returntype
 
 		elseif fn(exp) == '→' then
 			local f = arg0(exp)
 			local a = arg1(exp)
+
 			local F = moes(f)
 			local A = moes(a)
-
-			types[F] = types[F] or X'iets'
-			types[A] = types[A] or X'iets'
 
 			-- tf : A → B
 			-- tg : B → C
@@ -297,7 +309,13 @@ function typeer(exp)
 			--moetzijn(types[moes(exp)], ftype, exp)
 			types[moes(exp)] = ftype
 
-
+		elseif fn(exp) == ':' then
+			local doel,type = arg0(exp), arg1(exp)
+			local type = typegraaf:maaktype(type)
+			--moetzijn(doel, type, arg0(exp)) -- TODO
+			types[moes(exp)] = symbool.bit
+			types[fn(exp)] = symbool.bit
+ 
 		elseif ez then
 			types[moes(exp)] = ez
 
@@ -329,7 +347,7 @@ function typeer(exp)
 
 	-- is alles getypeerd?
 	for moes,exps in pairs(permoes) do
-		if (not types[moes] or _G.moes(types[moes]) == 'iets')
+		if false and (not types[moes] or _G.moes(types[moes]) == 'iets')
 				and not std[moes]
 				and not typegraaf.types[moes]
 				then

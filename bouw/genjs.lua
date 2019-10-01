@@ -199,7 +199,7 @@ local immsym = {
 	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] + 17.778/2; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, r * 72, a1, a2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 72, 720 - (xyz[1] * 72) - 1);\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] + 17.778/2; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
-	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0] + 17.778/2;\n\t\tvar y = xyr[0][1];\n\t\tvar r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect((x-r) * 72, 720 - ((y+r) * 72) - 1, r*2 * 72, r*2 * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect((x-r) * 72, 720 - ((y+r) * 72) - 1, r*2 * 72, r*2 * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] + 17.778/2; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2;\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 
@@ -221,9 +221,9 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['tekst'] = '(function(t) { if (!t && t !== false) return "niets"; return Array.isArray(t) ? t.toSource() : t.toString();})',
+	['alsTekst'] = '(function(t) { if (!t && t !== false) return "niets"; return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
-	['html'] = [[(function (a) {
+	['schrijfHtml'] = [[(function (a) {
 		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
@@ -267,7 +267,7 @@ local immsym = {
 	tan = 'Math.tan',
 	atan = '(function(a) { return Math.atan2(a[1], a[0]); })',
 	niets = 'null',
-	regMuis = [[(function(x)
+	metInvoer = [[(function(uit)
 		{
 			init = false;
 

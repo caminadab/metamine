@@ -14,7 +14,7 @@ require 'sjabloon'
 local dict = {}
 
 for naam, tekst in lst:gmatch('(%w+)\t+(.-)\n') do
-	local str = str:gsub('\\n', '\n'):gsub('\\t', '\t')
+	local str = tekst:gsub('\\n', '\n'):gsub('\\t', '\t')
 	dict[naam] = str
 end
 

@@ -29,7 +29,7 @@ xdemo12		; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x ‖ " 
 xdemo13		; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f
 xdemo14		; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)
 
-episch1		pos = (9,5)\nvorm = f(pos, 4)\nuit = canvas [ vorm ]\n\nals looptijd mod 1 < 1/2 dan\n\tf = vierkant\nanders\n\tf = cirkel\nend
+episch1		pos = (9,5)\nv = f(pos, 4)\nuit = teken v\n\nals looptijd mod 1 < 1/2 dan\n\tf = vierkant\nanders\n\tf = cirkel\nend
 ; TUTORIAL 1.1 --- Taal\n; Taal werkt met objecten en feiten.\n; Een object is bijvoorbeeld "3" of "uit".\n; "3" is gewoon een getal,\n; "uit" is het uitvoerscherm.\n; Een feit is "uit = 3".\n; Dit brengt ons bij het eerste voorbeeld:\nuit = 3
 demo1		; Je kan variabelen maken met "a = 2"\na = 2\nuit = a
 demo2		; ook kan je "+" gebruiken\na = 2\nb = 3\nuit = a + b

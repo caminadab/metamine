@@ -1,6 +1,6 @@
 ;i: 1 .. 10
 ;cirkels(i) = cirkel((i,5), 1)
-uit = canvas cirkels
+uit = teken cirkels
 
 ;-
 a = [1,2,3]

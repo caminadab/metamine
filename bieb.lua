@@ -48,7 +48,7 @@ function bieb()
 	-- web
 	consolelog =  function(s) print(s) end;
 	requestAnimationFrame = function () error('niet beschikbaar') end;
-	html = function () error('niet beschikbaar') end;
+	schrijfHtml = function () error('niet beschikbaar') end;
 
 	contextVan = function () error('niet beschikbaar') end;
 	wis = function () error('niet beschikbaar') end;
@@ -69,7 +69,7 @@ function bieb()
 	muisPos = false,
 	muisBeweegt = false,
 
-	regMuis = true, -- X_X
+	metInvoer = true, -- X_X
 
 	-- toetsenbord
 	toetsNeer = true,
@@ -448,7 +448,9 @@ function bieb()
 		end
 	end;
 
-	['tekst'] = function(a)
+	['alsHtml'] = function(a) return a end;
+
+	['alsTekst'] = function(a)
 		local t
 		if a == true then t = 'ja' end 
 		if a == false then t = 'nee' end 

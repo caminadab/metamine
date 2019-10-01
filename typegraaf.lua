@@ -190,7 +190,7 @@ function metatypegraaf:unie(a, b)
 			return t
 		end
 	end
-	if fn(a) == fn(b) then
+	if isfn(a) and fn(a) == fn(b) then
 		a.a = self:unie(a.a, b.a)
 		return a
 	end
@@ -216,7 +216,8 @@ function metatypegraaf:intersectie(a, b, exp)
 			--error(combineer(a)..','..combineer(b))
 			local fout = typeerfout(exp.loc,
 					'{code} is {exp} maar moet {exp} zijn',
-					bron(exp), b, a)
+					bron(exp), a, b)
+					--assert(false)
 			return false, fout
 		end
 	end
@@ -225,7 +226,7 @@ function metatypegraaf:intersectie(a, b, exp)
 	if fn(a) == '→' and atoom(b) == 'functie' then return a end
 	if fn(b) == '→' and atoom(a) == 'functie' then assign(a, b) ; return a end
 	if fn(a) and fn(a) == fn(b) then
-		local aa, fout = self:intersectie(a.a, b.a, exp.a or exp)
+		local aa, fout = self:intersectie(a.a, b.a, exp.a or exp) -- X('argument van '..C(exp)))
 		if aa then
 			assign(a.a, aa)
 		end
@@ -244,7 +245,7 @@ function metatypegraaf:intersectie(a, b, exp)
 	if isobj(a) and isobj(b) then
 		if obj(a) ~= obj(b) or #a ~= #b then
 			local fout = typeerfout(exp.loc,
-					'{code} is {exp} maar moet {exp} zijn',
+					'{code} is {exp} maar moet {exp} zijn!!!',
 					bron(exp), b, a)
 			return false, fout
 
@@ -252,20 +253,16 @@ function metatypegraaf:intersectie(a, b, exp)
 			for i=1,#a do
 				assert(a[i])
 				assert(b[i])
-				local expi = exp[i] or (exp.a and exp.a[i]) or exp
-				--print(combineer(a), combineer(b))
 				--assert(exp[i], 'geen exp['..i..'] voor '..combineer(exp))
+				local expi = exp[i] or exp
+
 				local preva = kopieer(a[i])
-				local ins = self:intersectie(a[i], b[i], expi)
+				local ins, fout = self:intersectie(a[i], b[i], expi)
 
 				if not ins then
-					local fout = typeerfout(expi.loc,
-						'{code} is {exp} maar moet {exp} zijn',
-						bron(expi), b[i], a[i])
-					intersectie = a[i]
-
 					return false, fout
 				end
+
 				a[i] = ins
 				b[i] = ins
 			end
@@ -278,9 +275,9 @@ function metatypegraaf:intersectie(a, b, exp)
 	if self:issubtype(a, b) then return a end
 	if self:issubtype(b, a) then assign(a, b) ; return a end
 
-	local fout = typeerfout(exp.loc or nergens,
-		'{code} is {exp} maar moet {exp} zijn',
-		bron(exp), a, b)
+	local fout = typeerfout(exp.loc,
+		'{code} is {exp} maar moet {exp} zijn???',
+		bron(exp), b, a)
 
 	return false, fout
 end

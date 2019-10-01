@@ -11,31 +11,31 @@ byte: nat ; nat < 256
 kommagetal: getal
 
 ; verz
-lijst: int → iets
-tupel: int → iets
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
 
 ; webspecifiek
 vorm: canvas → canvas
-html: tekst → tekst
+schrijfHtml: tekst → tekst
 consoleLog: tekst → bit
+canvas: tekst
+alsTekst: iets → iets
 
-vierkant: (ℝ, ℝ), ℝ → vorm
-cirkel: (ℝ, ℝ), ℝ → vorm
-ovaal: (ℝ, ℝ), (ℝ, ℝ) → vorm
-rechthoek: (ℝ, ℝ), (ℝ, ℝ) → vorm
-lijn: (ℝ, ℝ), (ℝ, ℝ) → vorm
+vierkant: (ℝ,ℝ), ℝ → vorm
+cirkel: (ℝ,ℝ), ℝ → vorm
+ovaal: (ℝ,ℝ), (ℝ,ℝ) → vorm
+rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
+lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 teken: lijst(vorm) → canvas
-label: (ℝ, ℝ), tekst → vorm
+label: (ℝ,ℝ), tekst → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
 
 requestAnimationFrame: (getal → tekst) → int
 contextVan: tekst → canvas
 wisCanvas: canvas → canvas
-regMuis: tekst → tekst
+metInvoer: tekst → tekst
 
 ; hardware
 schermVerverst: bit
@@ -131,11 +131,10 @@ entier: getal → int
 byte: int
 data: lijst byte
 letter: int
-;tekst: iets → tekst
+tekst: lijst letter
 
 looptijd : getal
 nu : moment
-;cijfer : iets → bit
 vind : (lijst, lijst) → int
 tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst

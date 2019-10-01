@@ -143,7 +143,11 @@ function loctekst(loc)
 	local bron = ''
 	if loc.bron then bron = loc.bron:sub(1,-6) .. '@' end
 
-	if loc.y1 == loc.y2 and loc.x1 == loc.x2 then
+	if not loc.x1 and bron == '' then
+		return '?'
+	elseif not loc.x1 then
+		return bron
+	elseif loc.y1 == loc.y2 and loc.x1 == loc.x2 then
 		return string.format("%s%d:%d", bron, loc.y1, loc.x1)
 	elseif loc.y1 == loc.y2 then
 		return string.format("%s%d:%d-%d", bron, loc.y1, loc.x1, loc.x2)
