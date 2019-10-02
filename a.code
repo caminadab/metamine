@@ -1,11 +1,4 @@
-;i: 1 .. 10
-;cirkels(i) = cirkel((i,5), 1)
 uit = teken cirkels
-
-;-
-a = [1,2,3]
-a
--;
 
 als muisBeweegt dan
  cirkels := cirkels' ‖ [cirkel(muisPos, 1)]

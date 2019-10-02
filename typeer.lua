@@ -9,7 +9,8 @@ local obj2sym = {
 	[','] = symbool.tupel,
 	['[]'] = symbool.lijst,
 	['{}'] = symbool.set,
-	['[]u'] = symbool.tekst,
+	--['[]u'] = symbool.tekst,
+	['[]u'] = X('_', 'lijst', 'teken'),
 }
 
 local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
@@ -126,6 +127,7 @@ function typeer(exp)
 			end
 			types[moes(exp)] = type
 
+		-- concatenatie
 		elseif fn(exp) == '‖' then
 			local A = moes(arg0(exp))
 			local B = moes(arg1(exp))
@@ -169,6 +171,7 @@ function typeer(exp)
 		elseif fn(exp) == "'" then
 			local A = types[moes(exp.a)]
 			types[moes(exp)] = A
+			types["'"] = X'functie'
 
 		-- compositie
 		elseif fn(exp) == '∘' then
@@ -196,7 +199,7 @@ function typeer(exp)
 			-- compo
 			local compositie = X('→', inA, uitB)
 
-			local inter = moetzijn(uitA, inB, exp)
+			local inter = moetzijn(uitA, inB, arg1(exp))
 			--assign(A.a[2], inter)
 			--assign(B.a[1], inter)
 			A.a[2] = inter
@@ -271,9 +274,11 @@ function typeer(exp)
 				local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
 				local functype = moetzijn(functype, anyfunc, exp.a)
 
-				funcarg = moetzijn(argtype, arg0(functype), exp.a)
+				--error(C(exp.a))
+				funcarg = moetzijn(argtype, arg0(functype), arg1(exp))
 				functype.a[1] = funcarg
 				returntype = functype.a[2]
+				--error(C(functype))
 
 			elseif obj(functype) == ',' then
 				returntype = {f=X'|', a=functype}

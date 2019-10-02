@@ -88,6 +88,26 @@ do
 	assert(g:issubtype(ii, gg))
 end
 
+-- lijst
+do
+	local g = maaktypegraaf()
+	local intlijst = g:maaktype 'lijst int'
+	local lijst = g:maaktype 'lijst'
+	if not g:issubtype(intlijst, lijst) then
+		laatzien(g.graaf, 'lijst(int) ⊂ lijst')
+	end
+end
+
+-- tekst
+if false then
+	local g = maaktypegraaf()
+	local tekst = g:maaktype 'tekst'
+	local letterlijst = g:maaktype 'lijst(letter)'
+	if not g:issubtype(tekst, letterlijst) then
+		laatzien(g.graaf, 'tekst ⊂ lijst(letter)')
+	end
+end
+
 
 -- intersectie
 do

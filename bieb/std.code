@@ -17,14 +17,14 @@ zak: verzameling
 
 ; webspecifiek
 vorm: canvas → canvas
-schrijfHtml: tekst → tekst
+alsHtml: tekst → tekst
 consoleLog: tekst → bit
 canvas: tekst
-alsTekst: iets → iets
+alsTekst: iets → tekst
 
 vierkant: (ℝ,ℝ), ℝ → vorm
 cirkel: (ℝ,ℝ), ℝ → vorm
-ovaal: (ℝ,ℝ), (ℝ,ℝ) → vorm
+ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
 lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 teken: lijst(vorm) → canvas

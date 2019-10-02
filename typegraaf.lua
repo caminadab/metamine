@@ -1,7 +1,17 @@
 require 'combineer'
+require 'symbool'
 require 'stroom'
 require 'fout'
 require 'exp'
+
+-- makkelijke symbolen
+local obj2sym = {
+	[','] = symbool.tupel,
+	['[]'] = symbool.lijst,
+	['{}'] = symbool.set,
+	--['[]u'] = symbool.tekst,
+	['[]u'] = X('_', 'lijst', 'teken'),
+}
 
 -- protometatypegraaf
 local metatypegraaf = {}
@@ -22,6 +32,16 @@ function metatypegraaf:issubtype(type, super)
 	end
 
 	if self.graaf:stroomafwaarts(moes(type), moes(super)) then
+		return true
+	end
+
+	-- lijst_int : lijst
+	if isfn(type) and atoom(super) == atoom(arg0(type)) then
+		return true
+	end
+
+	-- a → b : functie
+	if fn(type) == '→' and atoom(super) == 'functie' then
 		return true
 	end
 
@@ -234,10 +254,10 @@ function metatypegraaf:intersectie(a, b, exp)
 	end
 
 	-- lijst_int  &  lijst  →  lijst_int
-	if isfn(a) and fn(a) == atoom(b) then
+	if isfn(a) and arg0(a) == atoom(b) then
 		return a
 	end
-	if isfn(b) and atoom(a) == fn(b) then
+	if isfn(b) and atoom(a) == arg0(b) then
 		assign(a, b)
 		return a
 	end
@@ -277,7 +297,7 @@ function metatypegraaf:intersectie(a, b, exp)
 
 	local fout = typeerfout(exp.loc,
 		'{code} is {exp} maar moet {exp} zijn???',
-		bron(exp), b, a)
+		bron(exp), a, b)
 
 	return false, fout
 end

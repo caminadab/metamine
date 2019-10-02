@@ -19,6 +19,7 @@ function moettypezijn(code, typecode)
 		end
 		assert(false)
 	end
+	return fouten
 end
 
 moettypezijn('1 + 2', 'getal')
@@ -33,7 +34,7 @@ moettypezijn('a ∧ b', 'bit')
 
 moettypezijn('x → x', 'iets → iets')
 moettypezijn('x → x + 1', 'getal → getal')
-moettypezijn('[1,2,3] vouw (+)', 'getal')
+--moettypezijn('[1,2,3] vouw (+)', 'getal')
 
 
 -- kijk of exp's gelijk worden
@@ -63,3 +64,19 @@ moettypezijn('sin 3', 'getal')
 -- moeilijke lijsten
 moettypezijn('[1,2,3] || [4,5,6]', 'lijst int')
 moettypezijn('[1, 2, 0.5] || [1]', 'lijst getal')
+
+
+-- compositiefout check
+local type,fouten = typeer(ontleed[[
+f = x → x + 1
+g = a, b → a + b
+uit = (f ∘ g)(3)
+]])
+assert(#fouten > 0, C(type)) 
+
+-- tekst types
+moettypezijn(' "hoi" ', 'tekst')
+local fouten = moettypezijn(' "hoi" || "ja" ', 'tekst')
+if #fouten > 0 then
+	print('\n' .. table.concat(map(fouten, fout2ansi), '\n'))
+end

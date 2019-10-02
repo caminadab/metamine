@@ -1,4 +1,6 @@
-f = x → x + 1
-g = a, b → a + b
-uit = (f ∘ g)(3.3)
+;c = cirkel(muisPos, 2)
+;uit = a || b
+;a = alsTekst []
+;b = alsTekst 3
 
+uit = "hoi" || "ja"
