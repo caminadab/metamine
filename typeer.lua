@@ -347,7 +347,7 @@ function typeer(exp)
 			-- typeer arg
 			--types[moes(exp.a)] = types[moes(exp.a)] or inn
 			--print('ARGTYPE voor', combineer(argtype), combineer(inn), combineer(exp.a))
-			moetzijn(argtype, inn, exp.a)
+			moetzijn(argtype, inn, exp.a or exp)
 			--print('ARGTYPE na', combineer(argtype))
 
 			-- typeer exp
