@@ -1,4 +1,4 @@
-uit = teken cirkels
+uit = 3 ;teken cirkels
 
 als muisBeweegt dan
  cirkels := cirkels' ‖ [cirkel(muisPos, 1)]

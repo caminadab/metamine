@@ -25,7 +25,6 @@ function bieb()
 	init = true,
 	fout = true,
 	schermVerverst = true,
-	teken = true,
 
 	-- meta
 	['_var'] = function (a)
@@ -51,7 +50,7 @@ function bieb()
 	schrijfHtml = function () error('niet beschikbaar') end;
 
 	contextVan = function () error('niet beschikbaar') end;
-	wis = function () error('niet beschikbaar') end;
+	wisCanvas = function () error('niet beschikbaar') end;
 	looptijd = 0;
 
 	vierkant = function() error('niet beschikbaar') end;

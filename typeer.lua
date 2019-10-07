@@ -10,7 +10,7 @@ local obj2sym = {
 	['[]'] = symbool.lijst,
 	['{}'] = symbool.set,
 	--['[]u'] = symbool.tekst,
-	['[]u'] = X('_', 'lijst', 'teken'),
+	['[]u'] = X('_', 'lijst', 'letter'),
 }
 
 local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
@@ -92,7 +92,7 @@ function typeer(exp)
 		if not intersectie then
 			fouten[#fouten+1] = fout
 		elseif intersectie then
-			--ta = intersectie
+			ta = intersectie
 		end
 
 		return ta
@@ -137,7 +137,7 @@ function typeer(exp)
 
 			local lijsttypeA = types[A]
 			local lijsttypeB = types[B]
-			local lijsttype = typegraaf:unie(lijsttypeA, lijsttypeB)
+			local lijsttype = typegraaf:intersectie(lijsttypeA, lijsttypeB, exp)
 
 			--print("CAT", combineer(lijsttypeA), combineer(lijsttypeB), combineer(lijsttype))
 
@@ -259,6 +259,7 @@ function typeer(exp)
 			types[moes(exp)] = arg1(func)
 
 
+		-- indexeer
 		-- a _ b ⇒ ((X→Y) _ X) : Y
 		elseif fn(exp) == '_' then
 			local functype = types[moes(arg0(exp))]
@@ -270,27 +271,40 @@ function typeer(exp)
 
 			local funcarg, returntype
 
-			if true or fn(functype) == '→' then
-				local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
-				local functype = moetzijn(functype, anyfunc, exp.a)
+			if fn(functype) == '→' then
 
-				--error(C(exp.a))
+				--print('voor', C(functype), C(anyfunc))
+
+				if fn(functype) ~= '→' then
+					local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
+					functype = moetzijn(functype, anyfunc, arg0(exp))
+				end
+
+				--print('na', C(functype), C(anyfunc))
+
 				funcarg = moetzijn(argtype, arg0(functype), arg1(exp))
 				functype.a[1] = funcarg
 				returntype = functype.a[2]
-				--error(C(functype))
+
+				--error(C(arg0(functype)))
 
 			elseif obj(functype) == ',' then
-				returntype = {f=X'|', a=functype}
+				returntype = X'iets' --{f=X'|', a=functype}
 			elseif obj(functype) == '[]' then
 				returntype = moetzijn(argtype, arg1(functype), exp)
+			elseif fn(functype) == '_' and arg0(functype) == 'lijst' then
+				error'OK'
+				moetzijn(argtype, X'int', exp)
+				returntype = arg1(argtype) or X'iets'
 			else
 				local fout = typeerfout(exp.loc,
-					"ongeldig functieargument {exp} voor {exp}",
-					argtype, functype
+					"{code}: ongeldig functieargument {exp} voor {exp}",
+					bron(exp), argtype, functype
 				)
-				fouten[#fouten+1] = fout
-				returntype = typegraaf:maaktype(X'fout')
+				--fouten[#fouten+1] = fout
+				--error(C(functype))
+				--returntype = typegraaf:maaktype(X'fout')
+				returntype = X'iets'
 			end
 
 			types[moes(exp)] = returntype

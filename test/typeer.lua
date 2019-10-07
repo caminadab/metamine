@@ -75,8 +75,8 @@ uit = (f ∘ g)(3)
 assert(#fouten > 0, C(type)) 
 
 -- tekst types
-moettypezijn(' "hoi" ', 'tekst')
-local fouten = moettypezijn(' "hoi" || "ja" ', 'tekst')
+moettypezijn('"hoi"', 'lijst letter')
+local fouten = moettypezijn(' "hoi" || "ja" ', 'lijst letter')
 if #fouten > 0 then
 	print('\n' .. table.concat(map(fouten, fout2ansi), '\n'))
 end

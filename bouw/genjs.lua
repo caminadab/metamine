@@ -99,7 +99,7 @@ local immjs = {
 	-- lijst
 	['#'] = '$1.length',
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
-	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,$2-$1)), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,$1-$2)), (x,i) => $1 - 1 - i))',
+	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2-$1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1-$2))), (x,i) => $1 - 1 - i))',
 	['_u'] = '$1[$2]',
 	['_'] = 'Array.isArray($1) ? $1[$2] : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
@@ -194,14 +194,14 @@ local immsym = {
 
 	-- muis
 	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
-	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] + 17.778/2; var y = xyz[0][1]; var r = xyz[1];\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, r * 72, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] + 17.778/2; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 72, 720 - (y * 72) - 1, r * 72, a1, a2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 72, 720 - (xyz[1] * 72) - 1);\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] + 17.778/2; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
-	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect((x-r) * 72, 720 - ((y+r) * 72) - 1, r*2 * 72, r*2 * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] + 17.778/2; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 72, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
-	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2;\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 72, 720 - ((y+h) * 72) - 1, w * 72, h * 72);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, 0, Math.PI * 2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
+	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
+	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar r = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect((x-r) * 7.2, 720 - ((y+r) * 7.2) - 1, r*2 * 7.2, r*2 * 7.2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillStyle = "white";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
+	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fillStyle = "white";\n\t\tc.fill();\n\t\treturn c;}); })',
 
 	['lijn'] = [[
 	(function(_args) {return (function(c){
@@ -223,7 +223,7 @@ local immsym = {
 	})]],
 	['alsTekst'] = '(function(t) { if (!t && t !== false) return "niets"; return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
-	['schrijfHtml'] = [[(function (a) {
+	['alsHtml'] = [[(function (a) {
 		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
@@ -231,7 +231,6 @@ local immsym = {
 		}
 		return uit.children[0];
 	})]],
-	['teken'] = [[uit.getChildren()[0] ]],
 	['requestAnimationFrame'] = [[(function f(t) {
 		if (stop) {stop = false; uit.innerHTML = ''; return; };
 		if (!isFinite(t))
@@ -267,7 +266,7 @@ local immsym = {
 	tan = 'Math.tan',
 	atan = '(function(a) { return Math.atan2(a[1], a[0]); })',
 	niets = 'null',
-	metInvoer = [[(function(uit)
+	metInvoer = [[(function()
 		{
 			init = false;
 
@@ -285,8 +284,8 @@ local immsym = {
 			var b = canvas.getBoundingClientRect();
 			uit.onmousemove = function(ev)
 			{
-				mouseX = +((ev.clientX-b.left)/canvas.clientWidth*17.778).toFixed(3);
-				mouseY = +((b.bottom - ev.clientY)/canvas.clientHeight*10).toFixed(3);
+				mouseX = +((ev.clientX-b.left)/canvas.clientWidth*177.78).toFixed(3);
+				mouseY = +((b.bottom - ev.clientY)/canvas.clientHeight*100).toFixed(3);
 				mouseMoving = true;
 			};
 
@@ -308,7 +307,7 @@ local immsym = {
 			return uit;
 		}
 	)]],
-	['getContext'] = 'function(a) { if (uit.children.length == 0) alert("geen canvas gevonden"); return uit.children[0].getContext("2d"); }',
+	['contextVan'] = 'function(a) { if (uit.children.length == 0) alert("geen canvas gevonden"); return uit.children[0].getContext("2d"); }',
 	['consolelog'] = 'console.log($1)',
 
 	-- toetsen

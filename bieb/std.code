@@ -17,10 +17,10 @@ zak: verzameling
 
 ; webspecifiek
 vorm: canvas → canvas
-alsHtml: tekst → tekst
-consoleLog: tekst → bit
-canvas: tekst
-alsTekst: iets → tekst
+alsHtml: lijst(letter) → lijst(letter)
+consoleLog: lijst(letter) → bit
+canvas: lijst(letter)
+alsTekst: iets → lijst(letter)
 
 vierkant: (ℝ,ℝ), ℝ → vorm
 cirkel: (ℝ,ℝ), ℝ → vorm
@@ -28,14 +28,14 @@ ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
 lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 teken: lijst(vorm) → canvas
-label: (ℝ,ℝ), tekst → vorm
+label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
 
-requestAnimationFrame: (getal → tekst) → int
-contextVan: tekst → canvas
+requestAnimationFrame: (getal → lijst(letter)) → int
+contextVan: lijst(letter) → canvas
 wisCanvas: canvas → canvas
-metInvoer: tekst → tekst
+metInvoer: lijst(letter) → lijst(letter)
 
 ; hardware
 schermVerverst: bit
@@ -52,7 +52,7 @@ toetsOp: int → bit
 
 syscall: iets → int
 
-stduitSchrijf: tekst → int
+stduitSchrijf: lijst(letter) → int
 app: iets
 
 bit: iets

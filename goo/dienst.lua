@@ -1,6 +1,3 @@
-#!/usr/bin/luajit
-package.path = package.path..';../?.lua'
-
 require 'bouw.genjs'
 require 'vertaal'
 require 'vertolk'
@@ -193,7 +190,7 @@ end
 local veto = ...
 if veto then return end
 
-os.execute("chromium http://localhost:1237 >/dev/null 2>/dev/null &")
+--os.execute("chromium http://localhost:1237 >/dev/null 2>/dev/null &")
 
 
 while true do

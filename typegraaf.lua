@@ -244,8 +244,8 @@ function metatypegraaf:intersectie(a, b, exp)
 
 	-- functie
 	if fn(a) == '→' and atoom(b) == 'functie' then return a end
-	if fn(b) == '→' and atoom(a) == 'functie' then assign(a, b) ; return a end
-	if fn(a) and fn(a) == fn(b) then
+	if fn(b) == '→' and atoom(a) == 'functie' then assign(a, kopieer(b)) ; return a end
+	if isfn(a) and fn(a) == fn(b) then
 		local aa, fout = self:intersectie(a.a, b.a, exp.a or exp) -- X('argument van '..C(exp)))
 		if aa then
 			assign(a.a, aa)
@@ -258,7 +258,7 @@ function metatypegraaf:intersectie(a, b, exp)
 		return a
 	end
 	if isfn(b) and atoom(a) == arg0(b) then
-		assign(a, b)
+		assign(a, kopieer(b))
 		return a
 	end
 
@@ -293,10 +293,10 @@ function metatypegraaf:intersectie(a, b, exp)
 
 	-- triviaal
 	if self:issubtype(a, b) then return a end
-	if self:issubtype(b, a) then assign(a, b) ; return a end
+	if self:issubtype(b, a) then assign(a, kopieer(b)) ; return a end
 
 	local fout = typeerfout(exp.loc,
-		'{code} is {exp} maar moet {exp} zijn???',
+		'{code} is {exp} maar moet {exp} zijn',
 		bron(exp), a, b)
 
 	return false, fout

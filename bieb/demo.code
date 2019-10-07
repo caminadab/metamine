@@ -1,7 +1,7 @@
 ververs = moment → metInvoer(alsHtml(alsTekst(uit)))
 app = requestAnimationFrame(ververs)
 
-el = html "<canvas width='1280' height='720'></canvas>"
+el = alsHtml "<canvas width='1280' height='720'></canvas>"
 tekenCanvas = wisCanvas ∘ (vormen vouw (∘))
 teken = vormen → (tekenCanvas(contextVan(el)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
