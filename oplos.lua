@@ -326,7 +326,7 @@ function oplos(exp,voor)
 			eqs[eq] = false
 		end
 		for naam,alts in pairs(map) do
-			alts.o = X'{}'
+			alts.o = X','
 			local index = maakindex()
 			schaduw[naam] = index
 			assert(index and alts)

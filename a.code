@@ -1,5 +1,11 @@
-uit = 3 ;teken cirkels
+w = 177.78
+h = 100
+spelerW = 5
+spelerH = 20
+midden = (spelerH + h) / 2
+linksY := 0
+rechtsY := 0
 
-als muisBeweegt dan
- cirkels := cirkels' ‖ [cirkel(muisPos, 1)]
-eind
+links = rechthoek((0,linksY'),(spelerW,linksY'+spelerH))
+rechts = rechthoek((w-spelerW,rechtsY'),(w,rechtsY'+spelerH))
+uit = teken [links, rechts]

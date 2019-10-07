@@ -111,7 +111,7 @@ local immjs = {
 			var array = Array.from(ass);
 			var ret = vars[varindex];
 			for (var i = 0; i < array.length; i++) {
-				if (array[i] != null) {
+				if (array[i]) {
 					ret = array[i];
 				}
 			}
@@ -162,10 +162,14 @@ local immsym = {
 	['_var'] = [[ (function(a) {
 			var varindex = a[0];
 			var ass = a[1];
-			var array = Array.from(ass);
+			var array = ass;
 			var ret = vars[varindex];
 			for (var i = 0; i < array.length; i++) {
-				if (array[i] != null) {
+				if (array[i]) {
+					if (ret) {
+						console.log("dubbele assignment: " + array[i] + " en " + ret);
+						throw "dubbele assignment";
+					}
 					ret = array[i];
 				}
 			}
@@ -382,6 +386,8 @@ function genjs(app)
 				local o = obj(exp)
 				local fmt
 				if o == ',' then
+					if not exp[1] then error(C(exp[2])) end
+					print(table.concat(map(exp, function(e) return e and e.v or 'alert("fout")' end), ','))
 					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v or 'alert("fout")' end), ', ') .. '];'
 				elseif o == '{}' then
 					fmt = '%s%s = new Set(['.. table.concat(map(exp, function(e) return e.v end), ', ') .. ']);'
