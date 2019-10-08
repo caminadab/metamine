@@ -1,0 +1,39 @@
+kantW = 178 / 2 ; breedte van 1 zijde
+uit = teken [links, rechts, net]
+geel = rgb(1,1,0)
+blauw = rgb(0,0,1)
+wit = rgb(1,1,1)
+spelerBoog = pos → boog(pos, 10, τ/2, τ)
+net = (rechthoek((kantW-2,0),(kantW+2,20))) inkleur wit
+
+; links
+linksX := kantW/2
+linksY := 0
+linksVy := 0
+links = (spelerBoog(linksX, linksY)) inkleur geel
+
+; rechts
+rechtsX := kantW/2·3
+rechtsY := 0
+rechts = (spelerBoog(rechtsX, rechtsY)) inkleur blauw
+
+; links invoer
+als toetsA en linksX' > 0 dan
+	linksX := linksX' - 1
+eind
+als toetsD en linksX' < kantW dan
+	linksX := linksX' + 1
+eind
+als toetsW en linksY' = 0 dan
+	linksVy := -8
+eind
+als linksY' ≠ 0 en linksVy' ≠ 0 dan
+	linksY := linksY' + linksVy'
+eind
+
+als toetsLinks en rechtsX' > kantW dan
+	rechtsX := rechtsX' - 1
+eind
+als toetsRechts en rechtsX' < kantW·2 dan
+	rechtsX := rechtsX' + 1
+eind

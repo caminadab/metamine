@@ -58,7 +58,7 @@ end
 
 local postop = set("%","!",".","'")
 local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈", "^i", "^f")
-local unop   = set("-","#","¬","Σ","|")
+local unop   = set("-","#","¬","Σ","|","%")
 
 function codegen(exp, maakvar)
 	local graaf = maakgraaf()

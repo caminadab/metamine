@@ -1,6 +1,3 @@
-;c = cirkel(muisPos, 2)
-;uit = a || b
-;a = alsTekst []
-;b = alsTekst 3
-
-uit = "hoi" || "ja"
+uit = f(3)
+f = sin
+f = cirkel

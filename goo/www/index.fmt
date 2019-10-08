@@ -327,14 +327,11 @@ button {
 			.then(j => {
 				onsuccess();
 				try {
-					//js.innerHTML = j.js;
+					setErrors(j.fouten);
 					eval(j.js);
 					uit.focus();
-				//} catch (e) {
-				//	uit.innerHTML = "executiefout: " + e + e.stack;
-				//}
-				} finally {
-					setErrors(j.fouten);
+				} catch (e) {
+					uit.innerHTML = "executiefout: " + e + e.stack;
 				}
 			})
        			//.catch(e => onerror(e));

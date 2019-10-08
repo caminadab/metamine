@@ -249,8 +249,10 @@ function metatypegraaf:intersectie(a, b, exp)
 		local aa, fout = self:intersectie(a.a, b.a, exp.a or exp) -- X('argument van '..C(exp)))
 		if aa then
 			assign(a.a, aa)
-		end
-		return a, fout
+      return a
+    else
+      return false, fout
+    end
 	end
 
 	-- lijst_int  &  lijst  →  lijst_int
@@ -266,7 +268,7 @@ function metatypegraaf:intersectie(a, b, exp)
 		if obj(a) ~= obj(b) or #a ~= #b then
 			local fout = typeerfout(exp.loc,
 					'{code} is {exp} maar moet {exp} zijn!!!',
-					bron(exp), b, a)
+					bron(exp), a, b)
 			return false, fout
 
 		else
