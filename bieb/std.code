@@ -68,6 +68,7 @@ iets → iets: functie
 (_fn) : (iets→iets),iets → iets
 (_) :  ((iets→iets), iets) → iets
 map: lijst, (iets→iets) → lijst
+filter: lijst, (iets→bit) → lijst
 
 ; lijst
 (×) : lijst, lijst → lijst

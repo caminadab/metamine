@@ -42,15 +42,17 @@ local function doestat(stat, env)
 		local arg = doeatoom(arg(cmd), env)
 		--env['_arg'] = arg
 
-		local ok, w = xpcall(fn, function(f) return f ..'\n' .. debug.traceback() end, arg)
+		local ok, w = pcall(fn, arg)
 		if not ok then
 			local err = w
-			local f = executiefout(stat.loc, err)
-			print(fout2string(f))
+			local f = executiefout(stat.loc, '{code}: '..err:match('([^\n]+)'), bron(stat))
+			print(fout2ansi(f))
 			while true do
 				io.write('> ')
 				io.flush()
 				local source = io.read('*l')
+
+				-- kutje
 				if source == '' or source == '\x13' or source == 'exit' or source == 'quit' then
 					break
 				end

@@ -145,12 +145,13 @@ local immsym = {
 	['|'] = [[ (function(conds) {
 		const it = conds.entries();
 		for (let entry of it) {
-			if (entry[1] != null && entry[1] != false) {
+			if (entry[1] !== null && entry[1] !== false) {
 				return entry[1];
 			}
 		}
-		alert("Lege waarde");
-		throw new Exception(":(");
+		//alert("Lege waarde");
+		//throw new Exception(":(");
+		return null;
 	}) ]],
 
 	-- func
@@ -166,10 +167,6 @@ local immsym = {
 			var ret = vars[varindex];
 			for (var i = 0; i < array.length; i++) {
 				if (array[i] !== false && array[i] !== null) {
-					if (ret) {
-						//console.log("dubbele assignment: " + array[i] + " en " + ret);
-						//throw "dubbele assignment";
-					}
 					ret = array[i];
 				}
 			}
@@ -177,8 +174,6 @@ local immsym = {
 			return ret;
 		})
 	]],
-
-	['_prevvar'] = '(function(a){return vars[a];})',
 
 	-- discreet
 	['min'] = 'Math.min',
@@ -201,10 +196,10 @@ local immsym = {
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, 0, Math.PI * 2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
+	['label3'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
+	['label2'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
 	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar d = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+d) * 7.2) - 1, d * 7.2, d * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 72) - 1);\n\t\treturn c;}); })',
+	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
 
 	['inkleur'] = [[
@@ -240,7 +235,7 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['alsTekst'] = '(function(t) { if (!t && t !== false) return "niets"; return Array.isArray(t) ? t.toSource() : t.toString();})',
+	['alsTekst'] = '(function(t) { if (t === null) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 	['alsHtml'] = [[(function (a) {
 		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
@@ -260,6 +255,7 @@ local immsym = {
 		_keysPressed.clear();
 		_keysReleased.clear();
 		mouseMoving = false;
+		init = false;
 		requestAnimationFrame(f);
 		return true;
 	})]],
@@ -287,8 +283,6 @@ local immsym = {
 	niets = 'null',
 	metInvoer = [[(function()
 		{
-			init = false;
-
 			uit.onmouseup = function(ev) {
 				mouseLeftReleased = true;
 				mouseLeft = false;

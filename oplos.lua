@@ -81,7 +81,6 @@ function oplos(exp,voor)
 
 			if type(val) == 'table' then return false end
 			return (tonumber(val) and true)
-				or string.upper(val or '???')==val
 				or val == '_arg'
 				or val == '_fn'
 				or bieb[val] ~= nil -- KUCH KUCH

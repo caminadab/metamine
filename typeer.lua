@@ -9,8 +9,8 @@ local obj2sym = {
 	[','] = symbool.tupel,
 	['[]'] = symbool.lijst,
 	['{}'] = symbool.set,
-	--['[]u'] = symbool.tekst,
 	['[]u'] = X('_', 'lijst', 'letter'),
+	--['[]u'] = symbool.tekst,
 }
 
 local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
@@ -118,10 +118,20 @@ function typeer(exp)
 			local lijsttype = exp[1] and types[moes(exp[1])] or X'iets'
 			for i,sub in ipairs(exp) do
 				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
-				lijsttype = typegraaf:unie(lijsttype, subtype, sub) --moetzijn(lijsttype, subtype, sub)
+				local fout
+				lijsttype,fout = typegraaf:intersectie(lijsttype, subtype, sub) --moetzijn(lijsttype, subtype, sub)
+				if not lijsttype then
+					lijsttype = X'iets'
+					fouten[#fouten+1] = fout
+				end
 				types[moes(sub)] = lijsttype
 			end
-			local type = typegraaf:maaktype(X('_', 'lijst', lijsttype))
+			local type
+			if lijsttype then
+				type = typegraaf:maaktype(X('_', 'lijst', lijsttype))
+			else
+				type = typegraaf:maaktype(X'lijst')
+			end
 			if atoom(lijsttype) == 'iets' then
 				assign(type, X'lijst')
 			end
@@ -207,7 +217,7 @@ function typeer(exp)
 
 			types[moes(exp)] = compositie
 
-		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
+		elseif false and fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
 			types['vouw'] = X'functie'
 			types[moes(exp)] = X'iets'
 
@@ -238,7 +248,7 @@ function typeer(exp)
 
 			--funcargs.a[1] = moetzijn(funcargs.a[1], expargs
 			--print(combineer(arg(lijst)), combineer((funcargs)))
-			lijst.a = moetzijn(arg(lijst), funcargs[1], exp)
+			moetzijn(arg1(lijst), funcargs[1], exp)
 
 			--[[
 			print('VOUW')
@@ -250,7 +260,10 @@ function typeer(exp)
 			funcargs[1] = moetzijn(funcargs[1], arg1(lijst), exp)
 			funcargs[2] = moetzijn(funcargs[2], funcargs[1], exp)
 			lijst.a[2] = funcargs[1]
-			moetzijn(arg(lijsta), anya, exp)
+			--error(C(anya))
+
+			moetzijn(arg1(lijsta), anya, exp)
+			moetzijn(arg1(lijsta), arg1(func), exp) -- TODO
 
 			-- A,A → B  ⇒ arg₀ = arg₁ 
 			moetzijn(arg0(anyfunc)[1], arg0(anyfunc)[2], exp)
@@ -293,7 +306,6 @@ function typeer(exp)
 			elseif obj(functype) == '[]' then
 				returntype = moetzijn(argtype, arg1(functype), exp)
 			elseif fn(functype) == '_' and arg0(functype) == 'lijst' then
-				error'OK'
 				moetzijn(argtype, X'int', exp)
 				returntype = arg1(argtype) or X'iets'
 			else
@@ -347,7 +359,12 @@ function typeer(exp)
 			-- typeer arg
 			--types[moes(exp.a)] = types[moes(exp.a)] or inn
 			--print('ARGTYPE voor', combineer(argtype), combineer(inn), combineer(exp.a))
-			moetzijn(argtype, inn, exp.a or exp)
+			local sub = exp.a
+			if not sub then
+				sub = X('argument van '..combineer(exp))
+				sub.loc = exp.loc
+			end
+			moetzijn(argtype, inn, sub)
 			--print('ARGTYPE na', combineer(argtype))
 
 			-- typeer exp

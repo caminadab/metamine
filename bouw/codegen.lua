@@ -112,7 +112,9 @@ function codegen(exp, maakvar)
 
 	function mkstat(stat, ret)
 		stat.loc = exp.loc
+		--stat.code = exp.code
 		--stat.ref = ret.ref
+
 		local val = stat.a[2]
 		if verbozeIntermediair then
 			--print('  '..combineer(stat)..'  '..(val.ref and val.ref.v or ''))
@@ -154,6 +156,7 @@ function codegen(exp, maakvar)
 			local stat = X(':=', ret, (assert(al[exp.v], 'niet geregistreerd: '..exp.v))) --assert(al[exp.v:sub(1,-2)], exp.v))
 			--error('OK')
 			stat.loc = exp.loc
+			stat.code = assert(exp.code)
 			return mkstat(stat, ret)
 		
 		-- functie
@@ -204,6 +207,7 @@ function codegen(exp, maakvar)
 			blok = b
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
+			stat.code = exp.code
 			stat.a[2].ref = exp.ref --naam
 			al[ret.v] = naam
 			--table.insert(blok.stats, stat)
@@ -255,6 +259,7 @@ function codegen(exp, maakvar)
 		elseif tonumber(exp) then
 			stat.a[2] = X(tostring(exp))
 			stat.loc = exp.loc
+			stat.code = exp.code
 			mkstat(stat, ret)
 			stat.a[2].ref = exp.ref
 
@@ -262,6 +267,7 @@ function codegen(exp, maakvar)
 		elseif isatoom(exp) then
 			stat.a[2] = exp
 			stat.loc = exp.loc
+			stat.code = exp.code
 			--al[exp] = stat[2]
 			stat.a[2].ref = exp.ref
 			mkstat(stat, ret)
@@ -317,6 +323,7 @@ function codegen(exp, maakvar)
 			end
 			
 			stat.loc = exp.loc
+			stat.code = exp.code
 
 			--assert(exp.ref, e2s(stat)..' heeft geen referentie')
 			--if exp.ref then
