@@ -263,7 +263,9 @@ function typeer(exp)
 			--error(C(anya))
 
 			moetzijn(arg1(lijsta), anya, exp)
-			moetzijn(arg1(lijsta), arg1(func), exp) -- TODO
+			local sub = X('resultaat van '..C(arg1(exp)[2]))
+			sub.loc = exp.loc
+			moetzijn(arg1(lijsta), arg1(func), sub) -- TODO
 
 			-- A,A → B  ⇒ arg₀ = arg₁ 
 			moetzijn(arg0(anyfunc)[1], arg0(anyfunc)[2], exp)

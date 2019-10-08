@@ -1,3 +1,2 @@
 L = [1, 2, 3]
-F = (>)
-uit = (L vouw F)
+uit = (L vouw (>))
