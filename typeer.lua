@@ -314,7 +314,7 @@ function typeer(exp)
 				moetzijn(argtype, X'int', exp)
 				returntype = arg1(argtype) or X'iets'
 			else
-				local fout = typeerfout(exp.loc,
+				local fout = typeerfout(exp.loc or nergens,
 					"{code}: ongeldig functieargument {exp} voor {exp}",
 					bron(exp), argtype, functype
 				)
