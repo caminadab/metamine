@@ -1,4 +1,10 @@
-linux: ontleed goo/www/index.html goo/www/en
+linux: ontleed.so
+deploy: ontleed.so goo/www/
+	scp -r goo/www/* metamine.nl:/var/www/html/
+	ssh -f pi  'cd taal ; git pull ; make ; pkill luajit ; /etc/dienst ; touch abc'
+	
+
+ontleed.so: ontleed/
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
@@ -14,8 +20,6 @@ windows:
 	ln -sf ../vt bin/
 	ln -sf ../doe bin/
 
-deploy: goo/www/index.html goo/www/en
-	scp -r goo/www/* metamine.nl:/var/www/html/
 
 #scp -r goo/* pi:/var/www/blog/taal-0.1.1
 
