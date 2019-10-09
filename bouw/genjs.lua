@@ -487,7 +487,7 @@ _keysPressed = new Set();
 _keysReleased = new Set();
 init = true;
 html = "";
-uit = document.getElementById("uit"); uit.tabIndex = -1;
+uit = document.getElementById("uit");
 stop = false;
 ]])
 	flow(app.start, '')

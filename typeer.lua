@@ -187,10 +187,11 @@ function typeer(exp)
 		elseif fn(exp) == '∘' then
 			local A = types[moes(arg0(exp))]
 			local B = types[moes(arg1(exp))]
-			local anyfunc = X('→', 'iets', 'iets')
+			local anyfuncA = X('→', 'iets', 'iets')
+			local anyfuncB= X('→', 'iets', 'iets')
 
-			moetzijn(A, anyfunc, arg0(exp))
-			moetzijn(B, anyfunc, arg1(exp))
+			moetzijn(A, anyfuncA, arg0(exp))
+			moetzijn(B, anyfuncB, arg1(exp))
 
 			local  inA = arg0(A)
 			local uitA = arg1(A)
@@ -212,6 +213,8 @@ function typeer(exp)
 			local inter = moetzijn(uitA, inB, arg1(exp))
 			--assign(A.a[2], inter)
 			--assign(B.a[1], inter)
+			--moetzijn(arg1(A), inter)
+			--moetzijn(arg0(B), inter)
 			A.a[2] = inter
 			B.a[1] = inter
 
