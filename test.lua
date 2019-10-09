@@ -1,3 +1,4 @@
+#!/usr/bin/luajit
 require 'util'
 
 local bestanden = io.popen('ls test/*.lua')
