@@ -79,26 +79,26 @@
 	.CodeMirror {
 		width: 100%;
 		display: block;
+		height: 200px;
 	}
 	textarea {
 		width: 100%;
 	}
 	#in {
 		width: 100%;
-		height: 400px;
+		height: 200px;
 		display: inline;
 		float: left;
 	}
 	#uit {
 		width: 100%;
-		height: 400px;
+		height: 56vh;
 		display: inline;
 		float: left;
 	}
 }
 
 #uit {
-	min-height: 800px;
 	font-width: bold;
 	background: #3a2299;
 	font-size: 48px;
@@ -117,8 +117,13 @@
 		width: 50%;
 		display: inline;
 		float: right;
+		height: 800px !important;
+	}
+
+	#in {
 		height: 800px;
 	}
+
 	textarea {
 		width: 50%;
 		display: inline;
@@ -127,6 +132,7 @@
 	}
 
 	#uit {
+		min-height: 800px;
 		width: 50%;
 		display: inline;
 		float: left;
@@ -135,17 +141,14 @@
 
 textarea {
 	font-size: 20px;
-	padding: 14px;
+	tab-size: 2;
+	-moz-tab-size: 2;
+	padding: 3px 4px;
 	height: 800px;
 	color: white;
 	background: black;
 	border: none;
 	box-sizing: border-box;
-}
-
-#uit-tekst {
-	transition: width 2.0s linear;
-	margin-left: 24px;
 }
 
 .CodeMirror {
@@ -169,10 +172,6 @@ button {
 
 	transition-property: background;
 	transition-duration: 0.0s;
-}
-
-#intro {
-	min-height: 250px;
 }
 
 #vertaal { color: #1b1; }
@@ -435,7 +434,7 @@ canvas {
 	//editor.setSize('50%', '300px');
 	editor.setValue(demos[demoindex]);
 
-	editor.setSize(null, '800px');
+	//editor.setSize(null, '800px');
 
 	// zet de codemirror selectie
 	function selecteer(loc) {
@@ -477,7 +476,7 @@ canvas {
 					message.innerHTML = error.html;
 
 			var line = error.loc.anchor.line;
-			if (line > editor.lineCount() || line < 0)
+			if (line >= editor.lineCount() || line < 0)
 				line = 0;
 			var b = editor.addLineWidget(line, message);
 			oldLineWidgets.push(b);
