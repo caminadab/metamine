@@ -42,15 +42,16 @@ local function doestat(stat, env)
 		local arg = doeatoom(arg(cmd), env)
 		--env['_arg'] = arg
 
-		local ok, w = xpcall(fn, function(f) return f ..'\n' .. debug.traceback() end, arg)
+		local ok, res = pcall(fn, arg)
 		if not ok then
-			local err = w
-			local f = executiefout(stat.loc, err)
-			print(fout2string(f))
-			while true do
+			local err = res
+			local fout = executiefout(stat.loc, '{code}: '..err:match('([^\n]+)'), bron(stat))
+			print(fout2ansi(fout))
+			while false do
 				io.write('> ')
 				io.flush()
 				local source = io.read('*l')
+
 				if source == '' or source == '\x13' or source == 'exit' or source == 'quit' then
 					break
 				end
@@ -61,8 +62,9 @@ local function doestat(stat, env)
 				local ok, msg = pcall(fn)
 				if not ok then print(msg) end
 			end
+			return fout
 		end
-		return w
+		return res
 	
 	else
 		error('wat is dit: '..combineer(stat))
@@ -115,7 +117,7 @@ local function doestat0(stat, env)
 			if not ok then
 				local err = w
 				local f = executiefout(stat.loc, err)
-				print(fout2string(f))
+				--print(fout2string(f))
 				return
 			end
 
@@ -129,7 +131,7 @@ local function doestat0(stat, env)
 			print('ASDF', e2s(exp), exp.f.w, exp.w)
 			local f = executiefout(stat.loc, 'onbekende "functie": '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
 			print()
-			print(fout2string(f))
+			print(fout2ansi(f))
 		end
 
 	end
@@ -210,9 +212,6 @@ function doe(cfg)
 		env[k] = v
 	end
 
-	-- magie
-	--env['als'] 
-
 	for k,v in pairs(cfg.namen) do
 		env[k] = function(arg)
 			local isf = k:sub(1,2) == 'fn'
@@ -226,8 +225,6 @@ function doe(cfg)
 			return ret
 		end
 	end
-
-
 
 	-- GA
 	local ret = doeblok(cfg.start, env)

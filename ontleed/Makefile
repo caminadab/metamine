@@ -2,7 +2,7 @@ linux: ontleed.so
 
 ontleed.so: lua.c lex.l taal.y
 	mkdir -p bin
-	gcc -g -Wall -Wno-unused -std=c11 -shared -I/usr/include/lua5.1 -o bin/ontleed.so -fPIC lua.c .taal.yy.c .lex.yy.c -Wno-multichar
+	gcc -g -O2 -Wall -Wno-unused -std=c11 -shared -I/usr/include/lua5.1 -o bin/ontleed.so -fPIC lua.c .taal.yy.c .lex.yy.c -Wno-multichar
 	ln -sf bin/ontleed.so .
 
 test: test.c lua.c .taal.yy.h .taal.yy.c .lex.yy.h .lex.yy.c
@@ -12,7 +12,7 @@ test: test.c lua.c .taal.yy.h .taal.yy.c .lex.yy.h .lex.yy.c
 
 windows: main.c taal.yy.c lua.c
 	mkdir -p bin
-	gcc -std=c99 -ggdb -fPIC -shared -I/usr/include/lua5.1 -o bin/ontleed.dll main.c .taal.yy.c lua.c -llua test.c .lex.yy.c
+	gcc -std=c99 -O2 -ggdb -fPIC -shared -I/usr/include/lua5.1 -o bin/ontleed.dll main.c .taal.yy.c lua.c -llua test.c .lex.yy.c
 
 wintest: main.c .taal.yy.c
 	gcc -std=c99 -ggdb -o bin/test main.c .taal.yy.c .lex.yy.c test.c -lm --lua5.1

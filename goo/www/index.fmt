@@ -321,33 +321,27 @@ canvas {
 			.then(x => x.json())
 			.then(j => {
 				onsuccess();
+				stop = true;
+				setErrors(j.fouten);
 				try {
-					//js.innerHTML = j.js;
-					//var f = new Function('(function() {\n' + j.js + '\n})()');
-					//f();
 					eval(j.js);
 					uit.focus();
 				} catch (e) {
-						//alert(JSON.stringify(j));
 					var genlines = e.stack.match(/\d+/g);
-					//alert("GENLINES: "+genlines)
+					alert("GENLINES: "+genlines)
 					for (var i = 0; i < Math.min(genlines.length, 3); i++) {
 						alert("GENLINE: " + genlines[i]);
-						//, BRONLOC: "+JSON.stringify(bronloc));
 						var bronloc = j.gen2bron[0+genlines[i]];
+						alert("BRONLOC: "+JSON.stringify(bronloc));
 						// error: {html, loc: {anchor: {line: int } } }
-						//selecteer(bronloc);
+						selecteer(bronloc);
 						var fout = { html: e.message, loc: bronloc };
 						setErrors([fout]);
 					}
 					//setErrors({
-					uit.innerHTML = "executiefout: " + e.message + "\n" + e.stack;
-					stop = true;
-				} finally {
-					setErrors(j.fouten);
+					uit.innerHTML = "Fout!";
 				}
 			})
-       			//.catch(e => onerror(e));
 	}
 
 	function stopfunc() {

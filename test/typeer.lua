@@ -80,3 +80,36 @@ local fouten = moettypezijn(' "hoi" || "ja" ', 'lijst letter')
 if #fouten > 0 then
 	print('\n' .. table.concat(map(fouten, fout2ansi), '\n'))
 end
+
+
+
+-- foutjes
+local t,f = typeer(ontleed([[
+w = 177.78
+h = 100
+spelerW = 5
+spelerH = 20
+midden = (spelerH + h) / 2
+linksY := 0
+rechtsY := 0
+
+links = rechthoek((0,linksY'),(spelerW,linksY'+spelerH))
+rechts = rechthoek((w-spelerW,rechtsY'),(w,rechtsY'+spelerH))
+uit = teken [links, rechts]
+]]))
+
+
+-- functie type mismatch
+local t,f = typeer(ontleed([[
+uit = f(3)
+f = sin
+f = cirkel
+]]))
+assert(#f > 0, 'geen typefouten in ongeldig programma!')
+
+-- vouw mismatch
+local t,f = typeer(ontleed([[
+L = [1, 2, 3]
+uit = (L vouw (>))
+]]))
+assert(#f > 0, 'geen typefouten in ongeldig programma!')

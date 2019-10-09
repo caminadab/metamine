@@ -1,3 +1,9 @@
+require 'vertaal'
+require 'doe'
+
+local app = vertaal("uit = 10")
+
+local r,f = doe(vertaal [[
 ; beweegbare cirkel (gebruik pijltjestoetsen)
 x := 10
 y := 5
@@ -11,3 +17,4 @@ als muisKlik dan
 	x := muisX
 	y := muisY
 eind
+]])

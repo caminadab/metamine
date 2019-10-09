@@ -62,6 +62,7 @@ Opties:
     -u, --uitvoer=UIT	uitvoerbestand
 
     -i, --veilig      draai het programma in veilige modus
+    -n, --naakt       draai het programma in veilige modus
     -j,	--javascript	compileer naar javascript
     -x,	--demo				compileer naar demo
 		

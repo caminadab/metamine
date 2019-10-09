@@ -5,6 +5,7 @@ getal: iets
 
 ; getallen
 int: getal
+norm: getal ; 0 ≤ x ≤ 1
 moment: getal
 nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
@@ -21,6 +22,9 @@ alsHtml: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 canvas: lijst(letter)
 alsTekst: iets → lijst(letter)
+
+inkleur: vorm, kleur → vorm
+rgb: (getal, getal, getal) → kleur
 
 vierkant: (ℝ,ℝ), ℝ → vorm
 cirkel: (ℝ,ℝ), ℝ → vorm
@@ -64,6 +68,7 @@ iets → iets: functie
 (_fn) : (iets→iets),iets → iets
 (_) :  ((iets→iets), iets) → iets
 map: lijst, (iets→iets) → lijst
+filter: lijst, (iets→bit) → lijst
 
 ; lijst
 (×) : lijst, lijst → lijst

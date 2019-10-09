@@ -25,6 +25,9 @@ function bieb()
 	init = true,
 	fout = true,
 	schermVerverst = true,
+	inkleur = true,
+
+	rgb = true,
 
 	-- meta
 	['_var'] = function (a)
@@ -127,12 +130,6 @@ function bieb()
 
 	-- tekening
 	rechthoek = true,
-	groen = true,
-	bruin = true,
-	beige = true,
-	rood = true,
-	wit = true,
-	zwart = true,
 
 	-- willekeurig ×
 	aselect = function (a, b)

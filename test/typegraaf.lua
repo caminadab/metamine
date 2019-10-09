@@ -133,6 +133,17 @@ do
 	assert(g:issubtype(gu, fn))
 end
 
+-- functie fouten
+do
+	local g = maaktypegraaf()
+	local fn = g:maaktype 'functie'
+	local sin = g:maaktype 'getal → getal'
+	local cirkel = g:maaktype 'lijst → getal'
+	assert(not g:issubtype(sin, cirkel))
+	assert(not g:issubtype(cirkel, sin))
+	assert(not g:intersectie(sin, cirkel, X'ok'))
+end
+
 -- false
 if false then
 	local g = maaktypegraaf()
