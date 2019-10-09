@@ -6,13 +6,22 @@ require 'bouw.codegen'
 require 'optimaliseer'
 require 'oplos'
 
-function vertaal(code, doel)
+function vertaal(code, doel, naam)
 	local doel = doel or "im"
+	local naam = naam or "nergens"
 	local maakvar = maakvars()
 
 	local code = code ..'\n' .. file('bieb/'..doel..'.code')
 
-	local asb,syntaxfouten = ontleed(code)
+	local biebpad = 'bieb/'..doel..'.code'
+	local asbcode,syntaxfouten1 = ontleed(code, naam)
+	local asbbieb,syntaxfouten2 = ontleed(file(biebpad), doel)
+	local asb = asbcode
+
+	local asblijst = arg0(asbcode)
+	local bieblijst = arg0(asbbieb)
+	for i,biebitem in ipairs(bieblijst) do asblijst[#asblijst+1] = biebitem end
+	local syntaxfouten = cat(syntaxfouten1, syntaxfouten2)
 
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)
@@ -38,9 +47,9 @@ function vertaal(code, doel)
 	end
 
 	--local uit = optimaliseer(uit)
-	local app = codegen(uit, maakvar)
+	local app,gen2bron = codegen(uit, maakvar)
 
-	return app, fouten
+	return app, fouten, gen2bron
 end
 
 if test then

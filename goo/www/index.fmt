@@ -26,12 +26,13 @@
 	<!--<button id="info">🛈</button>-->
 </div>
 
+<!-- in -->
 <div>
 	<textarea id="broncode" name="broncode">{episch1}</textarea> 
-	<div id="uit">
-		<pre id="uit-tekst">
-		</pre>
-	</div>
+</div>
+
+<!-- uit! -->
+<div id="uit">
 </div>
 
 <div id="wat">
@@ -53,7 +54,6 @@
 </body>
 
 <style>
-
 
 #vlag {
 	width: 100px;
@@ -147,7 +147,7 @@ button {
 	color: white;
 	text-decoration: none;
 	border: 0;
-	width: 200px;
+	width: 25%;
 	font-size: 48px;
 	height: 70px;
 	line-height: 30px;
@@ -207,7 +207,7 @@ html, body {
 }
 
 h1 {
-	font-size: 72px;
+	font-size: 36px;
 	margin-left: 80px;
 }
 
@@ -273,11 +273,6 @@ canvas {
 	animation: AnimationName 20s linear infinite;
 }
 
-button {
-	margin-right: 10px;
-	margin-bottom: 10px;
-}
-
 @keyframes AnimationName {
     100%{background-position:0% 50%}
     0%{background-position:400% 50%}
@@ -328,11 +323,26 @@ button {
 				onsuccess();
 				try {
 					//js.innerHTML = j.js;
+					//var f = new Function('(function() {\n' + j.js + '\n})()');
+					//f();
 					eval(j.js);
 					uit.focus();
-				//} catch (e) {
-				//	uit.innerHTML = "executiefout: " + e + e.stack;
-				//}
+				} catch (e) {
+						//alert(JSON.stringify(j));
+					var genlines = e.stack.match(/\d+/g);
+					//alert("GENLINES: "+genlines)
+					for (var i = 0; i < Math.min(genlines.length, 3); i++) {
+						alert("GENLINE: " + genlines[i]);
+						//, BRONLOC: "+JSON.stringify(bronloc));
+						var bronloc = j.gen2bron[0+genlines[i]];
+						// error: {html, loc: {anchor: {line: int } } }
+						//selecteer(bronloc);
+						var fout = { html: e.message, loc: bronloc };
+						setErrors([fout]);
+					}
+					//setErrors({
+					uit.innerHTML = "executiefout: " + e.message + "\n" + e.stack;
+					stop = true;
 				} finally {
 					setErrors(j.fouten);
 				}
@@ -429,6 +439,8 @@ button {
 	var oldWidgets = [];
 	var oldLineWidgets = [];
 
+	// error.loc.anchor.line
+	// error: {html, loc: {anchor: {line: int } } }
 	function setErrors(errors) {
 
 		// verwijder oude

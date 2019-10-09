@@ -1,7 +1,10 @@
-linux: ontleed.so
+linux: goo/www/index.html ontleed.so
 deploy: ontleed.so goo/www/
 	scp -r goo/www/* metamine.nl:/var/www/html/
 	ssh -f pi  'cd taal ; git pull ; make ; pkill luajit ; /etc/dienst ; touch abc'
+
+run: linux
+	luajit goo/dienst.lua
 	
 
 ontleed.so: ontleed/

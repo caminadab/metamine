@@ -1,11 +1,11 @@
 welkom		Welkom
 kop1			Een nieuwe programmeertaal.
-kop2			Niet voor machines maar voor mensen.
+kop2			Declaratief en intuïtief.
 taalvlag	en.svg
 taallink	/en
 overkop		Wat
 over1			Taal is een nieuwe manier van ontwikkelen. Schrijf snel declaratieve code in de vorm van simpele vergelijkingen en maak je geen zorgen meer over moeilijke libraries, frameworks of andere standaard programmeerbeslommeringen.
-over2			Control flow wordt door de compiler berekent. Hierdoor kun je modulairdere code schrijven, die bovendien veilig en snel is.
+over2			Control flow wordt door de compiler uitgerekent. Hierdoor kun je modulairdere code schrijven, die bovendien veilig en snel is.
 over3			Aangezien alles 'live' is hoef je niet zelf in de weer met callbacks, hooks of threads: als je een interface een lijst van verbonden clients laat weergeven zal deze standaard live worden geupdate.
 qena			Q&A
 q1hoe			Hoe werkt het?

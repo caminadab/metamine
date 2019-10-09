@@ -1,7 +1,7 @@
 totaal = Σ 1 .. 1000
 t = "de som van 1 tot 1000 = " || tekst(totaal)
 
-y = sin(looptijd)/2
+y = sin(looptijd) / 2
 posA = (80%, 20%)
 posB = (70% + y, 80%)
 

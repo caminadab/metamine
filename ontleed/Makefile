@@ -1,4 +1,6 @@
-linux: .taal.yy.c lua.c .lex.yy.c
+linux: ontleed.so
+
+ontleed.so: lua.c lex.l taal.y
 	mkdir -p bin
 	gcc -g -Wall -Wno-unused -std=c11 -shared -I/usr/include/lua5.1 -o bin/ontleed.so -fPIC lua.c .taal.yy.c .lex.yy.c -Wno-multichar
 	ln -sf bin/ontleed.so .

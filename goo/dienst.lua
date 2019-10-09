@@ -39,9 +39,9 @@ end
 --     oplosfout: { type="oplos", ? }
 -- 
 -- de "fout" als los interpretabel object
-function vt(code)
+function vt(code, naam)
 
-	local icode,fouten = vertaal(code, "demo")
+	local icode,fouten,gen2bron = vertaal(code, "demo", naam)
 	local js = ''
 	if icode then
 		js = genjs(icode)
@@ -50,6 +50,7 @@ function vt(code)
 
 	return {
 		js = js,
+		gen2bron = gen2bron,
 		fouten = fouten,
 	}
 end
@@ -129,7 +130,7 @@ function serveer(sock)
 	-- VERTAAL!
 	if pad == '/vt' then
 		local internefout
-		local ok,j = xpcall(vt, debug.traceback, inn)
+		local ok,j = xpcall(vt, debug.traceback, inn, "in")
 		if not ok then internefout = j end
 
 		if not ok then

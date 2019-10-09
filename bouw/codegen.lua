@@ -82,6 +82,7 @@ function codegen(exp, maakvar)
 	local con
 	local al = {}
 	--setmetatable(al, {__newindex = function (...) print(...) ; rawset(...); print(debug.traceback()) end})
+	local gen2bron = {} -- lijn → lijn
 
 	local function arg(exp)
 		local arg
@@ -140,6 +141,7 @@ function codegen(exp, maakvar)
 			--error('geen referentie voor '..e2s(val))
 		end
 		table.insert(blok.stats, stat)
+		gen2bron[#blok.stats] = stat.loc
 		return ret
 	end
 
@@ -330,7 +332,7 @@ function codegen(exp, maakvar)
 
 		--print('REG', combineer(exp), ret)
 		al[moes(exp)] = ret
-		return ret
+		return ret, gen2bron
 	end
 
 	con(exp)
