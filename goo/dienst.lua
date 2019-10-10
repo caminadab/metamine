@@ -144,7 +144,7 @@ function serveer(sock)
 
 	elseif pad == '/vraag' then
 		local mail = string.format(
-[[To: ymte@pc
+[[To: ymte@pi
 Subject: vraag
 From: vraag@metamine.nl
 

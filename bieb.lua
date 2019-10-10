@@ -20,7 +20,7 @@ function bieb()
 	log10 = math.log10,
 	puts = true,
 	call = true,
-	tau = math.pi*2,
+	['τ'] = math.pi*2,
 	pi = math.pi,
 	init = true,
 	fout = true,

@@ -8,7 +8,7 @@ function isvar(name)
 		return false
 	elseif name.v == '||' then
 		return false
-	elseif string.match(name.v, '^%w*$') then
+	elseif string.match(name.v, '^[%w\\.]*$') then
 		return true
 	end
 	return false

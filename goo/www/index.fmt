@@ -27,12 +27,12 @@
 </div>
 
 <!-- in -->
-<div class="in">
+<div class="in" tabindex="1">
 	<textarea id="broncode" name="broncode">{episch1}</textarea> 
 </div>
 
 <!-- uit! -->
-<div id="uit" tabIndex="-1" >
+<div id="uit" tabIndex="2" >
 </div>
 
 <div id="wat">

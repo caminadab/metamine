@@ -1,5 +1,6 @@
 require 'graaf'
 require 'combineer'
+require 'bieb'
 require 'exp'
 
 function waarvoordfs(exp, fn)
@@ -16,19 +17,43 @@ function waarvoordfs(exp, fn)
 	return res
 end
 
+local bieb = bieb()
+
 -- codegen: focusstroom naar proc
 -- focus: exp naar focusstroom
+--  focusstroom : stroom(focus)
+--    focus; lijst(exp)
 function focus(exp)
 	local focusgraaf = maakgraaf()
 	local exps = {}
 
 	-- constant(exp) -> init(schepper)
 	local function isconstant(exp)
-		return not not tostring(atoom(exp))
+		if tonumber(atoom(exp)) or bieb[atoom(exp)] then
+			exp.constant = true
+			return true
+		end
+		local constant = false
+		for k,sub in subs(exp) do
+			if sub.constant then
+				constant = true
+			else
+				constant = false
+				break
+			end
+		end
+		exp.constant = constant
+		return constant
 	end
 
-	local init = waarvoordfs(exp, isconstant)
-	local tijd = waarvoordfs(exp, isconstant)
 
+	local init = waarvoordfs(exp, isconstant)
+	--local tijd = waarvoordfs(exp, muis)
+
+	for i,v in ipairs(init) do
+		print(combineer(v))
+	end
+
+	return init
 end
 
