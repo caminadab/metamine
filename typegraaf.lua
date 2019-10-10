@@ -283,7 +283,7 @@ function metatypegraaf:intersectie(a, b, exp)
 				--assert(exp[i], 'geen exp['..i..'] voor '..combineer(exp))
 				local sub = exp[i]
 				if not sub then
-					sub = X(i..'e argument van '..C(exp))
+					sub = X(i..'e '..C(exp))
 					sub.loc = exp.loc
 				end
 
