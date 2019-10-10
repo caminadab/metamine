@@ -7,7 +7,7 @@ run: linux
 	luajit goo/dienst.lua
 	
 
-ontleed.so: ontleed/
+ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/

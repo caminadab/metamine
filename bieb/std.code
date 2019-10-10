@@ -42,17 +42,20 @@ wisCanvas: canvas → canvas
 metInvoer: lijst(letter) → lijst(letter)
 
 ; hardware
-schermVerverst: bit
-muisBeweegt: bit
-muisPos: getal, getal
-muisX: getal
-muisY: getal
-screenRefreshes: bit
-mouseMoves: bit
-toetsNeer: int → bit
-toetsNeerBegin: int → bit
-toetsNeerEind: int → bit
-toetsOp: int → bit
+scherm.ververst: bit
+muis.klik: bit
+muis.klik.begin: bit
+muis.klik.eind: bit
+muis.beweegt: bit
+muis.pos: getal, getal
+muis.x: getal
+muis.y: getal
+screen.refreshes: bit
+mouse.moves: bit
+toets.neer: int → bit
+toets.neer.begin: int → bit
+toets.neer.eind: int → bit
+toets.op: int → bit
 
 syscall: iets → int
 

@@ -17,6 +17,7 @@ require 'oplos'
 require 'bouw.genjs'
 require 'bouw.genx64'
 
+require 'bouw.focus'
 require 'bouw.arch'
 require 'bouw.codegen'
 require 'bouw.assembleer'
@@ -270,6 +271,7 @@ end
 
 -- control flow!
 local maakvar = maakvars()
+local focusstroom = focus(uit)
 local cfg = codegen(uit, maakvar)
 
 if verbozeControle then

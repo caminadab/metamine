@@ -13,14 +13,14 @@ a1web			Een webservice vertaalt je code naar javascript. Je computer/mobiel draa
 vraag			Vraag!
 vraagverz	Vraag verzonden
 stelvraag	Stel je vraag...
-xdemo1			planeten := []\nzonnen := [ zon ]\nzon = ((9, 5), 0.3)\n\n; planeet = (pos,rad,vel)\nnieuweplaneet = (muisPos, 0.13, (0,0.01))\n\nals muisKlik dan\n\tplaneten := planeten' ‖ [nieuweplaneet]\neind\n\nals planeten' en ¬ muisKlik dan\n\tplaneten := planeten' map beweeg\neind\n\nvplus = v1,v2 → v1₀+v2₀,v1₁+v2₁\nvmin = w1,w2 → w1₀-w2₀,w1₁-w2₁\nvmul = u1,u2 → u1₀·u2₀,u1₁·u2₁\nvafstand = a,b → ((a₀-b₀)²+(a₁-b₁)²)^0.5\n\n; zwaartekracht\ng = 0.0001 / r²\nr = vafstand(pos, zon₀)\n\nrichting = atan (pos vmin zon₀)\ngrav = ((zon₀) vmin pos) vmul (g,g)\nbeweeg = (pos,rad,vel) → (pos vplus vel),rad,(vel vplus grav)\nuit = canvas((planeten ‖ zonnen) map cirkel)
+xdemo1			planeten := []\nzonnen := [ zon ]\nzon = ((9, 5), 0.3)\n\n; planeet = (pos,rad,vel)\nnieuweplaneet = (muis.pos, 0.13, (0,0.01))\n\nals muisKlik dan\n\tplaneten := planeten' ‖ [nieuweplaneet]\neind\n\nals planeten' en ¬ muisKlik dan\n\tplaneten := planeten' map beweeg\neind\n\nvplus = v1,v2 → v1₀+v2₀,v1₁+v2₁\nvmin = w1,w2 → w1₀-w2₀,w1₁-w2₁\nvmul = u1,u2 → u1₀·u2₀,u1₁·u2₁\nvafstand = a,b → ((a₀-b₀)²+(a₁-b₁)²)^0.5\n\n; zwaartekracht\ng = 0.0001 / r²\nr = vafstand(pos, zon₀)\n\nrichting = atan (pos vmin zon₀)\ngrav = ((zon₀) vmin pos) vmul (g,g)\nbeweeg = (pos,rad,vel) → (pos vplus vel),rad,(vel vplus grav)\nuit = canvas((planeten ‖ zonnen) map cirkel)
 xdemo1x		; je moet altijd 'uit' definieren\nuit = "hoi"
 xdemo2			; je kan variabelen maken\na = 3\nb = 2\nuit = a + b
 xdemo3			; beweegbare cirkel (gebruik pijltjestoetsen)\nx := 10\ny := 5\nals toetsRechts dan x := x' + 0.1 eind\nals toetsLinks dan x := x' - 0.1 eind\nuit = canvas [ cirkel(x,y,1) ]
-xdemo4			; paint programmaatje\n; teken met je muis\ncirkels := []\nuit = canvas cirkels\n\n; stipje bij de muis\nals muisKlik dan\n	cirkels := cirkels' ‖ [ cirkel(muisX, muisY, 0.1) ]\neind\n\n; haal ze weer weg met spatie\nals toetsSpatie dan\n	cirkels := cirkels' vanaf 1\neind\n
+xdemo4			; paint programmaatje\n; teken met je muis\ncirkels := []\nuit = canvas cirkels\n\n; stipje bij de muis\nals muis.klik dan\n	cirkels := cirkels' ‖ [ cirkel(muis.pos, 0.1) ]\neind\n\n; haal ze weer weg met spatie\nals toetsSpatie dan\n	cirkels := cirkels' vanaf 1\neind\n
 xdemo5			; simpele stopwatch\nuit = looptijd\n
 xdemo6			; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind
-xdemo7			; cirkel (canvas is 18×10)\nr = looptijd\nc = cirkel(muisX,muisY,r)\nuit = canvas [c]\n\n
+xdemo7			; cirkel (canvas is 18×10)\nr = looptijd\nc = cirkel(muis.x,muis.y,r)\nuit = canvas [c]\n\n
 xdemo8			; PONG 2019\n\n; spelers\ny1 := 3.5\ny2 := 3.5\nw = 1 ; spelerbreedte\nh = 3 ; spelerhoogte\nxmin = 0\nxmax = 17.777 - w\nymax = 10 - h\n\n; bal\nbalx := 17.777 / 2\nbaly := 5\nbalvx := -0.01\n\nals 2 > 1 dan\n	balx := balx' + balvx'\neind\nals toetsSpatie dan\n	balx := 10\neind\n\n; toetsenbord rechts\nals toetsOmhoog en y1' < ymax dan y1 := y1' + 0.2 eind\nals toetsOmlaag en y1' > 0    dan y1 := y1' - 0.2 eind\n\n; toetsenbord links\nals toetsW en y2' < ymax dan y2 := y2' + 0.2 eind\nals toetsS en y2' > 0    dan y2 := y2' - 0.2 eind\n\n; sprites\nlinks = rechthoek(xmax, y1, 1, 3)\nrechts = rechthoek(xmin, y2, 1, 3)\nbal = cirkel(balx, baly, 1)\nscore = label(5, 5, "hoi")\n\n; canvas\nuit = canvas [ links, rechts, bal, score ]
 xdemo9			; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001
 xdemo10		; mooie cirkels\nr = looptijd + n/2 + n/5 + n/9 + n/100\n\nf = n + sin(looptijd) → cirkel(n/1,g(n),abs(sin(3·r))·abs(2·sin(looptijd/100)))\ng = y → sin(0.4 · looptijd + y) + 4\n\ncirkels = (0..40) map f\nuit = canvas cirkels
@@ -29,7 +29,7 @@ xdemo12		; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x ‖ " 
 xdemo13		; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f
 xdemo14		; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)
 
-episch1		v = f(muisPos, 20)\nuit = teken [v]\n\nals looptijd mod 1 < 1/2 dan\n\tf = vierkant\nanders\n\tf = cirkel\nend
+episch1		v = f(muis.pos, 20)\nuit = teken [v]\n\nals looptijd mod 1 < 1/2 dan\n\tf = vierkant\nanders\n\tf = cirkel\nend
 ; TUTORIAL 1.1 --- Taal\n; Taal werkt met objecten en feiten.\n; Een object is bijvoorbeeld "3" of "uit".\n; "3" is gewoon een getal,\n; "uit" is het uitvoerscherm.\n; Een feit is "uit = 3".\n; Dit brengt ons bij het eerste voorbeeld:\nuit = 3
 demo1		; Je kan variabelen maken met "a = 2"\na = 2\nuit = a
 demo2		; ook kan je "+" gebruiken\na = 2\nb = 3\nuit = a + b

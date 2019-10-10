@@ -323,9 +323,9 @@ local immsym = {
 	['consolelog'] = 'console.log($1)',
 
 	-- toetsen
-	['toetsNeer']  = 'function(keyCode) { return !!_keys[keyCode]; }',
-	['toetsNeerBegin']  = 'function(keyCode) { return !!_keysPressed.has(keyCode); }',
-	['toetsNeerEind']  = 'function(keyCode) { return !!_keysReleased.has(keyCode); }',
+	['toets.neer']  = 'function(keyCode) { return !!_keys[keyCode]; }',
+	['toets.neer.begin']  = 'function(keyCode) { return !!_keysPressed.has(keyCode); }',
+	['toets.neer.eind']  = 'function(keyCode) { return !!_keysReleased.has(keyCode); }',
 
 	['_arg0'] = '_arg0',
 	['_arg1'] = '_arg1',
@@ -343,15 +343,15 @@ local immsym = {
 	['π'] = 'Math.PI',
 	['init'] = 'init',
 	['schermVerverst'] = '!init',
-	['muisX'] = 'mouseX',
-	['muisY'] = 'mouseY',
-	['muisPos'] = '[mouseX, mouseY]',
-	['muisBeweegt'] = 'mouseMoving',
+	['muis.x'] = 'mouseX',
+	['muis.y'] = 'mouseY',
+	['muis.pos'] = '[mouseX, mouseY]',
+	['muis.beweegt'] = 'mouseMoving',
 	['beige'] = '"#f5f5dc"',
 	['bruin'] = '"#996633"',
-	['muisKlik'] = 'mouseLeft',
-	['muisKlikBegin'] = 'mouseLeftPressed',
-	['muisKlikEind'] = 'mouseLeftReleased',
+	['muis.klik'] = 'mouseLeft',
+	['muis.klik.begin'] = 'mouseLeftPressed',
+	['muis.klik.eind'] = 'mouseLeftReleased',
 }
 
 function genjs(app)

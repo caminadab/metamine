@@ -66,7 +66,6 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "★"		{ *yylval = A(GL, "★", nergens); return JOKER; }
 "¬"		{ *yylval = A(GL, "¬", nergens); return NIET; }
 "#"		{ *yylval = A(GL, "#", nergens); return '#'; }
-"."		{ *yylval = A(GL, ".", nergens); return '.'; }
 "→"		{ *yylval = A(GL, "→", nergens); return TO; }
 ".."	{ *yylval = A(GL, "..", nergens); return ITOT; }
 "ℝ"		{ *yylval = A(GL, "getal", nergens); return NAAM; }
@@ -159,7 +158,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 [0-9]*e[0-9]*			{ *yylval = A(GL, yytext, nergens); return NAAM; }
 [0-9]*\.[0-9]+	{ *yylval = A(GL, yytext, nergens); return NAAM; }
 
-[a-zA-Z_][a-zA-Z0-9_]* { /* naam */
+[a-zA-Z_][a-zA-Z0-9_\.@]* { /* naam */
 	*yylval = A(GL, yytext, nergens);
 	return NAAM;
 }

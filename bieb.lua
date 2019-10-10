@@ -62,21 +62,21 @@ function bieb()
 	rechthoek = function() error('niet beschikbaar') end;
 	cirkel = function() error('niet beschikbaar') end;
 	lijn = function() error('niet beschikbaar') end;
-	muisKlik = false,
-	muisKlikBegin = false,
-	muisKlikEind = false,
-	muisSleep = false, -- (pad = (van, via, naar))
-	muisX = false,
-	muisY = false,
-	muisPos = false,
-	muisBeweegt = false,
-
-	metInvoer = true, -- X_X
+	['muis.klik'] = false,
+	['muis.klik.begin'] = false,
+	['muis.klik.eind'] = false,
+	['muis.sleep'] = false, -- (pad = (van, via, naar))
+	['muis.x'] = false,
+	['muis.y'] = false,
+	['muis.pos'] = false,
+	['muis.beweegt'] = false,
 
 	-- toetsenbord
-	toetsNeer = true,
-	toetsNeerBegin = true,
-	toetsNeerEind = true,
+	['toets.neer'] = true,
+	['toets.neer.begin'] = true,
+	['toets.neer.eind'] = true,
+
+	metInvoer = true, -- X_X
 
 
 	['_'] = function(a)
