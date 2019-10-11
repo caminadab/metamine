@@ -119,6 +119,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "!"		{ *yylval = A(GL, "!", nergens); return '!'; }
 "Σ"		{ *yylval = A(GL, "Σ", nergens); return SOM; }
 "⇒"		{ *yylval = A(GL, "⇒", nergens); return IMPLICEERT; }
+"√"		{ *yylval = A(GL, "√", nergens); return WORTEL; }
 ":="		{ *yylval = A(GL, ":=", nergens); return ASS; }
 
 "'"		{ *yylval = A(GL, "'", nergens); return '\''; }

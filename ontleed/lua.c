@@ -19,7 +19,7 @@ void xlua_pushloc(lua_State* L, YYLTYPE loc) {
 
 int xlua_reflijst(lua_State*L, int oid, int aid, YYLTYPE loc) {
 	// [](,(1 2)) 
-	if (xlua_istupel(L, aid)) {
+	if (xlua_istupel(L, aid) && xlua_isopen(L, aid)) {
 		lua_rawgeti(L, LREG, aid);
 			lua_rawgeti(L, LREG, oid);
 				lua_setfield(L, -2, "o");

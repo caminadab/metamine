@@ -19,7 +19,7 @@
 <div class="paneel">
 	<button id="vorige">⏮</button>
 	<button id="speel">▶</button>
-	<button id="stop">◼</button>
+	<button id="fullscreen">⇲</button><!--⛶-->
 	<button id="volgende">⏭</button>
 	<span id="foutmelding"></span>
 	<!--<button id="opnieuw">⟲</button>-->
@@ -317,7 +317,7 @@ canvas {
 		// Vyp4l.l.l.lVy
 	];
 	var speelknop = document.getElementById("speel");
-	var stopknop = document.getElementById("stop");
+	var fullscreenknop = document.getElementById("fullscreen");
 	var vorigeknop = document.getElementById("vorige");
 	var volgendeknop = document.getElementById("volgende");
 	var cknop = '#012ED4';
@@ -337,6 +337,7 @@ canvas {
 				setErrors(j.fouten);
 				try {
 					eval(j.js);
+
 					uit.focus();
 				} catch (e) {
 					var genlines = e.stack.match(/\d+/g);
@@ -360,8 +361,12 @@ canvas {
 		stop = true;
 	}
 
+	function fullscreen() {
+		uit.children[0].requestFullscreen();
+	}
+
 	speelknop.addEventListener("mousedown", vertaal);
-	stopknop.addEventListener("mousedown", stopfunc);
+	fullscreenknop.addEventListener("mousedown", fullscreen);
 	volgendeknop.addEventListener("mousedown", function() {
 		stop = true;
 		setErrors([]);
@@ -498,6 +503,7 @@ canvas {
 		"ooo": "∞",
 		"tau": "τ",
 		"som": "Σ",
+		"sqrt": "√",
 		"->": "→",
 		"-->": "↦",
 		">=": "≥",
@@ -535,6 +541,8 @@ canvas {
 		var l3 = zin.substr(Math.max(ch-2, 0), 2) + change.text;
 		var l4 = zin.substr(Math.max(ch-3, 0), 3) + change.text;
 		var l5 = zin.substr(Math.max(ch-4, 0), 4) + change.text;
+		var l6 = zin.substr(Math.max(ch-5, 0), 5) + change.text;
+		var l7 = zin.substr(Math.max(ch-6, 0), 6) + change.text;
 
 		var a;
 		var len;
@@ -542,6 +550,8 @@ canvas {
 		if (bimagisch[l3]) { len = 3; a = bimagisch[l3]; }
 		if (bimagisch[l4]) { len = 4; a = bimagisch[l4]; }
 		if (bimagisch[l5]) { len = 5; a = bimagisch[l5]; }
+		if (bimagisch[l6]) { len = 6; a = bimagisch[l6]; }
+		if (bimagisch[l7]) { len = 7; a = bimagisch[l7]; }
 	
 		if (a)
 		{

@@ -148,6 +148,9 @@ function typeer(exp)
 			local lijsttypeA = types[A]
 			local lijsttypeB = types[B]
 			local lijsttype = typegraaf:intersectie(lijsttypeA, lijsttypeB, exp)
+			if not lijsttype then
+				lijsttype = X'lijst'
+			end
 
 			--print("CAT", combineer(lijsttypeA), combineer(lijsttypeB), combineer(lijsttype))
 

@@ -64,6 +64,7 @@
 %token EIND "end"
 %token NIN "!:"
 %token SOM "Σ"
+%token WORTEL "√"
 %token NIET "¬"
 %token KWADRAAT "²"
 %token DERDEMACHT "³"
@@ -108,7 +109,7 @@
 /* precedenties! */
 %left ALS DAN ANDERS
 %left "⇒"
-%left SOM INTERSECTIEE UNIEE
+%left SOM INTERSECTIEE UNIEE WORTEL
 %left EN OF EXOF NOCH NIET
 %left '=' "≠" "≈"
 %left ":=" "*=" "/=" "+=" "-=" "|=" "&=" "||="
@@ -258,6 +259,7 @@ exp:
 |	exp I3						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"3", @2), @$); }
 |	exp I4						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"4", @2), @$); }
 |	"¬" exp  { $$ = FN1(L, $1, $2, @$); }
+|	"√" exp  { $$ = FN1(L, $1, $2, @$); }
 |	"Σ" exp  { $$ = FN1(L, $1, $2, @$); }
 |	'-' exp  %prec NEG { $$ = FN1(L, LOC(L,$1,@1), $2, @$); }
 |	'#' exp  { $$ = FN1(L, LOC(L,$1,@1), $2, @$); }

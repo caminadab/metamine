@@ -24,7 +24,7 @@ function bieb()
 	pi = math.pi,
 	init = true,
 	fout = true,
-	schermVerverst = true,
+	['scherm.ververst'] = true,
 	inkleur = true,
 
 	rgb = true,
@@ -230,6 +230,8 @@ function bieb()
 	['-'] = function(a) return -a end;
 	['·'] = function(a) return a[1] * a[2] end;
 	['/'] = function(a) return a[1] / a[2] end;
+	['√'] = function(a) return math.pow(a, 0.5) end;
+
 	['^'] = function(a)
 		if type(a[1]) == 'function' then
 			return function (x)

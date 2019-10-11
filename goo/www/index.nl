@@ -29,7 +29,9 @@ xdemo12		; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x ‖ " 
 xdemo13		; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f
 xdemo14		; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)
 
-episch1		v = f(muis.pos, 20)\nuit = teken [v]\n\nals looptijd mod 1 < 1/2 dan\n\tf = vierkant\nanders\n\tf = cirkel\nend
+episch1		w = 18 ; breedte\nh = 10 ; hoogte\nframe := 0 ; huidige frame\npos = 0..w × 0..h ; alle blokposities\n\n\n; cirkelpatroon\nf = 2 + 3 · sin(looptijd)\ndx = x - muis.x/10 \ndy = y - muis.y/10\nismuur = (x,y) → (√(dx²+dy²)) mod f < f·0.1\nmuur = pos filter ismuur\n\n; muisspoor\nsprites := nullen\nnullen = (0..20) map (x → (-1,-1))\n\n; houdt bij welke frame dit is\nals scherm.ververst dan\nframe := frame' + 1\neind\n\n; waar de kop te plaatsen (30x/seconde)\nkop = (int(muis.x/10), int(muis.y/10))\n\n; plaats de kop\nals frame mod 2 = 1 dan\nsprites := (sprites' vanaf 1) ‖ [kop]\nend\n\n; teken alles\nblokken = muur ‖ sprites\n\nvierkanten = blokken map ((a,b) → vierkant((a·10,b·10),9))\nuit = teken vierkanten\n\n
+; zo tel je vectors met elkaar op\nvplus = (vx,vy),(wx,wy) → vx+wx,vy+wy\n
+episch2		v = f(muis.pos, 20)\nuit = teken [v]\n\nals looptijd mod 1 < 1/2 dan\n\tf = vierkant\nanders\n\tf = cirkel\nend
 ; TUTORIAL 1.1 --- Taal\n; Taal werkt met objecten en feiten.\n; Een object is bijvoorbeeld "3" of "uit".\n; "3" is gewoon een getal,\n; "uit" is het uitvoerscherm.\n; Een feit is "uit = 3".\n; Dit brengt ons bij het eerste voorbeeld:\nuit = 3
 demo1		; Je kan variabelen maken met "a = 2"\na = 2\nuit = a
 demo2		; ook kan je "+" gebruiken\na = 2\nb = 3\nuit = a + b
