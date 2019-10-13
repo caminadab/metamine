@@ -1,1 +1,6 @@
-uit = 3
+pos := (0,0)
+uit = teken [ cirkel(pos, 10) ]
+
+als muis.beweegt dan
+	pos := (90, muis.y)
+eind

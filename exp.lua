@@ -49,7 +49,7 @@ function subs(exp)
 	end
 
 	if isfn(exp) then
-		local a = 2
+		local a = 1
 		return function()
 			if a == 2 then
 				a = 1

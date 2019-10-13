@@ -1,0 +1,18 @@
+slang := [(0,0),(1,0)]
+kop := (2,0)
+
+; vec2
+vplus = (vx,vy),(wx,wy) → (vx+wx,vy+wy)
+vschaal = (vx,vy),vf → (vx·vf,vy·vf)
+
+uit = teken(slang map (pos → vierkant(pos vschaal 10, 9)))
+
+frame := 0
+als scherm.ververst dan
+ frame := frame' + 1
+eind
+
+als frame mod 19 = 18 dan
+ slang := (slang' vanaf 1) ‖ [kop']
+ kop := kop' vplus (0,-1)
+eind

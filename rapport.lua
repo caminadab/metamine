@@ -85,7 +85,7 @@ function graaf2js(graaf, id, layout, map)
 	-- punten
 	local d = {}
 	for punt in spairs(graaf.punten) do
-		d[#d+1] = "{ data: {id: "..string.format('%q', punt).."}, classes: 'waarde' },"
+		d[#d+1] = "{ data: {id: "..string.format('%q', tostring(punt)).."}, classes: 'waarde' },"
 	end
 
 	-- pijlen
@@ -107,7 +107,7 @@ function graaf2js(graaf, id, layout, map)
 				data: {
 					id: ']]..rid()..[[',
 					source: ]] .. string.format('%q', pseudo) .. [[,
-					target: ]] .. string.format('%q', pijl.naar) .. [[,
+					target: ]] .. string.format('%q', tostring(pijl.naar)) .. [[,
 				}
 			},
 		]]

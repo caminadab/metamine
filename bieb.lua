@@ -13,9 +13,17 @@ function bieb()
 	local vars = {}
 
 	local bieb = {
+
+	-- net
+	['tcp.verbind'] = function (args)
+		require 'socket'
+		local host,poort = args[1],args[2]
+		--socket.
+	end;
 		
 	['⊤'] = true,
 	['⊥'] = false,
+	teken = true,
 	log2 = true,
 	log10 = math.log10,
 	puts = true,

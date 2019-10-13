@@ -17,6 +17,15 @@ function waarvoordfs(exp, fn)
 	return res
 end
 
+local muisinvoer = set(
+	'muis.x', 'muis.y', 'muis.pos', 'muis.beweegt',
+	'muis.klik', 'muis.klik.begin', 'muis.klik.eind'
+)
+
+local toetsenbordinvoer = set(
+	'toets.neer', 'toets.neer.begin', 'toets.neer.eind'
+)
+
 local bieb = bieb()
 
 -- codegen: focusstroom naar proc
@@ -46,14 +55,80 @@ function focus(exp)
 		return constant
 	end
 
-
-	local init = waarvoordfs(exp, isconstant)
-	--local tijd = waarvoordfs(exp, muis)
-
-	for i,v in ipairs(init) do
-		print(combineer(v))
+	local function vindconstantenr(exp, t)
+		if exp.constant and not bieb[atoom(exp)] or atoom(exp) == 'init' then
+			t[#t+1] = exp
+		else
+			for k,sub in subs(exp) do
+				vindconstantenr(sub, t)
+			end
+		end
 	end
 
-	return init
+	local function vindconstanten(exp)
+		local t = {}
+		vindconstantenr(exp, t)
+		return t
+	end
+
+	local function ismuis(exp)
+		for k,sub in subs(exp) do
+			if sub.ismuis then
+				exp.ismuis = true
+				return true
+			end
+		end
+		exp.ismuis = muisinvoer[atoom(exp)]
+		return exp.ismuis
+	end
+
+	local function vindmuizenr(exp, t)
+		if exp.ismuis and not bieb[atoom(exp)] then
+			t[#t+1] = exp
+		else
+			for k,sub in subs(exp) do
+				vindmuizenr(sub, t)
+			end
+		end
+	end
+
+	local function vindmuizen(exp)
+		local t = {}
+		vindmuizenr(exp, t)
+		return t
+	end
+
+	local function istoetsenbord(exp)
+		return toetsenbordinvoer[atoom(exp)]
+	end
+	local function istimer(exp)
+		return atoom(exp) == 'looptijd' or atoom(exp) == 'scherm.ververst'
+	end
+
+	waarvoordfs(exp, isconstant) -- markeer constantheid
+	waarvoordfs(exp, ismuis) -- markeer constantheid
+	local init = vindconstanten(exp)
+	local muis = vindmuizen(exp) -- waarvoordfs(exp, ismuis)
+	local toetsenbord = waarvoordfs(exp, istoetsenbord)
+	local timer = waarvoordfs(exp, istimer)
+	local mt = {__tostring = function (t) return table.concat(map(t,combineer), ', ') end}
+
+	setmetatable(init, mt)
+	setmetatable(muis, mt)
+	setmetatable(toetsenbord, mt)
+	setmetatable(timer, mt)
+	
+	focusgraaf:punt(init)
+	if #muis > 0 then focusgraaf:link(init, muis) end
+	if #timer > 0 then focusgraaf:link(init, timer) end
+	if #toetsenbord > 0 then focusgraaf:link(init, toetsenbord) end
+
+	--map(init, componeer(combineer, print))
+	for i,v in ipairs(init) do print("INIT", combineer(v)) end
+	for i,v in ipairs(muis) do print("MUIS", combineer(v)) end
+	for i,v in ipairs(toetsenbord) do print("TOETSENBORD", combineer(v)) end
+	for i,v in ipairs(timer) do print("TIMER", combineer(v)) end
+
+	return focusgraaf
 end
 
