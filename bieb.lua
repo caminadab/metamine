@@ -23,7 +23,6 @@ function bieb()
 		
 	['⊤'] = true,
 	['⊥'] = false,
-	teken = true,
 	log2 = true,
 	log10 = math.log10,
 	puts = true,
