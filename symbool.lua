@@ -75,18 +75,18 @@ function substitueer(exp, van, naar)
 			return exp, 0
 		end
 	else
-		if isexp(van) then
+		if isfn(van) then
 			if moes(exp) == moes(van) then
 				naar.ref = van.ref
 				return naar, 1
 			end
 		end
-		local t = {loc=exp.loc}
+		local t = {loc=exp.loc,o=exp.o,f=exp.f}
 		local n = 0
-		t.f = substitueer(exp.f, van, naar)
-		for i,v in ipairs(exp) do
+		--t.f = substitueer(exp.f, van, naar)
+		for k,v in subs(exp) do
 			local m
-			t[i],m = substitueer(v, van, naar)
+			t[k],m = substitueer(v, van, naar)
 			n = n + m
 		end
 		t.ref = exp.ref

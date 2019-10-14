@@ -383,33 +383,6 @@ function oplos(exp,voor)
 			eqs[eq] = true
 		end
 
-		--[[
-		S = 0
-		-- herschrijf
-		--   a = f(a')
-		-- naar
-		--   a = (herhaal (a' → a))(niets)
-		local nieuw = {}
-		local oud = {}
-		for eq in pairs(eqs) do
-			if isfn(eq) and isatoom(eq.a[1]) and eq.f.v == '=' then
-				local a,b = eq.a[1],eq.a[2]
-				for node in boompairs(b) do
-					if isfn(node) and node.f.v == "'" and node[1].v == a.v then
-						local oude = X(node[1].v .. '_oud')
-						b = substitueerzuinig(b, node, oude, maakvar)
-						node.f = nil
-						node.v = a.v
-						eqn = X('=', a, X(X('herhaal', X('→', oude, b)), 'niets'))
-						oud[eq] = true
-						nieuw[eqn] = true
-					end
-				end
-			end
-		end
-		]]
-
-
 		-- herschrijf
 		--   a'
 		-- naar
@@ -586,7 +559,7 @@ function oplos(exp,voor)
 			local n
 			naam2exp[naam] = naam2exp[naam] or {}
 			--naam2exp[naam][exp] = true
-			val, n = substitueerzuinig(val0, naam, exp, maakvar)
+			val, n = substitueer(val0, naam, exp, maakvar)
 			val.loc = assert(exp.loc or nergens)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
@@ -598,31 +571,12 @@ function oplos(exp,voor)
 			local n2e = {}
 			for k,v in pairs(exp2naam) do
 				local n
-				n2e[k],n = substitueerzuinig(v, naam, exp, maakvar)
+				n2e[k],n = substitueer(v, naam, exp, maakvar)
 				--print('SUBST', combineer(exp), n..'x')
 			end
 			exp2naam = n2e
 		end
 		--print('aantal subcalls = ', S)
-
-		--[[
-		-- nog ff sneaken
-		-- functies toepassen
-		--error(exp2string(val))
-		for exp in boompairs(val) do
-			if isfn(exp) and fn(exp.f) == '_fn' then
-				local waarde = exp.f[1]
-				for i=2,#exp.f do
-					local narg = exp.f[i]
-					local arg = X('_arg', narg)
-					local param = exp[i-1]
-				--error('sjaakpot')
-					waarde = substitueerzuinig(waarde, arg, param, maakvar)
-				end
-				assign(exp, waarde)
-			end
-		end
-		]]
 
 		-- opgelost
 		if verbozeWaarde then

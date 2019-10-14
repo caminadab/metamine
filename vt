@@ -107,6 +107,7 @@ end
 local doel
 if opt.j then doel = 'demo'
 elseif opt.i then doel = 'im'
+elseif opt.n then doel = 'naakt'
 elseif opt.x then doel = 'demo'
 else doel = 'unistd' end
 
@@ -138,7 +139,7 @@ if opt.B then verbozeBroncode = true end
 
 if opt.T then verbozeTypes = true end
 if opt.Y then verbozeTypegraaf = true end
-if opt.i then opt.veilig = true end
+if opt.i or opt.n then opt.veilig = true end
 
 if opt.g or opt.debug or opt.ontkever then
 	opt.g = true

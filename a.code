@@ -1,7 +1,2 @@
-a := 0
-
-als toets.neer(3) en muis.klik en muis.x > 3 en looptijd < 2 dan
-	a := 1
-eind
-
-uit = a
+f = x → x + 1
+uit = f(x)
