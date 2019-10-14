@@ -21,6 +21,8 @@ function bieb()
 		--socket.
 	end;
 		
+	_arg = true,
+
 	['⊤'] = true,
 	['⊥'] = false,
 	teken = true,

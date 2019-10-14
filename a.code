@@ -1,1 +1,2 @@
-uit = looptijd + 2
+f = x → x + 1
+uit = f(x)
