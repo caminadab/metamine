@@ -106,7 +106,7 @@ function bieb()
 	['⊥'] = false;
 
 	-- io
-	['stduitSchrijf'] = function(a)
+	['stduit.schrijf'] = function(a)
 		do
 			print(combineer(w2exp(a)))
 			return true

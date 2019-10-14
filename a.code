@@ -1,6 +1,7 @@
-pos := (0,0)
-uit = teken [ cirkel(pos, 10) ]
+a := 0
 
-als muis.beweegt dan
-	pos := (90, muis.y)
+als toets.neer(3) en muis.klik en muis.x > 3 en looptijd < 2 dan
+	a := 1
 eind
+
+uit = a

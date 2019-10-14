@@ -2,10 +2,11 @@ package.path = package.path ..';../?.lua'
 require 'util'
 require 'exp'
 require 'combineer'
+require 'typeer'
 require 'test.langecode'
 
 -- 1 MB
-local code,numlijnen = langecode(30 * 1024)
+local code,numlijnen = langecode(1024 * 1024)
 
 -- ontleed
 require 'ontleed'

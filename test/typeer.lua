@@ -1,6 +1,5 @@
 require 'combineer'
 require 'ontleed'
-require 'typeer'
 require 'fout'
 
 function moettypezijn(code, typecode)

@@ -119,4 +119,20 @@ function combineer(exp)
 	return table.concat(t)
 end
 
+-- combineer maar 1 level
+function combineersimpel(exp)
+	if isatoom(exp) then
+		return combineer(exp)
+	else
+		local nep = {}
+		nep.f = exp.f
+		nep.o = exp.o
+		for k,sub in subs(exp) do
+			nep[k] = (isatoom(sub) and sub) or (sub.ref and X(sub.ref)) or X'...'
+		end
+		nep.exp = nil
+		return combineer(nep)
+	end
+end
+
 C = combineer

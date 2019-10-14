@@ -1,1 +1,1 @@
-app = stduitSchrijf(alsTekst(uit))
+app = stduit.schrijf(alsTekst(uit))

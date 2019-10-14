@@ -59,7 +59,7 @@ toets.op: int → bit
 
 syscall: iets → int
 
-stduitSchrijf: lijst(letter) → int
+stduit.schrijf: lijst(letter) → int
 app: iets
 
 bit: iets
