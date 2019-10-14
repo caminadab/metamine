@@ -57,6 +57,7 @@
 %token FOUT
 %token NAAM "name"
 %token TEKST "text"
+%token ZOLANG "zolang"
 %token ALS "if"
 %token DAN "then"
 %token ANDERS "else"

@@ -11,8 +11,7 @@ test: linux
 	
 
 ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c
-	cd ontleed
-	make linux
+	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
 	ln -sf ../bin/ontleed.so goo/

@@ -136,6 +136,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "τ"			{ *yylval = A(GL, "τ", nergens); return NAAM; }
 
 "als"					{ return ALS; }
+"zolang"					{ return ZOLANG; }
 "dan"					{ return DAN; }
 "andersals"			{ return ANDERSALS; }
 "anders"			{ return ANDERS; }

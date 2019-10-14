@@ -216,5 +216,5 @@ function focus(exp)
 		end
 	end
 
-	return 2
+	return momenten
 end
