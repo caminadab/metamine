@@ -19,20 +19,16 @@ function waarvoordfs(exp, fn)
 end
 
 function ins2string(exp, exps)
-	local t = {f=exp.t, o=exp.o}
+	local t = {f=exp.f, o=exp.o, v=exp.v}
 	local naam = exps[exp]
 	for k,sub in subs(exp) do
-		if isatoom(sub) then
-			t[k] = sub
-		else
-			local naam = exps[sub]
-			assert(naam, 'naamloze exp: '..exp2string(exp))
-			t[k] = naam
-		end
+		local naam = exps[sub]
+		assert(naam, 'naamloze exp: '..exp2string(sub))
+		t[k] = X(naam)
 	end
-	local naam = exps[sub]
+	local naam = exps[exp]
 	assert(naam, 'naamloze exp: '..exp2string(exp))
-	return naam .. ' :=\t' .. combineer(t)
+	return naam .. '\t:= ' .. combineer(t)
 end
 
 local bieb = bieb()
@@ -156,14 +152,16 @@ function focus(exp)
 	r(exp)
 
 	local exps = {}
+	print '=== FOCUSSTROOM ==='
 	for k,vals in pairs(wanneer) do
-		print('WANNEER', k)
+		print(k..':')
 		for i,val in ipairs(vals) do
 			exps[val] = maakvar()
-			print('  DAN', exps[val], combineer(val, 2))
-			--print('\t', ins2string(val, exps))
+			print('  '.. ins2string(val, exps))
 		end
 	end
+
+	-- maak graaf ervan
 
 	return wanneer
 end

@@ -4,7 +4,7 @@ require 'set'
 
 local postop = set("%","!",".","'")
 local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|","|=","|:=", "∪","∩",":","∈")
-local unop   = set("-","#","¬","Σ","|")
+local unop   = set("-","#","¬","Σ","|","⋀","⋁")
 
 local function combineerR(exp, t, kind)
 	if not exp then
@@ -60,11 +60,13 @@ local function combineerR(exp, t, kind)
 		end
 		t[#t+1] = di:sub(2,2)
 
-	elseif fn(exp) == '⋀' then
-		for i,v in ipairs(exp.a) do
+	-- explijst
+	elseif fn(exp) == '⋀' and isobj(exp.a) then
+		for i,sub in ipairs(exp.a) do
 			combineerR(v, t, false)
 			t[#t+1] = '\n'
 		end
+
 	elseif isfn(exp) then
 		if not exp.a then return '?' end
 		local op = fn(exp)
@@ -107,6 +109,7 @@ local function combineerR(exp, t, kind)
 				t[#t+1] = ')'
 			end
 		end
+
 	else
 		--error('ongeldige exp '..e2s(exp))
 		t[#t+1] = '?'

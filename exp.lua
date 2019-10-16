@@ -229,7 +229,7 @@ function varnaam(i)
 		local l = string.char(string.byte('A') + c)
 		r = l .. r
 	end
-	return r
+	return r --r:sub(2)
 end
 
 function maakvars()

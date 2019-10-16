@@ -4,10 +4,10 @@ require 'rapport'
 require 'util'
 
 
-local f = focus(ontleed('2 + 3'))
+local f = focus(ontleedexp('2 + 3'))
 assert(next(f.punten) and not next(f.punten, next(f.punten)))
 
-local f = focus(ontleed('1 + muis.x'))
+local f = focus(ontleedexp('1 + muis.x'))
 file('a.html', graaf2html(f))
 os.execute('firefox a.html')
 assert(next(f.punten) and next(f.punten, next(f.punten)) and not next(f.punten, next(f.punten, next(f.punten))))
