@@ -1,2 +1,9 @@
-f = x → x + 1
-uit = f(x)
+f = a → b
+
+als a > 0 dan
+	b = 1
+anders
+	b = -1
+eind
+
+uit = f(3)

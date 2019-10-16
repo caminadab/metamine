@@ -581,7 +581,7 @@ function oplos(exp,voor)
 		-- opgelost
 		if verbozeWaarde then
 			print('=== WAARDE ===')
-			print(combineer(val))
+			print(e2s(val))
 			print()
 		end
 

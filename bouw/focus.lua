@@ -81,10 +81,21 @@ function focus(exp)
 		table.insert(wanneer[moment], exp)
 		wanneer[moment][moes(exp)] = exp
 	end
+	
+	local maakvar = maakvars()
 
 	local function r(exp)
 
-		if isatoom(exp) then
+		if fn(exp) == '_fn' then
+			local moment = maakvar()
+			dan(moment, exp)
+
+		elseif fn(exp) == '⇒' then
+			error'OK'
+			local moment = maakvar()
+			dan(moment, exp)
+
+		elseif isatoom(exp) then
 			local momenten = ezmoment(exp)
 
 			if type(momenten) == 'string' then
@@ -100,7 +111,7 @@ function focus(exp)
 
 			local momenten
 			for k,sub in subs(exp) do
-				print('SUB', combineer(sub))
+				--print('SUB', combineer(sub))
 				momenten = merge(momenten, r(sub))
 			end
 			--assert(moment, 'wat is het moment van '..combineer(exp))
@@ -120,7 +131,7 @@ function focus(exp)
 	for k,v in pairs(wanneer) do
 		print('WANNEER', k)
 		for i,v in ipairs(v) do
-			print('  DAN', combineersimpel(v, 2))
+			print('  DAN', i, combineer(v, 2))
 		end
 	end
 

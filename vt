@@ -273,6 +273,7 @@ end
 -- control flow!
 local maakvar = maakvars()
 local focusstroom = focus(uit)
+--local im = codegen(focusstroom)
 local cfg = codegen(uit, maakvar)
 
 if verbozeControle then
