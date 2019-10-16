@@ -140,11 +140,6 @@ function bieb()
 	-- tekening
 	rechthoek = true,
 
-	-- willekeurig ×
-	aselect = function (a, b)
-		return math.random(a, b-1)
-	end,
-
 	-- wiskunde
 	co = 3,
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
@@ -620,7 +615,7 @@ function bieb()
 		return t
 	end;
 
-	['kies-int'] = function(t)
+	['random.bereik'] = function(t)
 		return math.random(t[1], t[2]-1)
 	end;
 

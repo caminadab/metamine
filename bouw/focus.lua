@@ -18,6 +18,23 @@ function waarvoordfs(exp, fn)
 	return res
 end
 
+function ins2string(exp, exps)
+	local t = {f=exp.t, o=exp.o}
+	local naam = exps[exp]
+	for k,sub in subs(exp) do
+		if isatoom(sub) then
+			t[k] = sub
+		else
+			local naam = exps[sub]
+			assert(naam, 'naamloze exp: '..exp2string(exp))
+			t[k] = naam
+		end
+	end
+	local naam = exps[sub]
+	assert(naam, 'naamloze exp: '..exp2string(exp))
+	return naam .. ' :=\t' .. combineer(t)
+end
+
 local bieb = bieb()
 
 local naam2moment = {
@@ -86,14 +103,29 @@ function focus(exp)
 
 	local function r(exp)
 
+		-- kindermoment
+		local momenten
+		for k,sub in subs(exp) do
+			local submomenten = r(sub)
+			assert(submomenten, 'geen kindermoment voor '..combineer(sub))
+			momenten = merge(momenten, submomenten)
+		end
+
+		-- functiemoment
 		if fn(exp) == '_fn' then
 			local moment = maakvar()
-			dan(moment, exp)
+			dan('FUNC', exp)
+			return 'FUNC'
+
+		elseif atoom(exp) == '_arg' then
+			dan('ARG', exp)
+			return 'ARG'
 
 		elseif fn(exp) == '⇒' then
-			error'OK'
+			--error'OK'
 			local moment = maakvar()
 			dan(moment, exp)
+			return 'DAN'
 
 		elseif isatoom(exp) then
 			local momenten = ezmoment(exp)
@@ -109,12 +141,7 @@ function focus(exp)
 
 		else
 
-			local momenten
-			for k,sub in subs(exp) do
-				--print('SUB', combineer(sub))
-				momenten = merge(momenten, r(sub))
-			end
-			--assert(moment, 'wat is het moment van '..combineer(exp))
+			assert(momenten, 'wat is het moment van '..combineer(exp))
 
 			if type(momenten) == 'string' then
 				dan(momenten, exp)
@@ -128,10 +155,13 @@ function focus(exp)
 	end
 	r(exp)
 
-	for k,v in pairs(wanneer) do
+	local exps = {}
+	for k,vals in pairs(wanneer) do
 		print('WANNEER', k)
-		for i,v in ipairs(v) do
-			print('  DAN', i, combineer(v, 2))
+		for i,val in ipairs(vals) do
+			exps[val] = maakvar()
+			print('  DAN', exps[val], combineer(val, 2))
+			--print('\t', ins2string(val, exps))
 		end
 	end
 

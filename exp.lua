@@ -217,15 +217,18 @@ end
 -- 1 t/m 26 zijn A t/m Z
 -- daarna AA t/m ZZ
 -- daarna AAA t/m ZZZ
+-- A,B,AA,AB,BA,BB,AAA,AAB,ABA,ABB,BAA,BAB,BBA,BBB,AAAA
 function varnaam(i)
+	local i = i - 1
+	if i == 0 then return 'A' end
 	local r = ''
-	i = i - 1
-	repeat
+	while i > 0 do
 		local c = i % 26
 		i = math.floor(i / 26)
+		if r ~= '' then c = c - 1 end
 		local l = string.char(string.byte('A') + c)
 		r = l .. r
-	until i == 0
+	end
 	return r
 end
 
