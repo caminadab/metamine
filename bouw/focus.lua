@@ -38,13 +38,17 @@ local naam2moment = {
 	['looptijd'] = set('init', 'itereer'),
 
 	-- muis
-	['muis.x'] = 'muis.beweegt',
-	['muis.y'] = 'muis.beweegt',
-	['muis.pos'] = 'muis.beweegt',
-	['muis.beweegt'] = 'muis.beweegt',
+	['muis.x'] = set('muis.beweegt', 'init'),
+	['muis.y'] = set('muis.beweegt', 'init'),
+	['muis.pos'] = set('muis.beweegt', 'init'),
+	['muis.beweegt'] = set('muis.beweegt', 'init'),
 	['muis.klik'] = set('muis.klik.begin', 'muis.klik.eind', 'init'),
-	['muis.klik.begin'] = 'muis.klik.begin',
-	['muis.klik.eind'] = 'muis.klik.eind',
+	['muis.klik.begin'] = set('muis.klik.begin', 'init'),
+	['muis.klik.eind'] = set('muis.klik.eind', 'init'),
+	['muis.rechts'] = set('muis.klik.begin', 'muis.klik.eind', 'init'),
+	['muis.rechts.begin'] = set('muis.klik.begin', 'init'),
+	['muis.rechts.eind'] = set('muis.klik.begin', 'init'),
+	['muis.klik.eind'] = set('muis.klik.eind', 'init'),
 
 	-- toetsenbord
 	['toets.neer'] = set('toets.neer.begin', 'toets.neer.eind'),
@@ -53,6 +57,8 @@ local naam2moment = {
 
 	-- std shit
 	['stduit.schrijf'] = false,
+	['niets'] = 'init',
+	['_arg'] = 'test',
 }
 
 local function merge(a, b)
@@ -98,6 +104,7 @@ function focus(exp)
 	local maakvar = maakvars()
 
 	local function r(exp)
+		print('R', combineer(exp))
 
 		-- kindermoment
 		local momenten
@@ -119,8 +126,15 @@ function focus(exp)
 
 		elseif fn(exp) == '⇒' then
 			--error'OK'
-			local moment = maakvar()
-			dan(moment, exp)
+			local als = maakvar()
+			local dann = maakvar()
+			dan(als, arg0(exp))
+			dan(dann, arg1(exp))
+			if arg2(exp) then
+				local anders = maakvar()
+				dan(anders, arg2(exp))
+			end
+			dan(als, exp)
 			return 'DAN'
 
 		elseif isatoom(exp) then
@@ -152,11 +166,16 @@ function focus(exp)
 	r(exp)
 
 	local exps = {}
-	print '=== FOCUSSTROOM ==='
-	for k,vals in pairs(wanneer) do
-		print(k..':')
+	for moment,vals in pairs(wanneer) do
 		for i,val in ipairs(vals) do
 			exps[val] = maakvar()
+		end
+	end
+
+	print '=== FOCUSSTROOM ==='
+	for moment,vals in pairs(wanneer) do
+		print(moment..':')
+		for i,val in ipairs(vals) do
 			print('  '.. ins2string(val, exps))
 		end
 	end

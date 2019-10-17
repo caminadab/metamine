@@ -30,7 +30,6 @@ function punten(exp)
 	end
 end
 
-		-- fix dubbele args: f(,(2 3))
 		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
@@ -582,6 +581,7 @@ function oplos(exp,voor)
 		if verbozeWaarde then
 			print('=== WAARDE ===')
 			print(e2s(val))
+			print(combineer(val))
 			print()
 		end
 

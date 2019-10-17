@@ -156,6 +156,7 @@ stat:
 | ALS exp DAN exp EIND             { $$ = FN2(L, A(L,"⇒", @1), $2, $4, @$); }
 | ALS exp DAN exp ANDERS exp EIND  { $$ = FN3(L, A(L,"⇒", @1), $2, $4, $6, @$); }
 /* 1   2   3   4     5    6  */
+| ZOLANG exp NEWLINE block EIND     { $$ = FN2(L, A(L,"zolang", @1), $2, $4, @$); }
 
 /*
 als

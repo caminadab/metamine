@@ -184,7 +184,7 @@ end
 if verbozeSyntax then
 	print()
 	print('=== SYNTAX ===')
-	print(combineer(asb))
+	print(e2s(asb))
 	print()
 end
 
@@ -272,7 +272,7 @@ end
 
 -- control flow!
 local maakvar = maakvars()
---local focusstroom = focus(uit)
+local focusstroom = focus(uit)
 --local im = codegen(focusstroom)
 local cfg = codegen(uit, maakvar)
 
