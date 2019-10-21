@@ -144,9 +144,15 @@ function focus(exp)
 			dan(condtijd, exp, strekking)
 
 			-- wanneer moet de dan-tak gebeuren
-			local dantijd = r(alsja, 'als.'..namen[moes(cond)])
+			local alsjatijd = r(alsja, 'als.'..namen[moes(cond)])
 
-			-- de hele als-dan gebeurt wanneer?
+			-- fake triplet
+			--local triplet = X(',', cond, namen[alsja], namen[alsnee])
+			--dan(condtijd, alsja)
+			--dan(condtijd, namen[alsnee])
+			--dan(condtijd, triplet)
+
+			-- tijd van de hele if-statement
 			return condtijd
 
 		elseif isatoom(exp) then
