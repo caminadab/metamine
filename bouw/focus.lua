@@ -18,15 +18,13 @@ function waarvoordfs(exp, fn)
 	return res
 end
 
-function ins2string(exp, exps)
+function ins2string(exp, namen)
 	local t = {f=exp.f, o=exp.o, v=exp.v}
-	local naam = exps[exp]
+	local naam = namen[moes(exp)]
 	for k,sub in subs(exp) do
-		local naam = exps[sub]
-		assert(naam, 'naamloze exp: '..exp2string(sub))
-		t[k] = X(naam)
+		local naam = namen[moes(sub)]
+		t[k] = X(naam or color.red..combineer(sub)..color.white)
 	end
-	local naam = exps[exp]
 	assert(naam, 'naamloze exp: '..exp2string(exp))
 	return naam .. '\t:= ' .. combineer(t)
 end
@@ -90,93 +88,97 @@ end
 function focus(exp)
 	local wanneer = {} -- moment → exps, moment → (moes → moment)
 
-	local function dan(moment, exp)
-		assert(type(moment) == 'string')
-		assert(moment, 'geen moment voor '..combineer(exp))
-		wanneer[moment] = wanneer[moment] or {}
-		if wanneer[moment][moes(exp)] then
-			return false
+	-- geef alles een naam
+	local maakvar = maakvars()
+	local namen = {} -- moes → naam
+	for sub in boompairsbfs(exp) do
+		namen[moes(sub)] = maakvar()
+	end
+
+	local function dan(momenten, exp, strekking)
+		for moment in pairs(momenten) do
+			if strekking then
+				moment = moment .. '.' .. strekking
+			end
+
+			assert(type(moment) == 'string')
+			assert(moment, 'geen moment voor '..combineer(exp))
+			wanneer[moment] = wanneer[moment] or {}
+			if wanneer[moment][moes(exp)] then
+				return false
+			end
+			table.insert(wanneer[moment], exp)
+			wanneer[moment][moes(exp)] = exp
 		end
-		table.insert(wanneer[moment], exp)
-		wanneer[moment][moes(exp)] = exp
 	end
 	
 	local maakvar = maakvars()
 
-	local function r(exp)
-		print('R', combineer(exp))
-
-		-- kindermoment
-		local momenten
-		for k,sub in subs(exp) do
-			local submomenten = r(sub)
-			assert(submomenten, 'geen kindermoment voor '..combineer(sub))
-			momenten = merge(momenten, submomenten)
-		end
+	-- exp, scope
+	local function r(exp, strekking)
 
 		-- functiemoment
 		if fn(exp) == '_fn' then
-			local moment = maakvar()
-			dan('FUNC', exp)
+			local moment = set(maakvar())
+			dan(set'FUNC', exp, strekking)
 			return 'FUNC'
 
 		elseif atoom(exp) == '_arg' then
-			dan('ARG', exp)
+			dan(set'ARG', exp, strekking)
 			return 'ARG'
 
+		-- als dan
 		elseif fn(exp) == '⇒' then
-			--error'OK'
-			local als = maakvar()
-			local dann = maakvar()
-			dan(als, arg0(exp))
-			dan(dann, arg1(exp))
-			if arg2(exp) then
-				local anders = maakvar()
-				dan(anders, arg2(exp))
-			end
-			dan(als, exp)
-			return 'DAN'
+
+			local cond = arg0(exp) 
+			local alsja = arg1(exp)
+			local alsnee = arg2(exp)
+
+			--r(arg1(exp))
+			--if arg2(exp) then
+--				r(arg2(exp))
+			--end
+
+			-- wanneer moet de conditie gebeuren
+			local condtijd = r(arg0(exp))
+			dan(condtijd, exp, strekking)
+
+			-- wanneer moet de dan-tak gebeuren
+			local dantijd = r(alsja, 'als.'..namen[moes(cond)])
+
+			-- de hele als-dan gebeurt wanneer?
+			return condtijd
 
 		elseif isatoom(exp) then
-			local momenten = ezmoment(exp)
+			local momenten = set(ezmoment(exp))
 
-			if type(momenten) == 'string' then
-				dan(momenten, exp)
-			else
-				for moment in pairs(momenten) do
-					dan(moment, exp)
-				end
-			end
+			dan(momenten, exp, strekking)
 			return momenten
 
 		else
 
+			-- kindermoment
+			local momenten
+			for k,sub in subs(exp) do
+				local submomenten = r(sub)
+				assert(submomenten, 'geen kindermoment voor '..combineer(sub))
+				momenten = merge(momenten, submomenten)
+			end
+
 			assert(momenten, 'wat is het moment van '..combineer(exp))
 
-			if type(momenten) == 'string' then
-				dan(momenten, exp)
-			else
-				for moment in pairs(momenten) do
-					dan(moment, exp)
-				end
-			end
+			dan(momenten, exp, strekking)
+
 			return momenten
 		end
 	end
 	r(exp)
 
-	local exps = {}
-	for moment,vals in pairs(wanneer) do
-		for i,val in ipairs(vals) do
-			exps[val] = maakvar()
-		end
-	end
-
 	print '=== FOCUSSTROOM ==='
 	for moment,vals in pairs(wanneer) do
 		print(moment..':')
 		for i,val in ipairs(vals) do
-			print('  '.. ins2string(val, exps))
+			print('  '.. ins2string(val, namen))
 		end
 	end
 

@@ -1,1 +1,5 @@
-uit = looptijd + looptijd
+als 2 > 1 dan
+	uit = 1
+anders
+	uit = 0
+eind
