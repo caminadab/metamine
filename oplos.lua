@@ -264,7 +264,6 @@ function oplos(exp,voor)
 					local eqb = X('|'..fe, be, X(sym.dan, e, ae))
 					if isvar(a) then nieuw[eqa] = true end
 					if isvar(b) then nieuw[eqb] = true end
-					error'a'
 				end
 			end
 		end
