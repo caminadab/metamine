@@ -1,1 +1,3 @@
-als 3 > 2 dan uit = 1 anders uit = 0 eind
+als 3 > 2 dan
+	uit = 1
+eind

@@ -141,6 +141,8 @@ function focus(exp)
 
 			-- wanneer moet de conditie gebeuren
 			local condtijd = r(arg0(exp))
+
+			dan(condtijd, arg(exp))
 			dan(condtijd, exp, strekking)
 
 			-- wanneer moet de dan-tak gebeuren
@@ -149,7 +151,7 @@ function focus(exp)
 			-- wanneer moet de anders-tak gebeuren
 			if alsnee then
 				local alsneetijd = r(alsnee, 'als.niet.'..namen[moes(cond)])
-				dan(alsneetijd, alsnee, strekking)
+				--dan(alsneetijd, alsnee, strekking)
 			end
 
 			-- fake triplet

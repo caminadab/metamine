@@ -204,7 +204,7 @@ function arg1(exp)
 end
 
 function arg2(exp)
-	return exp.a and exp.a[2]
+	return exp.a and exp.a[3]
 end
 
 function assign(a, b)

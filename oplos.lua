@@ -295,12 +295,15 @@ function oplos(exp,voor)
 			eqs[eq] = false
 		end
 		for naam,alts in pairs(map) do
-			alts.o = X'{}'
-			local eq = X('=', naam, X('|', alts))
-			--print('SAMEN', combineer(eq))
-			--print('OK', combineer(eq))
+			local eq
+			if #alts == 1 then
+				eq = X('=', naam, alts[1])
+			else
+				alts.o = X'{}'
+				eq = X('=', naam, X('|', alts))
+				--nieuw[eq] = true
+			end
 			eqs[eq] = true
-			--nieuw[eq] = true
 		end
 
 		-- verzamel |:=
@@ -502,23 +505,7 @@ function oplos(exp,voor)
 
 		local stroom,halfvan,halfnaar = kennisgraaf:sorteer(invoer,voor)
 
-		-- RAPPORTJE SCHRIJVEN
-		if verbozeRapport then
-			local rap = rapport {kennisgraaf = kennisgraaf, infostroom = stroom}
-			file('rapport.html', rap)
-			print('rapport weggeschreven naar "rapport.html"')
-		end
-
-		local vt = {
-			code = "ABC",
-			kennisgraaf = kennisgraaf,
-			infostroom = stroom or kennisgraaf,
-		}
-		if verboos then file('rapport.html', rapport(vt)) end
 		if not stroom then
-			--file('fout.html', rapport(vt))
-			--return false, 'kon kennisgraaf niet sorteren:\n'..kennisgraaf:tekst(), bekend, {}, halvestroom
-
 			local fouten = {}
 			if false then
 				print('HALV VAN')
