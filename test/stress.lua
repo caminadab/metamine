@@ -6,7 +6,7 @@ require 'typeer'
 require 'test.langecode'
 
 -- 1 MB
-local code,numlijnen = langecode(1024 * 1024)
+local code,numlijnen = langecode(1024 * 1024 / 10)
 
 -- ontleed
 require 'ontleed'

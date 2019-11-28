@@ -161,7 +161,7 @@ From: vraag@metamine.nl
 	else
     pad = pad:gsub('%.%.', '%.')
 		if pad == '/' then pad = '/index.html' end
-    pad = 'www' .. pad
+    pad = 'goo/www' .. pad
 		uit = file(pad)
 		status = 200
 		if not uit then

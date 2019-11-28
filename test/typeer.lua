@@ -1,5 +1,6 @@
 require 'combineer'
 require 'ontleed'
+require 'typeer'
 require 'fout'
 
 function moettypezijn(code, typecode)
@@ -105,6 +106,13 @@ f = sin
 f = cirkel
 ]]))
 assert(#f > 0, 'geen typefouten in ongeldig programma!')
+
+local t,f,types = typeer(ontleed([[
+uit = a + b
+a = (1,2)
+b = (3,4)
+]]))
+assert(#f == 0, 'fouten')
 
 -- vouw mismatch
 local t,f = typeer(ontleed([[

@@ -101,7 +101,7 @@ function focus(exp)
 				moment = moment .. '.' .. strekking
 			end
 
-			assert(type(moment) == 'string')
+			assert(type(moment) == 'string', tostring(moment))
 			assert(moment, 'geen moment voor '..combineer(exp))
 			wanneer[moment] = wanneer[moment] or {}
 			if wanneer[moment][moes(exp)] then
@@ -164,7 +164,10 @@ function focus(exp)
 			return condtijd
 
 		elseif isatoom(exp) then
-			local momenten = set(ezmoment(exp))
+			local momenten = ezmoment(exp)
+			if type(momenten) ~= 'table' then
+				momenten = set(momenten)
+			end
 
 			dan(momenten, exp, strekking)
 			return momenten
