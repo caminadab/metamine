@@ -63,7 +63,7 @@ local function combineerR(exp, t, kind)
 	-- explijst
 	elseif fn(exp) == '⋀' and isobj(exp.a) then
 		for i,sub in ipairs(exp.a) do
-			combineerR(v, t, false)
+			combineerR(sub, t, false)
 			t[#t+1] = '\n'
 		end
 

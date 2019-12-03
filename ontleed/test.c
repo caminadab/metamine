@@ -44,7 +44,7 @@ int main() {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	char* str = " require 'ontleed'; require 'util'  ; print('ontleden b') ; b = file('b.code') ; print(b); ontleed(b) ;print('hoi');  b = ontleed(file('../bieb/std.code')) ; print('ja!')";
-	luaL_dostring(L, str);
+	//luaL_dostring(L, str);
 	if (lua_gettop(L) > 0) {
 		puts(luaL_checkstring(L, 1));
 	}
