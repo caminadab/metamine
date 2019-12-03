@@ -77,6 +77,7 @@ local immjs = {
 	['cos'] = 'Math.cos($1)',
 	['tan'] = 'Math.tan($1)',
 	['sincos'] = '[Math.cos($1), Math.sin($1)]',
+	['cossin'] = '[Math.sin($1), Math.cos($1)]',
 
 	-- discreet
 	['min'] = 'Math.min($1,$2)',

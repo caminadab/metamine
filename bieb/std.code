@@ -86,6 +86,7 @@ sin :  getal → getal
 cos :  getal → getal
 tan :  getal → getal
 sincos :  getal → getal, getal
+cossin :  getal → getal, getal
 (+) :  getal, getal → getal
 ;(+) :  int, int → getal
 (-) :  getal → getal

@@ -5,6 +5,13 @@ el = alsHtml "<canvas width='1280' height='720'></canvas>"
 tekenCanvas = wisCanvas ∘ (vormen vouw (∘))
 teken = vormen → (tekenCanvas(contextVan(el)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
+
+; vec
+vec2.schaal = (vx,vy),vf → (vx·vf,vy·vf)
+vec2.plus = (wx1,wy1),(wx2,wy2) → wx1+wx2,wy1+wy2
+vec2.min = (px1,py1),(px2,py2) → px1-px2,py1-py2
+vec2.unit = sincos
+
 ; toetsenbord
 toets.spatie = toets.neer(32)
 toets.links = toets.neer(37)

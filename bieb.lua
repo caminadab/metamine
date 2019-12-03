@@ -424,6 +424,9 @@ function bieb()
 	['sincos'] = function (a)
 		return {f=',', math.sin(a), math.cos(a)}
 	end;
+	['cossin'] = function (a)
+		return {f=',', math.cos(a), math.sin(a)}
+	end;
 
 	['∨'] = function(a,b) return a or b end;
 	['∧'] = function(a,b) return a and b end;

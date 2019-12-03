@@ -1,4 +1,7 @@
-uit = 1 F 2 G 3
-F = (+)
-G = (·)
+f = a → a + 1
+	a := 10
+	zolang a > 0
+		a := a' - 1
+
+uit = a
 
