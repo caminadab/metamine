@@ -1,3 +1,6 @@
-als 3 > 2 dan
-	uit = 1
-eind
+f = a → a + 1
+	a := 10
+	zolang a > 0
+		a := a' - 1
+
+uit = a

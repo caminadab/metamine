@@ -1,7 +1,9 @@
 require 'vertaal'
 require 'doe'
 
-local app = vertaal("uit = 10")
+local app = vertaal("uit = 1 + 2")
+
+assert(doe(app) == 3)
 
 local r,f = doe(vertaal [[
 ; beweegbare cirkel (gebruik pijltjestoetsen)

@@ -1,0 +1,8 @@
+; teken een pijl
+pijl = pijl.begin, pijl.eind → pijl.lijnen
+	pijl.rot = atan (pijl.eind VMIN pijl.begin)
+	pijl.ltip0 = (sincos(rot + τ/4 + τ/8)) VSCALE 4
+	pijl.ltip1 = (sincos(rot + τ/4 + τ/4 + τ/8)) VSCALE 4
+	pijl.tip0 = pijl.eind VPLUS pijl.ltip0
+	pijl.tip1 = pijl.eind VPLUS pijl.ltip1
+	pijl.lijnen = [ lijn(pijl.begin,pijl.eind), lijn(pijl.eind,pijl.tip0), lijn(pijl.eind,pijl.tip1) ]

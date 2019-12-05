@@ -152,6 +152,7 @@ stats:
 
 stat:
 	exp { $$ = LOC(L, $1, @1); }
+| ALS exp NEWLINE block EIND   { $$ = FN2(L, A(L,"⇒", @1), $2, $5, @$); }
 | ALS exp DAN NEWLINE block EIND   { $$ = FN2(L, A(L,"⇒", @1), $2, $5, @$); }
 | ALS exp DAN exp EIND             { $$ = FN2(L, A(L,"⇒", @1), $2, $4, @$); }
 | ALS exp DAN exp ANDERS exp EIND  { $$ = FN3(L, A(L,"⇒", @1), $2, $4, $6, @$); }
@@ -248,13 +249,29 @@ single:
 
 exp:
 	single
-| exp ',' exp  	{ if (xlua_isopen(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
-| single single  %prec CALL  { $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
-| single single single  %prec CALL  { $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @2), @$); }
-| single single single single {  $$ = A(L, "fout", @$); yyerrok; }
-|	exp KWADRAAT						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"2", @2), @$); }
-|	exp DERDEMACHT						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"3",@2), @$); }
-|	exp INVERTEER						{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"-1", @2), @$); }
+| exp ',' exp  												{ if (xlua_isopen(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
+| single single  %prec CALL  					{ $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
+| single single single  %prec CALL  	{ $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @$), @$); }
+| single single single single 				{ $$ = A(L, "fout", @$); yyerrok; }
+| single single single single single	{ $$ = FN2(L, A(L,"_",@4),
+																									$4,
+																									TN2(L, A(L,",",@2),
+																										FN2(L,
+																											A(L,"_",@3),
+																											$2,
+																											TN2(L, A(L,",",@2),
+																												$1, $3, @2
+																											),
+																											@2
+																										),
+																										$5,
+																										@5
+																									),
+																									@$
+																								); }
+|	exp KWADRAAT												{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"2", @2), @$); }
+|	exp DERDEMACHT											{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"3",@2), @$); }
+|	exp INVERTEER												{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"-1", @2), @$); }
 |	exp I0						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"0", @2), @$); }
 |	exp I1						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"1", @2), @$); }
 |	exp I2						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"2", @2), @$); }
