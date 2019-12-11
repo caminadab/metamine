@@ -1,4 +1,4 @@
-welkom		Welcome
+welkom		Welcome!
 kop1			A new coding language.
 kop2			Intuitive and declarative.
 taalvlag	nl.svg
@@ -13,22 +13,44 @@ a1web			A webservice translates your code to javascript. Your device then runs t
 vraag			Ask!
 vraagverz	Question sent
 stelvraag	Ask your question...
-episch1		; TODO
-demo1			; every program needs to define 'out'\nout = "hoi"
-demo2			; you can define variables\na = 3\nb = 2\nout = a + b
-demo3			; movable circle (use the arrow keys)\nx := 10\ny := 5\nif keyRight then x := x' + 0.1 end\nif keyLeft then x := x' - 0.1 end\nout = canvas [ circle(x,y,1) ]
-demo4			; paint app\n; draw with your mouse\ncircles := []\nout = canvas circles\n\n; add dot at mouse position\nif mouseClick then\n	circles := circles' ‖ [ circle(mouseX, mousY, 0.1) ]\nend\n\n; remove them with space\nif keySpace then\n	circles := circles' from 1\nend\n
-demo5			; simple stopwatch\nout = runtime\n
-demo6			; create a timer\ntimer = 3 - int(runtime)\nif timer > 0 then\n\tout = text(timer)\nelse\n\tout = "Boom!"\nend'
-demo7			; circle (canvas is 18×10)\nr = runtime\nc = circle(mouseX,mouseY,r)\nuit = canvas [c]\n\n; circletoy (use mouse/touch)\nout = canvas circles\ncircles = (0..15) map f\nf = i → circle(mouseX ^ (i/8), 5, i/4)
-demo8			; PONG 2019\n\n; players\ny1 := 3.5\ny2 := 3.5\nw = 1 ; player width\nh = 3 ; player height\nxmin = 0\nxmax = 17.777 - w\nymax = 10 - h\n\n; ball\nballx := 17.777 / 2\nbally := 5\nballvx := -0.01\n\nif 2 > 1 then\n	ballx := ballx' + ballvx'\nend\nif keySpace then\n	ballx := 10\nend\n\n; keyboard right\nif keyUp and y1' < ymax then y1 := y1' + 0.2 end\nif tkeyDown en y1' > 0    then y1 := y1' - 0.2 end\n\n; keyboard left\nif keyW and y2' < ymax then y2 := y2' + 0.2 end\nif keyS and y2' > 0    then y2 := y2' - 0.2 end\n\n; sprites\nleft = rrectangle(xmax, y1, 1, 3)\nright = rectangle(xmin, y2, 1, 3)\nball = circle(ballx, bally, 1)\nscore = label(5, 5, "hoi")\n\n; canvas\nout = canvas [ left, right, ball, score ]
-demo9			; sum the numbers 1 to 1000\nuit = Σ 1 .. 1001'
-demo10		; cool circles\nr = runtime + n/2 + n/5 + n/9 + n/100\n\nf = n + sin(runtime) → circle(n/1,g(n),abs(sin(3·r))·abs(2·sin(runtime/100)))\ng = y → sin(0.4 · runtime + y) + 4\n\ncircles = (0..40) map f\nout = canvas circles
-demo11		; function composition\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)
-demo12		; zeg een aantal keer "hoi"\naantal = int(runtime)\nf = x → x ‖ " hoi"\nuit = (f^aantal)("groet:")
-demo13		; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f
-demo14		; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)
-demo15		; lekker functioneel\nfuncties = [(·), (-), sin]\ng = functies vouw (∘)\nuit = g(2, 3)
+xdemo1			planets := []\nsuns := [ sun ]\nsun = ((9, 5), 0.3)\n\n; planeet = (pos,rad,vel)\nnieuweplaneet = (muis.pos, 0.13, (0,0.01))\n\nals muisKlik dan\n\tplaneten := planeten' ‖ [nieuweplaneet]\neind\n\nals planeten' en ¬ muisKlik dan\n\tplaneten := planeten' map beweeg\neind\n\nvplus = v1,v2 → v1₀+v2₀,v1₁+v2₁\nvmin = w1,w2 → w1₀-w2₀,w1₁-w2₁\nvmul = u1,u2 → u1₀·u2₀,u1₁·u2₁\nvafstand = a,b → ((a₀-b₀)²+(a₁-b₁)²)^0.5\n\n; zwaartekracht\ng = 0.0001 / r²\nr = vafstand(pos, zon₀)\n\nrichting = atan (pos vmin zon₀)\ngrav = ((zon₀) vmin pos) vmul (g,g)\nbeweeg = (pos,rad,vel) → (pos vplus vel),rad,(vel vplus grav)\nuit = canvas((planeten ‖ zonnen) map cirkel)
+xdemo1x		; je moet altijd 'uit' definieren\nuit = "hoi"
+xdemo2			; je kan variabelen maken\na = 3\nb = 2\nuit = a + b
+xdemo3			; beweegbare cirkel (gebruik pijltjestoetsen)\nx := 10\ny := 5\nals toetsRechts dan x := x' + 0.1 eind\nals toetsLinks dan x := x' - 0.1 eind\nuit = canvas [ cirkel(x,y,1) ]
+xdemo4			; paint programmaatje\n; teken met je muis\ncirkels := []\nuit = canvas cirkels\n\n; stipje bij de muis\nals muis.klik dan\n	cirkels := cirkels' ‖ [ cirkel(muis.pos, 0.1) ]\neind\n\n; haal ze weer weg met spatie\nals toetsSpatie dan\n	cirkels := cirkels' vanaf 1\neind\n
+xdemo5			; simpele stopwatch\nuit = looptijd\n
+xdemo6			; maak een timer\ntimer = 3 - int(looptijd)\nals timer > 0 dan\n\tuit = tekst(timer)\nanders\n\tuit = "Boem!"\neind
+xdemo7			; cirkel (canvas is 18×10)\nr = looptijd\nc = cirkel(muis.x,muis.y,r)\nuit = canvas [c]\n\n
+xdemo8			; PONG 2019\n\n; spelers\ny1 := 3.5\ny2 := 3.5\nw = 1 ; spelerbreedte\nh = 3 ; spelerhoogte\nxmin = 0\nxmax = 17.777 - w\nymax = 10 - h\n\n; bal\nbalx := 17.777 / 2\nbaly := 5\nbalvx := -0.01\n\nals 2 > 1 dan\n	balx := balx' + balvx'\neind\nals toetsSpatie dan\n	balx := 10\neind\n\n; toetsenbord rechts\nals toetsOmhoog en y1' < ymax dan y1 := y1' + 0.2 eind\nals toetsOmlaag en y1' > 0    dan y1 := y1' - 0.2 eind\n\n; toetsenbord links\nals toetsW en y2' < ymax dan y2 := y2' + 0.2 eind\nals toetsS en y2' > 0    dan y2 := y2' - 0.2 eind\n\n; sprites\nlinks = rechthoek(xmax, y1, 1, 3)\nrechts = rechthoek(xmin, y2, 1, 3)\nbal = cirkel(balx, baly, 1)\nscore = label(5, 5, "hoi")\n\n; canvas\nuit = canvas [ links, rechts, bal, score ]
+xdemo9			; tel de getallen 1 t/m 1000 op\nuit = Σ 1 .. 1001
+xdemo10		; mooie cirkels\nr = looptijd + n/2 + n/5 + n/9 + n/100\n\nf = n + sin(looptijd) → cirkel(n/1,g(n),abs(sin(3·r))·abs(2·sin(looptijd/100)))\ng = y → sin(0.4 · looptijd + y) + 4\n\ncirkels = (0..40) map f\nuit = canvas cirkels
+xdemo11		; functiecompositie\ng = x → x + 1\nh = y → y / 2 ; typ een "→" met "->"\nf = g² ∘ h ∘ g² ; typ met "@" en "^2" \nuit = f(3)
+xdemo12		; zeg een aantal keer "hoi"\naantal = int(looptijd)\nf = x → x ‖ " hoi"\nuit = (f^aantal)("groet:")
+xdemo13		; letters a t/m j\nf(i) = i + \'a\'\nuit = (0 .. 10) map f
+xdemo14		; neem van elke letter de volgende\nuit = "Iho" map (a → a + 1)
+
+episch1		w = 18 ; width\nh = 10 ; height\nframe := 0 ; current frame\npos = 0..w × 0..h ; all positions\n\n\n; circle pattern\nf = 2 + 3 · sin(runtime)\ndx = x - mouse.x/10 \ndy = y - mouse.y/10\ndst = √(dx²+dy²)\n\n; is the block at x,y lit?\nisblock = (x,y) → (-dst + runtime·10) mod 5 < sin(runtime)+2\nblocks = pos filter isblock\n\n; track current frame\nif screen.refresh then\n\tframe := frame' + 1\nend\n\nshape = square((a·10,b·10),9)\ndisco = paint(shape, color)\ncolor = rgb(a/10,b/10,sin(runtime)/2+0.5)\nsquares = blocks map ((a,b) → disco)\nout = draw squares\n\n
+episch2		w = 18 ; width\nh = 10 ; height\nframe := 0 ; current frame\npos = 0..w × 0..h ; all positions\n\n; mouse trace\nsprites := zeroes\nzeroes = (0..20) map (x → (-1,-1))\n\n; where to place next head (30x/second)\nhead = (int(mouse.x/10), int(mouse.y/10))\n\n; place the head\nif frame mod 2 = 1 then\n\tsprites := (sprites' from 1) ‖ [head]\nend\n\n; keep track of frame\nif screen.refreshes then\n\tframe := frame' + 1\nend\n\ncolor = rgb(1/10,b/10,sin(runtime)/2+0.5)\n\nshape = square((a·10,b·10),9)\ndisco = paint(shape, color)\nsquares = sprites map ((a,b) → disco)\nout = draw squares
+
+; zo tel je vectors met elkaar op\nvplus = (vx,vy),(wx,wy) → vx+wx,vy+wy\n
+episch3		v = f(muis.pos, 20)\nuit = teken [v]\n\nals looptijd mod 1 < 1/2 dan\n\tf = vierkant\nanders\n\tf = cirkel\nend
+; TUTORIAL 1.1 --- Taal\n; Taal werkt met objecten en feiten.\n; Een object is bijvoorbeeld "3" of "uit".\n; "3" is gewoon een getal,\n; "uit" is het uitvoerscherm.\n; Een feit is "uit = 3".\n; Dit brengt ons bij het eerste voorbeeld:\nuit = 3
+demo1		; Je kan variabelen maken met "a = 2"\na = 2\nuit = a
+demo2		; ook kan je "+" gebruiken\na = 2\nb = 3\nuit = a + b
+demo3		; de keerfunctie (·) schrijf je met sterretje\na = 1111\nb = 1111\nuit = a · b
+demo4		; een if-statement is ook een geldig feit.\n; In de if-statement kan je andere feiten\n; neerzetten.\n; Volgens mij kun je geen if-statements in\n; if-statements zetten\na = 21 / 8\nals a > 2 dan\n	uit = "21/8 > 2"\neind
+demo5		; met "anders" kun je aangeven\n; welke feiten moeten gebeuren als\n;de voorwaarde (a > 3) niet voldaan is\na = 21 / 8\nals a > 3 dan\n	uit = "21/8 > 3"\nanders\n	uit = "21/8 < 3"\neind
+demo6		; 1.2 --- Lijsten\n; een lijst is een rij aan waardes\nlijst = [1,2,3]\nuit = lijst
+demo7		; je kan ze combineren met "‖" (typ ||)\na = [1,2]\nb = [3,4]\nuit = a ‖ b
+demo8		; je kan het eerste element uit de lijst halen\n; met lijst(0), tweede met lijst(1), enz.\na = [1,2,3]\nuit = a(0)
+demo9		; je kan ook "_0" typen om "₀" te krijgen.\n; a₀ is het eerste element uit a.\na = [1,2,3]\nuit = a₀
+demo10		; met 0..10 krijg je een reeks van 0 tot 10.\n; NB: tót 10, dus 10 is uitgezonderd\nn = 10\nuit = 0 .. n
+demo11		; met "i : 0..10" geef je aan dat "i" in de\n; lijst 0 tot 10 zit.\n; Hiermee kun je makkelijk lijsten vullen.\ni: 0..10\nuit(i) = 3 · i
+demo11		; Met "×" (typ xx) maak je een cartesisch product\n; tussen lijsten.\na = 0..3\nb = 10..13\nuit = a × b
+demo12		; 1.3 --- Tupels\n; Een tupel is een meervoud aan waardes,\n; bijvoorbeeld (2,3). Dit tupel bevat\n; de elementen 2 en 3.\n; Je kan ze gebruiken bijvoorbeeld\n; als positie.\nx = 9\ny = 5\nuit = (x, y)
+demo13		; de elementen kan je bereiken net als\n; bij een lijst.\ni = 2\ntupel = (0,1,2)\nuit = tupel(i)
+demo14		; 1.3 --- Functies\n; Tot nu toe hebben we standaardfuncties gebruikt\n; zoals plus en keer. We kunnen ook onze eigen\n; functies maken met "→".\n; f = x → x + 1\n; geeft aan dat f een functie is die "x" naar "x + 1"\n; mapt.\n; Dit betekent dat f(x) = x + 1.\n; Dus f(0) = 1, f(3) = f(4),  f(-100) = -99\nf = x → x + 1\nuit = f(3)
+demo15		; Je kan functies aan elkaar linken met "∘"\n; (typ als apenstaartje)\n; "f ∘ g" betekent: doe eerst f, dan g.\n; wanneer "f = h ∘ g" dan is f(x) = g(h(x))\n; "sin ∘ cos" is dus een functie voor x\n; die de cosinus van de sinus van x returnt.\n; In dit voorbeeld voegt g 1 toe aan zijn invoer,\n; en h voegt twee toe.\ng = x → x + 1\nh = y → y + 2\nf = g ∘ h\nuit = f(0)
 demo16		; hierzo wordt +1 eerst toegepast,\n; daarna ·2, dan nog een keer ·2.\n; Dus van links naar rechts.\n; dit is hetzelfde als\n; uit = plus(mul(mul(2))).\nmul = x → x · 2\nplus = y → y + 1\nf = plus ∘ mul ∘ mul\nuit = f(2)
 demo17		; De standaardfuncties kun je gebruiken\n; door er haakjes omheen te zetten.\n; f = (+) is de plusfunctie\n; van het type (getal,getal) → getal.\n; (getal,getal) is een tupel met\n; twee getallen erin.\na = (1,2)\nuit = (+) a
 demo18		; Je kan ze ook aan elkaar linken\nf = (+) ∘ (-)\nuit = f(1,2)

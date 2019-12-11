@@ -88,6 +88,16 @@ assert(k)
 		error(string.format('%s[%s] = nil', e2s(p), k))
 	end
 	local n = 0
+	if type(e) ~= 'table' then
+		print('FAAL!')
+		print('Type:')
+		see(type(e))
+		print('Exp:')
+		print(lenc(e))
+		print('Parent:')
+		see(p)
+		error'check faalde'
+	end
 	if isatoom(e) then n = n + 1 end
 	if isfn(e) then n = n + 1 end
 	if isobj(e) then n = n + 1 end

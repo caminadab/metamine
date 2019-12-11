@@ -5,7 +5,7 @@ local lijst = file('bieb/en.lst')
 NL2EN = {}
 EN2NL = {}
 
-for NL, EN in lijst:gmatch('(%w+)\t(%w+)\n') do
+for NL, EN in lijst:gmatch('([%w%.]+)\t([%w%.]+)\n') do
 	NL2EN[NL] = EN
 	EN2NL[EN] = NL
 end

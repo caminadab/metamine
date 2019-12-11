@@ -87,6 +87,10 @@ function typeer(exp)
 
 		ta.var = ta.var or maakvar()
 
+		--print(combineer(ta), combineer(tb), combineer(exp))
+		check(ta)
+		check(tb)
+		check(exp)
 		local intersectie,fout = typegraaf:intersectie(ta, tb, exp)
 
 		if not intersectie then
@@ -345,7 +349,7 @@ function typeer(exp)
 			local ftype = X('→', tf, ta)
 			--moetzijn(a, 10)
 			--error'OK'
-			moetzijn(a, 10)
+			--moetzijn(a, 10, exp)
 			-- TODO
 			--types[moes(exp)] = types[moes(exp)] or kopieer(arg1(std.functie))
 			--moetzijn(types[moes(exp)], ftype, exp)

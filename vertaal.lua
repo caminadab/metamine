@@ -18,6 +18,8 @@ function vertaal(code, doel, naam)
 	local asbbieb,syntaxfouten2 = ontleed(file(biebpad), doel)
 	local asb = asbcode
 
+	local asb = vertolk(asb)
+
 	local asblijst = arg0(asbcode)
 	local bieblijst = arg0(asbbieb)
 	for i,biebitem in ipairs(bieblijst) do asblijst[#asblijst+1] = biebitem end

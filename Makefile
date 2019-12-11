@@ -1,4 +1,4 @@
-linux: goo/www/index.html ontleed.so
+linux: goo/www/index.html goo/www/index.en.html ontleed.so
 deploy: ontleed.so goo/www/
 	scp -r goo/www/* metamine.nl:/var/www/html/
 	ssh -f pi  'cd taal ; git pull ; make ; pkill luajit ; /etc/dienst'

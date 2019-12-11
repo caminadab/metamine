@@ -267,13 +267,6 @@ if not uit then
 	return
 end
 
--- expressie fase: optm
-if opt.O then
-	uit = optimaliseer(uit)
-	--print(taal2string(uit))
-	--return
-end
-
 -- control flow!
 local maakvar = maakvars()
 local focusstroom = focus(uit)
