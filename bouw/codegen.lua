@@ -75,8 +75,8 @@ function codegen(exp, maakvar)
 	end
 
 	-- running block
-	local blok = maakblok(X'start', {}, X'stop')
-	graaf.start = blok
+	local blok = maakblok(X'init', {}, X'stop')
+	graaf.init = blok
 	graaf:punt(blok)
 
 	local con
@@ -307,7 +307,7 @@ function codegen(exp, maakvar)
 
 			else
 
-				error('IDK' .. e2s(exp))
+				error('IDK ' .. e2s(exp))
 
 				for k,v in subs(exp) do
 					if k == 'f' or k == 'o' then

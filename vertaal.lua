@@ -4,54 +4,43 @@ require 'typeer'
 require 'bouw.arch'
 require 'bouw.codegen'
 require 'optimaliseer'
+require 'vertolk'
 require 'oplos'
 
-function vertaal(code, doel, naam)
-	local doel = doel or "im"
-	local naam = naam or "nergens"
+local std = lees 'bieb/im.code'
+
+-- code → struct
+function vertaal(code, naam)
+	local naam = naam or '?'
 	local maakvar = maakvars()
+	local code = code ..'\n' .. std
 
-	local code = code ..'\n' .. file('bieb/'..doel..'.code')
-
-	local biebpad = 'bieb/'..doel..'.code'
-	local asbcode,syntaxfouten1 = ontleed(code, naam)
-	local asbbieb,syntaxfouten2 = ontleed(file(biebpad), doel)
-	local asb = asbcode
-
+	local asb,syntaxfouten,map = ontleed(code, naam)
 	local asb = vertolk(asb)
 
+	--[[
 	local asblijst = arg0(asbcode)
 	local bieblijst = arg0(asbbieb)
 	for i,biebitem in ipairs(bieblijst) do asblijst[#asblijst+1] = biebitem end
 	local syntaxfouten = cat(syntaxfouten1, syntaxfouten2)
+	]]
 
 	-- types voor ARCH
 	local types,typeerfouten = typeer(asb)
 	if #typeerfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
-	--local typeerfouten = {}
 
-	--local mach = arch[doel](asb, types)
-	local mach = asb
-	local uit,oplosfouten = oplos(mach, "app")
+	local exp,oplosfouten = oplos(asb, "app")
 
-	-- definitieve types
-	local types = typeer(asb)
-	if #typeerfouten > 0 then
-		--return nil, cat(syntaxfouten, typeerfouten)
+	if #oplosfouten > 0 then
+		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
 	end
+	assert(exp)
 
-	local fouten = cat(syntaxfouten, typeerfouten, oplosfouten)
+	local app,gen2bron = codegen(exp, maakvar)
 
-	if not uit then
-		return nil, fouten
-	end
-
-	--local uit = optimaliseer(uit)
-	local app,gen2bron = codegen(uit, maakvar)
-
-	return app, fouten, gen2bron
+	return app, {}, gen2bron
 end
 
 if test then

@@ -174,7 +174,6 @@ local function doeblok(blok, env, arg)
 		local a,d,e = epi.a[1], epi.a[2], epi.a[3]
 		if #epi.a == 3 then
 			local b = env[a.v]
-			print('B = '..tostring(b))
 			local doel = b and d.v or e.v
 			if opt and opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
 			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi))
@@ -227,7 +226,20 @@ function doe(cfg)
 	end
 
 	-- GA
-	local ret = doeblok(cfg.start, env)
+	local socket = require 'socket'
+	local ret
+
+	-- init
+	local starttijd = socket.gettime()
+	env.looptijd = 0
+	doeblok(cfg.init, env)
+
+	while true do
+		io.write(ansi.wisregel, ansi.regelbegin)
+		ret = doeblok(cfg.init, env)
+		env.looptijd = socket.gettime() - starttijd
+		socket.sleep(1/60)
+	end
 
 	return ret
 end

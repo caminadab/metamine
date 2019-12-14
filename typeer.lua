@@ -177,6 +177,13 @@ function typeer(exp)
 		elseif fn(exp) == '⋀' then
 			types[moes(exp)] = symbool.bit
 
+		elseif fn(exp) == 'zolang' then
+			local A = types[moes(arg0(exp))]
+			local B = types[moes(arg1(exp))]
+
+			moetzijn(A, symbool.bit, arg0(exp))
+			types[moes(exp)] = X'iets'
+
 		elseif fn(exp) == '⇒' then
 			local A = types[moes(arg0(exp))]
 			local B = types[moes(arg1(exp))]

@@ -1,1 +1,9 @@
-uit = looptijd
+fac = n → x
+	i := 1
+	x := 1
+	while i < n
+		i := i + 1
+		x := x · n
+	eind
+
+uit = fac 10

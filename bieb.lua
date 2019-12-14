@@ -31,7 +31,7 @@ function bieb()
 	call = true,
 	['τ'] = math.pi*2,
 	pi = math.pi,
-	init = true,
+	start = true,
 	fout = true,
 	['scherm.ververst'] = true,
 	inkleur = true,
@@ -109,7 +109,8 @@ function bieb()
 	-- io
 	['stduit.schrijf'] = function(a)
 		do
-			print(combineer(w2exp(a)))
+			io.write(combineer(w2exp(a)))
+			io.flush()
 			return true
 		end
 		if type(a) == 'table' and #a > 1 then
@@ -123,13 +124,13 @@ function bieb()
 				end
 			end
 			if txt then
-				print(string.char(table.unpack(a)))
+				io.write(string.char(table.unpack(a)))
 				return 0
 			end
 		end
 			
 		if opt and opt.L then print() end;
-		print(combineer(w2exp(a)))
+		io.write(combineer(w2exp(a)))
 		return 0
 	end,
 
@@ -139,6 +140,7 @@ function bieb()
 
 	-- tekening
 	rechthoek = true,
+	teken = true,
 
 	-- wiskunde
 	co = 3,
@@ -451,6 +453,16 @@ function bieb()
 			end
 			return r
 		end
+	end;
+
+	-- while loop
+	['zolang'] = function(a)
+		local init,cond,update = a[1],a[2],a[3]
+		local x = init
+		while cond(x) do
+			x = update(x)
+		end
+		return x
 	end;
 
 	['alsHtml'] = function(a) return a end;

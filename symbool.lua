@@ -70,27 +70,24 @@ function substitueer(exp, van, naar)
 	if isatoom(exp) then
 		if exp.v == van.v then
 			naar.ref = van.ref
-			return naar, 1
+			return naar
 		else
-			return exp, 0
+			return exp
 		end
 	else
 		if isfn(van) then
 			if moes(exp) == moes(van) then
 				naar.ref = van.ref
-				return naar, 1
+				return naar
 			end
 		end
 		local t = {loc=exp.loc,o=exp.o,f=exp.f}
-		local n = 0
 		--t.f = substitueer(exp.f, van, naar)
 		for k,v in subs(exp) do
-			local m
-			t[k],m = substitueer(v, van, naar)
-			n = n + m
+			t[k] = substitueer(v, van, naar)
 		end
 		t.ref = exp.ref
-		return t, n
+		return t
 	end
 end
 
@@ -151,7 +148,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 	exp.moezen = moezen
 
 	if not moezen[moes(van)] then
-		return exp, 0
+		return exp
 	end
 
 	exp.moes = nil
@@ -192,7 +189,7 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 		--print('EXP' ,e2s(exp))
 	end
 		--print('RET' ,e2s(exp))
-	return exp, 0
+	return exp
 end
 
 sym = {

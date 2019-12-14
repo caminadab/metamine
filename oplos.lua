@@ -30,33 +30,33 @@ function punten(exp)
 	end
 end
 
-		-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
-		-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
-		-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
-		-- herschrijf (a ||= b) naar (a |= a' || b)
-		-- herschrijf (a < b) → (a: (b..∞) ∧ b: (-∞ .. a))
-		-- vind atomen
+-- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
+-- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
+-- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
+-- herschrijf (a ||= b) naar (a |= a' || b)
+-- herschrijf (a < b) → (a: (b..∞) ∧ b: (-∞ .. a))
+-- vind atomen
 
-		-- herschrijf
-		--   c ⇒ (a = b)
-		-- naar
-		--   a |= (c ⇒ b)
-		--   b |= (c ⇒ a)
-		-- 
-		-- en
-		--   ⇒(c, d, (x = y))
-		-- naar
-		--   x |= (¬d ⇒ y)
-		--   y |= (¬d ⇒ x)
-		-- herschrijf  f(a) = a + 1
-		-- naar        f ∐= a → a + 1
-		-- verzamel |=
-		-- verzamel ∈ en ∋
-		-- herschrijf
-		--   a = f(a')
-		-- naar
-		--   a = (herhaal (a' → a))(niets)
-		-- functieargumenten
+-- herschrijf
+--   c ⇒ (a = b)
+-- naar
+--   a |= (c ⇒ b)
+--   b |= (c ⇒ a)
+-- 
+-- en
+--   ⇒(c, d, (x = y))
+-- naar
+--   x |= (¬d ⇒ y)
+--   y |= (¬d ⇒ x)
+-- herschrijf  f(a) = a + 1
+-- naar        f ∐= a → a + 1
+-- verzamel |=
+-- verzamel ∈ en ∋
+-- herschrijf
+--   a = f(a')
+-- naar
+--   a = (herhaal (a' → a))(niets)
+-- functieargumenten
 
 -- oplos: exp → waarde,fouten
 function oplos(exp,voor)
@@ -79,7 +79,7 @@ function oplos(exp,voor)
 			end
 
 			if type(val) == 'table' then return false end
-			return (tonumber(val) and true)
+			return (tonumber(val) and tostring(val))
 				or val == '_arg'
 				or val == '_fn'
 				or bieb[val] ~= nil -- KUCH KUCH
@@ -87,9 +87,143 @@ function oplos(exp,voor)
 
 		local nieuw, oud = {}, {}
 
+		-- vind vars
+		local vars = {}
+		for eq in pairs(eqs) do
+			if fn(eq) == ':=' then
+				vars[arg0(eq).v] = eq
+			end
+		end
+
+		-- herschrijf
+		--
+		--  a := 1
+		--  b := 1
+		--  zolang b < 10
+		--    a := a · 2
+		--    b := b + 1
+		--  eind
+		--
+		-- naar
+		--  
+		--  n = zolang (
+		--    (1, 1),
+		--    A → A₁ < 10,
+		--    B → (B₀·2, B₁+1)
+		--  )
+		--
+		for eq in pairs(eqs) do
+			if fn(eq) == 'zolang' then
+				oud[eq] = true
+				local cond = eq.a[1]
+				local update = eq.a[2]
+
+				-- verzamel vars
+				local zvars = {}
+				for i,ass in ipairs(update.a) do
+					local naam = ass.a[1].v
+					zvars[#zvars+1] = naam
+					zvars[naam] = ass.a[2]
+					print('VARS', naam)
+				end
+
+				-- init
+				local zvar = maakvar()
+				local yvar = maakvar()
+
+				-- maak init & update
+				local initnaam = zvar..'.init'
+				local testnaam = zvar..'.test'
+				local updatenaam = zvar..'.update'
+				local init = {o=X',', loc=nergens}
+				local update = {o=X',', loc=nergens}
+
+				-- update
+				for i,naam in ipairs(zvars) do
+					oud[vars[naam]] = true
+					init[i] = arg1(vars[naam])
+					update[i] = zvars[naam]
+
+					-- specifiek
+					local neq = X('=', naam, X('_', yvar, tostring(i-1)))
+					nieuw[neq] = true
+
+					if not init[i] or not update[i] then
+						local fout = oplosfout(assvar.loc, 'lusvariabele {code} is ongeïnitialiseerd', naam)
+						fouten[#fouten+1] = fout
+						return nil, fouten
+					end
+				end
+
+				local neq = X('=', X(initnaam), init)
+				nieuw[neq] = true
+
+				eqs = complement(eqs, oud)
+
+				-- maak test
+				local condvar = yvar --maakvar()
+				for i,naam in ipairs(zvars) do
+					print('SUB', naam)
+					cond = substitueer(cond, X(naam), X('_', yvar, tostring(i-1)))
+					update = substitueer(update, X(naam), X('_', zvar, tostring(i-1)))
+				end
+				local test = X('→', condvar, cond)
+
+				-- test
+				local neq = X('=', testnaam, test)
+				nieuw[neq] = true
+
+				-- maak update
+				local neq = X('=', updatenaam, X('→', zvar, update))
+				nieuw[neq] = true
+
+				local neq = X('=', zvar, X('_', 'zolang', X(',', initnaam, testnaam, updatenaam))) --, test, X('→', uvar, update))))
+				nieuw[neq] = true
+
+			end
+
+			if fn(eq) == 'zolang1' then
+				local cond = eq.a[1]
+				local asslijst = eq.a[2]
+
+				print('HIER', combineer(asslijst))
+				local ass = map(asslijst.a, function(ass) return tonumber(ass) or arg0(ass) end)
+
+				print('Iteratie init')
+				ass.o = X','
+				print(e2s(ass))
+				print(ass[1].v)
+				print(ass[2].v)
+
+				assvar = ass[1]
+
+				local init = X('=', X(maakvar()))
+				local testvar = X(maakvar())
+				local updatevar = X(maakvar())
+
+				if not init then
+					local fout = oplosfout(assvar.loc, 'lusvariabele {code} is ongeïnitialiseerd', assvar.v)
+					fouten[#fouten+1] = fout
+					return nil, fouten
+
+				else
+					local test = X('→', testvar, substitueer(cond, assvar, testvar))
+					local update = X('→', updatevar, substitueer(assval, assvar, updatevar))
+
+					local neq = X('=', assvar, X('_', 'zolang', X(',', init, test, update)))
+					assign(eq, neq)
+
+					-- haal assignment weg
+					eqs[varass] = nil
+					--nieuw[eq] = true
+				end
+			end
+		end
+
+
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
-		-- herschrijf (a := b) naar (a := (init ⇒ b))
+		-- herschrijf (a := b) naar (a := (istart ⇒ b))
 		-- ** (a := b) naar (a := (start, b))
 		for eq in pairs(eqs) do
 			if fn(eq) == ':=' then
@@ -97,7 +231,7 @@ function oplos(exp,voor)
 
 				-- local neq = 
 				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-				local neq = X('|:=', a, X('⇒', 'init', b, 'niets'))
+				local neq = X('|:=', a, X('⇒', 'start', b, 'niets'))
 				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
@@ -520,6 +654,16 @@ function oplos(exp,voor)
 					fouten[#fouten+1] = fout
 				end
 			end
+			if #fouten == 0 then
+				print(halfnaar:tekst())
+				for punt in pairs(halfnaar.punten) do
+					local fout = oplosfout(nergens, '{code} was goed', punt)
+					fouten[#fouten+1] = fout
+				end
+				
+				local fout = oplosfout(nergens, 'kon niet oplossen')
+				fouten[#fouten+1] = fout
+			end
 			return false, fouten, {}
 		end
 		local substs = stroom:topologisch()
@@ -570,7 +714,7 @@ function oplos(exp,voor)
 			print()
 		end
 
-		return val,nil,bekend,exp2naam
+		return val,{},bekend,exp2naam
 
 		-- functie ontleding
 		--[=[

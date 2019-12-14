@@ -8,6 +8,9 @@ bit	bool
 ja	true
 nee	false
 
+als	if
+zolang	while
+
 getal	double
 int	int
 byte	byte
@@ -73,6 +76,7 @@ teken	draw
 muis.x	mouse.x
 muis.y	mouse.y
 muis.pos	mouse.pos
+muis.beweegt	mouse.moves
 muis.klik	mouse.click
 muis.klik.begin	mouse.click.begin
 muis.klik.eind	mouse.click.end

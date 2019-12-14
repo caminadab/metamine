@@ -114,6 +114,7 @@ function file(name, data)
 	end
 end
 bestand = file
+lees = file
 
 function push(t,v) t[#t+1] = v end
 function pop(t)

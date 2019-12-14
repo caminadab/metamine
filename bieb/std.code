@@ -11,6 +11,8 @@ nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
 
+(!): int → int
+
 ; verz
 lijst: verzameling
 tupel: verzameling
@@ -23,7 +25,7 @@ consoleLog: lijst(letter) → bit
 canvas: lijst(letter)
 alsTekst: iets → lijst(letter)
 
-inkleur: vorm, kleur → vorm
+verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
 
 vierkant: (ℝ,ℝ), ℝ → vorm
@@ -50,8 +52,6 @@ muis.beweegt: bit
 muis.pos: getal, getal
 muis.x: getal
 muis.y: getal
-screen.refreshes: bit
-mouse.moves: bit
 toets.neer: int → bit
 toets.neer.begin: int → bit
 toets.neer.eind: int → bit
@@ -122,7 +122,7 @@ set: verzameling
 (⋁) : verzameling bit → bit
 
 ; lijst
-(Σ) : verzameling getal → getal
+(Σ) : lijst getal → getal
 ;(∫) : (ontelbaar getal) → getal
 (..) : int, int → lijst
 

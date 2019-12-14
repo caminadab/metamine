@@ -143,6 +143,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "eind"			{ return EIND; }
 
 "if"					{ return ALS; }
+"while"					{ return ZOLANG; }
 "then"					{ return DAN; }
 "elseif"			{ return ANDERSALS; }
 "else"			{ return ANDERS; }

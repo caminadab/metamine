@@ -6,7 +6,7 @@ require 'bieb'
 
 require 'getopt'
 require 'lisp'
-require 'vertolk'
+require 'vertaal'
 
 require 'rapport'
 require 'typeer'
@@ -22,21 +22,6 @@ require 'bouw.arch'
 require 'bouw.codegen'
 require 'bouw.assembleer'
 require 'bouw.link'
-
--- installeer profiler
-local aantal = {}
-local D = debug.getinfo
-function trace()
-	local info = D(2, "Sl")
-	local loc = info.source .. "@" .. info.currentline
-	local a = aantal[loc]
-	if not a then
-		aantal[loc] = 1
-	else
-		aantal[loc] = a + 1
-	end
-end
---debug.sethook(trace, "l")
 
 opt,bronnen = getopt({...}, "u")
 
@@ -146,17 +131,11 @@ if opt.g or opt.debug or opt.ontkever then
 	ontkever = true
 end
 
-if opt.t or opt.tekening then
-	tekening = true
-end
+local code = table.concat(map(bronnen, lees), '\n')
+local app,fouten = vertaal(code, bronnen[1])
+assert(app or #fouten > 0)
 
-if opt.s or opt.syntaxis then
-	verboos = true
-end
-
-local codes = {}
-local asb = {f=X'⋀',a={o=X'[]'}}
-
+--[[
 if verbozeBroncode then
 	print('=== BRONCODE ===')
 end
@@ -184,98 +163,30 @@ for i,bron in ipairs(bronnen) do
 		asb.a[#asb.a+1] = eq
 	end
 end
+]]
 
 if verbozeSyntax then
 	print()
 	print('=== SYNTAX ===')
+	local asb = ontleed(code)
 	print(combineer(asb))
 	print()
 end
 
--- lekker checken
-check(asb)
-
--- annoteer ^_^
-local i = 1
-for t in boompairs(asb) do
-	t.i = i
-	i = i + 1
-	--io.write(t.i..': '..exp2string(t), ' ')
-end
-function r(exp)
-	for i,sub in subs(exp) do
-		sub.super = exp
-		r(sub)
-	end
-end
-r(asb)
-
--- vertolk
-if opt.lang == 'en' then
-	asb = vertolk(asb)
-end
-
-for exp in boompairs(asb) do
-	if exp == 'fout' then
-		print('syntaxfout')
-		print(asb)
-	end
-end
-assert(asb, 'syntaxfout')
-
--- machinespecifieke typechecker
-local t,fouten = typeer(asb)
-
---local mach = arch.x64(asb, t)
-if opt.R then
-	print('=== ARCH ===')
---	print(e2s(mach))
-end
-
--- typeer!
---local function gekleurd(x, kleur)
---local types,fouten0 = typeer(mach)
-
+-- foutjuhhs
 if #fouten > 0 then
-	local exit = false
 	for i,fout in ipairs(fouten) do
-		if not fout.loc.bron or fout.loc.bron:sub(1,4) ~= 'bieb' then
-			print(fout2ansi(fout))
-			exit = true
-		end
-	end
-	-- TODO print
-	if exit then
-		return
-	end
-end
-
-
-if opt.O then
-	mach = optimaliseer(mach)
-end
-local uit,fouten,exp2naam = oplos(asb, "app")
-
-if not uit then
-	if not fouten[1] then
-		print('kon niet oplossen voor "app"')
-		return
-	end
-	for i, fout in ipairs(fouten) do
 		print(fout2ansi(fout))
 	end
+end
+if not app then
 	return
 end
 
--- control flow!
-local maakvar = maakvars()
-local focusstroom = focus(uit)
---local im = codegen(focusstroom)
-local cfg = codegen(uit, maakvar)
-
+cfg = app
 if verbozeControle then
 	print('=== CONTROLEGRAAF ===')
-	print(cfg)
+	print(app)
 	print()
 end
 

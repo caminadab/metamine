@@ -79,13 +79,14 @@ function subs(exp)
 		end
 	end
 
+	check(exp)
 	error('geen exp: '..lenc(exp))
 end
 
 function checkr(e, p, k)
 assert(k)
 	if not e then
-		error(string.format('%s[%s] = nil', e2s(p), k))
+		error(string.format('%s[%s] = nil', lenc(p), k))
 	end
 	local n = 0
 	if type(e) ~= 'table' then
@@ -96,6 +97,7 @@ assert(k)
 		print(lenc(e))
 		print('Parent:')
 		see(p)
+		for k,v in pairs(p) do print(k..':'); see(v) end
 		error'check faalde'
 	end
 	if isatoom(e) then n = n + 1 end
@@ -115,7 +117,7 @@ assert(k)
 end
 
 function check(e)
-	checkr(e, '?', '?')
+	checkr(e, '<parent>', '<key>')
 end
 
 expmt = {}

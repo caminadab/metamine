@@ -191,11 +191,13 @@ function focus(exp)
 	end
 	r(exp)
 
-	print '=== FOCUSSTROOM ==='
-	for moment,vals in pairs(wanneer) do
-		print(moment..':')
-		for i,val in ipairs(vals) do
-			print('  '.. ins2string(val, namen))
+	if verboseFocus then
+		print '=== FOCUSSTROOM ==='
+		for moment,vals in pairs(wanneer) do
+			print(moment..':')
+			for i,val in ipairs(vals) do
+				print('  '.. ins2string(val, namen))
+			end
 		end
 	end
 

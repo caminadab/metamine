@@ -1,0 +1,31 @@
+uit = "looptijd: " ‖ itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
+
+; tekst -> integer
+atoi = b → i
+	; negatief?
+	als b₀ = '-' dan
+		sign = -1
+		tekens = b vanaf 1
+	anders
+		sign = 1
+		tekens = b
+	eind
+
+	; cijfers van de tekst
+  cijfers = tekens map (t → t - '0')
+
+	; waarde van elk cijfer gegeven de positie
+  waarde = (k → cijfers(j) · 10^k)
+    j = #tekens - k - 1
+
+	; positie en resultaat
+	pos = 0 .. #tekens
+  i = sign · Σ (pos map waarde)
+
+; integer -> tekst
+itoa = x → a
+  n = 1 + entier(log10(max(abs x, 1)))
+  neg = (⇒)((x < 0), "-", "")
+  a = neg ‖ ((n .. 0) map cijfer)
+  geschaald = (abs x)/10^m
+  cijfer = m → '0' + (entier geschaald) mod 10
