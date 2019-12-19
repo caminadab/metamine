@@ -6,6 +6,8 @@
 	<title>Taal</title>
 </head>
 <body>
+
+	<!--
 	<div id="intro">
 		<a id="vlag" href="{taallink}"><img id="vlag" src="{taalvlag}"></a>
 		<h1><i>{welkom}</i></h1>
@@ -15,6 +17,7 @@
 		</p>
 		</div>
 	</div>
+	-->
 
 <div class="paneel">
 	<button id="vorige">⏮</button>
@@ -35,6 +38,7 @@
 <div id="uit" tabIndex="2" >
 </div>
 
+<!--
 <div id="wat">
 	<h1><i>{overkop}</i></h1>
 	<p>{over1}</p>
@@ -50,6 +54,7 @@
 		<div id="qena">
 		</div>
 	</p>
+-->
 
 </body>
 
@@ -117,22 +122,22 @@
 		width: 50%;
 		display: inline;
 		float: right;
-		height: 800px !important;
+		height: 90vh !important;
 	}
 
 	#in {
-		height: 800px;
+		height: 90vh;
 	}
 
 	textarea {
 		width: 50%;
 		display: inline;
 		float: left;
-		height: 800px;
+		height: vh;
 	}
 
 	#uit {
-		min-height: 800px;
+		min-height: 90vh;
 		width: 50%;
 		display: inline;
 		float: left;
@@ -144,7 +149,7 @@ textarea {
 	tab-size: 2;
 	-moz-tab-size: 2;
 	padding: 3px 4px;
-	height: 800px;
+	height: 90vh;
 	color: white;
 	background: black;
 	border: none;
@@ -164,7 +169,7 @@ button {
 	border: 0;
 	width: 25%;
 	font-size: 48px;
-	height: 70px;
+	height: 10vh;
 	line-height: 30px;
 	display: inline;
 	cursor: pointer;
@@ -189,7 +194,6 @@ button:active {
 #laadbalk {
 	display: inline;
 	float: left;
-	height: 70px;
 
 	background: #000625;
 }

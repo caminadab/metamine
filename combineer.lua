@@ -4,7 +4,7 @@ require 'set'
 
 local postop = set("%","!",".","'")
 local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|","|=","|:=", "∪","∩",":","∈")
-local unop   = set("-","#","¬","Σ","|","⋀","⋁")
+local unop   = set("-","#","¬","Σ","|","⋀","⋁","√")
 
 local function combineerR(exp, t, kind)
 	if not exp then
@@ -71,7 +71,15 @@ local function combineerR(exp, t, kind)
 		if not exp.a then return '?' end
 		local op = fn(exp)
 		if op == '_' and isobj(exp.a) then
+
+			if isfn(exp.a[1]) then
+				t[#t+1] = '('
+			end
 			combineerR(exp.a[1], t, true)
+			if isfn(exp.a[1]) then
+				t[#t+1] = ')'
+			end
+
 			t[#t+1] = ' '
 			if not isobj(exp.a[2]) then
 				t[#t+1] = '('
@@ -93,6 +101,7 @@ local function combineerR(exp, t, kind)
 
 		elseif unop[op] then
 			t[#t+1] = op
+			t[#t+1] = ' '
 			combineerR(exp.a, t, true)
 		elseif postop[op] then
 			combineerR(exp.a, t, true)

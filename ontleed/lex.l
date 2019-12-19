@@ -60,7 +60,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 
 %%
 
-;-[^$]*-;				// negeer commentaar
+;-[^-]*-;				// negeer commentaar
 ;[^-][^\n]*\n		{ return NEWLINE; }
 
 "★"		{ *yylval = A(GL, "★", nergens); return JOKER; }

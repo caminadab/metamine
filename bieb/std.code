@@ -97,7 +97,7 @@ cossin :  getal → getal, getal
 ;(^) :  (int, int) → int
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
-(#) :  verzameling → int
+(#) :  lijst → int
 (‖) :  lijst, lijst → lijst
 
 ; set!

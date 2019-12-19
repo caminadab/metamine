@@ -257,8 +257,8 @@ function maakvars()
 	end
 end
 
-function maakindices()
-	local i = 1
+function maakindices(i)
+	local i = i or 1
 	return function ()
 		local var = tostring(i)
 		i = i + 1

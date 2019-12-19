@@ -1,3 +1,4 @@
+require 'functioneel'
 require 'util'
 require 'ontleed'
 require 'typeer'
@@ -9,6 +10,20 @@ require 'oplos'
 
 local std = lees 'bieb/im.code'
 
+function scope(x)
+	local maakvar = maakvars()
+	for exp in boompairs(x) do
+		if fn(exp) == '→' then
+			for naam in pairs(var(exp.a[1])) do
+				local nnaam = X('scope'..maakvar()..'.'..naam.v)
+				x.a = substitueer(x.a, naam, nnaam)
+				--exp.a[2] = substitueer(exp.a[2], naam, nnaam)
+			end
+		end
+	end
+	return x
+end
+
 -- code → struct
 function vertaal(code, naam)
 	local naam = naam or '?'
@@ -16,22 +31,19 @@ function vertaal(code, naam)
 	local code = code ..'\n' .. std
 
 	local asb,syntaxfouten,map = ontleed(code, naam)
+	--local scoped = scope(asb)
 	local asb = vertolk(asb)
 
-	--[[
-	local asblijst = arg0(asbcode)
-	local bieblijst = arg0(asbbieb)
-	for i,biebitem in ipairs(bieblijst) do asblijst[#asblijst+1] = biebitem end
-	local syntaxfouten = cat(syntaxfouten1, syntaxfouten2)
-	]]
-
-	-- types voor ARCH
+	-- types
 	local types,typeerfouten = typeer(asb)
 	if #typeerfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
 
-	local exp,oplosfouten = oplos(asb, "app")
+	local exp,oplosfouten = oplos(asb, "uit")
+	
+	-- (op|(op,atoom))[]
+	local func = functioneel(exp)
 
 	if #oplosfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)

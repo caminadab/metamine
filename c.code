@@ -1,2 +1,3 @@
-f = x → x + 1
-
+uit = (g 2)(3)
+f = x → (y → x + y)
+g = sin ∘ f

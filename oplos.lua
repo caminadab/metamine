@@ -61,6 +61,7 @@ end
 -- oplos: exp → waarde,fouten
 function oplos(exp,voor)
 	local maakvar = maakvars()
+	local maakindex = maakindices(0)
 	local fouten = {}
 	if isatoom(exp) then return X'ZWARE FOUT',fouten end -- KAN NIET
 	if fn(exp) == "⋀" then
@@ -563,9 +564,11 @@ function oplos(exp,voor)
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
 					local var = maakvar()
-					lam.f = X('_fn')--..var)
-					lam.a = uit
-					local naam = '_arg'--..var
+					local index = tostring(maakindex())
+					local func = X('_fn', index) 
+					local llam = X('_', func, uit)
+					assign(lam, llam)
+					local naam = X('_arg', index)
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
@@ -655,7 +658,7 @@ function oplos(exp,voor)
 				end
 			end
 			if #fouten == 0 then
-				print(halfnaar:tekst())
+				--print(halfnaar:tekst())
 				for punt in pairs(halfnaar.punten) do
 					local fout = oplosfout(nergens, '{code} was goed', punt)
 					fouten[#fouten+1] = fout

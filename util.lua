@@ -105,7 +105,7 @@ function file(name, data)
 		if not f then return false, 'bestand niet gevonden: '..name  end --error('file-not-found ' .. name) end
 		data = f:read("*a")
 		f:close()
-		return data
+		return data or ""
 	else
 		local f = io.open(name, 'w')
 		assert(f, 'onopenbaar: '..name)

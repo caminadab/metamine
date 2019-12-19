@@ -172,7 +172,7 @@ function codegen(exp, maakvar)
 			for k in pairs(exp) do keys[keys] = true end
 			for k in pairs(keys) do exp[k] = nil end
 			exp.v = naam.v
-			local bfn = maakblok(naam, {}, X('ret', '9999999'))
+			local bfn = maakblok(naam, {}, X('ret', '?'))
 			local b = blok
 			blok = bfn
 			--al[ret.v] = naam
@@ -307,7 +307,7 @@ function codegen(exp, maakvar)
 
 			else
 
-				error('IDK ' .. e2s(exp))
+				error('onbekende constructie ' .. e2s(exp))
 
 				for k,v in subs(exp) do
 					if k == 'f' or k == 'o' then

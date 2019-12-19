@@ -1,5 +1,7 @@
 require 'exp'
 
+local assoc = set{'+', '=', 'and', 'or', 'xor', 'nor', '·', '∘'}
+
 function isvar(name)
 	if not isatoom(name) then
 		return false

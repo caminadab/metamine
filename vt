@@ -47,7 +47,7 @@ Opties:
     -l, --lokale=CC	  stel lokale van broncode in (standaard NL)
     -u, --uitvoer=UIT	uitvoerbestand
 
-    -i, --veilig      draai het programma in veilige modus
+    -i      					genereer intermediaire code
     -n, --naakt       draai het programma in veilige modus
     -j,	--javascript	compileer naar javascript
     -x,	--demo				compileer naar demo
@@ -135,38 +135,13 @@ local code = table.concat(map(bronnen, lees), '\n')
 local app,fouten = vertaal(code, bronnen[1])
 assert(app or #fouten > 0)
 
---[[
 if verbozeBroncode then
 	print('=== BRONCODE ===')
+	print(code)
+	print()
 end
-for i,bron in ipairs(bronnen) do
-	local ok,code = pcall(file, bron)
-	if verbozeBroncode then
-		print('== '..bron..' ==')
-		print(code)
-	end
-	if not ok or not code then print('bestand '..bronnen[1]..' niet gevonden') ; return end
-	--codes[bron] = code
-
-	local sub,fouten = ontleed(code, bron)
-	sub = sub or X'nee'
-	for i,fout in ipairs(fouten) do
-		print(fout2ansi(fout))
-	end
-	if not sub.a then
-		print('kon niet ontleden')
-		return
-	end
-	for i,eq in ipairs(sub.a) do
-		eq.bron = bronnen[1]
-		eq.code = code
-		asb.a[#asb.a+1] = eq
-	end
-end
-]]
 
 if verbozeSyntax then
-	print()
 	print('=== SYNTAX ===')
 	local asb = ontleed(code)
 	print(combineer(asb))
@@ -228,17 +203,21 @@ if opt.javascript then
 end
 
 
-if opt.i or opt.veilig then
-	if opt.L then
-		print('=== START ===')
+if opt.i then
+	for blok in spairs(cfg.punten) do
+		print(blok)
 	end
-	local exp = doe(cfg)
-	if verbozeIntermediair then
-		print()
+	if opt.d then
+		if opt.L then
+			print('=== START ===')
+		end
+		local exp = doe(cfg)
+		if verbozeIntermediair then
+			print()
+		end
 	end
 	return
 end
-	
 
 for blok in pairs(cfg.punten) do
 	--blok.stats.fn = X'EN'

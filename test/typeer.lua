@@ -17,7 +17,7 @@ function moettypezijn(code, typecode)
 				print(fout2ansi(fout))
 			end
 		end
-		assert(false)
+		--assert(false)
 	end
 	return fouten
 end
