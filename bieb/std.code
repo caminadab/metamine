@@ -23,7 +23,7 @@ vorm: canvas → canvas
 alsHtml: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 canvas: lijst(letter)
-alsTekst: iets → lijst(letter)
+tekst: iets → lijst(letter)
 
 verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur

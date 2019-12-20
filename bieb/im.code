@@ -1,5 +1,5 @@
 looptijd = nu - starttijd
-app = stduit.schrijf(als.tekst(uit))
+app = stduit.schrijf(tekst(uit))
 
 ;-
 !) = n → x

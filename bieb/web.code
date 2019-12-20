@@ -1,10 +1,13 @@
-ververs = moment → metInvoer(alsHtml(alsTekst(uit)))
+ververs = moment → metInvoer(html(tekst(uit)))
 app = requestAnimationFrame(ververs)
 
 el = alsHtml "<canvas width='1280' height='720'></canvas>"
 tekenCanvas = wisCanvas ∘ (vormen vouw (∘))
 teken = vormen → (tekenCanvas(contextVan(el)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
+; scherm
+scherm.breedte = 177.778
+scherm.hoogte = 100
 
 ; vec
 vec2.schaal = (vx,vy),vf → (vx·vf,vy·vf)
@@ -38,7 +41,7 @@ toets.links.eind = toets.neer.eind(37)
 toets.omhoog.eind = toets.neer.eind(38)
 toets.rechts.eind = toets.neer.eind(39)
 toets.omlaag.eind = toets.neer.eind(40)
-toetsA.eind = toets.neer.eind(97)
-toetsD.eind = toets.neer.eind(100)
-toetsS.eind = toets.neer.eind(115)
-toetsW.eind = toets.neer.eind(119)
+toets.A.eind = toets.neer.eind(97)
+toets.D.eind = toets.neer.eind(100)
+toets.S.eind = toets.neer.eind(115)
+toets.W.eind = toets.neer.eind(119)

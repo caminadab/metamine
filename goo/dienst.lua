@@ -29,6 +29,8 @@ local function cat(...)
 	return r
 end
 
+local web = lees('bieb/web.code')
+
 -- DE webfunctie
 -- vt: code → {html?, fouten?}
 --   fouten: [ fout... ]
@@ -41,7 +43,9 @@ end
 -- de "fout" als los interpretabel object
 function vt(code, naam)
 
-	local icode,fouten,gen2bron = vertaal(code, "demo", naam)
+	code = code .. '\n' .. web
+
+	local icode,fouten,gen2bron = vertaal(code)
 	local js = ''
 	if icode then
 		js = genjs(icode)

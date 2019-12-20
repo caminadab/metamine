@@ -243,7 +243,7 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['alsTekst'] = '(function(t) { if (t === null) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toSource() : t.toString();})',
+	['tekst'] = '(function(t) { if (t === null) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 	['alsHtml'] = [[(function (a) {
 		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
@@ -423,6 +423,7 @@ function genjs(app)
 				end
 				t[#t+1] = string.format(fmt, tabs, naam.v)
 			elseif immsym[f] then
+				print('IMMSYM', e2s(exp))
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immsym[f], arg(exp).v)
 			elseif immjs0[f] then
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs0[f], arg(exp).v)
@@ -439,31 +440,30 @@ function genjs(app)
 		end
 	end
 
-
-	-- ;(((
-	local blokken = {}
-	for blok in pairs(app.punten) do
-		blokken[blok.naam.v] = blok
+	print'BLOKKEN'
+	for k,v in pairs(app) do
+		print(k)
 	end
 
 	local function flow(blok, tabs)
 		blokjs(blok, tabs)
 		local epi = blok.epiloog
+
 		if fn(epi) == 'ga' and #epi.a == 3 then
 			t[#t+1] = string.format('%sif (%s) {', tabs, epi.a[1].v)
-			local b = blokken[epi.a[2].v]
+			local b = assert( app[epi.a[2].v], epi.a[2].v )
 			flow(b, tabs..'  ')
 			t[#t+1] = tabs .. '} else {'
-			flow(blokken[epi.a[3].v], tabs..'  ')
+			flow(app[epi.a[3].v], tabs..'  ')
 			t[#t+1] = tabs .. '}'
 			
-			local phi = blokken[b.epiloog.a.v]
+			local phi = app[b.epiloog.a.v]
 			if phi then
 				flow(phi, tabs)
 			end
-			--flow(blokken[b.epiloog[1].v])
+			--flow(app[b.epiloog[1].v])
 		elseif fn(epi) == 'ga' and isatoom(arg(epi)) then
-			--flow(blokken[epi[1].v], tabs..'  ')
+			--flow(app[epi[1].v], tabs..'  ')
 		elseif fn(epi) == 'ret' then
 			t[#t+1] = string.format('%sreturn %s;', tabs, epi.a[1].v)
 		elseif epi.v == 'stop' then
@@ -473,8 +473,7 @@ function genjs(app)
 		end
 	end
 
-	for blok in spairs(app.punten) do
-		local naam = blok.naam.v
+	for naam, blok in spairs(app) do
 		if blok.naam.v:sub(1,2) == 'fn' then
 			t[#t+1] = 'function '..naam..'(_arg) {'
 			flow(blok, '  ')
@@ -498,7 +497,8 @@ html = "";
 uit = document.getElementById("uit");
 stop = false;
 ]])
-	flow(app.start, '')
+	--assert(app.start)
+	flow(app.init, '')
 
 	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
 end

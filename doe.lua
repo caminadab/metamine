@@ -198,12 +198,11 @@ function doejs(js)
 	return res
 end
 
-function doe(cfg)
-	if cfg == nil then
+function doe(app)
+	if app == nil then
 		return nil
 	end
 	local bieb = bieb()
-	assert(cfg.namen, 'is geen controlegraaf')
 	local env = {}
 
 	-- vul bieb
@@ -211,8 +210,8 @@ function doe(cfg)
 		env[k] = v
 	end
 
-	for k,v in pairs(cfg.namen) do
-		env[k] = function(arg)
+	for naam,blok in pairs(app) do
+		env[naam] = function(arg)
 			local isf = k:sub(1,2) == 'fn'
 			if isf and opt and opt.L then print('...\ncall '..k..' '..combineer(w2exp(arg))) end
 			env['_arg'] = arg
@@ -232,11 +231,11 @@ function doe(cfg)
 	-- init
 	local starttijd = socket.gettime()
 	env.looptijd = 0
-	doeblok(cfg.init, env)
+	doeblok(app.init, env)
 
 	while true do
 		io.write(ansi.wisregel, ansi.regelbegin)
-		ret = doeblok(cfg.init, env)
+		ret = doeblok(app.init, env)
 		env.looptijd = socket.gettime() - starttijd
 		socket.sleep(1/60)
 	end

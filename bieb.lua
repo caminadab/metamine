@@ -466,9 +466,9 @@ function bieb()
 		return x
 	end;
 
-	['als.html'] = function(a) return a end;
+	['html'] = function(a) return a end;
 
-	['als.tekst'] = function(a)
+	['tekst'] = function(a)
 		local t
 		if a == true then t = 'ja' end 
 		if a == false then t = 'nee' end 

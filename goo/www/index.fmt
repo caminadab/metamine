@@ -122,11 +122,11 @@
 		width: 50%;
 		display: inline;
 		float: right;
-		height: 90vh !important;
+		height: 97vh !important;
 	}
 
 	#in {
-		height: 90vh;
+		height: 97vh;
 	}
 
 	textarea {
@@ -137,7 +137,7 @@
 	}
 
 	#uit {
-		min-height: 90vh;
+		min-height: 97vh;
 		width: 50%;
 		display: inline;
 		float: left;
@@ -145,11 +145,11 @@
 }
 
 textarea {
-	font-size: 20px;
+	font-size: 16px;
 	tab-size: 2;
 	-moz-tab-size: 2;
 	padding: 3px 4px;
-	height: 90vh;
+	height: 97vh;
 	color: white;
 	background: black;
 	border: none;
@@ -168,9 +168,8 @@ button {
 	text-decoration: none;
 	border: 0;
 	width: 25%;
-	font-size: 48px;
-	height: 10vh;
-	line-height: 30px;
+	font-size: 12px;
+	height: 3vh;
 	display: inline;
 	cursor: pointer;
 	float: left;
@@ -216,7 +215,7 @@ html, body {
 	background: #050070;
 	color: white;
 	font-family: Impace, Charcoal, sans-serif;
-	font-size: 20px;
+	font-size: 16px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -344,10 +343,11 @@ canvas {
 
 					uit.focus();
 				} catch (e) {
-					var genlines = e.stack.match(/\d+/g);
-					alert("GENLINES: "+genlines)
+					alert(e + e.stack);
+					//var genlines = e.stack.match(/\d+/g);
+					//alert("GENLINES: "+genlines)
 					for (var i = 0; i < Math.min(genlines.length, 3); i++) {
-						alert("GENLINE: " + genlines[i]);
+						//alert("GENLINE: " + genlines[i]);
 						var bronloc = j.gen2bron[0+genlines[i]];
 						alert("BRONLOC: "+JSON.stringify(bronloc));
 						// error: {html, loc: {anchor: {line: int } } }

@@ -61,7 +61,7 @@ local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","�
 local unop   = set("-","#","¬","Σ","|","%","√","!")
 
 function codegen(exp, maakvar)
-	local graaf = maakgraaf()
+	local blokken = {} -- naam → blok
 	local maakvar = maakvar or maakvars()
 	local procindex = maakindices()
 	local funcindex = maakindices()
@@ -76,8 +76,7 @@ function codegen(exp, maakvar)
 
 	-- running block
 	local blok = maakblok(X'init', {}, X'stop')
-	graaf.init = blok
-	graaf:punt(blok)
+	blokken.init = blok
 
 	local con
 	local al = {}
@@ -94,7 +93,7 @@ function codegen(exp, maakvar)
 		if fn(exp) == '[]' then
 			arg = con(exp)
 		elseif fn(exp) == '[]u' then
-			error'OK'
+			--error'OK'
 			arg = con(exp)
 		elseif isfn(exp) then
 			arg = con(exp)
@@ -162,14 +161,14 @@ function codegen(exp, maakvar)
 			return mkstat(stat, ret)
 		
 		-- functie
-		elseif fn(exp) == '_fn' then
+		elseif fn(exp) == '_' and fn(arg0(exp)) == '_fn' then
 			--assert(exp.ref)
 			--al = {}
 			local naam = X(maakfunc())
-			local waarde = exp.a --exp.a[1]
+			local waarde = arg1(exp)
 			local arg = X'_arg' --exp.a[2]
 			local keys = {}
-			for k in pairs(exp) do keys[keys] = true end
+			for k in pairs(exp) do keys[k] = true end
 			for k in pairs(keys) do exp[k] = nil end
 			exp.v = naam.v
 			local bfn = maakblok(naam, {}, X('ret', '?'))
@@ -205,7 +204,10 @@ function codegen(exp, maakvar)
 
 			local res = con(waarde)
 			blok.epiloog.a[1] = res
-			graaf:punt(bfn)
+
+			--graaf:punt(bfn)
+			blokken[bfn.naam.v] = bfn
+
 			blok = b
 			local stat = X(':=', ret, naam)
 			stat.loc = exp.loc
@@ -227,7 +229,7 @@ function codegen(exp, maakvar)
 
 			-- phi (eindcontinuatie)
 			local bphi = maakblok(phi, {}, blok0.epiloog) -- krijgt zelfde eind
-			graaf:link(blok, bphi)
+			blokken[phi.v] = bphi
 
 			-- als
 			blok = blok0
@@ -237,13 +239,13 @@ function codegen(exp, maakvar)
 
 			-- dan
 			local bdan = maakblok(dan, {}, X('ga', phi))
-			graaf:link(blok, bdan)
+			blokken[dan.v] = bdan
 			blok = bdan
 			local rdan = con(edan)
 
 			-- anders
 			local banders = maakblok(anders, {}, X('ga', phi))
-			graaf:link(blok, banders)
+			blokken[anders.v] = banders
 			blok = banders
 
 			local randers = '???'
@@ -305,6 +307,14 @@ function codegen(exp, maakvar)
 					fw[i] = arg(v)
 				end
 
+			elseif fn(exp) == '_arg' then
+				--error'OK'
+
+				--exp.a = nil
+				--exp.o = nil
+				--fw.a = X(',', 
+				--fw.f = arg(exp.f)
+
 			else
 
 				error('onbekende constructie ' .. e2s(exp))
@@ -343,6 +353,7 @@ function codegen(exp, maakvar)
 	end
 
 	con(exp)
+
 	-- check
 	for r in boompairs(exp) do
 		if fn(r) == '_arg' then
@@ -350,12 +361,7 @@ function codegen(exp, maakvar)
 		end
 	end
 
-	graaf.namen = {}
-	for blok in pairs(graaf.punten) do
-		graaf.namen[blok.naam.v] = blok
-	end
-
-	return graaf
+	return blokken
 end
 
 if test then

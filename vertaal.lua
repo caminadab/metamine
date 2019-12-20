@@ -8,7 +8,6 @@ require 'optimaliseer'
 require 'vertolk'
 require 'oplos'
 
-local std = lees 'bieb/im.code'
 
 function scope(x)
 	local maakvar = maakvars()
@@ -28,7 +27,6 @@ end
 function vertaal(code, naam)
 	local naam = naam or '?'
 	local maakvar = maakvars()
-	local code = code ..'\n' .. std
 
 	local asb,syntaxfouten,map = ontleed(code, naam)
 	--local scoped = scope(asb)
@@ -40,10 +38,10 @@ function vertaal(code, naam)
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
 
-	local exp,oplosfouten = oplos(asb, "uit")
+	local exp,oplosfouten = oplos(asb, "app")
 	
 	-- (op|(op,atoom))[]
-	local func = functioneel(exp)
+--	local func = functioneel(exp)
 
 	if #oplosfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)

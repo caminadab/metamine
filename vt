@@ -96,7 +96,12 @@ elseif opt.n then doel = 'naakt'
 elseif opt.x then doel = 'demo'
 else doel = 'unistd' end
 
-bronnen[#bronnen+1] = 'bieb/'..doel..'.code'
+if opt.j then
+	bronnen[#bronnen+1] = 'bieb/web.code'
+end
+if opt.i then
+	bronnen[#bronnen+1] = 'bieb/im.code'
+end
 
 if opt.d or opt.doe then
 	doemeteen = true
@@ -158,7 +163,6 @@ if not app then
 	return
 end
 
-cfg = app
 if verbozeControle then
 	print('=== CONTROLEGRAAF ===')
 	print(app)
@@ -167,9 +171,9 @@ end
 
 if verbozeIntermediair then
 	print('=== INTERMEDIAIRE CODE ===')
-	print(cfg.start)
-	for blok in spairs(cfg.punten) do
-		if blok ~= cfg.start then
+	print(app.init)
+	for naam, blok in spairs(app) do
+		if naam ~= 'init' then
 			print(blok)
 		end
 	end
@@ -178,22 +182,7 @@ end
 
 -- nieuwe lage JS
 if opt.javascript then
-	uit = genjs(cfg)
-	debug.sethook()
-	local t = {}
-	for i=1,10 do
-		local max = 0
-		local maxloc = 'a'
-		for loc, num in pairs(aantal) do
-			if num > max then
-				maxloc = loc
-				max = num
-			end
-		end
-		--print('trace', maxloc, max)
-		aantal[maxloc] = nil
-	end
-
+	uit = genjs(app)
 	file('a.js', uit)
 	print(uit)
 	if opt.d then
@@ -204,14 +193,14 @@ end
 
 
 if opt.i then
-	for blok in spairs(cfg.punten) do
+	for naam,blok in spairs(app) do
 		print(blok)
 	end
 	if opt.d then
 		if opt.L then
 			print('=== START ===')
 		end
-		local exp = doe(cfg)
+		local exp = doe(app)
 		if verbozeIntermediair then
 			print()
 		end
