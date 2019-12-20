@@ -1,1 +1,93 @@
-; bal\nx := sw/2\ny := 50\ndx := 0\ndy := random.bereik(-τ/8,τ/8)\n\nals scherm.ververst en (dx > 0 of dx < 0) dan\n\tx := x' + dx'\neind\n\nals scherm.ververst en (dy > 0 of dy < 0) dan\n\t := y' + dy'\neind\n\nwachttot := looptijd + 1\n\n; variabeles\nvx = 2\nbw = 10\nsw = 10\nsh = 25\nvw = 177.8\n\n; klik\nals muis.klik dan\n\tx := muis.x\n\ty := muis.y\neind\n\n\n; raakt hij de spelers?\nrechts.raakt = (y' > ry' en y' < ry' + sh)\nlinks.raakt = (y' > ly' en y' < ly' + sh)\n\n; rechts stuiter\nals x' ≥ 178 - bw - sw en rechts.raakt dan\n\tdx := - vx\n\tx := 178 - sw - bw\n\tdy := (ry' - y' + sh/2) / 4\neind\n\n; links stuiter\nals x' < 0 + bw + sw en links.raakt dan\n\tdx := vx\n\tx := bw + sw\n\tdy := -(ly' - y' + sh/2) / 4\neind\n\n\n; goal\nals x' < 0 dan\n\tx := 90\n\ty := 50\n\tscore2 := score2' + 1\n\twachttot := looptijd + 1\n\tind\nals x' > vw dan\n\tx := 90\n\ty := 50\n\twachttot := looptijd + 1\n\tscore1 := score1' + 1\n\tind\n\n\n; top en onder\nals y' < 0 + bw dan\n\tdy := abs dy'\neind\nals y' > 100 - bw dan\n\tdy := - abs dy'\neind\n\n; score\nscore1 := 0\nscore2 := 0\n\n; spelers\nly := 50 - sh/2\nry := 50 - sh/2\nals toets.omlaag en ry' > 0 dan ry := ry' - 1 eind\nals toets.omhoog en ry' < 100-sh dan ry := ry' + 1 eind\nals toets.s en ly' > 0 dan ly := ly' - 1 eind\nals toets.w en ly' < 100-sh dan ly := ly' + 1 eind\n\n; teken spelers\nlinks = rechthoek((0,ly),(sw,ly+sh))\nrechts = rechthoek((vw-sw,ry),(vw,ry+sh))\nbal = cirkel((x,y),bw/2)\n\nlabel1 = label((90-9,90), alsTekst(score1))\nlabel2 = label((90+3,90), alsTekst(score2))\n\nuit = teken [ links, rechts, bal, label1, label2 ]
+; bal
+x := sw/2
+y := 50
+dx := 0
+dy := random.bereik(-τ/8,τ/8)
+
+als scherm.ververst en (dx > 0 of dx < 0) dan
+ x := x' + dx'
+eind
+
+als scherm.ververst en (dy > 0 of dy < 0) dan
+ y := y' + dy'
+eind
+
+wachttot := looptijd + 1
+
+; variabeles
+vx = 2
+bw = 10
+sw = 10
+sh = 25
+vw = 177.8
+
+; klik
+als muis.klik dan
+ x := muis.x
+ y := muis.y
+eind
+
+
+; raakt hij de spelers?
+rechts.raakt = (y' > ry' en y' < ry' + sh)
+links.raakt = (y' > ly' en y' < ly' + sh)
+
+; rechts stuiter
+als x' ≥ 178 - bw - sw en rechts.raakt dan
+ dx := - vx
+ x := 178 - sw - bw
+ dy := (ry' - y' + sh/2) / 4
+eind
+
+; links stuiter
+als x' < 0 + bw + sw en links.raakt dan
+ dx := vx
+ x := bw + sw
+ dy := -(ly' - y' + sh/2) / 4
+eind
+
+
+; goal
+als x' < 0 dan
+ x := 90
+ y := 50
+ score2 := score2' + 1
+ wachttot := looptijd + 1
+eind
+als x' > vw dan
+ x := 90
+ y := 50
+ wachttot := looptijd + 1
+ score1 := score1' + 1
+eind
+
+
+; top en onder
+als y' < 0 + bw dan
+ dy := abs dy'
+eind
+als y' > 100 - bw dan
+ dy := - abs dy'
+eind
+
+; score
+score1 := 0
+score2 := 0
+
+; spelers
+ly := 50 - sh/2
+ry := 50 - sh/2
+als toets.omlaag en ry' > 0 dan ry := ry' - 1 eind
+als toets.omhoog en ry' < 100-sh dan ry := ry' + 1 eind
+als toets.s en ly' > 0 dan ly := ly' - 1 eind
+als toets.w en ly' < 100-sh dan ly := ly' + 1 eind
+ 
+; teken spelers
+links = rechthoek((0,ly),(sw,ly+sh))
+rechts = rechthoek((vw-sw,ry),(vw,ry+sh))
+bal = cirkel((x,y),bw/2)
+
+label1 = label((90-9,90), alsTekst(score1))
+label2 = label((90+3,90), alsTekst(score2))
+
+uit = teken [ links, rechts, bal, label1, label2 ]

@@ -19,7 +19,7 @@
 .cm-s-slang span.cm-variable-3 { color: #def; }
 .cm-s-slang span.cm-property { color: #fedcba; }
 .cm-s-slang span.cm-operator { color: orange; }
-.cm-s-slang span.cm-comment { color: #0f0; font-style: italic;}
+.cm-s-slang span.cm-comment { color: #0f0; }
 .cm-s-slang span.cm-string { color: yellow; }
 .cm-s-slang span.cm-meta { color: #C9F; }
 .cm-s-slang span.cm-qualifier { color: purple; }
