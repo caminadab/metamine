@@ -1,9 +1,8 @@
-fac = n → x
-	i := 1
-	x := 1
-	while i < n
-		i := i + 1
-		x := x · n
-	eind
+x := 0
+dx := 0
 
-uit = fac 10
+als scherm.ververst dan
+	x := x' + dx'
+eind
+
+uit = x

@@ -53,13 +53,6 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 	var dedentTokens = wordRE(["anders", "andersals", "eind", "else", "elseif", "end"]);//"end", "until", "\\)", "}"]);
 	var dedentPartial = prefixRE(["anders", "andersals", "else", "elseif"]);//"end", "until", "\\)", "}", "\\]", "else", "elseif"]);
 
-  function readBracket(stream) {
-    var level = 0;
-    while (stream.eat("=")) ++level;
-    stream.eat("[");
-    return level;
-  }
-
 	// getallen
 	var subp = new Set( ('∞ τ ₀ ₁ ₂ ₃ ₄ ² ³').split(' '));
 	var operatoren = new Set( (': = > < ≈ ≠ ≥ ≤ ≈ × → ↦ ⊂ ∪ ∩ ∧ ∨ Σ ∘ ⇒ Δ · ⌊ ⌋ ⌈ ⌉ ∏ ∐ ‖').split(' ') );
@@ -187,10 +180,6 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
       var closing = dedentPartial.test(textAfter);
       return state.basecol + indentUnit * (state.indentDepth - (closing ? 1 : 0));
     },
-
-    lineComment: ";",
-    blockCommentStart: ";-",
-    blockCommentEnd: "-;"
   };
 });
 
