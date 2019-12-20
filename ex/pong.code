@@ -1,36 +1,93 @@
-; PONG 2019
-
-; speler posities
-y1 := 5-h/2 ; ypos rechts
-y2 := 5-h/2 ; ypos links
-w = 1 ; breedte
-h = 3 ; hoogte
-xmin = 0
-xmax = 17.777 - w
-ymax = 10 - h
-
 ; bal
-balx := 17.777 / 2
-baly := 5
-balvx := -0.1
+x := sw/2
+y := 50
+dx := 0
+dy := random.bereik(-τ/8,τ/8)
 
-als 2 > 1 dan
-	balx := balx' + balvx
+als scherm.ververst en (dx > 0 of dx < 0) dan
+ x := x' + dx'
+eind
+
+als scherm.ververst en (dy > 0 of dy < 0) dan
+ y := y' + dy'
+eind
+
+wachttot := looptijd + 1
+
+; variabeles
+vx = 2
+bw = 10
+sw = 10
+sh = 25
+vw = 177.8
+
+; klik
+als muis.klik dan
+ x := muis.x
+ y := muis.y
 eind
 
 
-; toetsenbord rechts
-als toetsOmhoog en y1' < ymax dan y1 := y1' + 0.2 eind
-als toetsOmlaag en y1' > 0    dan y1 := y1' - 0.2 eind
+; raakt hij de spelers?
+rechts.raakt = (y' > ry' en y' < ry' + sh)
+links.raakt = (y' > ly' en y' < ly' + sh)
 
-; toetsenbord links
-als toetsW en y2' < ymax dan y2 := y2' + 0.2 eind
-als toetsS en y2' > 0    dan y2 := y2' - 0.2 eind
+; rechts stuiter
+als x' ≥ 178 - bw - sw en rechts.raakt dan
+ dx := - vx
+ x := 178 - sw - bw
+ dy := (ry' - y' + sh/2) / 4
+eind
 
-; sprites
-links = rechthoek(xmax, y1, 1, 3)
-rechts = rechthoek(xmin, y2, 1, 3)
-bal = cirkel(balx, baly, 1)
+; links stuiter
+als x' < 0 + bw + sw en links.raakt dan
+ dx := vx
+ x := bw + sw
+ dy := -(ly' - y' + sh/2) / 4
+eind
 
-; canvas
-uit = canvas [ links, rechts, bal ]
+
+; goal
+als x' < 0 dan
+ x := 90
+ y := 50
+ score2 := score2' + 1
+ wachttot := looptijd + 1
+eind
+als x' > vw dan
+ x := 90
+ y := 50
+ wachttot := looptijd + 1
+ score1 := score1' + 1
+eind
+
+
+; top en onder
+als y' < 0 + bw dan
+ dy := abs dy'
+eind
+als y' > 100 - bw dan
+ dy := - abs dy'
+eind
+
+; score
+score1 := 0
+score2 := 0
+
+; spelers
+ly := 50 - sh/2
+ry := 50 - sh/2
+als toets.omlaag en ry' > 0 dan ry := ry' - 1 eind
+als toets.omhoog en ry' < 100-sh dan ry := ry' + 1 eind
+als toets.s en ly' > 0 dan ly := ly' - 1 eind
+als toets.w en ly' < 100-sh dan ly := ly' + 1 eind
+ 
+; teken spelers
+links = rechthoek((0,ly),(sw,ly+sh))
+rechts = rechthoek((vw-sw,ry),(vw,ry+sh))
+bal = cirkel((x,y),bw/2)
+
+label1 = label((90-9,90), alsTekst(score1))
+label2 = label((90+3,90), alsTekst(score2))
+
+uit = teken [ links, rechts, bal, label1, label2 ]

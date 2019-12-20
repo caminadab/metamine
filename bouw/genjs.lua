@@ -217,6 +217,12 @@ local immsym = {
 		return c;});
 	})]],
 
+	['schaal'] = [[
+	(function(_args){return (function(c){
+		var vorm = _args[0];
+		var grootte = _args[1];
+	})})]],
+
 	['rgb'] = [[ (function(_args) { return _args; }) ]],
 
 	['lijn'] = [[

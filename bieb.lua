@@ -35,6 +35,7 @@ function bieb()
 	fout = true,
 	['scherm.ververst'] = true,
 	inkleur = true,
+	schaal = true,
 
 	rgb = true,
 

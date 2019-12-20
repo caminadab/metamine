@@ -1,9 +1,9 @@
-f = a → b
+x := 0
+dx := 0
 
-als a > 0 dan
-	b = 1
-anders
-	b = -1
+als scherm.ververst dan
+	x := x' + dx'
 eind
 
-uit = f(3)
+uit = x
+
