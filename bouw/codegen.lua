@@ -310,10 +310,16 @@ function codegen(exp, maakvar)
 			elseif fn(exp) == '_arg' then
 				--error'OK'
 
-				--exp.a = nil
+				--exp.f = nil
 				--exp.o = nil
+				--exp.v = nil
 				--fw.a = X(',', 
+				--fw.v = arg(exp.f)
 				--fw.f = arg(exp.f)
+				fw.o = nil
+				fw.f = nil
+				fw.a = nil
+				fw.v = fn(exp)
 
 			else
 

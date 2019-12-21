@@ -245,7 +245,7 @@ local immsym = {
 	})]],
 	['tekst'] = '(function(t) { if (t === null) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
-	['alsHtml'] = [[(function (a) {
+	['html'] = [[(function (a) {
 		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
@@ -263,7 +263,7 @@ local immsym = {
 		_keysPressed.clear();
 		_keysReleased.clear();
 		mouseMoving = false;
-		init = false;
+		start = false;
 		requestAnimationFrame(f);
 		return true;
 	})]],
@@ -283,7 +283,7 @@ local immsym = {
 	]],
 
 	['_arg'] = '_arg',
-	looptijd = '(new Date().getTime() - start)/1000', 
+	looptijd = '(new Date().getTime() - starttijd)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
@@ -340,7 +340,7 @@ local immsym = {
 	['_arg2'] = '_arg2',
 	['_arg3'] = '_arg3',
 	['_arg4'] = '_arg4',
-	looptijd = '(new Date().getTime() - start)/1000', 
+	looptijd = '(new Date().getTime() - starttijd)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
@@ -349,8 +349,8 @@ local immsym = {
 	['⊥'] = 'false',
 	['τ'] = 'Math.PI * 2',
 	['π'] = 'Math.PI',
-	['init'] = 'init',
-	['scherm.ververst'] = '!init',
+	['start'] = 'start',
+	['scherm.ververst'] = '!start',
 	['muis.x'] = 'mouseX',
 	['muis.y'] = 'mouseY',
 	['muis.pos'] = '[mouseX, mouseY]',
@@ -403,7 +403,7 @@ function genjs(app)
 				local fmt
 				if o == ',' then
 					--if not exp[1] then error(C(exp[2])) end
-					print(table.concat(map(exp, function(e) return e and e.v or 'alert("fout")' end), ','))
+					--print(table.concat(map(exp, function(e) return e and e.v or 'alert("fout")' end), ','))
 					fmt = '%s%s = ['.. table.concat(map(exp, function(e) return e.v or 'alert("fout")' end), ', ') .. '];'
 				elseif o == '{}' then
 					fmt = '%s%s = new Set(['.. table.concat(map(exp, function(e) return e.v end), ', ') .. ']);'
@@ -423,7 +423,6 @@ function genjs(app)
 				end
 				t[#t+1] = string.format(fmt, tabs, naam.v)
 			elseif immsym[f] then
-				print('IMMSYM', e2s(exp))
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immsym[f], arg(exp).v)
 			elseif immjs0[f] then
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs0[f], arg(exp).v)
@@ -438,11 +437,6 @@ function genjs(app)
 				t[#t+1] = string.format(tabs .. "throw 'onbekende functie: ' + " .. f .. ";")
 			end
 		end
-	end
-
-	print'BLOKKEN'
-	for k,v in pairs(app) do
-		print(k)
 	end
 
 	local function flow(blok, tabs)
@@ -481,7 +475,7 @@ function genjs(app)
 		end
 	end
 	table.insert(s, [[
-start = new Date().getTime();
+starttijd = new Date().getTime();
 vars = {};
 if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getBoundingClientRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}
 mouseLeft = false;
@@ -492,7 +486,7 @@ mouseY = 0;
 _keys = {};
 _keysPressed = new Set();
 _keysReleased = new Set();
-init = true;
+start = true;
 html = "";
 uit = document.getElementById("uit");
 stop = false;

@@ -343,7 +343,8 @@ canvas {
 
 					uit.focus();
 				} catch (e) {
-					alert(e + e.stack);
+					//alert(e + e.stack);
+					uit.innerHTML = e + "\n" + e.stack + "\n" + j.js;
 					//var genlines = e.stack.match(/\d+/g);
 					//alert("GENLINES: "+genlines)
 					for (var i = 0; i < Math.min(genlines.length, 3); i++) {

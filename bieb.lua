@@ -141,7 +141,6 @@ function bieb()
 
 	-- tekening
 	rechthoek = true,
-	teken = true,
 
 	-- wiskunde
 	co = 3,

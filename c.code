@@ -1,2 +1,6 @@
-f = x → x + 1
-uit = f(2)
+x := 0
+uit = x
+
+als toets.spatie dan
+	x := x' + 1
+eind
