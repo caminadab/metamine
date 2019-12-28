@@ -245,7 +245,7 @@ local immsym = {
 	})]],
 	['tekst'] = '(function(t) { if (t === null) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toSource() : t.toString();})',
 	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
-	['alsHtml'] = [[(function (a) {
+	['html'] = [[(function (a) {
 		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;

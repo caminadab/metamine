@@ -89,19 +89,7 @@ end
 --bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
-local doel
-if opt.j then doel = 'demo'
-elseif opt.i then doel = 'im'
-elseif opt.n then doel = 'naakt'
-elseif opt.x then doel = 'demo'
-else doel = 'unistd' end
-
-if opt.j then
-	bronnen[#bronnen+1] = 'bieb/web.code'
-end
-if opt.i then
-	bronnen[#bronnen+1] = 'bieb/im.code'
-end
+bronnen[#bronnen+1] = 'bieb/std.code'
 
 if opt.d or opt.doe then
 	doemeteen = true

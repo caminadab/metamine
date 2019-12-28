@@ -561,14 +561,23 @@ function oplos(exp,voor)
 					local inn,uit = lam.a[1], lam.a[2]
 					local index = maakindex()
 
+				--[[
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
 					local var = maakvar()
 					local index = tostring(maakindex())
-					local func = X('_fn', index) 
-					local llam = X('_', func, uit)
+					--local func = X('_fn'.. index) 
+					local llam = X('_fn', index)--func, uit)
 					assign(lam, llam)
-					local naam = X('_arg', index)
+					local naam = X('_', '_arg', index)
+				]]
+
+					-- pas vergelijking aan
+					for i in pairs(lam) do lam[i] = nil end
+					local var = maakvar()
+					lam.f = X('_fn')--..var)
+					lam.a = uit
+					local naam = '_arg'--..var
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
