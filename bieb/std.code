@@ -1,5 +1,5 @@
 looptijd = nu - starttijd
-app = stduit.schrijf(tekst(uit))
+;app = stduit.schrijf(tekst(uit))
 
 ;-
 !) = n → x
@@ -22,7 +22,7 @@ itereer:
 exit:
 	sys.exit 0
 -;
-ververs = moment → metInvoer(html(tekst(uit)))
+ververs = moment → invoer.registreer(html(tekst(uit)))
 app = herhaal.langzaam(ververs)
 
 canvas = html "<canvas width='1280' height='720'></canvas>"

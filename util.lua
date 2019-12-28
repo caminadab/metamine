@@ -129,12 +129,22 @@ end
 
 -- escapeer alles voor printen tussen enkele quotes
 function escape(t)
+	t = t:gsub([[\]], [[\\]])
+	t = t:gsub([[']], [[\']])
+	t = t:gsub('\x1B', '\\e')
 	t = t:gsub('\n', '\\n')
 	t = t:gsub('\r', '\\r')
 	t = t:gsub('\t', '\\t')
-	t = t:gsub('\\', '\\\\')
-	t = t:gsub('\x1B', '\\e')
-	t = t:gsub('\'', '\\\'')
+	return t
+end
+
+function unescape(t)
+	t = t:gsub([[\\]], [[\]])
+	t = t:gsub([[\']], [[']])
+	t = t:gsub('\\e', '\x1B')
+	t = t:gsub('\\n', '\n')
+	t = t:gsub('\\r', '\r')
+	t = t:gsub('\\t', '\t')
 	return t
 end
 

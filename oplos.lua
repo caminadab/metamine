@@ -224,8 +224,7 @@ function oplos(exp,voor)
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
-		-- herschrijf (a := b) naar (a := (istart ⇒ b))
-		-- ** (a := b) naar (a := (start, b))
+		-- herschrijf (a := b) naar (a := (start ⇒ b))
 		for eq in pairs(eqs) do
 			if fn(eq) == ':=' then
 				local a, b = eq.a[1], eq.a[2]
@@ -521,6 +520,8 @@ function oplos(exp,voor)
 
 		-- herschrijf
 		--   a'
+		-- of
+		--   a  (als a een var is)
 		-- naar
 		--   var(0)
 		local nieuw = {}
@@ -530,14 +531,23 @@ function oplos(exp,voor)
 			--print('COMB')
 			--print(combineer(eq))
 			for exp in boompairs(eq) do
-				if fn(exp) == "'" and exp.a.v then
-					local naam = exp.a.v
+				local naam = exp.a and exp.a.v
+				if (fn(exp) == "'" and naam) or schaduw[atoom(exp)] and false then
+					naam = naam or atoom(exp)
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
-					assert(schaduw[naam], 'onbekende variabele: '..naam)
-					if schaduw[naam] then
+					--assert(schaduw[naam], 'onbekende variabele: '..naam)
+					-- onbekende variabele
+					if not schaduw[naam] then
+						--local def = bron2def[punt]
+						local fout = oplosfout(exp.loc, '{code} is geen variabele', punt)
+						fouten[#fouten+1] = fout
+					else
+						exp.v = nil
 						exp.f = X('_')
 						exp.a = X(',', '_prevvar', schaduw[naam])
+						--exp.f = X'_prevvar'
+						--exp.a = X(schaduw[naam])
 					end
 				end
 			end
@@ -578,6 +588,8 @@ function oplos(exp,voor)
 					lam.f = X('_fn')--..var)
 					lam.a = uit
 					local naam = '_arg'--..var
+
+					--local naam = X('_', '_arg', index)
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
