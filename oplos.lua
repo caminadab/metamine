@@ -89,10 +89,15 @@ function oplos(exp,voor)
 		local nieuw, oud = {}, {}
 
 		-- vind vars
-		local vars = {}
+		local vars = {} -- naam → eq
+		local schaduw = {} -- naam → index
 		for eq in pairs(eqs) do
 			if fn(eq) == ':=' then
-				vars[arg0(eq).v] = eq
+				local naam = arg0(eq).v
+				local index = maakindex()
+				vars[naam] = eq
+				schaduw[naam] = index
+				--print('VAR', naam, eq, index)
 			end
 		end
 
@@ -224,8 +229,7 @@ function oplos(exp,voor)
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
-		-- herschrijf (a := b) naar (a := (istart ⇒ b))
-		-- ** (a := b) naar (a := (start, b))
+		-- herschrijf (a := b) naar (a |:= (start ⇒ b))
 		for eq in pairs(eqs) do
 			if fn(eq) == ':=' then
 				local a, b = eq.a[1], eq.a[2]
@@ -412,6 +416,23 @@ function oplos(exp,voor)
 		eqs = complement(eqs, oud)
 		eqs = unie(eqs, nieuw)
 
+		-- (a → a') als a een var is
+		local function alsvar(exp)
+			--print('EXP', e2s(exp))
+			if isatoom(exp) then
+				local naam = atoom(exp)
+				if vars[naam] then
+					exp.v = nil
+					exp.f = X('_')
+					assert(schaduw[naam], naam .. ' is geen variabele')
+					exp.a = X(',', '_prevvar', schaduw[naam])
+				end
+			end
+			for k,sub in subs(exp) do
+				alsvar(sub)
+			end
+		end
+		
 		-- verzamel |=
 		local map = {} -- k → [v]
 		local oud = {}
@@ -443,7 +464,6 @@ function oplos(exp,voor)
 
 		-- verzamel |:=
 		local maakindex = maakindices()
-		local schaduw = {}
 		local map = {} -- k → [v]
 		local oud = {}
 		for eq in pairs(eqs) do
@@ -461,14 +481,16 @@ function oplos(exp,voor)
 			eqs[eq] = false
 		end
 		for naam,alts in pairs(map) do
-			alts.o = X','
-			local index = maakindex()
-			schaduw[naam] = index
-			assert(index and alts)
-			local eq = X('=', naam, X('_', '_var', X(',', index, alts)))
-			eqs[eq] = true
+			if schaduw[naam] then
+				alts.o = X','
+				alsvar(alts)
+				local index = schaduw[naam]
+				assert(index, 'geen index voor variabele '..naam)
+				local eq = X('=', naam, X('_', '_var', X(',', tostring(index), alts)))
+				eqs[eq] = true
+			end
 		end
-		
+
 		-- verzamel ∐=
 		local map = {} -- k → [v]
 		local oud = {}
@@ -521,6 +543,8 @@ function oplos(exp,voor)
 
 		-- herschrijf
 		--   a'
+		-- of
+		--   a  (als a een var is)
 		-- naar
 		--   var(0)
 		local nieuw = {}
@@ -530,14 +554,23 @@ function oplos(exp,voor)
 			--print('COMB')
 			--print(combineer(eq))
 			for exp in boompairs(eq) do
-				if fn(exp) == "'" and exp.a.v then
-					local naam = exp.a.v
+				local naam = exp.a and exp.a.v
+				if (fn(exp) == "'" and naam) or schaduw[atoom(exp)] and false then
+					naam = naam or atoom(exp)
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
-					assert(schaduw[naam], 'onbekende variabele: '..naam)
-					if schaduw[naam] then
+					--assert(schaduw[naam], 'onbekende variabele: '..naam)
+					-- onbekende variabele
+					if not schaduw[naam] then
+						--local def = bron2def[punt]
+						local fout = oplosfout(exp.loc, '{code} is geen variabele', punt)
+						fouten[#fouten+1] = fout
+					else
+						exp.v = nil
 						exp.f = X('_')
 						exp.a = X(',', '_prevvar', schaduw[naam])
+						--exp.f = X'_prevvar'
+						--exp.a = X(schaduw[naam])
 					end
 				end
 			end
@@ -549,7 +582,6 @@ function oplos(exp,voor)
 		-- uit = (start ⇒ "ok") | (looptijd = 1 ⇒ uit' || "ok")
 
 		-- functies
-		local maakindex = maakindices()
 		local nieuw = {}
 		local afval = {}
 
@@ -561,14 +593,25 @@ function oplos(exp,voor)
 					local inn,uit = lam.a[1], lam.a[2]
 					local index = maakindex()
 
+				--[[
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
 					local var = maakvar()
 					local index = tostring(maakindex())
-					local func = X('_fn', index) 
-					local llam = X('_', func, uit)
+					--local func = X('_fn'.. index) 
+					local llam = X('_fn', index)--func, uit)
 					assign(lam, llam)
-					local naam = X('_arg', index)
+					local naam = X('_', '_arg', index)
+				]]
+
+					-- pas vergelijking aan
+					for i in pairs(lam) do lam[i] = nil end
+					local var = maakvar()
+					lam.f = X('_fn')--..var)
+					lam.a = uit
+					local naam = '_arg'--..var
+
+					--local naam = X('_', '_arg', index)
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)

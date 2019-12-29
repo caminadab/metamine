@@ -13,7 +13,7 @@ local obj2sym = {
 	--['[]u'] = symbool.tekst,
 }
 
-local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
+local stdbron = ontleed(file('bieb/types.code'), 'bieb/types.code')
 local std = {}
 
 for i,feit in ipairs(stdbron.a) do
@@ -24,7 +24,7 @@ for i,feit in ipairs(stdbron.a) do
 end
 
 function linkbieb(typegraaf)
-	local stdbron = ontleed(file('bieb/std.code'), 'bieb/std.code')
+	local stdbron = ontleed(file('bieb/types.code'), 'bieb/types.code')
 	for i,feit in ipairs(stdbron.a) do
 		if fn(feit) == ':' then
 			local t,s = arg0(feit), arg1(feit)

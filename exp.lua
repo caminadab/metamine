@@ -6,7 +6,7 @@ require 'lisp'
 require 'util'
 
 function fn(exp) if isfn(exp) then return exp.f.v end end
-function arg(exp) if isfn(exp) then return exp.a end end
+function arg(exp) return exp.a end
 function obj(exp) if isobj(exp) then return exp.o.v end end
 function atoom(exp,i) 
 	if not i then
@@ -243,6 +243,9 @@ function varnaam(i)
 		i = math.floor(i / 26)
 		if r ~= '' then c = c - 1 end
 		local l = string.char(string.byte('A') + c)
+		if c < 0 then
+			l = '_'
+		end
 		r = l .. r
 	end
 	return r --r:sub(2)

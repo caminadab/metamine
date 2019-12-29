@@ -167,11 +167,15 @@ local immsym = {
 			var ass = a[1];
 			var array = ass;
 			var ret = vars[varindex];
-			for (var i = 0; i < array.length; i++) {
-				if (array[i] !== false && array[i] !== null) {
-					ret = array[i];
+			if (!lastUpdated[varindex] || runtime > lastUpdated[varindex]) {
+				for (var i = 0; i < array.length; i++) {
+					if (array[i] !== false && array[i] !== null) {
+						ret = array[i];
+						break;
+					}
 				}
 			}
+			lastUpdated[varindex] = runtime;
 			vars[varindex] = ret;
 			return ret;
 		})
@@ -182,19 +186,14 @@ local immsym = {
 	['max'] = 'Math.max',
 	['entier'] = 'Math.floor',
 	['int'] = 'Math.floor',
-	['intd'] = 'Math.floor',
 	['abs'] = 'Math.abs',
-	['absd'] = 'Math.abs',
-	['absi'] = 'Math.abs',
 	['sign'] = '($1 > 0 ? 1 : -1)',
 	
 	-- LIB
-	['contextVan'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
-	--['getContext'] = 'uit.children[0].getContext("2d")',
-	['consolelog'] = 'console.log',
+	['canvas.context'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
+	['console.log'] = 'console.log',
 
 	-- muis
-	['getContext'] = '(function(a) { return uit.children[0].getContext("2d")})',
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, 0, Math.PI * 2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); })',
@@ -243,17 +242,17 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['tekst'] = '(function(t) { if (t === null) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toSource() : t.toString();})',
-	['wisCanvas'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
+	['tekst'] = '(function(t) { if (t === null || t == undefined) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toString() : t.toString();})',
+	['canvas.wis'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 	['html'] = [[(function (a) {
-		var t = a == null ? "null" : Array.isArray(a) ? a.toSource() : a.toString();
+		var t = a == null ? "null" : Array.isArray(a) ? a.toString() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
 			html = t;
 		}
 		return uit.children[0];
 	})]],
-	['requestAnimationFrame'] = [[(function f(t) {
+	['herhaal.langzaam'] = [[(function f(t) {
 		if (stop) {stop = false; uit.innerHTML = ''; return; };
 		if (!isFinite(t))
 			_G = t;
@@ -264,6 +263,8 @@ local immsym = {
 		_keysReleased.clear();
 		mouseMoving = false;
 		start = false;
+		now = (new Date().getTime()) / 1000;
+		runtime = now - starttime;
 		requestAnimationFrame(f);
 		return true;
 	})]],
@@ -283,13 +284,12 @@ local immsym = {
 	]],
 
 	['_arg'] = '_arg',
-	looptijd = '(new Date().getTime() - starttijd)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
 	atan = '(function(a) { return Math.atan2(a[1], a[0]); })',
 	niets = 'null',
-	metInvoer = [[(function()
+	['invoer.registreer'] = [[(function()
 		{
 			uit.onmouseup = function(ev) {
 				mouseLeftReleased = true;
@@ -328,7 +328,7 @@ local immsym = {
 			return uit;
 		}
 	)]],
-	['consolelog'] = 'console.log($1)',
+	['console.log'] = 'console.log($1)',
 
 	-- toetsen
 	['toets.neer']  = 'function(keyCode) { return !!_keys[keyCode]; }',
@@ -340,7 +340,6 @@ local immsym = {
 	['_arg2'] = '_arg2',
 	['_arg3'] = '_arg3',
 	['_arg4'] = '_arg4',
-	looptijd = '(new Date().getTime() - starttijd)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
@@ -351,6 +350,11 @@ local immsym = {
 	['π'] = 'Math.PI',
 	['start'] = 'start',
 	['scherm.ververst'] = '!start',
+
+	['starttijd'] = 'starttime', 
+	['looptijd'] = 'runtime', 
+	['nu'] = 'now', 
+
 	['muis.x'] = 'mouseX',
 	['muis.y'] = 'mouseY',
 	['muis.pos'] = '[mouseX, mouseY]',
@@ -475,8 +479,13 @@ function genjs(app)
 		end
 	end
 	table.insert(s, [[
-starttijd = new Date().getTime();
+starttime = (new Date().getTime())/1000;
+start = true;
+now = starttime;
+runtime = 0;
+
 vars = {};
+lastUpdated = {}; // varindex -> double
 if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getBoundingClientRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}
 mouseLeft = false;
 mouseLeftPressed = false;

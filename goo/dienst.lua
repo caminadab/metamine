@@ -29,7 +29,7 @@ local function cat(...)
 	return r
 end
 
-local web = lees('bieb/web.code')
+local web = lees('bieb/std.code')
 
 -- DE webfunctie
 -- vt: code → {html?, fouten?}

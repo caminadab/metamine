@@ -161,12 +161,14 @@ function codegen(exp, maakvar)
 			return mkstat(stat, ret)
 		
 		-- functie
-		elseif fn(exp) == '_' and fn(arg0(exp)) == '_fn' then
+		--elseif fn(exp) == '_' and fn(arg0(exp)) == '_fn' then
+		elseif fn(exp) == '_fn' then
 			--assert(exp.ref)
+			--error(e2s(arg(exp)))
 			--al = {}
 			local naam = X(maakfunc())
-			local waarde = arg1(exp)
-			local arg = X'_arg' --exp.a[2]
+			local waarde = exp.a
+			local arg = X('_arg', waarde)
 			local keys = {}
 			for k in pairs(exp) do keys[k] = true end
 			for k in pairs(keys) do exp[k] = nil end

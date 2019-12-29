@@ -25,12 +25,10 @@ function bieb()
 
 	['⊤'] = true,
 	['⊥'] = false,
-	log2 = true,
+	log2 = function (a) return math.log(a, 2) end,
 	log10 = math.log10,
-	puts = true,
-	call = true,
 	['τ'] = math.pi*2,
-	pi = math.pi,
+	['π'] = math.pi,
 	start = true,
 	fout = true,
 	['scherm.ververst'] = true,
@@ -58,13 +56,11 @@ function bieb()
 	end;
 
 	-- web
-	consolelog =  function(s) print(s) end;
-	requestAnimationFrame = function () error('niet beschikbaar') end;
-	schrijfHtml = function () error('niet beschikbaar') end;
-
-	contextVan = function () error('niet beschikbaar') end;
-	wisCanvas = function () error('niet beschikbaar') end;
-	looptijd = 0;
+	['console.log'] =  function(s) print(s) end;
+	['herhaal.langzaam'] = function () error('niet beschikbaar') end;
+	['html.schrijf'] = function () error('niet beschikbaar') end;
+	['canvas.context'] = function () error('niet beschikbaar') end;
+	['canvas.wis'] = function () error('niet beschikbaar') end;
 
 	vierkant = function() error('niet beschikbaar') end;
 	boog = function() error('niet beschikbaar') end;
@@ -86,7 +82,7 @@ function bieb()
 	['toets.neer.begin'] = true,
 	['toets.neer.eind'] = true,
 
-	metInvoer = true, -- X_X
+	['invoer.registreer'] = true, -- X_X
 
 
 	['_'] = function(a)
@@ -138,10 +134,6 @@ function bieb()
 	syscall = function(a) error 'SYSCALL' end, 
 	xcb_connect = true,
 
-
-	-- tekening
-	rechthoek = true,
-
 	-- wiskunde
 	co = 3,
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
@@ -157,12 +149,7 @@ function bieb()
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
-	starttijd = true,
-	['start1'] = (function()
-		local socket = require 'socket'
-		return socket.gettime()
-	end) (10),
-	os.time(),
+	['looptijd'] = true;
 	['inverteer'] = true; -- sure
 	['sqrt'] = function(a) return math.sqrt(a) end;
 	['niets'] = false; --"niets";

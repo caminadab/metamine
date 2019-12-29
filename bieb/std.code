@@ -1,155 +1,47 @@
-; basisobjecten
-verzameling: iets
-functie: iets
-getal: iets
+ververs = moment → invoer.registreer(html(tekst(uit)))
+app = herhaal.langzaam(ververs)
 
-; getallen
-int: getal
-norm: getal ; 0 ≤ x ≤ 1
-moment: getal
-nat: int ; natuurlijk getal (≥ 0)
-byte: nat ; nat < 256
-kommagetal: getal
+canvas = invoer.registreer(html "<canvas width='1280' height='720'></canvas>")
+canvas.teken = canvas.wis ∘ (vormen vouw (∘))
+teken = vormen → (canvas.teken(canvas.context(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
-(!): int → int
+; scherm
+scherm.breedte = 177.778
+scherm.hoogte = 100
 
-; verz
-lijst: verzameling
-tupel: verzameling
-zak: verzameling
+; vec
+vec2.schaal = (vx,vy),vf → (vx·vf,vy·vf)
+vec2.plus = (wx1,wy1),(wx2,wy2) → wx1+wx2,wy1+wy2
+vec2.min = (px1,py1),(px2,py2) → px1-px2,py1-py2
+vec2.unit = sincos
 
-; webspecifiek
-vorm: canvas → canvas
-alsHtml: lijst(letter) → lijst(letter)
-consoleLog: lijst(letter) → bit
-canvas: lijst(letter)
-tekst: iets → lijst(letter)
+; toetsenbord
+toets.spatie = toets.neer(32)
+toets.links = toets.neer(37)
+toets.omhoog = toets.neer(38)
+toets.rechts = toets.neer(39)
+toets.omlaag = toets.neer(40)
+toets.a = toets.neer(65)
+toets.w = toets.neer(87)
+toets.d = toets.neer(68)
+toets.s = toets.neer(83)
 
-verf: vorm, kleur → vorm
-rgb: (getal, getal, getal) → kleur
+toets.spatie.begin = toets.neer.begin(32)
+toets.links.begin = toets.neer.begin(37)
+toets.omhoog.begin = toets.neer.begin(38)
+toets.rechts.begin = toets.neer.begin(39)
+toets.omlaag.begin = toets.neer.begin(40)
+toets.a.begin = toets.neer.begin(97)
+toets.d.begin = toets.neer.begin(100)
+toets.s.begin = toets.neer.begin(115)
+toets.w.begin = toets.neer.begin(119)
 
-vierkant: (ℝ,ℝ), ℝ → vorm
-cirkel: (ℝ,ℝ), ℝ → vorm
-ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
-rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
-lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
-teken: lijst(vorm) → canvas
-label: (ℝ,ℝ), lijst(letter) → vorm
-draai: vorm → vorm
-;vouw: (lijst(A), (A → B)) → lijst(B)
-
-requestAnimationFrame: (getal → lijst(letter)) → int
-contextVan: lijst(letter) → canvas
-wisCanvas: canvas → canvas
-metInvoer: lijst(letter) → lijst(letter)
-
-; hardware
-scherm.ververst: bit
-muis.klik: bit
-muis.klik.begin: bit
-muis.klik.eind: bit
-muis.beweegt: bit
-muis.pos: getal, getal
-muis.x: getal
-muis.y: getal
-toets.neer: int → bit
-toets.neer.begin: int → bit
-toets.neer.eind: int → bit
-toets.op: int → bit
-
-syscall: iets → int
-
-stduit.schrijf: lijst(letter) → int
-app: iets
-
-bit: iets
-ja: bit
-nee: bit
-
-; functie
-iets → iets: functie
-(_fn) : (iets→iets),iets → iets
-(_) :  ((iets→iets), iets) → iets
-map: lijst, (iets→iets) → lijst
-filter: lijst, (iets→bit) → lijst
-
-; lijst
-(×) : lijst, lijst → lijst
-(∘) : functie, functie → functie
-(|) : iets,iets → iets
-(=) :  (iets, iets) → bit 
-(:=) : (iets, iets) → bit
-(→) :  (iets, iets) → (iets → iets)
-
-succ: nat → nat
-sin :  getal → getal
-cos :  getal → getal
-tan :  getal → getal
-sincos :  getal → getal, getal
-cossin :  getal → getal, getal
-(+) :  getal, getal → getal
-;(+) :  int, int → getal
-(-) :  getal → getal
-(·) :  (getal, getal) → getal
-(/) :  (getal, getal) → getal
-;(/) :  (int, int) → getal
-(^) :  (getal, getal) → getal
-;(^) :  (int, int) → int
-;(^) :  (int, int) → int
-;(^) :  ((→), nat) → iets
-(#) :  lijst → int
-(‖) :  lijst, lijst → lijst
-
-; set!
-set: verzameling
-(⋂) : verzameling set → set
-(⋃) : verzameling set → set
-(∩) : set, set → set
-(∪) : set, set → set
-;(-) : set, set → set
-;(∖) : set, set → set
-
-; logica
-(¬) : bit → bit
-;(') : iets → iets
-(>) : getal, getal → bit
-(≥) : getal, getal → bit
-(≤) : getal, getal → bit
-(<) : getal, getal → bit
-(∧) : bit, bit → bit
-(∨) : bit, bit → bit
-(⋀) : verzameling bit → bit
-(⋁) : verzameling bit → bit
-
-; lijst
-(Σ) : lijst getal → getal
-;(∫) : (ontelbaar getal) → getal
-(..) : int, int → lijst
-
-; util
-abs: getal → getal
-absd: getal → getal
-max: (getal,getal) → getal
-min: (getal,getal) → getal
-entier: getal → int
-(:): (iets,iets) → bit
-
-(iets → iets) : iets
-(iets → int) : iets
-
-byte: int
-data: lijst byte
-letter: int
-tekst: lijst letter
-
-looptijd : getal
-nu : moment
-vind : (lijst, lijst) → int
-tot : (lijst, int) → lijst
-vanaf : (lijst, int) → lijst
-deel : (lijst, (int, int)) → lijst
-
-;herhaal : ((→) → (→))
-;herhaal : ((→), int) → (→)
-waarvoor : (verzameling, (iets → bit)) → verzameling
-mod : getal, getal → getal
+toets.spatie.eind = toets.neer.eind(32)
+toets.links.eind = toets.neer.eind(37)
+toets.omhoog.eind = toets.neer.eind(38)
+toets.rechts.eind = toets.neer.eind(39)
+toets.omlaag.eind = toets.neer.eind(40)
+toets.A.eind = toets.neer.eind(97)
+toets.D.eind = toets.neer.eind(100)
+toets.S.eind = toets.neer.eind(115)
+toets.W.eind = toets.neer.eind(119)

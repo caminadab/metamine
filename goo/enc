@@ -1,0 +1,5 @@
+#!/usr/bin/lua
+require 'util'
+local pad = ...
+local data = lees(pad)
+print(escape(data))

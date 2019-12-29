@@ -1,93 +1,110 @@
-; bal
-x := sw/2
-y := 50
-dx := 0
-dy := random.bereik(-τ/8,τ/8)
+; bal variabelen
+bal.snelheid = 2
+bal.straal = 5
+bal.x.start = scherm.breedte / 2
+bal.y.start = scherm.hoogte / 2
+bal.x.min = speler.breedte + bal.straal
+bal.x.max = scherm.breedte - speler.breedte - bal.straal
+bal.y.min = bal.straal
+bal.y.max = scherm.hoogte - bal.straal
+bal.vx := 1
+bal.vy := random.bereik(-1,1)
 
-als scherm.ververst en (dx > 0 of dx < 0) dan
- x := x' + dx'
+; speler variabelen
+speler.breedte = 10
+speler.hoogte = 25
+speler.y.start = scherm.hoogte/2 - speler.hoogte/2
+speler.y.min = 0
+speler.y.max = scherm.hoogte - speler.hoogte
+
+; bal verplaatsing
+bal.x := bal.x.start
+bal.y := bal.y.start
+
+als ¬ pauze en (bal.vx > 0 of bal.vx < 0) dan
+ bal.x := bal.x + bal.vx
 eind
 
-als scherm.ververst en (dy > 0 of dy < 0) dan
- y := y' + dy'
+als ¬ pauze en (bal.vy > 0 of bal.vy < 0) dan
+ bal.y := bal.y + bal.vy
 eind
 
-wachttot := looptijd + 1
-
-; variabeles
-vx = 2
-bw = 10
-sw = 10
-sh = 25
-vw = 177.8
-
-; klik
-als muis.klik dan
- x := muis.x
- y := muis.y
-eind
+; pauze
+pauze.tot := looptijd + 1
+pauze = looptijd < pauze.tot
 
 
-; raakt hij de spelers?
-rechts.raakt = (y' > ry' en y' < ry' + sh)
-links.raakt = (y' > ly' en y' < ly' + sh)
+
+; STUITER
+
+; raakt bal de spelers?
+rechts.raakt = (bal.y > rechts.y en bal.y < rechts.y + speler.hoogte)
+links.raakt = (bal.y > links.y en bal.y < links.y + speler.hoogte)
 
 ; rechts stuiter
-als x' ≥ 178 - bw - sw en rechts.raakt dan
- dx := - vx
- x := 178 - sw - bw
- dy := (ry' - y' + sh/2) / 4
+bal.x.min = 0 + bal.straal + speler.breedte
+bal.x.max = scherm.breedte - bal.straal - speler.breedte
+
+als bal.x > bal.x.max en rechts.raakt dan
+ bal.x := bal.x.max
+ bal.vx := - bal.snelheid
+ bal.vy := -(rechts.y - bal.y + speler.hoogte/2) / 4
 eind
 
 ; links stuiter
-als x' < 0 + bw + sw en links.raakt dan
- dx := vx
- x := bw + sw
- dy := -(ly' - y' + sh/2) / 4
+als bal.x < bal.x.min en links.raakt dan
+ bal.x := bal.x.min
+ bal.vx := bal.snelheid
+ bal.vy := -(links.y - bal.y + speler.hoogte/2) / 4
 eind
 
-
-; goal
-als x' < 0 dan
- x := 90
- y := 50
- score2 := score2' + 1
- wachttot := looptijd + 1
+; top en onder stuiter
+als bal.y < bal.y.min dan
+ bal.vy := abs bal.vy
 eind
-als x' > vw dan
- x := 90
- y := 50
- wachttot := looptijd + 1
- score1 := score1' + 1
+als bal.y > bal.y.max dan
+ bal.vy := - abs bal.vy
 eind
 
-
-; top en onder
-als y' < 0 + bw dan
- dy := abs dy'
-eind
-als y' > 100 - bw dan
- dy := - abs dy'
-eind
 
 ; score
 score1 := 0
 score2 := 0
 
+als bal.x < 0 of bal.x > scherm.breedte dan
+ bal.x := 90
+ bal.y := 50
+ pauze.tot := looptijd + 1
+eind
+
+als bal.x < 0              dan score1 := score1 + 1 eind
+als bal.x > scherm.breedte dan score2 := score2 + 1 eind
+
+
+
 ; spelers
-ly := 50 - sh/2
-ry := 50 - sh/2
-als toets.omlaag en ry' > 0 dan ry := ry' - 1 eind
-als toets.omhoog en ry' < 100-sh dan ry := ry' + 1 eind
-als toets.s en ly' > 0 dan ly := ly' - 1 eind
-als toets.w en ly' < 100-sh dan ly := ly' + 1 eind
+links.y := speler.y.start
+rechts.y := speler.y.start
+
+; besturing
+als toets.omlaag en rechts.y > 0 dan rechts.y := rechts.y - 2 eind
+als toets.omhoog en rechts.y < speler.y.max dan rechts.y := rechts.y + 2 eind
+als toets.s en links.y > 0 dan links.y := links.y - 2 eind
+als toets.w en links.y < speler.y.max dan links.y := links.y + 2 eind
  
 ; teken spelers
-links = rechthoek((0,ly),(sw,ly+sh))
-rechts = rechthoek((vw-sw,ry),(vw,ry+sh))
-bal = cirkel((x,y),bw/2)
+links.min = (0, links.y)
+links.max = (speler.breedte, links.y + speler.hoogte)
+rechts.min = (scherm.breedte - speler.breedte, rechts.y)
+rechts.max = (scherm.breedte, rechts.y + speler.hoogte)
 
-label1 = label((90-9,90), alsTekst(score1))
-label2 = label((90+3,90), alsTekst(score2))
+rechts = rechthoek(rechts.min, rechts.max)
+links = rechthoek(links.min, links.max)
 
-uit = teken [ links, rechts, bal, label1, label2 ]
+; teken bal
+bal = cirkel((bal.x,bal.y), bal.straal)
+
+label1 = label((90-9,90), tekst(score1))
+label2 = label((90+3,90), tekst(score2))
+
+uit = (bal.vx,bal.vy ⇒ (teken [ links, rechts, bal, label1, label2 ]))

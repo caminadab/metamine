@@ -1,0 +1,155 @@
+; basisobjecten
+verzameling: iets
+functie: iets
+getal: iets
+
+; getallen
+int: getal
+norm: getal ; 0 ≤ x ≤ 1
+moment: getal
+nat: int ; natuurlijk getal (≥ 0)
+byte: nat ; nat < 256
+kommagetal: getal
+
+(!): int → int
+
+; verz
+lijst: verzameling
+tupel: verzameling
+zak: verzameling
+
+; webspecifiek
+vorm: canvas → canvas
+html: lijst(letter) → lijst(letter)
+consoleLog: lijst(letter) → bit
+canvas: lijst(letter)
+tekst: iets → lijst(letter)
+
+verf: vorm, kleur → vorm
+rgb: (getal, getal, getal) → kleur
+
+vierkant: (ℝ,ℝ), ℝ → vorm
+cirkel: (ℝ,ℝ), ℝ → vorm
+ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
+rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
+lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
+teken: lijst(vorm) → canvas
+label: (ℝ,ℝ), lijst(letter) → vorm
+draai: vorm → vorm
+;vouw: (lijst(A), (A → B)) → lijst(B)
+
+requestAnimationFrame: (getal → lijst(letter)) → int
+contextVan: lijst(letter) → canvas
+wisCanvas: canvas → canvas
+invoer.registreer: lijst(letter) → lijst(letter)
+
+; hardware
+scherm.ververst: bit
+muis.klik: bit
+muis.klik.begin: bit
+muis.klik.eind: bit
+muis.beweegt: bit
+muis.pos: getal, getal
+muis.x: getal
+muis.y: getal
+toets.neer: int → bit
+toets.neer.begin: int → bit
+toets.neer.eind: int → bit
+toets.op: int → bit
+
+syscall: iets → int
+
+stduit.schrijf: lijst(letter) → int
+app: iets
+
+bit: iets
+ja: bit
+nee: bit
+
+; functie
+iets → iets: functie
+(_fn) : (iets→iets),iets → iets
+(_) :  ((iets→iets), iets) → iets
+map: lijst, (iets→iets) → lijst
+filter: lijst, (iets→bit) → lijst
+
+; lijst
+(×) : lijst, lijst → lijst
+(∘) : functie, functie → functie
+(|) : iets,iets → iets
+(=) :  (iets, iets) → bit 
+(:=) : (iets, iets) → bit
+(→) :  (iets, iets) → (iets → iets)
+
+succ: nat → nat
+sin :  getal → getal
+cos :  getal → getal
+tan :  getal → getal
+sincos :  getal → getal, getal
+cossin :  getal → getal, getal
+(+) :  getal, getal → getal
+;(+) :  int, int → getal
+(-) :  getal → getal
+(·) :  (getal, getal) → getal
+(/) :  (getal, getal) → getal
+;(/) :  (int, int) → getal
+(^) :  (getal, getal) → getal
+;(^) :  (int, int) → int
+;(^) :  (int, int) → int
+;(^) :  ((→), nat) → iets
+(#) :  lijst → int
+(‖) :  lijst, lijst → lijst
+
+; set!
+set: verzameling
+(⋂) : verzameling set → set
+(⋃) : verzameling set → set
+(∩) : set, set → set
+(∪) : set, set → set
+;(-) : set, set → set
+;(∖) : set, set → set
+
+; logica
+(¬) : bit → bit
+;(') : iets → iets
+(>) : getal, getal → bit
+(≥) : getal, getal → bit
+(≤) : getal, getal → bit
+(<) : getal, getal → bit
+(∧) : bit, bit → bit
+(∨) : bit, bit → bit
+(⋀) : verzameling bit → bit
+(⋁) : verzameling bit → bit
+
+; lijst
+(Σ) : lijst getal → getal
+;(∫) : (ontelbaar getal) → getal
+(..) : int, int → lijst
+
+; util
+abs: getal → getal
+absd: getal → getal
+max: (getal,getal) → getal
+min: (getal,getal) → getal
+entier: getal → int
+(:): (iets,iets) → bit
+
+(iets → iets) : iets
+(iets → int) : iets
+
+byte: int
+data: lijst byte
+letter: int
+tekst: lijst letter
+
+looptijd : getal
+nu : moment
+vind : (lijst, lijst) → int
+tot : (lijst, int) → lijst
+vanaf : (lijst, int) → lijst
+deel : (lijst, (int, int)) → lijst
+
+;herhaal : ((→) → (→))
+;herhaal : ((→), int) → (→)
+waarvoor : (verzameling, (iets → bit)) → verzameling
+mod : getal, getal → getal
