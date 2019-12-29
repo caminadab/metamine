@@ -167,11 +167,15 @@ local immsym = {
 			var ass = a[1];
 			var array = ass;
 			var ret = vars[varindex];
-			for (var i = 0; i < array.length; i++) {
-				if (array[i] !== false && array[i] !== null) {
-					ret = array[i];
+			if (!lastUpdated[varindex] || runtime > lastUpdated[varindex]) {
+				for (var i = 0; i < array.length; i++) {
+					if (array[i] !== false && array[i] !== null) {
+						ret = array[i];
+						break;
+					}
 				}
 			}
+			lastUpdated[varindex] = runtime;
 			vars[varindex] = ret;
 			return ret;
 		})
@@ -187,7 +191,6 @@ local immsym = {
 	
 	-- LIB
 	['canvas.context'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
-	--['getContext'] = 'uit.children[0].getContext("2d")',
 	['console.log'] = 'console.log',
 
 	-- muis
@@ -260,6 +263,8 @@ local immsym = {
 		_keysReleased.clear();
 		mouseMoving = false;
 		start = false;
+		now = (new Date().getTime()) / 1000;
+		runtime = now - starttime;
 		requestAnimationFrame(f);
 		return true;
 	})]],
@@ -279,7 +284,6 @@ local immsym = {
 	]],
 
 	['_arg'] = '_arg',
-	looptijd = '(new Date().getTime() - start)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
@@ -324,7 +328,7 @@ local immsym = {
 			return uit;
 		}
 	)]],
-	['consolelog'] = 'console.log($1)',
+	['console.log'] = 'console.log($1)',
 
 	-- toetsen
 	['toets.neer']  = 'function(keyCode) { return !!_keys[keyCode]; }',
@@ -336,7 +340,6 @@ local immsym = {
 	['_arg2'] = '_arg2',
 	['_arg3'] = '_arg3',
 	['_arg4'] = '_arg4',
-	looptijd = '(new Date().getTime() - start)/1000', 
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
@@ -347,6 +350,11 @@ local immsym = {
 	['π'] = 'Math.PI',
 	['start'] = 'start',
 	['scherm.ververst'] = '!start',
+
+	['starttijd'] = 'starttime', 
+	['looptijd'] = 'runtime', 
+	['nu'] = 'now', 
+
 	['muis.x'] = 'mouseX',
 	['muis.y'] = 'mouseY',
 	['muis.pos'] = '[mouseX, mouseY]',
@@ -472,8 +480,12 @@ function genjs(app)
 		end
 	end
 	table.insert(s, [[
-starttijd = new Date().getTime();
+starttime = (new Date().getTime())/1000;
+start = true;
+now = starttime;
+runtime = 0;
 vars = {};
+lastUpdated = {}; // varindex -> double
 if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getBoundingClientRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}
 mouseLeft = false;
 mouseLeftPressed = false;
@@ -483,7 +495,6 @@ mouseY = 0;
 _keys = {};
 _keysPressed = new Set();
 _keysReleased = new Set();
-start = true;
 html = "";
 uit = document.getElementById("uit");
 stop = false;

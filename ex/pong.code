@@ -22,11 +22,11 @@ bal.x := bal.x.start
 bal.y := bal.y.start
 
 als ¬ pauze en (bal.vx > 0 of bal.vx < 0) dan
- bal.x := bal.x' + bal.vx'
+ bal.x := bal.x + bal.vx
 eind
 
 als ¬ pauze en (bal.vy > 0 of bal.vy < 0) dan
- bal.y := bal.y' + bal.vy'
+ bal.y := bal.y + bal.vy
 eind
 
 ; pauze
@@ -38,32 +38,32 @@ pauze = looptijd < pauze.tot
 ; STUITER
 
 ; raakt bal de spelers?
-rechts.raakt = (bal.y' > rechts.y' en bal.y' < rechts.y' + speler.hoogte)
-links.raakt = (bal.y' > links.y' en bal.y' < links.y' + speler.hoogte)
+rechts.raakt = (bal.y > rechts.y en bal.y < rechts.y + speler.hoogte)
+links.raakt = (bal.y > links.y en bal.y < links.y + speler.hoogte)
 
 ; rechts stuiter
 bal.x.min = 0 + bal.straal + speler.breedte
 bal.x.max = scherm.breedte - bal.straal - speler.breedte
 
-als bal.x' > bal.x.max en rechts.raakt dan
+als bal.x > bal.x.max en rechts.raakt dan
  bal.x := bal.x.max
  bal.vx := - bal.snelheid
- bal.vy := -(rechts.y' - bal.y' + speler.hoogte/2) / 4
+ bal.vy := -(rechts.y - bal.y + speler.hoogte/2) / 4
 eind
 
 ; links stuiter
-als bal.x' < bal.x.min en links.raakt dan
+als bal.x < bal.x.min en links.raakt dan
  bal.x := bal.x.min
  bal.vx := bal.snelheid
- bal.vy := -(links.y' - bal.y' + speler.hoogte/2) / 4
+ bal.vy := -(links.y - bal.y + speler.hoogte/2) / 4
 eind
 
 ; top en onder stuiter
-als bal.y' < bal.y.min dan
- bal.vy := abs bal.vy'
+als bal.y < bal.y.min dan
+ bal.vy := abs bal.vy
 eind
-als bal.y' > bal.y.max dan
- bal.vy := - abs bal.vy'
+als bal.y > bal.y.max dan
+ bal.vy := - abs bal.vy
 eind
 
 
@@ -71,14 +71,14 @@ eind
 score1 := 0
 score2 := 0
 
-als bal.x' < 0 of bal.x' > scherm.breedte dan
+als bal.x < 0 of bal.x > scherm.breedte dan
  bal.x := 90
  bal.y := 50
  pauze.tot := looptijd + 1
 eind
 
-als bal.x' < 0              dan score1 := score1' + 1 eind
-als bal.x' > scherm.breedte dan score2 := score2' + 1 eind
+als bal.x < 0              dan score1 := score1 + 1 eind
+als bal.x > scherm.breedte dan score2 := score2 + 1 eind
 
 
 
@@ -87,16 +87,16 @@ links.y := speler.y.start
 rechts.y := speler.y.start
 
 ; besturing
-als toets.omlaag en rechts.y' > 0 dan rechts.y := rechts.y' - 1 eind
-als toets.omhoog en rechts.y' < speler.y.max dan rechts.y := rechts.y' + 1 eind
-als toets.s en links.y' > 0 dan links.y := links.y' - 1 eind
-als toets.w en links.y' < speler.y.max dan links.y := links.y' + 1 eind
+als toets.omlaag en rechts.y > 0 dan rechts.y := rechts.y - 2 eind
+als toets.omhoog en rechts.y < speler.y.max dan rechts.y := rechts.y + 2 eind
+als toets.s en links.y > 0 dan links.y := links.y - 2 eind
+als toets.w en links.y < speler.y.max dan links.y := links.y + 2 eind
  
 ; teken spelers
-rechts.min = (0, links.y)
-rechts.max = (speler.breedte, links.y + speler.hoogte)
-links.min = (scherm.breedte - speler.breedte, rechts.y)
-links.max = (scherm.breedte, rechts.y + speler.hoogte)
+links.min = (0, links.y)
+links.max = (speler.breedte, links.y + speler.hoogte)
+rechts.min = (scherm.breedte - speler.breedte, rechts.y)
+rechts.max = (scherm.breedte, rechts.y + speler.hoogte)
 
 rechts = rechthoek(rechts.min, rechts.max)
 links = rechthoek(links.min, links.max)
@@ -107,4 +107,4 @@ bal = cirkel((bal.x,bal.y), bal.straal)
 label1 = label((90-9,90), tekst(score1))
 label2 = label((90+3,90), tekst(score2))
 
-uit = teken [ links, rechts, bal, label1, label2 ]
+uit = (bal.vx,bal.vy ⇒ (teken [ links, rechts, bal, label1, label2 ]))

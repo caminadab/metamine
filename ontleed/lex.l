@@ -122,7 +122,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "√"		{ *yylval = A(GL, "√", nergens); return WORTEL; }
 ":="		{ *yylval = A(GL, ":=", nergens); return ASS; }
 
-"'"		{ *yylval = A(GL, "'", nergens); return '\''; }
+"'"		//{ *yylval = A(GL, "'", nergens); return '\''; }
 
 
 \n		{ return NEWLINE; }

@@ -30,7 +30,6 @@ function bieb()
 	['τ'] = math.pi*2,
 	['π'] = math.pi,
 	start = true,
-	starttijd = true,
 	fout = true,
 	['scherm.ververst'] = true,
 	inkleur = true,
@@ -62,7 +61,6 @@ function bieb()
 	['html.schrijf'] = function () error('niet beschikbaar') end;
 	['canvas.context'] = function () error('niet beschikbaar') end;
 	['canvas.wis'] = function () error('niet beschikbaar') end;
-	looptijd = 0;
 
 	vierkant = function() error('niet beschikbaar') end;
 	boog = function() error('niet beschikbaar') end;
@@ -152,11 +150,7 @@ function bieb()
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
-	['start1'] = (function()
-		local socket = require 'socket'
-		return socket.gettime()
-	end) (10),
-	os.time(),
+	['looptijd'] = true;
 	['inverteer'] = true; -- sure
 	['sqrt'] = function(a) return math.sqrt(a) end;
 	['niets'] = false; --"niets";

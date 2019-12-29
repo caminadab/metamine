@@ -243,6 +243,9 @@ function varnaam(i)
 		i = math.floor(i / 26)
 		if r ~= '' then c = c - 1 end
 		local l = string.char(string.byte('A') + c)
+		if c < 0 then
+			l = '_'
+		end
 		r = l .. r
 	end
 	return r --r:sub(2)

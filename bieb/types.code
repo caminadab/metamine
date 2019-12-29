@@ -20,7 +20,7 @@ zak: verzameling
 
 ; webspecifiek
 vorm: canvas → canvas
-alsHtml: lijst(letter) → lijst(letter)
+html: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 canvas: lijst(letter)
 tekst: iets → lijst(letter)
@@ -41,7 +41,7 @@ draai: vorm → vorm
 requestAnimationFrame: (getal → lijst(letter)) → int
 contextVan: lijst(letter) → canvas
 wisCanvas: canvas → canvas
-metInvoer: lijst(letter) → lijst(letter)
+invoer.registreer: lijst(letter) → lijst(letter)
 
 ; hardware
 scherm.ververst: bit

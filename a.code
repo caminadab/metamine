@@ -1,8 +1,8 @@
 x := 0
 dx := 0
 
-als scherm.ververst dan
-	x := x' + dx'
+als toets.spatie.begin dan
+	x := x + dx
 eind
 
 uit = x
