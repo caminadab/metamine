@@ -300,6 +300,8 @@ canvas {
 <script src="lib/codemirror.js"></script>
 <script src="lib/addon/edit/matchbrackets.js"></script>
 <script src="lib/addon/selection/active-line.js"></script>
+<script src="lib/addon/search/search.js"></script>
+<script src="lib/addon/search/searchcursor.js"></script>
 <script src="lib/taal.js"></script>
 <script src="lib/vim.js"></script>
 <script>

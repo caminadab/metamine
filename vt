@@ -196,20 +196,6 @@ if opt.i then
 	return
 end
 
-for blok in pairs(cfg.punten) do
-	--blok.stats.fn = X'EN'
-	--print(exp2string(blok.stats))
-	--blok.stats = kijkgat(blok.stats, maakvar)
-end
-
-if verbozeKijkgat then
-	print('=== KIJKGAT CODE ===')
-	for blok in spairs(cfg.punten) do
-		print(blok)
-	end
-	print()
-end
-
 local asm = genx64(cfg)
 if opt.S then
 	--file('a.s', asm)

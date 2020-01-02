@@ -38,6 +38,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		// tekening
 		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "beige", "bruin", "geel", "cyaan",
 		"cirkel", "rechthoek", "vierkant", "lijn", "label", "boog", "polygoon", "map", "sin", "cos", "tan", "abs",
+		"atan",
 
 		// drawing
 		"red", "green", "blue", "orange", "purple", "black", "white", "grey", "beige", "brown", "yellow", "cyan",
