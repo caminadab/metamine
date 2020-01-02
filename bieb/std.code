@@ -1,6 +1,7 @@
 ververs = moment → invoer.registreer(html(tekst(uit)))
 app = herhaal.langzaam(ververs)
 
+itereert = scherm.ververst
 canvas = invoer.registreer(html "<canvas width='1280' height='720'></canvas>")
 canvas.teken = canvas.wis ∘ (vormen vouw (∘))
 teken = vormen → (canvas.teken(canvas.context(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
@@ -8,6 +9,8 @@ teken = vormen → (canvas.teken(canvas.context(canvas)) ⇒ "<canvas width='128
 ; scherm
 scherm.breedte = 177.778
 scherm.hoogte = 100
+;scherm.frequentie = ?
+;dt = scherm.frequentie
 
 ; vec
 vec2.schaal = (vx,vy),vf → (vx·vf,vy·vf)

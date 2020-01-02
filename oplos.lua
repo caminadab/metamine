@@ -83,6 +83,7 @@ function oplos(exp,voor)
 			return (tonumber(val) and tostring(val))
 				or val == '_arg'
 				or val == '_fn'
+				or val == 'niets'
 				or bieb[val] ~= nil -- KUCH KUCH
 		end
 
@@ -100,6 +101,37 @@ function oplos(exp,voor)
 				--print('VAR', naam, eq, index)
 			end
 		end
+
+		-- herschrijf (a += b) naar (a := a' + b / fps)
+		-- syntactic cocain
+		for eq in pairs(eqs) do
+			if fn(eq) == '+=' then
+				local a, b = arg0(eq), arg1(eq)
+				local B = X('+', a, X('·', b, 'dt'))
+				local neq = X('|:=', a, X('⇒', X('≠', a, 'niets'), B))
+				--assign(eq, neq)
+				nieuw[neq] = true
+				oud[eq] = true
+			end
+
+			for exp in boompairs(eq) do
+				if exp ~= eq and fn(exp) == '+=' then
+					local a, b = exp.a[1], exp.a[2]
+
+					-- local neq = 
+					--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
+					local B = X('+', kopieer(a), X('·', kopieer(b), 'dt'))
+					local nexp = X(':=', a, B)
+					--local nexp = X(':=', a, X('⇒', X('∧', X('¬', 'start'), X('≠', a, 'niets')), B, 'niets'))
+					--print(e2s(neq))
+					--oud[eq] = true
+					--nieuw[neq] = true
+					assign(exp, nexp)
+				end
+			end
+		end
+
+
 
 		-- herschrijf
 		--
@@ -225,7 +257,6 @@ function oplos(exp,voor)
 				end
 			end
 		end
-
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
@@ -428,8 +459,10 @@ function oplos(exp,voor)
 					exp.a = X(',', '_prevvar', schaduw[naam])
 				end
 			end
-			for k,sub in subs(exp) do
-				alsvar(sub)
+			for key,sub in subs(exp) do
+				if fn(exp) ~= ':=' then --or key ~= 1 then
+					alsvar(sub)
+				end
 			end
 		end
 		
@@ -744,10 +777,9 @@ function oplos(exp,voor)
 
 			exp2naam[naam.v] = exp
 			local n2e = {}
-			for k,v in pairs(exp2naam) do
-				local n
-				n2e[k],n = substitueer(v, naam, exp, maakvar)
-				--print('SUBST', combineer(exp), n..'x')
+			for naam,sub in pairs(exp2naam) do
+				n2e[naam] = substitueer(sub, naam, exp, maakvar)
+				--print('SUBST_diep', combineer(exp))
 			end
 			exp2naam = n2e
 		end

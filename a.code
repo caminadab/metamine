@@ -1,8 +1,5 @@
 x := 0
-dx := 0
-
-als toets.spatie.begin dan
-	x := x + dx
+als toets.spatie dan
+	x += 1
 eind
-
 uit = x

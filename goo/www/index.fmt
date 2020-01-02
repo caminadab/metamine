@@ -341,7 +341,7 @@ canvas {
 				try {
 					eval(j.js);
 
-					uit.focus();
+					//uit.focus(); WAUW
 				} catch (e) {
 					//alert(e + e.stack);
 					uit.innerHTML = e + "\n" + e.stack + "\n" + j.js;

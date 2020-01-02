@@ -60,6 +60,7 @@ local postop = set("%","!",".","'")
 local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈", "^i", "^f")
 local unop   = set("-","#","¬","Σ","|","%","√","!")
 
+-- maakt de app
 function codegen(exp, maakvar)
 	local blokken = {} -- naam → blok
 	local maakvar = maakvar or maakvars()

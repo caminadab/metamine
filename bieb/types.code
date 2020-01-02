@@ -4,6 +4,7 @@ functie: iets
 getal: iets
 
 ; getallen
+dt: getal ; seconde
 int: getal
 norm: getal ; 0 ≤ x ≤ 1
 moment: getal

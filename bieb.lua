@@ -24,6 +24,7 @@ function bieb()
 	_arg = true,
 
 	['⊤'] = true,
+	['dt'] = 1/24, -- terminal altijd
 	['⊥'] = false,
 	log2 = function (a) return math.log(a, 2) end,
 	log10 = math.log10,
@@ -57,7 +58,7 @@ function bieb()
 
 	-- web
 	['console.log'] =  function(s) print(s) end;
-	['herhaal.langzaam'] = function () error('niet beschikbaar') end;
+	['herhaal.langzaam'] = function (f) f(1/24) end; --error('niet beschikbaar') end;
 	['html.schrijf'] = function () error('niet beschikbaar') end;
 	['canvas.context'] = function () error('niet beschikbaar') end;
 	['canvas.wis'] = function () error('niet beschikbaar') end;
@@ -152,7 +153,7 @@ function bieb()
 	['looptijd'] = true;
 	['inverteer'] = true; -- sure
 	['sqrt'] = function(a) return math.sqrt(a) end;
-	['niets'] = false; --"niets";
+	['niets'] = nil;
 	['min'] = function(a,b) return math.min(a,b) end;
 	['mod'] = function(a,b) return a % b end;
 
