@@ -142,6 +142,7 @@ end
 -- doe een continu blok aan instructies
 -- mogelijk met argumenten
 local function doeblok(blok, env, arg)
+	assert(blok, 'geen blok!')
 	for i,stat in ipairs(blok.stats) do
 		if opt and opt.L then
 			-- locsub(exp.code, stat.loc), 
@@ -176,7 +177,7 @@ local function doeblok(blok, env, arg)
 			local b = env[a.v]
 			local doel = b and d.v or e.v
 			if opt and opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
-			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi))
+			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi)..', cond='..tostring(b))
 			return env[doel](arg)
 		else
 			if opt and opt.L then print('ga '..epi.a.v) end
@@ -212,10 +213,10 @@ function doe(app)
 
 	for naam,blok in pairs(app) do
 		env[naam] = function(arg)
-			local isf = k:sub(1,2) == 'fn'
-			if isf and opt and opt.L then print('...\ncall '..k..' '..combineer(w2exp(arg))) end
+			local isf = naam:sub(1,2) == 'fn'
+			if isf and opt and opt.L then print('...\ncall '..naam..' '..combineer(w2exp(arg))) end
 			env['_arg'] = arg
-			local ret = doeblok(v, env, arg)
+			local ret = doeblok(blok, env, arg)
 			if opt and opt.L then 
 				--if isf then io.write('\n...') end
 				----io.flush()
@@ -237,7 +238,7 @@ function doe(app)
 		io.write(ansi.wisregel, ansi.regelbegin)
 		ret = doeblok(app.init, env)
 		env.looptijd = socket.gettime() - starttijd
-		socket.sleep(1/60)
+		socket.sleep(1/24)
 	end
 
 	return ret

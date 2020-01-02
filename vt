@@ -89,7 +89,11 @@ end
 --bronnen[#bronnen+1] = 'bieb/x64.code'
 --bronnen[#bronnen+1] = 'bieb/linux-syscalls.code'
 
-bronnen[#bronnen+1] = 'bieb/std.code'
+if not opt.n then
+	bronnen[#bronnen+1] = 'bieb/std.code'
+else
+	bronnen[#bronnen+1] = 'bieb/n.code'
+end
 
 if opt.d or opt.doe then
 	doemeteen = true
@@ -181,9 +185,7 @@ end
 
 
 if opt.i then
-	for naam,blok in spairs(app) do
-		print(blok)
-	end
+	-- doe
 	if opt.d then
 		if opt.L then
 			print('=== START ===')
@@ -192,6 +194,13 @@ if opt.i then
 		if verbozeIntermediair then
 			print()
 		end
+
+	-- print
+	else
+		for naam,blok in spairs(app) do
+			print(blok)
+		end
+
 	end
 	return
 end

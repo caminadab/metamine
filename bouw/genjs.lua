@@ -25,6 +25,8 @@ sin(A)   -> Math.sin(A)
 vanaf(A 1)   -> A.splice(1)
 ]]
 local immjs = {
+	['niets'] = 'undefined',
+	['dt'] = 'dt',
 	['[]'] = '[$ARGS]',
 	['[]u'] = '$TARGS',
 	['{}'] = 'new Set([$ARGS])',
@@ -64,7 +66,7 @@ local immjs = {
 	['>'] = '$1 > $2',
 	['≥'] = '$1 >= $2',
 	['='] = '$1 === $2',
-	['≠'] = '$1 !=== $2',
+	['≠'] = '$1 !== $2',
 	['≤'] = '$1 <= $2',
 	['<'] = '$1 < $2',
 
@@ -113,7 +115,7 @@ local immjs = {
 			var array = Array.from(ass);
 			var ret = vars[varindex];
 			for (var i = 0; i < array.length; i++) {
-				if (array[i] !== null && array[i] !== false) {
+				if (array[i] !== undefined) {
 					ret = array[i];
 				}
 			}
@@ -142,18 +144,20 @@ for k,v in pairs(immjs) do
 end
 
 local immsym = {
-	['_2'] = '(function(_fn, _nieuwArg) { _oudArg = _arg || null; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
+	['niets'] = 'undefined',
+	['dt'] = 'dt',
+	['_2'] = '(function(_fn, _nieuwArg) { _oudArg = _arg || undefined; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
 	--['_'] = '(function(a) { return a[0](a[1]); })',
 	['|'] = [[ (function(conds) {
 		const it = conds.entries();
 		for (let entry of it) {
-			if (entry[1] !== null && entry[1] !== false) {
+			if (entry[1] !== undefined && entry[1] !== false) {
 				return entry[1];
 			}
 		}
 		//alert("Lege waarde");
 		//throw new Exception(":(");
-		return null;
+		return undefined;
 	}) ]],
 
 	-- func
@@ -169,7 +173,7 @@ local immsym = {
 			var ret = vars[varindex];
 			if (!lastUpdated[varindex] || runtime > lastUpdated[varindex]) {
 				for (var i = 0; i < array.length; i++) {
-					if (array[i] !== false && array[i] !== null) {
+					if (array[i] !== undefined) {
 						ret = array[i];
 						break;
 					}
@@ -242,10 +246,10 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['tekst'] = '(function(t) { if (t === null || t == undefined) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toString() : t.toString();})',
+	['tekst'] = '(function(t) { if (t === undefined) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toString() : t.toString();})',
 	['canvas.wis'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 	['html'] = [[(function (a) {
-		var t = a == null ? "null" : Array.isArray(a) ? a.toString() : a.toString();
+		var t = a == undefined ? "niets" : Array.isArray(a) ? a.toString() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
 			html = t;
@@ -255,15 +259,31 @@ local immsym = {
 	['herhaal.langzaam'] = [[(function f(t) {
 		if (stop) {stop = false; uit.innerHTML = ''; return; };
 		if (!isFinite(t))
+		{
+			dt = 0;
 			_G = t;
-		_G();
+		}
+		else
+		{
+			now = t / 1000;
+			if (prev)
+			{
+				dt = now - prev;
+			}
+			else
+			{
+				dt = 0;
+			}
+		}
+		_G(0);
 		mouseLeftPressed = false;
 		mouseLeftReleased = false;
 		_keysPressed.clear();
 		_keysReleased.clear();
 		mouseMoving = false;
 		start = false;
-		now = (new Date().getTime()) / 1000;
+
+		prev = now;
 		runtime = now - starttime;
 		requestAnimationFrame(f);
 		return true;
@@ -288,7 +308,7 @@ local immsym = {
 	cos = 'Math.cos',
 	tan = 'Math.tan',
 	atan = '(function(a) { return Math.atan2(a[1], a[0]); })',
-	niets = 'null',
+	niets = 'undefined',
 	['invoer.registreer'] = [[(function()
 		{
 			uit.onmouseup = function(ev) {
@@ -343,7 +363,7 @@ local immsym = {
 	sin = 'Math.sin',
 	cos = 'Math.cos',
 	tan = 'Math.tan',
-	niets = 'null',
+	niets = 'undefined',
 	['⊤'] = 'true',
 	['⊥'] = 'false',
 	['τ'] = 'Math.PI * 2',
@@ -479,7 +499,7 @@ function genjs(app)
 		end
 	end
 	table.insert(s, [[
-starttime = (new Date().getTime())/1000;
+starttime = performance.now() / 1000;
 start = true;
 now = starttime;
 runtime = 0;
@@ -496,6 +516,7 @@ _keys = {};
 _keysPressed = new Set();
 _keysReleased = new Set();
 start = true;
+dt = 0;
 html = "";
 uit = document.getElementById("uit");
 stop = false;
