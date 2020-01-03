@@ -12,6 +12,7 @@ nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
 
+misschien: bit
 (!): int → int
 
 ; verz

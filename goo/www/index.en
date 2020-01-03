@@ -13,6 +13,7 @@ a1web			A webservice translates your code to javascript. Your device then runs t
 vraag			Ask!
 vraagverz	Question sent
 stelvraag	Ask your question...
+kubus	; todo
 pong	; todo
 xdemo1			planets := []\nsuns := [ sun ]\nsun = ((9, 5), 0.3)\n\n; planeet = (pos,rad,vel)\nnieuweplaneet = (muis.pos, 0.13, (0,0.01))\n\nals muisKlik dan\n\tplaneten := planeten' ‖ [nieuweplaneet]\neind\n\nals planeten' en ¬ muisKlik dan\n\tplaneten := planeten' map beweeg\neind\n\nvplus = v1,v2 → v1₀+v2₀,v1₁+v2₁\nvmin = w1,w2 → w1₀-w2₀,w1₁-w2₁\nvmul = u1,u2 → u1₀·u2₀,u1₁·u2₁\nvafstand = a,b → ((a₀-b₀)²+(a₁-b₁)²)^0.5\n\n; zwaartekracht\ng = 0.0001 / r²\nr = vafstand(pos, zon₀)\n\nrichting = atan (pos vmin zon₀)\ngrav = ((zon₀) vmin pos) vmul (g,g)\nbeweeg = (pos,rad,vel) → (pos vplus vel),rad,(vel vplus grav)\nuit = canvas((planeten ‖ zonnen) map cirkel)
 xdemo1x		; je moet altijd 'uit' definieren\nuit = "hoi"

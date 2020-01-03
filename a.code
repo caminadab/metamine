@@ -1,5 +1,4 @@
-x := 0
-als toets.spatie dan
-	x += 1
-eind
-uit = x
+a = [3, 1, 2]
+b = a sorteer f
+f = c,d → c > d
+uit = b

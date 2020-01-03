@@ -32,6 +32,8 @@ local immjs = {
 	['{}'] = 'new Set([$ARGS])',
 
 	-- arit
+	--['sorteer'] = '$1.sort($2)',
+	['misschien'] = 'Math.random() < 0.5',
 	['map'] = '$1.map($2)',
 	['vouw'] = '$1.length == 0 ? (x => x) : $1.length == 1 ? $1[0] : $1.slice(1).reduce((x,y) => $2([x,y]),$1[0])',
 	['atoom'] = 'atoom$1',
@@ -145,6 +147,7 @@ end
 
 local immsym = {
 	['niets'] = 'undefined',
+	['misschien'] = 'Math.random() < 0.5',
 	['dt'] = 'dt',
 	['_2'] = '(function(_fn, _nieuwArg) { _oudArg = _arg || undefined; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
 	--['_'] = '(function(a) { return a[0](a[1]); })',
@@ -161,6 +164,7 @@ local immsym = {
 	}) ]],
 
 	-- func
+	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
 	['map'] = '(function(a){ return a[0].map(a[1]); })',
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
@@ -186,8 +190,8 @@ local immsym = {
 	]],
 
 	-- discreet
-	['min'] = 'Math.min',
-	['max'] = 'Math.max',
+	['min'] = '(function(a) { return Math.min(a[0], a[1]); })',
+	['max'] = '(function(a) { return Math.max(a[0], a[1]); })',
 	['entier'] = 'Math.floor',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
@@ -203,7 +207,7 @@ local immsym = {
 	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label3'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
 	['label2'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
-	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar d = xyr[1];\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+d) * 7.2) - 1, d * 7.2, d * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
+	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar d = xyr[1] || 1.0;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+d) * 7.2) - 1, d * 7.2, d * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
 

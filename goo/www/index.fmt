@@ -31,7 +31,7 @@
 
 <!-- in -->
 <div class="in" tabindex="1">
-	<textarea id="broncode" name="broncode">{pong}</textarea> 
+	<textarea id="broncode" name="broncode">{kubus}</textarea> 
 </div>
 
 <!-- uit! -->
@@ -308,7 +308,7 @@ canvas {
 	
 	var demoindex = 0;
 	var demos = [
-		`{pong}`, `{episch1}`, `{episch2}`,
+		`{kubus}`, `{pong}`, `{episch1}`, `{episch2}`,
 		`{demo1}`, `{demo2}`, `{demo3}`, `{demo4}`, `{demo5}`,
 		`{demo6}`, `{demo7}`, `{demo8}`, `{demo9}`, `{demo10}`,
 		`{demo11}`, `{demo12}`, `{demo13}`, `{demo14}`,
@@ -525,6 +525,7 @@ canvas {
 		"_0": "₀",
 		"_1": "₁",
 		"_2": "₂",
+		"_3": "₃",
 		"^-1": "⁻¹",
 		"RR": "ℝ",
 		"NN": "ℕ",

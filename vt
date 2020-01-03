@@ -175,7 +175,7 @@ end
 -- nieuwe lage JS
 if opt.javascript then
 	uit = genjs(app)
-	file('a.js', uit)
+	file('a.js', '\nperformance = {now: function() { return 0; }}\n'..uit)--{now: new Date().getTime()}')
 	print(uit)
 	if opt.d then
 		os.execute('js a.js')

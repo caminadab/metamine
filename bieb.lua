@@ -24,6 +24,7 @@ function bieb()
 	_arg = true,
 
 	['⊤'] = true,
+	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
 	['dt'] = 1/24, -- terminal altijd
 	['⊥'] = false,
 	log2 = function (a) return math.log(a, 2) end,
@@ -31,6 +32,7 @@ function bieb()
 	['τ'] = math.pi*2,
 	['π'] = math.pi,
 	start = true,
+	misschien = true,
 	fout = true,
 	['scherm.ververst'] = true,
 	inkleur = true,
