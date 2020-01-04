@@ -16,6 +16,7 @@ misschien: bit
 (!): int → int
 
 ; verz
+verzameling: (→)
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
@@ -72,6 +73,8 @@ nee: bit
 iets → iets: functie
 (_fn) : (iets→iets),iets → iets
 (_) :  ((iets→iets), iets) → iets
+zip: iets, iets → lijst
+zip1: iets, iets → lijst
 map: lijst, (iets→iets) → lijst
 filter: lijst, (iets→bit) → lijst
 

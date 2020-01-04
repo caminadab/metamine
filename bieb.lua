@@ -369,6 +369,24 @@ function bieb()
 		return aggr
 	end;
 
+	['zip'] = function(a)
+		local a,b = a[1],a[2]
+		local v = {}
+		for i=#a,1,-1 do
+			v[i] = {a[i], b[i]}
+		end
+		return v
+	end;
+
+	['zip1'] = function(a)
+		local a,b = a[1],a[2]
+		local v = {}
+		for i=#a,1,-1 do
+			v[i] = {a[i], b}
+		end
+		return v
+	end;
+
 	['map'] = function(a)
 		local a,b = a[1],a[2]
 		local r = {}

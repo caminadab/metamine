@@ -96,9 +96,18 @@ local immjs = {
 
 	-- exp
 	['log10'] = 'Math.log($1, 10)',
+	-- concatenate
 	['‖'] = 'Array.isArray($1) ? $1.concat($2) : $1 + $2',
 	['‖u'] = '$1 + $2',
-	['cat'] = '$1.join($2)', -- TODO werkt dit?
+	['cat'] = [[
+(function(lijst) {
+	var s = [];
+	for (var i = 0; i < lijst.length; i++)
+		for (var j = 0; j < lijst[j].length; j++)
+			push(s, lijst[i][j]);
+	return s;
+})
+]],
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
 	['catu'] = '$1.join($2)',
 
@@ -165,7 +174,9 @@ local immsym = {
 
 	-- func
 	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
-	['map'] = '(function(a){ return a[0].map(a[1]); })',
+	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
+	['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
+	['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 

@@ -201,7 +201,7 @@ function oplos(exp,voor)
 				-- maak test
 				local condvar = yvar --maakvar()
 				for i,naam in ipairs(zvars) do
-					print('SUB', naam)
+					--print('SUB', naam)
 					cond = substitueer(cond, X(naam), X('_', yvar, tostring(i-1)))
 					update = substitueer(update, X(naam), X('_', zvar, tostring(i-1)))
 				end

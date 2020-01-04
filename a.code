@@ -1,4 +1,3 @@
 a = [3, 1, 2]
-b = a sorteer f
-f = c,d → c > d
-uit = b
+b = 4 .. 7
+uit = a zip b

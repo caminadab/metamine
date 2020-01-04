@@ -6,11 +6,35 @@ canvas = invoer.registreer(html "<canvas width='1280' height='720'></canvas>")
 canvas.teken = canvas.wis ∘ (vormen vouw (∘))
 teken = vormen → (canvas.teken(canvas.context(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
+; matrix
+mat4.vmul = mvm,mvv → (mat4.transpose mvm) zip1 mvv map vec4.dot
+vec4.mul = va,vb → va zip vb map (·)
+mat4.mul = mma,mmb → mmA,mmB,mmC,mmD
+	mmg = mat4.transpose mma
+	mmA = mmg zip1 (mmb₀) map vec4.dot
+	mmB = mmg zip1 (mmb₁) map vec4.dot
+	mmC = mmg zip1 (mmb₂) map vec4.dot
+	mmD = mmg zip1 (mmb₃) map vec4.dot
+
+; transformatie
+transform.verplaats = tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tv₀,tv₁,tv₂,1))
+transform.schaal = tx,ty,tz → ((tx,0,0,0),(0,ty,0,0),(0,0,tz,0),(0,0,0,1))
+transform.draai = tda → (cos tda, sin tda, 0, 0), (-sin tda, cos tda, 0, 0), (0,0,1,0), (0,0,0,1)
+
 ; scherm
 scherm.breedte = 177.778
 scherm.hoogte = 100
 ;scherm.frequentie = ?
 ;dt = scherm.frequentie
+
+; fn
+kruid = f,a → (b → f(a,b))
+
+; mat4
+mat4.id = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1))
+mat4.transpose = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
+vec4.dot = da,db → da₀·db₀+da₁·db₁+da₂·db₂+da₃·db₃
+vec4.schaal = (vsx,vsy,vsz,vsw),vsf → (vsx·vsf,vsy·vsf,vsz·vsf,vsw·vsf)
 
 ; vec
 vec2.schaal = (vx,vy),vf → (vx·vf,vy·vf)
