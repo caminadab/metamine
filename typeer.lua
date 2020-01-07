@@ -45,8 +45,8 @@ local function eztypeer(exp)
 			else
 				return kopieer(symbool.getal)
 			end
-		elseif std[moes(exp)] then
-			return kloon(std[moes(exp)])
+		--elseif std[moes(exp)] then
+			--return kloon(std[moes(exp)])
 		end
 	elseif isobj(exp) then
 		return obj2sym[obj(exp)]

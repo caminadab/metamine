@@ -12,6 +12,13 @@ nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
 
+; net
+socket: int
+tcp.bind: int, int → socket
+tcp.accepteer: socket → lijst socket
+tcp.schrijf: socket, data → socket
+tcp.lees: socket → data
+
 misschien: bit
 (!): int → int
 
@@ -75,11 +82,13 @@ iets → iets: functie
 (_) :  ((iets→iets), iets) → iets
 zip: iets, iets → lijst
 zip1: iets, iets → lijst
+rzip1: iets, iets → lijst
 map: lijst, (iets→iets) → lijst
 filter: lijst, (iets→bit) → lijst
 
 ; lijst
 (×) : lijst, lijst → lijst
+;(‖) :  lijst, lijst → lijst
 (∘) : functie, functie → functie
 (|) : iets,iets → iets
 (=) :  (iets, iets) → bit 
@@ -103,7 +112,6 @@ cossin :  getal → getal, getal
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
 (#) :  lijst → int
-(‖) :  lijst, lijst → lijst
 
 ; set!
 set: verzameling

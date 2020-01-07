@@ -97,7 +97,6 @@
 	}
 	#uit {
 		width: 100%;
-		height: 56vh;
 		display: inline;
 		float: left;
 	}
@@ -297,6 +296,7 @@ canvas {
 <link rel="stylesheet" href="lib/slang.css">
 <link rel="stylesheet" href="lib/codemirror.css">
 
+<script src="lib/fastclick.js"></script>
 <script src="lib/codemirror.js"></script>
 <script src="lib/addon/edit/matchbrackets.js"></script>
 <script src="lib/addon/selection/active-line.js"></script>
@@ -319,7 +319,6 @@ canvas {
 		`{demo31}`, `{demo32}`, `{demo33}`, `{demo34}`,
 		`{demo35}`, `{demo36}`, `{demo37}`, `{demo38}`,
 		`{demo39}`, `{demo40}`, `{demo41}`,
-		// Vyp4l.l.l.lVy
 	];
 	var speelknop = document.getElementById("speel");
 	var fullscreenknop = document.getElementById("fullscreen");
@@ -372,6 +371,7 @@ canvas {
 		uit.children[0].requestFullscreen();
 	}
 
+	
 	speelknop.addEventListener("mousedown", vertaal);
 	fullscreenknop.addEventListener("mousedown", fullscreen);
 	volgendeknop.addEventListener("mousedown", function() {
@@ -443,8 +443,15 @@ canvas {
 		},
   });
 
+	// lokaal opslaan
+	if (localStorage.getItem("code"))
+		editor.setValue(localStorage.getItem("code"));
+	else
+		editor.setValue(demos[demoindex]);
+	setInterval((x) => localStorage.setItem("code", editor.getValue()), 10000);
+
+
 	//editor.setSize('50%', '300px');
-	editor.setValue(demos[demoindex]);
 
 	//editor.setSize(null, '800px');
 

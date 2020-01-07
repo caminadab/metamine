@@ -238,7 +238,7 @@ function doe(app)
 		io.write(ansi.wisregel, ansi.regelbegin)
 		ret = doeblok(app.init, env)
 		env.looptijd = socket.gettime() - starttijd
-		socket.sleep(1/24)
+		socket.sleep(1/10)
 	end
 
 	return ret

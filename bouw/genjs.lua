@@ -99,15 +99,6 @@ local immjs = {
 	-- concatenate
 	['‖'] = 'Array.isArray($1) ? $1.concat($2) : $1 + $2',
 	['‖u'] = '$1 + $2',
-	['cat'] = [[
-(function(lijst) {
-	var s = [];
-	for (var i = 0; i < lijst.length; i++)
-		for (var j = 0; j < lijst[j].length; j++)
-			push(s, lijst[i][j]);
-	return s;
-})
-]],
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
 	['catu'] = '$1.join($2)',
 
@@ -155,6 +146,13 @@ for k,v in pairs(immjs) do
 end
 
 local immsym = {
+	['cat'] = [[(function(lijst) {
+	var s = [];
+	for (var i = 0; i < lijst.length; i++)
+		for (var j = 0; j < lijst[i].length; j++)
+			s.push(lijst[i][j]);
+	return s;
+})]],
 	['niets'] = 'undefined',
 	['misschien'] = 'Math.random() < 0.5',
 	['dt'] = 'dt',
@@ -176,6 +174,7 @@ local immsym = {
 	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
 	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
 	['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
+	['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < b.length; i++) { c[i] = [a, b[i]]; }; return c;})',
 	['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
@@ -222,7 +221,7 @@ local immsym = {
 	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
 
-	['inkleur'] = [[
+	['verf'] = [[
 	(function(_args) {return (function(c){
 		var vorm = _args[0];
 		var kleur = _args[1];
@@ -263,7 +262,7 @@ local immsym = {
 	})]],
 	['tekst'] = '(function(t) { if (t === undefined) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toString() : t.toString();})',
 	['canvas.wis'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
-	['html'] = [[(function (a) {
+	['schrijf'] = [[(function (a) {
 		var t = a == undefined ? "niets" : Array.isArray(a) ? a.toString() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;

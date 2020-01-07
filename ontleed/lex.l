@@ -75,6 +75,7 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "⋃"		{ *yylval = A(GL, "⋃", nergens); return INTERSECTIEE; }
 "‖"		{ *yylval = A(GL, "‖", nergens); return CAT; }
 "||"		{ *yylval = A(GL, "‖", nergens); return CAT; }
+"|"		{ *yylval = A(GL, "|", nergens); return '|'; }
 "×"		{ *yylval = A(GL, "×", nergens); return CART; }
 ","		{ *yylval = A(GL, ",", nergens); return ','; }
 "^"		{ *yylval = A(GL, "^", nergens); return '^'; }
@@ -122,6 +123,9 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "√"		{ *yylval = A(GL, "√", nergens); return WORTEL; }
 ":="		{ *yylval = A(GL, ":=", nergens); return ASS; }
 "+="		{ *yylval = A(GL, "+=", nergens); return PLUSASS; }
+"-="		{ *yylval = A(GL, "-=", nergens); return MINASS; }
+"·="		{ *yylval = A(GL, "·=", nergens); return MAALASS; }
+"/="		{ *yylval = A(GL, "/=", nergens); return DEELASS; }
 
 "'"		//{ *yylval = A(GL, "'", nergens); return '\''; }
 

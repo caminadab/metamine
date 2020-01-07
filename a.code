@@ -1,3 +1,9 @@
-a = [3, 1, 2]
-b = 4 .. 7
-uit = a zip b
+gastheer = tcp.bind (0, 10101)
+klanten = tcp.accepteer gastheer
+
+;in = (0..looptijd) map (c → 'a')
+
+;uit = klanten zip1 in map tcp.schrijf
+
+; HTTP / 1.1\r\n
+; WGet

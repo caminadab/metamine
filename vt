@@ -48,7 +48,7 @@ Opties:
     -u, --uitvoer=UIT	uitvoerbestand
 
     -i      					genereer intermediaire code
-    -n, --naakt       draai het programma in veilige modus
+    -n, --naakt       compileer zonder stdbieb
     -j,	--javascript	compileer naar javascript
     -x,	--demo				compileer naar demo
 		

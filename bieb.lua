@@ -1,5 +1,6 @@
 require 'exp'
 require 'util'
+socket = require 'socket'
 
 local niets = {}
 
@@ -12,20 +13,93 @@ function bieb()
 	local inn = {}
 	local vars = {}
 
+	-- host, poort → socket
+	local sockets = {}
+	-- socket → set(socket)
+	local clients = {}
+	-- socket → int
+	local written = {}
+	-- read
+	local read = {}
+
 	local bieb = {
 
 	-- net
+
+	-- host, poort → socket
 	['tcp.verbind'] = function (args)
-		require 'socket'
 		local host,poort = args[1],args[2]
-		--socket.
+		if not sockets[host] or not sockets[host][poort] then
+			local sock = socket.connect(host, poort)
+			sock:settimeout(0)
+			sockets[host] = socket[host] or {}
+			sockets[host][poort] = sock
+			written[sock] = 0
+			read[sock] = ''
+		end
+		return sockets[host][poort]
+	end;
+
+	-- host, poort → socket
+	['tcp.bind'] = function (args)
+		local host,poort = args[1],args[2]
+		if not sockets[host] or not sockets[host][poort] then
+			local sock = socket.bind(host, poort)
+			sock:settimeout(0)
+			sockets[host] = socket[host] or {}
+			sockets[host][poort] = sock
+			clients[host] = {}
+		end
+		return sockets[host][poort]
+	end;
+
+	-- socket → set(socket)
+	['tcp.accepteer'] = function(sock)
+		clients[sock] = clients[sock] or {}
+		while true do
+			local client = sock:accept()
+			if client then
+				client:settimeout(0)
+				table.insert(clients[sock], client)
+			else
+				break
+			end
+		end
+		return clients[sock]
+	end;
+			
+	-- socket, data → socket
+	['tcp.schrijf'] = function(args)
+		local sock, data = args[1], args[2]
+		local n = written[sock] or 0
+		if type(data) == 'table' then
+			data = string.char(table.unpack(data))
+		end
+		if #data > n then
+			local w = sock:send(data, n+1)
+			if not tonumber(w) then
+				return
+			end
+			written[sock] = w
+		end
+		return written[sock]
+	end;
+
+	-- socket → data
+	['tcp.lees'] = function(sock)
+		read[sock] = read[sock] or ''
+		local data = sock:receive()
+		if data then
+			read[sock] = read[sock] .. data
+		end
+		return read[sock]
 	end;
 		
 	_arg = true,
 
 	['⊤'] = true,
 	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
-	['dt'] = 1/24, -- terminal altijd
+	['dt'] = 1/10, -- terminal altijd
 	['⊥'] = false,
 	log2 = function (a) return math.log(a, 2) end,
 	log10 = math.log10,
@@ -35,7 +109,7 @@ function bieb()
 	misschien = true,
 	fout = true,
 	['scherm.ververst'] = true,
-	inkleur = true,
+	verf = true,
 	schaal = true,
 
 	rgb = true,
@@ -61,7 +135,6 @@ function bieb()
 	-- web
 	['console.log'] =  function(s) print(s) end;
 	['herhaal.langzaam'] = function (f) f(1/24) end; --error('niet beschikbaar') end;
-	['html.schrijf'] = function () error('niet beschikbaar') end;
 	['canvas.context'] = function () error('niet beschikbaar') end;
 	['canvas.wis'] = function () error('niet beschikbaar') end;
 
@@ -85,7 +158,7 @@ function bieb()
 	['toets.neer.begin'] = true,
 	['toets.neer.eind'] = true,
 
-	['invoer.registreer'] = true, -- X_X
+	['invoer.registreer'] = function (a) return a end;
 
 
 	['_'] = function(a)
@@ -318,6 +391,7 @@ function bieb()
 		return r
 	end;
 
+	-- concatenate
 	['‖'] = function(a)
 		local a,b = a[1], a[2]
 		if type(a) == 'string' or type(b) == 'string' then
@@ -383,6 +457,15 @@ function bieb()
 		local v = {}
 		for i=#a,1,-1 do
 			v[i] = {a[i], b}
+		end
+		return v
+	end;
+
+	['rzip1'] = function(a)
+		local a,b = a[1],a[2]
+		local v = {}
+		for i=#b,1,-1 do
+			v[i] = {a, b[i]}
 		end
 		return v
 	end;
@@ -473,19 +556,9 @@ function bieb()
 		return x
 	end;
 
-	['html'] = function(a) return a end;
+	['schrijf'] = function(a) io.write(ansi.wisregel, ansi.regelbegin) ; io.write(a, '  '); io.flush() ; return a ; end;
 
-	['tekst'] = function(a)
-		local t
-		if a == true then t = 'ja' end 
-		if a == false then t = 'nee' end 
-		if tonumber(a) then t = tostring(a) end
-		if type(a) == 'string' then return a end
-		if type(a) == 'table' then
-			return string.char(table.unpack(a))
-		end
-		return tostring(a)
-	end;
+	['tekst'] = lenc,
 
 	['getal'] = function(a)
 		return tonumber(string.char(table.unpack(a)))

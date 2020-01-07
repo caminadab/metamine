@@ -1,12 +1,16 @@
-ververs = moment → invoer.registreer(html(tekst(uit)))
+ververs = moment → invoer.registreer(schrijf(tekst(uit)))
 app = herhaal.langzaam(ververs)
 
 itereert = scherm.ververst
-canvas = invoer.registreer(html "<canvas width='1280' height='720'></canvas>")
+canvas = invoer.registreer(schrijf "<canvas width='1280' height='720'></canvas>")
 canvas.teken = canvas.wis ∘ (vormen vouw (∘))
 teken = vormen → (canvas.teken(canvas.context(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
-; matrix
+; vec2
+vec2.mul = (vva,vvb),(vvc,vvd) → (vva·vvc, vvb·vvd)
+vec2.plus = (vwa,vwb),(vwc,vwd) → (vwa·vwc, vwb·vwd)
+
+; vec4
 mat4.vmul = mvm,mvv → (mat4.transpose mvm) zip1 mvv map vec4.dot
 vec4.mul = va,vb → va zip vb map (·)
 mat4.mul = mma,mmb → mmA,mmB,mmC,mmD
