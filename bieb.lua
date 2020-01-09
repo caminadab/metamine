@@ -26,6 +26,8 @@ function bieb()
 
 	-- net
 
+	['model'] = function () end,
+
 	-- host, poort → socket
 	['tcp.verbind'] = function (args)
 		local host,poort = args[1],args[2]
@@ -135,7 +137,8 @@ function bieb()
 	-- web
 	['console.log'] =  function(s) print(s) end;
 	['herhaal.langzaam'] = function (f) f(1/24) end; --error('niet beschikbaar') end;
-	['canvas.context'] = function () error('niet beschikbaar') end;
+	['canvas.context2d'] = function () error('niet beschikbaar') end;
+	['canvas.context3d'] = function () error('niet beschikbaar') end;
 	['canvas.wis'] = function () error('niet beschikbaar') end;
 
 	vierkant = function() error('niet beschikbaar') end;
@@ -167,8 +170,10 @@ function bieb()
 			return a:byte(b+1)
 		elseif type(a) == 'table' then
 			return a[b+1]
-		else
+		elseif type(a) == 'function' then
 			return a(b)
+		else
+			return b
 		end
 	end;
 
@@ -395,7 +400,13 @@ function bieb()
 	['‖'] = function(a)
 		local a,b = a[1], a[2]
 		if type(a) == 'string' or type(b) == 'string' then
-			return tostring(a) .. tostring(b)
+			if type(b) == 'table' then
+				return a .. string.char(table.unpack(b))
+			elseif type(a) == 'table' then
+				return string.char(table.unpack(a)) .. b
+			else
+				return tostring(a) .. b
+			end
 		end
 		local j = 1
 		local t = {f='[]'}

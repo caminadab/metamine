@@ -1,9 +1,14 @@
-gastheer = tcp.bind (0, 10101)
+gastheer = tcp.bind (0, 1237)
 klanten = tcp.accepteer gastheer
 
-;in = (0..looptijd) map (c → 'a')
+uit = klanten zip1 stroom map tcp.schrijf
 
-;uit = klanten zip1 in map tcp.schrijf
+data = tekst(looptijd)
 
-; HTTP / 1.1\r\n
-; WGet
+; http
+stroom = kop ‖ h1 ‖ h2 ‖ h3 ‖ h4 ‖ data
+kop = "HTTP/1.0 200 OK\r\n"
+h1 = "Host: localhost\r\n"
+h2 = "Server: Metamine\r\n"
+h3 = "Content-Length: " ‖ tekst(#data) ‖ "\r\n"
+h4 = "\r\n"

@@ -1,14 +1,20 @@
 ververs = moment → invoer.registreer(schrijf(tekst(uit)))
 app = herhaal.langzaam(ververs)
 
+; 3D
+
+
+
 itereert = scherm.ververst
 canvas = invoer.registreer(schrijf "<canvas width='1280' height='720'></canvas>")
 canvas.teken = canvas.wis ∘ (vormen vouw (∘))
-teken = vormen → (canvas.teken(canvas.context(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
+canvas.render = vormen vouw (∘)
+teken = vormen → (canvas.teken(canvas.context2d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
+render = vormen → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
 ; vec2
 vec2.mul = (vva,vvb),(vvc,vvd) → (vva·vvc, vvb·vvd)
-vec2.plus = (vwa,vwb),(vwc,vwd) → (vwa·vwc, vwb·vwd)
+vec2.plus = (vwa,vwb),(vwc,vwd) → (vwa+vwc, vwb+vwd)
 
 ; vec4
 mat4.vmul = mvm,mvv → (mat4.transpose mvm) zip1 mvv map vec4.dot
@@ -24,15 +30,14 @@ mat4.mul = mma,mmb → mmA,mmB,mmC,mmD
 transform.verplaats = tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tv₀,tv₁,tv₂,1))
 transform.schaal = tx,ty,tz → ((tx,0,0,0),(0,ty,0,0),(0,0,tz,0),(0,0,0,1))
 transform.draai = tda → (cos tda, sin tda, 0, 0), (-sin tda, cos tda, 0, 0), (0,0,1,0), (0,0,0,1)
+transform.comp = mat4.mul
+transformeer = mat4.vmul
 
 ; scherm
 scherm.breedte = 177.778
 scherm.hoogte = 100
 ;scherm.frequentie = ?
 ;dt = scherm.frequentie
-
-; fn
-kruid = f,a → (b → f(a,b))
 
 ; mat4
 mat4.id = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1))
