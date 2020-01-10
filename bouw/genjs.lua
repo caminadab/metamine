@@ -109,7 +109,7 @@ local immjs = {
 	['_u'] = '$1[$2]',
 	['_'] = 'Array.isArray($1) ? index($1,$2) : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
-	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => [x, y])))',
+	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => Array.isArray(x) ? Array.from(x).concat([y]) : [x, y])))', -- cartesisch product
 	['∘'] = 'function (a) { return $2($1(a)); }',
 	['_var'] = [[ (function(a) {
 			var varindex = a[0];
@@ -130,7 +130,7 @@ local immjs = {
 -- Shift-K
 
 local immjs0 = {}
-for k,v in pairs(immjs) do
+for k,v in spairs(immjs) do
 	local multi = v:match('$2')
 	if multi then
 		v = v:gsub('$1', '_arg[0]')
@@ -141,6 +141,8 @@ for k,v in pairs(immjs) do
 		v = v:gsub('$1', '_arg')
 	end
 	v = 'function(_arg) { return ' .. v .. '; }'
+	
+	print(k,v)
 
 	immjs0[k] = v
 end
@@ -219,9 +221,6 @@ local immsym = {
 	['model'] = [[(function(args) {
 		if (!window.gl) { return; }
 
-		return (function() {
-
-		/* Step1: Prepare the canvas and get WebGL context */
 
          /* Step2: Define the geometry and store it in buffer objects */
 
@@ -296,6 +295,9 @@ local immsym = {
          //Enable the attribute
          gl.enableVertexAttribArray(coord);
 
+		var f =  (function(_gl) {
+		alert('OK!');
+
          /* Step5: Drawing the required object (triangle) */
 
          // Clear the canvas
@@ -312,7 +314,12 @@ local immsym = {
 
          // Draw the triangle
          gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+				 return gl;
 			});
+		f(3);
+		alert('ok');
+		return f;
 
 		/*var positions = new Float32Array(args[0]);
 		var indices = new Int32Array(args[1]);
@@ -344,11 +351,9 @@ local immsym = {
 			uit.innerHTML = 'opengl error ' + e;
 			gl.clearColor(1,1,0,1);
 			gl.clear(gl.COLOR_BUFFER_BIT); //| gl.DEPTH_BUFFER_BIT);
-			*/
 
 		return (function(args) {
 		});
-		/*
 			gl.clearColor(1,1,0,1);
 			gl.clear(gl.COLOR_BUFFER_BIT); //| gl.DEPTH_BUFFER_BIT);
 			gl.viewport(0, 0, 180, 100);
@@ -378,7 +383,7 @@ local immsym = {
 
 	-- vormen
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, 0, Math.PI * 2);\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] || xyz[0]; var y = xyz[0][1] || xyz[1]; var r = xyz[0][0] ? xyz[1] : 1/xyz[2];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, Math.max(r,0) * 7.2, 0, Math.PI * 2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label3'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
 	['label2'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
@@ -425,7 +430,7 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['tekst'] = '(function(t) { if (t === undefined) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toString() : t.toString();})',
+	['tekst'] = 'TEXT',
 	['canvas.wis'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 	['schrijf'] = [[(function (a) {
 		var t = a == undefined ? "niets" : Array.isArray(a) ? a.toString() : a.toString();
@@ -490,6 +495,8 @@ local immsym = {
 	niets = 'undefined',
 	['invoer.registreer'] = [[(function()
 		{
+			if (!uit) return;
+
 			uit.onmouseup = function(ev) {
 				mouseLeftReleased = true;
 				mouseLeft = false;
@@ -700,15 +707,35 @@ html = "";
 uit = document.getElementById("uit");
 stop = false;
 
+function TEXT(t) {
+	if (t === undefined)
+		return "niets";
+	if (t === true) return "ja";
+	if (t === false) return "nee";
+
+	if (Array.isArray(t)) {
+		var r = "[";
+		for (var i = 0; i < t.length; i++) {
+			if (i > 0)
+				r += ", ";
+			r += TEXT(t[i]);
+		}
+		r += "]";
+		return r;
+	}
+
+	return t.toString();
+}
+
 function index(lijst, indices) {
-	if (indices % 1 == indices) {
-		return lijst[Math.floor(indices)]
-	} else {
+	if (Array.isArray(indices)) {
 		var r = lijst;
 		for (var i = 0; i < indices.length; i++) {
 			r = r[ indices[i] ];
 		}
 		return r
+	} else {
+		return lijst[Math.floor(indices)]
 	}
 }
 

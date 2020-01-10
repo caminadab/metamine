@@ -1,26 +1,24 @@
 ververs = moment → invoer.registreer(schrijf(tekst(uit)))
 app = herhaal.langzaam(ververs)
 
-; 3D
-
-
-
-itereert = scherm.ververst
+; canvas
 canvas = invoer.registreer(schrijf "<canvas width='1280' height='720'></canvas>")
-canvas.teken = canvas.wis ∘ (vormen vouw (∘))
-canvas.render = vormen vouw (∘)
-teken = vormen → (canvas.teken(canvas.context2d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
-render = vormen → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
+canvas.teken = canvas.wis ∘ (vormen2d vouw (∘))
+canvas.render = vormen3d vouw (∘)
+teken = vormen2d → (canvas.teken(canvas.context2d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
+render = vormen3d → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
 
-; vec2
-vec2.mul = (vva,vvb),(vvc,vvd) → (vva·vvc, vvb·vvd)
-vec2.plus = (vwa,vwb),(vwc,vwd) → (vwa+vwc, vwb+vwd)
+; vec
+vec.plus = va,vb → va zip vb map (+)
+vec.min = va,vb → va zip (vb map (-)) map (+)
+vec.mul  = va,vb → va zip vb map (·)
 
 ; vec4
-mat4.vmul = mvm,mvv → (mat4.transpose mvm) zip1 mvv map vec4.dot
-vec4.mul = va,vb → va zip vb map (·)
+vec4.plus = vec.plus
+vec4.mul = vec.mul
+mat4.vmul = mvm,mvv → (mat4.transponeer mvm) zip1 mvv map vec4.dot
 mat4.mul = mma,mmb → mmA,mmB,mmC,mmD
-	mmg = mat4.transpose mma
+	mmg = mat4.transponeer mma
 	mmA = mmg zip1 (mmb₀) map vec4.dot
 	mmB = mmg zip1 (mmb₁) map vec4.dot
 	mmC = mmg zip1 (mmb₂) map vec4.dot
@@ -29,7 +27,13 @@ mat4.mul = mma,mmb → mmA,mmB,mmC,mmD
 ; transformatie
 transform.verplaats = tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tv₀,tv₁,tv₂,1))
 transform.schaal = tx,ty,tz → ((tx,0,0,0),(0,ty,0,0),(0,0,tz,0),(0,0,0,1))
-transform.draai = tda → (cos tda, sin tda, 0, 0), (-sin tda, cos tda, 0, 0), (0,0,1,0), (0,0,0,1)
+
+; [a b 0]  [a 0 b]  [1 0 0]
+; [c d 0]  [0 1 0]  [0 a b]
+; [0 0 1]  [c 0 d]  [0 c d]
+transform.xdraai = tdx → (1,0,0,0), (0, cos tdx, sin tdx, 0), (0, -sin tdx, cos tdx, 0), (0,0,0,1)
+transform.ydraai = tdy → (cos tdy, 0, sin tdy, 0), (0,1,0,0), (-sin tdy, 0, cos tdy, 0), (0,0,0,1)
+transform.zdraai = tdz → (cos tdz, sin tdz, 0, 0), (-sin tdz, cos tdz, 0, 0), (0,0,1,0), (0,0,0,1)
 transform.comp = mat4.mul
 transformeer = mat4.vmul
 
@@ -41,14 +45,15 @@ scherm.hoogte = 100
 
 ; mat4
 mat4.id = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1))
-mat4.transpose = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
+mat4.transponeer = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
 vec4.dot = da,db → da₀·db₀+da₁·db₁+da₂·db₂+da₃·db₃
 vec4.schaal = (vsx,vsy,vsz,vsw),vsf → (vsx·vsf,vsy·vsf,vsz·vsf,vsw·vsf)
 
 ; vec
+vec2.plus = vec.plus
+vec2.mul  = vec.mul
 vec2.schaal = (vx,vy),vf → (vx·vf,vy·vf)
-vec2.plus = (wx1,wy1),(wx2,wy2) → wx1+wx2,wy1+wy2
-vec2.min = (px1,py1),(px2,py2) → px1-px2,py1-py2
+vec2.min  = (px1,py1),(px2,py2) → px1-px2,py1-py2
 vec2.unit = sincos
 
 ; toetsenbord
