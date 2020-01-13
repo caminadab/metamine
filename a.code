@@ -1,7 +1,7 @@
 gastheer = tcp.bind (0, 1237)
 klanten = tcp.accepteer gastheer
 
-uit = klanten zip1 stroom map tcp.schrijf
+;uit = klanten zip1 stroom map tcp.schrijf
 
 data = tekst(looptijd)
 
