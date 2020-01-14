@@ -43,7 +43,6 @@ cirkel: (ℝ,ℝ), ℝ → vorm
 ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
 lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
-teken: lijst(vorm) → canvas
 label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)

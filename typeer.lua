@@ -45,8 +45,8 @@ local function eztypeer(exp)
 			else
 				return kopieer(symbool.getal)
 			end
-		--elseif std[moes(exp)] then
-			--return kloon(std[moes(exp)])
+		elseif std[moes(exp)] then
+			return kloon(std[moes(exp)])
 		end
 	elseif isobj(exp) then
 		return obj2sym[obj(exp)]
@@ -62,15 +62,13 @@ function typeer(exp)
 	local maakvar = maakvars()
 
 	-- track
-	local track = verbozeTypes
 	local _types
-	if track then
+	if verbozeTypes then
 	_types = {}
 	setmetatable(types, {
 		__index = function(t,k) return _types[k] end;
 		__newindex = function(t,k,v)
 			v.var = v.var or maakvar()
-			print('Typeer', k, combineer(v), v.var)
 			if false and k == 'uit' and moes(v) ~= 'iets' then
 				assert(false)
 			end
@@ -123,7 +121,7 @@ function typeer(exp)
 			for i,sub in ipairs(exp) do
 				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
 				local fout
-				lijsttype,fout = typegraaf:intersectie(lijsttype, subtype, sub) --moetzijn(lijsttype, subtype, sub)
+				lijsttype,fout = typegraaf:unie(lijsttype, subtype, sub) --moetzijn(lijsttype, subtype, sub)
 				if not lijsttype then
 					lijsttype = X'iets'
 					fouten[#fouten+1] = fout
@@ -374,12 +372,14 @@ function typeer(exp)
 
 		-- standaardtypes
 		elseif std[fn(exp)] then
+			local s = std[fn(exp)]
 			local stdtype = kloon(std[fn(exp)])
-			local argtype = types[moes(exp.a)]
+			--local argtype = types[moes(arg(exp))]
+			local argtype = types[moes(arg(exp))]
 			local inn, uit = arg0(stdtype), arg1(stdtype)
 
 			-- typeer arg
-			--types[moes(exp.a)] = types[moes(exp.a)] or inn
+			types[moes(exp.a)] = types[moes(exp.a)] or inn
 			--print('ARGTYPE voor', combineer(argtype), combineer(inn), combineer(exp.a))
 			local sub = exp.a
 			if not sub then
@@ -387,14 +387,18 @@ function typeer(exp)
 				sub.loc = exp.loc
 			end
 			moetzijn(argtype, inn, sub)
-			--print('ARGTYPE na', combineer(argtype))
 
 			-- typeer exp
+			--types[moes(exp.a)] = argtype
 			types[moes(exp)] = uit
 
 		else
 			local m = moes(exp)
+			if isvar(m) then
+				error'OK'
+			end
 			types[m] = types[m] or X'iets'
+
 		end
 
 	end
@@ -426,7 +430,7 @@ function typeer(exp)
 		end
 	end
 
-	if track then
+	if verbozeTypes then
 		types = _types or types
 	end
 

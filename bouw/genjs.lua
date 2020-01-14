@@ -142,8 +142,6 @@ for k,v in spairs(immjs) do
 	end
 	v = 'function(_arg) { return ' .. v .. '; }'
 	
-	print(k,v)
-
 	immjs0[k] = v
 end
 

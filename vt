@@ -129,8 +129,6 @@ if opt.g or opt.debug or opt.ontkever then
 end
 
 local code = table.concat(map(bronnen, lees), '\n')
-local app,fouten = vertaal(code, bronnen[1])
-assert(app or #fouten > 0)
 
 if verbozeBroncode then
 	print('=== BRONCODE ===')
@@ -141,9 +139,13 @@ end
 if verbozeSyntax then
 	print('=== SYNTAX ===')
 	local asb = ontleed(code)
+	print('OK', lenc(asb))
 	print(combineer(asb))
 	print()
 end
+
+local app,fouten = vertaal(code, bronnen[1])
+assert(app or #fouten > 0)
 
 -- foutjuhhs
 if #fouten > 0 then

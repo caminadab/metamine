@@ -121,9 +121,9 @@ function bieb()
 		local index, set = a[1], a[2]
 		local ret = vars[index]
 		-- start
-		for exp in pairs(set) do
-			if exp ~= nil then
-				ret = exp
+		for i, val in pairs(set) do
+			if val ~= nil then
+				ret = val
 			end
 		end
 		vars[index] = ret

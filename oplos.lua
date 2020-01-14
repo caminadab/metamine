@@ -59,7 +59,7 @@ end
 -- functieargumenten
 
 -- oplos: exp → waarde,fouten
-function oplos(exp)
+function oplos(exp, voor)
 	local maakvar = maakvars()
 	local maakindex = maakindices(0)
 	local fouten = {}
@@ -109,8 +109,8 @@ function oplos(exp)
 			table.insert(ivars, var)
 		end
 
-		local eq = X('=', 'uit', ivars)
-		nieuw[eq] = true
+		--local eq = X('=', 'uit', ivars)
+		--nieuw[eq] = true
 
 		-- herschrijf (a += b) naar (a := a' + b / fps)
 		-- syntactic cocain

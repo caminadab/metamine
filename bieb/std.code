@@ -10,7 +10,7 @@ render = vormen3d → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas widt
 
 ; vec
 vec.plus = va,vb → va zip vb map (+)
-vec.min = va,vb → va zip (vb map (-)) map (+)
+;vec.min = va,vb → va zip (vb map (-)) map (+)
 vec.mul  = va,vb → va zip vb map (·)
 
 ; vec4

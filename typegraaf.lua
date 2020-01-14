@@ -200,14 +200,13 @@ function metatypegraaf:unie(a, b)
 		if obj(a) ~= obj(b) then
 			return self:maaktype(X'verzameling')
 		else
-			local t = {o = a.o}
 			for i=1,#a do
-				t[i] = self:unie(a[i], b[i])
-				if not t[i] then
-					t[i] = X'iets'
+				a[i] = self:unie(a[i], b[i])
+				if not a[i] then
+					a[i] = X'iets'
 				end
 			end
-			return t
+			return a
 		end
 	end
 	if isfn(a) and fn(a) == fn(b) then
@@ -237,7 +236,6 @@ function metatypegraaf:intersectie(a, b, exp)
 			local fout = typeerfout(exp.loc,
 					'{code} is {exp} maar moet {exp} zijn',
 					bron(exp), a, b)
-					print(fout2ansi(fout))
 			return false, fout
 		end
 	end
@@ -287,14 +285,16 @@ function metatypegraaf:intersectie(a, b, exp)
 					sub.loc = exp.loc
 				end
 
-				local ins, fout = self:intersectie(b[i], a[i], sub)
+				local ins, fout = self:intersectie(a[i], b[i], sub)
 
 				if not ins then
 					return false, fout
 				end
 
-				a[i] = ins
-				b[i] = ins
+				assign(a[i], ins)
+				assign(b[i], ins)
+				--a[i] = ins
+				--b[i] = ins
 			end
 			return a
 		end
