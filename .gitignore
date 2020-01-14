@@ -3,6 +3,7 @@
 # autogen
 *.yy.*
 *.gen.*
+*.en.code
 *.log
 ontleed/taal.c
 ontleed/taal.h

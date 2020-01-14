@@ -1,4 +1,5 @@
-ja				ja
+cc				nl
+anderecc	en
 welkom		Welkom
 welkom		Welkom
 kop1			Een nieuwe programmeertaal.

@@ -7,6 +7,8 @@ schrijf	write
 bit	bool
 ja	true
 nee	false
+transformeer	transform
+sorteer	sort
 
 tcp.bind tcp.bind
 tcp.lees tcp.read
@@ -17,6 +19,8 @@ udp.lees udp.read
 udp.schrijf udp.write
 udp.leesvan udp.readfrom
 udp.schrijfnaar udp.sendto
+
+vec2.plus	vec2.add
 
 als	if
 zolang	while

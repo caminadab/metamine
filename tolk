@@ -1,4 +1,5 @@
 #!/usr/bin/lua
+require 'util'
 
 NL2EN = {}
 EN2NL = {}
@@ -15,13 +16,15 @@ function toepas(pad)
 	end
 end
 
-toepas('../../../bieb/en.lst')
-toepas('endemo.lst')
+toepas('bieb/en.lst')
+toepas('bieb/demo.lst')
 
 
-local f = io.open((...))
-local code = f:read('*a')
-f:close()
+local inn, uit = ...
+if not inn and not uit then error('gebruik: tolk [IN] [UIT]') end
+if not inn then error('IN niet gedefineerd') end
+local code = file((inn))
+if not code then error('bestand niet gevonden') end
 
 local res = code:gsub('([%w%.]+)', function (token)
 		return NL2EN[token] or token
@@ -31,4 +34,9 @@ local res = res:gsub('(%w+)', function (token)
 		return NL2EN[token] or token
 end)
 
-print(res)
+if uit then
+	file(uit, res)
+else
+	print(res)
+end
+

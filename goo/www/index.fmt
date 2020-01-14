@@ -23,7 +23,7 @@
 	<button id="vorige">⏮</button>
 	<button id="speel">▶</button>
 	<button id="fullscreen">⇲</button><!--⛶-->
-	<button id="engels" onclick="document.location='{taallink}'"><img id="vlag" src="{taalvlag}"></img></button>
+	<button id="engels" onclick="localStorage.setItem('cc', '{anderecc}'); document.location='{taallink}';"><img id="vlag" src="{taalvlag}"></img></button>
 	<button id="volgende">⏭</button>
 	<!--<button id="opnieuw">⟲</button>-->
 	<!--<button id="info">🛈</button>-->
@@ -300,10 +300,14 @@ canvas {
 <script>
 
 	// autoherleid engels
-	if (localStorage.getItem("ja") == "{ja}") {
-		localStorage.setItem("ja", "nee");
+	if (localStorage.getItem("cc") != "{cc}") {
+		localStorage.setItem("cc", "{anderecc}");
 		document.location='{taallink}';
 	}
+
+	// demoindex
+
+	var cc = ("{cc}" == "nl") ? "" : ".en";
 
 	var demoindex = 0;
 	var demos = [ 'pong', 'kubus', 'cirkels', 'salvobal' ] ;
@@ -358,8 +362,6 @@ canvas {
 		uit.children[0].requestFullscreen();
 	}
 	
-	var cc = ("{ja}" == "ja") ? "" : ".en";
-
 	speelknop.addEventListener("mousedown", vertaal);
 	fullscreenknop.addEventListener("mousedown", fullscreen);
 	volgendeknop.addEventListener("mousedown", function() {
