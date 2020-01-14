@@ -1,1 +1,2 @@
-uit = x → x + 1
+uit = f "hoi"
+f = x → x + 1

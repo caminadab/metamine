@@ -1,0 +1,28 @@
+w = 18 ; width
+h = 10 ; height
+frame := 0 ; current frame
+pos = 0..w × 0..h ; every blockpositions
+
+
+; circlepattern
+f = 2 + 3 · sin(runtime)
+dx = x - mouse.x/10 
+dy = y - mouse.y/10
+dst = √(dx²+dy²)
+
+; is the block on (x,y) on?
+isblock = (x,y) → (-dst + runtime·10) mod 5 < sin(runtime)+2
+blocks = pos filter isblock
+
+; keeps track which frame this is
+if screen.refreshes then
+	frame := frame' + 1
+end
+
+shape = square((a·10,b·10),9)
+disco = paint(shape, color)
+color = rgb(a/10,b/10,sin(runtime)/2+0.5)
+squares = blocks map ((a,b) → disco)
+out = draw squares
+
+

@@ -1,5 +1,4 @@
 ; bal variabelen
-bal.snelheid = 2
 bal.straal = 5
 bal.x.start = scherm.breedte / 2
 bal.y.start = scherm.hoogte / 2
@@ -14,7 +13,6 @@ bal.vy := random.bereik(-1,1)
 speler.breedte = 10
 speler.hoogte = 25
 speler.y.start = scherm.hoogte/2 - speler.hoogte/2
-speler.y.min = 0
 speler.y.max = scherm.hoogte - speler.hoogte
 
 ; bal verplaatsing
@@ -47,14 +45,14 @@ bal.x.max = scherm.breedte - bal.straal - speler.breedte
 
 als bal.x > bal.x.max en rechts.raakt dan
  bal.x := bal.x.max
- bal.vx := - bal.snelheid
+ bal.vx := -2
  bal.vy := -(rechts.y - bal.y + speler.hoogte/2) / 4
 eind
 
 ; links stuiter
 als bal.x < bal.x.min en links.raakt dan
  bal.x := bal.x.min
- bal.vx := bal.snelheid
+ bal.vx := - bal.vx
  bal.vy := -(links.y - bal.y + speler.hoogte/2) / 4
 eind
 
@@ -104,7 +102,7 @@ links = rechthoek(links.min, links.max)
 ; teken bal
 bal = cirkel((bal.x,bal.y), bal.straal)
 
-label1 = label((90-9,90), tekst(score1))
-label2 = label((90+3,90), tekst(score2))
+label1 = label((90-9,90), tekst(score2))
+label2 = label((90+3,90), tekst(score1))
 
 uit = (bal.vx,bal.vy ⇒ (teken [ links, rechts, bal, label1, label2 ]))

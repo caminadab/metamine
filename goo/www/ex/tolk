@@ -1,0 +1,34 @@
+#!/usr/bin/lua
+
+NL2EN = {}
+EN2NL = {}
+
+function toepas(pad)
+	local flijst = io.open(pad) 
+	local lijst = flijst:read('*a')
+	flijst:close()
+
+
+	for NL, EN in lijst:gmatch('([%w%.]+)\t([%w%.]+)\n') do
+		NL2EN[NL] = EN
+		EN2NL[EN] = NL
+	end
+end
+
+toepas('../../../bieb/en.lst')
+toepas('endemo.lst')
+
+
+local f = io.open((...))
+local code = f:read('*a')
+f:close()
+
+local res = code:gsub('([%w%.]+)', function (token)
+		return NL2EN[token] or token
+end)
+
+local res = res:gsub('(%w+)', function (token)
+		return NL2EN[token] or token
+end)
+
+print(res)

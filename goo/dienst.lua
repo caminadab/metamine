@@ -92,7 +92,6 @@ function serveer(sock)
 		sock:close()
 		return false
 	end
-			print(line)
 	local methode,pad = line:match("([^ ]*) ([^ ]*) ([^ ]*)")
 
 	while true do
@@ -104,7 +103,6 @@ function serveer(sock)
 		if not line or line == '' then
 			break
 		end
-			print(line)
 		
 		local len0 = line:match('Content%-Length: (%d+)')
 		if len0 then
