@@ -86,9 +86,10 @@ local immjs = {
 	-- discreet
 	['min'] = 'Math.min($1,$2)',
 	['max'] = 'Math.max($1,$2)',
-	['entier'] = 'Math.floor($1)',
+	['afrond.onder'] = 'Math.floor($1)',
+	['afrond']       = 'Math.round($1)',
+	['afrond.boven'] = 'Math.ceil($1)',
 	['int'] = 'Math.floor($1)',
-	['intd'] = 'Math.floor($1)',
 	['abs'] = 'Math.abs($1)',
 	['absd'] = 'Math.abs($1)',
 	['absi'] = 'Math.abs($1)',

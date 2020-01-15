@@ -87,6 +87,12 @@ is-teken-witruimte = x → (x = ' ' ∨ x = 10 ∨ x = 13 ∨ x = 9
 "₂"		{ return I2; }
 "₃"		{ return I3; }
 "₄"		{ return I4; }
+
+"⌊"		{ return FLOORA; }
+"⌋"		{ return FLOORB; }
+"⌈"		{ return CEILA; }
+"⌉"		{ return CEILB; }
+
 _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "("		{ *yylval = A(GL, "(", nergens); return '('; }
 ")"		{ *yylval = A(GL, ")", nergens); return ')'; }

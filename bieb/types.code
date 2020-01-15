@@ -146,7 +146,9 @@ abs: getal → getal
 absd: getal → getal
 max: (getal,getal) → getal
 min: (getal,getal) → getal
-entier: getal → int
+afrond: getal → int
+afrond.boven: getal → int
+afrond.onder: getal → int
 (:): (iets,iets) → bit
 
 (iets → iets) : iets

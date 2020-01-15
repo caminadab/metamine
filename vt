@@ -139,7 +139,6 @@ end
 if verbozeSyntax then
 	print('=== SYNTAX ===')
 	local asb = ontleed(code)
-	print('OK', lenc(asb))
 	print(combineer(asb))
 	print()
 end

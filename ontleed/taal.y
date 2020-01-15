@@ -57,6 +57,10 @@
 %token FOUT
 %token NAAM "name"
 %token TEKST "text"
+%token FLOORA "⌊"
+%token FLOORB "⌋"
+%token CEILA  "⌈"
+%token CEILB  "⌉"
 %token ZOLANG "zolang"
 %token ALS "if"
 %token DAN "then"
@@ -284,6 +288,11 @@ exp:
 |	'#' exp  { $$ = FN1(L, LOC(L,$1,@1), $2, @$); }
 |	exp '!' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
 |	exp '%' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
+
+|	"⌈" exp "⌉"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond.boven", @2), $2, @$); }
+|	"⌊" exp "⌋"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond.onder", @2), $2, @$); }
+|	"⌊" exp "⌉"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond", @2), $2, @$); }
+|	"⌈" exp "⌋"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond", @2), $2, @$); }
 
 |	exp '<' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "≤" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }

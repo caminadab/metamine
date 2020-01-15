@@ -390,7 +390,6 @@ function typeer(exp)
 
 		-- standaardtypes
 		elseif std[fn(exp)] then
-			local s = std[fn(exp)]
 			local stdtype = kloon(std[fn(exp)])
 			--local argtype = types[moes(arg(exp))]
 			local argtype = types[moes(arg(exp))]

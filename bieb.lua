@@ -274,8 +274,6 @@ function bieb()
 	['/i'] = true,
 	['^i'] = true,
 	['modi'] = true,
-	['entier'] = function(a) return math.floor(a) end,
-	['ceiling'] = function(a) return math.ceil(a) end,
  
 	['+i'] = function(a,b) return a + b end,
 	['-i'] = function(a,b) return a - b end,
@@ -575,7 +573,9 @@ function bieb()
 		return tonumber(string.char(table.unpack(a)))
 	end;
 
-	['intd'] = math.floor,
+	['afrond.onder'] = math.floor;
+	['afrond.boven'] = math.ceil;
+	['afrond'] = function(a) return math.floor(a+0.5) end;
 
 	['int'] = function(a)
 		if tonumber(a) then
