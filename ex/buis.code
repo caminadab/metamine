@@ -20,16 +20,16 @@ als toets.omhoog dan y += -10 eind
 als toets.omlaag dan y += 10 eind
 
 ; viewport
-rechts    = (10·cos x,0,10·sin x)
-boven     = (0,10,0)
-rechtdoor = (10·sin x,0,10·-cos x)
-pos       = (90,55+y,-z·20+muis.x,50)
+rechts    = [10·cos x,0,10·sin x,0]
+boven     = [0,10,0,0]
+rechtdoor = [10·sin x,0,10·-cos x,0]
+pos       = [90,55+y,-z·20+muis.x,50,1]
 
 matrix = (rechts, boven, rechtdoor, pos)
 
 K = 20/pz-10
 k = rgb(K/w₀,K/w₁,K/w₂)
-h = matrix mat4.mul w
+h = matrix mat4.vmul w
 
 transformeer = w → h
 plot = px,py,pz·(muis.x-10),pw → verf(cirkel( ((px-90)/pz+90,(py-50)/pz+50), max(0,3/pz)), k)

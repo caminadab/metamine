@@ -7,9 +7,9 @@ require 'exp'
 
 local obj2sym = {
 	[','] = symbool.tupel,
-	['[]'] = symbool.lijst,
+	['[]'] = X('→', 'nat', 'iets'),
 	['{}'] = symbool.set,
-	['[]u'] = X('_', 'lijst', 'letter'),
+	['[]u'] = X('→', 'nat', 'letter'),
 	--['[]u'] = symbool.tekst,
 }
 
@@ -17,6 +17,15 @@ local stdbron = ontleed(file('bieb/types.code'), 'bieb/types.code')
 local std = {}
 
 for i,feit in ipairs(stdbron.a) do
+	for eq in boompairs(feit) do
+		if fn(eq) == '_' and arg0(eq).v == 'lijst' then
+			assign(eq, X('→', 'nat', arg1(eq)))
+		end
+		if atoom(eq) == 'lijst' then
+			assign(eq, X('→', 'nat', 'iets'))
+		end
+	end
+			
 	if fn(feit) == ':' then
 		local t,s = arg0(feit), arg1(feit)
 		std[moes(t)] = s
@@ -24,7 +33,6 @@ for i,feit in ipairs(stdbron.a) do
 end
 
 function linkbieb(typegraaf)
-	local stdbron = ontleed(file('bieb/types.code'), 'bieb/types.code')
 	for i,feit in ipairs(stdbron.a) do
 		if fn(feit) == ':' then
 			local t,s = arg0(feit), arg1(feit)
@@ -87,7 +95,7 @@ function typeer(exp)
 
 		ta.var = ta.var or maakvar()
 
-		--print(combineer(ta), combineer(tb), combineer(exp))
+		--print('moetzijn', combineer(ta), combineer(tb), combineer(exp))
 		check(ta)
 		check(tb)
 		check(exp)
@@ -123,22 +131,21 @@ function typeer(exp)
 			for i,sub in ipairs(exp) do
 				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
 				local fout
-				lijsttype,fout = typegraaf:unie(lijsttype, subtype, sub) --moetzijn(lijsttype, subtype, sub)
+				lijsttype,fout = typegraaf:intersectie(subtype, lijsttype, sub) --moetzijn(lijsttype, subtype, sub)
 				if not lijsttype then
 					lijsttype = X'iets'
 					fouten[#fouten+1] = fout
 				end
 				types[moes(sub)] = lijsttype
 			end
-			local type
-			if lijsttype then
-				type = typegraaf:maaktype(X('_', 'lijst', lijsttype))
-			else
-				type = typegraaf:maaktype(X'lijst')
+
+			-- metamine ondersteunt geen gemixte lijsten; gebruik tupels!
+			if false and atoom(lijsttype) == 'iets' then
+				local fout = typeerfout(exp.loc, "type van {code} is onzeker", bron(exp))
+				fouten[#fouten+1] = fout
 			end
-			if atoom(lijsttype) == 'iets' then
-				assign(type, X'lijst')
-			end
+
+			local type = typegraaf:maaktype(X('→', 'nat', lijsttype))
 			types[moes(exp)] = type
 
 		-- concatenatie
@@ -146,14 +153,19 @@ function typeer(exp)
 			local A = moes(arg0(exp))
 			local B = moes(arg1(exp))
 
-			moetzijn(types[A], X'lijst', arg0(exp))
-			moetzijn(types[B], X'lijst', arg1(exp))
+			moetzijn(types[A], X('→', 'nat', 'iets'), exp)
+			moetzijn(types[B], X('→', 'nat', 'iets'), exp)
+
+			--print('CAT A', A, e2s(types[A]))
+			--print('CAT B', B, e2s(types[B]))
 
 			local lijsttypeA = types[A]
 			local lijsttypeB = types[B]
 			local lijsttype = typegraaf:intersectie(lijsttypeA, lijsttypeB, exp)
 			if not lijsttype then
-				lijsttype = X'lijst'
+				local fout = typeerfout(exp.loc, "{code}: ongeldige concatenatie van {exp} en {exp}", bron(exp), lijsttypeA, lijsttypeB)
+				fouten[#fouten+1] = fout
+				lijsttype = X('→', 'nat', 'iets')
 			end
 
 			--print("CAT", combineer(lijsttypeA), combineer(lijsttypeB), combineer(lijsttype))
@@ -172,7 +184,7 @@ function typeer(exp)
 			types[B] = T
 			types[moes(exp)] = symbool.bit
 			types[moes(arg(exp))] = typegraaf:maaktype(X(',', T, T))
-			types[fn(exp)] = X'ja'
+			types[fn(exp)] = X'⊤'
 
 		elseif fn(exp) == '⋀' then
 			types[moes(exp)] = symbool.bit
@@ -246,7 +258,7 @@ function typeer(exp)
 			--print('expargs1', combineer(expargs))
 			local anya = X'iets'
 			local anyb = X'iets'
-			local lijsta = X('_', 'lijst', anya)
+			local lijsta = X('→', 'nat', anya)
 			local anyfunc = X('→', X(',', anya, anya), anyb)
 
 			-- A,A → B
@@ -292,42 +304,44 @@ function typeer(exp)
 
 
 		-- indexeer
-		-- a _ b  ⇒  ((X→Y) _ X) : Y
+		-- a _ b  :  ((X→Y) _ X) :  Y
 		elseif fn(exp) == '_' then
 			local functype = types[moes(arg0(exp))] -- type(a)  = X→Y
 			local argtype = types[moes(arg1(exp))]  -- type(b)  = X
 			assert(functype)
 			assert(argtype)
 
-			print('____', combineer(argtype), combineer(functype), combineer(exp), combineer(argtype))
+			--print('____', combineer(argtype), combineer(functype), combineer(exp), combineer(argtype))
 
 			local funcarg, returntype
 
 			if fn(functype) == '→' then
-
-				--print('voor', C(functype), C(anyfunc))
-
-				if fn(functype) ~= '→' then
-					local anyfunc = typegraaf:maaktype(X('→', 'iets', 'iets'))
-					functype = moetzijn(functype, anyfunc, arg0(exp))
-				end
-
-				--print('na', C(functype), C(anyfunc))
-
 				funcarg = moetzijn(argtype, arg0(functype), arg1(exp))
 				functype.a[1] = funcarg
-				returntype = functype.a[2]
+				returntype = arg1(functype)
 
 				--error(C(arg0(functype)))
 
 			elseif obj(functype) == ',' then
 				returntype = X'iets' --{f=X'|', a=functype}
-			elseif obj(functype) == '[]' then
-				returntype = moetzijn(argtype, arg1(functype), exp)
-			elseif fn(functype) == '_' and arg0(functype) == 'lijst' then
-				moetzijn(argtype, X'int', exp)
-				returntype = arg1(argtype) or X'iets'
+
 			else
+
+				local anyfunc = X('→', 'iets', 'iets')
+				moetzijn(functype, anyfunc, exp)
+
+				if fn(functype) ~= '→' then
+					returntype = X'iets'
+
+				else
+					--print('FUNCTYPE', combineer(functype))
+					--print('ARGTYPE', combineer(argtype))
+					moetzijn(arg0(functype), argtype, exp)
+
+					returntype = arg1(functype)
+				end
+
+				--[[
 				local fout = typeerfout(exp.loc or nergens,
 					"{code}: ongeldig functieargument {exp} voor {exp}",
 					bron(exp), argtype, functype
@@ -336,6 +350,8 @@ function typeer(exp)
 				--error(C(functype))
 				--returntype = typegraaf:maaktype(X'fout')
 				returntype = X'iets'
+				]]
+
 			end
 
 			types[moes(exp)] = returntype

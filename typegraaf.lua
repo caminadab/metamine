@@ -246,7 +246,7 @@ function metatypegraaf:intersectie(a, b, exp)
 	if isfn(a) and fn(a) == fn(b) then
 		local sub = exp.a
 		if not sub then
-			sub = X('argument van '..C(exp))
+			sub = X(C(exp))
 			sub.loc = exp.loc
 		end
 		local aa, fout = self:intersectie(a.a, b.a, sub)
@@ -258,16 +258,21 @@ function metatypegraaf:intersectie(a, b, exp)
     end
 	end
 
-	-- lijst_int  &  lijst  →  lijst_int
-	if isfn(a) and arg0(a) == atoom(b) then
-		return a
-	end
-	if isfn(b) and atoom(a) == arg0(b) then
-		assign(a, kopieer(b))
+	if atoom(a) == 'iets' then
+		return assign(a, b)
+	elseif atoom(b) == 'iets' then
 		return a
 	end
 
+	if (isatoom(a) and not isatoom(b)) or (not isatoom(a) and isatoom(b)) then
+		local fout = typeerfout(exp.loc,
+			'{code} is {exp} maar moet {exp} zijn',
+			bron(exp), a, b)
+		return false, fout
+	end
+
 	if isobj(a) and isobj(b) then
+		--error('ok')
 		if obj(a) ~= obj(b) or #a ~= #b then
 			local fout = typeerfout(exp.loc,
 					'{code} is {exp} maar moet {exp} zijn!!!',
@@ -281,7 +286,7 @@ function metatypegraaf:intersectie(a, b, exp)
 				--assert(exp[i], 'geen exp['..i..'] voor '..combineer(exp))
 				local sub = exp[i]
 				if not sub then
-					sub = X(i..'e '..C(exp))
+					sub = X(i..'e argument van '..C(exp))
 					sub.loc = exp.loc
 				end
 
@@ -305,7 +310,7 @@ function metatypegraaf:intersectie(a, b, exp)
 	if self:issubtype(a, b) then return a end
 	if self:issubtype(b, a) then assign(a, kopieer(b)) ; return a end
 
-	local fout = typeerfout(exp.loc or nergens,
+	local fout = typeerfout(exp.loc,
 		'{code} is {exp} maar moet {exp} zijn',
 		bron(exp), a, b)
 
