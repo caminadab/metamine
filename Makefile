@@ -13,7 +13,7 @@ webdemos: goo/www/ex/
 	./tolk ex/pong.code goo/www/ex/pong.en.code
 	./tolk ex/cirkels.code goo/www/ex/cirkels.en.code
 	./tolk ex/salvobal.code goo/www/ex/salvobal.en.code
-	./tolk ex/kubus.code goo/www/ex/kubus.en.code
+	./tolk ex/buis.code goo/www/ex/buis.en.code
 	
 
 ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c

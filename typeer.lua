@@ -72,7 +72,9 @@ function typeer(exp)
 			if false and k == 'uit' and moes(v) ~= 'iets' then
 				assert(false)
 			end
-			_types[k] = v end
+			print('TYPEER', k..': '..combineer(v))
+			_types[k] = v
+		end
 	})
 	end
 
@@ -290,14 +292,14 @@ function typeer(exp)
 
 
 		-- indexeer
-		-- a _ b ⇒ ((X→Y) _ X) : Y
+		-- a _ b  ⇒  ((X→Y) _ X) : Y
 		elseif fn(exp) == '_' then
-			local functype = types[moes(arg0(exp))]
-			local argtype = types[moes(arg1(exp))]
+			local functype = types[moes(arg0(exp))] -- type(a)  = X→Y
+			local argtype = types[moes(arg1(exp))]  -- type(b)  = X
 			assert(functype)
 			assert(argtype)
 
-			--print('____', combineer(argtype), combineer(functype), combineer(exp), combineer(argtype))
+			print('____', combineer(argtype), combineer(functype), combineer(exp), combineer(argtype))
 
 			local funcarg, returntype
 
@@ -330,7 +332,7 @@ function typeer(exp)
 					"{code}: ongeldig functieargument {exp} voor {exp}",
 					bron(exp), argtype, functype
 				)
-				--fouten[#fouten+1] = fout
+				fouten[#fouten+1] = fout
 				--error(C(functype))
 				--returntype = typegraaf:maaktype(X'fout')
 				returntype = X'iets'

@@ -131,6 +131,10 @@
 		height: 95vh;
 	}
 
+	button {
+		width: 10.01%;
+	}
+
 	textarea {
 		width: 50%;
 		display: inline;
@@ -169,7 +173,6 @@ button {
 	color: white;
 	text-decoration: none;
 	border: 0;
-	width: 10.01%;
 	font-size: 4vh;
 	height: 5vh;
 	display: inline;
@@ -310,7 +313,7 @@ canvas {
 	var cc = ("{cc}" == "nl") ? "" : ".en";
 
 	var demoindex = 0;
-	var demos = [ 'pong', 'kubus', 'cirkels', 'salvobal' ] ;
+	var demos = [ 'pong', 'buis', 'cirkels', 'salvobal' ] ;
 
 	var speelknop = document.getElementById("speel");
 	var fullscreenknop = document.getElementById("fullscreen");

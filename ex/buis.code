@@ -1,0 +1,45 @@
+; loop met pijltjes en WASD
+veld2 = -2..3 × -2..3 × -2..3 × [1]
+veld = veld2 map ((A,B,C,D) → (X,Y,Z,1))
+X = cos ((A/5+B/25)·τ+looptijd)
+Y = sin ((A/5+B/25)·τ+looptijd)
+Z = C/2
+
+l = looptijd / 100
+
+; camera
+x := 0
+y := 0
+z := 0
+
+als toets.w dan z += 1 eind
+als toets.s dan z += -1 eind
+als toets.d dan x += -1 eind
+als toets.a dan x += 1 eind
+als toets.omhoog dan y += -10 eind
+als toets.omlaag dan y += 10 eind
+
+; viewport
+rechts    = (10·cos x,0,10·sin x)
+boven     = (0,10,0)
+rechtdoor = (10·sin x,0,10·-cos x)
+pos       = (90,55+y,-z·20+muis.x,50)
+
+matrix = (rechts, boven, rechtdoor, pos)
+
+K = 20/pz-10
+k = rgb(K/w₀,K/w₁,K/w₂)
+h = matrix mat4.mul w
+
+transformeer = w → h
+plot = px,py,pz·(muis.x-10),pw → verf(cirkel( ((px-90)/pz+90,(py-50)/pz+50), max(0,3/pz)), k)
+
+
+punten = veld map transformeer
+gesorteerd = punten sorteer ggg
+ggg = fa,fb → fa₂ < fb₂
+
+; util
+uit = teken (gesorteerd map plot)
+
+

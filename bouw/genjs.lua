@@ -107,9 +107,11 @@ local immjs = {
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2-$1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1-$2))), (x,i) => $1 - 1 - i))',
 	['_u'] = '$1[$2]',
-	['_'] = 'Array.isArray($1) ? index($1,$2) : $1($2)',
+	['_'] = 'Array.isArray($1) ? index($1,$2) : typeof $1 == "string" ? $1[$2] : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
+
 	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => Array.isArray(x) ? Array.from(x).concat([y]) : [x, y])))', -- cartesisch product
+
 	['∘'] = 'function (a) { return $2($1(a)); }',
 	['_var'] = [[ (function(a) {
 			var varindex = a[0];
@@ -731,9 +733,9 @@ function index(lijst, indices) {
 		for (var i = 0; i < indices.length; i++) {
 			r = r[ indices[i] ];
 		}
-		return r
+		return r;
 	} else {
-		return lijst[Math.floor(indices)]
+		return lijst[Math.floor(indices)];
 	}
 }
 

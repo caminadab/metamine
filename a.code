@@ -1,2 +1,2 @@
-uit = f "hoi"
+uit = f 3
 f = x → x + 1

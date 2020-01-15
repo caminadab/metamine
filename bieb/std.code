@@ -12,17 +12,14 @@ render = vormen3d → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas widt
 vec.plus = va,vb → va zip vb map (+)
 ;vec.min = va,vb → va zip (vb map (-)) map (+)
 vec.mul  = va,vb → va zip vb map (·)
+vec.dot = vda,vdb → Σ (vda zip vdb map (·))
+vec.schaal = vsv,vsf → vsv zip1 vsf map (·)
 
 ; vec4
 vec4.plus = vec.plus
 vec4.mul = vec.mul
-mat4.vmul = mvm,mvv → (mat4.transponeer mvm) zip1 mvv map vec4.dot
-mat4.mul = mma,mmb → mmA,mmB,mmC,mmD
-	mmg = mat4.transponeer mma
-	mmA = mmg zip1 (mmb₀) map vec4.dot
-	mmB = mmg zip1 (mmb₁) map vec4.dot
-	mmC = mmg zip1 (mmb₂) map vec4.dot
-	mmD = mmg zip1 (mmb₃) map vec4.dot
+mat4.vmul = mvm,mvv → (mat4.transponeer mvm) zip1 mvv map vec.dot
+mat4.mul = m,v → (mat4.transponeer m) zip1 v map vec.dot
 
 ; transformatie
 transform.verplaats = tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tv₀,tv₁,tv₂,1))
@@ -46,8 +43,6 @@ scherm.hoogte = 100
 ; mat4
 mat4.id = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1))
 mat4.transponeer = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
-vec4.dot = da,db → da₀·db₀+da₁·db₁+da₂·db₂+da₃·db₃
-vec4.schaal = (vsx,vsy,vsz,vsw),vsf → (vsx·vsf,vsy·vsf,vsz·vsf,vsw·vsf)
 
 ; vec
 vec2.plus = vec.plus
