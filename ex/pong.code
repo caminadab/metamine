@@ -7,7 +7,7 @@ bal.x.max = scherm.breedte - speler.breedte - bal.straal
 bal.y.min = bal.straal
 bal.y.max = scherm.hoogte - bal.straal
 bal.vx := 1
-bal.vy := random.bereik(-1,1)
+bal.vy := willekeurig(-1,1)
 
 ; speler variabelen
 speler.breedte = 10

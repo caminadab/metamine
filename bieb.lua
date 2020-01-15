@@ -722,7 +722,7 @@ function bieb()
 		return t
 	end;
 
-	['random.bereik'] = function(t)
+	['willekeurig'] = function(t)
 		return math.random(t[1], t[2]-1)
 	end;
 

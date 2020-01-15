@@ -30,6 +30,9 @@
 
 		local asb,syntaxfouten,map = ontleed(code, naam)
 		--local scoped = scope(asb)
+		if type(asb) ~= 'table' then
+			return nil, { syntaxfout(nergens, "rommel"); }
+		end
 		local asb = vertolk(asb)
 
 		-- types

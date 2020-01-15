@@ -16,8 +16,10 @@ kommagetal: getal
 socket: int
 tcp.bind: int, int → socket
 tcp.accepteer: socket → lijst socket
-tcp.schrijf: socket, data → socket
-tcp.lees: socket → data
+tcp.schrijf: socket, lijst byte → socket
+tcp.lees: socket → lijst byte
+
+willekeurig: getal,getal → getal
 
 misschien: bit
 (!): int → int
@@ -29,7 +31,7 @@ tupel: verzameling
 zak: verzameling
 
 ; webspecifiek
-vorm: canvas → canvas
+vorm: functie
 html: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 canvas: lijst(letter)
@@ -41,6 +43,7 @@ rgb: (getal, getal, getal) → kleur
 vierkant: (ℝ,ℝ), ℝ → vorm
 cirkel: (ℝ,ℝ), ℝ → vorm
 ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
+boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
 lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 label: (ℝ,ℝ), lijst(letter) → vorm
@@ -150,7 +153,6 @@ entier: getal → int
 (iets → int) : iets
 
 byte: int
-data: lijst byte
 letter: int
 tekst: lijst letter
 
