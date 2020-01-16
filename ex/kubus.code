@@ -1,0 +1,43 @@
+; loop met pijltjes en W en S
+veld = -2..3 × -2..3 × -2..3 × [1]
+l = looptijd / 100
+
+a := 0
+b := 0
+c := 0
+
+mat4.transpose = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
+
+als toets.rechts dan a += -1 eind
+als toets.links dan a += 1 eind
+als toets.omhoog dan c += -10 eind
+als toets.omlaag dan c += 10 eind
+als toets.s dan b += -1 eind
+als toets.w dan b += 1 eind
+
+rechts    = (10·cos a,0,10·sin a)
+boven     = (0,10,0)
+rechtdoor = (10·sin a,0,10·-cos a)
+pos       = (90,55+c,100-b·20,50)
+
+matrix = mat4.transpose(rechts, boven, rechtdoor, pos)
+
+K = 20/pz-10
+k = rgb(K/w₀,K/w₁,K/w₂)
+h = matrix mat4.mulv w
+
+transformeer = w → h
+plot = px,py,pz·100,pw → verf(cirkel( ((px-90)/pz+90,(py-50)/pz+50), max(0,3/pz)), k)
+
+
+punten = veld2 map transformeer
+gesorteerd = punten sorteer ggg
+ggg = fa,fb → fa₂ < fb₂
+
+; util
+;mat2.mul = m,v → (m₀₀·v₀+m₀₁·v₁, m₁₀·v₀+m₁₁·v₁)
+;mat3.mul = m,v → (m₀₀·v₀+m₀₁·v₁+m₀₂, m₁₀·v₀+m₁₁·v₁+m₁₂, m₂₀·v₀+m₂₁·v₁+m₂₂) 
+dot4 = da,db → da₀·db₀+da₁·db₁+da₂·db₂+(da 3)·(db 3)
+mat4.mulv = m,v → (dot4(m₀,v), dot4(m₁, v), dot4(m₂, v), dot4((m 3), v)) 
+uit = teken (gesorteerd map plot)
+

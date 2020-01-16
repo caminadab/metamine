@@ -12,16 +12,26 @@ nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
 
+; net
+socket: int
+tcp.bind: int, int → socket
+tcp.accepteer: socket → lijst socket
+tcp.schrijf: socket, lijst byte → socket
+tcp.lees: socket → lijst byte
+
+willekeurig: getal,getal → getal
+
 misschien: bit
 (!): int → int
 
 ; verz
+verzameling: (→)
 lijst: verzameling
 tupel: verzameling
 zak: verzameling
 
 ; webspecifiek
-vorm: canvas → canvas
+vorm: functie
 html: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 canvas: lijst(letter)
@@ -33,9 +43,9 @@ rgb: (getal, getal, getal) → kleur
 vierkant: (ℝ,ℝ), ℝ → vorm
 cirkel: (ℝ,ℝ), ℝ → vorm
 ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
+boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
 lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
-teken: lijst(vorm) → canvas
 label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
@@ -72,11 +82,15 @@ nee: bit
 iets → iets: functie
 (_fn) : (iets→iets),iets → iets
 (_) :  ((iets→iets), iets) → iets
+zip: iets, iets → lijst
+zip1: iets, iets → lijst
+rzip1: iets, iets → lijst
 map: lijst, (iets→iets) → lijst
 filter: lijst, (iets→bit) → lijst
 
 ; lijst
 (×) : lijst, lijst → lijst
+;(‖) :  lijst, lijst → lijst
 (∘) : functie, functie → functie
 (|) : iets,iets → iets
 (=) :  (iets, iets) → bit 
@@ -100,7 +114,6 @@ cossin :  getal → getal, getal
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
 (#) :  lijst → int
-(‖) :  lijst, lijst → lijst
 
 ; set!
 set: verzameling
@@ -133,14 +146,15 @@ abs: getal → getal
 absd: getal → getal
 max: (getal,getal) → getal
 min: (getal,getal) → getal
-entier: getal → int
+afrond: getal → int
+afrond.boven: getal → int
+afrond.onder: getal → int
 (:): (iets,iets) → bit
 
 (iets → iets) : iets
 (iets → int) : iets
 
 byte: int
-data: lijst byte
 letter: int
 tekst: lijst letter
 

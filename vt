@@ -48,7 +48,7 @@ Opties:
     -u, --uitvoer=UIT	uitvoerbestand
 
     -i      					genereer intermediaire code
-    -n, --naakt       draai het programma in veilige modus
+    -n, --naakt       compileer zonder stdbieb
     -j,	--javascript	compileer naar javascript
     -x,	--demo				compileer naar demo
 		
@@ -129,8 +129,6 @@ if opt.g or opt.debug or opt.ontkever then
 end
 
 local code = table.concat(map(bronnen, lees), '\n')
-local app,fouten = vertaal(code, bronnen[1])
-assert(app or #fouten > 0)
 
 if verbozeBroncode then
 	print('=== BRONCODE ===')
@@ -144,6 +142,9 @@ if verbozeSyntax then
 	print(combineer(asb))
 	print()
 end
+
+local app,fouten = vertaal(code, bronnen[1])
+assert(app or #fouten > 0)
 
 -- foutjuhhs
 if #fouten > 0 then

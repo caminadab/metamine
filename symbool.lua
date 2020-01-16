@@ -95,6 +95,7 @@ end
 
 Al = {}
 function substitueerzuinig(exp, van, naar, maakvar, al)
+	if type(van) == 'string' then van = X(van) end
 	al = Al or al or {}
 	local moezen = exp.moezen
 
@@ -149,14 +150,14 @@ function substitueerzuinig(exp, van, naar, maakvar, al)
 	end
 	exp.moezen = moezen
 
-	if not moezen[moes(van)] then
-		return exp
-	end
+	--if not moezen[moes(van)] then
+--		return exp
+--	end
 
 	exp.moes = nil
 
 	-- hier gaan we!
-	local vannen = moezen[moes(van)]
+	local vannen = moezen[moes(van)] or {}
 
 	for i, sub in ipairs(vannen) do
 		ontlink(sub, i)

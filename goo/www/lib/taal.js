@@ -28,7 +28,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 
   // long list of standard functions from lua manual
   var builtins = wordRE([
-    "niets", "canvas", "uit", "ja", "nee", "fout", "∅",
+    "niets", "teken", "uit", "ja", "nee", "fout", "∅",
 		"tekst", "int", "getal", "cijfer", "letter", "witruimte",
 
 		// engels
@@ -37,12 +37,12 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 
 		// tekening
 		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "beige", "bruin", "geel", "cyaan",
-		"cirkel", "rechthoek", "vierkant", "lijn", "label", "boog", "polygoon", "map", "sin", "cos", "tan", "abs",
+		"cirkel", "rechthoek", "vierkant", "lijn", "label", "boog", "polygoon", "map", "zip", "vouw", "sin", "cos", "tan", "abs",
 		"atan",
 
 		// drawing
 		"red", "green", "blue", "orange", "purple", "black", "white", "grey", "beige", "brown", "yellow", "cyan",
-		"circle", "rectangle", "square", "line", "label", "arc", "polygon", "map", "sin", "cos", "tan", "abs",
+		"circle", "rectangle", "square", "line", "label", "arc", "polygon", "map", "zip", "fold", "sin", "cos", "tan", "abs",
   ]);
 	var keywords = wordRE([
 		"als","dan","andersals", "anders","eind",

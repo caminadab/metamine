@@ -9,6 +9,12 @@ run: linux
 
 test: linux
 	luajit test.lua
+
+webdemos: goo/www/ex/
+	./tolk ex/pong.code goo/www/ex/pong.en.code
+	./tolk ex/cirkels.code goo/www/ex/cirkels.en.code
+	./tolk ex/salvobal.code goo/www/ex/salvobal.en.code
+	./tolk ex/buis.code goo/www/ex/buis.en.code
 	
 
 ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c
@@ -37,6 +43,9 @@ all:
 
 goo/www/index.en.html: goo/www/index.fmt goo/www/index.en
 	./sjab goo/www/index.fmt goo/www/index.en goo/www/index.en.html
+
+goo/www/ex/demo.en.code: ex/demo.code bieb/en.lst bieb/demo.lst
+	./tolk ex/demo.code goo/www/ex/demo.en.code
 
 goo/www/index.nl.html: goo/www/index.fmt goo/www/index.nl 
 	./sjab goo/www/index.fmt goo/www/index.nl goo/www/index.nl.html

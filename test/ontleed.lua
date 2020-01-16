@@ -1,4 +1,5 @@
 require 'ontleed'
+require 'util'
 
 function unlisp(x)
 	local t = {}
@@ -28,21 +29,6 @@ function unlisp(x)
 	return table.concat(t)
 end
 
-function file(name, data)
-	if not data then
-		local f = io.open(name, 'r')
-		if not f then return false, 'bestand niet gevonden: '..name  end --error('file-not-found ' .. name) end
-		data = f:read("*a")
-		f:close()
-		return data
-	else
-		local f = io.open(name, 'w')
-		assert(f, 'onopenbaar: '..name)
-		f:write(data)
-		f:close()
-	end
-end
-
 local totaal,goed = 0,0
 local function passert(ok, msg)
 	totaal = totaal + 1
@@ -54,15 +40,15 @@ local function passert(ok, msg)
 	end
 end
 
-local tests = file('TESTS')
+local tests = file('test/ontleed.lst')
 for code in tests:gmatch('(.-)\n\n') do
 	local taal,moet = code:match('(.*)\n([^n]-)$')
 	if taal and moet then
-	--print()
-	--print(taal, moet)
-	local lisp = unlisp(ontleed(taal))
-	passert(lisp == moet, string.format('ontleed("%s") moet %s zijn maar is %s', taal, moet, lisp))
-end
+		--print()
+		--print(taal, moet)
+		local lisp = unlisp(ontleed(taal))
+		passert(lisp == moet, string.format('ontleed("%s") moet %s zijn maar is %s', taal, moet, lisp))
+	end
 end
 
 print(string.format('%d/%d goed (%.2d%%)', goed, totaal, goed/totaal*100))

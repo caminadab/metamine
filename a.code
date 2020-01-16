@@ -1,4 +1,1 @@
-a = [3, 1, 2]
-b = a sorteer f
-f = c,d → c > d
-uit = b
+uit = ⌊2.4⌋

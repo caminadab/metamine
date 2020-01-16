@@ -1,2 +1,12 @@
-x := 0
-uit = x
+teken cirkels
+
+cirkels = punt(0..10, y)
+
+teken = objecten → x
+
+als beeld.ververst
+	beeld := (objecten vouw (∘)) teken
+
+cirkel = (x,y,z) → { straal: 100/z }
+
+teken cirkel(10,20,30)

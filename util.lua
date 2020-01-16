@@ -47,16 +47,53 @@ function emap(exp, fn, ...)
 	return s
 end
 
+-- geheime functie
+-- lua obj -> nice string
 function lenc(t)
 	if type(t) == 'number' then
-		return t
+		return tostring(t)
+	elseif t == nil then
+		return 'niets'
+	elseif t == true then
+		return 'ja'
+	elseif t == false then
+		return 'nee'
 	elseif type(t) == 'string' then
 		return string.format('%q', t)
 	elseif type(t) == 'table' then
+		if not next(t) then
+			return '∅'
+		end
+		local islijst = true
+		local isset = true
+		for k,v in pairs(t) do
+			if not tonumber(k) or k % 1 ~= 0 then
+				islijst = false
+			end
+			if v ~= true and v ~= false then
+				isset = false
+			end
+		end
+		if islijst then
+			local r = {}
+			r[#r+1] = '['
+			for _,v in pairs(t) do
+				r[#r+1] = lenc(v)
+				r[#r+1] = ','
+			end
+			r[#r] = nil
+			r[#r+1] = ']'
+			return table.concat(r)
+		end
+
 		local r = {}
 		r[#r+1] = '{'
 		for k,v in pairs(t) do
-			r[#r+1] = lenc(k)..'='..lenc(v)
+			if isset then
+				r[#r+1] = lenc(k)
+			else
+				r[#r+1] = lenc(k)..'='..lenc(v)
+			end
 			r[#r+1] = ','
 		end
 		if r[#r] == ',' then r[#r] = nil end

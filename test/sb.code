@@ -4,36 +4,36 @@ geel = rgb(1,1,0)
 blauw = rgb(0,0,1)
 wit = rgb(1,1,1)
 spelerBoog = pos → boog(pos, 10, τ/2, τ)
-net = (rechthoek((kantW-2,0),(kantW+2,20))) inkleur wit
+net = (rechthoek((kantW-2,0),(kantW+2,20))) verf wit
 
 ; links
-linksX := kantW/2
-linksY := 0
-linksVy := 0
-links = (spelerBoog(linksX, linksY)) inkleur geel
+links.x := kantW/2
+links.y := 0
+links.vy := 0
+links = (spelerBoog(links.x, links.y)) verf geel
 
 ; rechts
-rechtsX := kantW/2·3
-rechtsY := 0
-rechts = (spelerBoog(rechtsX, rechtsY)) inkleur blauw
+rechts.x := kantW/2·3
+rechts.y := 0
+rechts = (spelerBoog(rechts.x, rechts.y)) verf blauw
 
 ; links invoer
-als toetsA en linksX' > 0 dan
-	linksX := linksX' - 1
+als toets.a en links.x' > 0 dan
+	links.x := links.x' - 1
 eind
-als toetsD en linksX' < kantW dan
-	linksX := linksX' + 1
+als toets.d en links.x < kantW dan
+	links.x := links.x' + 1
 eind
-als toetsW en linksY' = 0 dan
-	linksVy := -8
+als toets.w en links.y = 0 dan
+	links.vy := -8
 eind
-als linksY' ≠ 0 en linksVy' ≠ 0 dan
-	linksY := linksY' + linksVy'
+als links.y ≠ 0 en links.vy ≠ 0 dan
+	links.y := linksy + links.vy'
 eind
 
-als toetsLinks en rechtsX' > kantW dan
-	rechtsX := rechtsX' - 1
+als toets.links en rechts.x > kantW dan
+	rechts.x := rechts.x - 1
 eind
-als toetsRechts en rechtsX' < kantW·2 dan
-	rechtsX := rechtsX' + 1
+als toets.rechts en rechts.x < kantW·2 dan
+	rechts.x := rechts.x + 1
 eind

@@ -1,6 +1,15 @@
-x := 0
-uit = x
+a = tcp.gastheer
+gastheer = tcp.bind (0, 10101)
+klanten = tcp.accepteer gastheer
 
-als toets.spatie dan
-	x := x' + 1
-eind
+uit = klanten zip1 stroom map tcp.schrijf
+
+;h1 = "Host: localhost\r\n"
+;h2 = "Server: METAMINE\r\n"
+
+data = "hoi"
+
+stroom = kop || h1 || h2 || data
+kop = "HTTP/1.0 200 OK\r\n"
+h1 = "Host: localhost\r\n"
+h2 = "Server: METAMINE\r\n"

@@ -1,0 +1,27 @@
+w = 18 ; breedte
+h = 10 ; hoogte
+frame := 0 ; huidige frame
+pos = 0..w × 0..h ; alle blokposities
+
+
+; cirkelpatroon
+f = 2 + 3 · sin(looptijd)
+dx = x - muis.x/10 
+dy = y - muis.y/10
+dst = √(dx²+dy²)
+
+; staat het blok op (x,y) aan?
+isblok = (x,y) → (-dst + looptijd·10) mod 5 < sin(looptijd)+2
+blokken = pos filter isblok
+
+; houdt bij welke frame dit is
+als scherm.ververst dan
+	frame := frame' + 1
+eind
+
+vorm = vierkant((a·10,b·10),9)
+disco = verf(vorm, kleur)
+kleur = rgb(a/10,b/10,sin(looptijd)/2+0.5)
+vierkanten = blokken map ((a,b) → disco)
+uit = teken vierkanten
+

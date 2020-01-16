@@ -1,3 +1,7 @@
+; LEXSCOPE
+als a > 2
+	b = 3
+
 ; BASIS
 a = 3
 ⋀([](=(a 3)))

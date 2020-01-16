@@ -7,9 +7,31 @@ schrijf	write
 bit	bool
 ja	true
 nee	false
+transformeer	transform
+sorteer	sort
+
+willekeurig	random
+
+tcp.bind tcp.bind
+tcp.lees tcp.read
+tcp.schrijf tcp.write
+tcp.accepteer tcp.accept
+udp.bind udp.bind
+udp.lees udp.read
+udp.schrijf udp.write
+udp.leesvan udp.readfrom
+udp.schrijfnaar udp.sendto
+
+vec2.plus	vec2.add
 
 als	if
 zolang	while
+eind	end
+dan	then
+
+of	or
+en	and
+niet	not
 
 getal	double
 int	int
@@ -55,6 +77,7 @@ straal	radius
 vorm	shape
 canvas	canvas
 cirkel	circle
+boog	arc
 vierkant	square
 rechthoek	rectangle
 
@@ -70,7 +93,9 @@ wit	white
 uit	out
 
 scherm.ververst	screen.refreshes
-inkleur	paint
+scherm.breedte	screen.width
+scherm.hoogte	screen.height
+verf	paint
 teken	draw
 
 muis.x	mouse.x

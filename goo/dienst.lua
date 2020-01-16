@@ -50,6 +50,7 @@ function vt(code, naam)
 	if icode then
 		js = genjs(icode)
 	end
+	file('a.js', js)
 	local fouten = map(fouten, fout2json)
 
 	return {

@@ -1,0 +1,17 @@
+; hele veld is ~180
+l := (45, 0)
+r := (135, 0)
+
+speler = pos → boog(pos, 10, τ/2, τ)
+net = rechthoek((88,0),(92,20))
+
+vp = vec2.plus
+
+als toets.links dan r := r' vp (-1, 0) eind
+als toets.rechts dan r := r' vp (1, 0) eind
+
+als toets.a dan l := l' vp (-1, 0) eind
+als toets.d dan l := l' vp (1, 0) eind
+
+;x = (Vx,Vy) → Vx
+uit = teken [speler l, speler r, net]

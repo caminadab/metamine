@@ -55,7 +55,7 @@ local immjs = {
 	['mod'] = '$1 % $2',
 	['modi'] = '$1 % $2',
 	['modd'] = '$1 % $2',
-	['random.bereik'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
+	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
 	['√'] = 'Math.pow($1, 0.5)',
 	['^'] = 'Math.pow($1, $2)',
 	['^i'] = 'Math.pow($1, $2)',
@@ -86,9 +86,10 @@ local immjs = {
 	-- discreet
 	['min'] = 'Math.min($1,$2)',
 	['max'] = 'Math.max($1,$2)',
-	['entier'] = 'Math.floor($1)',
+	['afrond.onder'] = 'Math.floor($1)',
+	['afrond']       = 'Math.round($1)',
+	['afrond.boven'] = 'Math.ceil($1)',
 	['int'] = 'Math.floor($1)',
-	['intd'] = 'Math.floor($1)',
 	['abs'] = 'Math.abs($1)',
 	['absd'] = 'Math.abs($1)',
 	['absi'] = 'Math.abs($1)',
@@ -96,9 +97,9 @@ local immjs = {
 
 	-- exp
 	['log10'] = 'Math.log($1, 10)',
+	-- concatenate
 	['‖'] = 'Array.isArray($1) ? $1.concat($2) : $1 + $2',
 	['‖u'] = '$1 + $2',
-	['cat'] = '$1.join($2)', -- TODO werkt dit?
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
 	['catu'] = '$1.join($2)',
 
@@ -107,9 +108,11 @@ local immjs = {
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2-$1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1-$2))), (x,i) => $1 - 1 - i))',
 	['_u'] = '$1[$2]',
-	['_'] = 'Array.isArray($1) ? $1[$2] : $1($2)',
+	['_'] = 'Array.isArray($1) ? index($1,$2) : typeof $1 == "string" ? $1[$2] : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
-	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => [x, y])))',
+
+	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => Array.isArray(x) ? Array.from(x).concat([y]) : [x, y])))', -- cartesisch product
+
 	['∘'] = 'function (a) { return $2($1(a)); }',
 	['_var'] = [[ (function(a) {
 			var varindex = a[0];
@@ -130,7 +133,7 @@ local immjs = {
 -- Shift-K
 
 local immjs0 = {}
-for k,v in pairs(immjs) do
+for k,v in spairs(immjs) do
 	local multi = v:match('$2')
 	if multi then
 		v = v:gsub('$1', '_arg[0]')
@@ -141,15 +144,22 @@ for k,v in pairs(immjs) do
 		v = v:gsub('$1', '_arg')
 	end
 	v = 'function(_arg) { return ' .. v .. '; }'
-
+	
 	immjs0[k] = v
 end
 
 local immsym = {
+	['cat'] = [[(function(lijst) {
+	var s = [];
+	for (var i = 0; i < lijst.length; i++)
+		for (var j = 0; j < lijst[i].length; j++)
+			s.push(lijst[i][j]);
+	return s;
+})]],
 	['niets'] = 'undefined',
 	['misschien'] = 'Math.random() < 0.5',
 	['dt'] = 'dt',
-	['_2'] = '(function(_fn, _nieuwArg) { _oudArg = _arg || undefined; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
+	['_2'] = '(function(_fn, _nieuwArg) { alert("ok"); _oudArg = _arg || undefined; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
 	--['_'] = '(function(a) { return a[0](a[1]); })',
 	['|'] = [[ (function(conds) {
 		const it = conds.entries();
@@ -165,7 +175,10 @@ local immsym = {
 
 	-- func
 	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
-	['map'] = '(function(a){ return a[0].map(a[1]); })',
+	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
+	['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
+	['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < b.length; i++) { c[i] = [a, b[i]]; }; return c;})',
+	['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 
@@ -198,12 +211,180 @@ local immsym = {
 	['sign'] = '($1 > 0 ? 1 : -1)',
 	
 	-- LIB
-	['canvas.context'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
+	['canvas.context2d'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
+	['canvas.context3d'] = '(function() { if (uit.children.length > 0 && !window.gl) gl = uit.children[0].getContext("webgl"); return gl; })',
+
 	['console.log'] = 'console.log',
 
-	-- muis
+	-- 3D
+
+	-- model: positions & indices
+	['model'] = [[(function(args) {
+		if (!window.gl) { return; }
+
+
+         /* Step2: Define the geometry and store it in buffer objects */
+
+         var vertices = [-0.5, 0.5, -0.5, -0.5, 0.0, -0.5,];
+
+         // Create a new buffer object
+         var vertex_buffer = gl.createBuffer();
+
+         // Bind an empty array buffer to it
+         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+         
+         // Pass the vertices data to the buffer
+         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+         // Unbind the buffer
+         gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+         /* Step3: Create and compile Shader programs */
+
+         // Vertex shader source code
+         var vertCode =
+            'attribute vec2 coordinates;' + 
+            'void main(void) {' + ' gl_Position = vec4(coordinates,0.0, 1.0);' + '}';
+
+         //Create a vertex shader object
+         var vertShader = gl.createShader(gl.VERTEX_SHADER);
+
+         //Attach vertex shader source code
+         gl.shaderSource(vertShader, vertCode);
+
+         //Compile the vertex shader
+         gl.compileShader(vertShader);
+
+         //Fragment shader source code
+         var fragCode = 'void main(void) {' + 'gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' + '}';
+
+         // Create fragment shader object
+         var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+         // Attach fragment shader source code
+         gl.shaderSource(fragShader, fragCode);
+
+         // Compile the fragment shader
+         gl.compileShader(fragShader);
+
+         // Create a shader program object to store combined shader program
+         var shaderProgram = gl.createProgram();
+
+         // Attach a vertex shader
+         gl.attachShader(shaderProgram, vertShader); 
+         
+         // Attach a fragment shader
+         gl.attachShader(shaderProgram, fragShader);
+
+         // Link both programs
+         gl.linkProgram(shaderProgram);
+
+         // Use the combined shader program object
+         gl.useProgram(shaderProgram);
+
+         /* Step 4: Associate the shader programs to buffer objects */
+
+         //Bind vertex buffer object
+         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+         //Get the attribute location
+         var coord = gl.getAttribLocation(shaderProgram, "coordinates");
+
+         //point an attribute to the currently bound VBO
+         gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
+
+         //Enable the attribute
+         gl.enableVertexAttribArray(coord);
+
+		var f =  (function(_gl) {
+		alert('OK!');
+
+         /* Step5: Drawing the required object (triangle) */
+
+         // Clear the canvas
+         gl.clearColor(0.5, 0.5, 0.5, 0.9);
+
+         // Enable the depth test
+         gl.enable(gl.DEPTH_TEST); 
+         
+         // Clear the color buffer bit
+         gl.clear(gl.COLOR_BUFFER_BIT);
+
+         // Set the view port
+         gl.viewport(0,0,1280,720);
+
+         // Draw the triangle
+         gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+				 return gl;
+			});
+		f(3);
+		alert('ok');
+		return f;
+
+		/*var positions = new Float32Array(args[0]);
+		var indices = new Int32Array(args[1]);
+
+		if (!window.J) {
+			window.J = true;
+		}
+
+    g_vbo = gl.createBuffer();
+    g_elementVbo = gl.createBuffer();
+
+		// punten
+    gl.bindBuffer(gl.ARRAY_BUFFER, g_vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, positions.length * 4, gl.STATIC_DRAW);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, positions);
+
+		// indices
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_elementVbo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices.length * 4, gl.STATIC_DRAW);
+		gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, indices);
+    g_numElements = indices.length;
+
+		gl.viewport(0, 0, 180, 100);
+		gl.enable(gl.DEPTH_TEST);
+
+		// errors
+		var e = gl.getError();
+		if (e != gl.NO_ERROR && e != gl.CONTEXT_LOST_WEBGL)
+			uit.innerHTML = 'opengl error ' + e;
+			gl.clearColor(1,1,0,1);
+			gl.clear(gl.COLOR_BUFFER_BIT); //| gl.DEPTH_BUFFER_BIT);
+
+		return (function(args) {
+		});
+			gl.clearColor(1,1,0,1);
+			gl.clear(gl.COLOR_BUFFER_BIT); //| gl.DEPTH_BUFFER_BIT);
+			gl.viewport(0, 0, 180, 100);
+
+			// Bind and set up vertex streams
+			gl.bindBuffer(gl.ARRAY_BUFFER, g_vbo);
+			gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+			gl.enableVertexAttribArray(0);
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_elementVbo);
+			gl.enableVertexAttribArray(1);
+
+			if (!window.A) {
+				gl.drawElements(gl.TRIANGLES, g_numElements, gl.UNSIGNED_SHORT, 0);
+				window.A = true;
+			}
+
+			// errors
+			var e = gl.getError();
+			if (e != gl.NO_ERROR && e != gl.CONTEXT_LOST_WEBGL)
+				uit.innerHTML = 'opengl error ' + e;
+
+			return gl;
+		});
+		*/
+
+	})]],
+
+	-- vormen
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, 0, Math.PI * 2);\n\t\tc.fill();\n\t\treturn c;}); })',
+	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] || xyz[0]; var y = xyz[0][1] || xyz[1]; var r = xyz[0][0] ? xyz[1] : 1/xyz[2];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, Math.max(r,0) * 7.2, 0, Math.PI * 2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); })',
 	['label3'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
 	['label2'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
@@ -211,7 +392,7 @@ local immsym = {
 	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
 	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
 
-	['inkleur'] = [[
+	['verf'] = [[
 	(function(_args) {return (function(c){
 		var vorm = _args[0];
 		var kleur = _args[1];
@@ -250,9 +431,9 @@ local immsym = {
 		c.stroke();
 		return c;});
 	})]],
-	['tekst'] = '(function(t) { if (t === undefined) return "niets"; if (t === true) return "ja"; if (t === false) return "nee"; return Array.isArray(t) ? t.toString() : t.toString();})',
+	['tekst'] = 'TEXT',
 	['canvas.wis'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
-	['html'] = [[(function (a) {
+	['schrijf'] = [[(function (a) {
 		var t = a == undefined ? "niets" : Array.isArray(a) ? a.toString() : a.toString();
 		if (html != t) {
 			uit.innerHTML = t;
@@ -315,6 +496,8 @@ local immsym = {
 	niets = 'undefined',
 	['invoer.registreer'] = [[(function()
 		{
+			if (!uit) return;
+
 			uit.onmouseup = function(ev) {
 				mouseLeftReleased = true;
 				mouseLeft = false;
@@ -524,6 +707,39 @@ dt = 0;
 html = "";
 uit = document.getElementById("uit");
 stop = false;
+
+function TEXT(t) {
+	if (t === undefined)
+		return "niets";
+	if (t === true) return "ja";
+	if (t === false) return "nee";
+
+	if (Array.isArray(t)) {
+		var r = "[";
+		for (var i = 0; i < t.length; i++) {
+			if (i > 0)
+				r += ", ";
+			r += TEXT(t[i]);
+		}
+		r += "]";
+		return r;
+	}
+
+	return t.toString();
+}
+
+function index(lijst, indices) {
+	if (Array.isArray(indices)) {
+		var r = lijst;
+		for (var i = 0; i < indices.length; i++) {
+			r = r[ indices[i] ];
+		}
+		return r;
+	} else {
+		return lijst[Math.floor(indices)];
+	}
+}
+
 ]])
 	--assert(app.start)
 	flow(app.init, '')

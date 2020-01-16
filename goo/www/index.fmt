@@ -23,15 +23,15 @@
 	<button id="vorige">⏮</button>
 	<button id="speel">▶</button>
 	<button id="fullscreen">⇲</button><!--⛶-->
+	<button id="engels" onclick="localStorage.setItem('cc', '{anderecc}'); document.location='{taallink}';"><img id="vlag" src="{taalvlag}"></img></button>
 	<button id="volgende">⏭</button>
-	<span id="foutmelding"></span>
 	<!--<button id="opnieuw">⟲</button>-->
 	<!--<button id="info">🛈</button>-->
 </div>
 
 <!-- in -->
 <div class="in" tabindex="1">
-	<textarea id="broncode" name="broncode">{kubus}</textarea> 
+	<textarea id="broncode" name="broncode">{laden}</textarea> 
 </div>
 
 <!-- uit! -->
@@ -86,6 +86,9 @@
 		display: block;
 		height: 200px;
 	}
+	button {
+		width: 20%;
+	}
 	textarea {
 		width: 100%;
 	}
@@ -97,7 +100,6 @@
 	}
 	#uit {
 		width: 100%;
-		height: 56vh;
 		display: inline;
 		float: left;
 	}
@@ -122,11 +124,15 @@
 		width: 50%;
 		display: inline;
 		float: right;
-		height: 97vh !important;
+		height: 95vh !important;
 	}
 
 	#in {
-		height: 97vh;
+		height: 95vh;
+	}
+
+	button {
+		width: 10.01%;
 	}
 
 	textarea {
@@ -137,7 +143,7 @@
 	}
 
 	#uit {
-		min-height: 97vh;
+		min-height: 95vh;
 		width: 50%;
 		display: inline;
 		float: left;
@@ -149,7 +155,7 @@ textarea {
 	tab-size: 2;
 	-moz-tab-size: 2;
 	padding: 3px 4px;
-	height: 97vh;
+	height: 95vh;
 	color: white;
 	background: black;
 	border: none;
@@ -167,9 +173,8 @@ button {
 	color: white;
 	text-decoration: none;
 	border: 0;
-	width: 25%;
-	font-size: 12px;
-	height: 3vh;
+	font-size: 4vh;
+	height: 5vh;
 	display: inline;
 	cursor: pointer;
 	float: left;
@@ -179,7 +184,7 @@ button {
 }
 
 #vertaal { color: #1b1; }
-#volgende, #vorige { color: #bb0; font-size: 72px; }
+#volgende, #vorige { color: #bb0; }
 
 button:hover {
 	background: #0023A1;
@@ -195,20 +200,6 @@ button:active {
 	float: left;
 
 	background: #000625;
-}
-
-#foutmelding {
-	opacity: 0;
-	display: inline;
-	display: none;
-	width: 0;
-	font-size: 48px;
-	margin-left: 20px;
-	white-space: nowrap;
-	float: left;
-	transition: opacity 2.0s linear;
-	color: red;
-	font-weight: bold;
 }
 
 html, body {
@@ -265,6 +256,10 @@ canvas {
 
 .loc { cursor: pointer; text-decoration: underline; font-weight: bold; }
 
+#vlag {
+	height: 4vh;
+}
+
 #speel0 {
 	margin-top: 0.5cm;
 	margin-bottom: 0.5cm;
@@ -297,6 +292,7 @@ canvas {
 <link rel="stylesheet" href="lib/slang.css">
 <link rel="stylesheet" href="lib/codemirror.css">
 
+<script src="lib/fastclick.js"></script>
 <script src="lib/codemirror.js"></script>
 <script src="lib/addon/edit/matchbrackets.js"></script>
 <script src="lib/addon/selection/active-line.js"></script>
@@ -305,28 +301,25 @@ canvas {
 <script src="lib/taal.js"></script>
 <script src="lib/vim.js"></script>
 <script>
-	
+
+	// autoherleid engels
+	if (localStorage.getItem("cc") != "{cc}") {
+		localStorage.setItem("cc", "{anderecc}");
+		document.location='{taallink}';
+	}
+
+	// demoindex
+
+	var cc = ("{cc}" == "nl") ? "" : ".en";
+
 	var demoindex = 0;
-	var demos = [
-		`{kubus}`, `{pong}`, `{episch1}`, `{episch2}`,
-		`{demo1}`, `{demo2}`, `{demo3}`, `{demo4}`, `{demo5}`,
-		`{demo6}`, `{demo7}`, `{demo8}`, `{demo9}`, `{demo10}`,
-		`{demo11}`, `{demo12}`, `{demo13}`, `{demo14}`,
-		`{demo15}`, `{demo16}`, `{demo17}`, `{demo18}`,
-		`{demo19}`, `{demo20}`, `{demo21}`, `{demo22}`,
-		`{demo23}`, `{demo24}`, `{demo25}`, `{demo26}`,
-		`{demo27}`, `{demo28}`, `{demo29}`, `{demo30}`,
-		`{demo31}`, `{demo32}`, `{demo33}`, `{demo34}`,
-		`{demo35}`, `{demo36}`, `{demo37}`, `{demo38}`,
-		`{demo39}`, `{demo40}`, `{demo41}`,
-		// Vyp4l.l.l.lVy
-	];
+	var demos = [ 'pong', 'buis', 'cirkels', 'salvobal' ] ;
+
 	var speelknop = document.getElementById("speel");
 	var fullscreenknop = document.getElementById("fullscreen");
 	var vorigeknop = document.getElementById("vorige");
 	var volgendeknop = document.getElementById("volgende");
 	var cknop = '#012ED4';
-	var foutmelding = document.getElementById("foutmelding");
 	var laadbalk = document.getElementById("laadbalk");
 	var js = document.getElementById("js");
 
@@ -371,7 +364,7 @@ canvas {
 	function fullscreen() {
 		uit.children[0].requestFullscreen();
 	}
-
+	
 	speelknop.addEventListener("mousedown", vertaal);
 	fullscreenknop.addEventListener("mousedown", fullscreen);
 	volgendeknop.addEventListener("mousedown", function() {
@@ -379,14 +372,18 @@ canvas {
 		setErrors([]);
 		demoindex++;
 		demoindex = Math.min(demoindex, demos.length-1);
-		editor.setValue(demos[demoindex]);
+		fetch('/ex/' + demos[demoindex] + cc + '.code')
+			.then(res => res.text())
+			.then(data => {onsuccess(); editor.setValue(data); vertaal();});
 	});
 	vorigeknop.addEventListener("mousedown", function() {
 		stop = true;
 		setErrors([]);
 		demoindex--;
 		demoindex = Math.max(demoindex, 0);
-		editor.setValue(demos[demoindex]);
+		fetch('/ex/' + demos[demoindex] + cc + '.code')
+			.then(res => res.text())
+			.then(data => {onsuccess(); editor.setValue(data); vertaal();});
 	});
 
 	function onsuccess() {
@@ -396,15 +393,11 @@ canvas {
 		speelknop.style.transitionDuration = '0.0s';
 
 
-		foutmelding.style.opacity = "1.0"
-		foutmelding.style.color = "green"
-
 		// uitvoer!
 
 
 		setTimeout(function() {
 			speelknop.style.background = cknop;
-			foutmelding.style.opacity = "0"
 			speelknop.style.transitionDuration = '1.0s';
 		}, 100);
 	}
@@ -413,14 +406,9 @@ canvas {
 		speelknop.innerHTML = '▶';
 		speelknop.style.background = 'red';
 		speelknop.style.transitionDuration = '0.0s';
-		foutmelding.style.color = "red"
-
-		foutmelding.innerHTML = e;
-		foutmelding.style.opacity = "1.0"
 
 		setTimeout(function() {
 			speelknop.style.background = cknop;
-			foutmelding.style.opacity = "0.0"
 		}, 5000);
 	}
 
@@ -443,8 +431,22 @@ canvas {
 		},
   });
 
+	// lokaal opslaan
+	if (localStorage.getItem("code")) {
+		editor.setValue(localStorage.getItem("code"));
+		vertaal();
+	}
+	else {
+		editor.setValue("{laden}");
+		fetch('/ex/' + demos[0] + cc + '.code')
+			.then(resp => resp.text())
+			.then(text => {editor.setValue(text); vertaal(); });
+	}
+
+	setInterval((x) => localStorage.setItem("code", editor.getValue()), 10000);
+
+
 	//editor.setSize('50%', '300px');
-	editor.setValue(demos[demoindex]);
 
 	//editor.setSize(null, '800px');
 
@@ -502,9 +504,13 @@ canvas {
 		"!": "¬",
 	};
 	var bimagisch = {
+		"|_": "⌊",
+		"_|": "⌋",
+		"|^": "⌈",
+		"^|": "⌉",
 		"||": "‖",
-		"/0": "∅",
 		"0/": "∅",
+		"/0": "∅",
 		"o/": "∅",
 		"/o": "∅",
 		"ooo": "∞",
