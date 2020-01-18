@@ -1,4 +1,6 @@
-a := 1
-a := 2
+uit = a
+a := []
 
-uit = f(2,3,4)
+als toets.spatie dan
+	a := a || [1]
+eind

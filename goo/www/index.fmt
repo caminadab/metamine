@@ -325,23 +325,32 @@ canvas {
 	stop = true;
 
 	function playfunc() {
-		speelknop.style.backgroundColor = '#000E42';
 		stop = true;
+		// suspense...
+		speelknop.style.backgroundColor = '#000E42';
 
 		fetch('/vt', {method: "POST", body: editor.getValue()})
 			.then(x => x.json())
 			.then(j => {
-				onsuccess();
-				speelknop.innerHTML = "■";
-				setErrors(j.fouten);
+				if (j.fouten.length > 0) {
+					setErrors(j.fouten);
+					onerror();
+					return;
+				}
 
 				try {
-					setTimeout(() => {stop = false; }, 100);
 					eval(j.js);
 
+					setTimeout(() => {
+						stop = false;
+						speelknop.innerHTML = "■";
+						speelknop.style.background = 'green';
+						speelknop.style.transitionDuration = '0.0s';
+					}, 100);
 
 					//uit.focus(); WAUW
 				} catch (e) {
+					onerror();
 					//alert(e + e.stack);
 					uit.innerHTML = e + "\n" + e.stack + "\n" + j.js;
 					//var genlines = e.stack.match(/\d+/g);
@@ -390,7 +399,7 @@ canvas {
 		demoindex = Math.min(demoindex, demos.length-1);
 		fetch('/ex/' + demos[demoindex] + cc + '.code')
 			.then(res => res.text())
-			.then(data => {onsuccess(); editor.setValue(data); playfunc();});
+			.then(data => {editor.setValue(data); playfunc();});
 	});
 	vorigeknop.addEventListener("mousedown", function() {
 		stopfunc();
@@ -399,15 +408,8 @@ canvas {
 		demoindex = Math.max(demoindex, 0);
 		fetch('/ex/' + demos[demoindex] + cc + '.code')
 			.then(res => res.text())
-			.then(data => {onsuccess(); editor.setValue(data); playfunc();});
+			.then(data => {editor.setValue(data); playfunc();});
 	});
-
-	function onsuccess() {
-
-		speelknop.innerHTML = '▶';
-		speelknop.style.background = 'green';
-		speelknop.style.transitionDuration = '0.0s';
-	}
 
 	function onerror(e) {
 		speelknop.innerHTML = '▶';
@@ -416,7 +418,8 @@ canvas {
 
 		setTimeout(function() {
 			speelknop.style.background = cknop;
-		}, 5000);
+			speelknop.style.transitionDuration = '1.0s';
+		}, 200);
 	}
 
   var editor = CodeMirror.fromTextArea(document.getElementById("broncode"), {
