@@ -313,7 +313,7 @@ canvas {
 	var cc = ("{cc}" == "nl") ? "" : ".en";
 
 	var demoindex = 0;
-	var demos = [ 'pong', 'buis', 'cirkels', 'salvobal' ] ;
+	var demos = [ 'pong', 'buis', 'cirkels', 'salvobal', 'paint' ] ;
 
 	var speelknop = document.getElementById("speel");
 	var fullscreenknop = document.getElementById("fullscreen");

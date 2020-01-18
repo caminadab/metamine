@@ -1,0 +1,12 @@
+; paint
+cirkels := []
+
+als muis.klik dan
+ cirkels := cirkels ‖ [ cirkel(muis.pos, 3) ]
+eind
+
+als toets.spatie dan
+ cirkels := []
+eind
+
+uit = teken cirkels
