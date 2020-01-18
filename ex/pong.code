@@ -1,59 +1,47 @@
 ; bal variabelen
-bal.straal = 5
-bal.x.start = scherm.breedte / 2
-bal.y.start = scherm.hoogte / 2
-bal.x.min = speler.breedte + bal.straal
-bal.x.max = scherm.breedte - speler.breedte - bal.straal
-bal.y.min = bal.straal
-bal.y.max = scherm.hoogte - bal.straal
+bal.x.min = 15
+bal.y.min = 5
+bal.x.max = scherm.breedte - 15
+bal.y.max = scherm.hoogte - 5
 bal.vx := 1
 bal.vy := willekeurig(-1,1)
 
 ; speler variabelen
-speler.breedte = 10
-speler.hoogte = 25
-speler.y.start = scherm.hoogte/2 - speler.hoogte/2
-speler.y.max = scherm.hoogte - speler.hoogte
+speler.y.start = speler.y.max / 2
+speler.y.max = scherm.hoogte - 25
 
 ; bal verplaatsing
-bal.x := bal.x.start
-bal.y := bal.y.start
-
-als ¬ pauze en (bal.vx > 0 of bal.vx < 0) dan
- bal.x := bal.x + bal.vx
-eind
-
-als ¬ pauze en (bal.vy > 0 of bal.vy < 0) dan
- bal.y := bal.y + bal.vy
-eind
+bal.x := scherm.breedte / 2
+bal.y := scherm.hoogte / 2
 
 ; pauze
 pauze.tot := looptijd + 1
 pauze = looptijd < pauze.tot
 
-
-
-; STUITER
+als ¬ pauze dan
+ bal.x := bal.x + bal.vx
+ bal.y := bal.y + bal.vy
+eind
 
 ; raakt bal de spelers?
-rechts.raakt = (bal.y > rechts.y en bal.y < rechts.y + speler.hoogte)
-links.raakt = (bal.y > links.y en bal.y < links.y + speler.hoogte)
+rechts.raakt = (bal.y > rechts.y en bal.y < rechts.y + 25)
+links.raakt = (bal.y > links.y en bal.y < links.y + 25)
 
 ; rechts stuiter
-bal.x.min = 0 + bal.straal + speler.breedte
-bal.x.max = scherm.breedte - bal.straal - speler.breedte
+bal.x.min = 0 + 5 + 10
+bal.x.max = scherm.breedte - 5 - 10
 
 als bal.x > bal.x.max en rechts.raakt dan
  bal.x := bal.x.max
  bal.vx := -2
- bal.vy := -(rechts.y - bal.y + speler.hoogte/2) / 4
+ bal.vy := -(rechts.y - bal.y + 25/2) / 4
 eind
 
 ; links stuiter
 als bal.x < bal.x.min en links.raakt dan
  bal.x := bal.x.min
  bal.vx := - bal.vx
- bal.vy := -(links.y - bal.y + speler.hoogte/2) / 4
+ bal.vy := -(links.y - bal.y + 25/2) / 4
 eind
 
 ; top en onder stuiter
@@ -85,24 +73,26 @@ links.y := speler.y.start
 rechts.y := speler.y.start
 
 ; besturing
-als toets.omlaag en rechts.y > 0 dan rechts.y := rechts.y - 2 eind
+als toets.omlaag en rechts.y > 0						dan rechts.y := rechts.y - 2 eind
 als toets.omhoog en rechts.y < speler.y.max dan rechts.y := rechts.y + 2 eind
-als toets.s en links.y > 0 dan links.y := links.y - 2 eind
-als toets.w en links.y < speler.y.max dan links.y := links.y + 2 eind
+als toets.s en links.y > 0									dan links.y := links.y - 2 eind
+als toets.w en links.y < speler.y.max				dan links.y := links.y + 2 eind
  
 ; teken spelers
 links.min = (0, links.y)
-links.max = (speler.breedte, links.y + speler.hoogte)
-rechts.min = (scherm.breedte - speler.breedte, rechts.y)
-rechts.max = (scherm.breedte, rechts.y + speler.hoogte)
+links.max = (10, links.y + 25)
+rechts.min = (scherm.breedte - 10, rechts.y)
+rechts.max = (scherm.breedte, rechts.y + 25)
 
 rechts = rechthoek(rechts.min, rechts.max)
 links = rechthoek(links.min, links.max)
 
 ; teken bal
-bal = cirkel((bal.x,bal.y), bal.straal)
+bal = cirkel((bal.x,bal.y), 5)
 
 label1 = label((90-9,90), tekst(score2))
-label2 = label((90+3,90), tekst(score1))
+label2 = label((90-2,90), "-")
+label3 = label((90+3,90), tekst(score1))
 
-uit = (bal.vx,bal.vy ⇒ (teken [ links, rechts, bal, label1, label2 ]))
+uit = (bal.vx,bal.vy ⇒ (teken [ links, rechts, bal, label1, label2, label3 ]))
+

@@ -442,7 +442,7 @@ local immsym = {
 		return uit.children[0];
 	})]],
 	['herhaal.langzaam'] = [[(function f(t) {
-		if (stop) {stop = false; uit.innerHTML = ''; return; };
+		if (stop) { uit.innerHTML = ''; return; };
 		if (!isFinite(t))
 		{
 			dt = 0;

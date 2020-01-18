@@ -3,7 +3,7 @@ require 'func'
 require 'set'
 
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|","|=","|:=", "∪","∩",":","∈")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|","|=","|:=", "∪","∩",":","∈","‖")
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√")
 
 local function combineerR(exp, t, kind)
@@ -28,7 +28,7 @@ local function combineerR(exp, t, kind)
 				r[#r+1] = tonumber(sub.v)
 			end
 			local tekst = string.char(table.unpack(r))
-			t[#t+1] = string.format('%q', tekst)
+			t[#t+1] = string.format('%q', tekst):gsub('\n', 'n')
 
 		else
 

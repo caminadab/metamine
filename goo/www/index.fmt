@@ -322,19 +322,23 @@ canvas {
 	var cknop = '#012ED4';
 	var laadbalk = document.getElementById("laadbalk");
 	var js = document.getElementById("js");
+	stop = true;
 
-	function vertaal() {
-		stop = true; // stop draaiende programma's
+	function playfunc() {
 		speelknop.style.backgroundColor = '#000E42';
+		stop = true;
 
 		fetch('/vt', {method: "POST", body: editor.getValue()})
 			.then(x => x.json())
 			.then(j => {
 				onsuccess();
-				stop = true;
+				speelknop.innerHTML = "■";
 				setErrors(j.fouten);
+
 				try {
+					setTimeout(() => {stop = false; }, 100);
 					eval(j.js);
+
 
 					//uit.focus(); WAUW
 				} catch (e) {
@@ -359,31 +363,43 @@ canvas {
 
 	function stopfunc() {
 		stop = true;
+		speelknop.innerHTML = "▶";
+		speelknop.style.background = cknop;
+		speelknop.style.transitionDuration = '1.0s';
 	}
 
 	function fullscreen() {
 		uit.children[0].requestFullscreen();
 	}
+
+	function playorstop() {
+		if (!stop) {
+			stopfunc(); 
+		} else {
+			playfunc();
+		}
+	}
 	
-	speelknop.addEventListener("mousedown", vertaal);
+	speelknop.addEventListener("mousedown", playorstop);
+
 	fullscreenknop.addEventListener("mousedown", fullscreen);
 	volgendeknop.addEventListener("mousedown", function() {
-		stop = true;
+		stopfunc();
 		setErrors([]);
 		demoindex++;
 		demoindex = Math.min(demoindex, demos.length-1);
 		fetch('/ex/' + demos[demoindex] + cc + '.code')
 			.then(res => res.text())
-			.then(data => {onsuccess(); editor.setValue(data); vertaal();});
+			.then(data => {onsuccess(); editor.setValue(data); playfunc();});
 	});
 	vorigeknop.addEventListener("mousedown", function() {
-		stop = true;
+		stopfunc();
 		setErrors([]);
 		demoindex--;
 		demoindex = Math.max(demoindex, 0);
 		fetch('/ex/' + demos[demoindex] + cc + '.code')
 			.then(res => res.text())
-			.then(data => {onsuccess(); editor.setValue(data); vertaal();});
+			.then(data => {onsuccess(); editor.setValue(data); playfunc();});
 	});
 
 	function onsuccess() {
@@ -391,15 +407,6 @@ canvas {
 		speelknop.innerHTML = '▶';
 		speelknop.style.background = 'green';
 		speelknop.style.transitionDuration = '0.0s';
-
-
-		// uitvoer!
-
-
-		setTimeout(function() {
-			speelknop.style.background = cknop;
-			speelknop.style.transitionDuration = '1.0s';
-		}, 100);
 	}
 
 	function onerror(e) {
@@ -426,7 +433,7 @@ canvas {
 		height: "1200px",
 
 		extraKeys: {
-			"Shift-Enter": function(cm) { vertaal(); },
+			"Shift-Enter": function(cm) { playfunc(); },
 			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
 		},
   });
@@ -434,13 +441,13 @@ canvas {
 	// lokaal opslaan
 	if (localStorage.getItem("code")) {
 		editor.setValue(localStorage.getItem("code"));
-		vertaal();
+		playfunc();
 	}
 	else {
 		editor.setValue("{laden}");
 		fetch('/ex/' + demos[0] + cc + '.code')
 			.then(resp => resp.text())
-			.then(text => {editor.setValue(text); vertaal(); });
+			.then(text => {editor.setValue(text); playfunc(); });
 	}
 
 	setInterval((x) => localStorage.setItem("code", editor.getValue()), 10000);

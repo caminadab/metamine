@@ -62,8 +62,8 @@ moettypezijn('sin ∘ cos', 'getal → getal')
 moettypezijn('sin 3', 'getal')
 
 -- moeilijke lijsten
-moettypezijn('[1,2,3] || [4,5,6]', 'lijst int')
-moettypezijn('[1, 2, 0.5] || [1]', 'lijst getal')
+moettypezijn('[1,2,3] || [4,5,6]', 'nat → int')
+moettypezijn('[1, 2, 0.5] || [1]', 'nat → getal')
 
 
 -- compositiefout check
@@ -75,8 +75,8 @@ uit = (f ∘ g)(3)
 assert(#fouten > 0, C(type)) 
 
 -- tekst types
-moettypezijn('"hoi"', 'lijst letter')
-local fouten = moettypezijn(' "hoi" || "ja" ', 'lijst letter')
+moettypezijn('"hoi"', 'nat → letter')
+local fouten = moettypezijn(' "hoi" || "ja" ', 'nat → letter')
 if #fouten > 0 then
 	print('\n' .. table.concat(map(fouten, fout2ansi), '\n'))
 end
