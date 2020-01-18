@@ -21,9 +21,9 @@
 
 <div class="paneel">
 	<button id="vorige">⏮</button>
+	<button id="engels" onclick="localStorage.setItem('cc', '{anderecc}'); document.location='{taallink}';"><img id="vlag" src="{taalvlag}"></img></button>
 	<button id="speel">▶</button>
 	<button id="fullscreen">⇲</button><!--⛶-->
-	<button id="engels" onclick="localStorage.setItem('cc', '{anderecc}'); document.location='{taallink}';"><img id="vlag" src="{taalvlag}"></img></button>
 	<button id="volgende">⏭</button>
 	<!--<button id="opnieuw">⟲</button>-->
 	<!--<button id="info">🛈</button>-->
