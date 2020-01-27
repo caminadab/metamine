@@ -19,11 +19,11 @@ vec.schaal = vsv,vsf → vsv zip1 vsf map (·)
 vec4.plus = vec.plus
 vec4.mul = vec.mul
 mat4.vmul = mvm,mvv → (mat4.transponeer mvm) zip1 mvv map vec.dot
-mat4.mul = mma,mmb → (mat4.transponeer mma) zip mmb map vec.dot
+mat4.mul = mma,mmb → (mat4.transponeer mma) rzip1 mmb map mat4.vmul
 
 ; transformatie
-transform.verplaats = tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tv₀,tv₁,tv₂,1))
-transform.schaal = tx,ty,tz → ((tx,0,0,0),(0,ty,0,0),(0,0,tz,0),(0,0,0,1))
+transform.verplaats = tva,tvb,tvc → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tva,tvb,tvc,1))
+transform.schaal = tsx,tsy,tsz → ((tsx,0,0,0),(0,tsy,0,0),(0,0,tsz,0),(0,0,0,1))
 
 ; [a b 0]  [a 0 b]  [1 0 0]
 ; [c d 0]  [0 1 0]  [0 a b]

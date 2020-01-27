@@ -5,6 +5,7 @@ require 'symbool'
 require 'vhgraaf'
 require 'bieb'
 require 'rapport'
+require 'graaf'
 
 local bieb = bieb()
 
@@ -433,7 +434,7 @@ function oplos(exp, voor)
 				local eqb = X('|'..f, b, X(sym.dan, c, a, ae))
 
 				if isvar(a) then nieuw[eqa] = true end
-				if isvar(b) then nieuw[eqb] = true end
+				if isvar(b) and fn(eq.a[2]) == '=' then nieuw[eqb] = true end
 
 				if eq.a[3] and (fn(eq.a[3]) == '=' or fn(eq.a[3]) == '|=' or fn(eq.a[3]) == ':=') then
 					local e = X(sym.niet, c)
@@ -443,7 +444,7 @@ function oplos(exp, voor)
 					local eqa = X('|'..fe, ae, X(sym.dan, e, be))
 					local eqb = X('|'..fe, be, X(sym.dan, e, ae))
 					if isvar(a) then nieuw[eqa] = true end
-					if isvar(b) then nieuw[eqb] = true end
+					if isvar(b) and fn(eq.a[3]) == '=' then nieuw[eqb] = true end
 				end
 			end
 		end
@@ -523,7 +524,7 @@ function oplos(exp, voor)
 		for eq in pairs(oud) do
 			eqs[eq] = false
 		end
-		for naam,alts in pairs(map) do
+		for naam,alts in spairs(map) do
 			if schaduw[naam] then
 				alts.o = X','
 				alsvar(alts)
@@ -700,6 +701,7 @@ function oplos(exp, voor)
 			print('=== VOORGEKAUWD ===')
 			for eq in pairs(eqs) do
 				print(combineer(eq))
+				print(loctekst(eq.loc), combineer(eq))
 			end
 			print()
 		end
@@ -798,8 +800,13 @@ function oplos(exp, voor)
 		-- opgelost
 		if verbozeWaarde then
 			print('=== WAARDE ===')
-			print(combineer(val))
-			print()
+			if #val > 1 then
+				for i,v in ipairs(val) do
+					print(combineer(v))
+				end
+			else
+				print(combineer(val))
+			end
 		end
 
 		return val,{},bekend,exp2naam

@@ -101,11 +101,12 @@ function bieb()
 
 	['⊤'] = true,
 	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
-	['dt'] = 1/10, -- terminal altijd
+	['dt'] = 1/60, -- terminal altijd
 	['⊥'] = false,
 	log2 = function (a) return math.log(a, 2) end,
 	log10 = math.log10,
 	['τ'] = math.pi*2,
+	['∅'] = {},
 	['π'] = math.pi,
 	start = true,
 	misschien = true,
@@ -216,7 +217,6 @@ function bieb()
 	xcb_connect = true,
 
 	-- wiskunde
-	co = 3,
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
 	max = function(args) return math.max(args[1], args[2]) end,
 	min = function(args) return math.min(args[1], args[2]) end,
@@ -263,32 +263,6 @@ function bieb()
 		return t
 	end;
 			
-	['kortsluit'] = function(a,b)
-		-- a = origineel
-		-- b = verbeterd
-	end;
-
-	['+i'] = true,
-	['-i'] = true,
-	['*i'] = true,
-	['/i'] = true,
-	['^i'] = true,
-	['modi'] = true,
- 
-	['+i'] = function(a,b) return a + b end,
-	['-i'] = function(a,b) return a - b end,
-	['*i'] = function(a,b) return a * b end,
-	['/i'] = function(a,b) return a / b end,
-	['^i'] = function(a,b) return a ^ b end,
-	['modi'] = function(a,b) return a % b end,
-
-	['+d'] = function(a,b) return a + b end,
-	['-d'] = function(a,b) return b and a - b or -a end,
-	['*d'] = function(a,b) return a * b end,
-	['/d'] = function(a,b) return a / b end,
-	['^d'] = function(a,b) return a ^ b end,
-	['modd'] = function(a,b) return a % b end,
-
 	['^f'] = function(a, b)
 		return function (x)
 			for i=1,b do
@@ -303,6 +277,7 @@ function bieb()
 	['·'] = function(a) return a[1] * a[2] end;
 	['/'] = function(a) return a[1] / a[2] end;
 	['√'] = function(a) return math.pow(a, 0.5) end;
+	['%'] = function(a) return a / 100 end;
 
 	['^'] = function(a)
 		if type(a[1]) == 'function' then
@@ -316,7 +291,6 @@ function bieb()
 			return a[1] ^ a[2]
 		end
 	end;
-	['%'] = function(a) return a / 100 end;
 
 	['ontleed'] = function(a)
 		--local code = string.char(table.unpack(a))
@@ -660,7 +634,7 @@ function bieb()
 	end;
 	['⇒'] = function(a,b,c)
 		if a then return b
-		else return c or niets end
+		else return c end
 	end;
 	-- delta componeer
 	-- 2@∆3 = 5

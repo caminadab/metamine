@@ -91,8 +91,6 @@ local immjs = {
 	['afrond.boven'] = 'Math.ceil($1)',
 	['int'] = 'Math.floor($1)',
 	['abs'] = 'Math.abs($1)',
-	['absd'] = 'Math.abs($1)',
-	['absi'] = 'Math.abs($1)',
 	['sign'] = '($1 > 0 ? 1 : -1)',
 
 	-- exp

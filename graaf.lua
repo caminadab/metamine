@@ -127,7 +127,7 @@ function metagraaf:topologisch()
 	-- we moeten helaas alle dubbelen uitfilteren, achterstevoren _.-._
 	local al = {}
 	for i=#volgorde,1,-1 do
-		local naam = volgorde[i]
+		local naam = volgorde[i].van
 		if al[naam] then table.remove(volgorde,i)
 		else al[naam] = true end
 	end
@@ -161,16 +161,8 @@ local function naar(self,doel)
 	end
 end
 
-function metagraaf:link(pijl_of_van, naar)
-	local van, pijl
-	if naar then
-		van = pijl_of_van
-		pijl = {van=van,naar=naar}
-	else
-		pijl = pijl_of_van
-		van = pijl.van
-		naar = pijl.naar 
-	end
+function metagraaf:link(van, naar)
+	local pijl = {van = van, naar = naar}
 
 	-- per van
 	if self.pervan[van] and self.pervan[van][naar] then
@@ -180,6 +172,29 @@ function metagraaf:link(pijl_of_van, naar)
 	self.pervan[van][naar] = true
 
 	self.pijlen[pijl] = true
+
+	-- werk begin bij
+	if self.begin[pijl.naar] then
+		self.begin[pijl.naar] = nil
+	end
+	if not next(pijl.van) then
+		self.begin[pijl.naar] = true
+	end
+	for bron in pairs(pijl.van) do
+		if not self.punten[bron] then
+			self.begin[bron] = true
+		end
+	end
+
+	-- werk van bij
+	for bron in pairs(pijl.van) do
+		self.van2pijl[bron] = self.van2pijl[bron] or {}
+		self.van2pijl[bron][pijl] = true
+	end
+
+	-- werk naar bij
+	self.naar2pijl[pijl.naar] = self.naar2pijl[pijl.naar] or {}
+	self.naar2pijl[pijl.naar][pijl] = true
 
 	-- registreer punten
 	self.punten[naar] = true

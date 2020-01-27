@@ -46,6 +46,7 @@ local function doestat(stat, env)
 		if not ok then
 			local err = res
 			local fout = executiefout(stat.loc, '{code}: '..err:match('([^\n]+)'), bron(stat))
+			if opt and opt.L then print('...') end
 			print(fout2ansi(fout))
 			while false do
 				io.write('> ')
@@ -56,7 +57,7 @@ local function doestat(stat, env)
 					break
 				end
 				local fn = load(source)
-				env.print = function(a) print(combineer(w2exp(a))) end
+				env.print = function(a) print(lenc(a)) end
 				env._G = env
 				setfenv(fn, env)
 				local ok, msg = pcall(fn)
@@ -97,7 +98,7 @@ local function doestat0(stat, env)
 		local a = exp.f.w
 		local i = exp[1].w
 		w = a[i+1]
-		assert(w ~= nil, combineer(w2exp(a)) .. '.' .. combineer(w2exp(b)))
+		assert(w ~= nil, lenc(a) .. '.' .. lenc(b))
 
 	elseif exp.f.v == '_fn' then
 		w = env[fn(exp)]
@@ -118,6 +119,7 @@ local function doestat0(stat, env)
 				local err = w
 				local f = executiefout(stat.loc, err)
 				--print(fout2string(f))
+				w = nil
 				return
 			end
 
@@ -128,6 +130,7 @@ local function doestat0(stat, env)
 			w = func:sub(args[1]+1, args[1]+1)
 
 		else
+			w = nil
 			print('ASDF', e2s(exp), exp.f.w, exp.w)
 			local f = executiefout(stat.loc, 'onbekende "functie": '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
 			print()
@@ -156,7 +159,7 @@ local function doeblok(blok, env, arg)
 			local exp = stat.a[2]
 			local skip = fn(exp) == '_' and env[exp.a.v] == env.stduitSchrijf
 			if not skip then
-				io.write(combineer(w2exp(w)), '\n')
+				io.write(lenc(w), '\n')
 			end
 		end
 
@@ -214,12 +217,12 @@ function doe(app)
 	for naam,blok in pairs(app) do
 		env[naam] = function(arg)
 			local isf = naam:sub(1,2) == 'fn'
-			if isf and opt and opt.L then print('...\ncall '..naam..' '..combineer(w2exp(arg))) end
+			if isf and opt and opt.L then print('...\ncall '..naam..' '..lenc(arg)) end
 			env['_arg'] = arg
 			local ret = doeblok(blok, env, arg)
 			if opt and opt.L then 
-				--if isf then io.write('\n...') end
-				----io.flush()
+				if isf then io.write('\n...') end
+				io.flush()
 			end
 			return ret
 		end

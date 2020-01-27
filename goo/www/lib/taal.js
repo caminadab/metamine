@@ -36,12 +36,10 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		"text", "int", "number", "digit", "letter", "whitespace",
 
 		// tekening
-		"rood", "groen", "blauw", "oranje", "paars", "zwart", "wit", "grijs", "beige", "bruin", "geel", "cyaan",
 		"cirkel", "rechthoek", "vierkant", "lijn", "label", "boog", "polygoon", "map", "zip", "vouw", "sin", "cos", "tan", "abs",
 		"atan",
 
 		// drawing
-		"red", "green", "blue", "orange", "purple", "black", "white", "grey", "beige", "brown", "yellow", "cyan",
 		"circle", "rectangle", "square", "line", "label", "arc", "polygon", "map", "zip", "fold", "sin", "cos", "tan", "abs",
   ]);
 	var keywords = wordRE([
