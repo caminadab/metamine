@@ -77,9 +77,14 @@ function lenc(t)
 		if islijst then
 			local r = {}
 			r[#r+1] = '['
-			for _,v in pairs(t) do
+			local previ = 1
+			for i,v in pairs(t) do
+				for j=1,i-previ-1 do
+					r[#r+1] = 'niets,'
+				end
 				r[#r+1] = lenc(v)
 				r[#r+1] = ','
+				previ = i
 			end
 			r[#r] = nil
 			r[#r+1] = ']'

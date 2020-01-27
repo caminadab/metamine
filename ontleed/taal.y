@@ -82,6 +82,7 @@
 %token ICAT "::"
 %token ITOT ".."
 %token CART "×"
+%token LEEG "∅"
 %token END 0 "end of file"
 %token NEG '-'
 %token GDGA "≥"

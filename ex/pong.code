@@ -57,16 +57,14 @@ eind
 score1 := 0
 score2 := 0
 
+; er wordt gescoord
 als bal.x < 0 of bal.x > scherm.breedte dan
- bal.x := 90
- bal.y := 50
- pauze.tot := looptijd + 1
+	bal.x := 90
+	bal.y := 50
+	pauze.tot := looptijd + 1
 eind
-
 als bal.x < 0              dan score1 := score1 + 1 eind
 als bal.x > scherm.breedte dan score2 := score2 + 1 eind
-
-
 
 ; spelers
 links.y := speler.y.start

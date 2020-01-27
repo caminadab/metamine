@@ -1,4 +1,3 @@
-a = tcp.gastheer
 gastheer = tcp.bind (0, 10101)
 klanten = tcp.accepteer gastheer
 

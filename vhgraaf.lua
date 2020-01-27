@@ -221,11 +221,11 @@ function vhgraaf()
 
 		-- hyperpijlen naar doel
 		naar = function (self,doel)
-			local hoek = nil
+			local pijl = nil
 			return function()
-				while next(self.pijlen, hoek) do
-					local kan = next(self.pijlen, hoek)
-					hoek = kan
+				while next(self.pijlen, pijl) do
+					local kan = next(self.pijlen, pijl)
+					pijl = kan
 					if kan.naar == doel then
 						return kan
 					end

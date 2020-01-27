@@ -159,7 +159,7 @@ letter: int
 tekst: lijst letter
 
 looptijd : getal
-nu : moment
+nu : getal
 vind : (lijst, lijst) → int
 tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst

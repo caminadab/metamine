@@ -13,8 +13,6 @@ require 'optimaliseer'
 local socket = require 'socket'
 local server = socket.bind('127.0.0.1','1237')
 assert(server, 'serverpoort 1237 is niet beschikbaar')
-local log = io.open('dienst.log', 'a')
-assert(log, 'logbestand is niet beschikbaar')
 local sockets = {server}
 local coros = {}
 
@@ -126,12 +124,6 @@ function serveer(sock)
 	-- uitvoer, log (in), http statuscode
 	local uit, inL, status
 
-	if inn then
-		inL = string.format('%q', tostring(inn)):gsub('\n', '\\n')
-		log:write(inL, '\n')
-		log:flush()
-	end
-
 	-- VERTAAL!
 	if pad == '/vt' then
 		local internefout
@@ -175,6 +167,18 @@ From: vraag@metamine.nl
 		end
 	end
 
+	if pad:sub(-4) == ".svg" then
+		contenttype = "image/svg+xml"
+	elseif pad:sub(-3) == ".js" then
+		contenttype = "application/javascript"
+	elseif pad:sub(-4) == ".css" then
+		contenttype = "text/css"
+	elseif pad:sub(-3) == "/vt" then
+		contenttype = "application/json"
+	else
+		contenttype = "text/html; charset=utf-8"
+	end
+
 	print(os.date(), status, pad, string.sub(inL or '', 1, 20))
 
 	-- header
@@ -184,6 +188,7 @@ From: vraag@metamine.nl
 	t[#t+1] = "Host: localhost\r\n"
 	t[#t+1] = "Server: Lua 5.2\r\n"
 	t[#t+1] = "Content-Length: "..#uit.."\r\n"
+	t[#t+1] = "Content-Type: "..contenttype.."\r\n"
 	t[#t+1] = "\r\n"
 	t[#t+1] = uit
 	sendblocking(sock, table.concat(t))
