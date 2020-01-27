@@ -84,7 +84,6 @@ function substitueer(exp, van, naar)
 			end
 		end
 		local t = {loc=exp.loc,o=exp.o,f=exp.f}
-		--t.f = substitueer(exp.f, van, naar)
 		for k,v in subs(exp) do
 			t[k] = substitueer(v, van, naar)
 		end

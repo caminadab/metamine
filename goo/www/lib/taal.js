@@ -28,11 +28,12 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 
   // long list of standard functions from lua manual
   var builtins = wordRE([
-    "niets", "teken", "uit", "ja", "nee", "fout", "∅",
+    "niets", "uit", "ja", "nee", "fout", "∅",
 		"tekst", "int", "getal", "cijfer", "letter", "witruimte",
+		"teken", "render",
 
 		// engels
-		"none", "canvas", "out", "yes", "no", "error",
+		"none", "out", "yes", "no", "error",
 		"text", "int", "number", "digit", "letter", "whitespace",
 
 		// tekening
@@ -40,6 +41,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		"atan",
 
 		// drawing
+		"draw", "render",
 		"circle", "rectangle", "square", "line", "label", "arc", "polygon", "map", "zip", "fold", "sin", "cos", "tan", "abs",
   ]);
 	var keywords = wordRE([
@@ -99,7 +101,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		return 'number';
 	}
     if (/[\w]/.test(ch)) {
-      stream.eatWhile(/[\da-zA-Z]/);
+      stream.eatWhile(/[\da-zA-Z%.]/);
       return "variable";
     }
 	

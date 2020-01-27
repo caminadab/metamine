@@ -83,7 +83,11 @@
 	var cknop = '#012ED4';
 	var laadbalk = document.getElementById("laadbalk");
 	var js = document.getElementById("js");
+
+	var preview = document.createElement("div", "preview");
+	preview.className = "preview";
 	stop = true;
+	var wraps = document.getElementsByClassName("CodeMirror-wrap");
 
 	function playfunc() {
 		speelknop.style.backgroundColor = '#000E42';
@@ -95,6 +99,22 @@
 				onsuccess();
 				speelknop.innerHTML = "■";
 				setErrors(j.fouten);
+
+				// debug info
+				wraps[0].onmousemove = (ev) => {
+					var pos = editor.coordsChar({left: ev.clientX, top: ev.clientY});
+					var token = editor.getTokenAt(pos);
+					console.log(token);
+
+					var widgetpos = {line: pos.line, ch: token.start};
+					if (token.type == "variable") {
+						preview.innerHTML = token.string;
+					}
+					else {
+						preview.innerHTML = "";
+					}
+					editor.addWidget(widgetpos, preview);
+				};
 
 				try {
 					setTimeout(() => {stop = false; }, 100);
@@ -123,6 +143,9 @@
 	}
 
 	function stopfunc() {
+		wraps[0].onmousemove = undefined;
+		preview.innerHTML = '';
+
 		stop = true;
 		setErrors([]);
 		speelknop.innerHTML = "▶";
@@ -203,6 +226,7 @@
 		extraKeys: {
 			"Shift-Enter": function(cm) { playfunc(); },
 			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
+			"Ctrl-Y": function(cm) { cm.setOption('keyMap', 'vim'); },
 		},
   });
 
