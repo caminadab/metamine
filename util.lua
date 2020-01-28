@@ -58,6 +58,8 @@ function lenc(t)
 		return 'ja'
 	elseif t == false then
 		return 'nee'
+	elseif type(t) == 'function' then
+		return 'functie'
 	elseif type(t) == 'string' then
 		return string.format('%q', t)
 	elseif type(t) == 'table' then

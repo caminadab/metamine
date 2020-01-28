@@ -4,7 +4,7 @@
 	require 'typeer'
 	require 'bouw.arch'
 	require 'bouw.codegen'
-	require 'optimaliseer'
+	require 'optimiseer'
 	require 'vertolk'
 	require 'oplos'
 
@@ -43,15 +43,13 @@
 
 		local exp,oplosfouten = oplos(asb, "app")
 		
-		-- (op|(op,atoom))[]
-	--	local func = functioneel(exp)
-
 		if #oplosfouten > 0 then
 			return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
 		end
 		assert(exp)
 
-		local app,gen2bron = codegen(exp, maakvar)
+		local exp = optimiseer(exp)
+		local app = codegen(exp, maakvar)
 
 		return app, {}, gen2bron
 	end

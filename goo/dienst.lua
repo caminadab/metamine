@@ -8,7 +8,6 @@ require 'json'
 require 'ontleed'
 require 'typeer'
 require 'oplos'
-require 'optimaliseer'
 
 local socket = require 'socket'
 local server = socket.bind('127.0.0.1','1237')

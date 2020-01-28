@@ -142,12 +142,12 @@ function bieb()
 	['canvas.context3d'] = function () error('niet beschikbaar') end;
 	['canvas.wis'] = function () error('niet beschikbaar') end;
 
-	vierkant = function() error('niet beschikbaar') end;
-	boog = function() error('niet beschikbaar') end;
-	label = function() error('niet beschikbaar') end;
-	rechthoek = function() error('niet beschikbaar') end;
-	cirkel = function() error('niet beschikbaar') end;
-	lijn = function() error('niet beschikbaar') end;
+	vierkant = function() return('vierkant') end;
+	boog = function() return('boog') end;
+	label = function() return('label') end;
+	rechthoek = function() return('rechthoek') end;
+	cirkel = function() return('cirkel') end;
+	lijn = function() return('lijn') end;
 	['muis.klik'] = false,
 	['muis.klik.begin'] = false,
 	['muis.klik.eind'] = false,
@@ -230,7 +230,7 @@ function bieb()
 		local socket = require 'socket'
 		return socket.gettime()
 	end) (10),
-	['looptijd'] = true;
+	['looptijd'] = 0;
 	['inverteer'] = true; -- sure
 	['sqrt'] = function(a) return math.sqrt(a) end;
 	['niets'] = nil;
