@@ -51,7 +51,7 @@ Opties:
     -j,	--javascript	compileer naar javascript
     -x,	--demo				compileer naar demo
 		
-    -O								optimaliseer uitvoer
+    -O								optimaliseer uitvoer NIET
 
     -S                genereer assembly-code
     -R                genereer uitgebreid rapport

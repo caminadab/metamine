@@ -5,8 +5,25 @@ app = herhaal.langzaam(ververs)
 canvas = invoer.registreer(schrijf "<canvas width='1280' height='720'></canvas>")
 canvas.teken = canvas.wis ∘ (vormen2d vouw (∘))
 canvas.render = vormen3d vouw (∘)
-teken = vormen2d → (canvas.teken(canvas.context2d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
-render = vormen3d → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
+nvas.wis ∘ (vormen2d vouw (∘))
+  canvas.render = vormen3d vouw (∘)
+
+video: nu → beeld
+schilder: canvas → canvas 
+
+app = (video, audio, vars)
+in = (toets.neer, toets.op, nu, vars)
+
+context = canvas.getContext(html "<canvas width='1280' height='720'></canvas>")
+teken = objs → (objs vouw (_)) context
+
+;rechthoek = ((x1,y1),(x2,y2)) → (ctx → (pad.begin ∘ pad.rect ∘ pad.eind))
+
+; verf: ctx → ctx
+
+; schilder: obj → (canvas → canvas)
+;render = vormen3d → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
+
 
 ; vec
 vec.plus = va,vb → va zip vb map (+)

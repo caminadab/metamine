@@ -2,7 +2,10 @@ require 'util'
 require 'bieb'
 local bieb = bieb()
 local makkelijk = set('+', '-', '·', '/', '%', '#', '_', '^',  '√', '∧', '∨', 'Σ')
-local dynamisch = set('looptijd', 'nu', 'starttijd', 'tcp.lees', 'tcp.schrijf', '_arg', 'schrijf', 'vierkant', 'cirkel', 'label', 'rechthoek', 'lijn', '_var', '_prevvar', 'toets.neer', 'muis.klik', 'muis.klik.begin', 'muis.klik.eind', 'toets.neer.begin', 'toets.neer.eind', 'misschien', 'willekeurig')
+local dynamisch = set('looptijd', 'nu', 'starttijd',
+	'tcp.lees', 'tcp.schrijf', 'tcp.accepteer', 'tcp.bind',
+	'pad.begin', 'pad.eind', 'pad.rect', 'pad.vul', 'pad.verf',
+	'_arg', 'schrijf', 'vierkant', 'cirkel', 'label', 'rechthoek', 'lijn', '_var', '_prevvar', 'toets.neer', 'muis.klik', 'muis.klik.begin', 'muis.klik.eind', 'toets.neer.begin', 'toets.neer.eind', 'misschien', 'willekeurig', 'constant', 'id', 'merge', 'kruid')
 
 local function w2exp(w)
 	local uit

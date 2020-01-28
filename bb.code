@@ -1,4 +1,9 @@
-z = 1
-w = 4
-y = 2 + 3
-uit = y · y · w · w
+sgn = x → y
+
+als x < 0 dan
+	y = -1
+anders
+	y = 1
+end
+
+uit = sgn 3

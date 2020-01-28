@@ -24,6 +24,43 @@ function bieb()
 
 	local bieb = {
 
+	-- canvas
+	['pad.begin'] = true,
+
+	-- functioneel
+	['merge'] = function(fns)
+		return function(x)
+			local r = {}
+			for i,fn in ipairs(fns) do
+				r[i] = fn(x)
+			end
+			return r
+		end
+	end;
+	['dup'] = function(x)
+		return {x, x}
+	end;
+	['id'] = function(x)
+		return x
+	end;
+	['constant'] = function(x)
+		return function()
+			return x
+		end
+	end;
+	['kruid'] = function(args)
+		local fn,x = args[1], args[2]
+		return function(y)
+			return fn(x,y)
+		end
+	end;
+	['kruidL'] = function(args)
+		local fn,y = args[1], args[2]
+		return function(x)
+			return fn(x,y)
+		end
+	end;
+
 	-- net
 
 	['model'] = function () end,
@@ -101,7 +138,7 @@ function bieb()
 
 	['⊤'] = true,
 	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
-	['dt'] = 1/60, -- terminal altijd
+	['dt'] = 1/10, -- terminal altijd
 	['⊥'] = false,
 	log2 = function (a) return math.log(a, 2) end,
 	log10 = math.log10,

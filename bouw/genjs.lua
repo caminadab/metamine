@@ -207,6 +207,8 @@ local immsym = {
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
 	['sign'] = '($1 > 0 ? 1 : -1)',
+
+	--['verplaats'] = '(canvas => x 
 	
 	-- LIB
 	['canvas.context2d'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
@@ -387,13 +389,27 @@ local immsym = {
 	['label3'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
 	['label2'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
 	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar d = xyr[1] || 1.0;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+d) * 7.2) - 1, d * 7.2, d * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
-	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = [[(function(xyz) {
+		return (function(c){
+			var x = xyz[0][0];
+			var y = xyz[0][1];
+			var t = xyz[1];
+			c.font = "48px Arial";
+			c.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);
+			return c;
+		});
+	})]],
 
-	['verf'] = [[
-	(function(_args) {return (function(c){
-		var vorm = _args[0];
-		var kleur = _args[1];
+	['pad.begin'] = 'ctx => ctx.beginPath()',
+	['rechthoek'] = [[rect => {ctx => ctx.rect (
+		rect[0]*720, rect[1]*720,
+		(rect[2]-rect[0])*720, (rect[3]-rect[1])*720 )
+	}
+	]],
+	['pad.vul'] = 'ctx => ctx.fill()',
+	['verf'] = [[ c => {ctx =>
+		var vorm = c[0];
+		var kleur = c[1];
 		var r = kleur[0]*255;
 		var g = kleur[1]*255;
 		var b = kleur[2]*255;
@@ -705,6 +721,18 @@ dt = 0;
 html = "";
 uit = document.getElementById("uit");
 stop = false;
+
+function merge(funcs) {
+	return function(x) {
+		var r = [];
+		for (var i = 0; i < funcs.length; i++)
+			r[i] = funcs[i](x);
+		return r;
+	};
+}
+function id(x) { return x; }
+function constant(x) { return function() { return x; }}
+function dup(x) { return function() { return [x,x]; }}
 
 function TEXT(t) {
 	if (t === undefined)

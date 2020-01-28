@@ -217,7 +217,7 @@ function doe(app)
 	for naam,blok in pairs(app) do
 		env[naam] = function(arg)
 			local isf = naam:sub(1,2) == 'fn'
-			if isf and opt and opt.L then print('...\ncall '..naam..' '..lenc(arg)) end
+			if opt and opt.L then print('...\ncall '..naam..' '..lenc(arg)) end
 			env['_arg'] = arg
 			local ret = doeblok(blok, env, arg)
 			if opt and opt.L then 

@@ -104,7 +104,6 @@
 				wraps[0].onmousemove = (ev) => {
 					var pos = editor.coordsChar({left: ev.clientX, top: ev.clientY});
 					var token = editor.getTokenAt(pos);
-					console.log(token);
 
 					var widgetpos = {line: pos.line, ch: token.start};
 					if (token.type == "variable") {
@@ -123,20 +122,7 @@
 
 					//uit.focus(); WAUW
 				} catch (e) {
-					//alert(e + e.stack);
 					uit.innerHTML = e + "\n" + e.stack + "\n" + j.js;
-					//var genlines = e.stack.match(/\d+/g);
-					//alert("GENLINES: "+genlines)
-					for (var i = 0; i < Math.min(genlines.length, 3); i++) {
-						//alert("GENLINE: " + genlines[i]);
-						var bronloc = j.gen2bron[0+genlines[i]];
-						alert("BRONLOC: "+JSON.stringify(bronloc));
-						// error: {html, loc: {anchor: {line: int } } }
-						selecteer(bronloc);
-						var fout = { html: e.message, loc: bronloc };
-						setErrors([fout]);
-					}
-					//setErrors({
 					uit.innerHTML = "Fout!";
 				}
 			})
@@ -308,8 +294,6 @@
 		"|^": "⌈",
 		"^|": "⌉",
 		"||": "‖",
-		"0/": "∅",
-		"/0": "∅",
 		"o/": "∅",
 		"/o": "∅",
 		"ooo": "∞",

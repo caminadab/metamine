@@ -31,6 +31,51 @@ function punten(exp)
 	end
 end
 
+-- bevat
+function bevat(exp, naam)
+	if isatoom(exp) then
+		return atoom(exp) == atoom(naam)
+	else
+		for k,sub in subs(exp) do
+			if bevat(sub,naam) then return true end
+		end
+		return false
+	end
+end
+
+-- defunctionaliseer
+function defunc(exp)
+	if isfn(exp) then
+		return X('∘', defunc(arg(exp)), fn(exp))
+	end
+	if isobj(exp) then
+		local mergeval = {o=exp.o}
+		for k, sub in subs(exp) do
+			mergeval[k] = defunc(sub)
+		end
+
+		-- special case: merge(id, id) = dup
+		if atoom(mergeval[1]) == 'id' and atoom(mergeval[2]) == 'id' and not mergeval[3] then
+			return X'dup'
+		end
+
+		-- special case: merge(C(w), x) = kruid(x, w)
+		if false and #mergeval == 2 and atoom(arg0(mergeval[1])) == 'constant' then --and not bevat(mergeval[2], '_arg') then
+			return X('_', 'kruidL', arg1(mergeval[1]), mergeval[2])
+		end
+
+		if #mergeval == 1 then
+			return X('_', 'merge', mergeval[1])
+		else
+			return X('_', 'merge', mergeval)
+		end
+	end
+	if atoom(exp) == '_arg' then
+		return X'id'
+	end
+	return X('_', 'constant', exp)
+end
+
 -- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 -- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 -- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
@@ -637,17 +682,6 @@ function oplos(exp, voor)
 					local inn,uit = lam.a[1], lam.a[2]
 					local index = maakindex()
 
-				--[[
-					-- pas vergelijking aan
-					for i in pairs(lam) do lam[i] = nil end
-					local var = maakvar()
-					local index = tostring(maakindex())
-					--local func = X('_fn'.. index) 
-					local llam = X('_fn', index)--func, uit)
-					assign(lam, llam)
-					local naam = X('_', '_arg', index)
-				]]
-
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
 					local var = maakvar()
@@ -655,17 +689,9 @@ function oplos(exp, voor)
 					lam.a = uit
 					local naam = '_arg'--..var
 
-					--local naam = X('_', '_arg', index)
-
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
-					nieuw[paramhulp] = true -- HIER!
-					if isobj(inn) then
-						--for i,v in ipairs(inn) do
-						--	local arghulp = X('=', v, X('_','_arg',tostring(i-1)))
-						--	nieuw[arghulp] = true -- HIER!
-						--end
-					end
+					nieuw[paramhulp] = true
 				end
 			end
 		end
@@ -796,6 +822,14 @@ function oplos(exp, voor)
 			exp2naam = n2e
 		end
 		--print('aantal subcalls = ', S)
+
+		-- defunctionaliseer
+		for exp in boompairsdfs(val) do
+			if fn(exp) == '_fn' then
+				local beter = defunc(arg(exp))
+				assign(exp, beter)
+			end
+		end
 
 		-- opgelost
 		if verbozeWaarde then

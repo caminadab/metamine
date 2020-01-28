@@ -33,6 +33,8 @@
 		if type(asb) ~= 'table' then
 			return nil, { syntaxfout(nergens, "rommel"); }
 		end
+
+		-- vertaal
 		local asb = vertolk(asb)
 
 		-- types
@@ -48,7 +50,9 @@
 		end
 		assert(exp)
 
-		local exp = optimiseer(exp)
+		if opt and not opt.O then
+			exp = optimiseer(exp)
+		end
 		local app = codegen(exp, maakvar)
 
 		return app, {}, gen2bron
