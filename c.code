@@ -1,10 +1,7 @@
 gastheer = tcp.bind (0, 10101)
 klanten = tcp.accepteer gastheer
 
-uit = klanten zip1 stroom map tcp.schrijf
-
-;h1 = "Host: localhost\r\n"
-;h2 = "Server: METAMINE\r\n"
+uit = klanten map tcp.lees ;klanten zip1 stroom map tcp.schrijf
 
 data = "hoi"
 

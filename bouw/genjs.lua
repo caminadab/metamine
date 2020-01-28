@@ -104,7 +104,7 @@ local immjs = {
 	-- lijst
 	['#'] = '$1.length',
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
-	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2-$1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1-$2))), (x,i) => $1 - 1 - i))',
+	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
 	['_u'] = '$1[$2]',
 	['_'] = 'Array.isArray($1) ? index($1,$2) : typeof $1 == "string" ? $1[$2] : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
