@@ -44,12 +44,15 @@ function bevat(exp, naam)
 end
 
 -- defunctionaliseer
+local tel = { "eerste", "tweede", "derde", "vierde" }
 function defunc(exp, al)
-	if fn(exp) == '_' and isobj(arg(exp)) and obj(arg(exp)) == ',' then
-		local a = arg(exp)
-		--return X('∘', X('_', 'constant', defunc(a[2])), a[1])
-		return X('∘', defunc(a[2]), a[1])
+	-- first, second, third, fourth
+	local num = tonumber(atoom(arg1(exp)))
+	if fn(exp) == '_' and num and num < 4 and num % 1 == 0 then
+		local sel = 'fn.' .. tel[num + 1]
+		return X('∘', defunc(arg0(exp)), X(sel))
 	end
+
 	if isfn(exp) then
 		return X('∘', defunc(arg(exp)), fn(exp))
 	end
@@ -155,13 +158,13 @@ function oplos(exp, voor)
 		end
 
 		-- uit (jaja!)
-		local ivars = X '[]'
+		local ivars = {o=X'[]'}
 		for var in spairs(vars) do
 			table.insert(ivars, var)
 		end
 
-		--local eq = X('=', 'uit', ivars)
-		--nieuw[eq] = true
+		local eq = X('=', 'uit.vars', ivars)
+		nieuw[eq] = true
 
 		-- herschrijf (a += b) naar (a := a' + b / fps)
 		-- syntactic cocain
@@ -549,7 +552,7 @@ function oplos(exp, voor)
 			if #alts == 1 then
 				eq = X('=', naam, alts[1])
 			else
-				alts.o = X'{}'
+				alts.o = X'[]'
 				eq = X('=', naam, X('|', alts))
 				--nieuw[eq] = true
 			end
@@ -731,7 +734,6 @@ function oplos(exp, voor)
 		if verbozeKennis then
 			print('=== VOORGEKAUWD ===')
 			for eq in pairs(eqs) do
-				print(combineer(eq))
 				print(loctekst(eq.loc), combineer(eq))
 			end
 			print()
@@ -828,18 +830,15 @@ function oplos(exp, voor)
 		end
 
 		-- optimiseer
-		val = optimiseer(val)
+		if not opt or not opt.O then
+			val = optimiseer(val)
+		end
 
 		-- opgelost 1
 		if verbozeWaarde then
 			print('=== WAARDE ===')
-			if #val > 1 then
-				for i,v in ipairs(val) do
-					print(combineer(v))
-				end
-			else
-				print(combineer(val))
-			end
+			print(combineer(val))
+			print()
 		end
 
 
@@ -854,13 +853,8 @@ function oplos(exp, voor)
 		-- opgelost 2
 		if verbozeWaarde then
 			print('=== DEFUNC WAARDE ===')
-			if #val > 1 then
-				for i,v in ipairs(val) do
-					print(combineer(v))
-				end
-			else
-				print(combineer(val))
-			end
+			print(combineer(val))
+			print()
 		end
 
 		return val,{},bekend,exp2naam
