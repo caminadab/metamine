@@ -1,4 +1,3 @@
-	require 'functioneel'
 	require 'util'
 	require 'ontleed'
 	require 'typeer'

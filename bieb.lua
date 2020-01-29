@@ -29,6 +29,10 @@ function bieb()
 	['canvas.context'] = true,
 
 	-- functioneel
+	['fn.eerste'] = function(x) return x[1] end;
+	['fn.tweede'] = function(x) return x[2] end;
+	['fn.derde'] = function(x) return x[3] end;
+	['fn.vierde'] = function(x) return x[4] end;
 	['merge'] = function(fns)
 		return function(x)
 			local r = {}
@@ -135,18 +139,15 @@ function bieb()
 		return read[sock]
 	end;
 		
-	_arg = true,
-
 	['⊤'] = true,
 	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
-	['dt'] = 1/10, -- terminal altijd
+	['dt'] = 1/60, -- terminal altijd
 	['⊥'] = false,
 	log2 = function (a) return math.log(a, 2) end,
 	log10 = math.log10,
 	['τ'] = math.pi*2,
 	['∅'] = {},
 	['π'] = math.pi,
-	start = true,
 	misschien = true,
 	fout = true,
 	['scherm.ververst'] = true,
@@ -212,7 +213,7 @@ function bieb()
 		elseif type(a) == 'function' then
 			return a(b)
 		else
-			return b
+			return a
 		end
 	end;
 
@@ -264,16 +265,11 @@ function bieb()
 	absi = math.abs,
 	ceil = math.ceil,
 	["'"] = true,
-	['nu'] = (function()
-		local socket = require 'socket'
-		return socket.gettime()
-	end) (10),
-	['looptijd'] = 0;
 	['inverteer'] = true; -- sure
-	['sqrt'] = function(a) return math.sqrt(a) end;
+	['sqrt'] = math.sqrt;
 	['niets'] = nil;
-	['min'] = function(a,b) return math.min(a,b) end;
-	['mod'] = function(a,b) return a % b end;
+	['min'] = function(a) return math.min(a[1],a[2]) end;
+	['mod'] = function(a) return a[1] % a[2] end;
 
 	['¬'] = function(b)
 		return not b
