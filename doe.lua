@@ -146,7 +146,7 @@ end
 -- mogelijk met argumenten
 local function doeblok(blok, env, arg)
 	assert(blok, 'geen blok!')
-	for i,stat in ipairs(blok.stats) do
+	for i,stat in ipairs(blok) do
 		if opt and opt.L then
 			-- locsub(exp.code, stat.loc), 
 			io.write('  ', combineer(stat), '\t', loctekst(stat.loc), '\t\t' )
@@ -164,30 +164,6 @@ local function doeblok(blok, env, arg)
 		end
 
 		env[stat.a[1].v] = w
-	end
-	local epi = blok.epiloog
-	if fn(epi) == 'ret' then
-		local a = env[blok.stats[#blok.stats].a[1].v]
-		if opt and opt.L then print('ret '..tostring(a)) end
-		return a
-	elseif epi.v == 'stop' then
-		local a =  env[blok.stats[#blok.stats].a[1].v]
-		if opt and opt.L then print('stop') end
-		return a
-	elseif fn(epi) == 'ga' then
-		local a,d,e = epi.a[1], epi.a[2], epi.a[3]
-		if #epi.a == 3 then
-			local b = env[a.v]
-			local doel = b and d.v or e.v
-			if opt and opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
-			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi)..', cond='..tostring(b))
-			return env[doel](arg)
-		else
-			if opt and opt.L then print('ga '..epi.a.v) end
-			return env[epi.a.v](arg) -- sws jmp
-		end
-	else
-		error('slechte epiloog: '..combineer(epi))
 	end
 end
 
@@ -214,20 +190,6 @@ function doe(app)
 		env[k] = v
 	end
 
-	for naam,blok in pairs(app) do
-		env[naam] = function(arg)
-			local isf = naam:sub(1,2) == 'fn'
-			if opt and opt.L then print('...\ncall '..naam..' '..lenc(arg)) end
-			env['_arg'] = arg
-			local ret = doeblok(blok, env, arg)
-			if opt and opt.L then 
-				if isf then io.write('\n...') end
-				io.flush()
-			end
-			return ret
-		end
-	end
-
 	-- GA
 	local socket = require 'socket'
 	local ret
@@ -235,11 +197,11 @@ function doe(app)
 	-- init
 	local starttijd = socket.gettime()
 	env.looptijd = 0
-	doeblok(app.init, env)
+	doeblok(app, env)
 
 	while true do
 		io.write(ansi.wisregel, ansi.regelbegin)
-		ret = doeblok(app.init, env)
+		ret = doeblok(app, env)
 		env.looptijd = socket.gettime() - starttijd
 		socket.sleep(1/10)
 	end

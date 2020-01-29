@@ -26,6 +26,7 @@ function bieb()
 
 	-- canvas
 	['pad.begin'] = true,
+	['canvas.context'] = true,
 
 	-- functioneel
 	['merge'] = function(fns)
@@ -168,7 +169,7 @@ function bieb()
 		return ret
 	end;
 
-	_prevvar = function(index)
+	_V = function(index)
 		return vars[index]
 	end;
 

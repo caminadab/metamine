@@ -115,15 +115,24 @@
 					editor.addWidget(widgetpos, preview);
 				};
 
+				//var func = new Function("IN", j.js);
+
 				try {
 					setTimeout(() => {stop = false; }, 100);
-					eval(j.js);
+
+					var f = (ev) => {
+						var k = new Function("IN", j.js);
+						k();
+						if (!stop)
+							requestAnimationFrame(f);
+					}
+					requestAnimationFrame(f);
+
 
 
 					//uit.focus(); WAUW
 				} catch (e) {
 					uit.innerHTML = e + "\n" + e.stack + "\n" + j.js;
-					uit.innerHTML = "Fout!";
 				}
 			})
 	}

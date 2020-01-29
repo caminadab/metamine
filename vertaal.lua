@@ -50,9 +50,6 @@
 		end
 		assert(exp)
 
-		if opt and not opt.O then
-			exp = optimiseer(exp)
-		end
 		local app = codegen(exp, maakvar)
 
 		return app, {}, gen2bron

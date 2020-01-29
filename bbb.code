@@ -1,3 +1,1 @@
-x = 1 + 2
-y = x + x + x
-uit = y
+uit = 2 + looptijd

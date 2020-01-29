@@ -44,7 +44,12 @@ function bevat(exp, naam)
 end
 
 -- defunctionaliseer
-function defunc(exp)
+function defunc(exp, al)
+	if fn(exp) == '_' and isobj(arg(exp)) and obj(arg(exp)) == ',' then
+		local a = arg(exp)
+		--return X('∘', X('_', 'constant', defunc(a[2])), a[1])
+		return X('∘', defunc(a[2]), a[1])
+	end
 	if isfn(exp) then
 		return X('∘', defunc(arg(exp)), fn(exp))
 	end
@@ -512,7 +517,7 @@ function oplos(exp, voor)
 					exp.v = nil
 					exp.f = X('_')
 					assert(schaduw[naam], naam .. ' is geen variabele')
-					exp.a = X(',', '_prevvar', schaduw[naam])
+					exp.a = X(',', '_V', schaduw[naam])
 				end
 			end
 			for key,sub in subs(exp) do
@@ -657,8 +662,8 @@ function oplos(exp, voor)
 					else
 						exp.v = nil
 						exp.f = X('_')
-						exp.a = X(',', '_prevvar', schaduw[naam])
-						--exp.f = X'_prevvar'
+						exp.a = X(',', '_V', schaduw[naam])
+						--exp.f = X'_V'
 						--exp.a = X(schaduw[naam])
 					end
 				end
@@ -821,7 +826,22 @@ function oplos(exp, voor)
 			end
 			exp2naam = n2e
 		end
-		--print('aantal subcalls = ', S)
+
+		-- optimiseer
+		val = optimiseer(val)
+
+		-- opgelost 1
+		if verbozeWaarde then
+			print('=== WAARDE ===')
+			if #val > 1 then
+				for i,v in ipairs(val) do
+					print(combineer(v))
+				end
+			else
+				print(combineer(val))
+			end
+		end
+
 
 		-- defunctionaliseer
 		for exp in boompairsdfs(val) do
@@ -831,9 +851,9 @@ function oplos(exp, voor)
 			end
 		end
 
-		-- opgelost
+		-- opgelost 2
 		if verbozeWaarde then
-			print('=== WAARDE ===')
+			print('=== DEFUNC WAARDE ===')
 			if #val > 1 then
 				for i,v in ipairs(val) do
 					print(combineer(v))

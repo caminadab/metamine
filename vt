@@ -197,10 +197,9 @@ if opt.i then
 
 	-- print
 	else
-		for naam,blok in spairs(app) do
-			print(blok)
+		for i,stat in ipairs(app) do
+			print(combineer(stat))
 		end
-
 	end
 	return
 end

@@ -1,21 +1,20 @@
-ververs = moment → invoer.registreer(schrijf(tekst(uit)))
+ververs = moment → schrijf(tekst(uit))
 app = herhaal.langzaam(ververs)
 
 ; canvas
 canvas = invoer.registreer(schrijf "<canvas width='1280' height='720'></canvas>")
 canvas.teken = canvas.wis ∘ (vormen2d vouw (∘))
 canvas.render = vormen3d vouw (∘)
-nvas.wis ∘ (vormen2d vouw (∘))
-  canvas.render = vormen3d vouw (∘)
 
-video: nu → beeld
-schilder: canvas → canvas 
+;video: nu → beeld
+;schilder: canvas → canvas 
 
-app = (video, audio, vars)
-in = (toets.neer, toets.op, nu, vars)
+;app = (video, audio, vars)
+;in = (toets.neer, toets.op, nu, vars)
 
-context = canvas.getContext(html "<canvas width='1280' height='720'></canvas>")
-teken = objs → (objs vouw (_)) context
+context = canvas.context2d(schrijf "<canvas width='1280' height='720'></canvas>")
+;teken = objs → (objs vouw (_)) context
+teken = obj → obj(context)
 
 ;rechthoek = ((x1,y1),(x2,y2)) → (ctx → (pad.begin ∘ pad.rect ∘ pad.eind))
 
