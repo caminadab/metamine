@@ -46,10 +46,10 @@ for i = 1,math.min(#fouten, 10) do
 	print(fout2ansi(fouten[i]))
 end
 
-
-
-
 do return end
+
+
+
 --------------------- OPLOS
 local voor = socket.gettime()
 	local exp = oplos(lang, "uit")

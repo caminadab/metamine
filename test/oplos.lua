@@ -2,7 +2,7 @@ require 'oplos'
 require 'vertaal'
 require 'fout'
 
-local code = "b := 1\nc := 2\napp = b"
+local code = "b := 1\nc := 2\napp = b\nuit.vars = []"
 local b,fouten = oplos(ontleed(code), "app")
 print(code)
 print(combineer(b))

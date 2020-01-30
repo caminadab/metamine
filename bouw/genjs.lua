@@ -207,6 +207,8 @@ local immsym = {
 	['canvas.context2d'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
 	['canvas.context3d'] = '(function() { if (uit.children.length > 0 && !window.gl) gl = uit.children[0].getContext("webgl"); return gl; })',
 
+	['aspect'] = '16/9',
+
 	['console.log'] = 'console.log',
 
 	-- 3D

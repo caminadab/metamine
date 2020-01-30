@@ -2,11 +2,11 @@ require 'util'
 require 'bieb'
 local bieb = bieb()
 local makkelijk = set('+', '-', '·', '/', '%', '#', '_', '^',  '√', '∧', '∨', 'Σ')
-local dynamisch = set('looptijd', 'nu', 'starttijd',
+local dynamisch = set('looptijd', 'nu', 'starttijd', 'start', '∘',
 	'tcp.lees', 'tcp.schrijf', 'tcp.accepteer', 'tcp.bind',
 	'pad.begin', 'pad.eind', 'pad.rect', 'pad.vul', 'pad.verf',
 	'canvas.context', 'html',
-	'_arg', 'schrijf', 'vierkant', 'cirkel', 'label', 'rechthoek', 'lijn', '_var', '_prevvar', 'toets.neer', 'muis.klik', 'muis.klik.begin', 'muis.klik.eind', 'toets.neer.begin', 'toets.neer.eind', 'misschien', 'willekeurig', 'constant', 'id', 'merge', 'kruid')
+	'_arg', 'schrijf', 'vierkant', 'cirkel', 'label', 'rechthoek', 'lijn', '_V', '_var', 'toets.neer', 'muis.klik', 'muis.klik.begin', 'muis.klik.eind', 'toets.neer.begin', 'toets.neer.eind', 'misschien', 'willekeurig', 'constant', 'id', 'merge', 'kruid')
 
 local function w2exp(w)
 	local uit
@@ -48,7 +48,9 @@ function optimiseer(exp)
 		end
 		if atoom(exp) == "⊤" then return exp, true end
 		if atoom(exp) == "⊥" then return exp, false end
-		if bieb[atoom(exp)] and not dynamisch[atoom(exp)] then return exp, bieb[atoom(exp)] end
+		if bieb[atoom(exp)] and not dynamisch[atoom(exp)] then
+			return exp, bieb[atoom(exp)]
+		end
 		return exp, nil
 	end
 

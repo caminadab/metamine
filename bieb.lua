@@ -27,39 +27,44 @@ function bieb()
 	-- canvas
 	['pad.begin'] = true,
 	['canvas.context'] = true,
+	['aspect'] = function(x) return 16/9 end;
 
 	-- functioneel
 	['fn.eerste'] = function(x) return x[1] end;
 	['fn.tweede'] = function(x) return x[2] end;
 	['fn.derde'] = function(x) return x[3] end;
 	['fn.vierde'] = function(x) return x[4] end;
-	['merge'] = function(fns)
+	['fn.merge'] = function(fns)
 		return function(x)
 			local r = {}
 			for i,fn in ipairs(fns) do
-				r[i] = fn(x)
+				if type(fn) == 'function' then
+					r[i] = fn(x)
+				else
+					r[i] = fn
+				end
 			end
 			return r
 		end
 	end;
-	['dup'] = function(x)
+	['fn.dup'] = function(x)
 		return {x, x}
 	end;
-	['id'] = function(x)
+	['fn.id'] = function(x)
 		return x
 	end;
-	['constant'] = function(x)
+	['fn.constant'] = function(x)
 		return function()
 			return x
 		end
 	end;
-	['kruid'] = function(args)
+	['fn.kruid'] = function(args)
 		local fn,x = args[1], args[2]
 		return function(y)
 			return fn(x,y)
 		end
 	end;
-	['kruidL'] = function(args)
+	['fn.kruidL'] = function(args)
 		local fn,y = args[1], args[2]
 		return function(x)
 			return fn(x,y)
@@ -161,7 +166,7 @@ function bieb()
 		local index, set = a[1], a[2]
 		local ret = vars[index]
 		-- start
-		for i, val in pairs(set) do
+		for i, val in ipairs(set) do
 			if val ~= nil then
 				ret = val
 			end
@@ -344,11 +349,14 @@ function bieb()
 		return doe0(exp)
 	end;
 
+	-- componeer
 	['∘'] = function(a)
 		assert(type(a[1]) == 'function', '@1 is geen functie')
 		assert(type(a[2]) == 'function', '@2 is geen functie')
-		return function(...)
-			return a[2](a[1](...))
+		return function(x)
+			local b = a[1](x)
+			print(e2s(b))
+			return a[2](b)
 		end
 	end;
 

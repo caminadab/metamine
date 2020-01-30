@@ -90,7 +90,7 @@ function codegen(exp, maakvar)
 			table.remove(stats, i)
 		end
 
-		if false and isatoom(arg1(x)) and isfn(arg1(y)) then
+		if isatoom(arg1(x)) and isfn(arg1(y)) then
 			y.a[2].a = x.a[2]
 			table.remove(stats, i)
 		end

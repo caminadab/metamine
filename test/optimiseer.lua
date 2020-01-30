@@ -30,7 +30,7 @@ assert(a == "4", a)
 local a = T "2 + 3"
 assert(a == "5", a)
 
-local a = T "2 max 1"
+local a = T "max(2,1)"
 assert(a == "2", a)
 
 local a = T "(1 + 1) + (1 + 1)"

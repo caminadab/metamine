@@ -9,28 +9,6 @@ require 'graaf'
 
 local bieb = bieb()
 
-local function pakpunten(exp,r)
-	local r = r or {}
-	r[#r+1] = exp
-	for k,sub in subs(exp) do
-		pakpunten(sub,r)
-	end
-	return r
-end
-
-function punten(exp)
-	local r = pakpunten(exp)
-	
-	local i = 1
-	return function ()
-		if r[i] then
-			local v = r[i]
-			i = i + 1
-			return v
-		end
-	end
-end
-
 -- bevat
 function bevat(exp, naam)
 	if isatoom(exp) then
@@ -63,25 +41,25 @@ function defunc(exp, al)
 		end
 
 		-- special case: merge(id, id) = dup
-		if atoom(mergeval[1]) == 'id' and atoom(mergeval[2]) == 'id' and not mergeval[3] then
-			return X'dup'
+		if atoom(mergeval[1]) == 'fn.id' and atoom(mergeval[2]) == 'fn.id' and not mergeval[3] then
+			return X'fn.dup'
 		end
 
 		-- special case: merge(C(w), x) = kruid(x, w)
-		if false and #mergeval == 2 and atoom(arg0(mergeval[1])) == 'constant' then --and not bevat(mergeval[2], '_arg') then
-			return X('_', 'kruidL', arg1(mergeval[1]), mergeval[2])
+		if false and #mergeval == 2 and atoom(arg0(mergeval[1])) == 'fn.constant' then --and not bevat(mergeval[2], '_arg') then
+			return X('_', 'fn.kruidL', arg1(mergeval[1]), mergeval[2])
 		end
 
 		if #mergeval == 1 then
-			return X('_', 'merge', mergeval[1])
+			return X('_', 'fn.merge', mergeval[1])
 		else
-			return X('_', 'merge', mergeval)
+			return X('_', 'fn.merge', mergeval)
 		end
 	end
 	if atoom(exp) == '_arg' then
 		return X'id'
 	end
-	return X('_', 'constant', exp)
+	return exp
 end
 
 -- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
@@ -156,15 +134,6 @@ function oplos(exp, voor)
 				--print('VAR', naam, eq, index)
 			end
 		end
-
-		-- uit (jaja!)
-		local ivars = {o=X'[]'}
-		for var in spairs(vars) do
-			table.insert(ivars, X(var))
-		end
-
-		local eq = X('=', 'uit.vars', ivars)
-		nieuw[eq] = true
 
 		-- herschrijf (a += b) naar (a := a' + b / fps)
 		-- syntactic cocain
@@ -283,44 +252,8 @@ function oplos(exp, voor)
 				nieuw[neq] = true
 
 			end
-
-			if fn(eq) == 'zolang1' then
-				local cond = eq.a[1]
-				local asslijst = eq.a[2]
-
-				print('HIER', combineer(asslijst))
-				local ass = map(asslijst.a, function(ass) return tonumber(ass) or arg0(ass) end)
-
-				print('Iteratie init')
-				ass.o = X','
-				print(e2s(ass))
-				print(ass[1].v)
-				print(ass[2].v)
-
-				assvar = ass[1]
-
-				local init = X('=', X(maakvar()))
-				local testvar = X(maakvar())
-				local updatevar = X(maakvar())
-
-				if not init then
-					local fout = oplosfout(assvar.loc, 'lusvariabele {code} is ongeïnitialiseerd', assvar.v)
-					fouten[#fouten+1] = fout
-					return nil, fouten
-
-				else
-					local test = X('→', testvar, substitueer(cond, assvar, testvar))
-					local update = X('→', updatevar, substitueer(assval, assvar, updatevar))
-
-					local neq = X('=', assvar, X('_', 'zolang', X(',', init, test, update)))
-					assign(eq, neq)
-
-					-- haal assignment weg
-					eqs[varass] = nil
-					--nieuw[eq] = true
-				end
-			end
 		end
+
 
 		-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
 
@@ -650,7 +583,7 @@ function oplos(exp, voor)
 		for eq in pairs(eqs) do
 			for exp in boompairs(eq) do
 				local naam = exp.a and exp.a.v
-				if (fn(exp) == "'" and naam) or schaduw[atoom(exp)] and false then
+				if (fn(exp) == "'" and naam) or schaduw[atoom(exp)] then
 					naam = naam or atoom(exp)
 					--schaduw[naam] = maakindex() 
 					-- a' ↦ var(0)
@@ -671,6 +604,14 @@ function oplos(exp, voor)
 			end
 		end
 
+		-- uit (jaja!)
+		local ivars = {o=X'[]'}
+		for var in spairs(vars) do
+			table.insert(ivars, X(var))
+		end
+		local eq = X('=', 'uit.vars', ivars)
+		nieuw[eq] = true
+
 		eqs = unie(eqs, nieuw)
 		eqs = complement(eqs, oud)
 
@@ -682,7 +623,7 @@ function oplos(exp, voor)
 
 		-- herschrijf a→a+1 naar _fn(0 +(_arg(0) 1))
 		for eq in pairs(eqs) do
-			for lam in punten(eq) do
+			for lam in boompairs(eq) do
 				-- 
 				if fn(lam) == '→' then
 					local inn,uit = lam.a[1], lam.a[2]
@@ -811,6 +752,7 @@ function oplos(exp, voor)
 			naam2exp[naam] = naam2exp[naam] or {}
 			--naam2exp[naam][exp] = true
 			val, n = substitueer(val0, naam, exp, maakvar)
+			print('N', naam.v, n, combineer(exp))
 			val.loc = assert(exp.loc or nergens)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
@@ -821,7 +763,7 @@ function oplos(exp, voor)
 			exp2naam[naam.v] = exp
 			local n2e = {}
 			for naam,sub in pairs(exp2naam) do
-				n2e[naam] = substitueer(sub, naam, exp, maakvar)
+				n2e[naam] = substitueerzuinig(sub, naam, exp, maakvar)
 				--print('SUBST_diep', combineer(exp))
 			end
 			exp2naam = n2e
@@ -835,7 +777,7 @@ function oplos(exp, voor)
 		-- opgelost 1
 		if verbozeWaarde then
 			print('=== WAARDE ===')
-			print(combineer(val))
+			print(unlisp(val))
 			print()
 		end
 
@@ -849,6 +791,7 @@ function oplos(exp, voor)
 		end
 
 		-- opgelost 2
+		exp = optimiseer(exp)
 		if verbozeWaarde then
 			print('=== DEFUNC WAARDE ===')
 			print(combineer(val))
@@ -857,81 +800,7 @@ function oplos(exp, voor)
 
 		return val,{},bekend,exp2naam
 
-		-- functie ontleding
-		--[=[
-		for eq in pairs(eqs) do
-			if eq.f == [[=]] then
-				local fx,val = eq[1],eq.a[2]
-				-- (...) = f
-				if isfn(fx) then
-					-- (f x) = g
-					if not isinvoer(fx.f) and not isinvoer(fx[1]) and bevat(val, fx[1]) then
-						eq[1] = fx.f
-						eq.a[2] = toexp {f='→', fx[1], val}
-					end
-				end
-			end
-		end
-		]=]
-
-		--return verenig(eqs, isinvoer)
-
 	end
 
 	return exp,nil,exp2naam
-end
-
-if test then
-	require 'util'
-	require 'ontleed'
-
-	do return end
-
-
-	local v,f = oplos(ontleed'a = (x → x + 1)(2)', 'a')
-	assert(v)
-	assert(moes(v) == '+(2 1)' or moes(v) == '+(_arg(0) 1)',
-		'v.b = '..moes(v)..' ≠ +(2 1)')
-
-	assert(oplos(ontleed('a = 2'), 'a').v == '2')
-
-	-- b = 2 + 2
-	local v = oplos(ontleed('a = 2\na + 2 = b'), 'b')
-	assert(v)
-	assert(moes(v) == '+(2 2)',
-		'v.b = '..moes(v)..' ≠ +(2 2)')
-
-	do return end
-
-	local v = oplos(ontleed('f(a) = f(b)\na = 2', 'b'))
-	assert(v)
-	assert(moes(v.b) == '2',
-		'v.b = '..moes(v.b)..' ≠ 2')
-
-	local v = oplos(toexp(ontleed('f(a + 1) = f(b + 1)\na = 2')), 'b')
-	assert(v)
-	assert(tostring(v.b) == '2',
-		'v.b = '..tostring(v.b)..' ≠ 2')
-
-	local v = oplos(toexp(ontleed('f = g⁻¹ ∧ g = ★ - 3')))
-	print(toexp(ontleed('f = g⁻¹ ∧ g = ★ - 3')))
-	assert(v)
-	assert(tostring(v.f) == 'inverteer(-(_ 3))', tostring(v.f))
-
-	local s = [[
-f = ★/2 ∘ sin
-a = f⁻¹(2)
-	]]
-	local c = oplos(toexp(ontleed(s)))
-
-	for i=1,10 do
-		local s = [[
-standaarduitvoer = "a = " || tekst(a) || [10]
-a = f(3)
-f = sin ∘ cos
-		]]
-		local m = oplos(toexp(ontleed(s)))
-		assert(m.standaarduitvoer)
-	end
-
 end

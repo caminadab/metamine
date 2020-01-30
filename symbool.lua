@@ -72,23 +72,25 @@ function substitueer(exp, van, naar)
 	if isatoom(exp) then
 		if exp.v == van.v then
 			naar.ref = van.ref
-			return naar
+			return naar, 1
 		else
-			return exp
+			return exp, 0
 		end
 	else
 		if isfn(van) then
 			if moes(exp) == moes(van) then
 				naar.ref = van.ref
-				return naar
+				return naar, 1
 			end
 		end
 		local t = {loc=exp.loc,o=exp.o,f=exp.f}
+		local n = 0
 		for k,v in subs(exp) do
-			t[k] = substitueer(v, van, naar)
+			t[k],m = substitueer(v, van, naar)
+			n = n + m
 		end
 		t.ref = exp.ref
-		return t
+		return t, n
 	end
 end
 

@@ -62,6 +62,8 @@ function doejs(js)
 end
 
 function doestats(app, bieb)
+	local invbieb = {}
+	for k,v in pairs(bieb) do invbieb[v] = k end
 	local env = {}
 	for i, stat in ipairs(app) do
 		io.write('  ', combineer(stat), '\t= ')
@@ -69,7 +71,11 @@ function doestats(app, bieb)
 		local val = doestat(stat, bieb, env)
 		local naam = atoom(arg0(stat))
 		env[naam] = val
-		print(lenc(val))
+		if invbieb[val] then
+			print(invbieb[val])
+		else
+			print(lenc(val))
+		end
 	end
 	return env[atoom(arg0(app[#app]))], env
 end

@@ -2,6 +2,11 @@ app = app.in → app.uit
 app.in = (in.vars, start, nu)
 app.uit = (uit, uit.vars)
 
+teken = "ok"
+looptijd = 3
+uit.breedte = 100 · 16/9
+uit.hoogte = 100
+
 
 ; toetsenbord
 toets.spatie = toets.neer(32)
