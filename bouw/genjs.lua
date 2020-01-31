@@ -38,14 +38,10 @@ local immjs = {
 	['vouw'] = '$1.length == 0 ? (x => x) : $1.length == 1 ? $1[0] : $1.slice(1).reduce((x,y) => $2([x,y]),$1[0])',
 	['atoom'] = 'atoom$1',
 	['%'] = '$1 / 100',
-	['+i'] = '$1 + $2',
-	['+d'] = '$1 + $2',
 	['+'] = '$1 + $2',
 
 	['¬'] = '! $1',
 	['-'] = '- $1',
-	['-i'] = '- $2',
-	['-d'] = '- $2',
 	['·'] = '$1 * $2',
 	['·i'] = '$1 * $2',
 	['·d'] = '$1 * $2',
@@ -58,8 +54,6 @@ local immjs = {
 	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
 	['√'] = 'Math.pow($1, 0.5)',
 	['^'] = 'Math.pow($1, $2)',
-	['^i'] = 'Math.pow($1, $2)',
-	['^d'] = 'Math.pow($1, $2)',
 	['^f'] = 'function(res) { for (var i = 0; i < $2; i++) res = $1(res); return res; }',
 	['wortel'] = 'Math.sqrt($1)',
 	['derdemachtswortel'] = 'Math.pow($1,1/3)',
@@ -91,8 +85,6 @@ local immjs = {
 	['afrond.boven'] = 'Math.ceil($1)',
 	['int'] = 'Math.floor($1)',
 	['abs'] = 'Math.abs($1)',
-	['absd'] = 'Math.abs($1)',
-	['absi'] = 'Math.abs($1)',
 	['sign'] = '($1 > 0 ? 1 : -1)',
 
 	-- exp
@@ -106,9 +98,8 @@ local immjs = {
 	-- lijst
 	['#'] = '$1.length',
 	['Σ'] = '$1.reduce((a,b) => a + b, 0)',
-	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2-$1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1-$2))), (x,i) => $1 - 1 - i))',
+	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
 	['_u'] = '$1[$2]',
-	['_'] = 'Array.isArray($1) ? index($1,$2) : typeof $1 == "string" ? $1[$2] : $1($2)',
 	['vanaf'] = '$1.slice($2, $1.length)',
 
 	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => Array.isArray(x) ? Array.from(x).concat([y]) : [x, y])))', -- cartesisch product
@@ -136,14 +127,14 @@ local immjs0 = {}
 for k,v in spairs(immjs) do
 	local multi = v:match('$2')
 	if multi then
-		v = v:gsub('$1', '_arg[0]')
-		v = v:gsub('$2', '_arg[1]')
-		v = v:gsub('$3', '_arg[2]')
-		v = v:gsub('$4', '_arg[3]')
+		v = v:gsub('$1', '_Z[0]')
+		v = v:gsub('$2', '_Z[1]')
+		v = v:gsub('$3', '_Z[2]')
+		v = v:gsub('$4', '_Z[3]')
 	else
-		v = v:gsub('$1', '_arg')
+		v = v:gsub('$1', '_Z')
 	end
-	v = 'function(_arg) { return ' .. v .. '; }'
+	v = '_Z => ' .. v
 	
 	immjs0[k] = v
 end
@@ -156,11 +147,11 @@ local immsym = {
 			s.push(lijst[i][j]);
 	return s;
 })]],
+	['index'] = 'index',
 	['niets'] = 'undefined',
 	['misschien'] = 'Math.random() < 0.5',
 	['dt'] = 'dt',
-	['_2'] = '(function(_fn, _nieuwArg) { alert("ok"); _oudArg = _arg || undefined; _arg = _nieuwArg ; var res = _fn(_arg); _arg = _oudArg; return res; })',
-	--['_'] = '(function(a) { return a[0](a[1]); })',
+	['_'] = '_Z => _Z[0](_Z[1])',
 	['|'] = [[ (function(conds) {
 		const it = conds.entries();
 		for (let entry of it) {
@@ -209,10 +200,14 @@ local immsym = {
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
 	['sign'] = '($1 > 0 ? 1 : -1)',
+
+	--['verplaats'] = '(canvas => x 
 	
 	-- LIB
 	['canvas.context2d'] = '(function() { var c = uit.children[0].getContext("2d"); c.fillStyle = "white"; c.strokeStyle = "white"; return c; })',
 	['canvas.context3d'] = '(function() { if (uit.children.length > 0 && !window.gl) gl = uit.children[0].getContext("webgl"); return gl; })',
+
+	['aspect'] = '16/9',
 
 	['console.log'] = 'console.log',
 
@@ -389,13 +384,27 @@ local immsym = {
 	['label3'] = '(function(xyz) {return (function(c){\n\t\tc.font = "48px Arial";\n\t\tc.fillText(xyz[2], xyz[0] * 7.2, 720 - (xyz[1] * 7.2) - 1);\n\t\treturn c;}); })',
 	['label2'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
 	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar d = xyr[1] || 1.0;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+d) * 7.2) - 1, d * 7.2, d * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['label'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var t = xyz[1];\n\t\tc.font = "48px Arial";\n\t\tc.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);\n\t\treturn c;}); })',
-	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0];\n\t\tvar y = pos[0][1];\n\t\tvar w = pos[1][0] - x;\n\t\tvar h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
+	['label'] = [[(function(xyz) {
+		return (function(c){
+			var x = xyz[0][0];
+			var y = xyz[0][1];
+			var t = xyz[1];
+			c.font = "48px Arial";
+			c.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);
+			return c;
+		});
+	})]],
 
-	['verf'] = [[
-	(function(_args) {return (function(c){
-		var vorm = _args[0];
-		var kleur = _args[1];
+	['pad.begin'] = 'ctx => ctx.beginPath()',
+	['rechthoek'] = [[rect => {ctx => ctx.rect (
+		rect[0]*720, rect[1]*720,
+		(rect[2]-rect[0])*720, (rect[3]-rect[1])*720 )
+	}
+	]],
+	['pad.vul'] = 'ctx => ctx.fill()',
+	['verf'] = [[ c => {ctx =>
+		var vorm = c[0];
+		var kleur = c[1];
 		var r = kleur[0]*255;
 		var g = kleur[1]*255;
 		var b = kleur[2]*255;
@@ -577,12 +586,14 @@ function genjs(app)
 	local s = {}
 	local t = {}
 	local maakvar = maakvars()
+	local eindvar = 'A'
 
 	local function blokjs(blok, tabs)
-		for i,stat in ipairs(blok.stats) do
+		for i,stat in ipairs(blok) do
 			local naam, exp = stat.a[1], stat.a[2]
 			local var = maakvar()
 			local f = fn(exp)
+			eindvar = naam.v
 
 			if isatoom(exp) and immsym[exp.v] then
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, immsym[exp.v])
@@ -600,7 +611,7 @@ function genjs(app)
 					o = exp.a[4] and o:gsub('$4', immsym[exp.a[4].v] or exp.a[4].v) or o
 				else
 					if not exp.a or not exp.a.v then error(o) end
-					o = o:gsub('$1', exp.a.v)
+					o = o:gsub('$1', exp.a.v or o)
 				end
 				if o:match('%$') then error('niet alle argumenten gevonden: '..o..', exp = '..e2s(exp)) end
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, o)
@@ -648,43 +659,14 @@ function genjs(app)
 				t[#t+1] = string.format(tabs .. "throw 'onbekende functie: ' + " .. f .. ";")
 			end
 		end
+
+		t[#t+1] = 'return ' .. eindvar .. ';'
 	end
 
 	local function flow(blok, tabs)
 		blokjs(blok, tabs)
-		local epi = blok.epiloog
-
-		if fn(epi) == 'ga' and #epi.a == 3 then
-			t[#t+1] = string.format('%sif (%s) {', tabs, epi.a[1].v)
-			local b = assert( app[epi.a[2].v], epi.a[2].v )
-			flow(b, tabs..'  ')
-			t[#t+1] = tabs .. '} else {'
-			flow(app[epi.a[3].v], tabs..'  ')
-			t[#t+1] = tabs .. '}'
-			
-			local phi = app[b.epiloog.a.v]
-			if phi then
-				flow(phi, tabs)
-			end
-			--flow(app[b.epiloog[1].v])
-		elseif fn(epi) == 'ga' and isatoom(arg(epi)) then
-			--flow(app[epi[1].v], tabs..'  ')
-		elseif fn(epi) == 'ret' then
-			t[#t+1] = string.format('%sreturn %s;', tabs, epi.a[1].v)
-		elseif epi.v == 'stop' then
-			-- niets
-		else
-			error('foute epiloog: '..combineer(epi))
-		end
 	end
 
-	for naam, blok in spairs(app) do
-		if blok.naam.v:sub(1,2) == 'fn' then
-			t[#t+1] = 'function '..naam..'(_arg) {'
-			flow(blok, '  ')
-			t[#t+1] = '}'
-		end
-	end
 	table.insert(s, [[
 starttime = performance.now() / 1000;
 start = true;
@@ -708,6 +690,18 @@ html = "";
 uit = document.getElementById("uit");
 stop = false;
 
+function merge(funcs) {
+	return function(x) {
+		var r = [];
+		for (var i = 0; i < funcs.length; i++)
+			r[i] = funcs[i](x);
+		return r;
+	};
+}
+function id(x) { return x; }
+function constant(x) { return function() { return x; }}
+function dup(x) { return function() { return [x,x]; }}
+
 function TEXT(t) {
 	if (t === undefined)
 		return "niets";
@@ -729,6 +723,8 @@ function TEXT(t) {
 }
 
 function index(lijst, indices) {
+	if (typeof lijst == "string")
+		return lijst[indices];
 	if (Array.isArray(indices)) {
 		var r = lijst;
 		for (var i = 0; i < indices.length; i++) {
@@ -741,10 +737,9 @@ function index(lijst, indices) {
 }
 
 ]])
-	--assert(app.start)
-	flow(app.init, '')
+	flow(app, '')
 
-	return table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
+	return ''..table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
 end
 
 if test then

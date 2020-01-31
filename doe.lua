@@ -1,17 +1,20 @@
+local socket = require 'socket'
 require 'combineer'
 require 'bieb'
 require 'func'
 require 'fout'
 
-local function doeatoom(exp, env)
+local function doeatoom(exp, bieb, env)
 	if tonumber(exp.v) then
 		return tonumber(exp.v)
+	elseif bieb[exp.v] ~= nil then
+		return bieb[exp.v]
 	elseif env[exp.v] ~= nil then
 		return env[exp.v]
 	elseif isobj(exp) then
 		local t = {}
 		for i,sub in ipairs(exp) do
-			t[i] = doeatoom(sub, env)
+			t[i] = doeatoom(sub, bieb, env)
 		end
 		return t
 	else
@@ -20,171 +23,30 @@ local function doeatoom(exp, env)
 	end
 end
 
-local function doestat(stat, env)
+local function doestat(stat, bieb, env)
 	assert(env)
 	local cmd = stat.a[2]
+
 	if isobj(cmd) then
-		local o = obj(cmd)
-		if true or o == ',' then
-			local r = {}
-			for i,v in ipairs(cmd) do
-				r[i] = doeatoom(v, env)
-			end
-			return r
-			--return map(cmd, doeatoom, env)
+		local r = {}
+		for i,v in ipairs(cmd) do
+			r[i] = doeatoom(v, bieb, env)
 		end
+		return r
 	
 	elseif isatoom(cmd) then
-		return doeatoom(cmd, env)
+		return doeatoom(cmd, bieb, env)
 
 	elseif isfn(cmd) then
-		local fn = env[fn(cmd)]
-		local arg = doeatoom(arg(cmd), env)
-		--env['_arg'] = arg
+		local fn = bieb[fn(cmd)]
+		local arg = doeatoom(arg(cmd), bieb, env)
+		local res = fn(arg)
 
-		local ok, res = pcall(fn, arg)
-		if not ok then
-			local err = res
-			local fout = executiefout(stat.loc, '{code}: '..err:match('([^\n]+)'), bron(stat))
-			print(fout2ansi(fout))
-			while false do
-				io.write('> ')
-				io.flush()
-				local source = io.read('*l')
-
-				if source == '' or source == '\x13' or source == 'exit' or source == 'quit' then
-					break
-				end
-				local fn = load(source)
-				env.print = function(a) print(combineer(w2exp(a))) end
-				env._G = env
-				setfenv(fn, env)
-				local ok, msg = pcall(fn)
-				if not ok then print(msg) end
-			end
-			return fout
-		end
 		return res
 	
 	else
 		error('wat is dit: '..combineer(stat))
 
-	end
-end
-
-local function doestat0(stat, env)
-	-- naam := exp
-	-- naam := f(a,b)
-	local naam,exp = stat.a[1],stat.a[2]
-	local uit
-	local w
-
-	-- verkrijg waardes van argumenten enzo
-	--exp = emap(exp, waarde, env, ...)
-
-	--print(lenc(exp))
-	--check(exp)
-
-	if isatoom(exp) then
-		if exp.v == '[]' then
-			w = {}
-		else
-			w = exp.w
-		end
-
-	elseif exp.f and type(exp.f.w) == 'table' then
-		-- woeps
-		local a = exp.f.w
-		local i = exp[1].w
-		w = a[i+1]
-		assert(w ~= nil, combineer(w2exp(a)) .. '.' .. combineer(w2exp(b)))
-
-	elseif exp.f.v == '_fn' then
-		w = env[fn(exp)]
-
-	-- normale functie
-	else
-		local func = exp.f.w
-		assert(func ~= nil, "geen functie voor "..e2s(exp.f))
-		local args = {}
-		for i,s in ipairs(exp) do
-			args[i] = s.w
-		end
-		if type(func) == 'function' then
-			--w = func(able.unpack(args))
-			local ok
-			ok, w = xpcall(func, function(f) return f ..'\n' .. debug.traceback() end, table.unpack(args))
-			if not ok then
-				local err = w
-				local f = executiefout(stat.loc, err)
-				--print(fout2string(f))
-				return
-			end
-
-		elseif type(func) == 'table' then
-			w = func[args[1]]
-
-		elseif type(func) == 'string' then
-			w = func:sub(args[1]+1, args[1]+1)
-
-		else
-			print('ASDF', e2s(exp), exp.f.w, exp.w)
-			local f = executiefout(stat.loc, 'onbekende "functie": '..tostring(func)..' : '..type(func)..' ('..combineer(stat)..')')
-			print()
-			print(fout2ansi(f))
-		end
-
-	end
-	--assert(w ~= nil, 'Ontologiefout: '..combineer(exp) .. ' is niets')
-	return w
-end
-
--- doe een continu blok aan instructies
--- mogelijk met argumenten
-local function doeblok(blok, env, arg)
-	assert(blok, 'geen blok!')
-	for i,stat in ipairs(blok.stats) do
-		if opt and opt.L then
-			-- locsub(exp.code, stat.loc), 
-			io.write('  ', combineer(stat), '\t', loctekst(stat.loc), '\t\t' )
-			io.flush()
-		end
-
-		local w = doestat(stat, env)
-
-		if opt and opt.L then
-			local exp = stat.a[2]
-			local skip = fn(exp) == '_' and env[exp.a.v] == env.stduitSchrijf
-			if not skip then
-				io.write(combineer(w2exp(w)), '\n')
-			end
-		end
-
-		env[stat.a[1].v] = w
-	end
-	local epi = blok.epiloog
-	if fn(epi) == 'ret' then
-		local a = env[blok.stats[#blok.stats].a[1].v]
-		if opt and opt.L then print('ret '..tostring(a)) end
-		return a
-	elseif epi.v == 'stop' then
-		local a =  env[blok.stats[#blok.stats].a[1].v]
-		if opt and opt.L then print('stop') end
-		return a
-	elseif fn(epi) == 'ga' then
-		local a,d,e = epi.a[1], epi.a[2], epi.a[3]
-		if #epi.a == 3 then
-			local b = env[a.v]
-			local doel = b and d.v or e.v
-			if opt and opt.L then print(string.format('ga %s want %s = %s', doel, a.v, b)) end
-			assert(type(b) == 'boolean', 'sprongkeuze is niet binair: '..combineer(epi)..', cond='..tostring(b))
-			return env[doel](arg)
-		else
-			if opt and opt.L then print('ga '..epi.a.v) end
-			return env[epi.a.v](arg) -- sws jmp
-		end
-	else
-		error('slechte epiloog: '..combineer(epi))
 	end
 end
 
@@ -199,46 +61,53 @@ function doejs(js)
 	return res
 end
 
-function doe(app)
-	if app == nil then
-		return nil
-	end
-	local bieb = bieb()
+function doestats(app, bieb)
+	local invbieb = {}
+	for k,v in pairs(bieb) do invbieb[v] = k end
 	local env = {}
-
-	-- vul bieb
-	for k,v in pairs(bieb) do
-		env[k] = v
-	end
-
-	for naam,blok in pairs(app) do
-		env[naam] = function(arg)
-			local isf = naam:sub(1,2) == 'fn'
-			if isf and opt and opt.L then print('...\ncall '..naam..' '..combineer(w2exp(arg))) end
-			env['_arg'] = arg
-			local ret = doeblok(blok, env, arg)
-			if opt and opt.L then 
-				--if isf then io.write('\n...') end
-				----io.flush()
-			end
-			return ret
+	for i, stat in ipairs(app) do
+		io.write('  ', combineer(stat), '\t= ')
+		io.flush()
+		local val = doestat(stat, bieb, env)
+		local naam = atoom(arg0(stat))
+		env[naam] = val
+		if invbieb[val] then
+			print(invbieb[val])
+		else
+			print(lenc(val))
 		end
 	end
+	return env[atoom(arg0(app[#app]))], env
+end
 
-	-- GA
-	local socket = require 'socket'
-	local ret
+-- app: (nu, vars) → (uit, vars)
+function doe(app)
+	local bieb = bieb()
+	local main,env = doestats(app, bieb)
 
 	-- init
-	local starttijd = socket.gettime()
-	env.looptijd = 0
-	doeblok(app.init, env)
+	local nu = socket.gettime()
+	local start = true
+	local vars = {}
+
+	-- doe
+	local res = main {vars, start, nu}
+	local uit, vars = res[1], res[2]
 
 	while true do
+		-- update
+		local nu = socket.gettime()
+		local start = false
+
+		-- doe
+		local res = main {vars, start, nu}
+		local uit, vars = res[1], res[2]
+
+		-- uit
 		io.write(ansi.wisregel, ansi.regelbegin)
-		ret = doeblok(app.init, env)
-		env.looptijd = socket.gettime() - starttijd
-		socket.sleep(1/10)
+		io.write(uit, ' ')
+		io.flush()
+		socket.sleep(1/60)
 	end
 
 	return ret

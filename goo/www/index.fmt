@@ -4,26 +4,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
 	<title>Taal</title>
+	<link rel="stylesheet" href="index.css">
 </head>
 <body>
 
-	<!--
-	<div id="intro">
-		<a id="vlag" href="{taallink}"><img id="vlag" src="{taalvlag}"></a>
-		<h1><i>{welkom}</i></h1>
-		<p>
-			<i>{kop1}</i></br>
-			<i>{kop2}</i>
-		</p>
-		</div>
-	</div>
-	-->
-
 <div class="paneel">
 	<button id="vorige">⏮</button>
-	<button id="speel">▶</button>
-	<button id="fullscreen">⇲</button><!--⛶-->
 	<button id="engels" onclick="localStorage.setItem('cc', '{anderecc}'); document.location='{taallink}';"><img id="vlag" src="{taalvlag}"></img></button>
+	<button id="speel">▶</button>
+	<button id="fullscreen" onclick="fullscreen()">⇲</button><!--⛶-->
 	<button id="volgende">⏭</button>
 	<!--<button id="opnieuw">⟲</button>-->
 	<!--<button id="info">🛈</button>-->
@@ -37,6 +26,10 @@
 <!-- uit! -->
 <div id="uit" tabIndex="2" >
 </div>
+
+<div style="height:100vh;">h</div>
+
+	<pre id="code"> </pre>
 
 <!--
 <div id="wat">
@@ -57,238 +50,6 @@
 -->
 
 </body>
-
-<style>
-
-#vlag {
-	width: 100px;
-	float: right;
-	display: inline;
-}
-
-#vraag {
-	background: black;
-	border: none;
-	padding: 10px;
-	color: white;
-	font-size: 24px;
-	width: 100%;
-}
-
-.paneel {
-	clear: both;
-	width: 100%;
-}
-
-@media (max-width: 800px) {
-	.CodeMirror {
-		width: 100%;
-		display: block;
-		height: 200px;
-	}
-	button {
-		width: 20%;
-	}
-	textarea {
-		width: 100%;
-	}
-	#in {
-		width: 100%;
-		height: 200px;
-		display: inline;
-		float: left;
-	}
-	#uit {
-		width: 100%;
-		display: inline;
-		float: left;
-	}
-}
-
-#uit {
-	font-width: bold;
-	background: #3a2299;
-	font-size: 48px;
-	padding: 12px;
-	box-sizing: border-box;
-	word-wrap: break-word;
-}
-
-#wat {
-	clear: both;
-	display: block;
-}
-
-@media (min-width: 800px) {
-	.CodeMirror {
-		width: 50%;
-		display: inline;
-		float: right;
-		height: 95vh !important;
-	}
-
-	#in {
-		height: 95vh;
-	}
-
-	button {
-		width: 10.01%;
-	}
-
-	textarea {
-		width: 50%;
-		display: inline;
-		float: left;
-		height: vh;
-	}
-
-	#uit {
-		min-height: 95vh;
-		width: 50%;
-		display: inline;
-		float: left;
-	}
-}
-
-textarea {
-	font-size: 16px;
-	tab-size: 2;
-	-moz-tab-size: 2;
-	padding: 3px 4px;
-	height: 95vh;
-	color: white;
-	background: black;
-	border: none;
-	box-sizing: border-box;
-}
-
-.CodeMirror {
-	float: left;
-	box-sizing: border-box;
-}
-
-button {
-	background: #012ED4;
-
-	color: white;
-	text-decoration: none;
-	border: 0;
-	font-size: 4vh;
-	height: 5vh;
-	display: inline;
-	cursor: pointer;
-	float: left;
-
-	transition-property: background;
-	transition-duration: 0.0s;
-}
-
-#vertaal { color: #1b1; }
-#volgende, #vorige { color: #bb0; }
-
-button:hover {
-	background: #0023A1;
-	transition-duration: 0.0s;
-}
-
-button:active {
-	background: #000E42;
-}
-
-#laadbalk {
-	display: inline;
-	float: left;
-
-	background: #000625;
-}
-
-html, body {
-	background: #050070;
-	color: white;
-	font-family: Impace, Charcoal, sans-serif;
-	font-size: 16px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-}
-
-h1 {
-	font-size: 36px;
-	margin-left: 80px;
-}
-
-p {
-	margin-left: 60px;
-}
-
-.logo {
-	display: inline;
-	float: right;
-	height: 144px;
-	margin: 30px;
-}
-
-.bar {
-	background: #180D31;
-}
-
-.uit {
-	background: #1400BC;
-}
-
-.volgendeles {
-	position: absolute;
-	left: -100;
-	top: -100;
-	font-size: 96px;
-	color: darkgreen;
-}
-
-canvas {
-	background: #000;
-	width: 100%;
-	height: 100%;
-}
-.syntaxfout { background: #800; color: #A80; }
-.oplosfout { background: #049; color: #AFF; }
-.typeerfout { background: #805; color: #FBF; }
-.fouticoon { background: #800; color: #F88; }
-
-.loc { cursor: pointer; text-decoration: underline; font-weight: bold; }
-
-#vlag {
-	height: 4vh;
-}
-
-#speel0 {
-	margin-top: 0.5cm;
-	margin-bottom: 0.5cm;
-	cursor: pointer;
-	font-size: 24px;
-	width: 100%;
-	/* padding: 10px; */
-	/* border: 10px solid black; */
-	transition-property: border;
-}
-
-@keyframes Knipper {
-    0%{background:yellow;color:purple;}
-    100%{background:red;color:green;}
-}
-
-#speel {
-	background: linear-gradient(to right, red, orange, yellow, green, cyan, blue, purple, red);
-	background-size: 400% 400%;
-	background-repeat: repeat;
-	animation: AnimationName 20s linear infinite;
-}
-
-@keyframes AnimationName {
-    100%{background-position:0% 50%}
-    0%{background-position:400% 50%}
-}
-
-</style>
 <link rel="stylesheet" href="lib/slang.css">
 <link rel="stylesheet" href="lib/codemirror.css">
 
@@ -314,15 +75,19 @@ canvas {
 
 	var demoindex = 0;
 	var demos = [ 'pong', 'buis', 'cirkels', 'salvobal', 'paint' ] ;
+	var uit = document.getElementById('uit');
 
 	var speelknop = document.getElementById("speel");
-	var fullscreenknop = document.getElementById("fullscreen");
 	var vorigeknop = document.getElementById("vorige");
 	var volgendeknop = document.getElementById("volgende");
 	var cknop = '#012ED4';
 	var laadbalk = document.getElementById("laadbalk");
 	var js = document.getElementById("js");
+
+	var preview = document.createElement("div", "preview");
+	preview.className = "preview";
 	stop = true;
+	var wraps = document.getElementsByClassName("CodeMirror-wrap");
 
 	function playfunc() {
 		stop = true;
@@ -338,8 +103,33 @@ canvas {
 					return;
 				}
 
+				// debug info
+				wraps[0].onmousemove = (ev) => {
+					var pos = editor.coordsChar({left: ev.clientX, top: ev.clientY});
+					var token = editor.getTokenAt(pos);
+
+					var widgetpos = {line: pos.line, ch: token.start};
+					if (token.type == "variable") {
+						preview.innerHTML = token.string;
+					}
+					else {
+						preview.innerHTML = "";
+					}
+					editor.addWidget(widgetpos, preview);
+				};
+
+				var func = new Function("IN", j.js);
+
 				try {
-					eval(j.js);
+					setTimeout(() => {stop = false; }, 100);
+
+					var f = (ev) => {
+						var k = new Function("IN", j.js);
+						k();
+						if (!stop)
+							requestAnimationFrame(f);
+					}
+					requestAnimationFrame(f);
 
 					setTimeout(() => {
 						stop = false;
@@ -351,47 +141,43 @@ canvas {
 					//uit.focus(); WAUW
 				} catch (e) {
 					onerror();
-					//alert(e + e.stack);
-					uit.innerHTML = e + "\n" + e.stack + "\n" + j.js;
-					//var genlines = e.stack.match(/\d+/g);
-					//alert("GENLINES: "+genlines)
-					for (var i = 0; i < Math.min(genlines.length, 3); i++) {
-						//alert("GENLINE: " + genlines[i]);
-						var bronloc = j.gen2bron[0+genlines[i]];
-						alert("BRONLOC: "+JSON.stringify(bronloc));
-						// error: {html, loc: {anchor: {line: int } } }
-						selecteer(bronloc);
-						var fout = { html: e.message, loc: bronloc };
-						setErrors([fout]);
-					}
-					//setErrors({
-					uit.innerHTML = "Fout!";
+					//uit.innerHTML = e + "\n" + e.stack + "\n" + j.js;
 				}
 			})
 	}
 
 	function stopfunc() {
+		wraps[0].onmousemove = undefined;
+		preview.innerHTML = '';
+
 		stop = true;
+		setErrors([]);
 		speelknop.innerHTML = "▶";
+		uit.onmousemove = undefined;
+		uit.onkeydown = undefined;
+		uit.onkeyup = undefined;
+		uit.innerHTML = "";
+		nieuw = null;
+		tekst = null;
 		speelknop.style.background = cknop;
 		speelknop.style.transitionDuration = '1.0s';
 	}
 
+	// make fullscreen
 	function fullscreen() {
 		uit.children[0].requestFullscreen();
 	}
 
 	function playorstop() {
-		if (!stop) {
-			stopfunc(); 
-		} else {
+		if (stop) {
 			playfunc();
+		} else {
+			stopfunc(); 
 		}
 	}
 	
 	speelknop.addEventListener("mousedown", playorstop);
 
-	fullscreenknop.addEventListener("mousedown", fullscreen);
 	volgendeknop.addEventListener("mousedown", function() {
 		stopfunc();
 		setErrors([]);
@@ -438,6 +224,7 @@ canvas {
 		extraKeys: {
 			"Shift-Enter": function(cm) { playfunc(); },
 			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
+			"Ctrl-Y": function(cm) { cm.setOption('keyMap', 'vim'); },
 		},
   });
 
@@ -519,8 +306,6 @@ canvas {
 		"|^": "⌈",
 		"^|": "⌉",
 		"||": "‖",
-		"0/": "∅",
-		"/0": "∅",
 		"o/": "∅",
 		"/o": "∅",
 		"ooo": "∞",

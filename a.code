@@ -1,6 +1,5 @@
 uit = a
-a := []
-
-als toets.spatie dan
-	a := a || [1]
+a := 2
+als 2 > 1 dan
+	a := 3
 eind

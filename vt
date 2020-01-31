@@ -11,7 +11,6 @@ require 'vertaal'
 require 'rapport'
 require 'typeer'
 require 'doe'
-require 'optimaliseer'
 require 'oplos'
 
 require 'bouw.genjs'
@@ -52,7 +51,7 @@ Opties:
     -j,	--javascript	compileer naar javascript
     -x,	--demo				compileer naar demo
 		
-    -O								optimaliseer uitvoer
+    -O								optimaliseer uitvoer NIET
 
     -S                genereer assembly-code
     -R                genereer uitgebreid rapport
@@ -198,10 +197,9 @@ if opt.i then
 
 	-- print
 	else
-		for naam,blok in spairs(app) do
-			print(blok)
+		for i,stat in ipairs(app) do
+			print(combineer(stat))
 		end
-
 	end
 	return
 end

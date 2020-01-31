@@ -1,18 +1,18 @@
 ; bal variabelen
 bal.x.min = 15
 bal.y.min = 5
-bal.x.max = scherm.breedte - 15
-bal.y.max = scherm.hoogte - 5
+bal.x.max = uit.breedte - 15
+bal.y.max = uit.hoogte - 5
 bal.vx := 1
 bal.vy := willekeurig(-1,1)
 
 ; speler variabelen
 speler.y.start = speler.y.max / 2
-speler.y.max = scherm.hoogte - 25
+speler.y.max = uit.hoogte - 25
 
 ; bal verplaatsing
-bal.x := scherm.breedte / 2
-bal.y := scherm.hoogte / 2
+bal.x := uit.breedte / 2
+bal.y := uit.hoogte / 2
 
 ; pauze
 pauze.tot := looptijd + 1
@@ -29,7 +29,7 @@ links.raakt = (bal.y > links.y en bal.y < links.y + 25)
 
 ; rechts stuiter
 bal.x.min = 0 + 5 + 10
-bal.x.max = scherm.breedte - 5 - 10
+bal.x.max = uit.breedte - 5 - 10
 
 als bal.x > bal.x.max en rechts.raakt dan
  bal.x := bal.x.max
@@ -57,16 +57,14 @@ eind
 score1 := 0
 score2 := 0
 
-als bal.x < 0 of bal.x > scherm.breedte dan
- bal.x := 90
- bal.y := 50
- pauze.tot := looptijd + 1
+; er wordt gescoord
+als bal.x < 0 of bal.x > uit.breedte dan
+	bal.x := 90
+	bal.y := 50
+	pauze.tot := looptijd + 1
 eind
-
 als bal.x < 0              dan score1 := score1 + 1 eind
-als bal.x > scherm.breedte dan score2 := score2 + 1 eind
-
-
+als bal.x > uit.breedte dan score2 := score2 + 1 eind
 
 ; spelers
 links.y := speler.y.start
@@ -81,8 +79,8 @@ als toets.w en links.y < speler.y.max				dan links.y := links.y + 2 eind
 ; teken spelers
 links.min = (0, links.y)
 links.max = (10, links.y + 25)
-rechts.min = (scherm.breedte - 10, rechts.y)
-rechts.max = (scherm.breedte, rechts.y + 25)
+rechts.min = (uit.breedte - 10, rechts.y)
+rechts.max = (uit.breedte, rechts.y + 25)
 
 rechts = rechthoek(rechts.min, rechts.max)
 links = rechthoek(links.min, links.max)

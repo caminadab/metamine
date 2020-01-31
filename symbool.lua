@@ -68,28 +68,32 @@ function val(exp,t)
 	return t
 end
 
-function substitueer(exp, van, naar)
+function substitueer(exp, van, naar, klaar)
+	local klaar = klaar or {}
+	if klaar[exp] then return klaar[exp], 1 end
 	if isatoom(exp) then
 		if exp.v == van.v then
-			naar.ref = van.ref
-			return naar
+			klaar[exp] = naar
+			return naar, 1
 		else
-			return exp
+			klaar[exp] = exp
+			return exp, 0
 		end
 	else
 		if isfn(van) then
 			if moes(exp) == moes(van) then
-				naar.ref = van.ref
-				return naar
+				klaar[exp] = naar
+				return naar, 1
 			end
 		end
 		local t = {loc=exp.loc,o=exp.o,f=exp.f}
-		--t.f = substitueer(exp.f, van, naar)
+		local n = 0
 		for k,v in subs(exp) do
-			t[k] = substitueer(v, van, naar)
+			t[k],m = substitueer(v, van, naar, klaar)
+			n = n + m
 		end
-		t.ref = exp.ref
-		return t
+		klaar[exp] = t
+		return t, n
 	end
 end
 

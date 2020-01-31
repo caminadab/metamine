@@ -1,0 +1,98 @@
+ververs = moment → schrijf(tekst(uit))
+app = herhaal.langzaam(ververs)
+
+; canvas
+canvas = invoer.registreer(schrijf "<canvas width='1280' height='720'></canvas>")
+canvas.teken = canvas.wis ∘ (vormen2d vouw (∘))
+canvas.render = vormen3d vouw (∘)
+
+;video: nu → beeld
+;schilder: canvas → canvas 
+
+;app = (video, audio, vars)
+;in = (toets.neer, toets.op, nu, vars)
+
+context = canvas.context2d(schrijf "<canvas width='1280' height='720'></canvas>")
+;teken = objs → (objs vouw (_)) context
+teken = obj → obj(context)
+
+;rechthoek = ((x1,y1),(x2,y2)) → (ctx → (pad.begin ∘ pad.rect ∘ pad.eind))
+
+; verf: ctx → ctx
+
+; schilder: obj → (canvas → canvas)
+;render = vormen3d → (canvas.render(canvas.context3d(canvas)) ⇒ "<canvas width='1280' height='720'></canvas>")
+
+
+; vec
+vec.plus = va,vb → va zip vb map (+)
+;vec.min = va,vb → va zip (vb map (-)) map (+)
+vec.mul  = va,vb → va zip vb map (·)
+vec.dot = vda,vdb → Σ (vda zip vdb map (·))
+vec.schaal = vsv,vsf → vsv zip1 vsf map (·)
+
+; vec4
+vec4.plus = vec.plus
+vec4.mul = vec.mul
+mat4.vmul = mvm,mvv → (mat4.transponeer mvm) zip1 mvv map vec.dot
+mat4.mul = mma,mmb → (mat4.transponeer mma) rzip1 mmb map mat4.vmul
+
+; transformatie
+transform.verplaats = tva,tvb,tvc → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tva,tvb,tvc,1))
+transform.schaal = tsx,tsy,tsz → ((tsx,0,0,0),(0,tsy,0,0),(0,0,tsz,0),(0,0,0,1))
+
+; [a b 0]  [a 0 b]  [1 0 0]
+; [c d 0]  [0 1 0]  [0 a b]
+; [0 0 1]  [c 0 d]  [0 c d]
+transform.xdraai = tdx → (1,0,0,0), (0, cos tdx, sin tdx, 0), (0, -sin tdx, cos tdx, 0), (0,0,0,1)
+transform.ydraai = tdy → (cos tdy, 0, sin tdy, 0), (0,1,0,0), (-sin tdy, 0, cos tdy, 0), (0,0,0,1)
+transform.zdraai = tdz → (cos tdz, sin tdz, 0, 0), (-sin tdz, cos tdz, 0, 0), (0,0,1,0), (0,0,0,1)
+transform.comp = mat4.mul
+
+; scherm
+scherm.breedte = 177.778
+scherm.hoogte = 100
+;scherm.frequentie = ?
+;dt = scherm.frequentie
+
+; mat4
+mat4.id = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1))
+mat4.transponeer = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
+
+; vec
+vec2.plus = (Va,Vb),(Vc,Vd) → Va+Vc, Vb+Vd
+vec2.mul  = vec.mul
+vec2.schaal = (vx,vy),vf → (vx·vf,vy·vf)
+vec2.min  = (px1,py1),(px2,py2) → px1-px2,py1-py2
+vec2.unit = sincos
+
+; toetsenbord
+toets.spatie = toets.neer(32)
+toets.links = toets.neer(37)
+toets.omhoog = toets.neer(38)
+toets.rechts = toets.neer(39)
+toets.omlaag = toets.neer(40)
+toets.a = toets.neer(65)
+toets.w = toets.neer(87)
+toets.d = toets.neer(68)
+toets.s = toets.neer(83)
+
+toets.spatie.begin = toets.neer.begin(32)
+toets.links.begin = toets.neer.begin(37)
+toets.omhoog.begin = toets.neer.begin(38)
+toets.rechts.begin = toets.neer.begin(39)
+toets.omlaag.begin = toets.neer.begin(40)
+toets.a.begin = toets.neer.begin(97)
+toets.d.begin = toets.neer.begin(100)
+toets.s.begin = toets.neer.begin(115)
+toets.w.begin = toets.neer.begin(119)
+
+toets.spatie.eind = toets.neer.eind(32)
+toets.links.eind = toets.neer.eind(37)
+toets.omhoog.eind = toets.neer.eind(38)
+toets.rechts.eind = toets.neer.eind(39)
+toets.omlaag.eind = toets.neer.eind(40)
+toets.A.eind = toets.neer.eind(97)
+toets.D.eind = toets.neer.eind(100)
+toets.S.eind = toets.neer.eind(115)
+toets.W.eind = toets.neer.eind(119)

@@ -24,6 +24,53 @@ function bieb()
 
 	local bieb = {
 
+	-- canvas
+	['pad.begin'] = true,
+	['canvas.context'] = true,
+	['aspect'] = function(x) return 16/9 end;
+
+	-- functioneel
+	['fn.eerste'] = function(x) return x[1] end;
+	['fn.tweede'] = function(x) return x[2] end;
+	['fn.derde'] = function(x) return x[3] end;
+	['fn.vierde'] = function(x) return x[4] end;
+	['fn.merge'] = function(fns)
+		return function(x)
+			local r = {}
+			for i,fn in ipairs(fns) do
+				if type(fn) == 'function' then
+					r[i] = fn(x)
+				else
+					r[i] = fn
+				end
+			end
+			return r
+		end
+	end;
+	['fn.dup'] = function(x)
+		return {x, x}
+	end;
+	['fn.id'] = function(x)
+		return x
+	end;
+	['fn.constant'] = function(x)
+		return function()
+			return x
+		end
+	end;
+	['fn.kruid'] = function(args)
+		local fn,x = args[1], args[2]
+		return function(y)
+			return fn(x,y)
+		end
+	end;
+	['fn.kruidL'] = function(args)
+		local fn,y = args[1], args[2]
+		return function(x)
+			return fn(x,y)
+		end
+	end;
+
 	-- net
 
 	['model'] = function () end,
@@ -97,17 +144,15 @@ function bieb()
 		return read[sock]
 	end;
 		
-	_arg = true,
-
 	['⊤'] = true,
 	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
-	['dt'] = 1/10, -- terminal altijd
+	['dt'] = 1/60, -- terminal altijd
 	['⊥'] = false,
 	log2 = function (a) return math.log(a, 2) end,
 	log10 = math.log10,
 	['τ'] = math.pi*2,
+	['∅'] = {},
 	['π'] = math.pi,
-	start = true,
 	misschien = true,
 	fout = true,
 	['scherm.ververst'] = true,
@@ -116,24 +161,6 @@ function bieb()
 
 	rgb = true,
 
-	-- meta
-	['_var'] = function (a)
-		local index, set = a[1], a[2]
-		local ret = vars[index]
-		-- start
-		for i, val in pairs(set) do
-			if val ~= nil then
-				ret = val
-			end
-		end
-		vars[index] = ret
-		return ret
-	end;
-
-	_prevvar = function(index)
-		return vars[index]
-	end;
-
 	-- web
 	['console.log'] =  function(s) print(s) end;
 	['herhaal.langzaam'] = function (f) f(1/24) end; --error('niet beschikbaar') end;
@@ -141,12 +168,12 @@ function bieb()
 	['canvas.context3d'] = function () error('niet beschikbaar') end;
 	['canvas.wis'] = function () error('niet beschikbaar') end;
 
-	vierkant = function() error('niet beschikbaar') end;
-	boog = function() error('niet beschikbaar') end;
-	label = function() error('niet beschikbaar') end;
-	rechthoek = function() error('niet beschikbaar') end;
-	cirkel = function() error('niet beschikbaar') end;
-	lijn = function() error('niet beschikbaar') end;
+	vierkant = function() return('vierkant') end;
+	boog = function() return('boog') end;
+	label = function() return('label') end;
+	rechthoek = function() return('rechthoek') end;
+	cirkel = function() return('cirkel') end;
+	lijn = function() return('lijn') end;
 	['muis.klik'] = false,
 	['muis.klik.begin'] = false,
 	['muis.klik.eind'] = false,
@@ -173,7 +200,7 @@ function bieb()
 		elseif type(a) == 'function' then
 			return a(b)
 		else
-			return b
+			return a
 		end
 	end;
 
@@ -216,7 +243,6 @@ function bieb()
 	xcb_connect = true,
 
 	-- wiskunde
-	co = 3,
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
 	max = function(args) return math.max(args[1], args[2]) end,
 	min = function(args) return math.min(args[1], args[2]) end,
@@ -226,16 +252,11 @@ function bieb()
 	absi = math.abs,
 	ceil = math.ceil,
 	["'"] = true,
-	['nu'] = (function()
-		local socket = require 'socket'
-		return socket.gettime()
-	end) (10),
-	['looptijd'] = true;
 	['inverteer'] = true; -- sure
-	['sqrt'] = function(a) return math.sqrt(a) end;
+	['sqrt'] = math.sqrt;
 	['niets'] = nil;
-	['min'] = function(a,b) return math.min(a,b) end;
-	['mod'] = function(a,b) return a % b end;
+	['min'] = function(a) return math.min(a[1],a[2]) end;
+	['mod'] = function(a) return a[1] % a[2] end;
 
 	['¬'] = function(b)
 		return not b
@@ -263,32 +284,6 @@ function bieb()
 		return t
 	end;
 			
-	['kortsluit'] = function(a,b)
-		-- a = origineel
-		-- b = verbeterd
-	end;
-
-	['+i'] = true,
-	['-i'] = true,
-	['*i'] = true,
-	['/i'] = true,
-	['^i'] = true,
-	['modi'] = true,
- 
-	['+i'] = function(a,b) return a + b end,
-	['-i'] = function(a,b) return a - b end,
-	['*i'] = function(a,b) return a * b end,
-	['/i'] = function(a,b) return a / b end,
-	['^i'] = function(a,b) return a ^ b end,
-	['modi'] = function(a,b) return a % b end,
-
-	['+d'] = function(a,b) return a + b end,
-	['-d'] = function(a,b) return b and a - b or -a end,
-	['*d'] = function(a,b) return a * b end,
-	['/d'] = function(a,b) return a / b end,
-	['^d'] = function(a,b) return a ^ b end,
-	['modd'] = function(a,b) return a % b end,
-
 	['^f'] = function(a, b)
 		return function (x)
 			for i=1,b do
@@ -303,6 +298,7 @@ function bieb()
 	['·'] = function(a) return a[1] * a[2] end;
 	['/'] = function(a) return a[1] / a[2] end;
 	['√'] = function(a) return math.pow(a, 0.5) end;
+	['%'] = function(a) return a / 100 end;
 
 	['^'] = function(a)
 		if type(a[1]) == 'function' then
@@ -316,7 +312,6 @@ function bieb()
 			return a[1] ^ a[2]
 		end
 	end;
-	['%'] = function(a) return a / 100 end;
 
 	['ontleed'] = function(a)
 		--local code = string.char(table.unpack(a))
@@ -336,20 +331,24 @@ function bieb()
 		return doe0(exp)
 	end;
 
+	-- componeer
 	['∘'] = function(a)
 		assert(type(a[1]) == 'function', '@1 is geen functie')
 		assert(type(a[2]) == 'function', '@2 is geen functie')
-		return function(...)
-			return a[2](a[1](...))
+		return function(x)
+			local b = a[1](x)
+			print(e2s(b))
+			return a[2](b)
 		end
 	end;
 
 	['|'] = function(a)
 		for i,v in pairs(a) do
-			if v ~= nil and v ~= false then
+			if v ~= nil then
 				return v
 			end
 		end
+		assert(false, 'geen geldige optie uit '..lenc(a))
 	end;
 
 	['→'] = function(param, f)
@@ -660,7 +659,7 @@ function bieb()
 	end;
 	['⇒'] = function(a,b,c)
 		if a then return b
-		else return c or niets end
+		else return c end
 	end;
 	-- delta componeer
 	-- 2@∆3 = 5

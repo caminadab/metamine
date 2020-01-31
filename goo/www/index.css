@@ -1,0 +1,234 @@
+#vlag {
+	width: 100px;
+	float: right;
+	display: inline;
+}
+
+#vraag {
+	background: black;
+	border: none;
+	padding: 10px;
+	color: white;
+	font-size: 24px;
+	width: 100%;
+}
+
+.preview {
+	background: #330;
+	color: #FF7;
+	z-index: 999;
+	position: absolute;
+}
+
+.paneel {
+	clear: both;
+	width: 100%;
+}
+
+@media (max-width: 800px) {
+	.CodeMirror {
+		width: 100%;
+		display: block;
+		height: 100vh;
+	}
+	button {
+		width: 20%;
+	}
+	textarea {
+		width: 100%;
+	}
+	#in {
+		width: 100%;
+		height: 100vh;
+		display: inline;
+		float: left;
+	}
+	#uit {
+		width: 100%;
+		display: inline;
+		float: left;
+	}
+}
+
+#uit {
+	font-width: bold;
+	background: #3a2299;
+	font-size: 48px;
+	padding: 12px;
+	box-sizing: border-box;
+	word-wrap: break-word;
+}
+
+#wat {
+	clear: both;
+	display: block;
+}
+
+@media (min-width: 800px) {
+	.CodeMirror {
+		width: 50%;
+		display: inline;
+		float: right;
+		height: 95vh !important;
+	}
+
+	#in {
+		height: 95vh;
+	}
+
+	button {
+		width: 10.01%;
+	}
+
+	textarea {
+		width: 50%;
+		display: inline;
+		float: left;
+		height: vh;
+	}
+
+	#uit {
+		min-height: 95vh;
+		width: 50%;
+		display: inline;
+		float: left;
+	}
+}
+
+textarea {
+	font-size: 16px;
+	tab-size: 2;
+	-moz-tab-size: 2;
+	padding: 3px 4px;
+	height: 95vh;
+	color: white;
+	background: black;
+	border: none;
+	box-sizing: border-box;
+}
+
+.CodeMirror {
+	float: left;
+	box-sizing: border-box;
+}
+
+button {
+	background: #012ED4;
+
+	color: white;
+	text-decoration: none;
+	border: 0;
+	font-size: 4vh;
+	height: 5vh;
+	display: inline;
+	cursor: pointer;
+	float: left;
+
+	transition-property: background;
+	transition-duration: 0.0s;
+}
+
+#vertaal { color: #1b1; }
+#volgende, #vorige { color: #bb0; }
+
+button:hover {
+	background: #0023A1;
+	transition-duration: 0.0s;
+}
+
+button:active {
+	background: #000E42;
+}
+
+#laadbalk {
+	display: inline;
+	float: left;
+
+	background: #000625;
+}
+
+html, body {
+	background: #050070;
+	color: white;
+	font-family: Impace, Charcoal, sans-serif;
+	font-size: 16px;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+}
+
+h1 {
+	font-size: 36px;
+	margin-left: 80px;
+}
+
+p {
+	margin-left: 60px;
+}
+
+.logo {
+	display: inline;
+	float: right;
+	height: 144px;
+	margin: 30px;
+}
+
+.bar {
+	background: #180D31;
+}
+
+.uit {
+	background: #1400BC;
+}
+
+.volgendeles {
+	position: absolute;
+	left: -100;
+	top: -100;
+	font-size: 96px;
+	color: darkgreen;
+}
+
+canvas {
+	background: #000;
+	width: 100%;
+	height: 100%;
+}
+.syntaxfout { background: #800; color: #A80; }
+.oplosfout { background: #049; color: #AFF; }
+.typeerfout { background: #805; color: #FBF; }
+.fouticoon { background: #800; color: #F88; }
+
+.loc { cursor: pointer; text-decoration: underline; font-weight: bold; }
+
+#vlag {
+	height: 4vh;
+}
+
+#speel0 {
+	margin-top: 0.5cm;
+	margin-bottom: 0.5cm;
+	cursor: pointer;
+	font-size: 24px;
+	width: 100%;
+	/* padding: 10px; */
+	/* border: 10px solid black; */
+	transition-property: border;
+}
+
+@keyframes Knipper {
+    0%{background:yellow;color:purple;}
+    100%{background:red;color:green;}
+}
+
+#speel {
+	background: linear-gradient(to right, red, orange, yellow, green, cyan, blue, purple, red);
+	background-size: 400% 400%;
+	background-repeat: repeat;
+	animation: AnimationName 20s linear infinite;
+}
+
+@keyframes AnimationName {
+    100%{background-position:0% 50%}
+    0%{background-position:400% 50%}
+}

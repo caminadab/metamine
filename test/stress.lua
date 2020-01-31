@@ -4,9 +4,10 @@ require 'exp'
 require 'combineer'
 require 'typeer'
 require 'test.langecode'
+require 'bouw.codegen'
 
 -- 1 MB
-local code,numlijnen = langecode(1024 * 1024 / 10)
+local code,numlijnen = langecode(124 * 1024 / 10)
 
 -- ontleed
 require 'ontleed'
@@ -44,3 +45,28 @@ print(string.format('%s feiten getypeerd in %d ms (%.1f kfeit/s, %.1f kB/s)', le
 for i = 1,math.min(#fouten, 10) do
 	print(fout2ansi(fouten[i]))
 end
+
+do return end
+
+
+
+--------------------- OPLOS
+local voor = socket.gettime()
+	local exp = oplos(lang, "uit")
+local na = socket.gettime()
+local dt = na - voor
+print(string.format('%s feiten opgelost in %d ms (%.1f kfeit/s, %.1f kB/s)', leeslijnen, dt*1000, leeslijnen/dt/1000, #code/1000/dt))
+for i = 1,math.min(#fouten, 10) do
+	print(fout2ansi(fouten[i]))
+end
+
+
+
+
+
+--------------------- CODEGEN
+local voor = socket.gettime()
+	local prog = codegen(exp)
+local na = socket.gettime()
+local dt = na - voor
+print(string.format('%s feiten opgelost in %d ms (%.1f kfeit/s, %.1f kB/s)', leeslijnen, dt*1000, leeslijnen/dt/1000, #code/1000/dt))

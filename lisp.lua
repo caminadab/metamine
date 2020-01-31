@@ -90,7 +90,7 @@ function unparse_len(exp)
 	if isatoom(exp) then return #(exp.v or '???') end
 
 	len = len + unparse_len(exp.f)
-	for i,v in ipairs(exp) do
+	for i,v in subs(exp) do
 		len = len + unparse_len(v)
 	end
 	len = len + #exp - 1 + 2
@@ -98,43 +98,45 @@ function unparse_len(exp)
 	return len
 end
 
-function unparse_work2(sexpr, maxlen, tabs, res)
+function unparse_work(exp, maxlen, tabs, res, klaar)
+	klaar = klaar or {}
   tabs = tabs or 0
   res = res or {}
-  if isatoom(sexpr) then
-    insert(res, sexpr.v)
-		if sexpr.ref then
-			insert(res, sexpr.ref.v)
-		end
-	elseif isfn(sexpr) and sexpr.f.v == '[]u' then
+	if klaar[exp] then
+		insert(res, '~')
+		return
+	end
+	klaar[exp] = true
+  if isatoom(exp) then
+    insert(res,atoom(exp))
+	elseif isfn(exp) and fn(exp) == '[]u' then
 		insert(res, '[]u(...)')
-	elseif isfn(sexpr) then
-    local split = unparse_len(sexpr) > maxlen
-		unparse_work(sexpr.f, maxlen, tabs+1, res)
+	elseif isfn(exp) or isobj(exp) then
+		local len = unparse_len(exp) 
+    local split = len > maxlen and len < 1.4 * maxlen or len > 3 * maxlen and len < 5.5 * maxlen or len > 7 * maxlen
+		--unparse_work(sexpr.f, maxlen, tabs+1, res)
+		insert(res, fn(exp) or obj(exp))
 		insert(res, color[(tabs%#color)+1])
 		insert(res, '(')
 		insert(res, color.white)
 
 		-- arg is troubled?
-		local t = sexpr
-		if sexpr.a.f and sexpr.a.f.v == ',' then
-			t = sexpr.a
-		else
-			t = {sexpr.a}
+		local t = exp
+		if arg(t) and obj(arg(t)) == ',' then
+			t = arg(t)
 		end
 			
-    for i,sub in ipairs(t) do
-			if type(sub) == 'boolean' then
-				sub = tostring(sub)
-			end
+    for i,sub in subs(t) do
       if split then
         insert(res, '\n')
         insert(res, string.rep('  ', tabs+1))
       end
-      unparse_work(sub, maxlen, tabs+1, res)
-      if next(sexpr, i) and type(next(sexpr, i)) == 'number' then
+      unparse_work(sub, maxlen, tabs+1, res, klaar)
+      --if next(exp, i) and type(next(exp, i)) == 'number' then
+			if tonumber(i) and t[i+1] then
         insert(res, ' ')
-      end
+			end
+      --end
 			if split then
 				-- commentaar
 				if isfn(sub) and sub[';'] then
@@ -149,9 +151,6 @@ function unparse_work2(sexpr, maxlen, tabs, res)
     end
 		insert(res, color[(tabs%#color)+1])
 		insert(res, ')')
-		if sexpr.ref then
-			insert(res, sexpr.ref.v)
-		end
 		insert(res, color.white)
   else
 		res[#res+1] = '?'
@@ -161,6 +160,5 @@ end
 
 function unlisp(sexpr, len)
   if not sexpr then return 'niets' end
-	local t = unparse_work(sexpr, len or 20)
-  return concat(unparse_work(sexpr, len or 20))
+  return concat(unparse_work(sexpr, 40))
 end

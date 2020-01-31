@@ -1,5 +1,8 @@
 require 'combineer'
 
+-- graaf2html
+-- stroom2html
+
 local function tag(naam,id,props,autoclose)
 	if type(id) == 'table' then
 		props = id

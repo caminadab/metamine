@@ -31,7 +31,7 @@ tupel: verzameling
 zak: verzameling
 
 ; webspecifiek
-vorm: functie
+vorm: iets → iets
 html: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 canvas: lijst(letter)
@@ -159,7 +159,7 @@ letter: int
 tekst: lijst letter
 
 looptijd : getal
-nu : moment
+nu : getal
 vind : (lijst, lijst) → int
 tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst

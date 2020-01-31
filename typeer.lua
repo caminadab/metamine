@@ -252,7 +252,7 @@ function typeer(exp)
 
 		---------- linq
 		-- vouw: lijst(A), (A,A → B) → lijst(B)
-		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
+		elseif false and fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
 			local expargs = types[moes(arg1(exp))]
 
 			--print('expargs1', combineer(expargs))
@@ -328,7 +328,7 @@ function typeer(exp)
 			else
 
 				local anyfunc = X('→', 'iets', 'iets')
-				moetzijn(functype, anyfunc, exp)
+				moetzijn(functype, anyfunc, arg0(exp))
 
 				if fn(functype) ~= '→' then
 					returntype = X'iets'

@@ -1,2 +1,3 @@
-app = uit
-toets.spatie = toets.neer 32
+app = app.in → app.uit
+app.in = (in.vars, in.start, nu)
+app.uit = (uit, uit.vars)
