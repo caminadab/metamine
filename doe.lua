@@ -66,14 +66,14 @@ function doestats(app, bieb)
 	for k,v in pairs(bieb) do invbieb[v] = k end
 	local env = {}
 	for i, stat in ipairs(app) do
-		io.write('  ', combineer(stat), '\t= ')
-		io.flush()
+		if opt and opt.L then
+			io.write('  ', combineer(stat), '\t= ')
+			io.flush()
+		end
 		local val = doestat(stat, bieb, env)
 		local naam = atoom(arg0(stat))
 		env[naam] = val
-		if invbieb[val] then
-			print(invbieb[val])
-		else
+		if opt and opt.L then
 			print(lenc(val))
 		end
 	end

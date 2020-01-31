@@ -30,6 +30,8 @@ function bieb()
 	['aspect'] = function(x) return 16/9 end;
 
 	-- functioneel
+	['fn.inc'] = function(x) return x + 1 end;
+	['fn.dec'] = function(x) return x - 1 end;
 	['fn.eerste'] = function(x) return x[1] end;
 	['fn.tweede'] = function(x) return x[2] end;
 	['fn.derde'] = function(x) return x[3] end;
@@ -332,13 +334,13 @@ function bieb()
 	end;
 
 	-- componeer
-	['∘'] = function(a)
-		assert(type(a[1]) == 'function', '@1 is geen functie')
-		assert(type(a[2]) == 'function', '@2 is geen functie')
+	['∘'] = function(fns)
 		return function(x)
-			local b = a[1](x)
-			print(e2s(b))
-			return a[2](b)
+			for i, fn in ipairs(fns) do
+				--print('TUSSENRESULTAAT', lenc(x))
+				x = fn(x)
+			end
+			return x
 		end
 	end;
 

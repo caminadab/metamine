@@ -103,13 +103,17 @@ function unparse_work(exp, maxlen, tabs, res, klaar)
   tabs = tabs or 0
   res = res or {}
 	if klaar[exp] then
-		insert(res, '~')
+		if isatoom(exp) then
+			insert(res, '~'..atoom(exp))
+		else
+			insert(res, '~')
+		end
 		return
 	end
 	klaar[exp] = true
   if isatoom(exp) then
     insert(res,atoom(exp))
-	elseif isfn(exp) and fn(exp) == '[]u' then
+	elseif fn(exp) == '[]u' then
 		insert(res, '[]u(...)')
 	elseif isfn(exp) or isobj(exp) then
 		local len = unparse_len(exp) 
@@ -161,4 +165,9 @@ end
 function unlisp(sexpr, len)
   if not sexpr then return 'niets' end
   return concat(unparse_work(sexpr, 40))
+end
+
+function unlispcompact(sexpr, len)
+  if not sexpr then return 'niets' end
+  return concat(unparse_work(sexpr, 1e10))
 end

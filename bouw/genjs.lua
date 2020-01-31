@@ -159,9 +159,7 @@ local immsym = {
 				return entry[1];
 			}
 		}
-		//alert("Lege waarde");
-		//throw new Exception(":(");
-		return undefined;
+		throw new Exception("geen geldig alternatief");
 	}) ]],
 
 	-- func

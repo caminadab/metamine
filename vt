@@ -163,11 +163,8 @@ end
 
 if verbozeIntermediair then
 	print('=== INTERMEDIAIRE CODE ===')
-	print(app.init)
-	for naam, blok in spairs(app) do
-		if naam ~= 'init' then
-			print(blok)
-		end
+	for i, stat in ipairs(app) do
+		print(combineer(stat))
 	end
 	print()
 end

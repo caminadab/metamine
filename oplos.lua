@@ -21,48 +21,75 @@ function bevat(exp, naam)
 	end
 end
 
--- defunctionaliseer
-local tel = { "eerste", "tweede", "derde", "vierde" }
+local tel = { X'fn.eerste', X'fn.tweede', X'fn.derde', X'fn.vierde' }
+local id = X'fn.id'
+local dup = X'fn.dup'
+local merge = X'fn.merge'
+local constant = X'fn.constant'
+local inc = X'fn.inc'
+local dec = X'fn.dec'
 
+-- defunctionaliseer (maak er een gebonden functie van)
 function defunc(exp, klaar)
 	klaar = klaar or {}
 	if klaar[exp] then return klaar[exp] end
+	local res
+	local num = isfn(exp) and arg1(exp) and isatoom(arg1(exp)) and tonumber(atoom(arg1(exp)))
 
-	-- first, second, third, fourth
-	local num = tonumber(atoom(arg1(exp)))
-	if fn(exp) == '_' and num and num >= 0 and num < 4 and num % 1 == 0 then
-		local sel = 'fn.' .. tel[num + 1]
-		local res = X('∘', defunc(arg0(exp)), X(sel))
-	end
+	if not bevat(exp, X'_arg') then
+		res = X('_', constant, exp)
 
-	if isfn(exp) then
-		res = X('∘', defunc(arg(exp)), fn(exp))
-	end
-	if isobj(exp) then
+	-- fn.eerste t/m fn.vierde
+	elseif fn(exp) == '_' and num and num >= 0 and num < 4 and num % 1 == 0 then
+		local sel = tel[num + 1]
+		local A = defunc(arg0(exp), klaar)
+		if atoom(A) == 'fn.id' then
+			res = X(sel) 
+		else
+			res = X('∘', A, X(sel))
+		end
+
+	-- fn.inc
+	elseif fn(exp) == '+' and isobj(arg(exp)) and #obj(arg(exp)) == 2
+			and (arg0(exp).v == '1' or arg1(exp).v == '1') then
+		if arg0(exp).v == '1' then
+			res = X('_', inc, arg0(exp).v)
+		else
+			res = X('_', inc, arg1(exp).v)
+		end
+
+	-- f(a)  ->  c(a) ∘ f
+	elseif isfn(exp) then
+		local A = defunc(arg(exp), klaar)
+		if atoom(A) == 'fn.id' then
+			res = fn(exp)
+		else
+			res = X('∘', A, fn(exp))
+		end
+
+	elseif isobj(exp) then
 		local mergeval = {o=exp.o}
 		for k, sub in subs(exp) do
-			mergeval[k] = defunc(sub)
+			mergeval[k] = defunc(sub, klaar)
 		end
+
 
 		-- special case: merge(id, id) = dup
 		if atoom(mergeval[1]) == 'fn.id' and atoom(mergeval[2]) == 'fn.id' and not mergeval[3] then
-			res = X'fn.dup'
-		end
-
-		-- special case: merge(C(w), x) = kruid(x, w)
-		if false and #mergeval == 2 and atoom(arg0(mergeval[1])) == 'fn.constant' then --and not bevat(mergeval[2], '_arg') then
-			res = X('_', 'fn.kruidL', arg1(mergeval[1]), mergeval[2])
-		end
-
-		if #mergeval == 1 then
-			res = X('_', 'fn.merge', mergeval[1])
+			res = dup
+		elseif #mergeval == 0 then
+			res = X'∅'
+		elseif #mergeval == 1 then
+			res = X('_', merge, mergeval[1])
 		else
-			res = X('_', 'fn.merge', mergeval)
+			res = X('_', merge, mergeval)
 		end
+	elseif atoom(exp) == '_arg' then
+		res = id
+	elseif atoom(exp) then
+		res = exp
 	end
-	if atoom(exp) == '_arg' then
-		res = X'fn.id'
-	end
+
 	klaar[exp] = res
 	return res
 end
@@ -663,7 +690,7 @@ function oplos(exp, voor)
 			naam2exp[naam] = naam2exp[naam] or {}
 			--naam2exp[naam][exp] = true
 			val, n = substitueer(val0, naam, exp)
-			print('N', naam.v, n, combineer(exp))
+			--print('N', naam.v, n, combineer(exp))
 			val.loc = assert(exp.loc or nergens)
 			--exp2naam[val0] = naam
 			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
@@ -680,11 +707,6 @@ function oplos(exp, voor)
 			exp2naam = n2e
 		end
 
-		-- optimiseer
-		if not opt or not opt.O then
-			val = optimiseer(val)
-		end
-
 		-- opgelost 1
 		if verbozeWaarde then
 			print('=== WAARDE ===')
@@ -692,20 +714,21 @@ function oplos(exp, voor)
 			print()
 		end
 
+		-- optimiseer
+		--local val = optimiseer(val)
 
 		-- defunctionaliseer
 		for exp in boompairsdfs(val) do
 			if fn(exp) == '_fn' then
-				local beter = defunc(arg(exp))
+				local beter = defunc(arg(exp), klaar)
 				assign(exp, beter)
 			end
 		end
 
 		-- opgelost 2
-		exp = optimiseer(exp)
 		if verbozeWaarde then
 			print('=== DEFUNC WAARDE ===')
-			print(unlisp(val))
+			print(combineer(val))
 			print()
 		end
 
