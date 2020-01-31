@@ -30,7 +30,7 @@ local inc = X'fn.inc'
 local dec = X'fn.dec'
 
 -- defunctionaliseer (maak er een gebonden functie van)
-function defunc(exp, klaar)
+function defunc(exp, argindex, klaar)
 	klaar = klaar or {}
 	if klaar[exp] then return klaar[exp] end
 	local res
@@ -39,10 +39,13 @@ function defunc(exp, klaar)
 	if not bevat(exp, X'_arg') then
 		res = X('_', constant, exp)
 
+	elseif fn(exp) == '_' and atoom(arg0(exp)) == '_arg' and atoom(arg1(exp)) == argindex then
+		res = id
+
 	-- fn.eerste t/m fn.vierde
 	elseif fn(exp) == '_' and num and num >= 0 and num < 4 and num % 1 == 0 then
 		local sel = tel[num + 1]
-		local A = defunc(arg0(exp), klaar)
+		local A = defunc(arg0(exp), argindex, klaar)
 		if atoom(A) == 'fn.id' then
 			res = X(sel) 
 		else
@@ -60,7 +63,7 @@ function defunc(exp, klaar)
 
 	-- f(a)  ->  c(a) ∘ f
 	elseif isfn(exp) then
-		local A = defunc(arg(exp), klaar)
+		local A = defunc(arg(exp), argindex, klaar)
 		if atoom(A) == 'fn.id' then
 			res = fn(exp)
 		else
@@ -70,7 +73,7 @@ function defunc(exp, klaar)
 	elseif isobj(exp) then
 		local mergeval = {o=exp.o}
 		for k, sub in subs(exp) do
-			mergeval[k] = defunc(sub, klaar)
+			mergeval[k] = defunc(sub, argindex, klaar)
 		end
 
 
@@ -84,8 +87,6 @@ function defunc(exp, klaar)
 		else
 			res = X('_', merge, mergeval)
 		end
-	elseif atoom(exp) == '_arg' then
-		res = id
 	elseif atoom(exp) then
 		res = exp
 	end
@@ -565,14 +566,14 @@ function oplos(exp, voor)
 				-- 
 				if fn(lam) == '→' then
 					local inn,uit = lam.a[1], lam.a[2]
-					local index = maakindex()
+					local argindex = maakindex()
 
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
 					local var = maakvar()
 					lam.f = X('_fn')--..var)
-					lam.a = uit
-					local naam = '_arg'--..var
+					lam.a = X(',', argindex, uit)
+					local naam = X('_', '_arg', argindex)
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
@@ -720,7 +721,8 @@ function oplos(exp, voor)
 		-- defunctionaliseer
 		for exp in boompairsdfs(val) do
 			if fn(exp) == '_fn' then
-				local beter = defunc(arg(exp), klaar)
+				local argindex = arg0(exp).v
+				local beter = defunc(arg1(exp), argindex, klaar)
 				assign(exp, beter)
 			end
 		end

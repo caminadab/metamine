@@ -1,4 +1,2 @@
-f = x → x · 2
-g = y → y + nu
-h = f ∘ g ∘ f
-uit = h(2)
+f = x → x + nu
+uit = f(2)
