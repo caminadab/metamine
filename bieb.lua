@@ -337,7 +337,7 @@ function bieb()
 	['∘'] = function(fns)
 		return function(x)
 			for i, fn in ipairs(fns) do
-				--print('TUSSENRESULTAAT', lenc(x))
+				print('TUSSENRESULTAAT', lenc(x))
 				x = fn(x)
 			end
 			return x

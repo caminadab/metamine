@@ -101,7 +101,7 @@ function doe(app)
 
 		-- doe
 		local res = main {vars, start, nu}
-		local uit, vars = res[1], res[2]
+		uit, vars = res[1], res[2]
 
 		-- uit
 		io.write(ansi.wisregel, ansi.regelbegin)
