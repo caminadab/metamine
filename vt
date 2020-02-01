@@ -62,7 +62,8 @@ Opties:
     -K                print voorgekauwde (opgeloste) kennis
 
     -Q                print oplosinformatie
-    -W                print opgeloste waarde (GENERIEK AS FUCK!)
+    -W                print opgeloste waarde
+    -D                print opgeloste defunc
 
     -T                print types
     -Y                print typegraaf
@@ -106,10 +107,10 @@ if opt.R then verbozeRapport = true end
 if opt.S then verbozeSyntax = true end
 if opt.D then verbozeDeductie = true end
 if opt.K then verbozeKennis = true end
-if opt.Q then verbozeOplos = true end
+if opt.W then verbozeOplos = true end
+if opt.D then verbozeDefunc = true end
 if opt.G then verbozeKennisgraaf = true end
 if opt.W then verbozeWaarde = true end
-if opt.D then verbozeDelta = true end
 if opt.C then verbozeControle = true end
 if opt.I then verbozeIntermediair = true end
 if opt.J then verbozeKijkgat = true end

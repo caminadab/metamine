@@ -728,9 +728,9 @@ function oplos(exp, voor)
 		end
 
 		-- opgelost 2
-		if verbozeWaarde then
+		if verbozeDefunc then
 			print('=== DEFUNC WAARDE ===')
-			print(combineer(val))
+			print(unlisp(val))
 			print()
 		end
 
