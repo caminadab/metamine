@@ -708,15 +708,17 @@ function oplos(exp, voor)
 			exp2naam = n2e
 		end
 
+		-- optimiseer
+		if not opt or not opt.O0 then
+			val = optimiseer(val)
+		end
+
 		-- opgelost 1
 		if verbozeWaarde then
 			print('=== WAARDE ===')
 			print(unlisp(val))
 			print()
 		end
-
-		-- optimiseer
-		--local val = optimiseer(val)
 
 		-- defunctionaliseer
 		for exp in boompairsdfs(val) do
@@ -725,6 +727,11 @@ function oplos(exp, voor)
 				local beter = defunc(arg1(exp), argindex, klaar)
 				assign(exp, beter)
 			end
+		end
+
+		-- optimiseer
+		if not opt or not opt.O0 then
+			val = optimiseer(val)
 		end
 
 		-- opgelost 2

@@ -68,6 +68,8 @@ function optimiseer(exp)
 				isconstant = false
 			end
 		end
+		assign(exp, nexp)
+		nexp = exp
 		if isconstant then
 			return nexp, val
 		else
