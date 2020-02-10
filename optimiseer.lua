@@ -17,7 +17,8 @@ local function w2exp(w)
 	elseif w == nil then
 		uit = X'niets'
 	elseif type(w) == 'function' then
-		uit = X'functie'
+		-- functies kunnen we (nog) niet tot waarde maken
+		assert(false)
 	elseif tonumber(w) then
 		uit = X(tostring(w))
 	elseif type(w) == 'table' then
@@ -86,6 +87,9 @@ function optimiseer(exp)
 			wexp = bieb[fn(exp)](warg)
 			nexp = w2exp(wexp)
 		else
+			if fn(exp) == '_fn' then
+				wexp = nil
+			end
 			nexp = {f=exp.f, a=narg} --X(fn(exp), narg)
 		end
 		return nexp, wexp

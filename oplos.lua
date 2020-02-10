@@ -709,7 +709,7 @@ function oplos(exp, voor)
 		end
 
 		-- optimiseer
-		if not opt or not opt.O0 then
+		if not opt or not opt['0'] then
 			val = optimiseer(val)
 		end
 
@@ -727,11 +727,6 @@ function oplos(exp, voor)
 				local beter = defunc(arg1(exp), argindex, klaar)
 				assign(exp, beter)
 			end
-		end
-
-		-- optimiseer
-		if not opt or not opt.O0 then
-			val = optimiseer(val)
 		end
 
 		-- opgelost 2
