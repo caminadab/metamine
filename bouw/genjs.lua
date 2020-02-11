@@ -105,20 +105,6 @@ local immjs = {
 	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => Array.isArray(x) ? Array.from(x).concat([y]) : [x, y])))', -- cartesisch product
 
 	['∘'] = 'function (a) { return $2($1(a)); }',
-	['_var'] = [[ (function(a) {
-			var varindex = a[0];
-			var ass = a[1];
-			var array = Array.from(ass);
-			var ret = vars[varindex];
-			for (var i = 0; i < array.length; i++) {
-				if (array[i] !== undefined) {
-					ret = array[i];
-				}
-			}
-			vars[varindex] = ret;
-			return ret;
-		})($1)
-	]],
 }
 
 -- Shift-K
@@ -127,19 +113,27 @@ local immjs0 = {}
 for k,v in spairs(immjs) do
 	local multi = v:match('$2')
 	if multi then
-		v = v:gsub('$1', '_Z[0]')
-		v = v:gsub('$2', '_Z[1]')
-		v = v:gsub('$3', '_Z[2]')
-		v = v:gsub('$4', '_Z[3]')
+		v = v:gsub('$1', 'x[0]')
+		v = v:gsub('$2', 'x[1]')
+		v = v:gsub('$3', 'x[2]')
+		v = v:gsub('$4', 'x[3]')
 	else
-		v = v:gsub('$1', '_Z')
+		v = v:gsub('$1', 'x')
 	end
-	v = '_Z => ' .. v
+	v = 'x => ' .. v
 	
 	immjs0[k] = v
 end
 
 local immsym = {
+	['fn.constant'] = "c => (x => c)",
+	['fn.dup'] = "x => [x, x]",
+	['fn.merge'] = "fns => (x => fns.map(fn => fn(x)))",
+	['fn.eerste'] = "x => x[0]",
+	['fn.tweede'] = "x => x[1]",
+	['fn.derde'] = "x => x[2]",
+	['fn.vierde'] = "x => x[3]",
+
 	['cat'] = [[(function(lijst) {
 	var s = [];
 	for (var i = 0; i < lijst.length; i++)
@@ -151,7 +145,7 @@ local immsym = {
 	['niets'] = 'undefined',
 	['misschien'] = 'Math.random() < 0.5',
 	['dt'] = 'dt',
-	['_'] = '_Z => _Z[0](_Z[1])',
+	['_'] = 'x => x[0](x[1])',
 	['|'] = [[ (function(conds) {
 		const it = conds.entries();
 		for (let entry of it) {
@@ -448,52 +442,6 @@ local immsym = {
 		}
 		return uit.children[0];
 	})]],
-	['herhaal.langzaam'] = [[(function f(t) {
-		if (stop) { uit.innerHTML = ''; return; };
-		if (!isFinite(t))
-		{
-			dt = 0;
-			_G = t;
-		}
-		else
-		{
-			now = t / 1000;
-			if (prev)
-			{
-				dt = now - prev;
-			}
-			else
-			{
-				dt = 0;
-			}
-		}
-		_G(0);
-		mouseLeftPressed = false;
-		mouseLeftReleased = false;
-		_keysPressed.clear();
-		_keysReleased.clear();
-		mouseMoving = false;
-		start = false;
-
-		prev = now;
-		runtime = now - starttime;
-		requestAnimationFrame(f);
-		return true;
-	})]],
-	['herhaal'] = [[
-	(function(f, x) {
-		var a = x;
-		while (1) {
-			var b = f(a);
-			if (b) {
-				a = b;
-			} else {
-				break;
-			}
-		}
-		return a;
-	})
-	]],
 
 	['_arg'] = '_arg',
 	sin = 'Math.sin',
@@ -567,7 +515,6 @@ local immsym = {
 
 	['starttijd'] = 'starttime', 
 	['looptijd'] = 'runtime', 
-	['nu'] = 'now', 
 
 	['muis.x'] = 'mouseX',
 	['muis.y'] = 'mouseY',
@@ -609,7 +556,7 @@ function genjs(app)
 					o = exp.a[4] and o:gsub('$4', immsym[exp.a[4].v] or exp.a[4].v) or o
 				else
 					if not exp.a or not exp.a.v then error(o) end
-					o = o:gsub('$1', exp.a.v or o)
+					o = o:gsub('$1', assert(exp.a.v or o))
 				end
 				if o:match('%$') then error('niet alle argumenten gevonden: '..o..', exp = '..e2s(exp)) end
 				t[#t+1] = string.format('%s%s = %s;', tabs, naam.v, o)
@@ -643,6 +590,7 @@ function genjs(app)
 				end
 				t[#t+1] = string.format(fmt, tabs, naam.v)
 			elseif immsym[f] then
+				--print('IMMSYM', f, e2s(exp))
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immsym[f], arg(exp).v)
 			elseif immjs0[f] then
 				t[#t+1] = string.format('%s%s = (%s)(%s);', tabs, naam.v, immjs0[f], arg(exp).v)
@@ -666,39 +614,9 @@ function genjs(app)
 	end
 
 	table.insert(s, [[
-starttime = performance.now() / 1000;
-start = true;
-now = starttime;
-runtime = 0;
-
-vars = {};
-lastUpdated = {}; // varindex -> double
-if (typeof(document) == "undefined") { document = {getElementById: (x) => ({children: [{getContext: (z) => {}}], getBoundingClientRect: (y) => ({left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, bottom: 0, right: 0}) })}}
-mouseLeft = false;
-mouseLeftPressed = false;
-mouseLeftReleased = false;
-mouseX = 0;
-mouseY = 0;
 _keys = {};
 _keysPressed = new Set();
 _keysReleased = new Set();
-start = true;
-dt = 0;
-html = "";
-uit = document.getElementById("uit");
-stop = false;
-
-function merge(funcs) {
-	return function(x) {
-		var r = [];
-		for (var i = 0; i < funcs.length; i++)
-			r[i] = funcs[i](x);
-		return r;
-	};
-}
-function id(x) { return x; }
-function constant(x) { return function() { return x; }}
-function dup(x) { return function() { return [x,x]; }}
 
 function TEXT(t) {
 	if (t === undefined)

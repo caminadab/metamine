@@ -97,20 +97,6 @@ function vertaal(code, naam)
 	end
 
 
-	-- plet
-	print('=== SFC ===')
-	local sfc = plet(exp)
-	for i,ins in ipairs(sfc) do
-		print('  '..combineer(ins))
-	end
-	print()
-
-	-- js test
-	local js = genjs(sfc)
-	print('=== JS ===')
-	print(js)
-	print()
-
 	local app = codegen(exp, maakvar)
 
 	return app, {}, gen2bron

@@ -178,7 +178,8 @@ From: vraag@metamine.nl
 		contenttype = "text/html; charset=utf-8"
 	end
 
-	print(os.date(), status, pad, string.sub(inL or '', 1, 20))
+	-- access log
+	--print(os.date(), status, pad, string.sub(inL or '', 1, 20))
 
 	-- header
 	local h = string.format('HTTP/1.0 %d %s\r\n', status, statusberichten[status])

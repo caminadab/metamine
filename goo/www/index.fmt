@@ -31,24 +31,6 @@
 
 	<pre id="code"> </pre>
 
-<!--
-<div id="wat">
-	<h1><i>{overkop}</i></h1>
-	<p>{over1}</p>
-	<p>{over2}</p>
-	<p>{over3}</p>
-
-	<h1><i>{qena}</i></h1>
-		<h2>{q1hoe}</h2>
-		<p>{a1web}</p>
-		<input id="vraag" placeholder="{stelvraag}"></input>
-		<br>
-		<button id="vraagknop" onclick="fetch('/vraag', {method: 'post', body: document.getElementById('vraag').value}).then(x => {document.getElementById('vraagknop').style.backgroundColor='green'; document.getElementById('vraag').value=''; document.getElementById('vraag').placeholder='{vraagverz}';})">{vraag}</button>
-		<div id="qena">
-		</div>
-	</p>
--->
-
 </body>
 <link rel="stylesheet" href="lib/slang.css">
 <link rel="stylesheet" href="lib/codemirror.css">
@@ -86,11 +68,10 @@
 
 	var preview = document.createElement("div", "preview");
 	preview.className = "preview";
-	stop = true;
+	var stop = true;
 	var wraps = document.getElementsByClassName("CodeMirror-wrap");
 
 	function playfunc() {
-		stop = true;
 		// suspense...
 		speelknop.style.backgroundColor = '#000E42';
 
@@ -102,6 +83,8 @@
 					onerror();
 					return;
 				}
+
+				stop = false;
 
 				// debug info
 				wraps[0].onmousemove = (ev) => {
@@ -118,21 +101,28 @@
 					editor.addWidget(widgetpos, preview);
 				};
 
-				var func = new Function("IN", j.js);
+				var main = new Function("IN", j.js)();
+				var nu = new Date().getTime() / 1000;
+				var uitvars = main([[], true, nu]);
+				var uitvoer = uitvars[0];
+				var vars = uitvars[1];
+				uit.innerHTML = uitvoer;
 
 				try {
-					setTimeout(() => {stop = false; }, 100);
-
 					var f = (ev) => {
-						var k = new Function("IN", j.js);
-						k();
+						var nu = new Date().getTime() / 1000;
+						var uitvars = main([vars, false, nu]);
+						uitvoer = uitvars[0];
+						vars = uitvars[1];
+
+						uit.innerHTML = uitvoer;
+
 						if (!stop)
 							requestAnimationFrame(f);
 					}
 					requestAnimationFrame(f);
 
 					setTimeout(() => {
-						stop = false;
 						speelknop.innerHTML = "■";
 						speelknop.style.background = 'green';
 						speelknop.style.transitionDuration = '0.0s';
@@ -149,7 +139,6 @@
 	function stopfunc() {
 		wraps[0].onmousemove = undefined;
 		preview.innerHTML = '';
-
 		stop = true;
 		setErrors([]);
 		speelknop.innerHTML = "▶";
@@ -222,7 +211,7 @@
 		height: "1200px",
 
 		extraKeys: {
-			"Shift-Enter": function(cm) { playfunc(); },
+			"Shift-Enter": function(cm) { stopfunc(); playfunc(); },
 			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
 			"Ctrl-Y": function(cm) { cm.setOption('keyMap', 'vim'); },
 		},
