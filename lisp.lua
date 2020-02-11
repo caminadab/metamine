@@ -20,7 +20,7 @@ local objs = set(',', '{}', '[]')
 
 function X(f, ...)
 	local args = {...}
-
+	
 	-- fix
 	if type(f) == 'string' then
 		f = {v = f, loc = nergens}
@@ -32,7 +32,11 @@ function X(f, ...)
 	end
 
 	if #args == 0 then
-		return f
+		if false and atoom(f) == ',' then
+			return { o = f }
+		else
+			return f
+		end
 	elseif objs[f.v] then
 		-- herbruik args
 		args.o = f

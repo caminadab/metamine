@@ -1,92 +1,54 @@
 require 'exp'
-require 'util'
-require 'graaf'
-require 'symbool'
 require 'combineer'
 
-require 'bouw.blok'
+function codegen(exp, ins)
+	local ins = ins or {o='[]'}
 
--- diepte bepalen
-local function peil(waarde)
-	-- bepaal diepte
-	local diepte = {}
+	if fn(exp) == '_' and atoom(arg0(exp)) == 'fn.merge' then
+		local args = arg1(exp)
 
-	for exp in boompairsdfs(waarde) do
-		-- bladwaarden krijgen 1
-		if isatoom(exp) then
-			diepte[exp] = 1
+		if #args == 2 then
+			ins[#ins+1] = X'dup'
+			codegen(args[1], ins)
+			ins[#ins+1] = X'rouleer'
+			codegen(args[2], ins)
+			ins[#ins+1] = X'rouleer'
+
+		elseif #args == 3 then
+			ins[#ins+1] = X'trip'
+			codegen(args[1], ins)
+			ins[#ins+1] = X'rouleer'
+			codegen(args[2], ins)
+			ins[#ins+1] = X'rouleer'
+			codegen(args[3], ins)
+			ins[#ins+1] = X'rouleer'
+		
 		else
-			diepte[exp] = 0
-			local gelijk = false
-			-- bepaal rec diepte
-			for i,v in ipairs(exp) do
-				if diepte[v] > diepte[exp] then gelijk = false
-				elseif diepte[v] == diepte[exp] then gelijk = true
-				end
-				diepte[exp] = math.max(diepte[exp], diepte[v])
-			end
-			-- als ze zelfde zijn is er 1 extra nodig (voor phi?)
-			if gelijk
-				then diepte[exp] = diepte[exp] + 1
+			ins[#ins+1] = X('rep', #args)
+			for i, arg in ipairs(args) do
+				ins[#ins+1] = X'rouleer'
+				codegen(arg, ins)
 			end
 		end
-	end
-	
-	return diepte
-end
 
-local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈")
-local unop   = set("-","#","¬","Σ","|","%","√","!")
+	elseif fn(exp) == '_' and atoom(arg0(exp)) == 'fn.constant' then
+		codegen(arg1(exp), ins)
 
-function codegen(exp, maakvar)
-	local maakvar = maakvar or maakvars()
-	local stats = {o=X","}
-	local klaar = {}
+	elseif isatoom(exp) then
+		ins[#ins+1] = X('push', exp)
 
-	for sub in boompairsdfs(exp) do
-		-- bestaat al?
-		if not klaar[sub] then
-			local gen = maakvar()
+	elseif isfn(exp) then
+		codegen(arg(exp), ins)
+		ins[#ins+1] = X(fn(exp))
 
-			local val
-			if isfn(sub) then
-				val = {f=sub.f}
-				val.a = X((assert(klaar[sub.a], e2s(sub))))
-			end
-			if isobj(sub) then
-				val = {o=sub.o}
-				for k, sub in subs(sub) do
-					val[k] = X((assert(klaar[sub], e2s(sub))))
-				end
-			end
-			if isatoom(sub) then
-				val = sub
-			end
-			local stat = X(":=", gen, val)
-			klaar[sub] = gen
-			stats[#stats+1] = stat
+	elseif isobj(exp) then
+		for i, sub in ipairs(exp) do
+			codegen(sub, ins)
 		end
+
+	else
+		ins[#ins+1] = X'?'
 	end
 
-	-- contract stats
-	if true then
-		for i=#stats-1,2,-1 do
-			local x = stats[i+0]
-			local y = stats[i+1]
-
-			if isobj(arg1(x)) and isfn(arg1(y)) and isatoom(arg(arg1(y))) then
-				arg1(y).a = x.a[2]
-				table.remove(stats, i)
-			end
-
-			if false and isatoom(arg1(x)) and isfn(arg1(y)) then
-				y.a[2].a = x.a[2]
-				table.remove(stats, i)
-			end
-
-		end
-	end
-
-	return stats
+	return ins
 end

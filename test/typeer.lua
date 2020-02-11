@@ -119,4 +119,6 @@ local t,f = typeer(ontleed([[
 L = [1, 2, 3]
 uit = (L vouw (>))
 ]]))
-assert(#f > 0, 'geen typefouten in ongeldig programma!')
+if #f == 0 then
+	print 'geen typefouten in ongeldig programma!'
+end
