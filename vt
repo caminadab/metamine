@@ -11,7 +11,6 @@ require 'vertaal'
 require 'rapport'
 require 'typeer'
 require 'doe'
-require 'oplos'
 
 require 'bouw.genjs'
 require 'bouw.genx64'
