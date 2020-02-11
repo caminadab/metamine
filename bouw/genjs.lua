@@ -43,14 +43,8 @@ local immjs = {
 	['¬'] = '! $1',
 	['-'] = '- $1',
 	['·'] = '$1 * $2',
-	['·i'] = '$1 * $2',
-	['·d'] = '$1 * $2',
 	['/'] = '$1 / $2',
-	['/i'] = '$1 / $2',
-	['/d'] = '$1 / $2',
 	['mod'] = '$1 % $2',
-	['modi'] = '$1 % $2',
-	['modd'] = '$1 % $2',
 	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
 	['√'] = 'Math.pow($1, 0.5)',
 	['^'] = 'Math.pow($1, $2)',
@@ -200,8 +194,6 @@ local immsym = {
 	['canvas.context3d'] = '(function() { if (uit.children.length > 0 && !window.gl) gl = uit.children[0].getContext("webgl"); return gl; })',
 
 	['aspect'] = '16/9',
-
-	['console.log'] = 'console.log',
 
 	-- 3D
 
@@ -444,68 +436,12 @@ local immsym = {
 	})]],
 
 	['_arg'] = '_arg',
-	sin = 'Math.sin',
-	cos = 'Math.cos',
-	tan = 'Math.tan',
-	atan = '(function(a) { return Math.atan2(a[1], a[0]); })',
-	niets = 'undefined',
-	['invoer.registreer'] = [[(function()
-		{
-			if (!uit) return;
+	['sin'] = 'Math.sin',
+	['cos'] = 'Math.cos',
+	['tan'] = 'Math.tan',
+	['atan'] = '(function(a) { return Math.atan2(a[1], a[0]); })',
+	['niets'] = 'undefined',
 
-			uit.onmouseup = function(ev) {
-				mouseLeftReleased = true;
-				mouseLeft = false;
-			};
-
-			uit.onmousedown = function(ev) {
-				mouseLeftPressed = true;
-				mouseLeft = true;
-			};
-
-			var canvas = uit.children[0] || uit;
-			var b = canvas.getBoundingClientRect();
-			uit.onmousemove = function(ev)
-			{
-				mouseX = +((ev.clientX-b.left)/canvas.clientWidth*177.78).toFixed(3);
-				mouseY = +((b.bottom - ev.clientY)/canvas.clientHeight*100).toFixed(3);
-				mouseMoving = true;
-			};
-
-			// toetsenbord neer
-			uit.onkeydown = function(ev) {
-				if (!_keys[ev.keyCode])
-					_keysPressed.add(ev.keyCode);
-				_keys[ev.keyCode] = true;
-				return (ev.keyCode >= 111);
-			};
-
-			// toetsenbord op
-			uit.onkeyup = function(ev) {
-				_keys[ev.keyCode] = false;
-				_keysReleased.add(ev.keyCode);
-				return false;
-			};
-
-			return uit;
-		}
-	)]],
-	['console.log'] = 'console.log($1)',
-
-	-- toetsen
-	['toets.neer']  = 'function(keyCode) { return !!_keys[keyCode]; }',
-	['toets.neer.begin']  = 'function(keyCode) { return !!_keysPressed.has(keyCode); }',
-	['toets.neer.eind']  = 'function(keyCode) { return !!_keysReleased.has(keyCode); }',
-
-	['_arg0'] = '_arg0',
-	['_arg1'] = '_arg1',
-	['_arg2'] = '_arg2',
-	['_arg3'] = '_arg3',
-	['_arg4'] = '_arg4',
-	sin = 'Math.sin',
-	cos = 'Math.cos',
-	tan = 'Math.tan',
-	niets = 'undefined',
 	['⊤'] = 'true',
 	['⊥'] = 'false',
 	['τ'] = 'Math.PI * 2',
@@ -513,15 +449,15 @@ local immsym = {
 	['start'] = 'start',
 	['scherm.ververst'] = '!start',
 
-	['starttijd'] = 'starttime', 
-	['looptijd'] = 'runtime', 
+	-- toetsen
+	['toets.neer']  = 'function(keyCode) { return !!_keys[keyCode]; }',
+	['toets.neer.begin']  = 'function(keyCode) { return !!_keysPressed.has(keyCode); }',
+	['toets.neer.eind']  = 'function(keyCode) { return !!_keysReleased.has(keyCode); }',
 
 	['muis.x'] = 'mouseX',
 	['muis.y'] = 'mouseY',
 	['muis.pos'] = '[mouseX, mouseY]',
 	['muis.beweegt'] = 'mouseMoving',
-	['beige'] = '"#f5f5dc"',
-	['bruin'] = '"#996633"',
 	['muis.klik'] = 'mouseLeft',
 	['muis.klik.begin'] = 'mouseLeftPressed',
 	['muis.klik.eind'] = 'mouseLeftReleased',
@@ -609,10 +545,6 @@ function genjs(app)
 		t[#t+1] = 'return ' .. eindvar .. ';'
 	end
 
-	local function flow(blok, tabs)
-		blokjs(blok, tabs)
-	end
-
 	table.insert(s, [[
 _keys = {};
 _keysPressed = new Set();
@@ -653,7 +585,8 @@ function index(lijst, indices) {
 }
 
 ]])
-	flow(app, '')
+
+	blokjs(app, '')
 
 	return ''..table.concat(s, '\n') .. '\n' .. table.concat(t, '\n')
 end

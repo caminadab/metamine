@@ -101,16 +101,16 @@
 					editor.addWidget(widgetpos, preview);
 				};
 
-				var main = new Function("IN", j.js)();
+				var main = new Function(j.js)();
 				var nu = new Date().getTime() / 1000;
-				var uitvars = main([[], true, nu]);
+				var uitvars = main([[0,0,0,0,0], true, nu]);
 				var uitvoer = uitvars[0];
 				var vars = uitvars[1];
 				uit.innerHTML = uitvoer;
 
 				try {
 					var f = (ev) => {
-						var nu = new Date().getTime() / 1000;
+						var looptijd = new Date().getTime() / 1000 - begin;
 						var uitvars = main([vars, false, nu]);
 						uitvoer = uitvars[0];
 						vars = uitvars[1];

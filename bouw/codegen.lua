@@ -39,8 +39,13 @@ local postop = set("%","!",".","'")
 local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈")
 local unop   = set("-","#","¬","Σ","|","%","√","!")
 
+-- exp → sfc
+function codegen(exp)
+	local ins = {}
+	local stack = {1}
+end
 
-function codegen(exp, maakvar)
+function codegen2(exp, maakvar)
 	local maakvar = maakvar or maakvars()
 	local stats = X(",")
 	local klaar = {}
@@ -76,9 +81,14 @@ function codegen(exp, maakvar)
 			local x = stats[i+0]
 			local y = stats[i+1]
 
-			if isobj(arg1(x)) and isfn(arg1(y)) and isatoom(arg(arg1(y))) then
-				arg1(y).a = x.a[2]
-				table.remove(stats, i)
+			local v, w = arg1(x), arg1(y)
+
+			if isobj(arg1(x))
+					and obj(v) == ','
+					and isfn(w)
+					and isatoom(arg(w)) then
+				v.a = w
+				--table.remove(stats, i)
 			end
 
 			if false and isatoom(arg1(x)) and isfn(arg1(y)) then

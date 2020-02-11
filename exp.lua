@@ -304,12 +304,20 @@ boompairs = boompairsbfs
 
 function bevat(exp, naam)
 	if not exp then error('geen exp') end
-	if not exp.v and not exp.f and not exp.o then error('geen exp') end
-	if not naam.v then error('naam is geen exp') end
+	if not exp.v and not exp.f and not exp.o then error('geen exp: '..lenc(exp)) end
+	--if not naam.v then error('naam is geen exp') end
 
 	if exp.v then
 		return exp.v == naam.v
 	else
+		if isfn(naam) and moes(exp) == moes(naam) then
+			return true
+		end
+		--print('FN', fn(exp), naam.v)
+		if fn(exp) == atoom(naam) then
+		--print'ja'
+			return true
+		end
 		for k,sub in subs(exp) do
 			if bevat(sub, naam) then return true end
 		end

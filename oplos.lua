@@ -10,18 +10,6 @@ require 'graaf'
 
 local bieb = bieb()
 
--- bevat
-function bevat(exp, naam)
-	if isatoom(exp) then
-		return atoom(exp) == atoom(naam)
-	else
-		for k,sub in subs(exp) do
-			if bevat(sub,naam) then return true end
-		end
-		return false
-	end
-end
-
 -- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 -- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 -- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
@@ -500,7 +488,7 @@ function oplos(exp, voor)
 					local var = maakvar()
 					lam.f = X('_fn')--..var)
 					lam.a = X(',', argindex, uit)
-					local naam = X('_', '_arg', argindex)
+					local naam = X('_arg', argindex)
 
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)

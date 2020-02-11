@@ -1,3 +1,6 @@
+require 'exp'
+require 'combineer'
+
 local tel = { X'fn.eerste', X'fn.tweede', X'fn.derde', X'fn.vierde' }
 local id = X'fn.id'
 local dup = X'fn.dup'
@@ -5,6 +8,8 @@ local merge = X'fn.merge'
 local constant = X'fn.constant'
 local inc = X'fn.inc'
 local dec = X'fn.dec'
+local kruid = X'fn.kruid'
+local kruidL = X'fn.kruidL'
 
 -- defunctionaliseer (maak er een gebonden functie van)
 function defunc(exp, argindex, klaar)
@@ -13,10 +18,12 @@ function defunc(exp, argindex, klaar)
 	local res
 	local num = isfn(exp) and arg1(exp) and isatoom(arg1(exp)) and tonumber(atoom(arg1(exp)))
 
+	-- C(exp)
 	if not bevat(exp, X'_arg') then
-		res = X('_', constant, exp)
+		res = X(constant, exp)
 
-	elseif fn(exp) == '_' and atoom(arg0(exp)) == '_arg' and atoom(arg1(exp)) == argindex then
+	-- fn.id
+	elseif fn(exp) == '_arg' and atoom(arg(exp)) == argindex then
 		res = id
 
 	-- fn.eerste t/m fn.vierde
@@ -29,22 +36,42 @@ function defunc(exp, argindex, klaar)
 			res = X('∘', A, X(sel))
 		end
 
+	-- fn.kruid
+	elseif isfn(exp) and #arg(exp) == 2
+			and not bevat(arg0(exp), X('_arg', argindex)) then
+		local d = defunc(arg1(exp), argindex, klaar)
+		res = X('∘', X('_', kruid, X(',', fn(exp), arg0(exp))), d)
+
+	-- fn.kruidL
+	-- 2 + _arg → kruidL((+), 2) ∘ A
+	elseif isfn(exp) and #arg(exp) == 2
+			and not bevat(arg1(exp), X('_arg', argindex)) then
+		local d = defunc(arg0(exp), argindex, klaar)
+		res = X('∘', X('_', kruidL, X(',', fn(exp), arg1(exp))), d)
+	
+	-- fn.if & fn.else
+	--elseif fn(exp) == '+' then
+
 	-- fn.inc
 	elseif fn(exp) == '+' and isobj(arg(exp)) and #obj(arg(exp)) == 2
 			and (arg0(exp).v == '1' or arg1(exp).v == '1') then
 		if arg0(exp).v == '1' then
-			res = X('_', inc, arg0(exp).v)
+			res = X(inc, arg0(exp).v)
 		else
-			res = X('_', inc, arg1(exp).v)
+			res = X(inc, arg1(exp).v)
 		end
 
 	-- f(a)  ->  c(a) ∘ f
-	elseif isfn(exp) then
+	elseif isfn(exp) and fn(exp) ~= '_arg' then
 		local A = defunc(arg(exp), argindex, klaar)
 		if atoom(A) == 'fn.id' then
 			res = fn(exp)
 		else
-			res = X('∘', A, fn(exp))
+			if fn(A) == '∘' then
+				res = X('∘', arg0(A), arg1(A), fn(exp))
+			else
+				res = X('∘', A, fn(exp))
+			end
 		end
 
 	elseif isobj(exp) then
@@ -60,9 +87,9 @@ function defunc(exp, argindex, klaar)
 		elseif #mergeval == 0 then
 			res = X'∅'
 		elseif #mergeval == 1 then
-			res = X('_', merge, mergeval[1])
+			res = X(merge, mergeval[1])
 		else
-			res = X('_', merge, mergeval)
+			res = X(merge, mergeval)
 		end
 	elseif atoom(exp) then
 		res = exp
