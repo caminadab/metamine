@@ -30,6 +30,12 @@ local op2fn = {
 	['⇒'] = X'fn.dan',
 }
 
+local unop2fn = {
+	['-'] = X'fn.min',
+	['¬'] = X'fn.niet',
+	['!'] = X'fn.faculteit',
+}
+
 local rop2fn = {
 	['+'] = X'fn.plus',
 	['·'] = X'fn.maal', 
@@ -47,6 +53,8 @@ local rop2fn = {
 	['⇒'] = X'fn.als',
 }
 
+	--['¬'] = X'fn.niet',
+
 -- defunctionaliseer (maak er een gebonden functie van)
 function defunc(exp, argindex, klaar)
 	--if not klaar then print('DEFUNC', argindex) end
@@ -55,9 +63,26 @@ function defunc(exp, argindex, klaar)
 	local res
 	local num = isfn(exp) and arg1(exp) and isatoom(arg1(exp)) and tonumber(atoom(arg1(exp)))
 
-	-- C(exp)
-	if not bevat(exp, X'_arg') then
-		res = X(constant, exp)
+	-- constanten worden ingepakt
+	if isatoom(exp) then
+		res = X('fn.constant', atoom(exp))
+
+	-- C(exp) = 
+	elseif false and not bevat(exp, X'_arg') then
+		if isatoom(exp) then
+			res = X('fn.constant', atoom(exp))
+		else
+			res = X('fn.constant', exp)
+		end
+
+	-- fn.inc
+	elseif fn(exp) == '+' and isobj(arg(exp)) and #obj(arg(exp)) == 2
+			and (arg0(exp).v == '1' or arg1(exp).v == '1') then
+		if arg0(exp).v == '1' then
+			res = X(inc, arg0(exp).v)
+		else
+			res = X(inc, arg1(exp).v)
+		end
 
 	-- fn.id
 	elseif fn(exp) == '_arg' and atoom(arg(exp)) == argindex then
@@ -85,6 +110,24 @@ function defunc(exp, argindex, klaar)
 			res = X('∘', d, achter)
 		end
 
+	-- -(A) → d(A) ∘ (-)
+	elseif isfn(exp) and #arg(exp) == 1 then
+			--and bevat(arg(exp), X('_arg', argindex)) then
+		local f = fn(exp)
+		local unop = assert(unop2fn[f], combineer(f))
+
+		local d = defunc(arg(exp), argindex, klaar)
+		res = X(unop2fn[f], arg(exp))
+
+		local achter = fn(exp)
+
+		-- samenvoegen van compositie
+		if false and fn(d) == '∘' then
+			res = kopieer(d)
+			table.insert(arg(res), achter)
+		else
+			res = X('∘', d, achter)
+		end
 
 	-- fn.kruid
 	-- A + 2  →  d(A) ∘ kruid((+), 2)
@@ -117,7 +160,7 @@ function defunc(exp, argindex, klaar)
 		local achter
 		local f = fn(exp)
 		if rop2fn[f] then
-			achter = X(op2fn[f], arg1(exp))
+			achter = X(rop2fn[f], arg1(exp))
 		else
 			achter = X('fn.kruidL', X(',', fn(exp), arg1(exp)))
 		end
@@ -131,20 +174,12 @@ function defunc(exp, argindex, klaar)
 		end
 	
 
-	-- fn.inc
-	elseif fn(exp) == '+' and isobj(arg(exp)) and #obj(arg(exp)) == 2
-			and (arg0(exp).v == '1' or arg1(exp).v == '1') then
-		if arg0(exp).v == '1' then
-			res = X(inc, arg0(exp).v)
-		else
-			res = X(inc, arg1(exp).v)
-		end
-
 	-- f(a)  ->  c(a) ∘ f
 	elseif isfn(exp) and fn(exp) ~= '_arg' then
 		local A = defunc(arg(exp), argindex, klaar)
 		if atoom(A) == 'fn.id' then
-			res = fn(exp)
+			local unop = unop2fn[fn(exp)]
+			res = X('∘', A, unop)
 		else
 			if fn(A) == '∘' then
 				res = X('∘', arg0(A), arg1(A), fn(exp))
@@ -164,7 +199,7 @@ function defunc(exp, argindex, klaar)
 		if atoom(mergeval[1]) == 'fn.id' and atoom(mergeval[2]) == 'fn.id' and not mergeval[3] then
 			res = dup
 		elseif #mergeval == 0 then
-			res = X'∅'
+			res = X('fn.constant', X'∅')
 		elseif #mergeval == 1 then
 			res = X(merge, mergeval[1])
 		else
@@ -173,9 +208,8 @@ function defunc(exp, argindex, klaar)
 
 	else
 		res = X(constant, exp)
-	end
 
-	assert(res)
+	end
 
 	klaar[exp] = res
 	return res

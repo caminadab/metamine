@@ -1,3 +1,4 @@
-app = app.in → app.uit
-app.in = (in.vars, in.start, nu)
-app.uit = (uit.vars, uit, uit.vars)
+;app = app.in → app.uit
+;app.in = (in.vars, in.start, nu)
+;app.uit = (uit.vars, uit)
+app = in → uit

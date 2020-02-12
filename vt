@@ -12,8 +12,8 @@ require 'rapport'
 require 'typeer'
 require 'doe'
 
-require 'bouw.genjs'
-require 'bouw.genx64'
+require 'bouw.gen.js'
+require 'bouw.gen.x64'
 
 require 'bouw.focus'
 require 'bouw.arch'
@@ -171,7 +171,7 @@ end
 
 -- nieuwe lage JS
 if opt.javascript then
-	uit = genjs(app)
+	uit = jsgen(app)
 	file('a.js', '\nperformance = {now: function() { return 0; }}\n'..uit)--{now: new Date().getTime()}')
 	print(uit)
 	if opt.d then

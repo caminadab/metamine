@@ -18,8 +18,10 @@ local diops = {
 
 
 function ins2lua(ins, focus)
-	if fn(ins) == 'push' then
-		focus = focus + 1
+	if fn(ins) == 'push' or fn(ins) == 'put' then
+		if fn(ins) == 'push' then
+			focus = focus + 1
+		end
 		assert(atoom(arg(ins)), unlisp(ins))
 		return string.format('local %s = %s', varnaam(focus), atoom(arg(ins))), focus
 

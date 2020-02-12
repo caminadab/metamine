@@ -49,13 +49,13 @@ local function genjs(sfc)
 			focus = focus - 1
 		elseif diops[atoom(ins)] then
 			gen[#gen+1] = string.format('var %s = %s %s %s;', varnaam(focus), atoom(ins), varnaam(focus-1))
-		elseif fn(ins) == 'push' then
+		elseif fn(ins) == 'put' then
 			gen[#gen+1] = string.format('var %s = %s;', varnaam(focus), atoom(arg(ins)))
+		elseif fn(ins) == 'push' then
 			focus = focus + 1
+			gen[#gen+1] = string.format('var %s = %s;', varnaam(focus), atoom(arg(ins)))
 		elseif atoom(ins) == 'dup' then
 			gen[#gen+1] = string.format('var %s = %s;', varnaam(focus+1), varnaam(focus))
-			focus = focus + 1
-		elseif atoom(ins) == 'rouleer' then
 			focus = focus + 1
 		elseif atoom(ins) == 'trip' then
 			gen[#gen+1] = string.format('var %s = %s;', varnaam(focus+1), varnaam(focus))

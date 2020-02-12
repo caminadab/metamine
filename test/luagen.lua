@@ -23,7 +23,7 @@ function verwacht(im, val)
 	assert(not err, tostring(err) .. '\n' .. lua)
 
 	local ok,res = pcall(func)
-	assert(ok, res .. '\n' .. lua)
+	assert(ok, tostring(res) .. '\n' .. lua)
 
 	assert(res == val, string.format('%s moet %s zijn maar was %s', lua, lenc(val), lenc(res)))
 end

@@ -1,4 +1,4 @@
-require 'bouw.genjs'
+require 'bouw.gen.js'
 require 'vertaal'
 require 'vertolk'
 require 'combineer'
@@ -45,7 +45,7 @@ function vt(code, naam)
 	local icode,fouten,gen2bron = vertaal(code)
 	local js = ''
 	if icode then
-		js = genjs(icode)
+		js = jsgen(icode)
 	end
 	file('a.js', js)
 	local fouten = map(fouten, fout2json)

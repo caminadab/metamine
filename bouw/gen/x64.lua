@@ -97,8 +97,9 @@ function genx64(cfg)
 		print()
 		print('=== OPSLAG ===')
 	end
-	for blok in spairs(cfg.punten) do
-		labels[blok.naam.v] = true
+	do
+		local blok = cfg
+		--labels[blok.naam.v] = true
 		for i, stat in ipairs(blok.stats) do
 			local naam,exp,f = stat[1].v, stat[2], stat[2] and fn(stat[2])
 			if not opslag[naam] then

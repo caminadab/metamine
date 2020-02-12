@@ -1,6 +1,5 @@
 require 'exp'
 require 'util'
-require 'plet'
 require 'graaf'
 require 'symbool'
 require 'combineer'
@@ -41,13 +40,7 @@ local postop = set("%","!",".","'")
 local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈")
 local unop   = set("-","#","¬","Σ","|","%","√","!")
 
--- exp → sfc
-function codegen(exp)
-	--local ins = {}
-	--local stack = {1}
-end
-
-function codegen(exp, maakvar)
+function codegen2(exp, maakvar)
 	local maakvar = maakvar or maakvars()
 	local stats = X(",")
 	local klaar = {}
@@ -102,4 +95,57 @@ function codegen(exp, maakvar)
 	end
 
 	return stats
+end
+
+
+function constantgen(exp, ins)
+	if isatoom(exp) then
+		ins[#ins+1] = X('put', exp)
+	
+	elseif isobj(exp) then
+		for i,sub in ipairs(exp) do
+			ins[#ins+1] = X('put', exp)
+		end
+
+		if obj(exp) ~= ',' then
+			ins[#ins+1] = X(obj(exp), tostring(#exp))
+		end
+
+	end
+end
+
+function codegen(exp, ins)
+	local ins = ins or {o='[]'}
+
+	if fn(exp) == 'fn.merge' then
+		local len = #arg(exp)
+		ins[#ins+1] = X('rep', tostring(len))
+		for i,sub in ipairs(arg(exp)) do
+			codegen(sub, ins)
+			ins[#ins+1] = X('wissel', tostring(-i))
+		end
+
+	elseif fn(exp) == 'fn.constant' then
+		constantgen(arg(exp), ins)
+
+	elseif isobj(exp) then
+		for i,sub in ipairs(exp) do
+			codegen(sub, ins)
+		end
+
+	elseif false and isfn(exp) and fn(exp):sub(1,3) == "fn." then
+		constantgen(arg(exp), ins)
+		ins[#ins+1] = X(fn(exp):sub(4))
+
+	elseif fn(exp) == '∘' then
+		codegen(arg(exp), ins)
+
+	elseif isatoom(exp) then
+		ins[#ins+1] = exp
+	
+	else
+		ins[#ins+1] = X('???', exp)
+	end
+	
+	return ins
 end
