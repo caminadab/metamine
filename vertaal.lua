@@ -96,8 +96,7 @@ function vertaal(code, naam)
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
 	end
 
-
-	local app = codegen(exp, maakvar)
+	local app = codegen(exp)
 
 	return app, {}, gen2bron
 end

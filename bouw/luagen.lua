@@ -1,148 +1,66 @@
-local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈")
-local unop   = set("-","#","¬","Σ","|","%","√","!", "%","!",".","'")
+require 'func'
 
-local imm = {
-	['niets'] = 'undefined',
-	['dt'] = 'dt',
-	['[]'] = '[$ARGS]',
-	['[]u'] = '$TARGS',
-	['{}'] = 'new Set([$ARGS])',
-
-	-- arit
-	['misschien'] = 'Math.random() < 0.5',
-	['map'] = '$1.map($2)',
-	['vouw'] = '$1.length == 0 ? (x => x) : $1.length == 1 ? $1[0] : $1.slice(1).reduce((x,y) => $2([x,y]),$1[0])',
-	['atoom'] = 'atoom$1',
-	['%'] = '$1 / 100',
-
-	['¬'] = '! $1',
-	['_'] = '$1($2)',
-
-	['+'] = '$1 + $2',
+local unops = {
+	['abs'] = 'math.abs($1)',
 	['-'] = '- $1',
-	['·'] = '$1 * $2',
-	['/'] = '$1 / $2',
-
-	['mod'] = '$1 % $2',
-
-	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
-	['√'] = 'Math.pow($1, 0.5)',
-	['^'] = 'Math.pow($1, $2)',
-	['^f'] = 'function(res) { for (var i = 0; i < $2; i++) res = $1(res); return res; }',
-	['wortel'] = 'Math.sqrt($1)',
-	['derdemachtswortel'] = 'Math.pow($1,1/3)',
-
-	-- cmp
-	['>'] = '$1 > $2',
-	['≥'] = '$1 >= $2',
-	['='] = '$1 === $2',
-	['≠'] = '$1 !== $2',
-	['≤'] = '$1 <= $2',
-	['<'] = '$1 < $2',
-
-	-- deduct
-	['∧'] = '$1 && $2', 
-	['∨'] = '$1 || $2', 
-	['⇒'] = '$1 ? $2 : $3', 
-
-	['sin'] = 'math.sin($1)',
-	['cos'] = 'math.cos($1)',
-	['tan'] = 'math.tan($1)',
-	['sincos'] = '{math.cos($1), math.sin($1)}',
-	['cossin'] = '{math.sin($1), math.cos($1)}',
-
-	-- discreet
-	['min'] = 'Math.min($1,$2)',
-	['max'] = 'Math.max($1,$2)',
-	['afrond.onder'] = 'Math.floor($1)',
-	['afrond']       = 'Math.round($1)',
-	['afrond.boven'] = 'Math.ceil($1)',
-	['int'] = 'Math.floor($1)',
-	['abs'] = 'Math.abs($1)',
-	['sign'] = '($1 > 0 ? 1 : -1)',
-
-	-- exp
-	['log10'] = 'math.log10($1)',
-	-- concatenate
-	['‖'] = 'Array.isArray($1) ? $1.concat($2) : $1 + $2',
-	['‖u'] = '$1 + $2',
-	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
-	['catu'] = '$1.join($2)',
-
-	-- lijst
-	['#'] = '$1.length',
-	['Σ'] = '(function(t) local sum = 0; for i, v in ipairs(t) do sum = sum + v end; return sum)($1)',
-	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
-	['_u'] = '$1[$2]',
-	['vanaf'] = '$1.slice($2, $1.length)',
-
-	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => Array.isArray(x) ? Array.from(x).concat([y]) : [x, y])))', -- cartesisch product
-
-	['∘'] = 'function(x) return $2($1(x)) end',
+	['fn.eerste'] = '$1[1]',
+	['fn.tweede'] = '$1[2]',
+	['fn.derde'] = '$1[3]',
+	['fn.vierde'] = '$1[4]',
 }
 
-local immf = {}
-for k,v in pairs(imm) do
-	if v:match('$2') then
-		immf[k] = string.format('function(x) return %s end', v:gsub('$1', 'x[1]'):gsub('$2', 'x[2]'))
-	else
-		immf[k] = string.format('function(x) return %s end', v:gsub('$1', 'x'))
-	end
-end
+local diops = {
+	['plus'] = '$1 + $2',
+	--['+'] = '$1 + $2',
+	['·'] = '$1 * $2',
+	['/'] = '$1 / $2',
+}
 
-local function ins2lua(ins, stack)
-	local focus = stack[#stack]
 
-	-- doet 1 op de stack erbij
+function ins2lua(ins, focus)
 	if fn(ins) == 'push' then
-		local a = varnaam(focus)
-		stack[#stack] = focus + 1
-		local exp = atoom(arg(ins))
-		local exp = immf[exp] or exp
-		return string.format('local %s = %s', a, exp)
-	
-	-- dupliceer 1 waarde
-	elseif atoom(ins) == 'dup' then
-		local a = varnaam(focus + 1)
-		local b = varnaam(focus + 0)
-		stack[#stack] = focus + 1
-		return string.format('local %s = %s', a, b)
-	
-	elseif atoom(ins) == 'rouleer' then
-		stack[#stack] = focus - 0
+		focus = focus + 1
+		assert(atoom(arg(ins)), unlisp(ins))
+		return string.format('local %s = %s', varnaam(focus), atoom(arg(ins))), focus
 
-	-- haalt 1 van de stack af
-	elseif binop[atoom(ins)] then
-		local a = varnaam(focus - 2)
-		local b = varnaam(focus - 1)
+	elseif fn(ins) == 'rep' then
+		local res = {}
+		local num = tonumber(atoom(arg(ins)))
+		assert(num, unlisp(ins))
+		for i = 1, num do
+			res[#res+1] = string.format('local %s = %s', varnaam(focus+i), varnaam(tostring(focus)))
+		end
+		return table.concat(res, '\n'), focus + num
 
-		stack[#stack] = focus - 1
-		local exp = imm[atoom(ins)]:gsub('$1',a):gsub('$2',b)
-		return string.format('local %s = %s', a, exp)
-	
-	-- houdt de stack gelijk
-	elseif unop[atoom(ins)] then
-		local a = varnaam(focus - 1)
-		local exp = imm[atoom(ins)]:gsub('$1',a)
-		return string.format('local %s = %s', a, exp)
-	
+	elseif fn(ins) == 'wissel' then
+		local naama = varnaam(focus)
+		local num = atoom(arg(ins))
+		local naamb = varnaam(focus + num)
+		return string.format('local %s,%s = %s,%s', naama, naamb, naamb, naama), focus
+
+	elseif unops[atoom(ins)] then
+		local naam = varnaam(focus)
+		local un = unops[atoom(ins)]:gsub('$1', naam)
+		return string.format('local %s = %s', naam, un), focus
+
+	elseif diops[atoom(ins)] then
+		local naama = varnaam(focus-1)
+		local naamb = varnaam(focus)
+		local di = diops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
+		return string.format('local %s = %s', naama, di), focus - 1
+
 	else
-		return '-- '..combineer(ins)
+		return '-- ' .. unlisp(ins), focus
 	end
 end
 
-
-function luagen(im)
-	local lua = {}
-	local stack = {1}
-	
-	lua[#lua+1] = 'local A = ...'
-
-	for i, ins in ipairs(im) do
-		lua[#lua+1] = ins2lua(ins, stack)
+function luagen(sfc)
+	local lijnen = {}
+	lijnen[#lijnen+1] = 'local A = ...'
+	local focus = 1
+	for i,ins in ipairs(sfc) do
+		lijnen[#lijnen+1], focus = ins2lua(ins, focus)
 	end
-
-	lua[#lua+1] = 'return A'
-
-	return table.concat(lua, '\n')
+	lijnen[#lijnen+1] = 'return A'
+	return table.concat(lijnen, '\n')
 end

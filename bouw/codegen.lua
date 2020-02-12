@@ -1,10 +1,12 @@
 require 'exp'
 require 'util'
+require 'plet'
 require 'graaf'
 require 'symbool'
 require 'combineer'
 
 require 'bouw.blok'
+require 'bouw.luagen'
 
 -- diepte bepalen
 local function peil(waarde)
@@ -41,11 +43,11 @@ local unop   = set("-","#","¬","Σ","|","%","√","!")
 
 -- exp → sfc
 function codegen(exp)
-	local ins = {}
-	local stack = {1}
+	--local ins = {}
+	--local stack = {1}
 end
 
-function codegen2(exp, maakvar)
+function codegen(exp, maakvar)
 	local maakvar = maakvar or maakvars()
 	local stats = X(",")
 	local klaar = {}

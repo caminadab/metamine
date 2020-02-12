@@ -1,3 +1,3 @@
 app = app.in → app.uit
 app.in = (in.vars, in.start, nu)
-app.uit = (uit, uit.vars)
+app.uit = (uit.vars, uit, uit.vars)

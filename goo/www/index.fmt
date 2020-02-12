@@ -101,19 +101,23 @@
 					editor.addWidget(widgetpos, preview);
 				};
 
-				var main = new Function(j.js)();
-				var nu = new Date().getTime() / 1000;
-				var uitvars = main([[0,0,0,0,0], true, nu]);
-				var uitvoer = uitvars[0];
-				var vars = uitvars[1];
+				var main = new Function("IN", j.js);
+				uit.innerHTML = '<pre>' + (j.js) + '</pre>';
+				var nu = (x => new Date().getTime() / 1000);
+				var start = (x => true);
+				var vars = (x => []);
+				var uitvars = main([vars, start, nu]);
+				alert(uitvars);
+				var vars = uitvars[0];
+				var uitvoer = uitvars[1];
 				uit.innerHTML = uitvoer;
 
 				try {
 					var f = (ev) => {
-						var looptijd = new Date().getTime() / 1000 - begin;
+						var nu = new Date().getTime() / 1000;
 						var uitvars = main([vars, false, nu]);
-						uitvoer = uitvars[0];
-						vars = uitvars[1];
+						vars = uitvars[0];
+						uitvoer = uitvars[1];
 
 						uit.innerHTML = uitvoer;
 

@@ -121,7 +121,7 @@ function unparse_work(exp, maxlen, tabs, res, klaar)
 		insert(res, '[]u(...)')
 	elseif isfn(exp) or isobj(exp) then
 		local len = unparse_len(exp) 
-    local split = len > maxlen and len < 1.4 * maxlen or len > 3 * maxlen and len < 5.5 * maxlen or len > 7 * maxlen
+    local split = len > maxlen --len > maxlen and len < 1.4 * maxlen or len > 3 * maxlen and len < 5.5 * maxlen or len > 7 * maxlen
 		--unparse_work(sexpr.f, maxlen, tabs+1, res)
 		insert(res, fn(exp) or obj(exp))
 		insert(res, color[(tabs%#color)+1])

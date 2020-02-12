@@ -240,10 +240,10 @@ function varnaam(i)
 	if i == 0 then return 'A' end
 	local r = ''
 	while i > 0 do
-		local c = i % 26
-		i = math.floor(i / 26)
-		if r ~= '' then c = c - 1 end
-		local l = string.char(string.byte('A') + c)
+		local c = i % 25
+		i = math.floor(i / 25)
+		--if r ~= '' then c = c - 1 end
+		local l = string.char(string.byte('A') + c + 1)
 		if c < 0 then
 			l = '_'
 		end
@@ -310,7 +310,7 @@ function bevat(exp, naam)
 	if exp.v then
 		return exp.v == naam.v
 	else
-		if isfn(naam) and moes(exp) == moes(naam) then
+		if not isatoom(naam) and moes(exp) == moes(naam) then
 			return true
 		end
 		--print('FN', fn(exp), naam.v)

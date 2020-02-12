@@ -1,47 +1,47 @@
+require 'exp'
+
+function plet1(exp, ins)
+	if isatoom(exp) then
+		ins[#ins+1] = X('push', exp)
+	
+	elseif isobj(exp) then
+		for i,sub in ipairs(exp) do
+			ins[#ins+1] = X('push', exp)
+		end
+
+		if obj(exp) ~= ',' then
+			ins[#ins+1] = X(obj(exp), tostring(#exp))
+		end
+
+	end
+end
+
 function plet(exp, ins)
 	local ins = ins or {o='[]'}
 
-	if fn(exp) == '_' and atoom(arg0(exp)) == 'fn.merge' then
-		local args = arg1(exp)
-
-		if #args == 2 then
-			ins[#ins+1] = X'dup'
-			plet(args[1], ins)
-			ins[#ins+1] = X'rouleer'
-			plet(args[2], ins)
-			ins[#ins+1] = X'rouleer'
-
-		elseif #args == 3 then
-			ins[#ins+1] = X'trip'
-			plet(args[1], ins)
-			ins[#ins+1] = X'rouleer'
-			plet(args[2], ins)
-			ins[#ins+1] = X'rouleer'
-			plet(args[3], ins)
-			ins[#ins+1] = X'rouleer'
-		
-		else
-			error('onbekende hoeveelheid args: '..combineer(exp))
+	if fn(exp) == 'fn.merge' then
+		local len = #arg(exp)
+		ins[#ins+1] = X('rep', tostring(len))
+		for i,sub in ipairs(arg(exp)) do
+			plet(sub, ins)
+			ins[#ins+1] = X('wissel', tostring(-i))
 		end
 
-	elseif fn(exp) == '_' and atoom(arg0(exp)) == 'fn.constant' then
-		plet(arg1(exp), ins)
-
-	elseif isatoom(exp) then
-		ins[#ins+1] = X('push', exp)
-
-	elseif isfn(exp) then
-		plet(arg(exp), ins)
-		ins[#ins+1] = X(fn(exp))
-
 	elseif isobj(exp) then
-		for i, sub in ipairs(exp) do
+		for i,sub in ipairs(exp) do
 			plet(sub, ins)
 		end
 
-	else
-		ins[#ins+1] = X'?'
-	end
+	elseif isfn(exp) and fn(exp):sub(1,3) == "fn." then
+		plet1(arg(exp), ins)
+		ins[#ins+1] = X(fn(exp):sub(4))
 
+	elseif fn(exp) == '∘' then
+		plet(arg(exp), ins)
+
+	elseif isatoom(exp) then
+		ins[#ins+1] = exp
+	end
+	
 	return ins
 end

@@ -1,6 +1,6 @@
-app = app.in → app.uit
-app.in = (in.vars, in.start, nu)
-app.uit = (uit, uit.vars)
+app     = app.in → app.uit
+app.in  = (in.vars,  in.start, nu)
+app.uit = (uit.vars, uit)
 
 ; tijd
 starttijd := nu
@@ -13,7 +13,6 @@ uit.hoogte = 100
 ; kleuren
 beige = rgb(96%, 96%, 86%)
 bruin = rgb(60%, 40%, 20%)
-
 
 ; toetsenbord
 toets.spatie = toets.neer(32)

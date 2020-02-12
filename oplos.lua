@@ -119,7 +119,7 @@ function oplos(exp, voor)
 
 				-- local neq = 
 				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-				local neq = X('|:=', a, X('⇒', 'in.start', b, 'niets'))
+				local neq = X('|:=', a, X('⇒', 'in.start', b))
 				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
@@ -223,7 +223,7 @@ function oplos(exp, voor)
 							--eq = X('⇒', X('wanneer', eq.a[1]), 
 							--sub = X('[]', sub.a[1], sub.a[2])
 						end
-						local neq = X('⇒', eq.a[1], sub)--X'niets')
+						local neq = X('⇒', eq.a[1], sub)
 						nieuw[neq] = true
 						oud[eq] = true
 
@@ -233,7 +233,7 @@ function oplos(exp, voor)
 				end
 				if eq.a[3] and fn(eq.a[3]) == '⋀' then
 					for i,sub in ipairs(eq.a[3].a) do
-						local eq = X('⇒', X('¬', eq.a[1]), sub)--X'niets')
+						local eq = X('⇒', X('¬', eq.a[1]), sub)
 						nieuw[eq] = true
 					end
 				end
@@ -271,8 +271,8 @@ function oplos(exp, voor)
 				local ae = eq.a[3] and eq.a[3].a[1] or X'niets'
 				local be = eq.a[3] and eq.a[3].a[2] or X'niets'
 				--assert(ae and be)
-				local eqa = X('|'..f, a, X(sym.dan, c, b, be))
-				local eqb = X('|'..f, b, X(sym.dan, c, a, ae))
+				local eqa = X('|'..f, a, X(sym.dan, c, b))--, be))
+				local eqb = X('|'..f, b, X(sym.dan, c, a))--, ae))
 
 				if isvar(a) then nieuw[eqa] = true end
 				if isvar(b) and fn(eq.a[2]) == '=' then nieuw[eqb] = true end

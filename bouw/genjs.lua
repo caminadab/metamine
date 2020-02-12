@@ -98,7 +98,7 @@ local immjs = {
 
 	['×'] = '[].concat.apply([], $1.map(x => $2.map(y => Array.isArray(x) ? Array.from(x).concat([y]) : [x, y])))', -- cartesisch product
 
-	['∘'] = 'function (a) { return $2($1(a)); }',
+	['∘'] = 'a => $2($1(a))',
 }
 
 -- Shift-K
@@ -122,7 +122,7 @@ end
 local immsym = {
 	['fn.constant'] = "c => (x => c)",
 	['fn.dup'] = "x => [x, x]",
-	['fn.merge'] = "fns => (x => fns.map(fn => fn(x)))",
+	['fn.merge'] = "fns => {x => fns.map(fn => fn(x))}",
 	['fn.eerste'] = "x => x[0]",
 	['fn.tweede'] = "x => x[1]",
 	['fn.derde'] = "x => x[2]",
@@ -140,15 +140,7 @@ local immsym = {
 	['misschien'] = 'Math.random() < 0.5',
 	['dt'] = 'dt',
 	['_'] = 'x => x[0](x[1])',
-	['|'] = [[ (function(conds) {
-		const it = conds.entries();
-		for (let entry of it) {
-			if (entry[1] !== undefined && entry[1] !== false) {
-				return entry[1];
-			}
-		}
-		throw new Exception("geen geldig alternatief");
-	}) ]],
+	['|'] = "x => x.reduce((a,b) => a || b)",
 
 	-- func
 	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
@@ -159,29 +151,9 @@ local immsym = {
 	['filter'] = '(function(a){return a[0].filter(a[1]);})',
 	['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 
-	['_prevvar'] = '(function(a){return vars[a];})',
-	['_var'] = [[ (function(a) {
-			var varindex = a[0];
-			var ass = a[1];
-			var array = ass;
-			var ret = vars[varindex];
-			if (!lastUpdated[varindex] || runtime > lastUpdated[varindex]) {
-				for (var i = 0; i < array.length; i++) {
-					if (array[i] !== undefined) {
-						ret = array[i];
-						break;
-					}
-				}
-			}
-			lastUpdated[varindex] = runtime;
-			vars[varindex] = ret;
-			return ret;
-		})
-	]],
-
 	-- discreet
-	['min'] = '(function(a) { return Math.min(a[0], a[1]); })',
-	['max'] = '(function(a) { return Math.max(a[0], a[1]); })',
+	['min'] = 'x => { return Math.min(x[0], x[1]); })',
+	['max'] = 'x => { return Math.max(x[0], x[1]); })',
 	['entier'] = 'Math.floor',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',

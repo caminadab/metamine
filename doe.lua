@@ -101,11 +101,11 @@ function doe(app)
 
 		-- doe
 		local res = main {vars, start, nu}
-		uit, vars = res[1], res[2]
+		vars, uit = res[1], res[2]
 
 		-- uit
 		io.write(ansi.wisregel, ansi.regelbegin)
-		io.write(uit, ' ')
+		io.write(lenc(vars), uit, ' ')
 		io.flush()
 		socket.sleep(1/60)
 	end
