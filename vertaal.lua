@@ -70,6 +70,35 @@ local function genjs(sfc)
 	return table.concat(gen, '\n')
 end
 
+function vectoriseer(asb, types)
+	for exp in boompairsdfs(asb) do
+
+		-- L_i → (_i)(L, i)
+		if fn(exp) == '_' then
+			local fntype = types[moes(arg0(exp))]
+			local islijst = atoom(arg0(fntype)) == 'nat'
+			if islijst then
+				exp.f = X'_l'
+			else
+				exp.f = X'_f'
+			end
+		end
+
+		-- (F^i) → (^)(F, i)
+		if fn(exp) == '^' then
+			local basetype = types[moes(arg0(exp))]
+			local isgetal = atoom(basetype) == 'getal' or atoom(basetype) == 'int'
+			if isgetal then
+				exp.f = X'^r'
+			else
+				exp.f = X'^f'
+			end
+		end
+
+	end
+	return asb
+end
+
 -- code → struct
 function vertaal(code, naam)
 	local naam = naam or '?'
@@ -85,10 +114,13 @@ function vertaal(code, naam)
 	local asb = vertolk(asb)
 
 	-- types
-	local types,typeerfouten = typeer(asb)
+	local type,typeerfouten,types = typeer(asb)
 	if #typeerfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
+
+	-- vectoriseer
+	local asb = vectoriseer(asb, types)
 
 	local exp,oplosfouten = oplos(asb, "app")
 	

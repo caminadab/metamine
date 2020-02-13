@@ -1,454 +1,152 @@
-require 'util'
-require 'exp'
+require 'func'
 
-local infix = set('+', '-', '*', '/', '!=', '=', '>', '<', '<=', '>=', '/\\', '\\/', 'mod') 
-local tab = '    '
-local bieb = {
-	['@'] = '_comp', ['|'] = '_kies', ['!'] = 'not', ['>='] = '_gt',
-	['^'] = '_pow', [':'] = '_istype', ['%'] = '_procent', ['..'] = '_iinterval',
-	['#'] = '_len', ['-->'] = '_maplet',
+local unops = {
+	['abs'] = 'math.abs($1)',
+	['-'] = '- $1',
+	['Σ'] = 'local sum = 0; for k, v in ipairs($1) do sum = sum + v end; $1 = sum;',
+	['log10'] = 'math.log10($1)',
+	['log'] = 'math.log',
+	['fn.id'] = '$1',
+	['fn.eerste'] = '(type($1)=="function") and $1(0) or $1[1]',
+	['fn.tweede'] = '(type($1)=="function") and $1(1) or $1[2]',
+	['fn.derde'] = '(type($1)=="function") and $1(2) or $1[3]',
+	['fn.vierde'] = '(type($1)=="function") and $1(3) or $1[4]',
+	['fn.plus'] = 'function(x) return x + $1 end', 
+	['fn.deel'] = 'function(x) return x / $1 end', 
+	['fn.maal'] = 'function(x) return x * $1 end', 
+	['fn.constant'] = 'function(x) return $1 end', 
 }
-local function naarluaR(exp,t,tabs,maakvar)
-	if isatoom(exp) then
-		return exp.v,t
-	end
-	-- HACK
-	if type(exp) ~= 'table' then return tostring(exp) end
 
-	local fn,a,b = exp.fn.v, exp[1], exp[2]
-	local var = maakvar()
+local noops = {
+	['fn.id'] = 'function(x) return x end',
+	['fn.constant'] = 'function() return $1 end',
+	['fn.merge'] = 'function(x) return {$1(x),$2(x)} end',
+	['fn.plus'] = 'function(x) return function(y) return x + y end end',
+	['∘'] = 'function(x) return $1($2(x)) end',
+	['log10'] = 'math.log',
+	['_f'] = 'local r = nil ; for i=1,$2 do r = $1(r) end ; return r',
+	['⊤'] = 'true',
+	['⊥'] = 'false',
+	['∅'] = '{}',
+	['τ'] = 'math.pi * 2',
+	['π'] = 'math.pi',
+	['fn.eerste'] = '(type($1)=="function") and $1(1) or $1[1]',
+	['fn.tweede'] = '(type($1)=="function") and $1(2) or $1[2]',
+	['fn.derde'] = '(type($1)=="function") and $1(3) or $1[3]',
+	['fn.vierde'] = '(type($1)=="function") and $1(4) or $1[4]',
+}
 
-	if infix[fn] then
-		if fn == '=' then fn = '==' end
-		if fn == '!=' then fn = '~=' end
-		if fn == '/\\' then fn = 'and' end
-		if fn == '\\/' then fn = 'or' end
-		if fn == 'mod' then fn = '%' end
-		local A = naarluaR(a,t,tabs,maakvar)
-		local B = naarluaR(b,t,tabs,maakvar)
-		t[#t+1] = string.format('%slocal %s = %s %s %s\n', tabs, var, A, fn, B)
+local diops = {
+	['+'] = '$1 + $2',
+	['¬'] = '! $1',
+	['-'] = '- $1',
+	['·'] = '$1 * $2',
+	['/'] = '$1 / $2',
+	['mod'] = '$1 % $2',
+	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
+	['√'] = 'math.sqrt($1, 0.5)',
+	['^'] = 'math.pow($1, $2)',
+	['^f'] = 'function(res) { for (var i = 0; i < $2; i++) res = $1(res); return res; }',
+	['derdemachtswortel'] = 'Math.pow($1,1/3)',
 
-	elseif fn == '||' then
-		local A = naarluaR(a,t,tabs,maakvar)
-		local B = naarluaR(b,t,tabs,maakvar)
-		t[#t+1] = string.format('%slocal %s = cat{%s, %s}\n', tabs, var, A, B)
+	-- cmp
+	['>'] = '$1 > $2',
+	['≥'] = '$1 >= $2',
+	['='] = '$1 === $2',
+	['≠'] = '$1 !== $2',
+	['≤'] = '$1 <= $2',
+	['<'] = '$1 < $2',
 
-	elseif fn == '=>' then
-		local A = naarluaR(a,t,tabs,maakvar)
-		t[#t+1] = string.format('%slocal %s = false\n', tabs, var)
-		t[#t+1] = string.format('%sif %s then\n', tabs, A)
-		local B = naarluaR(b,t,tabs..tab,maakvar)
-		t[#t+1] = string.format('%s%s = %s\n', tabs..tab, var, B)
-		t[#t+1] = string.format('%send\n', tabs)
+	-- deduct
+	['∧'] = '$1 && $2', 
+	['∨'] = '$1 || $2', 
+	['⇒'] = '$1 ? $2 : $3', 
 
-	elseif fn == '[]' then
-		local vars = {}
-		for i,v in ipairs(exp) do
-			vars[i] = naarluaR(v,t,tabs,maakvar)
-		end
-		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%slocal %s = tabel{%s}\n', tabs, var, inhoud)
+	['sin'] = 'Math.sin($1)',
+	['cos'] = 'Math.cos($1)',
+	['tan'] = 'Math.tan($1)',
+	['sincos'] = '[Math.cos($1), Math.sin($1)]',
+	['cossin'] = '[Math.sin($1), Math.cos($1)]',
 
-	elseif fn == ',' then
-		local vars = {}
-		for i,v in ipairs(exp) do
-			vars[i] = naarluaR(v,t,tabs,maakvar)
-		end
-		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%slocal %s = tabel{%s}\n', tabs, var, inhoud)
+	-- discreet
+	['min'] = 'Math.min($1,$2)',
+	['max'] = 'Math.max($1,$2)',
+	['afrond.onder'] = 'Math.floor($1)',
+	['afrond']       = 'Math.round($1)',
+	['afrond.boven'] = 'Math.ceil($1)',
+	['int'] = 'Math.floor($1)',
+	['abs'] = 'Math.abs($1)',
+	['sign'] = '($1 > 0 ? 1 : -1)',
 
-	elseif fn == '{}' then
-		local vars = {}
-		for i,v in ipairs(exp) do
-			vars[i] = '['..naarluaR(v,t,tabs,maakvar)..'] = true'
-		end
-		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%slocal %s = {is={set=true},set={%s}}\n', tabs, var, inhoud)
+	-- exp
+	-- concatenate
+	['‖'] = 'Array.isArray($1) ? $1.concat($2) : $1 + $2',
+	['‖u'] = '$1 + $2',
+	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
+	['catu'] = '$1.join($2)',
+}
 
-	elseif fn == 'map' then
-		-- nieuw
-		local nieuw = var
-		t[#t+1] = string.format('%slocal %s = tabel{}\n', tabs, nieuw)
+function luagen(sfc)
 
-		local A = naarluaR(a,t,tabs,maakvar)
+	local focus = 1
+	local L = {}
 
-		-- mappen
-		local sub = string.format('%s(%s[i])', naarluaR(b,t,tabs,maakvar), A)
-
-		-- lus
-		t[#t+1] = string.format('%sfor i=1,#%s do\n',tabs,A)
-		local tabs1 = tabs .. tab
-
-		-- terugzetten
-		t[#t+1] = string.format('%s%s[i] = %s\n',tabs1,nieuw,sub)
-		t[#t+1] = tabs..'end\n'
-
-	elseif fn == '->' then
-		t[#t+1] = string.format('%slocal %s = function (%s)\n', tabs, var, a.v)
-		local res = naarluaR(b, t, tabs..tab, maakvar)
-		t[#t+1] = string.format('%sreturn %s\n', tabs..tab, res)
-		t[#t+1] = string.format('%send\n', tabs)
-
-	elseif true then
-		-- normale functie aanroep
-		local vars = {}
-		for k,v in ipairs(exp) do
-			vars[k] = naarluaR(v,t,tabs,maakvar)
-		end
-		vars.fn = naarluaR(exp.fn,t,tabs,maakvar)
-		if bieb[fn] then vars.fn = bieb[fn] end
-		inhoud = table.concat(vars, ',')
-		t[#t+1] = string.format('%slocal %s = %s(%s)\n', tabs, var, vars.fn, inhoud)
-
-	else
-		print('kan niet', toexp(exp))
-
+	local function emit(fmt, ...)
+		local args = {...}
+		uit[#uit+1] = fmt:gsub('$(%d)', function(i) return args[tonumber(i)] end)
 	end
 
-	return var,t
-end
-
-local biebbron = [[
-local tau = math.pi * 2
-local ja = true
-local nee = false
-local pack = pack or table.pack
-local unpack = unpack or table.unpack
-local niets = nil
-local max = math.max
-local min = math.min
-local abs = math.abs
-local sin = math.sin
-local cos = math.cos
-local sincos = function(a)
-	local mt = {}
-	function mt:__call(i)
-		return self[i+1]
-	end
-	return setmetatable({is={tupel=true}, sin(a), cos(a)}, mt)
-end
-local tan = math.tan
-local function cijfer(a)
-	return string.byte('0', 1) <= a and a <= string.byte('9', 1)
-end
-local _pow = function(a,b)
-	if type(a) == 'number' then
-		return a ^ b
-	else
-		return function(c)
-			for i=1,b do
-				c = a(c)
+	function ins2lua(ins)
+		if fn(ins) == 'push' or fn(ins) == 'put' then
+			if fn(ins) == 'push' then
+				focus = focus + 1
 			end
-			return c
-		end
-	end
-end
-local _atomen = {}
-local function atoom(i)
-	if not _atomen[i+1] then
-		_atomen[i+1] = "ATOOM-"..i
-	end
-	return _atomen[i+1]
-end
-local lijst = 'lijst'
-local getal = function(a)
-	return tonumber(string.char(table.unpack(a)))
-end
-local int = function(a)
-	local getal
-	if type(a) == 'number' then
-		getal = a
-	else
-		getal = tonumber(string.char(table.unpack(a)))
-	end
-	if not getal then return false end
-	return math.floor(getal)
-end;
-local _iinterval = function(a,b)
-	local t = {is={lijst=true}}
-	for i = a,b-1 do
-		t[#t+1] = i
-	end
-	return t
-end;
-local waarvoor = function(l,fn)
-	local r = {}
-	for i,v in ipairs(l) do
-		if fn(v) then
-			r[#r+1] = v
-		end
-	end
-	return r
-end
+			local naam = atoom(arg(ins))
+			assert(naam, unlisp(ins))
+			naam = noops[naam] or naam
+			L[#L+1] = string.format('local %s = %s', varnaam(focus), naam), focus
 
-local som = function(t)
-	local som = 0
-	for i,v in ipairs(t) do
-		som = som + v
-	end
-	return som
-end;
-local _istype = function(a,b)
-	if type(b) == 'table' and b.is and b.is.set then
-		return b.set[a]
-	end
-	if b == getal then return type(a) == 'number' end
-	if b == int then return type(a) == 'number' and a%1 == 0 end
-	if b == lijst then return type(a) == 'table' end
-	-- set dan maar
-	return not not b[a]
-	--return false
-end
-local _procent = function(n) return n / 100 end
-local _comp = function(a,b)
-	return function(...)
-		return b(a(...))
-	end
-end
-local javascript = function(broncode)
-	-- ^_^
-	require 'bieb'
-	return bieb.javascript(broncode)
-end
-local tabel = function(t)
-	local t = t or {}
-	t.is = t.is or {}
-	t.is.lijst = true
-	local mt = {}
-	function mt:__call(i)
-		return t[i+1]
-	end
-	setmetatable(t, mt)
-	return t
-end
+		elseif atoom(ins) == 'fn.id' then
+			-- niets
 
-local _mapmt = {}
-function _mapmt:__call(naam)
-	return self[naam]
-end
-	
-local vanaf = function(a,van)
-	local t = tabel{}
-	for i=van+1,#a do
-		t[#t+1] = a[i]
-	end
-	return t
-end
-
-local tot = function(a,tot)
-	local t = tabel{}
-	for i=1,tot do
-		t[#t+1] = a[i]
-	end
-	return t
-end
-
-local deel = function(a,b)
-	local van,tot = b[1],b[2]
-	local t = tabel{}
-	for i=van+1,tot do
-		t[#t+1] = a[i]
-	end
-	return t
-end
-
-local rechthoek = function(a,b,c) return {is={vorm=true,rechthoek=true}, 1, a, b, c} end;
-
-local _kies = function(a,b)
-	if a and b then return niets end
-	return a or b
-end
-
-cache = cache or {}
-local function bestand(naam)
-	local naam = string.char(table.unpack(naam))
-	if cache[naam] then return cache[naam] end
-	local f = io.open(naam)
-	local data = f:read('*a')
-	f:close()
-	local data,err = table.pack(string.byte(data, 1, #data))
-	setmetatable(data, getmetatable(tabel()))
-	local t = tabel{}
-	for i=1,#data do
-		t[i] = data[i]
-	end
-	cache[naam] = t
-	return t
-end
-
-local cat = function(a,b)
-	local r = tabel{}
-	for i,v in ipairs(a) do
-		for i,v in ipairs(v) do
-			r[#r+1] = v
-		end
-		if b and i ~= #a then
-			for i,b in ipairs(b) do
-				r[#r+1] = b
+		elseif fn(ins) == 'rep' then
+			local res = {}
+			local num = tonumber(atoom(arg(ins)))
+			assert(num, unlisp(ins))
+			for i = 1, num-1 do
+				L[#L+1] = string.format('local %s = %s', varnaam(focus+i), varnaam(focus))
+				focus = focus + 1
 			end
-		end
-	end
-	return r
-end
 
-local socket = require 'socket'
-starttijd = start or socket.gettime()
-nu = starttijd
-local start = true
+		elseif fn(ins) == 'wissel' then
+			local naama = varnaam(focus)
+			local num = atoom(arg(ins))
+			local naamb = varnaam(focus + num)
+			L[#L+1] = string.format('local %s,%s = %s,%s', naama, naamb, naamb, naama)
 
-local vind = function(a,b)
-	for i=1,#a-#b+1 do
-		local gevonden = true
-		for j=i,i+#b-1 do
-			if a[j] ~= b[j-i+1] then
-				gevonden = false
-				break
-			end
-		end
-		if gevonden then
-			return i-1
-		end
-	end
-	return false
-end
+		elseif unops[atoom(ins)] then
+			local naam = varnaam(focus)
+			local di = unops[atoom(ins)]:gsub('$1', naam)
+			L[#L+1] = string.format('local %s = %s', naam, di)
 
-local function tekstR(a,t)
-	if type(a) == 'table' then
-		if a.is and a.is.tupel then t[#t+1] = '('
-		elseif a.is and a.is.lijst then t[#t+1] = '['
-		elseif a.is and a.is.set then t[#t+1] = '{'
-		end
+		elseif diops[atoom(ins)] then
+			local naama = varnaam(focus-1)
+			local naamb = varnaam(focus)
+			local di = diops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
+			L[#L+1] = string.format('local %s = %s', naama, di)
+			focus = focus - 1
 
-		if a.is and a.is.set then
-			for k in pairs(a.set) do
-				tekstR(k,t)
-				if next(a.set,k) then
-					t[#t+1] = ','
-				end
-			end
 		else
-			for i,v in ipairs(a) do
-				tekstR(v,t)
-				if i < #a then
-					t[#t+1] = ','
-				end
-			end
-		end
-
-		if a.is and a.is.tupel then t[#t+1] = ')'
-		elseif a.is and a.is.lijst then t[#t+1] = ']'
-		elseif a.is and a.is.set then t[#t+1] = '}'
-		end
-	else
-		t[#t+1] = tostring(a)
-	end
-			
-end
-
-local function tekst(a)
-	local t = {}
-	tekstR(a, t)
-	local t = table.concat(t)
-	return {string.byte(t,1,#t)}
-end
-
-local xx = function(a,b)
-	if type(a) == 'table' and a.is and a.is.set then
-		if type(b) == 'table' and b.is and b.is.set then
-			local res = {is={set=true},set={}}
-			for sa in pairs(a.set) do
-				for sb in pairs(b.set) do
-					res.set[{is={tupel=true}, sa, sb}] = true
-				end
-			end
-			return res
+			L[#L+1] = '-- ' .. unlisp(ins)
 		end
 	end
-			
-	if type(a) == 'table' and a.is and a.is.tupel then
-		if type(b) == 'table' and b.is and b.is.tupel then
-			for i=1,#b do
-				a[#a+1] = b[i]
-			end
-		else
-			a[#a+1] = b
-		end
-	else
-		if type(b) == 'table' and b.is and b.is.tuple then
-			table.insert(b, 1, a)
-			a = b
-		else
-			a = {is={tupel=true}, a, b}
-		end
-	end
-	return a
-end
 
-local herhaal = function(f)
-	return function(a)
-		repeat
-			r = a
-			a = f(a)
-		until a == nil
-		return r
-	end
-end
+	L[#L+1] = 'local A = ...'
 
-local function _len(t)
-	if type(t) == 'number' then
-		return t
-	elseif type(t) == 'table' and t.is and t.is.set then
-		local len = 0
-		for _ in pairs(t.set) do len = len + 1 end
-		return len
+	for i,ins in ipairs(sfc) do
+		ins2lua(ins)
 	end
-	if type(t) == 'table' and t.is and (t.is.tupel or t.is.lijst) then
-		return #t
-	end
-	if type(t) == 'table' then
-		return #t
-	end
-end
 
-local function _maplet(a, b)
-	return {type="maplet", a, b}
-end
-
-local _args = {}
-local function _arg(n)
-	if _args[arg] == nil then
-		error('argument #'..n..' nog niet bekend, maar wel gebruikt')
-	end
-end
-local function _fn(...)
-	local t = {...}
-
-	return function (...)
-		return a
-	end
-end
-
-local function co(...)
-	local map = {}
-	for i,maplet in ipairs{...} do
-		-- sleutel ↦ waarde
-		assert(maplet.type == 'maplet', 'kan alleen maplets samenvoegen')
-		local s,w = maplet[1],maplet[2]
-		map[s] = w
-	end
-	setmetatable(map, _mapmt)
-	return map
-end
-
-]]
-local biebbron = biebbron:gsub('\t', tab)
-
-function naarlua(exp)
-	local t = {biebbron}
-	local var,t = naarluaR(exp,t,'',maakvars())
-	--t[#t+1] = 'print(string.char(unpack('..var..')))\n'
-	t[#t+1] = 'return '
-	t[#t+1] = var
-	local lua = table.concat(t)
-	return lua
+	L[#L+1] = 'return A'
+	return table.concat(L, '\n')
 end

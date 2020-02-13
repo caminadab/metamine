@@ -3,7 +3,7 @@ require 'combineer'
 
 local tel = { X'fn.eerste', X'fn.tweede', X'fn.derde', X'fn.vierde' }
 local id = X'fn.id'
-local dup = X'fn.dup'
+local dup = X('rep', '2')
 local merge = X'fn.merge'
 local constant = X'fn.constant'
 local inc = X'fn.inc'
@@ -17,6 +17,7 @@ local op2fn = {
 	['+'] = X'fn.plus',
 	['·'] = X'fn.maal', 
 	['/'] = X'fn.deel',
+	['∘'] = X'fn.comp',
 
 	['∧'] = X'fn.en',
 	['∨'] = X'fn.of',
@@ -131,14 +132,19 @@ function defunc(exp, argindex, klaar)
 
 	-- fn.kruid
 	-- A + 2  →  d(A) ∘ kruid((+), 2)
-	elseif isfn(exp) and #arg(exp) == 2
+	elseif false and isfn(exp) and #arg(exp) == 2
 			and not bevat(arg0(exp), X('_arg', argindex)) then
 		local d = defunc(arg1(exp), argindex, klaar)
 		local f = fn(exp)
 
 		local achter
 		if op2fn[f] then
-			achter = X(op2fn[f], arg0(exp))
+			if atoom(op2fn[f]) == 'fn.comp' then
+				achter = arg0(exp)
+				--achter = X(op2fn[f], arg0(exp))
+			else
+				achter = X(op2fn[f], arg0(exp))
+			end
 		else
 			achter = X('fn.kruid', X(',', f, arg0(exp)))
 		end
@@ -153,7 +159,7 @@ function defunc(exp, argindex, klaar)
 
 	-- fn.kruidL
 	-- 2 + A  →  kruidL((+), 2) ∘ d(A)
-	elseif isfn(exp) and #arg(exp) == 2
+	elseif false and isfn(exp) and #arg(exp) == 2
 			and not bevat(arg1(exp), X('_arg', argindex)) then
 		local d = defunc(arg0(exp), argindex, klaar)
 
@@ -209,6 +215,15 @@ function defunc(exp, argindex, klaar)
 	else
 		res = X(constant, exp)
 
+	end
+
+	-- optimiseer res
+	if fn(res) == '∘' and (atoom(arg0(res)) == 'fn.id' or atoom(arg0(res)) == 'fn.id') then
+		if atoom(arg0(res)) == 'fn.id' then
+			res = arg1(res)
+		else
+			res = arg0(res)
+		end
 	end
 
 	klaar[exp] = res

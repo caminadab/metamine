@@ -109,7 +109,7 @@ cossin :  getal → getal, getal
 (·) :  (getal, getal) → getal
 (/) :  (getal, getal) → getal
 ;(/) :  (int, int) → getal
-(^) :  (getal, getal) → getal
+;(^) :  (getal, getal) → getal
 ;(^) :  (int, int) → int
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets

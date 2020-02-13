@@ -4,9 +4,6 @@ require 'graaf'
 require 'symbool'
 require 'combineer'
 
-require 'bouw.blok'
-require 'bouw.luagen'
-
 -- diepte bepalen
 local function peil(waarde)
 	-- bepaal diepte
@@ -122,11 +119,16 @@ function codegen(exp, ins)
 		ins[#ins+1] = X('rep', tostring(len))
 		for i,sub in ipairs(arg(exp)) do
 			codegen(sub, ins)
-			ins[#ins+1] = X('wissel', tostring(-i))
+			if i ~= #arg(exp) then
+				ins[#ins+1] = X('wissel', tostring(-i))
+			end
 		end
 
 	elseif fn(exp) == 'fn.constant' then
 		constantgen(arg(exp), ins)
+	
+	elseif fn(exp) == 'rep' then
+		ins[#ins+1] = exp
 
 	elseif isobj(exp) then
 		for i,sub in ipairs(exp) do
@@ -144,7 +146,7 @@ function codegen(exp, ins)
 		ins[#ins+1] = exp
 	
 	else
-		ins[#ins+1] = X('???', exp)
+		ins[#ins+1] = exp
 	end
 	
 	return ins
