@@ -1,7 +1,1 @@
-uit = a
-
-als nu > 1 dan
-	a = 3
-anders
-	a = 2
-eind
+uit = 1 + 2

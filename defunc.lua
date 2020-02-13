@@ -1,7 +1,8 @@
 require 'exp'
 require 'combineer'
 
-local tel = { X'fn.eerste', X'fn.tweede', X'fn.derde', X'fn.vierde' }
+local ftel = { X'fn.eerste', X'fn.tweede', X'fn.derde', X'fn.vierde' }
+local ltel = { X'l.eerste', X'l.tweede', X'l.derde', X'l.vierde' }
 local id = X'fn.id'
 local dup = X('rep', '2')
 local merge = X'fn.merge'
@@ -41,6 +42,8 @@ local rop2fn = {
 	['+'] = X'fn.plus',
 	['·'] = X'fn.maal', 
 	['/'] = X'fn.rdeel',
+	['^f'] = X'fn.herhaal',
+	['^'] = X'fn.macht',
 
 	['∧'] = X'fn.en',
 	['∨'] = X'fn.of',
@@ -89,9 +92,20 @@ function defunc(exp, argindex, klaar)
 	elseif fn(exp) == '_arg' and atoom(arg(exp)) == argindex then
 		res = id
 
+	-- fn.nul t/m fn.drie
+	elseif fn(exp) == '_l' and num and num >= 0 and num < 4 and num % 1 == 0 then
+		local sel = ltel[num + 1]
+		local A = defunc(arg0(exp), argindex, klaar)
+		if atoom(A) == 'fn.id' then
+			res = X(sel) 
+		else
+			res = X('∘', A, X(sel))
+		end
+
+
 	-- fn.eerste t/m fn.vierde
-	elseif fn(exp) == '_' and num and num >= 0 and num < 4 and num % 1 == 0 then
-		local sel = tel[num + 1]
+	elseif fn(exp) == '_f' and num and num >= 0 and num < 4 and num % 1 == 0 then
+		local sel = ftel[num + 1]
 		local A = defunc(arg0(exp), argindex, klaar)
 		if atoom(A) == 'fn.id' then
 			res = X(sel) 
@@ -100,7 +114,7 @@ function defunc(exp, argindex, klaar)
 		end
 
 	-- abs(A)  →  d(A) ∘ abs
-	elseif fn(exp) == '_' then
+	elseif fn(exp) == '_f' or fn(exp) == '_' then
 		local d = defunc(arg1(exp), argindex, klaar)
 		local achter = arg0(exp)
 
@@ -132,7 +146,7 @@ function defunc(exp, argindex, klaar)
 
 	-- fn.kruid
 	-- A + 2  →  d(A) ∘ kruid((+), 2)
-	elseif false and isfn(exp) and #arg(exp) == 2
+	elseif isfn(exp) and #arg(exp) == 2
 			and not bevat(arg0(exp), X('_arg', argindex)) then
 		local d = defunc(arg1(exp), argindex, klaar)
 		local f = fn(exp)
@@ -159,7 +173,7 @@ function defunc(exp, argindex, klaar)
 
 	-- fn.kruidL
 	-- 2 + A  →  kruidL((+), 2) ∘ d(A)
-	elseif false and isfn(exp) and #arg(exp) == 2
+	elseif isfn(exp) and #arg(exp) == 2
 			and not bevat(arg1(exp), X('_arg', argindex)) then
 		local d = defunc(arg0(exp), argindex, klaar)
 

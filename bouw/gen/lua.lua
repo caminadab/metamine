@@ -7,10 +7,14 @@ local unops = {
 	['log10'] = 'math.log10($1)',
 	['log'] = 'math.log',
 	['fn.id'] = '$1',
-	['fn.eerste'] = '(type($1)=="function") and $1(0) or $1[1]',
-	['fn.tweede'] = '(type($1)=="function") and $1(1) or $1[2]',
-	['fn.derde'] = '(type($1)=="function") and $1(2) or $1[3]',
-	['fn.vierde'] = '(type($1)=="function") and $1(3) or $1[4]',
+	['fn.eerste'] = '$1(0)',
+	['fn.tweede'] = '$1(1)',
+	['fn.derde'] = '$1(2)',
+	['fn.vierde'] = '$1(3)',
+	['l.eerste'] = '$1[1]',
+	['l.tweede'] = '$1[2]',
+	['l.derde']  = '$1[3]',
+	['l.vierde'] = '$1[4]',
 	['fn.plus'] = 'function(x) return x + $1 end', 
 	['fn.deel'] = 'function(x) return x / $1 end', 
 	['fn.maal'] = 'function(x) return x * $1 end', 
@@ -20,34 +24,50 @@ local unops = {
 local noops = {
 	['fn.id'] = 'function(x) return x end',
 	['fn.constant'] = 'function() return $1 end',
-	['fn.merge'] = 'function(x) return {$1(x),$2(x)} end',
+	['fn.merge'] = '{$1(x),$2(x)}',
 	['fn.plus'] = 'function(x) return function(y) return x + y end end',
 	['∘'] = 'function(x) return $1($2(x)) end',
 	['log10'] = 'math.log',
-	['_f'] = 'local r = nil ; for i=1,$2 do r = $1(r) end ; return r',
+	['+'] = 'function(x) return x[1] + x[2] end',
+	--['+'] = 'function(x) return $1 + $2 end',
 	['⊤'] = 'true',
 	['⊥'] = 'false',
 	['∅'] = '{}',
 	['τ'] = 'math.pi * 2',
 	['π'] = 'math.pi',
-	['fn.eerste'] = '(type($1)=="function") and $1(1) or $1[1]',
-	['fn.tweede'] = '(type($1)=="function") and $1(2) or $1[2]',
-	['fn.derde'] = '(type($1)=="function") and $1(3) or $1[3]',
-	['fn.vierde'] = '(type($1)=="function") and $1(4) or $1[4]',
+	['l.eerste'] = '$1[1]',
+	['l.tweede'] = '$1[2]',
+	['l.derde'] = '$1[3]',
+	['l.vierde'] = '$1[4]',
+	['fn.nul'] = '$1(0)',
+	['fn.een'] = '$1(1)',
+	['fn.twee'] = '$1(2)',
+	['fn.drie'] = '$1(3)',
+
+	-- dynamisch
+	['eerste'] = '(type($1)=="function") and $1(1) or $1[1]',
+	['tweede'] = '(type($1)=="function") and $1(2) or $1[2]',
+	['derde'] = '(type($1)=="function") and $1(3) or $1[3]',
+	['vierde'] = '(type($1)=="function") and $1(4) or $1[4]',
 }
 
 local diops = {
+	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
+	['_f'] = '$1($2)',
+	['_i'] = '$1[$2+1]',
+	['fn.merge'] = '{$1(x), $2(x)}',
+	['^r'] = '$1 ^ $2',
+	['∘'] = 'function(x) return $2($1(x)) end',
 	['+'] = '$1 + $2',
 	['¬'] = '! $1',
 	['-'] = '- $1',
 	['·'] = '$1 * $2',
 	['/'] = '$1 / $2',
 	['mod'] = '$1 % $2',
-	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
+	['willekeurig'] = 'math.random()*($2-$1) + $1', -- randomRange[0, 10]
 	['√'] = 'math.sqrt($1, 0.5)',
 	['^'] = 'math.pow($1, $2)',
-	['^f'] = 'function(res) { for (var i = 0; i < $2; i++) res = $1(res); return res; }',
-	['derdemachtswortel'] = 'Math.pow($1,1/3)',
+	['derdemachtswortel'] = 'math.pow($1,1/3)',
 
 	-- cmp
 	['>'] = '$1 > $2',
@@ -62,26 +82,27 @@ local diops = {
 	['∨'] = '$1 || $2', 
 	['⇒'] = '$1 ? $2 : $3', 
 
-	['sin'] = 'Math.sin($1)',
-	['cos'] = 'Math.cos($1)',
-	['tan'] = 'Math.tan($1)',
-	['sincos'] = '[Math.cos($1), Math.sin($1)]',
-	['cossin'] = '[Math.sin($1), Math.cos($1)]',
+	['sin'] = 'math.sin($1)',
+	['cos'] = 'math.cos($1)',
+	['tan'] = 'math.tan($1)',
+	['sincos'] = '{math.cos($1), math.sin($1)}',
+	['cossin'] = '{math.sin($1), math.cos($1)}',
 
 	-- discreet
-	['min'] = 'Math.min($1,$2)',
-	['max'] = 'Math.max($1,$2)',
-	['afrond.onder'] = 'Math.floor($1)',
-	['afrond']       = 'Math.round($1)',
-	['afrond.boven'] = 'Math.ceil($1)',
-	['int'] = 'Math.floor($1)',
-	['abs'] = 'Math.abs($1)',
-	['sign'] = '($1 > 0 ? 1 : -1)',
+	['min'] = 'math.min($1,$2)',
+	['max'] = 'math.max($1,$2)',
+	['afrond.onder'] = 'math.floor($1)',
+	['afrond']       = 'math.round($1)',
+	['afrond.boven'] = 'math.ceil($1)',
+	['int'] = 'math.floor($1)',
+	['abs'] = 'math.abs($1)',
+	['sign'] = '$1 > 0 and 1 or -1',
 
 	-- exp
 	-- concatenate
-	['‖'] = 'Array.isArray($1) ? $1.concat($2) : $1 + $2',
-	['‖u'] = '$1 + $2',
+	['‖'] = 'type($1) == "string" and $1 .. $2 or (for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
+	['‖u'] = '$1 .. $2',
+	['‖i'] = '(for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
 	['catu'] = '$1.join($2)',
 }
@@ -139,6 +160,8 @@ function luagen(sfc)
 		else
 			L[#L+1] = '-- ' .. unlisp(ins)
 		end
+		--L[#L+1] = 'print("'..L[#L]..'")'
+		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
 	L[#L+1] = 'local A = ...'
