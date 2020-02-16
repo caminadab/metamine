@@ -119,6 +119,8 @@ local klaar = {}
 local stack = {}
 local appindex = 1
 
+local bieb = bieb()
+
 function codegen(exp, ins)
 	local ins = ins or {o='[]'}
 	if klaar[exp] then
@@ -138,11 +140,21 @@ function codegen(exp, ins)
 			end
 		end
 
+	-- causatie
+	elseif fn(exp) == '⇒' then
+		codegen(arg0(exp), ins)
+		ins[#ins+1] = X'dan'
+		codegen(arg1(exp), ins)
+		ins[#ins+1] = X'einddan'
+
 	elseif fn(exp) == 'fn.constant' then
 		constantgen(arg(exp), ins)
 
 	elseif fn(exp) == '_arg' then
 		ins[#ins+1] = X('arg', atoom(arg(exp)))
+	
+	elseif bieb[atoom(exp)] then
+		ins[#ins+1] = exp
 
 	elseif false and fn(exp) == '∘' then
 		local var = tostring(1000 + appindex)
@@ -164,6 +176,7 @@ function codegen(exp, ins)
 		ins[#ins+1] = X(fn(exp))
 
 	-- _fn(1 +(1 _arg(1))) -> fn
+	-- functie
 	elseif fn(exp) == '_fn' then
 		ins[#ins+1] = X('fn', atoom(arg0(exp)))
 		codegen(arg1(exp), ins)

@@ -1,6 +1,7 @@
 require 'func'
 
 local unops = {
+	['#'] = '# $1',
 	['%'] = '$1 / 100',
 	['abs'] = 'math.abs($1)',
 	['-'] = '- $1',
@@ -27,7 +28,12 @@ local unops = {
 }
 
 local noops = {
+	['map'] = '(function (tf) local t,f = tf[1],tf[2]; local r = {} ; for k,v in pairs(t) do r[k] = f(v); end ; return r; end)',
+	['vouw'] = '(function(lf) local l,f,r = lf[1],lf[2],lf[1][1] ; for i=2,#l do r = f(r); end ; return r)',
 	['mod'] = 'function(x) return x[1] % x[2] end',
+
+	['tekst'] = 'tekst',
+
 	['|'] = '$1 or $2',
 	['fn.id'] = 'function(x) return x end',
 	['fn.constant'] = 'function() return $1 end',
@@ -221,6 +227,15 @@ function luagen(sfc)
 			L[#L+1] = tabs.."end"
 			focus = focus - 1
 
+		elseif atoom(ins) == 'einddan' then
+			local naam = varnaam(focus-1)
+			local tempnaam = 'tmp'
+			L[#L+1] = tabs .. tempnaam .. " = " .. naam
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs.."end"
+			L[#L+1] = tabs..'local ' .. naam .. " = " .. tempnaam
+			focus = focus - 1
+
 		-- biebfuncties?
 		elseif noops[atoom(ins)] then
 			L[#L+1] = tabs..'local '..varnaam(focus) .. " = " .. noops[atoom(ins)]
@@ -252,6 +267,11 @@ function luagen(sfc)
 			focus = focus + 1
 			tabs = tabs..'  '
 
+		elseif atoom(ins) == 'dan' then
+			local naam = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("if %s then", naam)
+			tabs = tabs..'  '
+
 		else
 			error('onbekende instructie: '..unlisp(ins))
 		end
@@ -260,6 +280,62 @@ function luagen(sfc)
 	end
 
 	L[#L+1] = 'local A = ...'
+	L[#L+1] = [[function tekst(t)
+			if type(t) == 'number' then return tostring(t)
+			elseif t == nil then return 'niets'
+			elseif t == true then return 'ja'
+			elseif t == false then return 'nee'
+			elseif type(t) == 'function' then return 'functie'
+			elseif type(t) == 'string' then return string.format('%q', t)
+			elseif type(t) == 'table' then
+				if not next(t) then
+					return '∅'
+				end
+				local islijst = true
+				local isset = true
+				for k,v in pairs(t) do
+					if not tonumber(k) or k % 1 ~= 0 then
+						islijst = false
+					end
+					if v ~= true and v ~= false then
+						isset = false
+					end
+				end
+				if islijst then
+					local r = {}
+					r[#r+1] = '['
+					local previ = 1
+					for i,v in pairs(t) do
+						for j=1,i-previ-1 do
+							r[#r+1] = 'niets,'
+						end
+						r[#r+1] = lenc(v)
+						r[#r+1] = ','
+						previ = i
+					end
+					r[#r] = nil
+					r[#r+1] = ']'
+					return table.concat(r)
+				end
+
+				local r = {}
+				r[#r+1] = '{'
+				for k,v in pairs(t) do
+					if isset then
+						r[#r+1] = lenc(k)
+					else
+						r[#r+1] = lenc(k)..'='..lenc(v)
+					end
+					r[#r+1] = ','
+				end
+				if r[#r] == ',' then r[#r] = nil end
+				r[#r+1] = '}'
+				return table.concat(r)
+			else
+				return tostring(t)
+			end
+		end
+		]]
 
 	for i,ins in ipairs(sfc) do
 		ins2lua(ins)

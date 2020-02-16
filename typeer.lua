@@ -254,13 +254,13 @@ function typeer(exp)
 
 			types[moes(exp)] = compositie
 
-		elseif false and fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
+		elseif false and fn(exp) == '_f' and atoom(arg0(exp)) == 'vouw' then
 			types['vouw'] = X'functie'
 			types[moes(exp)] = X'iets'
 
 		---------- linq
 		-- vouw: lijst(A), (A,A → B) → lijst(B)
-		elseif false and fn(exp) == '_' and atoom(arg0(exp)) == 'vouw' then
+		elseif false and fn(exp) == '_f' and atoom(arg0(exp)) == 'vouw' then
 			local expargs = types[moes(arg1(exp))]
 
 			--print('expargs1', combineer(expargs))

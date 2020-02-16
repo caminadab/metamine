@@ -1,1 +1,20 @@
-uit = -nu
+;uit = [1,2,3,4,5] vouw (+)
+;uit = bind 10101
+
+; (0, 3) int
+; (1, "ha") tekst
+; (2, []) lijst
+; (0, {}) dict
+
+
+funcs = [bint, btekst, blijst, bdict]
+bint = i → "i" || tekst(i) || "e"
+btekst = t → tekst(#t) || ":" || t
+blijst := l → "l" || (l map b) || "e"
+bdict := d → "d" || (d map b) || "e"
+
+b := bencode
+
+bencode = type, val → (funcs(type))(val)
+
+uit = bencode (0, 3)

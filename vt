@@ -14,7 +14,7 @@ require 'doe'
 
 require 'bouw.gen.js'
 require 'bouw.gen.lua'
-require 'bouw.gen.x64'
+require 'bouw.gen.asm'
 
 require 'bouw.focus'
 require 'bouw.arch'
@@ -213,7 +213,7 @@ elseif opt.l or opt.lua then
 		while true do
 			nu = socket.gettime()
 			io.write(ansi.wisregel, ansi.regelbegin)
-			io.write(tostring(main(nu)), ' ')
+			io.write(lenc(main(nu)), ' ')
 			io.flush()
 			socket.sleep(1/60)
 		end
@@ -230,7 +230,7 @@ elseif opt.l or opt.lua then
 			nu = socket.gettime()
 			io.write(ansi.wisregel, ansi.regelbegin)
 			vars, res = table.unpack(main {vars, false, socket.gettime() })
-			io.write(tostring(res), ' ')
+			io.write(lenc(res), ' ')
 			io.flush()
 			socket.sleep(1/60)
 		end
@@ -243,9 +243,10 @@ elseif opt.l or opt.lua then
 -- native
 else
 
-	local asm = genx64(cfg)
+	local asm = asmgen(app)
 	if opt.S then
-		--file('a.s', asm)
+		print('=== ASSEMBLY CODE ===')
+		print(asm)
 	end
 	local elf = link(assembleer(asm, 'a'), 'a')
 	file('a.elf', elf)
