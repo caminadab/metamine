@@ -113,6 +113,7 @@ cossin :  getal → getal, getal
 ;(^) :  (int, int) → int
 ;(^) :  (int, int) → int
 ;(^) :  ((→), nat) → iets
+(^): iets,getal → iets
 (#) :  lijst → int
 
 ; set!

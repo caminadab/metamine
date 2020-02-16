@@ -78,11 +78,14 @@ function vectoriseer(asb, types)
 		if fn(exp) == '_' then
 			local fntype = types[moes(arg0(exp))]
 			local islijst = atoom(arg0(fntype)) == 'nat' or obj(fntype) == ','
+			local isfunc = fn(fntype) == '→'
 
-			if islijst then
+			if isfunc then
+				exp.f = X'_f'
+			elseif islijst then
 				exp.f = X'_l'
 			else
-				exp.f = X'_f'
+				print('Waarschuwing: vectortype van '..unlisp(fntype)..' kon niet eenduidig worden bepaald')
 			end
 		end
 

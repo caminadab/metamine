@@ -148,6 +148,14 @@ function typeer(exp)
 			local type = typegraaf:maaktype(X('→', 'nat', lijsttype))
 			types[moes(exp)] = type
 
+		-- machtsverheffing
+		elseif fn(exp) == '^' then
+			local A = moes(arg0(exp))
+			local B = moes(arg1(exp))
+
+			--moetzijn(types[A], 
+			types[moes(exp)] = types[A]
+
 		-- concatenatie
 		elseif fn(exp) == '‖' then
 			local A = moes(arg0(exp))

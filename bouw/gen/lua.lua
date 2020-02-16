@@ -7,7 +7,6 @@ local unops = {
 	['log10'] = 'math.log10($1)',
 	['log'] = 'math.log',
 	['fn.id'] = '$1',
-<<<<<<< HEAD
 	['|'] = '(function() for i,v in ipairs($1) do if v then return v end end)()',
 
 	['fn.nul'] = '$1(0)',
@@ -20,17 +19,7 @@ local unops = {
 	['l.derde'] = '$1[3]',
 	['l.vierde'] = '$1[4]',
 
-=======
-	['fn.eerste'] = '$1(0)',
-	['fn.tweede'] = '$1(1)',
-	['fn.derde'] = '$1(2)',
-	['fn.vierde'] = '$1(3)',
-	['l.eerste'] = '$1[1]',
-	['l.tweede'] = '$1[2]',
-	['l.derde']  = '$1[3]',
-	['l.vierde'] = '$1[4]',
 	['fn.plus'] = 'function(x) return x + $1 end', 
->>>>>>> 540a213f4058634aad74bc24d7b4f0432b3dda10
 	['fn.deel'] = 'function(x) return x / $1 end', 
 	['fn.maal'] = 'function(x) return x * $1 end', 
 	['fn.constant'] = 'function(x) return $1 end', 
@@ -45,25 +34,13 @@ local noops = {
 	['∘'] = 'function(x) return $1($2(x)) end',
 	['-'] = 'function(x) return -x end',
 	['log10'] = 'math.log',
-<<<<<<< HEAD
-	['+'] = 'function(t) return t[1]+t[2] end',
-	['fn.plus'] = '$1 = $1 + 2',
-=======
 	['+'] = 'function(x) return x[1] + x[2] end',
-	--['+'] = 'function(x) return $1 + $2 end',
->>>>>>> 540a213f4058634aad74bc24d7b4f0432b3dda10
 	['⊤'] = 'true',
 	['⊥'] = 'false',
 	['∅'] = '{}',
 	['τ'] = 'math.pi * 2',
 	['π'] = 'math.pi',
-<<<<<<< HEAD
-	['fn.eerste'] = '(type($1)=="function") and $1(1) or $1[1]',
-	['fn.tweede'] = '(type($1)=="function") and $1(2) or $1[2]',
-	['fn.derde'] = '(type($1)=="function") and $1(3) or $1[3]',
-	['fn.vierde'] = '(type($1)=="function") and $1(4) or $1[4]',
 	['_f'] = '$1($2)',
-=======
 	['l.eerste'] = '$1[1]',
 	['l.tweede'] = '$1[2]',
 	['l.derde'] = '$1[3]',
@@ -78,13 +55,13 @@ local noops = {
 	['tweede'] = '(type($1)=="function") and $1(2) or $1[2]',
 	['derde'] = '(type($1)=="function") and $1(3) or $1[3]',
 	['vierde'] = '(type($1)=="function") and $1(4) or $1[4]',
->>>>>>> 540a213f4058634aad74bc24d7b4f0432b3dda10
 }
 
 local diops = {
 	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
 	['_f'] = '$1($2)',
 	['_i'] = '$1[$2+1]',
+	['_'] = 'type($1) == "function" and $1($2) or $1[$2+1]',
 	['fn.merge'] = '{$1(x), $2(x)}',
 	['^r'] = '$1 ^ $2',
 	['∘'] = 'function(x) return $2($1(x)) end',
@@ -98,7 +75,7 @@ local diops = {
 	['|'] = '$1 or $2',
 	['∘'] = 'function(x) return $2($1(x)) end',
 	['mod'] = '$1 % $2',
-<<<<<<< HEAD
+
 	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
 	['fn.merge'] = '$1, $2',--function(x) return {$1(x),$2(x)} end',
 	['√'] = 'math.sqrt($1, 0.5)',
@@ -115,12 +92,6 @@ local diops = {
 	['derdemachtswortel'] = 'Math.pow($1,1/3)',
 	['_f'] = '$1($2)',
 	['_l'] = '$1[$2+1]',
-=======
-	['willekeurig'] = 'math.random()*($2-$1) + $1', -- randomRange[0, 10]
-	['√'] = 'math.sqrt($1, 0.5)',
-	['^'] = 'math.pow($1, $2)',
-	['derdemachtswortel'] = 'math.pow($1,1/3)',
->>>>>>> 540a213f4058634aad74bc24d7b4f0432b3dda10
 
 	-- cmp
 	['>'] = '$1 > $2',
@@ -251,7 +222,10 @@ function luagen(sfc)
 			L[#L+1] = tabs.."end"
 			focus = focus - 1
 
-		elseif fn(ins) == 'tupel' then
+		elseif fn(ins) == 'set' then
+			error'TODO'
+
+		elseif fn(ins) == 'tupel' or fn(ins) == 'lijst' then
 			local tupel = {}
 			local num = tonumber(atoom(arg(ins)))
 			local naam = varnaam(focus - num)
