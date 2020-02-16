@@ -1,6 +1,6 @@
 uit = a
 
-als nu > 1 dan
+als in > 1 dan
 	a = 3
 anders
 	a = 2

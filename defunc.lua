@@ -1,7 +1,8 @@
 require 'exp'
 require 'combineer'
 
-local tel = { X'fn.eerste', X'fn.tweede', X'fn.derde', X'fn.vierde' }
+local tel = { X'fn.nul', X'fn.een', X'fn.twee', X'fn.drie' }
+local atel = { X'l.eerste', X'l.tweede', X'l.derde', X'l.vierde' }
 local id = X'fn.id'
 local dup = X('rep', '2')
 local merge = X'fn.merge'
@@ -69,6 +70,7 @@ function defunc(exp, argindex, klaar)
 		res = X('fn.constant', atoom(exp))
 
 	-- C(exp) = 
+	-- hoeft niet gedefunct
 	elseif false and not bevat(exp, X'_arg') then
 		if isatoom(exp) then
 			res = X('fn.constant', atoom(exp))
@@ -90,7 +92,7 @@ function defunc(exp, argindex, klaar)
 		res = id
 
 	-- fn.eerste t/m fn.vierde
-	elseif fn(exp) == '_' and num and num >= 0 and num < 4 and num % 1 == 0 then
+	elseif fn(exp) == '_f' and num and num >= 0 and num < 4 and num % 1 == 0 then
 		local sel = tel[num + 1]
 		local A = defunc(arg0(exp), argindex, klaar)
 		if atoom(A) == 'fn.id' then
@@ -99,8 +101,18 @@ function defunc(exp, argindex, klaar)
 			res = X('∘', A, X(sel))
 		end
 
+	-- l.eerste t/m l.vierde
+	elseif fn(exp) == '_l' and num and num >= 0 and num < 4 and num % 1 == 0 then
+		local sel = atel[num + 1]
+		local A = defunc(arg0(exp), argindex, klaar)
+		if atoom(A) == 'fn.id' then
+			res = X(sel) 
+		else
+			res = X('∘', A, X(sel))
+		end
+
 	-- abs(A)  →  d(A) ∘ abs
-	elseif fn(exp) == '_' then
+	elseif fn(exp) == '_f' or fn(exp) == '_' then
 		local d = defunc(arg1(exp), argindex, klaar)
 		local achter = arg0(exp)
 
@@ -132,7 +144,7 @@ function defunc(exp, argindex, klaar)
 
 	-- fn.kruid
 	-- A + 2  →  d(A) ∘ kruid((+), 2)
-	elseif false and isfn(exp) and #arg(exp) == 2
+	elseif isfn(exp) and #arg(exp) == 2
 			and not bevat(arg0(exp), X('_arg', argindex)) then
 		local d = defunc(arg1(exp), argindex, klaar)
 		local f = fn(exp)
@@ -159,7 +171,7 @@ function defunc(exp, argindex, klaar)
 
 	-- fn.kruidL
 	-- 2 + A  →  kruidL((+), 2) ∘ d(A)
-	elseif false and isfn(exp) and #arg(exp) == 2
+	elseif isfn(exp) and #arg(exp) == 2
 			and not bevat(arg1(exp), X('_arg', argindex)) then
 		local d = defunc(arg0(exp), argindex, klaar)
 

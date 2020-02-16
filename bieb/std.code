@@ -3,10 +3,8 @@ app.in  = (in.vars,  in.start, nu)
 app.uit = (uit.vars, uit)
 
 ; tijd
-starttijd := nu
+;starttijd := nu
 
-teken = "ok"
-looptijd = 3
 uit.breedte = 100 · 16/9
 uit.hoogte = 100
 

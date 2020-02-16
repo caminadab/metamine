@@ -1,4 +1,4 @@
-require 'bouw.luagen'
+require 'bouw.gen.lua'
 require 'ontleed'
 
 function imparse(imcode)
@@ -25,13 +25,21 @@ function verwacht(im, val)
 	local ok,res = pcall(func)
 	assert(ok, tostring(res) .. '\n' .. lua)
 
-	assert(res == val, string.format('%s moet %s zijn maar was %s', lua, lenc(val), lenc(res)))
+	if res ~= val then
+		print(string.format('moet %s zijn maar was %s', lenc(val), lenc(res)))
+		print('Im:')
+		for i,ins in ipairs(im) do
+			print(combineer(ins))
+		end
+		print('Lua:')
+		print(lua)
+	end
 end
 
 
 -- (- 1)
 local a = imparse [[
-	push 1
+	put 1
 	-
 ]]
 verwacht(a, -1)
@@ -39,7 +47,7 @@ verwacht(a, -1)
 
 -- 1 + 2
 local a = imparse [[
-	push 1
+	put 1
 	push 2
 	+
 ]]
@@ -48,7 +56,7 @@ verwacht(a, 3)
 
 -- 1 · 2 + 3
 local a = imparse [[
-	push 1
+	put 1
 	push 2
 	+
 	push 3
@@ -59,11 +67,20 @@ verwacht(a, 9)
 
 -- ((-) ∘ (-))(1) = 1
 local a = imparse [[
-	push -
+	put -
 	push -
 	∘
 	push 1
-	_
+	_f
+]]
+verwacht(a, 1)
+
+
+-- ((-) ∘ (-))(1) = 1
+local a = imparse [[
+	put fn.id
+	push 1
+	_f
 ]]
 verwacht(a, 1)
 

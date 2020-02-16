@@ -328,7 +328,7 @@ function typeer(exp)
 			else
 
 				local anyfunc = X('→', 'iets', 'iets')
-				moetzijn(functype, anyfunc, arg0(exp))
+				--moetzijn(functype, anyfunc, arg0(exp))
 
 				if fn(functype) ~= '→' then
 					returntype = X'iets'

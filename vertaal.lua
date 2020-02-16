@@ -76,7 +76,8 @@ function vectoriseer(asb, types)
 		-- L_i → (_i)(L, i)
 		if fn(exp) == '_' then
 			local fntype = types[moes(arg0(exp))]
-			local islijst = atoom(arg0(fntype)) == 'nat'
+			local islijst = atoom(arg0(fntype)) == 'nat' or obj(fntype) == ','
+
 			if islijst then
 				exp.f = X'_l'
 			else
@@ -89,7 +90,7 @@ function vectoriseer(asb, types)
 			local basetype = types[moes(arg0(exp))]
 			local isgetal = atoom(basetype) == 'getal' or atoom(basetype) == 'int'
 			if isgetal then
-				exp.f = X'^r'
+				exp.f = X'^'
 			else
 				exp.f = X'^f'
 			end

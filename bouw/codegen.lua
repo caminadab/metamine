@@ -34,7 +34,12 @@ local function peil(waarde)
 end
 
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^"," ","∨","∧","×","..","→","∘","_","‖","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|:=", "∪","∩",":","∈")
+local binop  = set(
+	'+','·','/','^',
+	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
+	'∪','∩',':','∈',
+	'_f','_f2','_l','^f','^l'
+)
 local unop   = set("-","#","¬","Σ","|","%","√","!")
 
 function codegen2(exp, maakvar)
@@ -111,8 +116,18 @@ function constantgen(exp, ins)
 	end
 end
 
+local klaar = {}
+local stack = {}
+local appindex = 1
+
 function codegen(exp, ins)
 	local ins = ins or {o='[]'}
+	if klaar[exp] then
+		ins[#ins+1] = X('1')
+		return
+	end
+	klaar[exp] = true
+	stack[#stack+1] = exp
 
 	if fn(exp) == 'fn.merge' then
 		local len = #arg(exp)
@@ -126,6 +141,30 @@ function codegen(exp, ins)
 
 	elseif fn(exp) == 'fn.constant' then
 		constantgen(arg(exp), ins)
+
+	elseif fn(exp) == '_arg' then
+		ins[#ins+1] = X('arg', atoom(arg(exp)))
+
+	elseif false and fn(exp) == '∘' then
+		local var = tostring(1000 + appindex)
+		appindex = appindex + 1
+		ins[#ins+1] = X('fn', var)
+		ins[#ins+1] = X('arg', var)
+		for i, sub in ipairs(arg(exp)) do
+			codegen(sub, ins)
+		end
+		ins[#ins+1] = X'eind'
+
+	elseif binop[fn(exp)] then
+		codegen(arg0(exp), ins)
+		codegen(arg1(exp), ins)
+		ins[#ins+1] = X(fn(exp))
+
+	-- _fn(1 +(1 _arg(1))) -> fn
+	elseif fn(exp) == '_fn' then
+		ins[#ins+1] = X('fn', atoom(arg0(exp)))
+		codegen(arg1(exp), ins)
+		ins[#ins+1] = X'eind'
 	
 	elseif fn(exp) == 'rep' then
 		ins[#ins+1] = exp
@@ -134,13 +173,13 @@ function codegen(exp, ins)
 		for i,sub in ipairs(exp) do
 			codegen(sub, ins)
 		end
-
-	elseif false and isfn(exp) and fn(exp):sub(1,3) == "fn." then
-		constantgen(arg(exp), ins)
-		ins[#ins+1] = X(fn(exp):sub(4))
-
-	elseif fn(exp) == '∘' then
-		codegen(arg(exp), ins)
+		if     obj(exp) == ',' then
+			ins[#ins+1] = X('tupel', tostring(#exp))
+		elseif obj(exp) == '[]' then
+			ins[#ins+1] = X('lijst', tostring(#exp))
+		elseif obj(exp) == '{}' then
+			ins[#ins+1] = X('set', tostring(#exp))
+		end
 
 	elseif isatoom(exp) then
 		ins[#ins+1] = exp

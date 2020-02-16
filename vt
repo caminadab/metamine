@@ -209,7 +209,7 @@ elseif opt.l or opt.lua then
 	-- doe makkelijk
 	if opt.d and opt.n then
 		local socket = require 'socket'
-		local main = load(lua)
+		local main = load(lua)()
 		while true do
 			nu = socket.gettime()
 			io.write(ansi.wisregel, ansi.regelbegin)
@@ -217,6 +217,8 @@ elseif opt.l or opt.lua then
 			io.flush()
 			socket.sleep(1/60)
 		end
+
+	-- alleen printen
 	else
 		print(lua)
 	end

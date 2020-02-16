@@ -1,8 +1,12 @@
 require 'ontleed'
-require 'bouw.luagen'
+require 'bouw.gen.lua'
 require 'bouw.codegen'
 require 'vertaal'
 require 'doe'
+
+function doe(x, a)
+	return (load(luagen(x)))()
+end
 
 -- fouten
 local _,f = vertaal('app = )')

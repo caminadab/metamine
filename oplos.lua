@@ -10,6 +10,32 @@ require 'graaf'
 
 local bieb = bieb()
 
+function componeer(exp)
+	local nexp = {f=exp.f,o=exp.o,a=exp.a,v=exp.v}
+	for k, v in subs(exp) do
+		nexp[k] = componeer(v)
+	end
+	exp = nexp
+
+	if fn(exp) == '∘' then
+		local A, B = arg0(exp), arg1(exp)
+		if fn(A) == '∘' and fn(B) == '∘' then
+			exp.a = arg(A)
+			for i,v in ipairs(arg(B)) do
+				table.insert(exp.a, v)
+			end
+		elseif fn(arg0(exp)) == '∘' then
+			exp.a = arg(A)
+			table.insert(exp.a, B)
+		elseif fn(arg1(exp)) == '∘' then
+			exp.a = arg(B)
+			table.insert(exp.a, 1, A)
+		end
+	end
+
+	return exp
+end
+
 -- herschrijf (a := b) naar (a |= (start ⇒ b) | a')
 -- herschrijf (a(b) = c) naar (a ∐= b ↦ c)
 -- herschrijf (c = a(b)) naar (a ∐= b ↦ c)
@@ -306,7 +332,7 @@ function oplos(exp, voor)
 				local naam = atoom(exp)
 				if vars[naam] then
 					exp.v = nil
-					exp.f = X('_')
+					exp.f = X('_l')
 					assert(schaduw[naam], naam .. ' is geen variabele')
 					exp.a = X(',', 'in.vars', schaduw[naam])
 				end
@@ -365,7 +391,7 @@ function oplos(exp, voor)
 		for naam,alts in spairs(map) do
 			if schaduw[naam] then
 				-- voeg de oude waarde toe 
-				alts[#alts+1] = X('_', 'in.vars', schaduw[naam])
+				alts[#alts+1] = X('_l', 'in.vars', schaduw[naam])
 
 				alts.o = X'[]'
 				alsvar(alts)
@@ -626,27 +652,12 @@ function oplos(exp, voor)
 		-- optimiseer
 		if not opt or not opt['0'] then
 			val = optimiseer(val)
+			val = componeer(val)
 		end
 
-		-- opgelost 1
+		-- opgelost
 		if verbozeWaarde then
 			print('=== WAARDE ===')
-			print(unlisp(val))
-			print()
-		end
-
-		-- defunctionaliseer
-		for exp in boompairsdfs(val) do
-			if fn(exp) == '_fn' then
-				local argindex = arg0(exp).v
-				local beter = defunc(arg1(exp), argindex, klaar)
-				assign(exp, beter)
-			end
-		end
-
-		-- opgelost 2
-		if verbozeDefunc then
-			print('=== DEFUNC WAARDE ===')
 			print(unlisp(val))
 			print()
 		end
