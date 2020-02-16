@@ -1,114 +1,77 @@
-local socket = require 'socket'
-require 'combineer'
 require 'bieb'
-require 'func'
-require 'fout'
 
-local function doeatoom(exp, bieb, env)
-	if tonumber(exp.v) then
-		return tonumber(exp.v)
-	elseif bieb[exp.v] ~= nil then
-		return bieb[exp.v]
-	elseif env[exp.v] ~= nil then
-		return env[exp.v]
-	elseif isobj(exp) then
-		local t = {}
-		for i,sub in ipairs(exp) do
-			t[i] = doeatoom(sub, bieb, env)
-		end
-		return t
+local postop = set("%","!",".","'")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖")
+local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
+
+function lenc2(exp)
+	if type(exp) == 'table' and (isatoom(exp) or isobj(exp) or isfn(exp)) then
+		return unlisp(exp)
 	else
-		--error('onbekend: '..combineer(exp))
-		return nil
+		return lenc(exp)
 	end
 end
 
-local function doestat(stat, bieb, env)
-	assert(env)
-	local cmd = stat.a[2]
-
-	if isobj(cmd) then
-		local r = {}
-		for i,v in ipairs(cmd) do
-			r[i] = doeatoom(v, bieb, env)
-		end
-		return r
-	
-	elseif isatoom(cmd) then
-		return doeatoom(cmd, bieb, env)
-
-	elseif isfn(cmd) then
-		local fn = bieb[fn(cmd)]
-		local arg = doeatoom(arg(cmd), bieb, env)
-		local res = fn(arg)
-
-		return res
-	
-	else
-		error('wat is dit: '..combineer(stat))
-
-	end
-end
-
-function doejs(js)
-	local jsnaam = os.tmpname()
-	local resnaam = os.tmpname()
-	file(jsnaam, js)
-	os.execute(string.format('js %s > %s', jsnaam, resnaam))
-	local res = file(resnaam):sub(1,-2)
-	os.remove(jsnaam)
-	os.remove(resnaam)
-	return res
-end
-
-function doestats(app, bieb)
-	local invbieb = {}
-	for k,v in pairs(bieb) do invbieb[v] = k end
-	local env = {}
-	for i, stat in ipairs(app) do
-		if opt and opt.L then
-			io.write('  ', combineer(stat), '\t= ')
-			io.flush()
-		end
-		local val = doestat(stat, bieb, env)
-		local naam = atoom(arg0(stat))
-		env[naam] = val
-		if opt and opt.L then
-			print(lenc(val))
-		end
-	end
-	return env[atoom(arg0(app[#app]))], env
-end
-
--- app: (nu, vars) → (uit, vars)
-function doe(app)
+-- sfc → func
+function doe(sfc, arg0)
+	local stack = {}
+	local i = 1
 	local bieb = bieb()
-	local main,env = doestats(app, bieb)
 
-	-- init
-	local nu = socket.gettime()
-	local start = true
-	local vars = {}
+	while i <= #sfc do
+		local ins = sfc[i]
 
-	-- doe
-	local res = main {vars, start, nu}
-	local uit, vars = res[1], res[2]
+		if atoom(ins) == '_f' then
+			local a = stack[#stack-1]
+			local b = stack[#stack-0]
+			doe(a, b)
 
-	while true do
-		-- update
-		local nu = socket.gettime()
-		local start = false
+		elseif atoom(ins) == 'eind' then
+			return
 
-		-- doe
-		local res = main {vars, start, nu}
-		vars, uit = res[1], res[2]
+		elseif fn(ins) == 'arg' then
+			stack[#stack+1] = arg0
 
-		-- uit
-		io.write(ansi.wisregel, ansi.regelbegin)
-		io.write(lenc(vars), uit, ' ')
-		io.flush()
-		socket.sleep(1/60)
+		elseif binop[atoom(ins)] then
+			local f = atoom(ins)
+			local a = stack[#stack]
+			local b = stack[#stack-1]
+			local args = {a, b}
+			stack[#stack] = nil
+			stack[#stack] = bieb[f](args)
+
+		elseif fn(ins) == 'fn' then
+			local proc = {}
+			local ins0 = ins
+
+			while atoom(ins) ~= 'eind' do
+				i=i+1
+				ins = sfc[i]
+				proc[#proc+1] = ins
+			end
+			stack[#stack+1] = proc
+			
+			io.write('fn('..atoom(arg(ins0)), '): ')
+			for i,v in ipairs(proc) do
+				io.write(unlisp(v),' ')
+			end
+			print()
+
+		elseif tonumber(atoom(ins)) then
+			stack[#stack+1] = tonumber(atoom(ins))
+
+		else
+			error('weet niet hoe te doen: '..combineer(ins))
+		end
+
+		io.write('stack: ')
+		for i, v in ipairs(stack) do
+			io.write(tostring(v), ' ')
+		end
+
+		io.write('ins: '..combineer(ins))
+		io.write('\n')
+		
+		i = i + 1
 	end
-
-	return ret
 end

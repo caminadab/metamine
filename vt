@@ -190,7 +190,7 @@ if opt.i or opt.im then
 			print('=== START ===')
 		end
 		local exp = doe(app)
-		if verbozeIntermediair then
+		if opt.L then
 			print()
 		end
 
