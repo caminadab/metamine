@@ -42,6 +42,8 @@ local rop2fn = {
 	['+'] = X'fn.plus',
 	['·'] = X'fn.maal', 
 	['/'] = X'fn.rdeel',
+	['^f'] = X'fn.herhaal',
+	['^'] = X'fn.macht',
 
 	['∧'] = X'fn.en',
 	['∨'] = X'fn.of',
@@ -90,6 +92,17 @@ function defunc(exp, argindex, klaar)
 	-- fn.id
 	elseif fn(exp) == '_arg' and atoom(arg(exp)) == argindex then
 		res = id
+
+	-- fn.nul t/m fn.drie
+	elseif fn(exp) == '_l' and num and num >= 0 and num < 4 and num % 1 == 0 then
+		local sel = ltel[num + 1]
+		local A = defunc(arg0(exp), argindex, klaar)
+		if atoom(A) == 'fn.id' then
+			res = X(sel) 
+		else
+			res = X('∘', A, X(sel))
+		end
+
 
 	-- fn.eerste t/m fn.vierde
 	elseif fn(exp) == '_f' and num and num >= 0 and num < 4 and num % 1 == 0 then

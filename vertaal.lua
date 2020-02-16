@@ -70,6 +70,7 @@ local function genjs(sfc)
 	return table.concat(gen, '\n')
 end
 
+-- past types toe om operators te preoverloaden
 function vectoriseer(asb, types)
 	for exp in boompairsdfs(asb) do
 
@@ -88,11 +89,13 @@ function vectoriseer(asb, types)
 		-- (F^i) → (^)(F, i)
 		if fn(exp) == '^' then
 			local basetype = types[moes(arg0(exp))]
-			local isgetal = atoom(basetype) == 'getal' or atoom(basetype) == 'int'
-			if isgetal then
+			local isfunc = fn(basetype) == '→' or atoom(basetype) == 'functie'
+			if isfunc then
+				exp.f = X'^f'
+			elseif atoom(basetype) == 'getal' or atoom(basetype) == 'int' then
 				exp.f = X'^'
 			else
-				exp.f = X'^f'
+				-- niets
 			end
 		end
 
