@@ -66,6 +66,23 @@ local noops = {
 
 local diops = {
 	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
+	['..'] = [[(function(a)
+		local a,b = a[1], a[2]
+		local r = {}
+		if a > b then
+			for i=a-1,b,-1 do
+				r[#r+1] = i
+			end
+		elseif a == b then
+			return {}
+		else
+			for i=a,b-1 do
+				r[#r+1] = i
+			end
+		end
+		return r
+	end)($1,$2)]],
+
 	['_f'] = '$1($2)',
 	['_i'] = '$1[$2+1]',
 	['_'] = 'type($1) == "function" and $1($2) or $1[$2+1]',

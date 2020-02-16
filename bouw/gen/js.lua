@@ -1,151 +1,275 @@
-require 'exp'
+require 'func'
 
-local function val2js(val)
-	if obj(val) == "," then
-		return "["..table.concat(imap(val, val2js), ",").."]"
-	elseif obj(val) == "[]" then
-		return "["..table.concat(imap(val, val2js), ",").."]"
-	elseif obj(val) == "{}" then
-		return "new Set(["..table.concat(imap(val, val2js), ",").."])"
-	elseif atoom(val) == '⊤' then
-			return 'true'
-	elseif atoom(val) == '⊥' then
-			return 'false'
-	elseif atoom(val) == 'π' then
-			return 'Math.PI'
-	elseif atoom(val) == 'τ' then
-			return 'Math.PI*2'
-	elseif atoom(val) == '∅' then
-			return '[]'
-	elseif tonumber(atoom(val)) then
-		return atoom(val)
-	else
-		error(combineer(val) .. ' is geen jsval')
-		--return false
-	end
-end
-
-local fn2js = {
-	['atoom'] = 'atoom$1',
+local unops = {
+	['#'] = '$1 = $1.length;',
 	['%'] = '$1 / 100;',
-	['+'] = '$1 + $2;',
-	['-'] = '$1 = - $1',
-	['¬'] = '$1 = ! $1',
-	['mod'] = '$1 %= $2',
+	['abs'] = 'Math.abs($1);',
+	['-'] = '- $1',
+	['Σ'] = 'var sum = 0; for k, v in ipairs($1) do sum = sum + v end; $1 = sum;',
+	['log10'] = 'Math.log($1, 10)',
+	['log'] = 'Math.log',
+	['fn.id'] = '$1',
+	['|'] = '(function(alts) { for (var i=0; i<alts.length; i++) { if (alt) return alt; }})($1)',
 
-	['plus'] = '$1 += $2;',
-	['deel'] = '$1 /= $2;',
-	['rdeel'] = '$2 /= $1;',
-	['maal'] = '$1 *= $2;',
-	['push'] = '$1 = $2;',
-	['wissel'] = '[$1,$2] = [$2,$1];',
+	['fn.nul'] = '$1(0)',
+	['fn.een'] = '$1(1)',
+	['fn.twee'] = '$1(2)',
+	['fn.drie'] = '$1(3)',
 
-	['fn.eerste'] = '$1 = $1[1];',
-	['fn.tweede'] = '$1 = $1[2];',
-	['fn.derde'] = '$1 = $1[3];',
-	['fn.vierde'] = '$1 = $1[4];',
-
-	['abs'] = '$1 = Math.abs($1);',
-
-	['tekst'] = '$1 = ($1).toString();',
-
-
-	['∧'] = '$1 = $1 && $2;',
-	['∨'] = '$1 = $1 || $2;',
-
-	['<'] = '$1 = $1 < $2;',
-	['≤'] = '$1 = $1 <= $2;',
-	['='] = '$1 = JSON.stringify($1) == JSON.stringify($2);',
-	['≥'] = '$1 = $1 >= $2;',
-	['>'] = '$1 = $1 > $2;',
-
-	['kleinerdan'] = '$1 = $1 < $2;',
-	['kleinergelijk'] = '$1 = $1 <= $2;',
-	['gelijk'] = '$1 = $1 == $2;',
-	['grotergelijk'] = '$1 = $1 >= $2;',
-	['groterdan'] = '$1 = $1 > $2;',
-	['dan'] = '$1 = $2 ? $1 : null;',
-	['als'] = '$1 = $1 ? $2 : null;',
-
-	['⇒'] = '$1 = $1 ? $2 : null;',
-	['|'] = '$1 = $1 || $2;',
-
-	-- gfx
-	['label'] = [[ $1 = (xyz) => {
-		return (c => {
-			var x = xyz[0][0];
-			var y = xyz[0][1];
-			var t = xyz[1];
-			c.font = "48px Arial";
-			c.fillText(t, x * 7.2, 720 - (y * 7.2) - 1);
-			return c;
-		});]],
-	['rechthoek'] = '(function(pos) {return (function(c){\n\t\tvar x = pos[0][0] + 17.778/2; var y = pos[0][1]; var w = pos[1][0] - x; var h = pos[1][1] - y;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+h) * 7.2) - 1, w * 7.2, h * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })($1);',
-	['cirkel'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0] || xyz[0]; var y = xyz[0][1] || xyz[1]; var r = xyz[0][0] ? xyz[1] : 1/xyz[2];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, Math.max(r,0) * 7.2, 0, Math.PI * 2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['boog'] = '(function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); })',
-	['vierkant'] = '(function(xyr) {return (function(c){\n\t\tvar x = xyr[0][0];\n\t\tvar y = xyr[0][1];\n\t\tvar d = xyr[1] || 1.0;\n\t\tc.beginPath();\n\t\tc.rect(x * 7.2, 720 - ((y+d) * 7.2) - 1, d * 7.2, d * 7.2);\n\t\tc.fill();\n\t\treturn c;}); })',
+	['l.eerste'] = '$1[0]',
+	['l.tweede'] = '$1[1]',
+	['l.derde'] = '$1[2]',
+	['l.vierde'] = '$1[3]',
 }
 
-function jsgen(im)
+local noops = {
+	['map'] = '(function(tf) {var t,f = tf[0],tf[1]; local r = {} ; for k,v in pairs(t) do r[k] = f(v); end ; return r;})',
+	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f(r); ; return r;})',
+	['mod'] = 'x => x[0] % x[1]',
+
+	['tekst'] = 'tekst',
+
+	['|'] = '$1 or $2',
+	['fn.id'] = 'function(x) return x end',
+	['fn.constant'] = 'function() return $1 end',
+	['fn.merge'] = '{$1(x),$2(x)}',
+	['fn.plus'] = 'function(x) return function(y) return x + y end end',
+	['-'] = 'function(x) return -x end',
+	['log10'] = 'math.log',
+	['+'] = 'x => x[0] + x[1]',
+	['⊤'] = 'true',
+	['⊥'] = 'false',
+	['∅'] = '{}',
+	['τ'] = 'Math.PI * 2',
+	['π'] = 'Math.PI',
+	['_f'] = '$1($2)',
+	['l.eerste'] = '$1[0]',
+	['l.tweede'] = '$1[1]',
+	['l.derde'] = '$1[2]',
+	['l.vierde'] = '$1[3]',
+	['fn.nul'] = '$1(0)',
+	['fn.een'] = '$1(1)',
+	['fn.twee'] = '$1(2)',
+	['fn.drie'] = '$1(3)',
+
+	-- dynamisch
+	['eerste'] = '(type($1)=="function") and $1(0) or $1[0]',
+	['tweede'] = '(type($1)=="function") and $1(1) or $1[1]',
+	['derde'] = '(type($1)=="function") and $1(2) or $1[2]',
+	['vierde'] = '(type($1)=="function") and $1(3) or $1[3]',
+}
+
+local diops = {
+	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
+	['map'] = '$1.map($2)',
+	['vouw'] = '$1.reduce($2)',
+	['_f'] = '$1($2)',
+	['_i'] = '$1[$2+1]',
+	['_'] = 'type($1) == "function" and $1($2) or $1[$2+1]',
+	['fn.merge'] = '{$1(x), $2(x)}',
+	['^r'] = '$1 ^ $2',
+	['∘'] = 'function(x) return $2($1(x)) end',
+	['+'] = '$1 + $2',
+	['·'] = '$1 * $2',
+	['/'] = '$1 / $2',
+	['^'] = '$1 ^ $2',
+	['mod'] = '$1 % $2',
+
+	['|'] = '$1 or $2',
+	['∘'] = 'function(x) return $2($1(x)) end',
+
+	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
+	['fn.merge'] = '$1, $2',--function(x) return {$1(x),$2(x)} end',
+	['√'] = 'Math.sqrt($1, 0.5)',
+	['^'] = 'Math.pow($1, $2)',
+	['^f'] = [[(function (f,n) {
+		return function(x) {
+			var r = x;
+			for (var i = 0; i < n; i++) {
+				r = f(r);
+			}
+			return r;
+		})($1,$2)]],
+	['derdemachtswortel'] = 'Math.pow($1,1/3)',
+	['_f'] = '$1($2)',
+	['_l'] = '$1[$2+1]',
+
+	-- cmp
+	['>'] = '$1 > $2',
+	['≥'] = '$1 >= $2',
+	['='] = '$1 === $2',
+	['≠'] = '$1 !== $2',
+	['≤'] = '$1 <= $2',
+	['<'] = '$1 < $2',
+
+	-- deduct
+	['¬'] = 'not $1',
+	['∧'] = '$1 and $2', 
+	['∨'] = '$1 or $2', 
+	['⇒'] = '$1 and $2', 
+
+	['sin'] = 'math.sin($1)',
+	['cos'] = 'math.cos($1)',
+	['tan'] = 'math.tan($1)',
+	['sincos'] = '{math.cos($1), math.sin($1)}',
+	['cossin'] = '{math.sin($1), math.cos($1)}',
+
+	-- discreet
+	['min'] = 'math.min($1,$2)',
+	['max'] = 'math.max($1,$2)',
+	['afrond.onder'] = 'math.floor($1)',
+	['afrond']       = 'math.round($1)',
+	['afrond.boven'] = 'math.ceil($1)',
+	['int'] = 'math.floor($1)',
+	['abs'] = 'math.abs($1)',
+	['sign'] = '$1 > 0 and 1 or -1',
+
+	-- exp
+	-- concatenate
+	['‖'] = 'type($1) == "string" and $1 .. $2 or (for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
+	['‖u'] = '$1 .. $2',
+	['‖i'] = '(for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
+	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
+	['catu'] = '$1.join($2)',
+}
+
+function jsgen(sfc)
 
 	local focus = 1
-	local uit = {}
+	local maakvar = maakindices()
+	local L = {}
+	local tabs = ''
 
 	local function emit(fmt, ...)
 		local args = {...}
 		uit[#uit+1] = fmt:gsub('$(%d)', function(i) return args[tonumber(i)] end)
 	end
-	
-	local function insgen(ins)
-		local b = varnaam(focus-1)
-		local a = varnaam(focus)
 
-		if fn2js[atoom(ins)] then
-			emit(fn2js[atoom(ins)], a, b)
-			if fn2js[atoom(ins)]:match('$2') then
-				focus = focus - 1
+	function ins2lua(ins)
+		if fn(ins) == 'push' or fn(ins) == 'put' then
+			if fn(ins) == 'push' then
+				focus = focus + 1
 			end
+			local naam = atoom(arg(ins))
+			assert(naam, unlisp(ins))
+			naam = noops[naam] or naam
+			L[#L+1] = string.format('%svar %s = %s;', tabs, varnaam(focus), naam), focus
 
-		elseif atoom(ins) == 'constant' then
-			emit("$1 = x => $2;", a, b)
-			focus = focus + 1
+		elseif atoom(ins) == 'fn.id' then
+			-- niets
 
-		-- functioneel
-		elseif fn(ins) == 'wissel' then
-			local num = assert(tonumber(atoom(arg(ins))))
-			local a = varnaam(focus)
-			local b = varnaam(focus + num)
-			emit("[$1,$2] = [$2,$1];", a, b, b, a)
-
-		elseif fn(ins) == 'push' then
-			local js = val2js(arg(ins))
-			emit("$1 = $2;", a, js)
+		elseif tonumber(atoom(ins)) then
+			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. atoom(ins)..';'
 			focus = focus + 1
 
 		elseif fn(ins) == 'rep' then
-			local x = varnaam(focus)
-			for i=1,#arg(ins) do
+			local res = {}
+			local num = tonumber(atoom(arg(ins)))
+			assert(num, unlisp(ins))
+			for i = 1, num-1 do
+				L[#L+1] = tabs..string.format('var %s = %s', varnaam(focus+i), varnaam(focus))
 				focus = focus + 1
-				local a = varnaam(focus)
-				emit("var $1 = $2;", a, js)
 			end
+
+		elseif fn(ins) == '∘' then
+			local funcs = arg(ins)
+			L[#L+1] = tabs..string.format('function %s(x) {')
+			for i, func in ipairs(funcs) do
+				local naam = varnaam(focus - i + 1)
+				L[#L+1] = tabs..'  x = '..naam
+			end
+			L[#L+1] = tabs..'  return x;'
+			L[#L+1] = tabs..'}'
+
+		elseif fn(ins) == 'wissel' then
+			local naama = varnaam(focus)
+			local num = atoom(arg(ins))
+			local naamb = varnaam(focus + num)
+			L[#L+1] = tabs..string.format('var %s,%s = %s,%s;', naama, naamb, naamb, naama)
+
+		elseif unops[atoom(ins)] then
+			local naam = varnaam(focus-1)
+			local di = unops[atoom(ins)]:gsub('$1', naam)
+			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
+
+		elseif fn(ins) == 'fn.plus' then
+			local naam = varnaam(focus)
+			local c = atoom(arg(ins))
+			L[#L+1] = tabs..string.format('var %s = %s + %s;', naam, naam, c)
+
+		elseif diops[atoom(ins)] then
+			local naama = varnaam(focus-2)
+			local naamb = varnaam(focus-1)
+			local di = diops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
+			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
+			focus = focus - 1
+
+		elseif atoom(ins) == 'eind' then
+			local naama = varnaam(focus-1)
+			local naamb = varnaam(focus-2)
+			L[#L+1] = tabs.."return "..naama
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs.."}"
+			focus = focus - 1
+
+		elseif atoom(ins) == 'einddan' then
+			local naam = varnaam(focus-1)
+			local tempnaam = 'tmp'
+			L[#L+1] = tabs .. tempnaam .. " = " .. naam
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs.."}"
+			L[#L+1] = tabs..'var ' .. naam .. " = " .. tempnaam
+			focus = focus - 1
+
+		-- biebfuncties?
+		elseif noops[atoom(ins)] then
+			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. noops[atoom(ins)]..';'
 			focus = focus + 1
 
-		elseif tonumber(atoom(ins)) then
-			local js = val2js(ins)
-			emit("$1 = $2;", a, js)
+		elseif fn(ins) == 'set' then
+			error'TODO'
+
+		elseif fn(ins) == 'tupel' or fn(ins) == 'lijst' then
+			local tupel = {}
+			local num = tonumber(atoom(arg(ins)))
+			local naam = varnaam(focus - num)
+			for i=1,num do
+				tupel[i] = varnaam(i + focus - num - 1)
+			end
+			L[#L+1] = tabs..string.format("var %s = [%s]", naam, table.concat(tupel, ","))
+			focus = focus - num + 1
+
+		elseif fn(ins) == 'arg' then
+			local var = varnaam(tonumber(atoom(arg(ins))))
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = arg'..var..';'
 			focus = focus + 1
+
+		elseif fn(ins) == 'fn' then
+			local naam = varnaam(focus)
+			local var = varnaam(tonumber(atoom(arg(ins))))
+			L[#L+1] = tabs..string.format("function %s(%s) {", naam, "arg"..var)
+			focus = focus + 1
+			tabs = tabs..'  '
+
+		elseif atoom(ins) == 'dan' then
+			local naam = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("if (%s) {", naam)
+			tabs = tabs..'  '
 
 		else
-			error('ONBEKEND: ' ..lenc(ins))
-			emit("// " .. combineer(ins))
+			error('onbekende instructie: '..unlisp(ins))
 		end
-
+		--L[#L+1] = 'print("'..L[#L]..'")'
+		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
-	for i, ins in ipairs(im) do
-		insgen(ins)
+	L[#L+1] = 'var A = ...'
+
+	for i,ins in ipairs(sfc) do
+		ins2lua(ins)
 	end
 
-	return table.concat(uit, '\n')
+	L[#L+1] = 'return A'
+	return table.concat(L, '\n')
 end

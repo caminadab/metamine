@@ -186,7 +186,7 @@ function bieb()
 	['muis.beweegt'] = false,
 
 	-- toetsenbord
-	['toets.neer'] = true,
+	--['toets.neer'] = true,
 	['toets.neer.begin'] = true,
 	['toets.neer.eind'] = true,
 

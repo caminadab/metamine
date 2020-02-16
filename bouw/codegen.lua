@@ -2,6 +2,7 @@ require 'exp'
 require 'util'
 require 'graaf'
 require 'symbool'
+require 'bieb'
 require 'combineer'
 
 -- diepte bepalen
