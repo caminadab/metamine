@@ -13,6 +13,7 @@ beige = rgb(96%, 96%, 86%)
 bruin = rgb(60%, 40%, 20%)
 
 ; toetsenbord
+;-
 toets.spatie = toets.neer(32)
 toets.links = toets.neer(37)
 toets.omhoog = toets.neer(38)
@@ -42,3 +43,4 @@ toets.A.eind = toets.neer.eind(97)
 toets.D.eind = toets.neer.eind(100)
 toets.S.eind = toets.neer.eind(115)
 toets.W.eind = toets.neer.eind(119)
+-;

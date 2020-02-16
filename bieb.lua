@@ -150,16 +150,16 @@ function bieb()
 	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
 	['dt'] = 1/60, -- terminal altijd
 	['⊥'] = false,
-	log2 = function (a) return math.log(a, 2) end,
-	log10 = math.log10,
+	['log2'] = function (a) return math.log(a, 2) end,
+	['log10'] = math.log10,
 	['τ'] = math.pi*2,
 	['∅'] = {},
 	['π'] = math.pi,
-	misschien = true,
-	fout = true,
+	['misschien'] = true,
+	['fout'] = true,
 	['scherm.ververst'] = true,
-	verf = true,
-	schaal = true,
+	['verf'] = true,
+	['schaal'] = true,
 
 	rgb = true,
 
@@ -209,9 +209,6 @@ function bieb()
 	['_u'] = function(a, b)
 		return a:byte(b)
 	end;
-
-	['⊤'] = true;
-	['⊥'] = false;
 
 	-- io
 	['stduit.schrijf'] = function(a)
@@ -659,23 +656,10 @@ function bieb()
 		if not b.buf then b.buf = b.fd:read(1024) end
 		return b.buf
 	end;
-	['⇒'] = function(a,b,c)
-		if a then return b
-		else return c end
-	end;
-	-- delta componeer
-	-- 2@∆3 = 5
-	['deltacomp'] = function(val,delta)
-		if val == nil then
-			return delta
-		elseif delta == nil then
-			return val
-		elseif tonumber(val) then
-			return val + delta
-		elseif val == true then
-			return delta
-		else
-			print('??', val, delta)
+
+	['⇒'] = function(x)
+		if x[1] then
+			return x[2]
 		end
 	end;
 

@@ -33,14 +33,13 @@ local function peil(waarde)
 	return diepte
 end
 
-local postop = set("%","!",".","'")
+local unop   = set('-','#','¬','Σ','|','√','!','%')
 local binop  = set(
-	'+','·','/','^',
+	'+','·','/','^','mod',
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
 	'∪','∩',':','∈',
 	'_f','_f2','_l','^f','^l'
 )
-local unop   = set("-","#","¬","Σ","|","%","√","!")
 
 function codegen2(exp, maakvar)
 	local maakvar = maakvar or maakvars()
@@ -158,6 +157,10 @@ function codegen(exp, ins)
 	elseif binop[fn(exp)] then
 		codegen(arg0(exp), ins)
 		codegen(arg1(exp), ins)
+		ins[#ins+1] = X(fn(exp))
+
+	elseif unop[fn(exp)] then
+		codegen(arg(exp), ins)
 		ins[#ins+1] = X(fn(exp))
 
 	-- _fn(1 +(1 _arg(1))) -> fn

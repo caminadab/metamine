@@ -1,13 +1,14 @@
 require 'func'
 
 local unops = {
+	['%'] = '$1 / 100',
 	['abs'] = 'math.abs($1)',
 	['-'] = '- $1',
 	['Σ'] = 'local sum = 0; for k, v in ipairs($1) do sum = sum + v end; $1 = sum;',
 	['log10'] = 'math.log10($1)',
 	['log'] = 'math.log',
 	['fn.id'] = '$1',
-	['|'] = '(function() for i,v in ipairs($1) do if v then return v end end)()',
+	['|'] = '(function(alts) for i,alt in ipairs(alts) do if alt then return alt end end end)($1)',
 
 	['fn.nul'] = '$1(0)',
 	['fn.een'] = '$1(1)',
@@ -26,12 +27,12 @@ local unops = {
 }
 
 local noops = {
+	['mod'] = 'function(x) return x[1] % x[2] end',
 	['|'] = '$1 or $2',
 	['fn.id'] = 'function(x) return x end',
 	['fn.constant'] = 'function() return $1 end',
 	['fn.merge'] = '{$1(x),$2(x)}',
 	['fn.plus'] = 'function(x) return function(y) return x + y end end',
-	['∘'] = 'function(x) return $1($2(x)) end',
 	['-'] = 'function(x) return -x end',
 	['log10'] = 'math.log',
 	['+'] = 'function(x) return x[1] + x[2] end',
@@ -70,11 +71,9 @@ local diops = {
 	['·'] = '$1 * $2',
 	['/'] = '$1 / $2',
 	['^'] = '$1 ^ $2',
-	['%'] = '$1 / 100',
 
 	['|'] = '$1 or $2',
 	['∘'] = 'function(x) return $2($1(x)) end',
-	['mod'] = '$1 % $2',
 
 	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
 	['fn.merge'] = '$1, $2',--function(x) return {$1(x),$2(x)} end',
@@ -102,10 +101,10 @@ local diops = {
 	['<'] = '$1 < $2',
 
 	-- deduct
-	['¬'] = '! $1',
-	['∧'] = '$1 && $2', 
-	['∨'] = '$1 || $2', 
-	['⇒'] = '$1 ? $2 : $3', 
+	['¬'] = 'not $1',
+	['∧'] = '$1 and $2', 
+	['∨'] = '$1 or $2', 
+	['⇒'] = '$1 and $2', 
 
 	['sin'] = 'math.sin($1)',
 	['cos'] = 'math.cos($1)',
@@ -190,7 +189,7 @@ function luagen(sfc)
 			L[#L+1] = tabs..string.format('local %s,%s = %s,%s', naama, naamb, naamb, naama)
 
 		elseif unops[atoom(ins)] then
-			local naam = varnaam(focus)
+			local naam = varnaam(focus-1)
 			local di = unops[atoom(ins)]:gsub('$1', naam)
 			L[#L+1] = tabs..string.format('local %s = %s', naam, di)
 
@@ -221,6 +220,11 @@ function luagen(sfc)
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs.."end"
 			focus = focus - 1
+
+		-- biebfuncties?
+		elseif noops[atoom(ins)] then
+			L[#L+1] = tabs..'local '..varnaam(focus) .. " = " .. noops[atoom(ins)]
+			focus = focus + 1
 
 		elseif fn(ins) == 'set' then
 			error'TODO'

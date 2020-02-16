@@ -1,2 +1,6 @@
 uit = a
+
 a := 0
+als a < 10 dan
+	a := a · 2
+eind

@@ -218,6 +218,23 @@ elseif opt.l or opt.lua then
 			socket.sleep(1/60)
 		end
 
+	-- doe moeilijk
+	elseif opt.d then
+		local socket = require 'socket'
+		local vars = {}
+		local main = load(lua)()
+
+		local vars, uit = table.unpack(main{vars, true, socket.gettime()})
+
+		while true do
+			nu = socket.gettime()
+			io.write(ansi.wisregel, ansi.regelbegin)
+			vars, res = table.unpack(main {vars, false, socket.gettime() })
+			io.write(tostring(res), ' ')
+			io.flush()
+			socket.sleep(1/60)
+		end
+
 	-- alleen printen
 	else
 		print(lua)
