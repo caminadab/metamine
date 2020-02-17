@@ -244,7 +244,7 @@ elseif opt.l or opt.lua then
 else
 
 	local asm = asmgen(app)
-	if opt.S then
+	if opt.A then
 		print('=== ASSEMBLY CODE ===')
 		print(asm)
 	end

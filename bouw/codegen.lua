@@ -125,8 +125,8 @@ local bieb = bieb()
 function codegen(exp, ins)
 	local ins = ins or {o='[]'}
 	if klaar[exp] then
-		ins[#ins+1] = X('1')
-		return
+		--ins[#ins+1] = X('1')
+		--return
 	end
 	klaar[exp] = true
 	stack[#stack+1] = exp

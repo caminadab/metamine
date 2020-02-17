@@ -129,7 +129,7 @@ function vertaal(code, naam)
 	-- vectoriseer
 	local asb = vectoriseer(asb, types)
 
-	local exp,oplosfouten = oplos(asb, "app")
+	local exp,oplosfouten = oplos(asb, "main")
 	
 	if #oplosfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)

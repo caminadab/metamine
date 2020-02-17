@@ -32,7 +32,7 @@ local noops = {
 	['vouw'] = '(function(lf) local l,f,r = lf[1],lf[2],lf[1][1] ; for i=2,#l do r = f(r); end ; return r)',
 	['mod'] = 'function(x) return x[1] % x[2] end',
 
-	['tekst'] = 'tekst',
+	['tekst'] = 'tostring',
 
 	['|'] = '$1 or $2',
 	['fn.id'] = 'function(x) return x end',
@@ -212,7 +212,7 @@ function luagen(sfc)
 			L[#L+1] = tabs..string.format('local %s,%s = %s,%s', naama, naamb, naamb, naama)
 
 		elseif unops[atoom(ins)] then
-			local naam = varnaam(focus-1)
+			local naam = varnaam(focus)
 			local di = unops[atoom(ins)]:gsub('$1', naam)
 			L[#L+1] = tabs..string.format('local %s = %s', naam, di)
 
@@ -222,8 +222,8 @@ function luagen(sfc)
 			L[#L+1] = tabs..string.format('local %s = %s + %s', naam, naam, c)
 
 		elseif diops[atoom(ins)] then
-			local naama = varnaam(focus-2)
-			local naamb = varnaam(focus-1)
+			local naama = varnaam(focus-1)
+			local naamb = varnaam(focus-0)
 			local di = diops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
 			L[#L+1] = tabs..string.format('local %s = %s', naama, di)
 			focus = focus - 1
@@ -296,68 +296,19 @@ function luagen(sfc)
 		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
-	L[#L+1] = 'local A = ...'
-	L[#L+1] = [[function tekst(t)
-			if type(t) == 'number' then return tostring(t)
-			elseif t == nil then return 'niets'
-			elseif t == true then return 'ja'
-			elseif t == false then return 'nee'
-			elseif type(t) == 'function' then return 'functie'
-			elseif type(t) == 'string' then return string.format('%q', t)
-			elseif type(t) == 'table' then
-				if not next(t) then
-					return '∅'
-				end
-				local islijst = true
-				local isset = true
-				for k,v in pairs(t) do
-					if not tonumber(k) or k % 1 ~= 0 then
-						islijst = false
-					end
-					if v ~= true and v ~= false then
-						isset = false
-					end
-				end
-				if islijst then
-					local r = {}
-					r[#r+1] = '['
-					local previ = 1
-					for i,v in pairs(t) do
-						for j=1,i-previ-1 do
-							r[#r+1] = 'niets,'
-						end
-						r[#r+1] = lenc(v)
-						r[#r+1] = ','
-						previ = i
-					end
-					r[#r] = nil
-					r[#r+1] = ']'
-					return table.concat(r)
-				end
+	-- elke app is een functie
+	local main = sfc[1]
 
-				local r = {}
-				r[#r+1] = '{'
-				for k,v in pairs(t) do
-					if isset then
-						r[#r+1] = lenc(k)
-					else
-						r[#r+1] = lenc(k)..'='..lenc(v)
-					end
-					r[#r+1] = ','
-				end
-				if r[#r] == ',' then r[#r] = nil end
-				r[#r+1] = '}'
-				return table.concat(r)
-			else
-				return tostring(t)
-			end
-		end
-		]]
+	assert(fn(main) == 'fn', 'main is geen functie')
+	local mainarg = varnaam(tonumber(atoom(arg(ins))))
+	L[#L+1] = 'local arg'..mainarg..' = ...'
 
-	for i,ins in ipairs(sfc) do
+	for i = 2, #sfc-1 do
+		local ins = sfc[i]
 		ins2lua(ins)
 	end
 
 	L[#L+1] = 'return A'
+
 	return table.concat(L, '\n')
 end

@@ -25,6 +25,7 @@ local op2asm = {
 function asmgen(im)
 	focus = 1
 	local arg2focus = {} -- int → int
+	local L = {}
 
 	local function asmnaam(focus)
 		if focus <= 6 then
@@ -35,60 +36,44 @@ function asmgen(im)
 	end
 
 	local function ins2asm(ins)
-
-		if op2asm[atoom(ins)] then
-			local naama = asmnaam(focus-2)
-			local naamb = asmnaam(focus-1)
-			return op2asm[atoom(ins)]:gsub('$1',naama):gsub('$2',naamb)
-
-		elseif fn(ins) == 'fn' then
+		if fn(ins) == 'fn' then
 			local res = 'fn'..atoom(arg(ins))..':'
-			arg2focus[atoom(arg(ins))] = focus
-			focus = focus + 1
-			return res
-
-		elseif fn(ins) == 'arg' then
-			local argfocus = arg2focus[atoom(arg(ins))]
-			string.format('mov %s, %s', asmnaam(focus), asmnaam(argfocus))
-			focus = focus + 1
-			return res
-
-		elseif fn(ins) == 'lijst' then
-			return 'lijst'..atoom(arg(ins))..':'
-
-		elseif atoom(ins) == 'eind' then
-			-- niets
-
+			L[#L+1] = res
 		elseif tonumber(atoom(ins)) then
-			local res =  string.format('mov %s, %s', asmnaam(focus), atoom(ins))
-			focus = focus + 1
-			return res
-
+			L[#L+1] = '  mov rax, '..atoom(ins)
+			L[#L+1] = '  mov -8[rsp], rax'
+			L[#L+1] = '  add rsp, 8'
+		elseif atoom(ins) == 'eind' then
+			L[#L+1] = '# eind'
 		else
-			error(unlisp(ins))
+			L[#L+1] = '  mov rbx, -8[rsp]'
+			L[#L+1] = '  mov rax, -16[rsp]'
+			L[#L+1] = '  add rbx, rax'
 		end
 	end
 
-	--require 'bouw.gen.asmops'
+	assert(fn(im[1]) == 'fn', 'main moet een functie zijn')
 
-	local L = {}
 	L[#L+1] = [[
-	.intel_syntax noprefix
-	.text
-	.global	start
+  .intel_syntax noprefix
+  .text
+  .global	start
 
 .section .text
 
 start: ]]
 
-	for i, ins in ipairs(im) do
-		L[#L+1] = ins2asm(ins)
+
+	for i = 2, #im-1 do
+		local ins = im[i]
+		ins2asm(ins)
 	end
 
-	L[#L+1] = [[.section .rodata
+	L[#L+1] = [[
+.section .rodata
 
 .groet:
-	.string "hoi.txt"
+  .string "hoi.txt"
 ]]
 
 	return table.concat(L,"\n")

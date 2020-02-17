@@ -24,10 +24,19 @@ function doe(sfc, arg0)
 		if atoom(ins) == '_f' then
 			local a = stack[#stack-1]
 			local b = stack[#stack-0]
-			doe(a, b)
+			local r = a(b)
+			stack[#stack] = nil
+			stack[#stack] = r
+
+		elseif atoom(ins) == '_l' then
+			local a = stack[#stack-1]
+			local b = stack[#stack-0]
+			local r = a[b+1]
+			stack[#stack] = nil
+			stack[#stack] = r
 
 		elseif atoom(ins) == 'eind' then
-			return
+			return stack[#stack]
 
 		elseif fn(ins) == 'arg' then
 			stack[#stack+1] = arg0
@@ -41,7 +50,7 @@ function doe(sfc, arg0)
 			stack[#stack] = bieb[f](args)
 
 		elseif fn(ins) == 'fn' then
-			local proc = {}
+			local proc = {o='[]'}
 			local ins0 = ins
 
 			while atoom(ins) ~= 'eind' do
@@ -49,13 +58,14 @@ function doe(sfc, arg0)
 				ins = sfc[i]
 				proc[#proc+1] = ins
 			end
-			stack[#stack+1] = proc
+			stack[#stack+1] = function(x) return doe(proc, x) end
 			
-			io.write('fn('..atoom(arg(ins0)), '): ')
+			--[[io.write('fn('..atoom(arg(ins0)), '): ')
 			for i,v in ipairs(proc) do
 				io.write(unlisp(v),' ')
 			end
 			print()
+			]]
 
 		elseif tonumber(atoom(ins)) then
 			stack[#stack+1] = tonumber(atoom(ins))
@@ -64,14 +74,18 @@ function doe(sfc, arg0)
 			error('weet niet hoe te doen: '..combineer(ins))
 		end
 
-		io.write('stack: ')
-		for i, v in ipairs(stack) do
-			io.write(tostring(v), ' ')
+		if opt and opt.L then
+			io.write(combineer(ins) .. '\t| ')
+		
+			for i, v in ipairs(stack) do
+				io.write(lenc2(v), ' ')
+			end
+			io.write('\n')
 		end
 
-		io.write('ins: '..combineer(ins))
-		io.write('\n')
-		
 		i = i + 1
 	end
+
+	--print("RET", lenc(stack[#stack]))
+	return stack[#stack]
 end

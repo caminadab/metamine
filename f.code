@@ -1,2 +1,3 @@
+g = f ∘ f
 f = x → x + 1
-uit = (f∘f)(2)
+uit = 1

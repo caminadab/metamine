@@ -1,6 +1,6 @@
-app     = app.in → app.uit
-app.in  = (in.vars,  in.start, nu)
-app.uit = (uit.vars, uit)
+main     = main.in → main.uit
+main.in  = (in.vars,  in.start, nu)
+main.uit = (uit.vars, uit)
 
 ; tijd
 starttijd := nu

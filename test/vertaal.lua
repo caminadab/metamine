@@ -4,10 +4,6 @@ require 'bouw.codegen'
 require 'vertaal'
 require 'doe'
 
-function doe(x, a)
-	return (load(luagen(x)))()
-end
-
 -- fouten
 local _,f = vertaal('app = )')
 assert(#f > 0)
@@ -22,7 +18,7 @@ local function test(code, moet)
 	end
 		
 	local imm = doe(v)
-	assert(imm == moet, string.format('vertaal("%s") moet %s zijn maar was %s', code, moet, imm))
+	assert(imm == moet, string.format('vertaal("%s") moet %s zijn maar was %s. imcode: %s', code, moet, imm, table.concat(map(v,combineer), " ")))
 end
 
 -- arith
@@ -40,10 +36,11 @@ test('a = 1 + 1\nb = a - a + a\napp = a · b', 4)
 test("f = a → a + 1\napp = f(-1)", 0)
 
 -- componeer
+test("f = x → x + 1\ng = f ∘ f\napp = g(0)", 2)
+test("f = x → x + 1\ng = f ∘ f ∘ f\napp = g(0)", 3)
 test("f = x → x · 2\ng = y → y - 1\nh = f ∘ g ∘ f ∘ f ∘ g\napp = h(3)", 19)
 
 -- als
-opt = {L=true}
 test("als 2 > 1 dan\n\tapp = 2\nanders\n\tapp = 3\neind", 2)
 
 -- functietjes
