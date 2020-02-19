@@ -39,6 +39,10 @@ function doe(sfc, arg0, stack)
 		elseif atoom(ins) == 'eind' then
 			return stack[#stack]
 
+		elseif fn(ins) == 'kp' then
+			local index = tonumber(atoom(arg(ins)))
+			stack[#stack+1] = stack[#stack-index]
+
 		elseif fn(ins) == 'arg' then
 			stack[#stack+1] = arg0
 
@@ -117,6 +121,9 @@ function doe(sfc, arg0, stack)
 
 		elseif atoom(ins) == '⊥' then
 			stack[#stack+1] = false
+
+		elseif atoom(ins) == 'dup' then
+			stack[#stack+1] = stack[#stack]
 
 		else
 			error('weet niet hoe te doen: '..combineer(ins))
