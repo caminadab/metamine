@@ -1,13 +1,7 @@
-main     = main.in → main.uit
-;main.in  = (in.vars,  in.start, in.toets, in.toets.op, in.toets.neer))
-;main.uit = (uit.vars, uit, uit.el)
-;main.in = (in.vars, in.start, in.nu)
+main = (in.vars, start, nu) → (uit.vars, uit)
 
-main.in = looptijd
-main.uit = uit
-
-;main.in = (in.start, canvas)
-;main.uit = uit
+teken = z → canvas2d (canvasClear ∘ z)
+vierkant = x,y,r → (c → canvasFillRect(c,x,y,r,r))
 
 ; tijd
 ;starttijd := nu

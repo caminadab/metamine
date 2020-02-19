@@ -26,7 +26,10 @@ function bieb()
 
 	-- canvas
 	['pad.begin'] = true,
-	['canvas.context'] = true,
+	--['context2d'] = true,
+	['canvas2d'] = true,
+	['canvasFillRect'] = true,
+	['canvasClear'] = true,
 	['aspect'] = function(x) return 16/9 end;
 
 	-- functioneel

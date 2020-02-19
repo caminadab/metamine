@@ -125,6 +125,20 @@ function doe(sfc, arg0, stack)
 		elseif atoom(ins) == 'dup' then
 			stack[#stack+1] = stack[#stack]
 
+		elseif atoom(ins) == 'vierkant' then
+			--sdl2.renderfillrect
+			local x = stack[#stack]
+			stack[#stack] = nil
+			print("X", x)
+			local y = stack[#stack]
+			print("Y", y)
+			stack[#stack] = nil
+			local r = stack[#stack]
+			print("R", r)
+			stack[#stack] = function(args)
+				return "vierkant("..x..","..y..","..r..")"
+			end
+
 		else
 			error('weet niet hoe te doen: '..combineer(ins))
 		end

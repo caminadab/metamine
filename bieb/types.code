@@ -40,11 +40,11 @@ tekst: iets → lijst(letter)
 verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
 
-vierkant: (ℝ,ℝ), ℝ → vorm
-cirkel: (ℝ,ℝ), ℝ → vorm
-ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
-boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
-rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
+;vierkant: ℝ,ℝ,ℝ → vorm
+;cirkel: ℝ,ℝ,ℝ → vorm
+;ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
+;boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
+;rechthoek: (ℝ,ℝ), (ℝ,ℝ) → vorm
 lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm

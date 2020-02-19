@@ -78,7 +78,7 @@ function vectoriseer(asb, types)
 		if fn(exp) == '_' then
 			local fntype = types[moes(arg0(exp))]
 			local islijst = atoom(arg0(fntype)) == 'nat' or obj(fntype) == ','
-			local isfunc = fn(fntype) == '→'
+			local isfunc = fn(fntype) == '→' and atoom(arg0(fntype)) ~= 'nat'
 
 			if isfunc then
 				exp.f = X'_f'

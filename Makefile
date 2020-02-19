@@ -1,27 +1,27 @@
-linux: goo/www/index.html goo/www/index.en.html ontleed.so
-deploy: ontleed.so goo/www/
-	scp -r goo/www/* metamine.nl:/var/www/html/
+linux: web/www/index.html web/www/index.en.html ontleed.so
+deploy: ontleed.so web/www/
+	scp -r web/www/* metamine.nl:/var/www/html/
 
 #ssh -f pi  'cd taal ; git pull ; make ; pkill luajit ; /etc/dienst'
 
 run: linux
-	luajit goo/dienst.lua
+	luajit web/dienst.lua
 
 test: linux
 	luajit test.lua
 
-webdemos: goo/www/ex/
-	./tolk ex/pong.code goo/www/ex/pong.en.code
-	./tolk ex/cirkels.code goo/www/ex/cirkels.en.code
-	./tolk ex/salvobal.code goo/www/ex/salvobal.en.code
-	./tolk ex/buis.code goo/www/ex/buis.en.code
+webdemos: web/www/ex/
+	./tolk ex/pong.code web/www/ex/pong.en.code
+	./tolk ex/cirkels.code web/www/ex/cirkels.en.code
+	./tolk ex/salvobal.code web/www/ex/salvobal.en.code
+	./tolk ex/buis.code web/www/ex/buis.en.code
 	
 
 ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c
 	cd ontleed; make linux
 	mkdir -p bin
 	cp -r ontleed/bin/* bin/
-	ln -sf ../bin/ontleed.so goo/
+	ln -sf ../bin/ontleed.so web/
 	ln -sf bin/ontleed.so .
 	ln -sf ../vt bin/
 	ln -sf ../doe bin/
@@ -34,27 +34,27 @@ windows:
 	ln -sf ../doe bin/
 
 
-#scp -r goo/* pi:/var/www/blog/taal-0.1.1
+#scp -r web/* pi:/var/www/blog/taal-0.1.1
 
 all:
 	mkdir -p bin	
 	cd ontleed; make
 	cp -r ontleed/bin/* bin/
 
-goo/www/index.en.html: goo/www/index.fmt goo/www/index.en
-	./sjab goo/www/index.fmt goo/www/index.en goo/www/index.en.html
+web/www/index.en.html: web/www/index.fmt web/www/index.en
+	./sjab web/www/index.fmt web/www/index.en web/www/index.en.html
 
-goo/www/ex/demo.en.code: ex/demo.code bieb/en.lst bieb/demo.lst
-	./tolk ex/demo.code goo/www/ex/demo.en.code
+web/www/ex/demo.en.code: ex/demo.code bieb/en.lst bieb/demo.lst
+	./tolk ex/demo.code web/www/ex/demo.en.code
 
-goo/www/index.nl.html: goo/www/index.fmt goo/www/index.nl 
-	./sjab goo/www/index.fmt goo/www/index.nl goo/www/index.nl.html
+web/www/index.nl.html: web/www/index.fmt web/www/index.nl 
+	./sjab web/www/index.fmt web/www/index.nl web/www/index.nl.html
 
-goo/www/index.html: goo/www/index.nl.html
-	ln -sf index.nl.html goo/www/index.html
+web/www/index.html: web/www/index.nl.html
+	ln -sf index.nl.html web/www/index.html
 
-goo/www/en: goo/www/index.en.html
-	ln -sf index.en.html goo/www/en
+web/www/en: web/www/index.en.html
+	ln -sf index.en.html web/www/en
 
 malloc.o: bieb/malloc.c
 	cc -c -fPIC -DLACKS_STDLIB_H -DNO_MALLOC_STATS bieb/malloc.c -o bieb/malloc.o
@@ -82,7 +82,7 @@ web:
 
 clean:
 	rm -rf bin/
-	rm -rf goo/www/index.html goo/www/en goo/www/nl goo/www/index.*.html
+	rm -rf web/www/index.html web/www/en web/www/nl web/www/index.*.html
 
 objects := $(patsubst %.lua,%.o,$(wildcard *.lua))
 

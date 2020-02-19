@@ -1,2 +1,2 @@
-uit = b · b · b
-b = 1 + 2
+uit = teken(v)
+v = vierkant(0,0,10)

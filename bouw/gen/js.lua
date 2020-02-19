@@ -11,6 +11,9 @@ local unops = {
 	['fn.id'] = '$1',
 	['|'] = '(function(alts) { for (var i=0; i<alts.length; i++) { if (alt) return alt; }})($1)',
 
+	['canvas2d'] = '$1.getContext("2d")',
+	['canvasClear'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
+
 	['fn.nul'] = '$1(0)',
 	['fn.een'] = '$1(1)',
 	['fn.twee'] = '$1(2)',
@@ -20,6 +23,15 @@ local unops = {
 	['l.tweede'] = '$1[1]',
 	['l.derde'] = '$1[2]',
 	['l.vierde'] = '$1[3]',
+}
+
+local triops = {
+	['vierkant'] = [[
+		context => {
+			var x,y,r = $1,$2,$3;
+			context.fillRect(c,x,y,r);
+			return context;
+		} ]]
 }
 
 local noops = {
@@ -198,6 +210,14 @@ function jsgen(sfc)
 			local di = binops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
 			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
 			focus = focus - 1
+
+		elseif triops[atoom(ins)] then
+			local naama = varnaam(focus-3)
+			local naamb = varnaam(focus-2)
+			local naamc = varnaam(focus-1)
+			local di = triops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb):gsub('$3', naamc)
+			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
+			focus = focus - 2
 
 		elseif atoom(ins) == 'eind' then
 			local naama = varnaam(focus-1)

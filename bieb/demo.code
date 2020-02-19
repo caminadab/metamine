@@ -1,1 +1,5 @@
-main = uit
+;main = (in.vars, start, toets.neer, toets.neer.begin, toets.neer.eind, nu, canvas2d, canvas3d) → (uit, uit.vars)
+main = (in.vars, start, nu) → (uit.vars, uit)
+
+teken = z → canvas2d (canvasClear ∘ z)
+vierkant = x,y,r → (c → canvasFillRect(c,x,y,r,r))

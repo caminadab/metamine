@@ -42,7 +42,11 @@ function vt(code, naam)
 
 	code = code .. '\n' .. web
 
+	local voor = socket.gettime()
 	local icode,fouten,gen2bron = vertaal(code)
+	local na = socket.gettime()
+	local delta = math.floor((na - voor) * 1000)
+	print('compilen van '..#code..' bytes nam '..delta ..'ms in beslag')
 	local js = ''
 	if icode then
 		js = jsgen(icode)
@@ -157,7 +161,7 @@ From: vraag@metamine.nl
 	else
     pad = pad:gsub('%.%.', '%.')
 		if pad == '/' then pad = '/index.html' end
-    pad = 'goo/www' .. pad
+    pad = 'web/www' .. pad
 		uit = file(pad)
 		status = 200
 		if not uit then
