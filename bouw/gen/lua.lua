@@ -172,13 +172,13 @@ function luagen(sfc)
 
 	function ins2lua(ins)
 		if fn(ins) == 'push' or fn(ins) == 'put' then
-			if fn(ins) == 'push' then
-				focus = focus + 1
-			end
 			local naam = atoom(arg(ins))
 			assert(naam, unlisp(ins))
 			naam = noops[naam] or naam
 			L[#L+1] = string.format('%slocal %s = %s', tabs, varnaam(focus), naam), focus
+			if fn(ins) == 'push' then
+				focus = focus + 1
+			end
 
 		elseif atoom(ins) == 'fn.id' then
 			-- niets
@@ -232,7 +232,7 @@ function luagen(sfc)
 			focus = focus - 2
 
 		elseif atoom(ins) == 'eind' then
-			local naama = varnaam(focus)
+			local naama = varnaam(focus-1)
 			local naamb = varnaam(focus-2)
 			L[#L+1] = tabs..'return '..naama
 			tabs = tabs:sub(3)

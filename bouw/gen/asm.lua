@@ -37,12 +37,21 @@ local op2asm = {
   idiv rax, rbx
   mov -8[rsp], rax
   add rsp, 8]],
+
+	-- [... fn arg] -> [... arg] -> [... res]
+	-- rax: fn, rbx: arg
+	['_f'] = [[  mov rax, 8[rsp]	# (_f)
+  mov rbx, [rsp]
+  mov 8[rsp], rbx
+  add rsp, 8
+	call rax]],
 }
 
 function asmgen(im)
 	focus = 1
 	local arg2focus = {} -- int → int
 	local L = {}
+	local lstack = {}
 
 	local function asmnaam(focus)
 		if focus <= 6 then
@@ -54,7 +63,10 @@ function asmgen(im)
 
 	local function ins2asm(ins)
 		if fn(ins) == 'fn' then
-			local res = 'fn'..atoom(arg(ins))..': \t#'..combineer(ins)
+			local label = 'fn'..atoom(arg(ins))
+			lstack[#lstack+1] = label
+			L[#L+1] = '  jmp '..label..'_eind'
+			local res = label..': \t#'..combineer(ins)
 
 			L[#L+1] = res
 
@@ -67,10 +79,14 @@ function asmgen(im)
 			L[#L+1] = op2asm[atoom(ins)]
 
 		elseif atoom(ins) == 'eind' then
-			L[#L+1] = '# eind'
+			L[#L+1] = '  mov rax, [rsp]'
+			L[#L+1] = '  ret'
+			local label = lstack[#lstack]
+			lstack[#lstack] = nil
+			L[#L+1] = label..'_eind:'
 
 		else
-			L[#L+1] = '  nop\t#'..combineer(ins)
+			L[#L+1] = '  nop\t# '..combineer(ins)
 		end
 	end
 

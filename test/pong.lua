@@ -17,6 +17,7 @@ local voor = socket.gettime()
 
 local app = vertaal(prog)
 local n = 0
+assert(app, 'pong kon niet eens gecompileerd worden')
 for i,ins in ipairs(app) do
 	n = n + #exp2string(ins)
 end

@@ -1,4 +1,2 @@
-f = x → x + 10
-g = y → y + 100
-h = (f ∘ g)³
-uit = h(3)
+uit = b + b + b
+b = 2 · 3

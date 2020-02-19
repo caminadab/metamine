@@ -106,20 +106,15 @@
 				var nu = (x => new Date().getTime() / 1000);
 				var start = (x => true);
 				var vars = (x => []);
-				var uitvars = main([vars, start, nu]);
-				alert(uitvars);
-				var vars = uitvars[0];
-				var uitvoer = uitvars[1];
+				var uitvoer = main();// [vars, start, nu]);
 				uit.innerHTML = uitvoer;
 
 				try {
 					var f = (ev) => {
 						var nu = new Date().getTime() / 1000;
-						var uitvars = main([vars, false, nu]);
-						vars = uitvars[0];
-						uitvoer = uitvars[1];
+						var uitvoer = main(); //([vars, false, nu]);
 
-						uit.innerHTML = uitvoer;
+						uit.innerHTML = '<pre>'+uitvoer+'</pre>';
 
 						if (!stop)
 							requestAnimationFrame(f);

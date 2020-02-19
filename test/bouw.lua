@@ -86,5 +86,12 @@ test("main = 1 + 2", 3)
 test("main = 1 + 2 · 3", 7)
 test("main = 6 - 2", 4)
 test("main = (ja ⇒ 2)", 2)
+test([[
+f = x → x + 10
+g = y → y + 100
+h = (f ∘ g)³
+main = h(3)]],
+333)
+test("main = (x → x + 1)(2)", 3)
 
 print('alles ok')

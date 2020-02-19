@@ -1,18 +1,23 @@
 main     = main.in → main.uit
-main.in  = (in.vars,  in.start, in.toets, in.toets.op, in.toets.neer))
-main.uit = (uit.vars, uit, uit.el)
+;main.in  = (in.vars,  in.start, in.toets, in.toets.op, in.toets.neer))
+;main.uit = (uit.vars, uit, uit.el)
+;main.in = (in.vars, in.start, in.nu)
+
+main.in = looptijd
+main.uit = uit
+
+;main.in = (in.start, canvas)
+;main.uit = uit
 
 ; tijd
-starttijd := nu
-looptijd := nu
+;starttijd := nu
+;looptijd := nu
 
-teken = vormen → "ok"
+;teken = vormen → "ok"
 
 ;als scherm.ververst dan
 ;	looptijd := nu - starttijd
 ;eind
-
-toets.aan = bit → ⊤
 
 ;als toets.neer.nieuw dan
 ;	toets.neer := toets.neer ∪ { toets.neer.nieuw }

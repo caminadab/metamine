@@ -30,7 +30,7 @@ local noops = {
 	['tekst'] = 'tekst',
 
 	['|'] = '$1 or $2',
-	['fn.id'] = 'function(x) return x end',
+	['fn.id'] = 'x => x',
 	['fn.constant'] = 'function() return $1 end',
 	['fn.merge'] = '{$1(x),$2(x)}',
 	['fn.plus'] = 'function(x) return function(y) return x + y end end',
@@ -60,7 +60,6 @@ local noops = {
 }
 
 local binops = {
-	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
 	['map'] = '$1.map($2)',
 	['vouw'] = '$1.reduce($2)',
 	['_f'] = '$1($2)',
@@ -68,15 +67,16 @@ local binops = {
 	['_'] = 'type($1) == "function" and $1($2) or $1[$2+1]',
 	['fn.merge'] = '{$1(x), $2(x)}',
 	['^r'] = '$1 ^ $2',
-	['∘'] = 'function(x) return $2($1(x)) end',
+	['∘'] = 'x => $2($1(x))',
 	['+'] = '$1 + $2',
 	['·'] = '$1 * $2',
 	['/'] = '$1 / $2',
 	['^'] = '$1 ^ $2',
+	['×'] = '(ab => { var r = []; for (var i = 0; i < $1.length; i++) { for (var j = 0; j < $2.length; j++) { r.push([$1[i],$2[j]]); }} ; return r;})()',
+	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
 	['mod'] = '$1 % $2',
 
 	['|'] = '$1 or $2',
-	['∘'] = 'function(x) return $2($1(x)) end',
 
 	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
 	['fn.merge'] = '$1, $2',--function(x) return {$1(x),$2(x)} end',
@@ -89,10 +89,11 @@ local binops = {
 				r = f(r);
 			}
 			return r;
-		})($1,$2)]],
+		}
+	})($1,$2)]],
 	['derdemachtswortel'] = 'Math.pow($1,1/3)',
 	['_f'] = '$1($2)',
-	['_l'] = '$1[$2+1]',
+	['_l'] = '$1[$2]',
 
 	-- cmp
 	['>'] = '$1 > $2',
@@ -103,25 +104,25 @@ local binops = {
 	['<'] = '$1 < $2',
 
 	-- deduct
-	['¬'] = 'not $1',
-	['∧'] = '$1 and $2', 
-	['∨'] = '$1 or $2', 
-	['⇒'] = '$1 and $2', 
+	['¬'] = '! $1',
+	['∧'] = '$1 && $2', 
+	['∨'] = '$1 || $2', 
+	['⇒'] = '$1 && $2', 
 
-	['sin'] = 'math.sin($1)',
-	['cos'] = 'math.cos($1)',
-	['tan'] = 'math.tan($1)',
-	['sincos'] = '{math.cos($1), math.sin($1)}',
-	['cossin'] = '{math.sin($1), math.cos($1)}',
+	['sin'] = 'Math.sin($1)',
+	['cos'] = 'Math.cos($1)',
+	['tan'] = 'Math.tan($1)',
+	['sincos'] = '{Math.cos($1), Math.sin($1)}',
+	['cossin'] = '{Math.sin($1), Math.cos($1)}',
 
 	-- discreet
-	['min'] = 'math.min($1,$2)',
-	['max'] = 'math.max($1,$2)',
-	['afrond.onder'] = 'math.floor($1)',
-	['afrond']       = 'math.round($1)',
-	['afrond.boven'] = 'math.ceil($1)',
-	['int'] = 'math.floor($1)',
-	['abs'] = 'math.abs($1)',
+	['min'] = 'Math.min($1,$2)',
+	['max'] = 'Math.max($1,$2)',
+	['afrond.onder'] = 'Math.floor($1)',
+	['afrond']       = 'Math.round($1)',
+	['afrond.boven'] = 'Math.ceil($1)',
+	['int'] = 'Math.floor($1)',
+	['abs'] = 'Math.abs($1)',
 	['sign'] = '$1 > 0 and 1 or -1',
 
 	-- exp
@@ -199,7 +200,7 @@ function jsgen(sfc)
 			focus = focus - 1
 
 		elseif atoom(ins) == 'eind' then
-			local naama = varnaam(focus)
+			local naama = varnaam(focus-1)
 			local naamb = varnaam(focus-2)
 			L[#L+1] = tabs..'return '..naama..';'
 			tabs = tabs:sub(3)
