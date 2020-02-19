@@ -40,8 +40,6 @@ for atoom in lst:gmatch('[^\n]+') do
 	atomen[atoom] = true
 end
 
-local objs = set(',', '{}', '[]', '[]u')
-
 -- itereer kinderen
 function subs(exp)
 

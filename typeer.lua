@@ -9,7 +9,7 @@ local obj2sym = {
 	[','] = symbool.tupel,
 	['[]'] = X('→', 'nat', 'iets'),
 	['{}'] = symbool.set,
-	['[]u'] = X('→', 'nat', 'letter'),
+	['"'] = X('→', 'nat', 'letter'),
 	--['[]u'] = symbool.tekst,
 }
 

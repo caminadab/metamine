@@ -38,7 +38,7 @@ local unop   = set('-','#','¬','Σ','|','√','!','%')
 local binop  = set(
 	'+','·','/','^','mod',
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
-	'∪','∩',':','∈',
+	'∪','∩',':','∈','|',
 	'_f','_f2','_l','^f','^l'
 )
 
@@ -196,6 +196,8 @@ function codegen(exp, ins)
 			ins[#ins+1] = X('lijst', tostring(#exp))
 		elseif obj(exp) == '{}' then
 			ins[#ins+1] = X('set', tostring(#exp))
+		elseif obj(exp) == '"' then
+			ins[#ins+1] = X('string', tostring(#exp))
 		end
 
 	elseif isatoom(exp) then

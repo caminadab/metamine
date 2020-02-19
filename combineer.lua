@@ -15,7 +15,7 @@ local function combineerR(exp, t, kind)
 		t[#t+1] = ')'
 	elseif isatoom(exp) then
 		t[#t+1] = exp.v
-	elseif obj(exp) == '[]u' then
+	elseif obj(exp) == '""' then
 		local const = true
 		for i,sub in ipairs(exp) do
 			if not tonumber(atoom(sub)) then

@@ -17,7 +17,9 @@ local voor = socket.gettime()
 
 local app = vertaal(prog)
 local n = 0
-n = n + #tostring(blok)
+for i,ins in ipairs(app) do
+	n = n + #exp2string(ins)
+end
 print('resultaat: '..n..' bytes')
 
 local na = socket.gettime()

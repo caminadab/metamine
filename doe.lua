@@ -1,7 +1,7 @@
 require 'bieb'
 
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖", "^f","_f","_l")
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
 
 function lenc2(exp)
@@ -13,8 +13,8 @@ function lenc2(exp)
 end
 
 -- sfc → func
-function doe(sfc, arg0)
-	local stack = {}
+function doe(sfc, arg0, stack)
+	local stack = stack or {}
 	local i = 1
 	local bieb = bieb()
 
@@ -24,6 +24,7 @@ function doe(sfc, arg0)
 		if atoom(ins) == '_f' then
 			local a = stack[#stack-1]
 			local b = stack[#stack-0]
+			print('call')
 			local r = a(b)
 			stack[#stack] = nil
 			stack[#stack] = r
@@ -41,24 +42,65 @@ function doe(sfc, arg0)
 		elseif fn(ins) == 'arg' then
 			stack[#stack+1] = arg0
 
+		elseif fn(ins) == 'lijst' or fn(ins) == 'tupel' then
+			local num = atoom(arg(ins))
+			local r = {}
+			for i=1,num do
+				r[#r+1] = stack[#stack]
+				stack[#stack] = nil
+			end
+			stack[#stack+1] = r
+
+		elseif fn(ins) == 'set' then
+			local num = atoom(arg(ins))
+			local r = {}
+			for i=1,num do
+				local top = stack[#stack]
+				r[top] = true
+				stack[#stack] = nil
+			end
+			stack[#stack+1] = r
+
+		elseif atoom(ins) == 'dan' then
+			if stack[#stack] == false then
+				-- skip tot 'einddan'
+				while atoom(ins) ~= 'einddan' do
+					i=i+1
+					ins = sfc[i]
+				end
+				stack[#stack+1] = false
+			end
+
 		elseif binop[atoom(ins)] then
 			local f = atoom(ins)
-			local a = stack[#stack]
-			local b = stack[#stack-1]
+			local a = stack[#stack-1]
+			local b = stack[#stack]
 			local args = {a, b}
 			stack[#stack] = nil
 			stack[#stack] = bieb[f](args)
 
+		elseif unop[atoom(ins)] then
+			local f = atoom(ins)
+			local a = stack[#stack]
+			stack[#stack] = bieb[f](a)
+
+		elseif atoom(ins) == 'einddan' then
+			-- niets
+			stack[#stack-1] = stack[#stack]
+			stack[#stack] = nil
+
 		elseif fn(ins) == 'fn' then
 			local proc = {o='[]'}
 			local ins0 = ins
+			i = i + 1
+			ins = sfc[i]
 
-			while atoom(ins) ~= 'eind' do
+			while atoom(ins) ~= 'eind' and i < #sfc do
+				proc[#proc+1] = ins
 				i=i+1
 				ins = sfc[i]
-				proc[#proc+1] = ins
 			end
-			stack[#stack+1] = function(x) return doe(proc, x) end
+			stack[#stack+1] = function(x) return doe(proc, x, stack) end
 			
 			--[[io.write('fn('..atoom(arg(ins0)), '): ')
 			for i,v in ipairs(proc) do
@@ -69,6 +111,12 @@ function doe(sfc, arg0)
 
 		elseif tonumber(atoom(ins)) then
 			stack[#stack+1] = tonumber(atoom(ins))
+
+		elseif atoom(ins) == '⊤' then
+			stack[#stack+1] = true
+
+		elseif atoom(ins) == '⊥' then
+			stack[#stack+1] = false
 
 		else
 			error('weet niet hoe te doen: '..combineer(ins))

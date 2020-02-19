@@ -269,6 +269,24 @@ function bieb()
 		return a
 	end;
 
+	['^f'] = function(a)
+		local f, n = a[1], a[2]
+		return function(x)
+			local r = x
+			for i = 1, n do
+				r = f(r)
+			end
+			return r
+		end
+	end;
+
+	['!'] = function(n)
+		local a = 1
+		for i=1,n do
+			a = a * i
+		end
+		return a
+	end;
 	-- linksassociatief
 	-- cartesisch product
 	['×'] = function(a)
@@ -283,15 +301,6 @@ function bieb()
 		return t
 	end;
 			
-	['^f'] = function(a, b)
-		return function (x)
-			for i=1,b do
-				x = a(x)
-			end
-			return x
-		end
-	end;
-
 	['+'] = function(a) return a[1] + a[2] end;
 	['-'] = function(a) return -a end;
 	['·'] = function(a) return a[1] * a[2] end;
@@ -342,7 +351,7 @@ function bieb()
 	end;
 
 	['|'] = function(a)
-		for i,v in pairs(a) do
+		for i,v in ipairs(a) do
 			if v ~= nil then
 				return v
 			end
@@ -624,17 +633,10 @@ function bieb()
 		return s
 	end;
 
-	[':'] = function(a,b)
-		if b == bieb.int then
-			return tonumber(a) and tonumber(a)%1==0 or type(a) == 'number'
-		elseif b == bieb.lijst then
-			return type(a) == 'table'
-		-- set
-		elseif a[b] == true then
-			return true
-		else
-			return false
-		end
+	[':'] = true,
+
+	['∈'] = function(set,val)
+		return set[val]
 	end;
 
 	-- aux
@@ -688,7 +690,10 @@ function bieb()
 		return t
 	end;
 
-	['[]u'] = false,
+	['"'] = function(a)
+		local t = string.byte(table.unpack(map(a, atoom)))
+		return t
+	end;
 
 	['tot'] = function(a,tot)
 		local t = {f='[]'}

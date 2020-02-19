@@ -59,7 +59,7 @@ local noops = {
 	['vierde'] = '(type($1)=="function") and $1(3) or $1[3]',
 }
 
-local diops = {
+local binops = {
 	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
 	['map'] = '$1.map($2)',
 	['vouw'] = '$1.reduce($2)',
@@ -135,10 +135,10 @@ local diops = {
 
 function jsgen(sfc)
 
-	local focus = 1
 	local maakvar = maakindices()
 	local L = {}
 	local tabs = ''
+	local focus = 1
 
 	local function emit(fmt, ...)
 		local args = {...}
@@ -159,7 +159,7 @@ function jsgen(sfc)
 			-- niets
 
 		elseif tonumber(atoom(ins)) then
-			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. atoom(ins)..';'
+			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. atoom(ins) .. ';'
 			focus = focus + 1
 
 		elseif fn(ins) == 'rep' then
@@ -167,7 +167,7 @@ function jsgen(sfc)
 			local num = tonumber(atoom(arg(ins)))
 			assert(num, unlisp(ins))
 			for i = 1, num-1 do
-				L[#L+1] = tabs..string.format('var %s = %s', varnaam(focus+i), varnaam(focus))
+				L[#L+1] = tabs..string.format('var %s = %s;', varnaam(focus+i), varnaam(focus))
 				focus = focus + 1
 			end
 
@@ -178,8 +178,7 @@ function jsgen(sfc)
 				local naam = varnaam(focus - i + 1)
 				L[#L+1] = tabs..'  x = '..naam
 			end
-			L[#L+1] = tabs..'  return x;'
-			L[#L+1] = tabs..'}'
+			L[#L+1] = tabs..string.format('function %s(x) {')
 
 		elseif fn(ins) == 'wissel' then
 			local naama = varnaam(focus)
@@ -192,22 +191,17 @@ function jsgen(sfc)
 			local di = unops[atoom(ins)]:gsub('$1', naam)
 			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
 
-		elseif fn(ins) == 'fn.plus' then
-			local naam = varnaam(focus)
-			local c = atoom(arg(ins))
-			L[#L+1] = tabs..string.format('var %s = %s + %s;', naam, naam, c)
-
-		elseif diops[atoom(ins)] then
+		elseif binops[atoom(ins)] then
 			local naama = varnaam(focus-2)
 			local naamb = varnaam(focus-1)
-			local di = diops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
+			local di = binops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
 			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
 			focus = focus - 1
 
 		elseif atoom(ins) == 'eind' then
-			local naama = varnaam(focus-1)
+			local naama = varnaam(focus)
 			local naamb = varnaam(focus-2)
-			L[#L+1] = tabs.."return "..naama
+			L[#L+1] = tabs..'return '..naama..';'
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs.."}"
 			focus = focus - 1
@@ -215,19 +209,27 @@ function jsgen(sfc)
 		elseif atoom(ins) == 'einddan' then
 			local naam = varnaam(focus-1)
 			local tempnaam = 'tmp'
-			L[#L+1] = tabs .. tempnaam .. " = " .. naam
+			L[#L+1] = tabs .. tempnaam .. " = " .. naam .. ';'
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs.."}"
-			L[#L+1] = tabs..'var ' .. naam .. " = " .. tempnaam
-			focus = focus - 1
+			L[#L+1] = tabs..'var ' .. naam .. " = " .. tempnaam .. ';'
+			focus = focus
 
 		-- biebfuncties?
 		elseif noops[atoom(ins)] then
-			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. noops[atoom(ins)]..';'
+			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. noops[atoom(ins)] .. ';'
 			focus = focus + 1
 
 		elseif fn(ins) == 'set' then
-			error'TODO'
+			local set = {}
+			local num = tonumber(atoom(arg(ins)))
+			local naam = varnaam(focus - num)
+			for i=1,num do
+				set[i] = varnaam(i + focus - num - 1)
+			end
+			L[#L+1] = tabs..string.format("var %s = new Set([%s]);", naam, table.concat(set, ","))
+			focus = focus - num + 1
+
 
 		elseif fn(ins) == 'tupel' or fn(ins) == 'lijst' then
 			local tupel = {}
@@ -236,7 +238,17 @@ function jsgen(sfc)
 			for i=1,num do
 				tupel[i] = varnaam(i + focus - num - 1)
 			end
-			L[#L+1] = tabs..string.format("var %s = [%s]", naam, table.concat(tupel, ","))
+			L[#L+1] = tabs..string.format("var %s = [%s];", naam, table.concat(tupel, ","))
+			focus = focus - num + 1
+
+		elseif fn(ins) == 'string' then
+			local text = {}
+			local num = tonumber(atoom(arg(ins)))
+			local naam = varnaam(focus - num)
+			for i=1,num do
+				text[i] = varnaam(i + focus - num - 1)
+			end
+			L[#L+1] = tabs..string.format("var %s = String.fromCharCode(%s);", naam, table.concat(text,  ","))
 			focus = focus - num + 1
 
 		elseif fn(ins) == 'arg' then
@@ -253,7 +265,8 @@ function jsgen(sfc)
 			tabs = tabs..'  '
 
 		elseif atoom(ins) == 'dan' then
-			local naam = varnaam(focus-1)
+			focus = focus-1
+			local naam = varnaam(focus)
 			L[#L+1] = tabs..string.format("if (%s) {", naam)
 			tabs = tabs..'  '
 
@@ -264,12 +277,12 @@ function jsgen(sfc)
 		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
-	L[#L+1] = 'var A = ...'
-
-	for i,ins in ipairs(sfc) do
+	for i = 1, #sfc do
+		local ins = sfc[i]
 		ins2lua(ins)
 	end
 
-	L[#L+1] = 'return A'
+	L[#L+1] = 'return A;'
+
 	return table.concat(L, '\n')
 end

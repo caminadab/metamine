@@ -5,6 +5,7 @@ local unops = {
 	['%'] = '$1 / 100',
 	['abs'] = 'math.abs($1)',
 	['-'] = '- $1',
+	['¬'] = 'not $1',
 	['Σ'] = 'local sum = 0; for k, v in ipairs($1) do sum = sum + v end; $1 = sum;',
 	['log10'] = 'math.log10($1)',
 	['log'] = 'math.log',
@@ -64,7 +65,7 @@ local noops = {
 	['vierde'] = '(type($1)=="function") and $1(4) or $1[4]',
 }
 
-local diops = {
+local binops = {
 	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
 	['..'] = [[(function(a)
 		local a,b = a[1], a[2]
@@ -124,7 +125,6 @@ local diops = {
 	['<'] = '$1 < $2',
 
 	-- deduct
-	['¬'] = 'not $1',
 	['∧'] = '$1 and $2', 
 	['∨'] = '$1 or $2', 
 	['⇒'] = '$1 and $2', 
@@ -160,10 +160,10 @@ local triops = {
 
 function luagen(sfc)
 
-	local focus = 1
 	local maakvar = maakindices()
 	local L = {}
 	local tabs = ''
+	local focus = 1
 
 	local function emit(fmt, ...)
 		local args = {...}
@@ -212,19 +212,14 @@ function luagen(sfc)
 			L[#L+1] = tabs..string.format('local %s,%s = %s,%s', naama, naamb, naamb, naama)
 
 		elseif unops[atoom(ins)] then
-			local naam = varnaam(focus)
+			local naam = varnaam(focus-1)
 			local di = unops[atoom(ins)]:gsub('$1', naam)
 			L[#L+1] = tabs..string.format('local %s = %s', naam, di)
 
-		elseif fn(ins) == 'fn.plus' then
-			local naam = varnaam(focus)
-			local c = atoom(arg(ins))
-			L[#L+1] = tabs..string.format('local %s = %s + %s', naam, naam, c)
-
-		elseif diops[atoom(ins)] then
-			local naama = varnaam(focus-1)
-			local naamb = varnaam(focus-0)
-			local di = diops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
+		elseif binops[atoom(ins)] then
+			local naama = varnaam(focus-2)
+			local naamb = varnaam(focus-1)
+			local di = binops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
 			L[#L+1] = tabs..string.format('local %s = %s', naama, di)
 			focus = focus - 1
 
@@ -237,9 +232,9 @@ function luagen(sfc)
 			focus = focus - 2
 
 		elseif atoom(ins) == 'eind' then
-			local naama = varnaam(focus-1)
+			local naama = varnaam(focus)
 			local naamb = varnaam(focus-2)
-			L[#L+1] = tabs.."return "..naama
+			L[#L+1] = tabs..'return '..naama
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs.."end"
 			focus = focus - 1
@@ -251,7 +246,7 @@ function luagen(sfc)
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs.."end"
 			L[#L+1] = tabs..'local ' .. naam .. " = " .. tempnaam
-			focus = focus - 1
+			focus = focus
 
 		-- biebfuncties?
 		elseif noops[atoom(ins)] then
@@ -259,7 +254,15 @@ function luagen(sfc)
 			focus = focus + 1
 
 		elseif fn(ins) == 'set' then
-			error'TODO'
+			local set = {}
+			local num = tonumber(atoom(arg(ins)))
+			local naam = varnaam(focus - num)
+			for i=1,num do
+				set[i] = '[' ..varnaam(i + focus - num - 1) .. ']=true'
+			end
+			L[#L+1] = tabs..string.format("local %s = {%s}", naam, table.concat(set, ","))
+			focus = focus - num + 1
+
 
 		elseif fn(ins) == 'tupel' or fn(ins) == 'lijst' then
 			local tupel = {}
@@ -269,6 +272,16 @@ function luagen(sfc)
 				tupel[i] = varnaam(i + focus - num - 1)
 			end
 			L[#L+1] = tabs..string.format("local %s = {%s}", naam, table.concat(tupel, ","))
+			focus = focus - num + 1
+
+		elseif fn(ins) == 'string' then
+			local text = {}
+			local num = tonumber(atoom(arg(ins)))
+			local naam = varnaam(focus - num)
+			for i=1,num do
+				text[i] = varnaam(i + focus - num - 1)
+			end
+			L[#L+1] = tabs..string.format("local %s = string.char(%s)", naam, table.concat(text,  ","))
 			focus = focus - num + 1
 
 		elseif fn(ins) == 'arg' then
@@ -285,7 +298,8 @@ function luagen(sfc)
 			tabs = tabs..'  '
 
 		elseif atoom(ins) == 'dan' then
-			local naam = varnaam(focus-1)
+			focus = focus-1
+			local naam = varnaam(focus)
 			L[#L+1] = tabs..string.format("if %s then", naam)
 			tabs = tabs..'  '
 
@@ -296,14 +310,7 @@ function luagen(sfc)
 		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
-	-- elke app is een functie
-	local main = sfc[1]
-
-	assert(fn(main) == 'fn', 'main is geen functie')
-	local mainarg = varnaam(tonumber(atoom(arg(ins))))
-	L[#L+1] = 'local arg'..mainarg..' = ...'
-
-	for i = 2, #sfc-1 do
+	for i = 1, #sfc do
 		local ins = sfc[i]
 		ins2lua(ins)
 	end

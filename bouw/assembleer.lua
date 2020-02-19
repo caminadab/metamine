@@ -7,7 +7,10 @@ function assembleer(asm, naam)
 	-- schrijf asm
 	file(snaam, asm)
 
-	os.execute(string.format('as -g %s -o %s --no-pad-section -R', snaam, onaam))
+	-- -g
+	os.execute(string.format('as %s -o %s --no-pad-section -R', snaam, onaam))
+	--os.execute(string.format('gcc -nostdlib', snaam, onaam))
+
 
 	-- lees obj
 	local obj = file(onaam)

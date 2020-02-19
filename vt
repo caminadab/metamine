@@ -189,8 +189,9 @@ if opt.i or opt.im then
 		if opt.L then
 			print('=== START ===')
 		end
-		local exp = doe(app)
+		local main = doe(app)
 		if opt.L then
+			print(lenc(main))
 			print()
 		end
 
@@ -213,7 +214,7 @@ elseif opt.l or opt.lua then
 		while true do
 			nu = socket.gettime()
 			io.write(ansi.wisregel, ansi.regelbegin)
-			io.write(lenc(main(nu)), ' ')
+			io.write(lenc(main), ' ')
 			io.flush()
 			socket.sleep(1/60)
 		end

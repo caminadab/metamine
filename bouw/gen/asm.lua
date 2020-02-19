@@ -16,10 +16,27 @@ local cmp = {
 }
 
 local op2asm = {
-	['+'] = 'add $1, $2',
-	['-'] = 'sub $1, $2',
-	['·'] = 'imul $1, $2',
-	['/'] = 'div $1, $2',
+	['+'] = [[  mov rax, 8[rsp]	# (+)
+  mov rbx, [rsp]
+  add rax, rbx
+  mov 8[rsp], rax
+  add rsp, 8]],
+
+	['-'] = [[  mov rax, [rsp]	# (-)
+	neg rax
+	mov [rsp], rax]],
+
+	['·'] = [[  mov rax, 8[rsp]	# (·)
+  mov rbx, [rsp]
+  imul rax, rbx
+  mov 8[rsp], rax
+  add rsp, 8]],
+
+	['/'] = [[  mov rax, 8[rsp]	# (/)
+  mov rbx, [rsp]
+  idiv rax, rbx
+  mov -8[rsp], rax
+  add rsp, 8]],
 }
 
 function asmgen(im)
@@ -37,22 +54,27 @@ function asmgen(im)
 
 	local function ins2asm(ins)
 		if fn(ins) == 'fn' then
-			local res = 'fn'..atoom(arg(ins))..':'
+			local res = 'fn'..atoom(arg(ins))..': \t#'..combineer(ins)
+
 			L[#L+1] = res
+
 		elseif tonumber(atoom(ins)) then
+			L[#L+1] = '  sub rsp, 8 \t#'..combineer(ins)
 			L[#L+1] = '  mov rax, '..atoom(ins)
-			L[#L+1] = '  mov -8[rsp], rax'
-			L[#L+1] = '  add rsp, 8'
+			L[#L+1] = '  mov [rsp], rax'
+
+		elseif op2asm[atoom(ins)] then
+			L[#L+1] = op2asm[atoom(ins)]
+
 		elseif atoom(ins) == 'eind' then
 			L[#L+1] = '# eind'
+
 		else
-			L[#L+1] = '  mov rbx, -8[rsp]'
-			L[#L+1] = '  mov rax, -16[rsp]'
-			L[#L+1] = '  add rbx, rax'
+			L[#L+1] = '  nop\t#'..combineer(ins)
 		end
 	end
 
-	assert(fn(im[1]) == 'fn', 'main moet een functie zijn')
+	--assert(fn(im[1]) == 'fn', 'main moet een functie zijn')
 
 	L[#L+1] = [[
   .intel_syntax noprefix
@@ -64,12 +86,19 @@ function asmgen(im)
 start: ]]
 
 
-	for i = 2, #im-1 do
+	for i = 1, #im do
 		local ins = im[i]
 		ins2asm(ins)
 	end
 
 	L[#L+1] = [[
+
+  # Exit
+  mov rax, 60
+  mov rdi, [rsp]
+  syscall
+  ret
+
 .section .rodata
 
 .groet:

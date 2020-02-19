@@ -1,80 +1,43 @@
-local A = ...
-local B = A
-print("local B = A")
-print(B)
-local C = B
-print("local C = B")
-print(C)
-local D = C
-print("local D = C")
-print(D)
-local E = D
-print("local E = D")
-print(E)
-local F = E
-print("local F = E")
-print(F)
-local F = function(x) return x end
-print("local F = function(x) return x end")
-print(F)
-local F,E = E,F
-print("local F,E = E,F")
-print(F)
-local F = 1
-print("local F = 1")
-print(F)
-local F = function(x) return F end
-print("local F = function(x) return F end")
-print(F)
-local E = function(x) return {E(x), F(x)} end
-print("local E = function(x) return {E(x), F(x)} end")
-print(E)
-local E,D = D,E
-print("local E,D = D,E")
-print(E)
-local E = function(x) return x[1] + x[2] end
-print("local E = function(x) return x[1] + x[2] end")
-print(E)
-local D = function(x) return E(D(x)) end
-print("local D = function(x) return E(D(x)) end")
-print(D)
-local D,C = C,D
-print("local D,C = C,D")
-print(D)
-local D = 2
-print("local D = 2")
-print(D)
-local C = (function (f,n) for i=1,n do r = f(r) end ; return r; end)(C,D)
-print("local C = (function (f,n) for i=1,n do r = f(r) end ; return r; end)(C,D)")
-print(C)
-local C,B = B,C
-print("local C,B = B,C")
-print(C)
-local C = 3
-print("local C = 3")
-print(C)
-local B = B(C)
-print("local B = B(C)")
-print(B)
-local B,A = A,B
-print("local B,A = A,B")
-print(B)
-local C = B
-print("local C = B")
-print(C)
-local C = 2
-print("local C = 2")
-print(C)
-local C,B = B,C
-print("local C,B = B,C")
-print(C)
-local C = 3
-print("local C = 3")
-print(C)
-local B = B ^ C
-print("local B = B ^ C")
-print(B)
-local A = A + B
-print("local A = A + B")
-print(A)
+function A(argC) 
+  local B = argC
+  local C = 1
+  local B = B[C+1]
+  if B then
+    local C = argC
+    local D = 2
+    local C = C[D+1]
+    tmp = C
+  end
+  local C = tmp
+  local D = argC
+  local E = 0
+  local D = D[E+1]
+  local E = 0
+  local D = D[E+1]
+  local C = {C,D}
+  local C = (function(alts) for i,alt in ipairs(alts) do if alt then return alt end end end)(C)
+  local D = argC
+  local E = 1
+  local D = D[E+1]
+  if D then
+    local E = argC
+    local F = 2
+    local E = E[F+1]
+    tmp = E
+  end
+  local E = tmp
+  local F = argC
+  local G = 0
+  local F = F[G+1]
+  local G = 1
+  local F = F[G+1]
+  local E = {E,F}
+  local E = (function(alts) for i,alt in ipairs(alts) do if alt then return alt end end end)(E)
+  local D = {D,E}
+  local E = 2
+  local F = 3
+  local E = {[E]=true,[F]=true}
+  local D = {D,E}
+  return E
+end
 return A

@@ -117,8 +117,8 @@ function unparse_work(exp, maxlen, tabs, res, klaar)
 	klaar[exp] = true
   if isatoom(exp) then
     insert(res,atoom(exp))
-	elseif fn(exp) == '[]u' then
-		insert(res, '[]u(...)')
+	elseif fn(exp) == '""' then
+		insert(res, '""(...)')
 	elseif isfn(exp) or isobj(exp) then
 		local len = unparse_len(exp) 
     local split = len > maxlen --len > maxlen and len < 1.4 * maxlen or len > 3 * maxlen and len < 5.5 * maxlen or len > 7 * maxlen

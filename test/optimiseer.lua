@@ -44,3 +44,5 @@ assert(a == "5", a)
 
 local a = T "1 + 1 + 1 + 1"
 assert(a == "4", a)
+
+print('alles ok')

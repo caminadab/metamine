@@ -76,7 +76,7 @@ function lenc(t)
 				isset = false
 			end
 		end
-		if islijst then
+		if islijst and not isset then
 			local r = {}
 			r[#r+1] = '['
 			local previ = 1
@@ -93,6 +93,7 @@ function lenc(t)
 			return table.concat(r)
 		end
 
+		-- isset
 		local r = {}
 		r[#r+1] = '{'
 		for k,v in pairs(t) do

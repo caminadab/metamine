@@ -39,7 +39,7 @@ end
 
 -- (- 1)
 local a = imparse [[
-	put 1
+	push 1
 	-
 ]]
 verwacht(a, -1)
@@ -47,7 +47,7 @@ verwacht(a, -1)
 
 -- 1 + 2
 local a = imparse [[
-	put 1
+	push 1
 	push 2
 	+
 ]]
@@ -56,7 +56,7 @@ verwacht(a, 3)
 
 -- 1 · 2 + 3
 local a = imparse [[
-	put 1
+	push 1
 	push 2
 	+
 	push 3
@@ -67,7 +67,7 @@ verwacht(a, 9)
 
 -- ((-) ∘ (-))(1) = 1
 local a = imparse [[
-	put -
+	push -
 	push -
 	∘
 	push 1
@@ -78,7 +78,7 @@ verwacht(a, 1)
 
 -- ((-) ∘ (-))(1) = 1
 local a = imparse [[
-	put fn.id
+	push fn.id
 	push 1
 	_f
 ]]
