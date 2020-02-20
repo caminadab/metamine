@@ -148,6 +148,20 @@ function typeer(exp)
 			local type = typegraaf:maaktype(X('→', 'nat', lijsttype))
 			types[moes(exp)] = type
 
+		-- min
+		elseif fn(exp) == '-' then
+			types[moes(exp)] = types[moes(arg(exp))]
+
+		-- plus
+		elseif fn(exp) == '+' or fn(exp) == '·' or fn(exp) == '/' then
+			local A = moes(arg0(exp))
+			local B = moes(arg1(exp))
+			if types[A] and atoom(types[A]) ~= 'int' and atoom(types[A]) ~= 'getal' then
+				types[moes(exp)] = types[A]
+			else
+				types[moes(exp)] = types[B]
+			end
+
 		-- machtsverheffing
 		elseif fn(exp) == '^' then
 			local A = moes(arg0(exp))

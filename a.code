@@ -1,7 +1,2 @@
-uit = in
-
-als in mod 2 > 1 dan
-	a = 3
-anders
-	a = 2
-eind
+data = (1..10 · 10) × [50] × [5]
+uit = data

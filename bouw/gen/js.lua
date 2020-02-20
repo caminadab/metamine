@@ -39,8 +39,6 @@ local noops = {
 	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f(r); ; return r;})',
 	['mod'] = 'x => x[0] % x[1]',
 
-	['tekst'] = 'tekst',
-
 	['|'] = '$1 or $2',
 	['fn.id'] = 'x => x',
 	['fn.constant'] = 'function() return $1 end',
@@ -79,6 +77,7 @@ local binops = {
 	['·v1'] = '$1.map(x => x * $2)',
 	['+f'] = '$1.map(x => x + $2)',
 	['·f1'] = '$1.map(x => x + $2)',
+	['/v1'] = '$1.map(x => x / $2)',
 	['vouw'] = '$1.reduce($2)',
 	['_f'] = '$1($2)',
 	['_i'] = '$1[$2+1]',
@@ -156,6 +155,9 @@ function jsgen(sfc)
 
 	local maakvar = maakindices()
 	local L = {}
+	if opt and opt.L then
+		setmetatable(L, {__newindex = function (t,k,v) rawset(L, k, v); print(v); end })
+	end
 	local tabs = ''
 	local focus = 1
 

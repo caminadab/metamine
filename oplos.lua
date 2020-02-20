@@ -145,7 +145,7 @@ function oplos(exp, voor)
 
 				-- local neq = 
 				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-				local neq = X('|:=', a, X('⇒', 'in.start', b))
+				local neq = X('|:=', a, X('⇒', 'start', b))
 				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true

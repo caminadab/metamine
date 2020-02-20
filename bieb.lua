@@ -208,6 +208,15 @@ function bieb()
 		end
 	end;
 
+	['_l'] = function(a)
+		local num = a[2]
+		return a[1][num+1]
+	end;
+
+	['_f'] = function(a)
+		return a[1](a[2])
+	end;
+
 	['_u'] = function(a, b)
 		return a:byte(b)
 	end;

@@ -40,7 +40,7 @@ local binop  = set(
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
 	'∪','∩',':','∈','|',
 	'_f','_f2','_l','^f','^l',
-	'+v', '+v1', '·v', '·v1',
+	'+v', '+v1', '·v', '·v1', '/v1',
 	'+m', '+m1', '·m1'
 )
 
@@ -104,7 +104,10 @@ function codegen(exp, ins)
 		focus = focus + 1
 
 	elseif isobj(exp) then
-		for i,sub in ipairs(exp) do
+		--for i=#exp,1,-1 do
+		for i=1,#exp do
+			local sub = exp[i]
+			--print('SUB', i, combineer(exp), combineer(sub))
 			codegen(sub, ins)
 		end
 		if     obj(exp) == ',' then

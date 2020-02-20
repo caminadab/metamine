@@ -15,7 +15,7 @@ function vectoriseer(asb, types)
 			elseif islijst then
 				exp.f = X'_l'
 			else
-				print('Waarschuwing: vectortype van '..unlisp(exp)..' kon niet eenduidig worden bepaald')
+				--print('Waarschuwing: vectortype van '..unlisp(exp)..' kon niet eenduidig worden bepaald')
 			end
 		end
 
@@ -75,6 +75,40 @@ function vectoriseer(asb, types)
 				exp.f = X'-f'
 			elseif islijst then
 				exp.f = X'-v'
+			end
+		end
+
+		-- (/) → +/ | +/1 | /m1 | /f
+		if fn(exp) == '/' then
+			local atype = types[moes(arg0(exp))]
+			local btype = types[moes(arg1(exp))]
+			local isnumA = atoom(atype) == 'int' or atoom(atype) == 'getal'
+			local isnumB = atoom(btype) == 'int' or atoom(btype) == 'getal'
+			local isfuncA = fn(atype) == '→' or atoom(atype) == 'functie'
+			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
+			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
+			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
+
+			-- vector
+			if islijstA and islijstB then exp.f = X'/v' 
+			elseif islijstA and isnumB then exp.f = X'/v1' 
+			elseif islijstB and isnumA then
+				exp.f = X'/v1' 
+				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
+
+			-- functie
+			elseif isfuncA and isfuncB then exp.f = X'/f'
+			elseif isfuncA and isnumB then exp.f = X'/f1'
+			elseif isfuncB and isnumA then
+				exp.f = X'/f1' 
+				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
+
+			-- matrix TODO
+			elseif isfuncA and isfuncB then exp.f = X'/m'
+			elseif isfuncA and isnumB then exp.f = X'/m1'
+			elseif isfuncB and isnumA then
+				exp.f = X'/m1' 
+				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 			end
 		end
 

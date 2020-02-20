@@ -101,16 +101,27 @@
 					editor.addWidget(widgetpos, preview);
 				};
 
+				var context;
+				function getcontext() {
+					if (context)
+						return context;
+					uit.innerHTML = '<canvas width="1280" height="720">'
+					context = uit.getContext("2d");
+					alert("context = " + context);
+					return context;
+				}
+
 				var main = new Function("IN", j.js)();
 				uit.innerHTML = '<pre>' + (j.js) + '</pre>';
 				var nu = new Date().getTime() / 1000;
 				var vars = [];
 				var uitvoer;
-				var uv = main([vars, true, nu, uit]);
+				var uv = main([vars, true, nu, uit, getcontext]);
 
 				vars = uv[0];
 				uitvoer = uv[1];
-				uit.innerHTML = uitvoer;
+
+				uit.innerHTML = JSON.stringify(uitvoer);
 
 				try {
 					var f = (ev) => {
@@ -119,7 +130,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 
-						uit.innerHTML = '<pre>'+uitvoer+'</pre>';
+						uit.innerHTML = JSON.stringify(uitvoer);
 
 						if (!stop)
 							requestAnimationFrame(f);
