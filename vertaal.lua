@@ -6,6 +6,7 @@ require 'bouw.codegen'
 require 'optimiseer'
 require 'vertolk'
 require 'oplos'
+require 'vectoriseer'
 
 
 function scope(x)
@@ -68,42 +69,6 @@ local function genjs(sfc)
 	gen[#gen+1] = 'return A;'
 	gen[#gen+1] = '}'
 	return table.concat(gen, '\n')
-end
-
--- past types toe om operators te preoverloaden
-function vectoriseer(asb, types)
-	for exp in boompairsdfs(asb) do
-
-		-- L_i → (_i)(L, i)
-		if fn(exp) == '_' then
-			local fntype = types[moes(arg0(exp))]
-			local islijst = atoom(arg0(fntype)) == 'nat' or obj(fntype) == ','
-			local isfunc = fn(fntype) == '→' and atoom(arg0(fntype)) ~= 'nat'
-
-			if isfunc then
-				exp.f = X'_f'
-			elseif islijst then
-				exp.f = X'_l'
-			else
-				print('Waarschuwing: vectortype van '..unlisp(fntype)..' kon niet eenduidig worden bepaald')
-			end
-		end
-
-		-- (F^i) → (^)(F, i)
-		if fn(exp) == '^' then
-			local basetype = types[moes(arg0(exp))]
-			local isfunc = fn(basetype) == '→' or atoom(basetype) == 'functie'
-			if isfunc then
-				exp.f = X'^f'
-			elseif atoom(basetype) == 'getal' or atoom(basetype) == 'int' then
-				exp.f = X'^'
-			else
-				-- niets
-			end
-		end
-
-	end
-	return asb
 end
 
 -- code → struct

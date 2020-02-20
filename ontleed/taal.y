@@ -129,9 +129,9 @@
 %left "‖" "::"
 %nonassoc CALL
 %left "×" UNIE INTERSECTIE
-%left ".."
 %left '+' '-'
 %left "·" '/'
+%left ".."
 %left NEG '#'
 %right '^' '_'
 %left OUD

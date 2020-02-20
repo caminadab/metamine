@@ -145,7 +145,7 @@ YYLTYPE locincrement(YYLTYPE loc, char* str) {
 }
 
 int xlua_reftekst(lua_State* L, char* str, YYLTYPE loc) {
-	int t = xlua_refobj(L, xlua_refatoom(L, "[]u", loc), loc);
+	int t = xlua_refobj(L, xlua_refatoom(L, "\"", loc), loc);
 
 	int i = 0;
 	int esc = 0;

@@ -235,6 +235,7 @@ end
 -- A,B,AA,AB,BA,BB,AAA,AAB,ABA,ABB,BAA,BAB,BBA,BBB,AAAA
 function varnaam(i)
 	local i = i - 1
+	assert(i >= 0)
 	if i == 0 then return 'A' end
 	local r = ''
 	while i > 0 do

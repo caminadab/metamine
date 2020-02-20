@@ -34,8 +34,11 @@ zak: verzameling
 vorm: iets → iets
 html: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
-canvas: lijst(letter)
 tekst: iets → lijst(letter)
+
+canvas2d: 
+canvasClear: canvas → canvas
+canvasFillRect: canvas,ℝ,ℝ,ℝ,ℝ → canvas
 
 verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
@@ -64,10 +67,10 @@ muis.beweegt: bit
 muis.pos: getal, getal
 muis.x: getal
 muis.y: getal
-toets.neer: int → bit
-toets.neer.begin: int → bit
-toets.neer.eind: int → bit
-toets.op: int → bit
+
+toets.aan: int → bit
+toets.begin: int → bit
+toets.eind: int → bit
 
 syscall: iets → int
 
@@ -103,11 +106,11 @@ cos :  getal → getal
 tan :  getal → getal
 sincos :  getal → getal, getal
 cossin :  getal → getal, getal
-(+) :  getal, getal → getal
+;(+) :  getal, getal → getal
 ;(+) :  int, int → getal
-(-) :  getal → getal
-(·) :  (getal, getal) → getal
-(/) :  (getal, getal) → getal
+;(-) :  getal → getal
+;(·) :  (getal, getal) → getal
+;(/) :  (getal, getal) → getal
 ;(/) :  (int, int) → getal
 ;(^) :  (getal, getal) → getal
 ;(^) :  (int, int) → int

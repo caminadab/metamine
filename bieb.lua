@@ -27,10 +27,9 @@ function bieb()
 	-- canvas
 	['pad.begin'] = true,
 	--['context2d'] = true,
-	['canvas2d'] = true,
-	['canvasFillRect'] = true,
-	['canvasClear'] = true,
-	['aspect'] = function(x) return 16/9 end;
+	['canvas.context'] = true,
+	['canvas.fillRect'] = true,
+	['canvas.clear'] = true,
 
 	-- functioneel
 	['fn.inc'] = function(x) return x + 1 end;
@@ -179,6 +178,8 @@ function bieb()
 	rechthoek = function() return('rechthoek') end;
 	cirkel = function() return('cirkel') end;
 	lijn = function() return('lijn') end;
+
+	-- input
 	['muis.klik'] = false,
 	['muis.klik.begin'] = false,
 	['muis.klik.eind'] = false,
@@ -190,11 +191,9 @@ function bieb()
 
 	-- toetsenbord
 	--['toets.neer'] = true,
-	['toets.neer.begin'] = true,
-	['toets.neer.eind'] = true,
-
-	['invoer.registreer'] = function (a) return a end;
-
+	['toets.aan'] = true,
+	['toets.begin'] = true,
+	['toets.eind'] = true,
 
 	['_'] = function(a)
 		local a,b = a[1],a[2]

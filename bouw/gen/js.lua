@@ -12,7 +12,7 @@ local unops = {
 	['|'] = '(function(alts) { for (var i=0; i<alts.length; i++) { if (alt) return alt; }})($1)',
 
 	['canvas2d'] = '$1.getContext("2d")',
-	['canvasClear'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
+	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 
 	['fn.nul'] = '$1(0)',
 	['fn.een'] = '$1(1)',
@@ -73,6 +73,12 @@ local noops = {
 
 local binops = {
 	['map'] = '$1.map($2)',
+	['+v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] + $2[i]); return r;})()',
+	['+v1'] = '$1.map(x => x + $2)',
+	['·v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] * $2[i]); return r;})()',
+	['·v1'] = '$1.map(x => x * $2)',
+	['+f'] = '$1.map(x => x + $2)',
+	['·f1'] = '$1.map(x => x + $2)',
 	['vouw'] = '$1.reduce($2)',
 	['_f'] = '$1($2)',
 	['_i'] = '$1[$2+1]',
