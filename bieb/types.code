@@ -37,8 +37,9 @@ consoleLog: lijst(letter) → bit
 tekst: iets → lijst(letter)
 
 canvas2d: 
-canvasClear: canvas → canvas
-canvasFillRect: canvas,ℝ,ℝ,ℝ,ℝ → canvas
+canvas.clear: canvas → canvas
+setcontext: functie
+;canvasFillRect: canvas,ℝ,ℝ,ℝ,ℝ → canvas
 
 verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
@@ -52,7 +53,7 @@ lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 label: ℝ, ℝ, lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
-vouw: functie
+vouw: lijst,functie → iets
 
 requestAnimationFrame: (getal → lijst(letter)) → int
 contextVan: lijst(letter) → canvas

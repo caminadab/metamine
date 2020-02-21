@@ -78,7 +78,27 @@ function codegen(exp, ins)
 	elseif fn(exp) == '_arg' then
 		ins[#ins+1] = X('arg', atoom(arg(exp)))
 		focus = focus + 1
-	
+
+	-- portable functies
+	elseif binop[atoom(exp)] then
+		ins[#ins+1] = X('fn', '999')
+		ins[#ins+1] = X('arg', '999')
+		ins[#ins+1] = X('0')
+		ins[#ins+1] = X('_l')
+		ins[#ins+1] = X('arg', '999')
+		ins[#ins+1] = X('1')
+		ins[#ins+1] = X('_l')
+		ins[#ins+1] = exp
+		ins[#ins+1] = X('eind')
+		focus = focus + 1
+
+	elseif unop[atoom(exp)] then
+		ins[#ins+1] = X('fn', '999')
+		ins[#ins+1] = X('arg', '999')
+		ins[#ins+1] = exp
+		ins[#ins+1] = X('eind')
+		focus = focus + 1
+
 	elseif bieb[atoom(exp)] then
 		ins[#ins+1] = exp
 		focus = focus + 1

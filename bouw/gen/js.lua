@@ -14,7 +14,6 @@ local unops = {
 	['|'] = '((alts) => { for (var i=0; i<alts.length; i++) {  var alt = alts[i]; if (alt != null) {return alt;} } })($1)',
 
 	['canvas2d'] = '$1.getContext("2d")',
-	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 
 	['fn.nul'] = '$1(0)',
 	['fn.een'] = '$1(1)',
@@ -27,14 +26,6 @@ local unops = {
 	['l.vierde'] = '$1[3]',
 }
 
-local triops = {
-	['vierkant'] = [[
-		context => {
-			var x,y,r = $1,$2,$3;
-			context.fillRect(c,x,y,r);
-			return context;
-		} ]]
-}
 
 local noops = {
 	['afrond.onder'] = 'Math.floor',
@@ -42,10 +33,21 @@ local noops = {
 	['afrond.boven'] = 'Math.ceil',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
+	['vierkant'] = [[ args => {
+  var x = args[0];
+  var y = args[1];
+  var r = args[2];
+  return context => {
+		context.fillStyle = 'white';
+    context.fillRect(x,y,r,r);
+    return context;
+  }
+  } ]],
+	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
 
 	['sign'] = '$1 > 0 and 1 or -1',
 	['map'] = 'tf => tf[0].map(tf[1])',
-	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f(r); ; return r;})',
+	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
 	['mod'] = 'x => x[0] % x[1]',
 
 	['int'] = 'Math.floor',
@@ -58,8 +60,7 @@ local noops = {
 	['fn.merge'] = '{$1(x),$2(x)}',
 	['fn.plus'] = 'function(x) return function(y) return x + y end end',
 	['-'] = 'function(x) return -x end',
-	['log10'] = 'math.log',
-	['+'] = 'x => x[0] + x[1]',
+	['log10'] = 'math.log10',
 	['⊤'] = 'true',
 	['⊥'] = 'false',
 	['∅'] = '{}',
@@ -92,11 +93,11 @@ local binops = {
 	['/v1'] = '$1.map(x => x / $2)',
 	['vouw'] = '$1.reduce($2)',
 	['_f'] = '$1($2)',
-	['_i'] = '$1[$2+1]',
-	['_'] = 'type($1) == "function" and $1($2) or $1[$2+1]',
+	['_l'] = '$1[$2]',
+	['_'] = 'typeof($1) == "function" ? $1($2) : $1[$2]',
 	['fn.merge'] = '{$1(x), $2(x)}',
 	['^r'] = '$1 ^ $2',
-	['∘'] = 'x => $2($1(x))',
+	['∘'] = '((a,b) => (x => b(a(x))))($1,$2)',
 	['+'] = '$1 + $2',
 	['·'] = '$1 * $2',
 	['/'] = '$1 / $2',
@@ -121,8 +122,6 @@ local binops = {
 		}
 	})($1,$2)]],
 	['derdemachtswortel'] = 'Math.pow($1,1/3)',
-	['_f'] = '$1($2)',
-	['_l'] = '$1[$2]',
 
 	-- cmp
 	['>'] = '$1 > $2',
@@ -138,9 +137,6 @@ local binops = {
 	['∨'] = '$1 || $2', 
 	['⇒'] = '$1 && $2', 
 
-	['sin'] = 'Math.sin($1)',
-	['cos'] = 'Math.cos($1)',
-	['tan'] = 'Math.tan($1)',
 	['sincos'] = '{Math.cos($1), Math.sin($1)}',
 	['cossin'] = '{Math.sin($1), Math.cos($1)}',
 
@@ -225,14 +221,6 @@ function jsgen(sfc)
 			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
 			focus = focus - 1
 
-		elseif triops[atoom(ins)] then
-			local naama = varnaam(focus-3)
-			local naamb = varnaam(focus-2)
-			local naamc = varnaam(focus-1)
-			local di = triops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb):gsub('$3', naamc)
-			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
-			focus = focus - 2
-
 		elseif atoom(ins) == 'eind' then
 			local naama = varnaam(focus-1)
 			local naamb = varnaam(focus-2)
@@ -307,6 +295,7 @@ function jsgen(sfc)
 
 		else
 			error('onbekende instructie: '..unlisp(ins))
+
 		end
 		--L[#L+1] = 'print("'..L[#L]..'")'
 		--L[#L+1] = 'print('..varnaam(focus)..')'
