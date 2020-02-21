@@ -1,1 +1,6 @@
-uit = sin(3)
+uit = x, y
+
+x := 2
+y := 3
+
+main = in.vars, start → uit

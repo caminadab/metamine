@@ -67,7 +67,7 @@ end
 -- oplos: exp → waarde,fouten
 function oplos(exp, voor)
 	local maakvar = maakvars()
-	local maakindex = maakindices(0)
+	local maakindex = maakindices()
 	local fouten = {}
 	if isatoom(exp) then return X'ZWARE FOUT',fouten end -- KAN NIET
 	if fn(exp) == "⋀" then
@@ -100,7 +100,7 @@ function oplos(exp, voor)
 		local schaduw = {} -- naam → index
 		for eq in pairs(eqs) do
 			if fn(eq) == ':=' then
-				local naam = arg0(eq).v
+				local naam = atoom(arg0(eq))
 				local index = maakindex()
 				vars[naam] = eq
 				schaduw[naam] = index
@@ -146,6 +146,7 @@ function oplos(exp, voor)
 				-- local neq = 
 				--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
 				local neq = X('|:=', a, X('⇒', 'start', b))
+				neq.start = true
 				--print(e2s(neq))
 				oud[eq] = true
 				nieuw[neq] = true
@@ -334,7 +335,7 @@ function oplos(exp, voor)
 					exp.v = nil
 					exp.f = X('_l')
 					assert(schaduw[naam], naam .. ' is geen variabele')
-					exp.a = X(',', 'in.vars', schaduw[naam])
+					exp.a = X(',', 'in.vars', tostring(schaduw[naam]-1))
 				end
 			end
 			for key,sub in subs(exp) do
@@ -383,7 +384,12 @@ function oplos(exp, voor)
 				local a,b = eq.a[1], eq.a[2]
 				map[a.v or a] = map[a.v or a] or {}
 				local v = map[a.v or a]
-				v[#v+1] = b
+				--print('VAAG', e2s(eq))
+				if eq.start then
+					table.insert(v, 1, b)
+				else
+					v[#v+1] = b
+				end
 				oud[eq] = true
 			end
 		end
@@ -395,7 +401,7 @@ function oplos(exp, voor)
 				alsvar(alts)
 
 				-- voeg de oude waarde toe 
-				alts[#alts+1] = X('_l', 'in.vars', schaduw[naam])
+				alts[#alts+1] = X('_l', 'in.vars', tostring(schaduw[naam]-1))
 
 				local index = schaduw[naam]
 				assert(index, 'geen index voor variabele '..naam)
@@ -491,7 +497,8 @@ function oplos(exp, voor)
 		-- uit (jaja!)
 		local ivars = {o=X'[]'}
 		for var in spairs(vars) do
-			table.insert(ivars, X(var))
+			local i = schaduw[var]
+			ivars[i] = X(var)
 		end
 		local eq = X('=', 'uit.vars', ivars)
 		nieuw[eq] = true
@@ -509,7 +516,7 @@ function oplos(exp, voor)
 				-- 
 				if fn(lam) == '→' then
 					local inn,uit = lam.a[1], lam.a[2]
-					local argindex = maakindex()
+					local argindex = tostring(maakindex())
 
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end

@@ -7,7 +7,7 @@ local unops = {
 	['abs'] = 'Math.abs($1)',
 	['int'] = 'Math.floor($1)',
 	['-'] = '- $1',
-	['Σ'] = 'var sum = 0; for k, v in ipairs($1) do sum = sum + v end; $1 = sum;',
+	['Σ'] = '(x => {var sum = 0; for (var i = 0; i < $1.length; i++) { sum = sum + $1[i]; }; return sum;})()',
 	['log10'] = 'Math.log($1, 10)',
 	['log'] = 'Math.log',
 	['fn.id'] = '$1',

@@ -117,7 +117,7 @@
 					var nu = new Date().getTime() / 1000;
 					var vars = [];
 					var uitvoer;
-					var uv = main([vars, true, nu, uit, getcontext]);
+					var uv = main([vars, true, nu, getcontext]);
 
 					if (!main)
 						alert("Compilation error! " + j.js);
@@ -129,7 +129,7 @@
 
 					var f = (ev) => {
 						var nu = new Date().getTime() / 1000;
-						var uv = main([vars, false, nu, uit]);
+						var uv = main([vars, false, nu, getcontext]);
 						vars = uv[0];
 						uitvoer = uv[1];
 

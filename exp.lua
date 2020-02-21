@@ -263,7 +263,7 @@ end
 function maakindices(i)
 	local i = i or 1
 	return function ()
-		local var = tostring(i)
+		local var = i
 		i = i + 1
 		return var
 	end
