@@ -4,11 +4,6 @@ socket = require 'socket'
 
 local niets = {}
 
-local listmeta = {}
-function listmeta:__tostring()
-	return '[' .. table.concat(map(self, function(a) return tostring(a) end), ',') .. ']'
-end
-
 function bieb()
 	local inn = {}
 	local vars = {}
@@ -500,14 +495,11 @@ function bieb()
 	['map'] = function(a)
 		local a,b = a[1],a[2]
 		local r = {}
-		for i=1,#a do --i,v in ipairs(a) do
+		for i=1,#a do
 			local v = a[i]
 			local s = b(v)
 			r[i] = s
-			--print('B', i, v, r[i])
-			--assert(s)
 		end
-		setmetatable(r, listmeta)
 		return r
 	end;
 

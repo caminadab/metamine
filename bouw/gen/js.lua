@@ -35,7 +35,7 @@ local triops = {
 }
 
 local noops = {
-	['map'] = '(function(tf) {var t,f = tf[0],tf[1]; local r = {} ; for k,v in pairs(t) do r[k] = f(v); end ; return r;})',
+	['map'] = 'tf => tf[0].map(tf[1])',
 	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f(r); ; return r;})',
 	['mod'] = 'x => x[0] % x[1]',
 
@@ -70,7 +70,6 @@ local noops = {
 }
 
 local binops = {
-	['map'] = '$1.map($2)',
 	['+v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] + $2[i]); return r;})()',
 	['+v1'] = '$1.map(x => x + $2)',
 	['·v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] * $2[i]); return r;})()',
@@ -144,7 +143,7 @@ local binops = {
 
 	-- exp
 	-- concatenate
-	['‖'] = 'type($1) == "string" and $1 .. $2 or (for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
+	['‖'] = 'type($1) == "string" and $1 + $2 or (for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
 	['‖u'] = '$1 .. $2',
 	['‖i'] = '(for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
@@ -289,7 +288,7 @@ function jsgen(sfc)
 		elseif fn(ins) == 'fn' then
 			local naam = varnaam(focus)
 			local var = varnaam(tonumber(atoom(arg(ins))))
-			L[#L+1] = tabs..string.format("function %s(%s) {", naam, "arg"..var)
+			L[#L+1] = tabs..string.format("var %s = (%s) => {", naam, "arg"..var)
 			focus = focus + 1
 			tabs = tabs..'  '
 

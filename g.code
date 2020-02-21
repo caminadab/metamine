@@ -1,1 +1,1 @@
-uit = teken[vierkant(0,0,10)]
+uit = (1..10) map (x → x)

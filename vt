@@ -190,6 +190,10 @@ if opt.i or opt.im then
 			print('=== START ===')
 		end
 		local main = doe(app)
+		if opt.n then
+			print(lenc(main))
+			return
+		end
 		local vars, uit
 		local res = main{{0,0,0,0,0}, true, socket.gettime(), false}
 		vars, uit = res[1], res[2]

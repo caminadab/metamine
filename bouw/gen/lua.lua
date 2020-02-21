@@ -67,8 +67,7 @@ local noops = {
 
 local binops = {
 	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
-	['..'] = [[(function(a)
-		local a,b = a[1], a[2]
+	['..'] = [[(function(a, b)
 		local r = {}
 		if a > b then
 			for i=a-1,b,-1 do

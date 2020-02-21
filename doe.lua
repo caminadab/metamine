@@ -12,6 +12,32 @@ function lenc2(exp)
 	end
 end
 
+-- sfc, oudi  →  proc, nieuwi
+function readfn(sfc, i)
+	local proc = {o=X'[]'}
+	local diepte = 0
+
+	while true do
+		--print('PROC', i, diepte, combineer(sfc[i]))
+		proc[#proc+1] = sfc[i]
+
+		if atoom(sfc[i]) == 'eind' and diepte == 0 then
+			return proc, i
+		end
+		if i > #sfc then
+			error('onafgesloten functie')
+		end
+		if fn(sfc[i]) == 'fn' then
+			diepte = diepte + 1
+		end
+		if atoom(sfc[i]) == 'eind' then
+			diepte = diepte - 1
+		end
+
+		i = i + 1
+	end
+end
+
 -- sfc → func
 function doe(sfc, arg0, stack)
 	local stack = stack or {}
@@ -24,7 +50,6 @@ function doe(sfc, arg0, stack)
 		if atoom(ins) == '_f' then
 			local a = stack[#stack-1]
 			local b = stack[#stack-0]
-			print('call')
 			local r = a(b)
 			stack[#stack] = nil
 			stack[#stack] = r
@@ -37,7 +62,9 @@ function doe(sfc, arg0, stack)
 			stack[#stack] = r
 
 		elseif atoom(ins) == 'eind' then
-			return stack[#stack]
+			local res = stack[#stack]
+			stack[#stack] = nil
+			return res
 
 		elseif fn(ins) == 'kp' then
 			local index = tonumber(atoom(arg(ins)))
@@ -49,8 +76,8 @@ function doe(sfc, arg0, stack)
 		elseif fn(ins) == 'lijst' or fn(ins) == 'tupel' then
 			local num = atoom(arg(ins))
 			local r = {}
-			for i=1,num do
-				r[#r+1] = stack[#stack]
+			for i=num,1,-1 do
+				r[i] = stack[#stack]
 				stack[#stack] = nil
 			end
 			stack[#stack+1] = r
@@ -88,31 +115,21 @@ function doe(sfc, arg0, stack)
 			local a = stack[#stack]
 			stack[#stack] = bieb[f](a)
 
+		elseif bieb[atoom(ins)] then
+			stack[#stack+1] = bieb[atoom(ins)]
+
 		elseif atoom(ins) == 'einddan' then
 			-- niets
 			stack[#stack-1] = stack[#stack]
 			stack[#stack] = nil
 
 		elseif fn(ins) == 'fn' then
-			local proc = {o='[]'}
-			local ins0 = ins
+			local proc
 			i = i + 1
-			ins = sfc[i]
+			proc,i = readfn(sfc, i)
 
-			while atoom(ins) ~= 'eind' and i < #sfc do
-				proc[#proc+1] = ins
-				i=i+1
-				ins = sfc[i]
-			end
 			stack[#stack+1] = function(x) return doe(proc, x, stack) end
 			
-			--[[io.write('fn('..atoom(arg(ins0)), '): ')
-			for i,v in ipairs(proc) do
-				io.write(unlisp(v),' ')
-			end
-			print()
-			]]
-
 		elseif tonumber(atoom(ins)) then
 			stack[#stack+1] = tonumber(atoom(ins))
 
@@ -144,7 +161,7 @@ function doe(sfc, arg0, stack)
 		end
 
 		if opt and opt.L then
-			io.write(combineer(ins) .. '\t| ')
+			io.write(unlisp(ins) .. '\t| ')
 		
 			for i, v in ipairs(stack) do
 				io.write(lenc2(v), ' ')
