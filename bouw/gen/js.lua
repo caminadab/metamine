@@ -37,6 +37,13 @@ local triops = {
 }
 
 local noops = {
+	['afrond.onder'] = 'Math.floor',
+	['afrond']       = 'Math.round',
+	['afrond.boven'] = 'Math.ceil',
+	['int'] = 'Math.floor',
+	['abs'] = 'Math.abs',
+
+	['sign'] = '$1 > 0 and 1 or -1',
 	['map'] = 'tf => tf[0].map(tf[1])',
 	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f(r); ; return r;})',
 	['mod'] = 'x => x[0] % x[1]',
@@ -140,12 +147,6 @@ local binops = {
 	-- discreet
 	['min'] = 'Math.min($1,$2)',
 	['max'] = 'Math.max($1,$2)',
-	['afrond.onder'] = 'Math.floor($1)',
-	['afrond']       = 'Math.round($1)',
-	['afrond.boven'] = 'Math.ceil($1)',
-	['int'] = 'Math.floor($1)',
-	['abs'] = 'Math.abs($1)',
-	['sign'] = '$1 > 0 and 1 or -1',
 
 	-- exp
 	-- concatenate
