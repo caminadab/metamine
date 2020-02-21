@@ -1,7 +1,8 @@
 require 'func'
 
 local unops = {
-	['#'] = '$1 = $1.length;',
+	['#'] = '$1.length',
+	['√'] = 'Math.sqrt($1)',
 	['%'] = '$1 / 100;',
 	['abs'] = 'Math.abs($1);',
 	['-'] = '- $1',
@@ -9,7 +10,7 @@ local unops = {
 	['log10'] = 'Math.log($1, 10)',
 	['log'] = 'Math.log',
 	['fn.id'] = '$1',
-	['|'] = '(function(alts) { for (var i=0; i<alts.length; i++) { if (alt) return alt; }})($1)',
+	['|'] = '((alts) => { for (var i=0; i<alts.length; i++) {  var alt = alts[i]; if (alt != null) {return alt;} } })($1)',
 
 	['canvas2d'] = '$1.getContext("2d")',
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
