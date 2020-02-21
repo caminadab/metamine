@@ -34,9 +34,9 @@ local noops = {
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
 	['vierkant'] = [[ args => {
-  var x = args[0];
-  var y = args[1];
-  var r = args[2];
+  var x = args[0][0];
+  var y = args[0][1];
+  var r = args[1];
   return context => {
 		context.fillStyle = 'white';
     context.fillRect(x,y,r,r);
@@ -47,7 +47,7 @@ local noops = {
 
 	['sign'] = '$1 > 0 and 1 or -1',
 	['map'] = 'tf => tf[0].map(tf[1])',
-	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
+	['vouw'] = '(function(lf) {var l=lf[0]; var f=lf[1]; var r=l[0] ; for (var i=1; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
 	['mod'] = 'x => x[0] % x[1]',
 
 	['int'] = 'Math.floor',
@@ -91,7 +91,6 @@ local binops = {
 	['+f'] = '$1.map(x => x + $2)',
 	['·f1'] = '$1.map(x => x + $2)',
 	['/v1'] = '$1.map(x => x / $2)',
-	['vouw'] = '$1.reduce($2)',
 	['_f'] = '$1($2)',
 	['_l'] = '$1[$2]',
 	['_'] = 'typeof($1) == "function" ? $1($2) : $1[$2]',

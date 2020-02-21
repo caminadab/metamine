@@ -41,8 +41,7 @@ local binop  = set(
 	'∪','∩',':','∈',
 	'_f','_f2','_l','^f','^l',
 	'+v', '+v1', '·v', '·v1', '/v1',
-	'+m', '+m1', '·m1',
-	'map', 'vouw'
+	'+m', '+m1', '·m1'
 )
 
 local klaar = {} -- exp → stackdepth
