@@ -390,11 +390,13 @@ function oplos(exp, voor)
 		local eqs = complement(eqs, oud)
 		for naam,alts in spairs(map) do
 			if schaduw[naam] then
+
+				alts.o = X','
+				alsvar(alts)
+
 				-- voeg de oude waarde toe 
 				alts[#alts+1] = X('_l', 'in.vars', schaduw[naam])
 
-				alts.o = X'[]'
-				alsvar(alts)
 				local index = schaduw[naam]
 				assert(index, 'geen index voor variabele '..naam)
 				local eq = X('=', naam, X('|', alts))

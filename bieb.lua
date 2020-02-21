@@ -665,6 +665,8 @@ function bieb()
 	['⇒'] = function(x)
 		if x[1] then
 			return x[2]
+		else
+			return nil
 		end
 	end;
 

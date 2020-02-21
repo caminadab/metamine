@@ -9,7 +9,8 @@ teken = vormen → allevormen(canvas.clear(getcontext))
 	allevormen = vormen vouw (∘)
 
 ; tijd
-looptijd = 0
+looptijd = nu - starttijd
+starttijd := nu
 
 ; vec
 vec.dot = vda,vdb → Σ (vda zip vdb map (·))

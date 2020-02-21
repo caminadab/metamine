@@ -4,7 +4,8 @@ local unops = {
 	['#'] = '$1.length',
 	['√'] = 'Math.sqrt($1)',
 	['%'] = '$1 / 100;',
-	['abs'] = 'Math.abs($1);',
+	['abs'] = 'Math.abs($1)',
+	['int'] = 'Math.floor($1)',
 	['-'] = '- $1',
 	['Σ'] = 'var sum = 0; for k, v in ipairs($1) do sum = sum + v end; $1 = sum;',
 	['log10'] = 'Math.log($1, 10)',
@@ -40,6 +41,10 @@ local noops = {
 	['vouw'] = '(function(lf) {var l,f,r = lf[0],lf[1],lf[0][0] ; for (var i=2; i < l.length; i++) r = f(r); ; return r;})',
 	['mod'] = 'x => x[0] % x[1]',
 
+	['int'] = 'Math.floor',
+	['sin'] = 'Math.sin',
+	['cos'] = 'Math.cos',
+
 	['|'] = '$1 or $2',
 	['fn.id'] = 'x => x',
 	['fn.constant'] = 'function() return $1 end',
@@ -64,10 +69,10 @@ local noops = {
 	['fn.drie'] = '$1(3)',
 
 	-- dynamisch
-	['eerste'] = '(type($1)=="function") and $1(0) or $1[0]',
-	['tweede'] = '(type($1)=="function") and $1(1) or $1[1]',
-	['derde'] = '(type($1)=="function") and $1(2) or $1[2]',
-	['vierde'] = '(type($1)=="function") and $1(3) or $1[3]',
+	['eerste'] = '(typeof($1)=="function") ? $1(0) : $1[0]',
+	['tweede'] = '(typeof($1)=="function") ? $1(1) : $1[1]',
+	['derde'] = '(typeof($1)=="function") ? $1(2) : $1[2]',
+	['vierde'] = '(typeof($1)=="function") ? $1(3) : $1[3]',
 }
 
 local binops = {
@@ -240,7 +245,7 @@ function jsgen(sfc)
 			local tempnaam = 'tmp'
 			L[#L+1] = tabs .. tempnaam .. " = " .. naam .. ';'
 			tabs = tabs:sub(3)
-			L[#L+1] = tabs.."}"
+			L[#L+1] = tabs.."} else tmp = null;"
 			L[#L+1] = tabs..'var ' .. naam .. " = " .. tempnaam .. ';'
 			focus = focus
 

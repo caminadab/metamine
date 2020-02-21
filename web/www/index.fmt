@@ -149,7 +149,7 @@
 					//uit.focus(); WAUW
 				} catch (e) {
 					onerror();
-					uit.innerHTML = e;// + "\n" + e.stack + "\n" + j.js;
+					uit.innerHTML = e + '<br>' + j.js;
 				}
 			})
 	}
