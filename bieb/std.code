@@ -1,6 +1,6 @@
 ;ververs = moment → schrijf(tekst(uit))
 ;main = herhaal.langzaam(ververs)
-main = (in.vars, start, nu, getcontext) → (uit.vars, uit)
+main = (in.vars, start, nu, getcontext, toets.begin, toets.eind) → (uit.vars, uit)
 
 ;uit = tekst | function(el → el)
 
@@ -66,10 +66,10 @@ toets.links.begin = toets.begin(37)
 toets.omhoog.begin = toets.begin(38)
 toets.rechts.begin = toets.begin(39)
 toets.omlaag.begin = toets.begin(40)
-toets.a.begin = toets.begin(97)
-toets.d.begin = toets.begin(100)
-toets.s.begin = toets.begin(115)
-toets.w.begin = toets.begin(119)
+toets.a.begin = toets.begin(65)
+toets.d.begin = toets.begin(68)
+toets.s.begin = toets.begin(83)
+toets.w.begin = toets.begin(87)
 
 toets.spatie.eind = toets.eind(32)
 toets.links.eind = toets.eind(37)

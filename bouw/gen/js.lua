@@ -149,7 +149,7 @@ local binops = {
 
 	-- exp
 	-- concatenate
-	['‖'] = 'type($1) == "string" and $1 + $2 or (for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
+	['‖'] = [[typeof($1) == "string" ? $1 + $2 : $1.concat($2)]],
 	['‖u'] = '$1 .. $2',
 	['‖i'] = '(for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?

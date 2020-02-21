@@ -184,12 +184,6 @@ function bieb()
 	['muis.pos'] = false,
 	['muis.beweegt'] = false,
 
-	-- toetsenbord
-	--['toets.neer'] = true,
-	['toets.aan'] = true,
-	['toets.begin'] = true,
-	['toets.eind'] = true,
-
 	['_'] = function(a)
 		local a,b = a[1],a[2]
 		if type(a) == 'string' then

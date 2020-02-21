@@ -1,6 +1,1 @@
-uit = x, y
-
-x := 2
-y := 3
-
-main = in.vars, start → uit
+main = [1,2] || [3,4]
