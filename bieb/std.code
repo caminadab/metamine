@@ -2,6 +2,8 @@
 ;main = herhaal.langzaam(ververs)
 main = (in.vars, start, nu, setcontext, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar) → (uit.vars, uit)
 
+toets.aan = xx → nee
+
 ;uit = tekst | function(el → el)
 
 ; canvas
@@ -39,8 +41,6 @@ ydraai = tdy → (cos tdy, 0, sin tdy, 0), (0,1,0,0), (-sin tdy, 0, cos tdy, 0),
 zdraai = tdz → (cos tdz, sin tdz, 0, 0), (-sin tdz, cos tdz, 0, 0), (0,0,1,0), (0,0,0,1)
 
 ; scherm
-scherm.breedte = 177.778
-scherm.hoogte = 100
 ;scherm.frequentie = ?
 ;dt = scherm.frequentie
 
@@ -65,7 +65,7 @@ toets.omhoog = toets.aan(38)
 toets.rechts = toets.aan(39)
 toets.omlaag = toets.aan(40)
 toets.a = toets.aan(65)
-;toets.w = toets.aan(87)
+toets.w = toets.aan(87)
 toets.d = toets.aan(68)
 toets.s = toets.aan(83)
 

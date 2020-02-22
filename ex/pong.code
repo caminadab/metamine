@@ -86,11 +86,11 @@ rechts = rechthoek(rechts.min, rechts.max)
 links = rechthoek(links.min, links.max)
 
 ; teken bal
-bal = cirkel(bal.x, bal.y, 5)
+bal = cirkel((bal.x, bal.y), 5)
 
-label1 = label(90-9, 90, tekst(score2))
-label2 = label(90-2, 90, "-")
-label3 = label(90+3, 90, tekst(score1))
+label1 = label((90-9, 9), tekst(score2))
+label2 = label((90-2, 9), "-")
+label3 = label((90+3, 9), tekst(score1))
 
-uit = (bal.vx,bal.vy ⇒ (teken [ links, rechts, bal, label1, label2, label3 ]))
+uit = teken [ links, rechts, bal, label1, label2, label3 ]
 

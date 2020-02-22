@@ -4,17 +4,21 @@ local unops = {
 	['#'] = '$1.length',
 	['√'] = 'Math.sqrt($1)',
 	['%'] = '$1 / 100;',
-	['abs'] = 'Math.abs($1)',
-	['int'] = 'Math.floor($1)',
 	['-'] = '- $1',
+	['¬'] = '! $1',
+	['!'] = [[(num => {
+  if (num === 0 || num === 1)
+    return 1;
+  for (var i = num - 1; i >= 1; i--) {
+    num *= i;
+  }
+  return num;})($1)
+	]],
 	['Σ'] = '(x => {var sum = 0; for (var i = 0; i < $1.length; i++) { sum = sum + $1[i]; }; return sum;})()',
-	['log10'] = 'Math.log($1, 10)',
-	['log'] = 'Math.log',
-	['fn.id'] = '$1',
 	['|'] = '((alts) => { for (var i=0; i<alts.length; i++) {  var alt = alts[i]; if (alt != null) {return alt;} } })($1)',
+}
 
-	['canvas2d'] = '$1.getContext("2d")',
-
+local fnops = {
 	['fn.nul'] = '$1(0)',
 	['fn.een'] = '$1(1)',
 	['fn.twee'] = '$1(2)',
@@ -26,11 +30,11 @@ local unops = {
 	['l.vierde'] = '$1[3]',
 }
 
-
 local noops = {
 	['afrond.onder'] = 'Math.floor',
 	['afrond']       = 'Math.round',
 	['afrond.boven'] = 'Math.ceil',
+	['willekeurig'] = 'x => Math.random()*(x[1]-x[0]) + x[0]',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
 	['tekst'] = 'x => JSON.stringify(x) || (x || "niets").toString()',
@@ -44,6 +48,7 @@ local noops = {
     return context;
   }
   } ]],
+
 	['label'] = [[ args => {
   var x = args[0][0];
   var y = args[0][1];
@@ -54,7 +59,8 @@ local noops = {
     context.fillText(t,x,y);
     return context;
   }
-	}]],
+	} ]],
+
 	['rechthoek'] = [[ args => {
   var x = args[0][0];
   var y = args[0][1];
@@ -66,6 +72,7 @@ local noops = {
     return context;
   }
 	} ]],
+
 	['cirkel'] = [[ args => {
 		return (function(c){
 			var x = args[0][0];
@@ -78,6 +85,7 @@ local noops = {
 			return c;
 		});
 	}]],
+
 	['boog'] = [[ (function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); }) ]],
 
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
@@ -131,7 +139,6 @@ local binops = {
 	['_f'] = '$1($2)',
 	['_l'] = '$1[$2]',
 	['_'] = 'typeof($1) == "function" ? $1($2) : $1[$2]',
-	['fn.merge'] = '{$1(x), $2(x)}',
 	['^r'] = '$1 ^ $2',
 	['∘'] = '((a,b) => (x => b(a(x))))($1,$2)',
 	['+'] = '$1 + $2',
@@ -144,8 +151,6 @@ local binops = {
 
 	['|'] = '$1 or $2',
 
-	['willekeurig'] = 'Math.random()*($2-$1) + $1', -- randomRange[0, 10]
-	['fn.merge'] = '$1, $2',--function(x) return {$1(x),$2(x)} end',
 	['√'] = 'Math.sqrt($1, 0.5)',
 	['^'] = 'Math.pow($1, $2)',
 	['^f'] = [[(function (f,n) {
@@ -168,7 +173,6 @@ local binops = {
 	['<'] = '$1 < $2',
 
 	-- deduct
-	['¬'] = '! $1',
 	['∧'] = '$1 && $2', 
 	['∨'] = '$1 || $2', 
 	['⇒'] = '$1 && $2', 
