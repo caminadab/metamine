@@ -33,6 +33,7 @@ local noops = {
 	['afrond.boven'] = 'Math.ceil',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
+	['tekst'] = 'x => JSON.stringify(x) || (x || "niets").toString()',
 	['vierkant'] = [[ args => {
   var x = args[0][0];
   var y = args[0][1];
@@ -43,7 +44,43 @@ local noops = {
     return context;
   }
   } ]],
-	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1280,720); return c; })',
+	['label'] = [[ args => {
+  var x = args[0][0];
+  var y = args[0][1];
+  var t = args[1];
+  return context => {
+		context.fillStyle = 'white';
+    context.fillText(t,x,y);
+    context.fillText(t,x,y);
+    return context;
+  }
+	}]],
+	['rechthoek'] = [[ args => {
+  var x = args[0][0];
+  var y = args[0][1];
+  var w = args[1][0];
+  var h = args[1][1];
+  return context => {
+		context.fillStyle = 'white';
+    context.fillRect(x,y,w,h);
+    return context;
+  }
+	} ]],
+	['cirkel'] = [[ args => {
+		return (function(c){
+			var x = args[0][0];
+			var y = args[0][1];
+			var r = args[1];
+			c.fillStyle = 'white';
+			c.beginPath();
+			c.arc(x, y, r, 0, Math.PI * 2);
+			c.fill();
+			return c;
+		});
+	}]],
+	['boog'] = [[ (function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); }) ]],
+
+	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
 	['sign'] = '$1 > 0 and 1 or -1',
 	['map'] = 'tf => tf[0].map(tf[1])',

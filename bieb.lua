@@ -179,10 +179,6 @@ function bieb()
 	['muis.klik.begin'] = false,
 	['muis.klik.eind'] = false,
 	['muis.sleep'] = false, -- (pad = (van, via, naar))
-	['muis.x'] = false,
-	['muis.y'] = false,
-	['muis.pos'] = false,
-	['muis.beweegt'] = false,
 
 	['_'] = function(a)
 		local a,b = a[1],a[2]

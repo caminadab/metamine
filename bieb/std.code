@@ -1,11 +1,20 @@
 ;ververs = moment → schrijf(tekst(uit))
 ;main = herhaal.langzaam(ververs)
-main = (in.vars, start, nu, setcontext, toets.begin, toets.eind) → (uit.vars, uit)
+main = (in.vars, start, nu, setcontext, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar) → (uit.vars, uit)
 
 ;uit = tekst | function(el → el)
 
 ; canvas
 teken = vormen → setcontext(canvas.clear ∘ (vormen vouw (∘)) )
+
+; muis
+muis.pos := (1/0,1/0)
+muis.x = muis.pos₀
+muis.y = muis.pos₁
+
+als muis.beweegt dan
+	muis.pos := muis.beweegt.naar
+eind
 
 ; tijd
 looptijd = nu - starttijd

@@ -19,6 +19,8 @@ local function w2exp(w)
 	elseif type(w) == 'function' then
 		-- functies kunnen we (nog) niet tot waarde maken
 		assert(false)
+	elseif w == 1/0 then
+		uit = X('/', '1', '0')
 	elseif tonumber(w) then
 		uit = X(tostring(w))
 	elseif type(w) == 'table' then

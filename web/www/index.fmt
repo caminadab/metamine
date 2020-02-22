@@ -107,7 +107,9 @@
 					var context;
 					function setcontext(transform) {
 						if (!context) {
-							uit.innerHTML = '<canvas width="1280" height="720">'
+							var width = window.screen.width;
+							var height = window.screen.height;
+							uit.innerHTML = '<canvas width="'+width+'" height="'+height+'"></canvas>'
 							context = uit.children[0].getContext("2d");
 						}
 						return transform(context);
@@ -119,11 +121,13 @@
 					var uitvoer;
 					var toetsBegin = (toetscode) => false;
 					var toetsEind = (toetscode) => false;
+					var muisBeweegt = false;
+					var muisBeweegtNaar = [1/0, 1/0];
 
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var toetsBegin = (keycode) => ev.keyCode == keycode;
-						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind]);
+						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -134,10 +138,26 @@
 						return ev.keyCode > 96;
 					};
 
+					uit.onmousemove = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						var muisBeweegt = true;
+						EV = ev;
+						var muisBeweegtNaar = [ev.offsetX, ev.offsetY];
+						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+
+						vars = uv[0];
+						uitvoer = uv[1];
+						if (!context)
+							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+
+						return ev.keyCode > 96;
+					};
+						
+
 					uit.onkeyup = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var toetsEind = (keycode) => ev.keyCode == keycode;
-						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind]);
+						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -147,7 +167,8 @@
 						return ev.keyCode > 96;
 					};
 
-					var uv = main([vars, true, nu, setcontext, toetsBegin, toetsEind]);
+					// start
+					var uv = main([vars, true, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 
 					if (!main)
 						alert("Compilation error! " + j.js);
@@ -160,7 +181,7 @@
 
 					var f = (ev) => {
 						var nu = new Date().getTime() / 1000;
-						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind]);
+						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 						vars = uv[0];
 						uitvoer = uv[1];
 
