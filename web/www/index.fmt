@@ -119,6 +119,7 @@
 					var nu = new Date().getTime() / 1000;
 					var vars = [];
 					var uitvoer;
+					var toetsCode = 1/0;
 					var toetsBegin = (toetscode) => false;
 					var toetsEind = (toetscode) => false;
 					var muisBeweegt = false;
@@ -127,7 +128,8 @@
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var toetsBegin = (keycode) => ev.keyCode == keycode;
-						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var toetsCode = ev.keyCode;
+						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -143,7 +145,7 @@
 						var muisBeweegt = true;
 						EV = ev;
 						var muisBeweegtNaar = [ev.offsetX, ev.offsetY];
-						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -157,7 +159,8 @@
 					uit.onkeyup = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var toetsEind = (keycode) => ev.keyCode == keycode;
-						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var toetsCode = ev.keyCode;
+						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -168,7 +171,7 @@
 					};
 
 					// start
-					var uv = main([vars, true, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+					var uv = main([vars, true, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 
 					if (!main)
 						alert("Compilation error! " + j.js);
@@ -181,7 +184,7 @@
 
 					var f = (ev) => {
 						var nu = new Date().getTime() / 1000;
-						var uv = main([vars, false, nu, setcontext, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
 						vars = uv[0];
 						uitvoer = uv[1];
 
@@ -361,6 +364,11 @@
 		"!": "¬",
 	};
 	var bimagisch = {
+		"II": "∩",
+		"UU": "∪",
+		"IN": "∈",
+		"intersectie": "∩",
+		"unie": "∪",
 		"|_": "⌊",
 		"_|": "⌋",
 		"|^": "⌈",

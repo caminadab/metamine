@@ -64,14 +64,15 @@ local noops = {
 	['rechthoek'] = [[ args => {
   var x = args[0][0];
   var y = args[0][1];
-  var w = args[1][0];
-  var h = args[1][1];
+  var w = args[1][0] - x;
+  var h = args[1][1] - y;
   return context => {
 		context.fillStyle = 'white';
     context.fillRect(x,y,w,h);
     return context;
   }
 	} ]],
+	-- cirkel = fillStyle("#fff") ∘ beginPath ∘ arc(x -> x || (0, τ)) ∘ fillPath
 
 	['cirkel'] = [[ args => {
 		return (function(c){
@@ -129,6 +130,11 @@ local noops = {
 }
 
 local binops = {
+	-- set
+	[':'] = '$2.has($1)',
+	['∩'] = 'new Set([...$1].filter(x => $2.has(x)))',
+	['∪'] = 'new Set([...$1, ...$2])',
+	['-s'] = 'new Set([...$1].filter(x => !$2.has(x)))',
 	['+v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] + $2[i]); return r;})()',
 	['+v1'] = '$1.map(x => x + $2)',
 	['·v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] * $2[i]); return r;})()',

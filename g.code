@@ -1,12 +1,2 @@
-starttijd := nu
-looptijd = int(nu - starttijd)
-
-mainfunc = in.vars → uit.vars
-main = mainfunc []
-
-als ja dan
-	starttijd := 1
-eind
-
-start = ja
-nu = 0
+x := 0
+uit = x

@@ -70,7 +70,7 @@ muis.pos: getal, getal
 muis.x: getal
 muis.y: getal
 
-toets.aan: int → bit
+toets.code: int
 toets.begin: int → bit
 toets.eind: int → bit
 

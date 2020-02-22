@@ -1,8 +1,14 @@
 ;ververs = moment → schrijf(tekst(uit))
 ;main = herhaal.langzaam(ververs)
-main = (in.vars, start, nu, setcontext, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar) → (uit.vars, uit)
+main = (in.vars, start, nu, setcontext, toets.code, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar) → (uit.vars, uit)
 
-toets.aan = xx → nee
+; toetsenbord
+toetsen := {}
+toets.aan = toets → toets ∈ toetsen
+
+;als toets.code dan
+;	toetsen := toetsen ∪ {toets.code}
+;eind
 
 ;uit = tekst | function(el → el)
 

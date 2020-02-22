@@ -32,6 +32,8 @@ function vectoriseer(asb, types)
 			end
 		end
 
+		-- TODO set -
+
 		-- (+) → +v | +v1 | +m | +m1 | +f
 		if fn(exp) == '+' then
 			local atype = types[moes(arg0(exp))]
