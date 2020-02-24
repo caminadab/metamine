@@ -74,8 +74,17 @@ vec2.unit = sincos
 uit.hoogte = 100
 
 ; kleuren
-beige = rgb(96%, 96%, 86%)
-bruin = rgb(60%, 40%, 20%)
+kleur.beige = rgb(96%, 96%, 86%)
+kleur.bruin = rgb(60%, 40%, 20%)
+kleur.rood = rgb(1,0,0)
+kleur.groen = rgb(0,1,0)
+kleur.blauw = rgb(0,0,1)
+kleur.zwart = rgb(0,0,0)
+kleur.wit = rgb(1,1,1)
+kleur.geel = rgb(1,1,0)
+kleur.paars = rgb(1,0,1)
+kleur.cyaan = rgb(0,1,1)
+kleur.oranje = rgb(1,.5,0)
 
 ; toetsenbord
 toets.spatie = toets.aan(32)

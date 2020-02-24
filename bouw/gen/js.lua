@@ -16,6 +16,8 @@ local unops = {
 	]],
 	['Σ'] = '(x => {var sum = 0; for (var i = 0; i < $1.length; i++) { sum = sum + $1[i]; }; return sum;})()',
 	['|'] = '((alts) => { for (var i=0; i<alts.length; i++) {  var alt = alts[i]; if (alt != null) {return alt;} } })($1)',
+	['derdemachtswortel'] = 'Math.pow($1,1/3)',
+	['√'] = 'Math.sqrt($1, 0.5)',
 }
 
 local fnops = {
@@ -31,6 +33,11 @@ local fnops = {
 }
 
 local noops = {
+	['niets'] = 'null',
+	-- niet goed
+	['misschien'] = 'Math.random() < 0.5',
+	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
+
 	-- functioneel
 	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
   ['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
@@ -38,6 +45,26 @@ local noops = {
   ['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
   ['filter'] = '(function(a){return a[0].filter(a[1]);})',
   ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
+	['vouw'] = '(function(lf) {var l=lf[0]; var f=lf[1]; var r=l[0] ; for (var i=1; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
+
+	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
+	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
+
+	-- discreet
+	['min'] = 'x => Math.min(x[0], x[1])',
+	['max'] = 'x => Math.max(x[0], x[1])',
+
+
+	 ['vanaf'] = 'x => x[0].slice(x[1])',
+	 ['canvas.fontsize'] = [[
+ (function(_args) {return (function(c){
+  var vorm = _args[0];
+  var fontsize = _args[1] * SCHAAL;
+  var font = fontsize+'px Arial';
+  c.font = font;
+  vorm(c);
+  return c;});
+ })]],
 
 	 ['verf'] = [[
  (function(_args) {return (function(c){
@@ -64,9 +91,9 @@ local noops = {
 	['abs'] = 'Math.abs',
 	['tekst'] = 'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
 	['vierkant'] = [[ args => {
-  var x = args[0][0] * SCHAAL;
-  var y = (100 - args[0][1]) * SCHAAL;
   var r = args[1] * SCHAAL;
+  var x = args[0][0] * SCHAAL;
+  var y = (100 - args[0][1]) * SCHAAL - r;
   return context => {
     context.fillRect(x,y,r,r);
     return context;
@@ -77,8 +104,10 @@ local noops = {
   var x = args[0][0] * SCHAAL;
   var y = (100 - args[0][1]) * SCHAAL;
   var t = args[1];
+	//if (typeof t == "object)
+//		t = [...t]
+//	alert("t = " + typeof t);
   return context => {
-		context.font = '48px Arial';
     context.fillText(t,x,y);
     return context;
   }
@@ -120,13 +149,24 @@ local noops = {
 		});
 	}]],
 
-	['boog'] = [[ (function(xyz) {return (function(c){\n\t\tvar x = xyz[0][0]; var y = xyz[0][1]; var r = xyz[1]; var a1 = xyz[2]; var a2 = xyz[3];\n\t\tc.beginPath();\n\t\tc.arc(x * 7.2, 720 - (y * 7.2) - 1, r * 7.2, a1, a2);\n\t\tc.fill();\n\t\treturn c;}); }) ]],
+
+	['boog'] = [[ args => {
+		return (function(c){
+			var x = args[0][0] * SCHAAL;
+			var y = (100 - args[0][1]) * SCHAAL;
+			var r = args[1] * SCHAAL;
+			var a1 = args[1] * SCHAAL;
+			var a2 = args[2] * SCHAAL;
+			c.beginPath();
+			c.arc(x, y, r, a1, a2);
+			c.fill();
+			return c;
+		});
+	}]],
 
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
 	['sign'] = '$1 > 0 and 1 or -1',
-	['map'] = 'tf => tf[0].map(tf[1])',
-	['vouw'] = '(function(lf) {var l=lf[0]; var f=lf[1]; var r=l[0] ; for (var i=1; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
 	['mod'] = 'x => x[0] % x[1]',
 
 	['int'] = 'Math.floor',
@@ -191,7 +231,6 @@ local binops = {
 
 	['|'] = '$1 or $2',
 
-	['√'] = 'Math.sqrt($1, 0.5)',
 	['^'] = 'Math.pow($1, $2)',
 	['^f'] = [[(function (f,n) {
 		return function(x) {
@@ -202,13 +241,12 @@ local binops = {
 			return r;
 		}
 	})($1,$2)]],
-	['derdemachtswortel'] = 'Math.pow($1,1/3)',
 
 	-- cmp
 	['>'] = '$1 > $2',
 	['≥'] = '$1 >= $2',
-	['='] = '$1 === $2',
-	['≠'] = '$1 !== $2',
+	['='] = 'JSON.stringify($1) == JSON.stringify($2)',
+	['≠'] = 'JSON.stringify($1) != JSON.stringify($2)',
 	['≤'] = '$1 <= $2',
 	['<'] = '$1 < $2',
 
@@ -216,13 +254,6 @@ local binops = {
 	['∧'] = '$1 && $2', 
 	['∨'] = '$1 || $2', 
 	['⇒'] = '$1 && $2', 
-
-	['sincos'] = '{Math.cos($1), Math.sin($1)}',
-	['cossin'] = '{Math.sin($1), Math.cos($1)}',
-
-	-- discreet
-	['min'] = 'Math.min($1,$2)',
-	['max'] = 'Math.max($1,$2)',
 
 	-- exp
 	-- concatenate

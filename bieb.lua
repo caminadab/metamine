@@ -25,6 +25,7 @@ function bieb()
 	['canvas.context'] = true,
 	['canvas.fillRect'] = true,
 	['canvas.clear'] = true,
+	['canvas.fontsize'] = true,
 
 	-- functioneel
 	['fn.inc'] = function(x) return x + 1 end;
@@ -240,6 +241,11 @@ function bieb()
 	absd = math.abs,
 	absi = math.abs,
 	ceil = math.ceil,
+	['newindex'] = function(args)
+		local t,k,v = args[1], args[2], args[3]
+		t[k] = v
+		return v
+	end,
 	["'"] = true,
 	['inverteer'] = true; -- sure
 	['sqrt'] = math.sqrt;

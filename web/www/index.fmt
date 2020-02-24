@@ -125,6 +125,7 @@
 					}
 
 					var main = new Function("IN", j.js)();
+					MAIN = main;
 					var nu = new Date().getTime() / 1000;
 					var vars = [];
 					var uitvoer;
