@@ -118,6 +118,8 @@
 							uit.innerHTML = '<canvas width="'+width+'" height="'+height+'"></canvas>'
 							context = uit.children[0].getContext("2d");
 							context.fillStyle = 'white';
+							context.strokeStyle = 'white';
+							context.lineWidth = '4';
 						}
 						return transform(context);
 					}

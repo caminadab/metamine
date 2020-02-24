@@ -80,7 +80,6 @@ local noops = {
   return context => {
 		context.font = '48px Arial';
     context.fillText(t,x,y);
-    context.fillText(t,x,y);
     return context;
   }
 	} ]],
@@ -95,7 +94,19 @@ local noops = {
     return context;
   }
 	} ]],
-	-- cirkel = fillStyle("#fff") ∘ beginPath ∘ arc(x -> x || (0, τ)) ∘ fillPath
+
+	['lijn'] = [[ args => {
+  var x1 = args[0][0] * SCHAAL;
+  var y1 = (100 - args[0][1]) * SCHAAL;
+  var x2 = args[1][0] * SCHAAL;
+  var y2 = (100 - args[1][1]) * SCHAAL;
+  return context => {
+		context.moveTo(x1,y1);
+		context.lineTo(x2,y2);
+		context.stroke();
+    return context;
+  }
+	} ]],
 
 	['cirkel'] = [[ args => {
 		return (function(c){
