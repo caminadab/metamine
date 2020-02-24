@@ -114,6 +114,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "-"		{ *yylval = A(GL, "-", nergens); return '-'; }
 "·"		{ *yylval = A(GL, "·", nergens); return KEER; }
 "/"		{ *yylval = A(GL, "/", nergens); return '/'; }
+"\\"	{ *yylval = A(GL, "\\", nergens); return '\\'; }
 "∘"		{ *yylval = A(GL, "∘", nergens); return COMP; }
 ":"		{ *yylval = A(GL, ":", nergens); return ':'; }
 "∈"		{ *yylval = A(GL, ":", nergens); return IN; }
@@ -148,14 +149,12 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "τ"			{ *yylval = A(GL, "τ", nergens); return NAAM; }
 
 "als"					{ return ALS; }
-"zolang"					{ return ZOLANG; }
 "dan"					{ return DAN; }
 "andersals"			{ return ANDERSALS; }
 "anders"			{ return ANDERS; }
 "eind"			{ return EIND; }
 
 "if"					{ return ALS; }
-"while"					{ return ZOLANG; }
 "then"					{ return DAN; }
 "elseif"			{ return ANDERSALS; }
 "else"			{ return ANDERS; }

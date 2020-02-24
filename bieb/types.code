@@ -128,7 +128,7 @@ set: verzameling
 (∩) : set, set → set
 (∪) : set, set → set
 ;(-) : set, set → set
-;(∖) : set, set → set
+(∖) : set, set → set
 
 ; logica
 (¬) : bit → bit

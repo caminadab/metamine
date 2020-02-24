@@ -104,13 +104,20 @@
 				try {
 
 					// context
+					SCHAAL = 7.2;
 					var context;
+					var uitBreedte = 100;
+
 					function setcontext(transform) {
 						if (!context) {
 							var width = window.screen.width;
 							var height = window.screen.height;
+							SCHAAL = height/100;
+							uitBreedte = width / height * 100;
+
 							uit.innerHTML = '<canvas width="'+width+'" height="'+height+'"></canvas>'
 							context = uit.children[0].getContext("2d");
+							context.fillStyle = 'white';
 						}
 						return transform(context);
 					}
@@ -119,33 +126,81 @@
 					var nu = new Date().getTime() / 1000;
 					var vars = [];
 					var uitvoer;
-					var toetsCode = 1/0;
+					var toetsCode = null;
+					var toetsBegint = false;
+					var toetsEindigt = false;
 					var toetsBegin = (toetscode) => false;
 					var toetsEind = (toetscode) => false;
 					var muisBeweegt = false;
 					var muisBeweegtNaar = [1/0, 1/0];
+					var muisKlikBegin = false;
+					var muisKlikEind = false;
 
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var toetsBegin = (keycode) => ev.keyCode == keycode;
 						var toetsCode = ev.keyCode;
-						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var toetsBegint = true;
+						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
 
 						if (!context)
 							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
-						
+
 						return ev.keyCode > 96;
+					};
+
+					uit.onmousedown = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						var muisBeweegt = true;
+						var canvas = uit.children[0] || uit;
+						var b = canvas.getBoundingClientRect();
+						EV = ev;
+						var muisX = (ev.clientX - b.left) / canvas.clientHeight * 100;
+						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
+						var muisY = 100 - muisY;
+						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
+						var muisKlikBegin = true;
+						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+
+						vars = uv[0];
+						uitvoer = uv[1];
+						if (!context)
+							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+					};
+						
+					uit.onmouseup = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						var muisBeweegt = true;
+						var canvas = uit.children[0] || uit;
+						var b = canvas.getBoundingClientRect();
+						EV = ev;
+						var muisX = (ev.clientX - b.left) / canvas.clientHeight * 100;
+						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
+						var muisY = 100 - muisY;
+						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
+						var muisKlikEind = true;
+						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+
+						vars = uv[0];
+						uitvoer = uv[1];
+						if (!context)
+							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 					};
 
 					uit.onmousemove = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var muisBeweegt = true;
+						var canvas = uit.children[0] || uit;
+						var b = canvas.getBoundingClientRect();
 						EV = ev;
-						var muisBeweegtNaar = [ev.offsetX, ev.offsetY];
-						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var muisX = (ev.clientX - b.left) / canvas.clientHeight * 100;
+						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
+						var muisY = 100 - muisY;
+						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
+						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -160,7 +215,8 @@
 						var nu = new Date().getTime() / 1000;
 						var toetsEind = (keycode) => ev.keyCode == keycode;
 						var toetsCode = ev.keyCode;
-						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var toetsEindigt = true;
+						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -171,7 +227,7 @@
 					};
 
 					// start
-					var uv = main([vars, true, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+					var uv = main([vars, true, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 					if (!main)
 						alert("Compilation error! " + j.js);
@@ -184,7 +240,7 @@
 
 					var f = (ev) => {
 						var nu = new Date().getTime() / 1000;
-						var uv = main([vars, false, nu, setcontext, toetsCode, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar]);
+						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 						vars = uv[0];
 						uitvoer = uv[1];
 

@@ -174,12 +174,6 @@ function bieb()
 	cirkel = function() return('cirkel') end;
 	lijn = function() return('lijn') end;
 
-	-- input
-	['muis.klik'] = false,
-	['muis.klik.begin'] = false,
-	['muis.klik.eind'] = false,
-	['muis.sleep'] = false, -- (pad = (van, via, naar))
-
 	['_'] = function(a)
 		local a,b = a[1],a[2]
 		if type(a) == 'string' then
@@ -606,30 +600,29 @@ function bieb()
 		return r
 	end;
 
-	['unie'] = function(a,b)
+	-- set
+	['∪'] = function(a,b)
 		local s = {}
 		for v in pairs(a) do s[v] = true end
 		for v in pairs(b) do s[v] = true end
-		return s
-	end;
-
-	['UNIE'] = function(a,b)
-		local s = {}
-		for v in pairs(a) do s[v] = true end
-		for v in pairs(b) do s[v] = true end
-		return s
-	end;
-
-	['verschil'] = function(a,b)
-		local s = {}
-		for k,v in pairs(a) do if not b[k] then s[k] = v end end
 		return s
 	end;
 
 	[':'] = true,
-
 	['∈'] = function(set,val)
 		return set[val]
+	end;
+
+	-- set verschil
+	['\\'] = function(ab)
+		local a,b = ab[1],ab[2]
+		local r = {}
+		for k in pairs(a) do
+			if not b[k] then
+				r[k] = true
+			end
+		end
+		return r
 	end;
 
 	-- aux

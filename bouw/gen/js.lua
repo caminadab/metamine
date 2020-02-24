@@ -31,6 +31,31 @@ local fnops = {
 }
 
 local noops = {
+	-- functioneel
+	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
+  ['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
+  ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < b.length; i++) { c[i] = [a, b[i]]; }; return c;})',
+  ['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
+  ['filter'] = '(function(a){return a[0].filter(a[1]);})',
+  ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
+
+	 ['verf'] = [[
+ (function(_args) {return (function(c){
+  var vorm = _args[0];
+  var kleur = _args[1];
+  var r = kleur[0]*255;
+  var g = kleur[1]*255;
+  var b = kleur[2]*255;
+  var style = 'rgb('+r+','+g+','+b+')';
+  c.fillStyle = style;
+  c.strokeStyle = style;
+  vorm(c);
+  return c;});
+ })]],
+
+
+	['rgb'] = [[ (function(_args) { return _args; }) ]],
+	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
 	['afrond.onder'] = 'Math.floor',
 	['afrond']       = 'Math.round',
 	['afrond.boven'] = 'Math.ceil',
@@ -39,22 +64,21 @@ local noops = {
 	['abs'] = 'Math.abs',
 	['tekst'] = 'x => JSON.stringify(x) || (x || "niets").toString()',
 	['vierkant'] = [[ args => {
-  var x = args[0][0];
-  var y = args[0][1];
-  var r = args[1];
+  var x = args[0][0] * SCHAAL;
+  var y = (100 - args[0][1]) * SCHAAL;
+  var r = args[1] * SCHAAL;
   return context => {
-		context.fillStyle = 'white';
     context.fillRect(x,y,r,r);
     return context;
   }
   } ]],
 
 	['label'] = [[ args => {
-  var x = args[0][0];
-  var y = args[0][1];
+  var x = args[0][0] * SCHAAL;
+  var y = (100 - args[0][1]) * SCHAAL;
   var t = args[1];
   return context => {
-		context.fillStyle = 'white';
+		context.font = '48px Arial';
     context.fillText(t,x,y);
     context.fillText(t,x,y);
     return context;
@@ -62,12 +86,11 @@ local noops = {
 	} ]],
 
 	['rechthoek'] = [[ args => {
-  var x = args[0][0];
-  var y = args[0][1];
-  var w = args[1][0] - x;
-  var h = args[1][1] - y;
+  var x = args[0][0] * SCHAAL;
+  var y = (100 - args[0][1]) * SCHAAL;
+  var w = args[1][0] * SCHAAL - x;
+  var h = (100 - args[1][1]) * SCHAAL - y;
   return context => {
-		context.fillStyle = 'white';
     context.fillRect(x,y,w,h);
     return context;
   }
@@ -76,10 +99,9 @@ local noops = {
 
 	['cirkel'] = [[ args => {
 		return (function(c){
-			var x = args[0][0];
-			var y = args[0][1];
-			var r = args[1];
-			c.fillStyle = 'white';
+			var x = args[0][0] * SCHAAL;
+			var y = (100 - args[0][1]) * SCHAAL;
+			var r = args[1] * SCHAAL;
 			c.beginPath();
 			c.arc(x, y, r, 0, Math.PI * 2);
 			c.fill();
@@ -135,6 +157,7 @@ local binops = {
 	['∩'] = 'new Set([...$1].filter(x => $2.has(x)))',
 	['∪'] = 'new Set([...$1, ...$2])',
 	['-s'] = 'new Set([...$1].filter(x => !$2.has(x)))',
+	['\\'] = 'new Set([...$1].filter(x => !$2.has(x)))',
 	['+v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] + $2[i]); return r;})()',
 	['+v1'] = '$1.map(x => x + $2)',
 	['·v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] * $2[i]); return r;})()',
