@@ -62,7 +62,7 @@ local noops = {
 	['willekeurig'] = 'x => Math.random()*(x[1]-x[0]) + x[0]',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
-	['tekst'] = 'x => JSON.stringify(x) || (x || "niets").toString()',
+	['tekst'] = 'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
 	['vierkant'] = [[ args => {
   var x = args[0][0] * SCHAAL;
   var y = (100 - args[0][1]) * SCHAAL;

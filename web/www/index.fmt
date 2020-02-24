@@ -147,7 +147,7 @@
 						uitvoer = uv[1];
 
 						if (!context)
-							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 
 						return ev.keyCode > 96;
 					};
@@ -168,7 +168,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 					};
 						
 					uit.onmouseup = (ev) => {
@@ -187,7 +187,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 					};
 
 					uit.onmousemove = (ev) => {
@@ -205,7 +205,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 
 						return ev.keyCode > 96;
 					};
@@ -221,7 +221,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 
 						return ev.keyCode > 96;
 					};
@@ -236,7 +236,7 @@
 					uitvoer = uv[1];
 
 					if (!context)
-						uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 
 					var f = (ev) => {
 						var nu = new Date().getTime() / 1000;
@@ -245,7 +245,7 @@
 						uitvoer = uv[1];
 
 						if (!context)
-							uit.innerHTML = JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 
 						if (!stop)
 							requestAnimationFrame(f);
