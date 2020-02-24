@@ -112,7 +112,7 @@ uit = a + b
 a = (1,2)
 b = (3,4)
 ]]))
-assert(#f > 0, 'geen fouten maar moest wel')
+assert(#f == 0, 'fouten maar moest niet')
 
 -- vouw mismatch
 local t,f = typeer(ontleed([[

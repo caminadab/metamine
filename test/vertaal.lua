@@ -30,15 +30,15 @@ test('main = 1 / 2 + 1 / 2', 1)
 test('a = 1 + 1\nb = a - a + a\nmain = a · b', 4)
 
 -- sets
-test('main = 1 ∈ {2,3}', false)
-test('main = 2 ∈ {2,3}', true)
+test('main = (1 ∈ {2,3})', false)
+test('main = (2 ∈ {2,3})', true)
 
 -- concat
 test('main = #(a || a)\na = [1,2,3]', 6)
 
 -- alsdan
-test('als 2 > 1 dan\nmain = 1\nanders\nmain = -1', 1)
-test('als 1 > 2 dan\nmain = 1\nanders\nmain = -1', -1)
+test('als 2 > 1 dan\nmain = 1\nanders\nmain = -1\neind', 1)
+test('als 1 > 2 dan\nmain = 1\nanders\nmain = -1\neind', -1)
 
 -- functies
 test("f = a → a + 1\nmain = f(-1)", 0)
@@ -65,7 +65,7 @@ test('main = "hoi" ‖ "ja"', 'hoija')
 test([[
 main = "fib(20) = " ‖ tekst(x) ‖ [10]
 x = fib 20
-fib = n → (fⁿ[0,1]) 0
+fib = n → (f^n[0,1]) 0
 f = [a,b] → [b,a+b]
 ]], 6765)
 

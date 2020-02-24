@@ -661,7 +661,6 @@ function oplos(exp, voor)
 		-- optimiseer
 		if not opt or not opt['0'] then
 			val = optimiseer(val)
-			--val = componeer(val)
 		end
 
 		-- opgelost

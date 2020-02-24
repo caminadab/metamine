@@ -73,6 +73,17 @@ function doe(sfc, arg0, stack)
 		elseif fn(ins) == 'arg' then
 			stack[#stack+1] = arg0
 
+		elseif fn(ins) == 'string' then
+			local num = atoom(arg(ins))
+			local r = {}
+			for i=1,num do
+				local top = stack[#stack]
+				r[num-i+1] = string.char(top)
+				stack[#stack] = nil
+			end
+			stack[#stack+1] = table.concat(r)
+
+
 		elseif fn(ins) == 'lijst' or fn(ins) == 'tupel' then
 			local num = atoom(arg(ins))
 			local r = {}

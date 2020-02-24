@@ -60,7 +60,7 @@ function codegen(exp, ins)
 		local diepte = klaardiepte[exp]
 
 		-- voeg sneaky toe
-		table.insert(ins, tussen+1, X'dup')
+		--table.insert(ins, tussen+1, X'dup')
 		ins[#ins+1] = X('kp', tostring(diepte))
 
 		return

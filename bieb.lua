@@ -368,10 +368,10 @@ function bieb()
 		end
 		return lenc(a[1]) == lenc(a[2])
 	end;
-	['>'] = function(a) return tonumber(a[1]) > tonumber(a[2]) end;
-	['<'] = function(a) return tonumber(a[1]) < tonumber(a[2]) end;
+	['>'] = function(a) return a[1] > a[2] end;
+	['<'] = function(a) return a[1] < a[2] end;
 	['≠'] = function(a) return a[1] ~= a[2] end;
-	['≈'] = function(a) return math.abs(a[1]-a[2]) < 0.00001 end;
+	['≈'] = function(a) return math.abs(a[1]-a[2]) < 1e-7 end;
 
 	['..'] = function(a)
 		local a,b = a[1], a[2]
@@ -608,7 +608,9 @@ function bieb()
 		return s
 	end;
 
-	[':'] = true,
+	[':'] = function(set,val)
+		return set[val]
+	end;
 	['∈'] = function(set,val)
 		return set[val]
 	end;
