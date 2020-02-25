@@ -30,8 +30,27 @@ local unops = {
 
 local noops = {
 	['map'] = '(function (tf) local t,f = tf[1],tf[2]; local r = {} ; for k,v in pairs(t) do r[k] = f(v); end ; return r; end)',
-	['vouw'] = '(function(lf) local l,f,r = lf[1],lf[2],lf[1][1] ; for i=2,#l do r = f(r); end ; return r)',
+	['vouw'] = '(function(lf) local l,f,r = lf[1],lf[2],lf[1][1] ; for i=2,#l do r = f{r,l[i]}; end ; return r; end)',
 	['mod'] = 'function(x) return x[1] % x[2] end',
+
+	['vanaf'] = [[
+	function(a,van)
+		local t = {f='[]'}
+		for i=van+1,#a do
+			t[#t+1] = a[i]
+		end
+		return t
+	end;
+	]],
+
+	['zip1'] = [[function(a)
+		local a,b = a[1],a[2]
+		local v = {}
+		for i=#a,1,-1 do
+			v[i] = {a[i], b}
+		end
+		return v
+	end]];
 
 	['tekst'] = 'tostring',
 

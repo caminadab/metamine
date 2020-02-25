@@ -36,7 +36,7 @@ end
 function test(code, moetzijn)
 	-- niet optimaliseren aub
 	opt = {['0'] = true}
-	local im = vertaal(code)
+	local im,fouten = vertaal(code)
 	assert(im, "onvertaalbaar: "..code)
 
 	local lua = luagen(im)
@@ -93,5 +93,62 @@ h = (f ∘ g)³
 main = h(3)]],
 333)
 test("main = (x → x + 1)(2)", 3)
+test("main = [1,2,3] vouw (+)", 6)
+test([[
+f = x,y → y,x 
+a = f(2, 3)
+main = a₀
+]], 3)
+
+test([[
+sgn = x → y
+
+als x < 0 dan
+	y = -1
+anders
+	y = 1
+end
+
+main = sgn 3
+]], 1)
+
+test('main = -3' --[[
+main = itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
+
+; tekst -> integer
+atoi = b → i
+	; negatief?
+	als b₀ = '-' dan
+		sign = -1
+		tekens = b vanaf 1
+	anders
+		sign = 1
+		tekens = b
+	eind
+
+	; cijfers van de tekst
+  cijfers = tekens map (t → t - '0')
+	cijfers = tekens zip1 ('0') map (-)
+
+	; waarde van elk cijfer gegeven de positie
+  waarde = (k → cijfers(j) · 10^k)
+    j = #tekens - k - 1
+
+	; positie en resultaat
+	pos = 0 .. #tekens
+  i = sign · Σ (pos map waarde)
+
+; integer -> tekst
+itoa = x → a
+  n = 1 + ⌊log10(max(abs x, 1))⌋
+	als x < 0 dan
+		neg = "-"
+	anders
+		neg = ""
+	eind
+  a = neg ‖ ((n .. 0) map cijfer)
+  geschaald = (abs x)/10^m
+  cijfer = m → '0' + ⌊geschaald mod 10⌋
+]], -3)
 
 print('alles ok')

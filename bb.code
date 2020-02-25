@@ -1,9 +1,0 @@
-sgn = x → y
-
-als x < 0 dan
-	y = -1
-anders
-	y = 1
-end
-
-uit = sgn 3

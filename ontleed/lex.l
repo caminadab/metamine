@@ -117,7 +117,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "\\"	{ *yylval = A(GL, "\\", nergens); return '\\'; }
 "∘"		{ *yylval = A(GL, "∘", nergens); return COMP; }
 ":"		{ *yylval = A(GL, ":", nergens); return ':'; }
-"∈"		{ *yylval = A(GL, ":", nergens); return IN; }
+"∈"		{ *yylval = A(GL, "∈", nergens); return IN; }
 ">"		{ *yylval = A(GL, ">", nergens); return '>'; }
 "≥"		{ *yylval = A(GL, "≥", nergens); return GDGA; }
 "="		{ *yylval = A(GL, "=", nergens); return '='; }

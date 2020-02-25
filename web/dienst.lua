@@ -2,7 +2,6 @@ require 'bouw.gen.js'
 require 'vertaal'
 require 'vertolk'
 require 'combineer'
-require 'rapporteer-syntax'
 require 'json'
 
 require 'ontleed'

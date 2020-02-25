@@ -1,2 +1,0 @@
-main = exit(0)
-exit = syscall(60)

@@ -1,3 +1,0 @@
-uit = teken(poly)
-pt = [(.2, .2, .2), (.4, .2, .2), (.4, .4, .4)]
-poly = polygoon(pt₀, pt₁, pt₂)

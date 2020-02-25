@@ -204,7 +204,7 @@ local noops = {
 
 local binops = {
 	-- set
-	[':'] = '$2.has($1)',
+	['∈'] = '$2.has($1)',
 	['∩'] = 'new Set([...$1].filter(x => $2.has(x)))',
 	['∪'] = 'new Set([...$1, ...$2])',
 	['-s'] = 'new Set([...$1].filter(x => !$2.has(x)))',

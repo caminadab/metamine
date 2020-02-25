@@ -119,6 +119,7 @@
 							context = uit.children[0].getContext("2d");
 							context.fillStyle = 'white';
 							context.strokeStyle = 'white';
+							context.font = '48px Arial';
 							context.lineWidth = '4';
 						}
 						return transform(context);

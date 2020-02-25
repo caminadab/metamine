@@ -606,17 +606,24 @@ function bieb()
 		return r
 	end;
 
-	-- set
-	['∪'] = function(a,b)
+	-- intersectie
+	['∩'] = function(ab)
+		local a,b = ab[1],ab[2]
+		local s = {}
+		for v in pairs(a) do if b[v] then s[v] = true end end
+		return s
+	end;
+
+	-- unie
+	['∪'] = function(ab)
+		local a,b = ab[1],ab[2]
 		local s = {}
 		for v in pairs(a) do s[v] = true end
 		for v in pairs(b) do s[v] = true end
 		return s
 	end;
 
-	[':'] = function(set,val)
-		return set[val]
-	end;
+	-- lidmaatschap
 	['∈'] = function(set,val)
 		return set[val]
 	end;
