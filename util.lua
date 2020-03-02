@@ -72,7 +72,7 @@ function lenc(t)
 			if not tonumber(k) or k % 1 ~= 0 then
 				islijst = false
 			end
-			if v ~= true and v ~= false then
+			if v ~= true then
 				isset = false
 			end
 		end

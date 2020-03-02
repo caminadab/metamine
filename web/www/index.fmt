@@ -106,7 +106,7 @@
 					// context
 					SCHAAL = 7.2;
 					var context;
-					var uitBreedte = 100;
+					var uitBreedte = 178;
 
 					function setcontext(transform) {
 						if (!context) {
@@ -130,13 +130,15 @@
 					var nu = new Date().getTime() / 1000;
 					var vars = [];
 					var uitvoer;
+
+					var schermVerverst = false;
 					var toetsCode = null;
 					var toetsBegint = false;
 					var toetsEindigt = false;
 					var toetsBegin = (toetscode) => false;
 					var toetsEind = (toetscode) => false;
 					var muisBeweegt = false;
-					var muisBeweegtNaar = [1/0, 1/0];
+					var muisBeweegtNaar = null; //[0, 0];
 					var muisKlikBegin = false;
 					var muisKlikEind = false;
 
@@ -145,7 +147,7 @@
 						var toetsBegin = (keycode) => ev.keyCode == keycode;
 						var toetsCode = ev.keyCode;
 						var toetsBegint = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -167,7 +169,7 @@
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
 						var muisKlikBegin = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -186,7 +188,7 @@
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
 						var muisKlikEind = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -204,7 +206,7 @@
 						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
-						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -220,7 +222,7 @@
 						var toetsEind = (keycode) => ev.keyCode == keycode;
 						var toetsCode = ev.keyCode;
 						var toetsEindigt = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -231,7 +233,7 @@
 					};
 
 					// start
-					var uv = main([vars, true, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+					var uv = main([vars, true, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
 
 					if (!main)
 						alert("Compilation error! " + j.js);
@@ -243,8 +245,14 @@
 							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 
 					var f = (ev) => {
+						if (stop)
+							return;
 						var nu = new Date().getTime() / 1000;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var schermVerverst = true;
+						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var na = new Date().getTime() / 1000;
+						//if (na - nu > 0.02)
+						//	console.log('traag..'+main);
 						vars = uv[0];
 						uitvoer = uv[1];
 
@@ -265,7 +273,7 @@
 					//uit.focus(); WAUW
 				} catch (e) {
 					onerror();
-					uit.innerHTML = e + '<br>' + j.js;
+					uit.innerHTML = e + '<br>' + '<pre>' + j.js + '</pre>';
 				}
 			})
 	}

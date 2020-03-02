@@ -1,7 +1,6 @@
 #!/usr/bin/luajit
 package.path = package.path .. ";../?.lua"
 require 'exp'
-require 'rapporteer-syntax'
 require 'bieb'
 
 require 'getopt'
@@ -165,7 +164,7 @@ end
 if verbozeIntermediair then
 	print('=== INTERMEDIAIRE CODE ===')
 	for i, stat in ipairs(app) do
-		print(combineer(stat))
+		print(unlisp(stat))
 	end
 	print()
 end
@@ -195,13 +194,15 @@ if opt.i or opt.im then
 			return
 		end
 		local vars, uit
-		local res = main{{0,0,0,0,0}, true, socket.gettime(), false}
+		local nop = function () end
+		local res = main{{}, true, socket.gettime(), nop, 100, -1, false, false, nop, nop, false, false, false, false}
+-- main = (in.vars, start, nu, setcontext, uit.breedte, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind) → (uit.vars, uit)
 		vars, uit = res[1], res[2]
 		io.write(lenc(uit))
 
 		while true do
 			nu = socket.gettime()
-			local res = main{vars, false, socket.gettime(), false}
+			local res = main{vars, false, socket.gettime(), nop, 100, -1, false, false, nop, nop, false, false, false, false}
 			vars, uit = res[1], res[2]
 			io.write(ansi.wisregel, ansi.regelbegin)
 			io.write(lenc(uit), ' ')
@@ -216,7 +217,7 @@ if opt.i or opt.im then
 	-- print
 	else
 		for i,stat in ipairs(app) do
-			print(combineer(stat))
+			print(unlisp(stat))
 		end
 	end
 	return
@@ -241,7 +242,11 @@ elseif opt.l or opt.lua then
 	elseif opt.d then
 		local socket = require 'socket'
 		local vars = {}
-		local main = load(lua)()
+		local mainfunc,err = load(lua)
+		if not mainfunc then
+			error(err)
+		end
+		local main = mainfunc()
 
 		local vars, uit = table.unpack(main{vars, true, socket.gettime()})
 

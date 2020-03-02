@@ -24,7 +24,7 @@ end
 print('resultaat: '..n..' bytes')
 
 local na = socket.gettime()
-local dt = math.floor((na - voor)*100)/100
-print('vertaal(pong) duurde '..dt..' s!')
+local dt = math.floor((na - voor)*1000)
+print('vertaal(pong) duurde '..dt..'ms')
 
 

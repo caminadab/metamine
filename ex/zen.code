@@ -1,0 +1,6 @@
+; zen
+pos = (90, 50)
+posA = pos + 30·sincos(i/6·τ)
+posB = pos + 30·sincos((i+1)/6·τ)
+rechthoeken = (0..6 + looptijd) map (i → rechthoek(posA,posB))
+uit = teken rechthoeken

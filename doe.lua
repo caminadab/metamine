@@ -43,6 +43,7 @@ function doe(sfc, arg0, stack)
 	local stack = stack or {}
 	local i = 1
 	local bieb = bieb()
+	local cache = {}
 
 	while i <= #sfc do
 		local ins = sfc[i]
@@ -53,6 +54,18 @@ function doe(sfc, arg0, stack)
 			local r = a(b)
 			stack[#stack] = nil
 			stack[#stack] = r
+
+		-- cache STORE
+		elseif fn(ins) == 'st' then
+			local index = tonumber(atoom(arg(ins)))
+			cache[index] = stack[#stack]
+			--print('cache store', index, lenc(stack[#stack]))
+
+		-- cache RETRIEVE
+		elseif fn(ins) == 'ld' then
+			local index = tonumber(atoom(arg(ins)))
+			stack[#stack+1] = cache[index]
+			--print('cache load', index, lenc(stack[#stack]))
 
 		elseif atoom(ins) == '_l' then
 			local a = stack[#stack-1]
@@ -110,7 +123,9 @@ function doe(sfc, arg0, stack)
 					i=i+1
 					ins = sfc[i]
 				end
-				stack[#stack+1] = false
+				--i=i+1
+				--ins = sfc[i]
+				stack[#stack] = false
 			end
 
 		elseif binop[atoom(ins)] then

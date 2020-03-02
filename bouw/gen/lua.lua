@@ -85,6 +85,10 @@ local noops = {
 }
 
 local binops = {
+	['\\'] = '(function(a,b) local r = {}; for i in pairs(a) do if not b[i] then r[i] = true end end return r ; end)($1,$2)',
+	['∩'] = '(function(a,b) local r = {}; for i in pairs(a) do if b[i] then r[i] = true end end ; return r ; end)($1,$2)',
+	['∪'] = '(function(a,b) local r = {}; for i in pairs(a) do r[i] = true end ; for i in pairs(b) do r[i] = true end ; return r ; end)($1,$2)',
+	['∈'] = '(function(a,b) return not not b[a] end)($1,$2)',
 	['^f'] = '(function (f,n) for i=1,n do r = f(r) end ; return r; end)($1,$2)',
 	['..'] = [[(function(a, b)
 		local r = {}
@@ -214,6 +218,15 @@ function luagen(sfc)
 				focus = focus + 1
 			end
 
+		elseif atoom(ins) == 'dup' then
+			L[#L+1] = tabs..string.format('local %s = %s', varnaam(focus), varnaam(focus-1))
+			focus = focus + 1
+
+		elseif fn(ins) == 'kp' then
+			local num = tonumber(atoom(arg(ins)))
+			L[#L+1] = tabs..string.format('local %s = %s', varnaam(focus-num+1), varnaam(focus-1))
+			focus = focus + 1
+
 		elseif fn(ins) == '∘' then
 			local funcs = arg(ins)
 			L[#L+1] = tabs..string.format('function %s(x)')
@@ -321,6 +334,18 @@ function luagen(sfc)
 			L[#L+1] = tabs..string.format("if %s then", naam)
 			tabs = tabs..'  '
 
+		-- cache
+		elseif fn(ins) == 'ld' then
+			local naam = varnaam(focus)
+			local index = atoom(arg(ins))
+			L[#L+1] = string.format('%slocal %s = cache[%s]', tabs, naam, index)
+			focus = focus + 1
+
+		elseif fn(ins) == 'st' then
+			local naam = varnaam(focus-1)
+			local index = atoom(arg(ins))
+			L[#L+1] = string.format('%scache[%s] = %s', tabs, index, naam)
+
 		else
 			error('onbekende instructie: '..unlisp(ins))
 		end
@@ -328,12 +353,14 @@ function luagen(sfc)
 		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
+	L[#L+1] = 'local cache = {}'
+
 	for i = 1, #sfc do
 		local ins = sfc[i]
 		ins2lua(ins)
 	end
 
-	L[#L+1] = 'return A'
+	L[#L+1] = 'return '..varnaam(focus-1)
 
 	return table.concat(L, '\n')
 end

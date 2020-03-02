@@ -94,15 +94,23 @@ function vertaal(code, naam)
 	-- vectoriseer
 	local asb = vectoriseer(asb, types)
 
-	local exp,oplosfouten = oplos(asb, "main")
+	local exp,oplosfouten,varmap = oplos(asb, "main")
 	
 	if #oplosfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
 	end
 
-	local app = codegen(exp)
-
-	return app, {}, gen2bron
+	local revmap = {}
+	for var, exp in ipairs(varmap) do
+		revmap[exp] = var
+		print('revmap', unlisp(exp), var)
+	end
+		
+	-- cachemap: exp → cacheindex
+	local app = codegen(exp, revmap)
+	
+	-- varmap: {varnaam → cacheindex}
+	return app, {}, varmap
 end
 
 if test then

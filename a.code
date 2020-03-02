@@ -1,2 +1,14 @@
-main = x · x
-x = 1 + 2
+lichaam := [(0,0),(1,0),(2,0)]
+
+blokken = lichaam map (x,y → vierkant((x·10,y·10),9))
+
+frame := 0
+als scherm.ververst dan
+	frame := frame + 1
+eind
+
+als ¬ start en frame mod 10 = 9 dan
+	lichaam := lichaam vanaf 1
+eind
+
+uit = teken blokken

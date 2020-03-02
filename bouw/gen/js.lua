@@ -17,7 +17,6 @@ local unops = {
 	['Σ'] = '(x => {var sum = 0; for (var i = 0; i < $1.length; i++) { sum = sum + $1[i]; }; return sum;})()',
 	['|'] = '((alts) => { for (var i=0; i<alts.length; i++) {  var alt = alts[i]; if (alt != null) {return alt;} } })($1)',
 	['derdemachtswortel'] = 'Math.pow($1,1/3)',
-	['√'] = 'Math.sqrt($1, 0.5)',
 }
 
 local fnops = {
@@ -37,6 +36,7 @@ local noops = {
 	-- niet goed
 	['misschien'] = 'Math.random() < 0.5',
 	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
+	['scherm.ververst'] = 'true',
 
 	-- functioneel
 	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
@@ -173,7 +173,6 @@ local noops = {
 	['sin'] = 'Math.sin',
 	['cos'] = 'Math.cos',
 
-	['|'] = '$1 or $2',
 	['fn.id'] = 'x => x',
 	['fn.constant'] = 'function() return $1 end',
 	['fn.merge'] = '{$1(x),$2(x)}',
@@ -227,9 +226,6 @@ local binops = {
 	['^'] = '$1 ^ $2',
 	['×'] = '(ab => { var r = []; for (var i = 0; i < $1.length; i++) { for (var j = 0; j < $2.length; j++) { r.push([$1[i],$2[j]]); }} ; return r;})()',
 	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
-	['mod'] = '$1 % $2',
-
-	['|'] = '$1 or $2',
 
 	['^'] = 'Math.pow($1, $2)',
 	['^f'] = [[(function (f,n) {
@@ -279,7 +275,22 @@ function jsgen(sfc)
 		uit[#uit+1] = fmt:gsub('$(%d)', function(i) return args[tonumber(i)] end)
 	end
 
-	function ins2lua(ins)
+	local function ins2js2(insA, expB)
+		if unops[atoom(ins)] then
+			local naam = atoom(expB)
+			local di = unops[atoom(ins)]:gsub('$1', naam)
+			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
+			focus = focus - 1
+		elseif binops[atoom(ins)] then
+			local naama = atoom(expB)
+			local naamb = varnaam(focus-1)
+			local di = binops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
+			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
+			focus = focus - 2
+		end
+	end
+
+	local function ins2js(ins)
 		if fn(ins) == 'push' or fn(ins) == 'put' then
 			if fn(ins) == 'push' then
 				focus = focus + 1
@@ -304,6 +315,16 @@ function jsgen(sfc)
 				L[#L+1] = tabs..string.format('var %s = %s;', varnaam(focus+i), varnaam(focus))
 				focus = focus + 1
 			end
+
+		elseif atoom(ins) == 'dup' then
+			L[#L+1] = tabs..string.format('var %s = %s;', varnaam(focus), varnaam(focus-1))
+			focus = focus + 1
+
+		elseif fn(ins) == 'kp' then
+			local num = tonumber(atoom(arg(ins)))
+			L[#L+1] = tabs..string.format('var %s = %s;', varnaam(focus-num+1), varnaam(focus-1))
+			focus = focus + 1
+
 
 		elseif fn(ins) == '∘' then
 			local funcs = arg(ins)
@@ -404,6 +425,18 @@ function jsgen(sfc)
 			L[#L+1] = tabs..string.format("if (%s) {", naam)
 			tabs = tabs..'  '
 
+		-- cache
+		elseif fn(ins) == 'ld' then
+			local naam = varnaam(focus)
+			local index = atoom(arg(ins))
+			L[#L+1] = string.format('%svar %s = cache[%s];', tabs, naam, index)
+			focus = focus + 1
+
+		elseif fn(ins) == 'st' then
+			local naam = varnaam(focus-1)
+			local index = atoom(arg(ins))
+			L[#L+1] = string.format('%scache[%s] = %s;', tabs, index, naam)
+
 		else
 			error('onbekende instructie: '..unlisp(ins))
 
@@ -412,12 +445,14 @@ function jsgen(sfc)
 		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
+	L[#L+1] = 'var cache = {};'
+
 	for i = 1, #sfc do
 		local ins = sfc[i]
-		ins2lua(ins)
+		ins2js(ins)
 	end
 
-	L[#L+1] = 'return A;'
+	L[#L+1] = 'return '..varnaam(focus-1)..';'
 
 	return table.concat(L, '\n')
 end

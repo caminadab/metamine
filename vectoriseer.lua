@@ -73,10 +73,10 @@ function vectoriseer(asb, types)
 			local isfunc = fn(type) == '→' or atoom(type) == 'functie'
 			local islijst = atoom(arg0(type)) == 'nat' or obj(type) == ','
 
-			if isfunc then
-				exp.f = X'-f'
-			elseif islijst then
+			if islijst then
 				exp.f = X'-v'
+			elseif isfunc then
+				exp.f = X'-f'
 			end
 		end
 

@@ -36,7 +36,7 @@ end
 
 local unop   = set('-','#','¬','Σ','|','√','!','%','-v','-m')
 local binop  = set(
-	'+','·','/','^','mod',
+	'+','·','/','^',
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
 	'∪','∩',':','∈','\\',
 	'_f','_f2','_l','^f',
@@ -44,114 +44,154 @@ local binop  = set(
 	'+m', '+m1', '·m1'
 )
 
-local klaar = {} -- exp → stackdepth
-local klaardiepte = {}
-local diepte = {} -- exp → waarzo
-local focus = 1
-
-local bieb = bieb()
-
-function codegen(exp, ins)
-	local ins = ins or {o='[]'}
+-- exps worden gecachet (voor debugging)
+function codegen(exp, exps)
+	local exps = exps or {}
+	local codeindex = {}
+	local reused = {} -- exp → index
 	local focus = 1
+	local maakindex = maakindices(0)
 
-	if false and klaar[exp] then
-		local tussen = klaar[exp]
-		local diepte = klaardiepte[exp]
+	local bieb = bieb()
 
-		-- voeg sneaky toe
-		--table.insert(ins, tussen+1, X'dup')
-		ins[#ins+1] = X('kp', tostring(diepte))
+	function codegen(exp, ins)
 
-		return
-	end
+		-- al gedaan
+		if false and codeindex[exp] then
+			local cindex = codeindex[exp]
 
-	-- causatie
-	if fn(exp) == '⇒' then
-		codegen(arg0(exp), ins)
-		ins[#ins+1] = X'dan'
-		codegen(arg1(exp), ins)
-		ins[#ins+1] = X'einddan'
-		focus = focus - 1
+			-- voeg sneaky toe
+			local index
+			if not reused[cindex] then
+				index = maakindex()
+				table.insert(ins, cindex+1, X('st', tostring(index)))
+				reused[cindex] = index
+				-- verschuif indices
+				--[[
+				for i=1,#codeindex do
+					if codeindex[i] >= cindex then
+						codeindex[i] = codeindex[i] + 1
+					end
+				end
+				]]
+			else
+				index = reused[cindex]
+			end
+			--ins[#ins+1] = X('ld', tostring(index))
 
-	elseif fn(exp) == '_arg' then
-		ins[#ins+1] = X('arg', atoom(arg(exp)))
-		focus = focus + 1
-
-	-- portable functies
-	elseif binop[atoom(exp)] then
-		ins[#ins+1] = X('fn', '999')
-		ins[#ins+1] = X('arg', '999')
-		ins[#ins+1] = X('0')
-		ins[#ins+1] = X('_l')
-		ins[#ins+1] = X('arg', '999')
-		ins[#ins+1] = X('1')
-		ins[#ins+1] = X('_l')
-		ins[#ins+1] = exp
-		ins[#ins+1] = X('eind')
-		focus = focus + 1
-
-	elseif unop[atoom(exp)] then
-		ins[#ins+1] = X('fn', '999')
-		ins[#ins+1] = X('arg', '999')
-		ins[#ins+1] = exp
-		ins[#ins+1] = X('eind')
-		focus = focus + 1
-
-	elseif bieb[atoom(exp)] then
-		ins[#ins+1] = exp
-		focus = focus + 1
-
-	elseif binop[fn(exp)] then
-		codegen(arg0(exp), ins)
-		codegen(arg1(exp), ins)
-		ins[#ins+1] = X(fn(exp))
-		focus = focus - 1
-
-	elseif unop[fn(exp)] then
-		codegen(arg(exp), ins)
-		ins[#ins+1] = X(fn(exp))
-
-	-- _fn(1 +(1 _arg(1))) -> fn
-	-- functie
-	elseif fn(exp) == '_fn' then
-		ins[#ins+1] = X('fn', atoom(arg0(exp)))
-		codegen(arg1(exp), ins)
-		ins[#ins+1] = X'eind'
-	
-	elseif fn(exp) == 'rep' then
-		ins[#ins+1] = exp
-		focus = focus + 1
-
-	elseif isobj(exp) then
-		--for i=#exp,1,-1 do
-		for i=1,#exp do
-			local sub = exp[i]
-			--print('SUB', i, combineer(exp), combineer(sub))
-			codegen(sub, ins)
-		end
-		if     obj(exp) == ',' then
-			ins[#ins+1] = X('tupel', tostring(#exp))
-		elseif obj(exp) == '[]' then
-			ins[#ins+1] = X('lijst', tostring(#exp))
-		elseif obj(exp) == '{}' then
-			ins[#ins+1] = X('set', tostring(#exp))
-		elseif obj(exp) == '"' then
-			ins[#ins+1] = X('string', tostring(#exp))
+			return
 		end
 
-	elseif isatoom(exp) then
-		ins[#ins+1] = exp
-		focus = focus + 1
-	
-	else
-		ins[#ins+1] = exp
-		focus = focus + 1
+		-- causatie
+		if fn(exp) == '⇒' then
+			codegen(arg0(exp), ins)
+			ins[#ins+1] = X'dan'
 
+			-- met lege cache
+			local ci = codeindex
+			local r = reused
+			codeindex = {}
+			reused = {}
+			codegen(arg1(exp), ins)
+			codeindex = ci
+			reused = r
+
+			ins[#ins+1] = X'einddan'
+			focus = focus - 1
+
+		elseif fn(exp) == '_arg' then
+			ins[#ins+1] = X('arg', atoom(arg(exp)))
+			focus = focus + 1
+
+		-- portable functies
+		elseif binop[atoom(exp)] then
+			ins[#ins+1] = X('fn', '999')
+			ins[#ins+1] = X('arg', '999')
+			ins[#ins+1] = X('0')
+			ins[#ins+1] = X('_l')
+			ins[#ins+1] = X('arg', '999')
+			ins[#ins+1] = X('1')
+			ins[#ins+1] = X('_l')
+			ins[#ins+1] = exp
+			ins[#ins+1] = X('eind')
+			focus = focus + 1
+
+		elseif unop[atoom(exp)] then
+			ins[#ins+1] = X('fn', '999')
+			ins[#ins+1] = X('arg', '999')
+			ins[#ins+1] = exp
+			ins[#ins+1] = X('eind')
+			focus = focus + 1
+
+		elseif bieb[atoom(exp)] then
+			ins[#ins+1] = exp
+			focus = focus + 1
+
+		elseif binop[fn(exp)] then
+			codegen(arg0(exp), ins)
+			codegen(arg1(exp), ins)
+			ins[#ins+1] = X(fn(exp))
+			focus = focus - 1
+
+		elseif unop[fn(exp)] then
+			codegen(arg(exp), ins)
+			ins[#ins+1] = X(fn(exp))
+
+		-- _fn(1 +(1 _arg(1))) -> fn
+		-- functie
+		elseif fn(exp) == '_fn' then
+			ins[#ins+1] = X('fn', atoom(arg0(exp)))
+
+			-- met lege cache
+			local ci = codeindex
+			local r = reused
+			codeindex = {}
+			reused = {}
+			codegen(arg1(exp), ins)
+			codeindex = ci
+			reused = r
+
+			ins[#ins+1] = X'eind'
+		
+		elseif fn(exp) == 'rep' then
+			ins[#ins+1] = exp
+			focus = focus + 1
+
+		elseif isobj(exp) then
+			for i=1,#exp do
+				local sub = exp[i]
+				codegen(sub, ins)
+			end
+			if     obj(exp) == ',' then
+				ins[#ins+1] = X('tupel', tostring(#exp))
+			elseif obj(exp) == '[]' then
+				ins[#ins+1] = X('lijst', tostring(#exp))
+			elseif obj(exp) == '{}' then
+				ins[#ins+1] = X('set', tostring(#exp))
+			elseif obj(exp) == '"' then
+				ins[#ins+1] = X('string', tostring(#exp))
+			end
+
+		elseif isatoom(exp) then
+			ins[#ins+1] = exp
+			focus = focus + 1
+		
+		else
+			ins[#ins+1] = exp
+			focus = focus + 1
+
+		end
+
+		codeindex[exp] = #ins
+
+		if false and exps[exp] then
+			index = maakindex()
+			ins[#ins+1] = X('st', tostring(index))
+		end
+		
+		return ins, reused
 	end
 
-	klaar[exp] = #ins
-	klaardiepte[exp] = focus
-	
-	return ins
+	local ins = {o='[]'}
+	return codegen(exp, ins)
 end

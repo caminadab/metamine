@@ -155,7 +155,6 @@ function bieb()
 	['π'] = math.pi,
 	['misschien'] = true,
 	['fout'] = true,
-	['scherm.ververst'] = true,
 	['verf'] = true,
 	['schaal'] = true,
 
@@ -348,7 +347,7 @@ function bieb()
 
 	['|'] = function(a)
 		for i,v in ipairs(a) do
-			if v ~= nil then
+			if v ~= false then
 				return v
 			end
 		end
@@ -624,8 +623,8 @@ function bieb()
 	end;
 
 	-- lidmaatschap
-	['∈'] = function(set,val)
-		return set[val]
+	['∈'] = function(a)
+		return not not a[2][a[1]]
 	end;
 
 	-- set verschil

@@ -18,7 +18,7 @@ bal.y := uit.hoogte / 2
 pauze.tot := looptijd + 1
 pauze = looptijd < pauze.tot
 
-als ¬ pauze dan
+als scherm.ververst en ¬ pauze dan
  bal.x := bal.x + bal.vx
  bal.y := bal.y + bal.vy
 eind
@@ -33,15 +33,15 @@ bal.x.max = uit.breedte - 5 - 10
 
 als bal.x > bal.x.max en rechts.raakt dan
  bal.x := bal.x.max
- bal.vx := -2
- bal.vy := -(rechts.y - bal.y + 25/2) / 4
+ bal.vx := - abs bal.vx
+ bal.vy := -(rechts.y - bal.y + 25/2) / 8
 eind
 
 ; links stuiter
 als bal.x < bal.x.min en links.raakt dan
  bal.x := bal.x.min
- bal.vx := - bal.vx
- bal.vy := -(links.y - bal.y + 25/2) / 4
+ bal.vx := abs bal.vx
+ bal.vy := -(links.y - bal.y + 25/2) / 8
 eind
 
 ; top en onder stuiter
@@ -71,10 +71,10 @@ links.y := speler.y.start
 rechts.y := speler.y.start
 
 ; besturing
-als toets.omlaag en rechts.y > 0						dan rechts.y := rechts.y - 2 eind
-als toets.omhoog en rechts.y < speler.y.max dan rechts.y := rechts.y + 2 eind
-als toets.s en links.y > 0									dan links.y := links.y - 2 eind
-als toets.w en links.y < speler.y.max				dan links.y := links.y + 2 eind
+als scherm.ververst en toets.omlaag en rechts.y > 0						dan rechts.y := rechts.y - 2 eind
+als scherm.ververst en toets.omhoog en rechts.y < speler.y.max dan rechts.y := rechts.y + 2 eind
+als scherm.ververst en toets.s en links.y > 0									dan links.y := links.y - 2 eind
+als scherm.ververst en toets.w en links.y < speler.y.max				dan links.y := links.y + 2 eind
  
 ; teken spelers
 links.min = (0, links.y)

@@ -12,6 +12,9 @@ nat: int ; natuurlijk getal (≥ 0)
 byte: nat ; nat < 256
 kommagetal: getal
 
+τ: getal
+π: getal
+
 ; net
 socket: int
 tcp.bind: int, int → socket

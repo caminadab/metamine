@@ -52,7 +52,9 @@ function optimiseer(exp)
 		if atoom(exp) == "⊤" then return exp, true end
 		if atoom(exp) == "⊥" then return exp, false end
 		if bieb[atoom(exp)] and not dynamisch[atoom(exp)] then
-			return exp, bieb[atoom(exp)]
+			if type(bieb[atoom(exp)]) ~= 'function' then
+				return exp, bieb[atoom(exp)]
+			end
 		end
 		return exp, nil
 	end
@@ -88,6 +90,9 @@ function optimiseer(exp)
 		if makkelijk[fn(exp)] and warg then
 			wexp = bieb[fn(exp)](warg)
 			nexp = w2exp(wexp)
+			if nexp == nil then
+				wexp = nil
+			end
 		else
 			if fn(exp) == '_fn' then
 				wexp = nil

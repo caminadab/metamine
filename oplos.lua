@@ -367,7 +367,7 @@ function oplos(exp, voor)
 			if #alts == 1 then
 				eq = X('=', naam, alts[1])
 			else
-				alts.o = X'[]'
+				alts.o = X','
 				eq = X('=', naam, X('|', alts))
 				--nieuw[eq] = true
 			end
@@ -619,43 +619,26 @@ function oplos(exp, voor)
 			return false, fouten, {}
 		end
 		local substs = stroom:topologisch()
-		if not substs then
-			-- dit is een zware fout...
-			return false, {oplosfout(nergens, 'zware fout')}
-		end
-		-- lijst(subst)
 
-		-- op te lossen waarde, staat die niet altijd laatste (;
-		--TODOlocal val = voor
-		local val = X(voor)--X'uit'
+		local val = X(voor)
 		local exp2naam = {}
-		-- sets van exps, op naam
-		local naam2exp = {}
+
+		local varmap = {}
 		
-		-- O(diepte · sz)
 		for i=#substs,1,-1 do
 			local sub = pijl2subst[substs[i]]
 			local naam,exp = sub.a[1],sub.a[2]
 			local val0 = val
-			local n
-			naam2exp[naam] = naam2exp[naam] or {}
-			--naam2exp[naam][exp] = true
-			val, n = substitueer(val0, naam, exp)
-			--print('N', naam.v, n, combineer(exp))
+			val = substitueer(val0, naam, exp)
 			val.loc = assert(exp.loc or nergens)
-			--exp2naam[val0] = naam
-			--print('SUBST', exp2string(val0), exp2string(naam), exp2string(exp), exp2string(val))
-			if true or verboos then
-				--print('SUBST', naam.v, n)
-			end
 
-			exp2naam[naam.v] = exp
+			exp2naam[atoom(naam)] = exp
 			local n2e = {}
 			for naam,sub in pairs(exp2naam) do
 				n2e[naam] = substitueer(sub, naam, exp)
-				--print('SUBST_diep', combineer(exp))
 			end
 			exp2naam = n2e
+			varmap[naam] = exp
 		end
 
 		-- optimiseer
@@ -668,9 +651,46 @@ function oplos(exp, voor)
 			print('=== WAARDE ===')
 			print(unlisp(val))
 			print()
+
+		 	-- tree size
+			local function treesize(exp)
+				if isatoom(exp) then
+					return 1
+				elseif isobj(exp) then
+					local n = 1
+					for i,v in ipairs(exp) do
+						n = treesize(v) + n
+					end
+					return n
+				else -- fn
+					return 1 + treesize(arg(exp))
+				end
+			end
+
+		 	-- gecachte tree size
+			local klaar = {}
+			local function cachedtreesize(exp)
+				if klaar[exp] then
+					return 1
+				end
+				klaar[exp] = true
+				if isatoom(exp) then
+					return 1
+				elseif isobj(exp) then
+					local n = 1
+					for i,v in ipairs(exp) do
+						n = cachedtreesize(v) + n
+					end
+					return n
+				else -- fn
+					return 1 + cachedtreesize(arg(exp))
+				end
+			end
+			print('TREESIZE = '..treesize(val))
+			print('CACHEDTREESIZE = '..cachedtreesize(val))
 		end
 
-		return val,{},bekend,exp2naam
+		return val,{},exp2naam
 
 	end
 
