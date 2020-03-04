@@ -16,6 +16,9 @@ webdemos: web/www/ex/
 	./tolk ex/salvobal.code web/www/ex/salvobal.en.code
 	./tolk ex/buis.code web/www/ex/buis.en.code
 	./tolk ex/paint.code web/www/ex/paint.en.code
+	./tolk ex/pe1.code web/www/ex/pe1.en.code
+	./tolk ex/pe2.code web/www/ex/pe2.en.code
+	./tolk ex/pe3.code web/www/ex/pe3.en.code
 	
 
 ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c

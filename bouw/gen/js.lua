@@ -34,6 +34,8 @@ local fnops = {
 
 local noops = {
 	['niets'] = 'null',
+	['omdraai'] = 'x => typeof(x) == "string" ? x.split("").reverse().join("") : x.reverse()',
+
 	-- niet goed
 	['misschien'] = 'Math.random() < 0.5',
 	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',

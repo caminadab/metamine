@@ -1,2 +1,0 @@
-som = Σ ((1..1000) waarvoor (i → ★mod3=0 ∧ ★mod5=0) )
-uit = tekst som

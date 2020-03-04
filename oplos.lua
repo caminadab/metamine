@@ -242,16 +242,28 @@ function oplos(exp, voor)
 		end
 
 		-- exp → eqs
-		local function uitpak(eq, scope)
-			for k,sub in subs(arg(arg1(eq))) do
+		local function uitpak(exp, scope)
+			for k,sub in subs(exp) do
 				if fn(sub) == '=' or fn(sub) == ':=' then
 					local neq = X('⇒', scope, sub)
 					nieuw[neq] = true
-					oud[eq] = true
 				end
 				if fn(sub) == '⇒' then
-					local subscope = X('∧', scope, arg0(sub))
-					uitpak(sub, subscope)
+					local cond   = arg0(sub)
+					local dan    = arg1(sub)
+					local anders = arg2(sub)
+					local block  = arg(dan)
+
+					if fn(dan) == '⋀' then
+						local subscope = X('∧', scope, arg0(sub))
+						local block = arg(dan)
+						uitpak(block, subscope)
+					end
+					if anders and fn(anders) == '⋀' then
+						local block = arg(anders)
+						local subnscope = X('∧', scope, X('¬', arg0(sub)))
+						uitpak(block, subnscope)
+					end
 				end
 			end
 		end
@@ -259,8 +271,19 @@ function oplos(exp, voor)
 		-- pak blokken uit
 		for eq in pairs(eqs) do
 			if fn(eq) == '⇒' then
-				if fn(arg1(eq)) == '⋀' then
-					uitpak(eq, arg0(eq))
+				local cond   = arg0(eq)
+				local dan    = arg1(eq)
+				local anders = arg2(eq)
+				oud[eq] = true
+				if fn(dan) == '⋀' then
+					local scope = cond
+					local block = arg(dan)
+					uitpak(block, scope)
+				end
+				if anders and fn(anders) == '⋀' then
+					local block = arg(anders)
+					local nscope = X('¬', cond)
+					uitpak(block, nscope)
 				end
 			end
 		end

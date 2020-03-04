@@ -440,6 +440,14 @@ function bieb()
 	end;
 
 	-- linq
+	['omdraai'] = function(a)
+		local r = {}
+		for i=#a,1,-1 do
+			r[#r+1] = a[i]
+		end
+		return r
+	end;
+
 	['vouw'] = function(a)
 		local lijst, func = a[1],a[2]
 		local aggr = lijst[1]
