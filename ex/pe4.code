@@ -1,0 +1,33 @@
+; A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
+
+; Find the largest palindrome made from the product of two 3-digit numbers.
+
+palindroom = p → ispalindroom
+
+t = tekst p
+half1 = ⌊#t / 2⌋
+half2 = ⌈#t / 2⌉
+hoog = t tot half1
+laag = t vanaf half2
+moetlaag = omdraai hoog
+ispalindroom = (laag = moetlaag)
+
+x := 100
+y := 100
+
+als x < 1000 dan
+	als y < 1000 dan
+		x := x + 1
+		
+		als palindroom(x·y) dan
+			pmax := x·y
+		eind
+	eind
+anders
+	y := y + 1
+	x := 100
+eind
+
+pmax := 11
+
+uit = x·y, pmax

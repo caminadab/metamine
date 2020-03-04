@@ -14,7 +14,7 @@ als y < stop dan
 	x := y
 	y := x + y
 
-	als y < stop dan
+	als y mod 2 = 0 dan
 		s := s + y
 	eind
 eind
