@@ -77,15 +77,27 @@ function test(code, moetzijn)
 			print(asm)
 			print()
 		end
+
+		os.exit(0)
 	end
 
 end
 
+-- arit
 test("main = 2", 2)
 test("main = 1 + 2", 3)
 test("main = 1 + 2 · 3", 7)
 test("main = 6 - 2", 4)
+
+-- functioneel
+test("f = x → x + 1\nmain = f(1)", 2)
+test("f = x → x + 1\nmain = (f ∘ f)(1)", 3)
+test("f = x → x + 1\nmain = (f ^ 3)(1)", 4)
+
+-- logica
 test("main = (ja ⇒ 2)", 2)
+
+
 test([[
 f = x → x + 10
 g = y → y + 100

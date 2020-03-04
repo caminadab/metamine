@@ -15,6 +15,7 @@ webdemos: web/www/ex/
 	./tolk ex/cirkels.code web/www/ex/cirkels.en.code
 	./tolk ex/salvobal.code web/www/ex/salvobal.en.code
 	./tolk ex/buis.code web/www/ex/buis.en.code
+	./tolk ex/paint.code web/www/ex/paint.en.code
 	
 
 ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c

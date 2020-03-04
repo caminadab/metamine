@@ -599,6 +599,10 @@ function oplos(exp, voor)
 				print('HALV NAAR')
 				print(halfnaar:tekst())
 			end
+			local a = stroom2html(halfvan)
+			local b = stroom2html(halfnaar)
+			file('halfvan.html', a)
+			file('halfnaar.html', b)
 			for punt in pairs(halfnaar.begin) do
 				if not halfvan.punten[punt] then
 					local def = bron2def[punt]

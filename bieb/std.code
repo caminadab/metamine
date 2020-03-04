@@ -1,8 +1,14 @@
 ;ververs = moment → schrijf(tekst(uit))
 ;main = herhaal.langzaam(ververs)
-main = (in.vars, start, nu, setcontext, uit.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind) → (uit.vars, uit)
+main = (in.vars, start, nu, setcontext, setcontext3d, uit.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind, in.fotos) → (uit.vars, uit)
 
 uit.hoogte = 100
+
+foto = ((Fx,Fy),Ff) → canvas.drawImage(Ff, Fx, Fy)
+
+fotos.gras = in.fotos₀
+fotos.muur = in.fotos₁
+fotos.dodo = in.fotos₂
 
 ; toetsenbord
 toetsen := {}
@@ -19,7 +25,10 @@ eind
 ;uit = tekst | function(el → el)
 
 ; canvas
-teken = vormen → setcontext(canvas.clear ∘ (vormen vouw (∘)) )
+canvas.wis = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), kleur.zwart)
+
+teken = vormen → setcontext(canvas.wis ∘ (vormen vouw (∘)) )
+render = vormen → setcontext3d(vormen vouw (∘))
 
 ; muis
 muis.pos := (1/0,1/0)

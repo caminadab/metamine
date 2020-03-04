@@ -6,6 +6,7 @@ local unops = {
 	['%'] = '$1 / 100;',
 	['-'] = '- $1',
 	['¬'] = '! $1',
+	['-v'] = '$1.map(x => -x)',
 	['!'] = [[(num => {
   if (num === 0 || num === 1)
     return 1;
@@ -37,6 +38,9 @@ local noops = {
 	['misschien'] = 'Math.random() < 0.5',
 	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
 	['scherm.ververst'] = 'true',
+	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
+	['model'] = 'x => (gl => drawModel(gl, x))',
+	['shader.programma'] = 'shaderProgram',
 
 	-- functioneel
 	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
@@ -45,7 +49,7 @@ local noops = {
   ['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
   ['filter'] = '(function(a){return a[0].filter(a[1]);})',
   ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
-	['vouw'] = '(function(lf) {var l=lf[0]; var f=lf[1]; var r=l[0] ; for (var i=1; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
+	['vouw'] = '(function(lf) {var l=lf[0]; if (l.length == 0) return false; var f=lf[1]; var r=l[0] ; for (var i=1; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
 
 	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
 	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
@@ -77,6 +81,8 @@ local noops = {
   c.fillStyle = style;
   c.strokeStyle = style;
   vorm(c);
+	c.fillStyle = 'white';
+  c.strokeStyle = 'white';
   return c;});
  })]],
 
@@ -155,8 +161,8 @@ local noops = {
 			var x = args[0][0] * SCHAAL;
 			var y = (100 - args[0][1]) * SCHAAL;
 			var r = args[1] * SCHAAL;
-			var a1 = args[1] * SCHAAL;
-			var a2 = args[2] * SCHAAL;
+			var a1 = args[2];
+			var a2 = args[3];
 			c.beginPath();
 			c.arc(x, y, r, a1, a2);
 			c.fill();
@@ -273,21 +279,6 @@ function jsgen(sfc)
 	local function emit(fmt, ...)
 		local args = {...}
 		uit[#uit+1] = fmt:gsub('$(%d)', function(i) return args[tonumber(i)] end)
-	end
-
-	local function ins2js2(insA, expB)
-		if unops[atoom(ins)] then
-			local naam = atoom(expB)
-			local di = unops[atoom(ins)]:gsub('$1', naam)
-			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
-			focus = focus - 1
-		elseif binops[atoom(ins)] then
-			local naama = atoom(expB)
-			local naamb = varnaam(focus-1)
-			local di = binops[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
-			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
-			focus = focus - 2
-		end
 	end
 
 	local function ins2js(ins)
@@ -445,11 +436,35 @@ function jsgen(sfc)
 		--L[#L+1] = 'print('..varnaam(focus)..')'
 	end
 
+	local function ins2js2(insA, insB)
+		if unops[atoom(insB)] then
+			local naam = atoom(insA)
+			local di = unops[atoom(ins)]:gsub('$1', naam)
+			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
+			focus = focus - 1
+		elseif binops[atoom(insB)] then
+			local naama = varnaam(focus-1)
+			local naamb = atoom(insA)
+			local di = binops[atoom(insB)]:gsub('$1', naama):gsub('$2', naamb)
+			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
+		else
+			ins2js(insA)
+			ins2js(insB)
+		end
+	end
+
 	L[#L+1] = 'var cache = {};'
 
-	for i = 1, #sfc do
-		local ins = sfc[i]
-		ins2js(ins)
+	local i = 1
+
+	while i <= #sfc do
+		if tonumber(atoom(sfc[i])) and sfc[i+1] then
+			ins2js2(sfc[i], sfc[i+1])
+			i = i + 1
+		else
+			ins2js(sfc[i])
+		end
+		i = i + 1
 	end
 
 	L[#L+1] = 'return '..varnaam(focus-1)..';'

@@ -1,4 +1,4 @@
--- registers voor argumenten van syscalls
+---- registers voor argumenten van syscalls
 local sysregs = { 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9' }
 -- registers voor argumenten van abicalls
 local abiregs = { 'rdi', 'rsi', 'rdx', 'rcx', 'r8', 'r9'} -- r10 is static chain pointer in case of nested functions
@@ -38,13 +38,21 @@ local op2asm = {
   mov -8[rsp], rax
   add rsp, 8]],
 
+	-- componeer...
+	['∘'] = [[  mov rax, 8[rsp]	# (∘)
+  mov rbx, [rsp]
+	add rsp, 8
+	mov [rsp], rax
+	]],
+
 	-- [... fn arg] -> [... arg] -> [... res]
 	-- rax: fn, rbx: arg
 	['_f'] = [[  mov rax, 8[rsp]	# (_f)
   mov rbx, [rsp]
+  mov rdi, rbx
   mov 8[rsp], rbx
   add rsp, 8
-	call rax]],
+  call rax]],
 }
 
 function asmgen(im)
@@ -62,28 +70,45 @@ function asmgen(im)
 	end
 
 	local function ins2asm(ins)
+		-- functie
 		if fn(ins) == 'fn' then
-			local label = 'fn'..atoom(arg(ins))
+			local num = atoom(arg(ins))
+			local label = 'fn'..num
+			local eindlabel = label .. '_eind'
 			lstack[#lstack+1] = label
-			L[#L+1] = '  jmp '..label..'_eind'
-			local res = label..': \t#'..combineer(ins)
+			L[#L+1] = '  jmp '..eindlabel
+			L[#L+1] = label..': \t# '..combineer(ins)
 
-			L[#L+1] = res
+		-- argument
+		elseif fn(ins) == 'arg' then
+			local num = atoom(arg(ins))
+			L[#L+1] = '  sub rsp, 8 \t# '..combineer(ins)
+			L[#L+1] = '  mov [rsp], rdi'
 
+		-- constanten
 		elseif tonumber(atoom(ins)) then
-			L[#L+1] = '  sub rsp, 8 \t#'..combineer(ins)
+			L[#L+1] = '  sub rsp, 8 \t# '..combineer(ins)
 			L[#L+1] = '  mov rax, '..atoom(ins)
 			L[#L+1] = '  mov [rsp], rax'
 
+		-- makkelijke ops
 		elseif op2asm[atoom(ins)] then
 			L[#L+1] = op2asm[atoom(ins)]
 
+		-- functie return
 		elseif atoom(ins) == 'eind' then
 			L[#L+1] = '  mov rax, [rsp]'
 			L[#L+1] = '  ret'
 			local label = lstack[#lstack]
+			local eindlabel = label..'_eind'
 			lstack[#lstack] = nil
-			L[#L+1] = label..'_eind:'
+			L[#L+1] = eindlabel..':'
+
+			-- push functie
+			L[#L+1] = '  sub rsp, 8'
+			L[#L+1] = '  mov rax, '..label
+			L[#L+1] = '  mov [rsp], rax'
+
 
 		else
 			L[#L+1] = '  nop\t# '..combineer(ins)
@@ -93,9 +118,9 @@ function asmgen(im)
 	--assert(fn(im[1]) == 'fn', 'main moet een functie zijn')
 
 	L[#L+1] = [[
-  .intel_syntax noprefix
-  .text
-  .global	start
+.intel_syntax noprefix
+.text
+.global	start
 
 .section .text
 

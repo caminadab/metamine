@@ -26,6 +26,7 @@ function bieb()
 	['canvas.fillRect'] = true,
 	['canvas.clear'] = true,
 	['canvas.fontsize'] = true,
+	['canvas.drawImage'] = true,
 
 	-- functioneel
 	['fn.inc'] = function(x) return x + 1 end;
@@ -160,13 +161,6 @@ function bieb()
 
 	rgb = true,
 
-	-- web
-	['console.log'] =  function(s) print(s) end;
-	['herhaal.langzaam'] = function (f) f(1/24) end; --error('niet beschikbaar') end;
-	['canvas.context2d'] = function () error('niet beschikbaar') end;
-	['canvas.context3d'] = function () error('niet beschikbaar') end;
-	['canvas.wis'] = function () error('niet beschikbaar') end;
-
 	vierkant = function() return('vierkant') end;
 	boog = function() return('boog') end;
 	label = function() return('label') end;
@@ -189,15 +183,15 @@ function bieb()
 
 	['_l'] = function(a)
 		local num = a[2]
-		return a[1][num+1]
+		return a[1][num+1] or false
 	end;
 
 	['_f'] = function(a)
-		return a[1](a[2])
+		return a[1](a[2]) or false
 	end;
 
 	['_u'] = function(a, b)
-		return a:byte(b)
+		return a:byte(b) or false
 	end;
 
 	-- io
@@ -347,6 +341,7 @@ function bieb()
 
 	['|'] = function(a)
 		for i,v in ipairs(a) do
+			print('I', i, lenc(v))
 			if v ~= false then
 				return v
 			end

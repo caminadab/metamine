@@ -31,6 +31,12 @@
 
 	<pre id="code"> </pre>
 
+	<!-- grondstoffen -->
+	<div class="res">
+		<img id="gras" src="data/gras.png">
+		<img id="muur" src="data/muur.png">
+		<img id="dodo" src="data/dodo.png">
+	</div>
 </body>
 <link rel="stylesheet" href="lib/slang.css">
 <link rel="stylesheet" href="lib/codemirror.css">
@@ -43,6 +49,7 @@
 <script src="lib/addon/search/searchcursor.js"></script>
 <script src="lib/taal.js"></script>
 <script src="lib/vim.js"></script>
+<script src="webgl.js"></script>
 <script>
 
 	// autoherleid engels
@@ -56,7 +63,7 @@
 	var cc = ("{cc}" == "nl") ? "" : ".en";
 
 	var demoindex = 0;
-	var demos = [ 'pong', 'buis', 'cirkels', 'salvobal', 'paint' ] ;
+	var demos = [ 'salvobal', 'pong', 'buis', 'cirkels', 'paint' ] ;
 	var uit = document.getElementById('uit');
 
 	var speelknop = document.getElementById("speel");
@@ -70,6 +77,19 @@
 	preview.className = "preview";
 	var stop = true;
 	var wraps = document.getElementsByClassName("CodeMirror-wrap");
+
+	// fotos
+	var gras = document.createElement('img');
+	var muur = document.createElement('img');
+	var dodo = document.createElement('img');
+	gras.setAttribute('src', 'res/gras.png');
+	muur.setAttribute('src', 'res/muur.png');
+	dodo.setAttribute('src', 'res/dodo.png');
+	//var gras = document.getElementById('gras');
+	//var muur = document.getElementById('muur');
+	//var dodo = document.getElementById('dodo');
+	var fotos = [gras, muur, dodo];
+
 
 	function playfunc() {
 		// suspense...
@@ -102,7 +122,6 @@
 				};
 
 				try {
-
 					// context
 					SCHAAL = 7.2;
 					var context;
@@ -123,6 +142,21 @@
 							context.lineWidth = '4';
 						}
 						return transform(context);
+					}
+
+					var context3d;
+					function setcontext3d(transform) {
+						if (!context3d) {
+							var width = window.screen.width;
+							var height = window.screen.height;
+							SCHAAL = height/100;
+							uitBreedte = width / height * 100;
+
+							uit.innerHTML = '<canvas width="'+width+'" height="'+height+'"></canvas>'
+							context3d = uit.children[0].getContext("webgl");
+							alert(context3d);
+						}
+						return transform(context3d);
 					}
 
 					var main = new Function("IN", j.js)();
@@ -147,7 +181,7 @@
 						var toetsBegin = (keycode) => ev.keyCode == keycode;
 						var toetsCode = ev.keyCode;
 						var toetsBegint = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -169,7 +203,7 @@
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
 						var muisKlikBegin = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -188,7 +222,7 @@
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
 						var muisKlikEind = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -206,7 +240,7 @@
 						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
-						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -222,7 +256,7 @@
 						var toetsEind = (keycode) => ev.keyCode == keycode;
 						var toetsCode = ev.keyCode;
 						var toetsEindigt = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
@@ -233,7 +267,7 @@
 					};
 
 					// start
-					var uv = main([vars, true, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+					var uv = main([vars, true, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 					if (!main)
 						alert("Compilation error! " + j.js);
@@ -249,7 +283,7 @@
 							return;
 						var nu = new Date().getTime() / 1000;
 						var schermVerverst = true;
-						var uv = main([vars, false, nu, setcontext, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind]);
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 						var na = new Date().getTime() / 1000;
 						//if (na - nu > 0.02)
 						//	console.log('traag..'+main);

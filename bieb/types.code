@@ -38,13 +38,11 @@ vorm: iets → iets
 html: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 tekst: iets → lijst(letter)
+;model: lijst(getal), lijst(getal) → iets
 
-canvas2d: 
-canvas.clear: canvas → canvas
 setcontext: functie
-;canvasFillRect: canvas,ℝ,ℝ,ℝ,ℝ → canvas
 
-verf: vorm, kleur → vorm
+;verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
 
 vierkant: (ℝ,ℝ),ℝ → vorm
@@ -60,7 +58,6 @@ vouw: lijst,functie → iets
 
 requestAnimationFrame: (getal → lijst(letter)) → int
 contextVan: lijst(letter) → canvas
-wisCanvas: canvas → canvas
 invoer.registreer: lijst(letter) → lijst(letter)
 
 ; hardware

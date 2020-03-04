@@ -1,17 +1,120 @@
-; hele veld is ~180
-l := (45, 0)
-r := (135, 0)
+hw = uit.breedte / 2
 
-speler = pos → boog(pos, 10, τ/2, τ)
-net = rechthoek((88,0),(92,20))
+links.x  := uit.breedte · 1 / 4
+rechts.x := uit.breedte · 3 / 4
+links.y  := 0
+rechts.y := 0
 
-vp = vec2.plus
+; bal pos
+bal.vx := 1
+bal.vy := 3
+bal.x := uit.breedte / 2
+bal.y := 50
 
-als toets.links dan r := r' vp (-1, 0) eind
-als toets.rechts dan r := r' vp (1, 0) eind
 
-als toets.a dan l := l' vp (-1, 0) eind
-als toets.d dan l := l' vp (1, 0) eind
 
-;x = (Vx,Vy) → Vx
-uit = teken [speler l, speler r, net]
+; speler movement
+
+; links
+als scherm.ververst en toets.a en links.x > 10 dan
+	links.x := links.x - 1
+eind
+
+als scherm.ververst en toets.d en links.x < hw - 10 dan
+	links.x := links.x + 1
+eind
+
+als toets.w.begin en links.y = 0 dan
+	links.y := 50
+eind
+
+als scherm.ververst en links.y > 0 dan
+	links.y := links.y - 1
+eind
+
+; rechts
+als scherm.ververst en toets.links en rechts.x > hw+10 dan
+	rechts.x := rechts.x - 1
+eind
+
+als scherm.ververst en toets.rechts en rechts.x < hw · 2 dan
+	rechts.x := rechts.x + 1
+eind
+
+als toets.omhoog.begin en rechts.y = 0 dan
+	rechts.y := 50
+eind
+
+als scherm.ververst en rechts.y > 0 dan
+	rechts.y := rechts.y - 1
+eind
+
+
+
+; bal physics
+als bal.x < 0 dan
+	bal.vx := abs bal.vx
+end
+
+als bal.x > uit.breedte dan
+	bal.vx := - abs bal.vx
+eind
+
+; stuiter links
+ldx = bal.x - links.x
+ldy = bal.y - links.y
+ldst = √(ldx²+ldy²)
+ldot = 2 ;bal.vx · ldx/ldst + bal.vy · ldy/ldst
+
+als ldst < 18 dan 
+	bal.vx := bal.vx - 2·ldot·ldx/ldst
+	bal.vy := bal.vy - 2·ldot·ldy/ldst
+eind
+
+; stuiter rechts
+rdx = bal.x - rechts.x
+rdy = bal.y - rechts.y
+rdst = √(rdx²+rdy²)
+rdot = 2 ;bal.vx · rdx/rdst + bal.vy · rdy/rdst
+
+als rdst < 18 dan 
+	bal.vx := bal.vx - 2·rdot·rdx/rdst
+	bal.vy := bal.vy - 2·rdot·rdy/rdst
+eind
+
+; zwaartekracht & beweging
+als scherm.ververst en bal.y ≥ 0 dan
+	bal.x := bal.x + bal.vx
+	bal.y := bal.y + bal.vy
+	bal.vy := bal.vy - 0.1
+eind
+
+; onderkant stuiter
+als scherm.ververst en bal.y < 0 dan
+	bal.vy := 0.8 · abs bal.vy
+	bal.y := 0
+eind
+
+
+; score
+score1 := 0
+score2 := 0
+
+als bal.y < 0 en bal.x < uit.breedte / 2 dan
+	score1 := score1 + 1
+eind
+
+als bal.y < 0 en bal.x > uit.breedte / 2 dan
+	score2 := score2 + 1
+eind
+
+
+; teken
+links  = verf(boog((links.x,links.y), 10, τ/2, τ), rgb(1,0,0))
+rechts = verf(boog((rechts.x,rechts.y), 10, τ/2, τ), rgb(0,0,1))
+net = verf(rechthoek((uit.breedte/2-1,0),(uit.breedte/2+1,10)), rgb(1,1,1))
+bal = verf(cirkel((bal.x, bal.y), 8), rgb(1,1,0))
+label1 = label((90-5,90), tekst(score1))
+label2 = label((90+5,90), tekst(score2))
+
+uit = teken [ links, rechts, net, bal, label1, label2 ]
