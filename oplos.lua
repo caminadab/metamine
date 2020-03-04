@@ -241,28 +241,26 @@ function oplos(exp, voor)
 			end
 		end
 
+		-- exp → eqs
+		local function uitpak(eq, scope)
+			for k,sub in subs(arg(arg1(eq))) do
+				if fn(sub) == '=' or fn(sub) == ':=' then
+					local neq = X('⇒', scope, sub)
+					nieuw[neq] = true
+					oud[eq] = true
+				end
+				if fn(sub) == '⇒' then
+					local subscope = X('∧', scope, arg0(sub))
+					uitpak(sub, subscope)
+				end
+			end
+		end
+
 		-- pak blokken uit
 		for eq in pairs(eqs) do
 			if fn(eq) == '⇒' then
-				if fn(eq.a[2]) == '⋀' then
-					for i,sub in ipairs(eq.a[2].a) do
-						if fn(sub) == '|:=' then
-							--eq = X('⇒', X('wanneer', eq.a[1]), 
-							--sub = X('[]', sub.a[1], sub.a[2])
-						end
-						local neq = X('⇒', eq.a[1], sub)
-						nieuw[neq] = true
-						oud[eq] = true
-
-						--print('NEQ', combineer(neq))
-						--print('BLOK', e2s(eq))
-					end
-				end
-				if eq.a[3] and fn(eq.a[3]) == '⋀' then
-					for i,sub in ipairs(eq.a[3].a) do
-						local eq = X('⇒', X('¬', eq.a[1]), sub)
-						nieuw[eq] = true
-					end
+				if fn(arg1(eq)) == '⋀' then
+					uitpak(eq, arg0(eq))
 				end
 			end
 		end
@@ -599,10 +597,10 @@ function oplos(exp, voor)
 				print('HALV NAAR')
 				print(halfnaar:tekst())
 			end
-			local a = stroom2html(halfvan)
-			local b = stroom2html(halfnaar)
-			file('halfvan.html', a)
-			file('halfnaar.html', b)
+			--local a = stroom2html(halfvan)
+			--local b = stroom2html(halfnaar)
+			--file('halfvan.html', a)
+			--file('halfnaar.html', b)
 			for punt in pairs(halfnaar.begin) do
 				if not halfvan.punten[punt] then
 					local def = bron2def[punt]
@@ -631,6 +629,7 @@ function oplos(exp, voor)
 		
 		for i=#substs,1,-1 do
 			local sub = pijl2subst[substs[i]]
+				--print('subst', unlisp(sub))
 			local naam,exp = sub.a[1],sub.a[2]
 			local val0 = val
 			val = substitueer(val0, naam, exp)

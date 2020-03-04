@@ -1,7 +1,17 @@
-f = [somA, i, j] → (x ⇒ [somB, j, i + j])
-	j mod 2 = 0  ⇒ somB = somA + j
-	j mod 2 ≠ 0  ⇒ somB = somA
-	x = j ≤ 4e6
+x := 1
+y := 2
+s := 0
 
-a = ((herhaal f) [0, 1, 1])₀
-uit = tekst(a)
+stop = 4000000
+
+als y < stop dan
+	x := y
+	y := x + y
+
+	als y < stop dan
+		s := s + y
+	eind
+eind
+
+
+uit = s

@@ -60,6 +60,7 @@ local noops = {
 
 
 	 ['vanaf'] = 'x => x[0].slice(x[1])',
+	 ['tot'] = 'x => x[0].slice(0, x[1])',
 	 ['canvas.fontsize'] = [[
  (function(_args) {return (function(c){
   var vorm = _args[0];

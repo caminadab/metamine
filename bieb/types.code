@@ -173,5 +173,5 @@ deel : (lijst, (int, int)) → lijst
 
 ;herhaal : ((→) → (→))
 ;herhaal : ((→), int) → (→)
-waarvoor : (verzameling, (iets → bit)) → verzameling
+waarvoor : ((nat → iets), (iets → bit)) → (nat → iets)
 mod : getal, getal → getal
