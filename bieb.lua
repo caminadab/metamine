@@ -186,6 +186,12 @@ function bieb()
 		return a[1][num+1] or false
 	end;
 
+	['_t'] = function(a)
+		local num = a[2]
+		print('_t', a[1], a[2])
+		return string.byte(a[1]:sub(num+1,num+1))
+	end;
+
 	['_f'] = function(a)
 		return a[1](a[2]) or false
 	end;
@@ -239,7 +245,6 @@ function bieb()
 		t[k] = v
 		return v
 	end,
-	["'"] = true,
 	['inverteer'] = true; -- sure
 	['sqrt'] = math.sqrt;
 	['niets'] = nil;
@@ -696,7 +701,7 @@ function bieb()
 	end;
 
 	['"'] = function(a)
-		local t = string.byte(table.unpack(map(a, atoom)))
+		local t = string.char(table.unpack(a))
 		return t
 	end;
 

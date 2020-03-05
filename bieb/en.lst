@@ -25,6 +25,8 @@ udp.schrijfnaar udp.sendto
 vec2.plus	vec2.add
 
 als	if
+anders	else
+andersals	elseif
 zolang	while
 eind	end
 dan	then

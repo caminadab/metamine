@@ -15,7 +15,7 @@ local function combineerR(exp, t, kind)
 		t[#t+1] = ')'
 	elseif isatoom(exp) then
 		t[#t+1] = exp.v
-	elseif obj(exp) == '""' then
+	elseif obj(exp) == '"' then
 		local const = true
 		for i,sub in ipairs(exp) do
 			if not tonumber(atoom(sub)) then
@@ -32,7 +32,7 @@ local function combineerR(exp, t, kind)
 
 		else
 
-			t[#t+1] = "utf8 ["
+			t[#t+1] = "unicode ["
 			for i,v in ipairs(exp) do
 				if i ~= 1 then
 					t[#t+1] = ', '

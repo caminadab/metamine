@@ -1,12 +1,2 @@
-als a < 2 dan
-	b = 3
-anders
-	als a < 1 dan
-		b = 4
-	anders
-		b = 5
-	eind
-eind
-
-a = 2
-main = a,b
+h = "hoi"
+main = h₀

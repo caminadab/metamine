@@ -8,10 +8,13 @@ function vectoriseer(asb, types)
 		if fn(exp) == '_' then
 			local fntype = types[moes(arg0(exp))]
 			local islijst = atoom(arg0(fntype)) == 'nat' or obj(fntype) == ','
+			local istekst = fn(fntype) == '→' and atoom(arg0(fntype)) == 'nat' and atoom(arg1(fntype)) == 'letter'
 			local isfunc = fn(fntype) == '→' and atoom(arg0(fntype)) ~= 'nat'
 
 			if isfunc then
 				exp.f = X'_f'
+			elseif istekst then
+				exp.f = X'_t'
 			elseif islijst then
 				exp.f = X'_l'
 			else
@@ -53,10 +56,10 @@ function vectoriseer(asb, types)
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- functie
-			elseif isfuncA and isfuncB then exp.f = X'+f'
-			elseif isfuncA and isnumB then exp.f = X'+f1'
+			elseif isfuncA and isfuncB then exp.f = X'+v'
+			elseif isfuncA and isnumB then exp.f = X'+v1'
 			elseif isfuncB and isnumA then
-				exp.f = X'+f1' 
+				exp.f = X'+v1' 
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- matrix TODO

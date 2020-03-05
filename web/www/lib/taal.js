@@ -81,9 +81,9 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 	}
 	
 	// string
-    if (ch == "\"")
+    if (ch == '"' || ch == "'")
       return (state.cur = string(ch))(stream, state);
-  
+
 	// number
     if (/[A-F\d\:]/.test(ch)) {
       stream.eatWhile(/[A-F\d\:\.]/);

@@ -1,0 +1,32 @@
+; The following problem is taken from Project Euler.
+
+; 2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
+
+; What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
+
+
+ispriem := ja
+
+n := 1
+i := 2
+deler := 0
+priems := [1]
+
+als i ≤ √n dan
+	als n mod i = 0 dan
+		ispriem := nee
+		deler := i
+	eind
+	i := i + 1
+anders
+	i := 2
+	n := n + 1
+	als ispriem en n ≤ 20 dan
+		priems := priems ‖ [n]
+	eind
+	ispriem := ja
+eind
+
+priemmod = priems vouw (·)
+
+uit = (n, ispriem, deler, priems, priemmod)

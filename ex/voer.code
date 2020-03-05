@@ -1,0 +1,30 @@
+; bord
+vakdata = 0..7·15+30 × 0..6·15 × [14]
+tekenvak = vak → verf(vierkant(vak), kleur.blauw)
+vakken = vakdata map tekenvak
+modx = ⌊(muis.x-30) / 15⌋
+snapx = max(0, min(6, modx))
+selx = 30 + snapx · 15 + 7.5
+selectie = cirkel((selx,95), 3)
+uit = teken (vakken ‖ stukken ‖ [selectie, statuslabel])
+statuslabel = label((0,90),status)
+
+stukken = (0..7 × 0..6) map (x,y → z)
+
+z = verf(cirkel((x·15+30,y·15)+7,5), ckleur)
+ckleur = palet(bord(y·7+x))
+palet = [kleur.zwart, kleur.rood, kleur.geel]
+
+
+
+; spel
+bord := (0..(6·7)) map (x → 0)
+aanzet := ja
+status := "aan zet"
+
+; actie
+als muis.klik.begin en aanzet dan; bord(30 + snapx) = 0 en aanzet dan
+	bord := newindex(bord, snapx, 1)
+	aanzet := nee
+	status := "denken..."
+eind

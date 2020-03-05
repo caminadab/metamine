@@ -123,7 +123,9 @@
 %left "∘"
 %left ':' "!:" IN
 %left "→" "↦"
+%left VOOR
 %left '<' '>' "≤" "≥"
+%left TUSSEN
 %left ','
 %left '&' '|'
 %left "‖" "::"
@@ -247,6 +249,11 @@ single:
 |	single INVERTEER												{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"-1", @2), @$); }
 |	'(' op ')'					{ $$ = LOC(L,$2,@$); }
 |	'(' unop ')'				{ $$ = LOC(L,$2,@$);; }
+|	"⌈" exp "⌉"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond.boven", @2), $2, @$); }
+|	"⌊" exp "⌋"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond.onder", @2), $2, @$); }
+|	"⌊" exp "⌉"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond", @2), $2, @$); }
+|	"⌈" exp "⌋"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond", @2), $2, @$); }
+
 
 /* lijst */
 | '[' ']'							{ $$ = O(L, A(L,"[]",@$), @$); }
@@ -290,10 +297,10 @@ exp:
 |	exp '!' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
 |	exp '%' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
 
-|	"⌈" exp "⌉"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond.boven", @2), $2, @$); }
-|	"⌊" exp "⌋"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond.onder", @2), $2, @$); }
-|	"⌊" exp "⌉"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond", @2), $2, @$); }
-|	"⌈" exp "⌋"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond", @2), $2, @$); }
+|	exp '<' exp '<' exp  %prec TUSSEN  { $$ = FN2(L, A(L,"∧",@2), FN2(L, LOC(L,$2,@2), $1, $3, @$), FN2(L, LOC(L,$4,@4), $3, $5, @$), @$); }
+|	exp "≤" exp '<' exp  %prec TUSSEN { $$ = FN2(L, A(L,"∧",@2), FN2(L, LOC(L,$2,@2), $1, $3, @$), FN2(L, LOC(L,$4,@2), $3, $5, @$), @$); }
+|	exp '<' exp "≤" exp  %prec TUSSEN { $$ = FN2(L, A(L,"∧",@2), FN2(L, LOC(L,$2,@2), $1, $3, @$), FN2(L, LOC(L,$4,@2), $3, $5, @$), @$); }
+|	exp "≤" exp "≤" exp  %prec TUSSEN { $$ = FN2(L, A(L,"∧",@2), FN2(L, LOC(L,$2,@2), $1, $3, @$), FN2(L, LOC(L,$4,@2), $3, $5, @$), @$); }
 
 |	exp '<' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "≤" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }

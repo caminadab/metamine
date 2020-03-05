@@ -1,7 +1,7 @@
 require 'util'
 require 'bieb'
 local bieb = bieb()
-local makkelijk = set('+', '-', '·', '/', '%', '#', '_', '^',  '√', '∧', '∨', 'Σ', '>', '<', '≥', '≤', '=', '≠', '⇒', '⊤', '⊥', '_l')
+local makkelijk = set('+', '-', '·', '/', '%', '#', '_', '^',  '√', '∧', '∨', 'Σ', '>', '<', '≥', '≤', '=', '≠', '⇒', '⊤', '⊥', '_l', '_f', '_t')
 local dynamisch = set('looptijd', 'nu', 'starttijd', 'start', '∘',
 	'tcp.lees', 'tcp.schrijf', 'tcp.accepteer', 'tcp.bind',
 	'pad.begin', 'pad.eind', 'pad.rect', 'pad.vul', 'pad.verf',
@@ -23,6 +23,8 @@ local function w2exp(w)
 		uit = X('/', '1', '0')
 	elseif tonumber(w) then
 		uit = X(tostring(w))
+	elseif type(w) == 'string' then
+		error'ok'
 	elseif type(w) == 'table' then
 		if w.isset then
 			uit = X('{}', table.unpack(map(w, w2exp)))
@@ -58,6 +60,12 @@ function optimiseer(exp)
 		end
 		return exp, nil
 	end
+
+	-- string
+	if obj(exp) == '"' then
+		return exp, nil
+	end
+
 
 	-- objects
 	if isobj(exp) then

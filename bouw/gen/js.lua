@@ -210,6 +210,12 @@ local noops = {
 	['vierde'] = '(typeof($1)=="function") ? $1(3) : $1[3]',
 }
 
+local binops2 = {
+	['+'] = '$1 += $2;',
+	['·'] = '$1 *= $2;',
+	['/'] = '$1 /= $2;',
+}
+
 local binops = {
 	-- set
 	['∈'] = '$2.has($1)',
@@ -225,8 +231,9 @@ local binops = {
 	['·f1'] = '$1.map(x => x + $2)',
 	['/v1'] = '$1.map(x => x / $2)',
 	['_f'] = '$1($2)',
+	['_t'] = '$1.charCodeAt($2)',
 	['_l'] = '$1[$2]',
-	['_'] = 'typeof($1) == "function" ? $1($2) : $1[$2]',
+	['_'] = 'typeof($1) == "function" ? $1($2) : (typeof($1) == "string" ? $1.charCodeAt($2) : $1[$2])',
 	['^r'] = '$1 ^ $2',
 	['∘'] = '((a,b) => (x => b(a(x))))($1,$2)',
 	['+'] = '$1 + $2',
@@ -294,9 +301,6 @@ function jsgen(sfc)
 			naam = noops[naam] or naam
 			L[#L+1] = string.format('%svar %s = %s;', tabs, varnaam(focus), naam), focus
 
-		elseif atoom(ins) == 'fn.id' then
-			-- niets
-
 		elseif tonumber(atoom(ins)) then
 			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. atoom(ins) .. ';'
 			focus = focus + 1
@@ -339,6 +343,13 @@ function jsgen(sfc)
 			local naam = varnaam(focus-1)
 			local di = unops[atoom(ins)]:gsub('$1', naam)
 			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
+
+		elseif binops2[atoom(ins)] then
+			local naama = varnaam(focus-2)
+			local naamb = varnaam(focus-1)
+			local di = binops2[atoom(ins)]:gsub('$1', naama):gsub('$2', naamb)
+			L[#L+1] = tabs..di
+			focus = focus - 1
 
 		elseif binops[atoom(ins)] then
 			local naama = varnaam(focus-2)
@@ -442,14 +453,22 @@ function jsgen(sfc)
 	local function ins2js2(insA, insB)
 		if unops[atoom(insB)] then
 			local naam = atoom(insA)
-			local di = unops[atoom(ins)]:gsub('$1', naam)
+			local di = unops[atoom(insB)]:gsub('$1', naam)
 			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
 			focus = focus - 1
+
+		elseif binops2[atoom(insB)] then
+			local naama = varnaam(focus-1)
+			local naamb = atoom(insA)
+			local di = binops2[atoom(insB)]:gsub('$1', naama):gsub('$2', naamb)
+			L[#L+1] = tabs..di
+
 		elseif binops[atoom(insB)] then
 			local naama = varnaam(focus-1)
 			local naamb = atoom(insA)
 			local di = binops[atoom(insB)]:gsub('$1', naama):gsub('$2', naamb)
 			L[#L+1] = tabs..string.format('var %s = %s;', naama, di)
+
 		else
 			ins2js(insA)
 			ins2js(insB)

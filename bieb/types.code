@@ -34,7 +34,7 @@ tupel: verzameling
 zak: verzameling
 
 ; webspecifiek
-vorm: iets → iets
+vorm: functie
 html: lijst(letter) → lijst(letter)
 consoleLog: lijst(letter) → bit
 tekst: iets → lijst(letter)
