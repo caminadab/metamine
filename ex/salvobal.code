@@ -100,13 +100,20 @@ eind
 score1 := 0
 score2 := 0
 
-als bal.y < 0 en bal.x < uit.breedte / 2 dan
-	score1 := score1 + 1
+als bal.y < 0 dan 
+	bal.x := 90
+	bal.y := 50
+
+	als bal.x < uit.breedte / 2 dan
+		score1 := score1 + 1
+	eind
+
+	als bal.x > uit.breedte / 2 dan
+		score2 := score2 + 1
+	eind
+
 eind
 
-als bal.y < 0 en bal.x > uit.breedte / 2 dan
-	score2 := score2 + 1
-eind
 
 
 ; teken

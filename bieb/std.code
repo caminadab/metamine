@@ -1,6 +1,6 @@
 ;ververs = moment → schrijf(tekst(uit))
 ;main = herhaal.langzaam(ververs)
-main = (in.vars, start, nu, setcontext, setcontext3d, uit.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind, in.fotos) → (uit.vars, uit)
+main = (in.vars, start, nu, setcontext, setcontext3d, uit.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind, in.fotos, dt) → (uit.vars, uit)
 
 uit.hoogte = 100
 

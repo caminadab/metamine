@@ -2,6 +2,8 @@ require 'optimiseer'
 require 'combineer' require 'ontleed'
 require 'util'
 
+opt = {['0'] = false}
+
 local function T(x)
 	return combineer(optimiseer(ontleedexp(x)))
 end

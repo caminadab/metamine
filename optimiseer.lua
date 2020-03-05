@@ -56,6 +56,8 @@ function optimiseer(exp)
 		if bieb[atoom(exp)] and not dynamisch[atoom(exp)] then
 			if type(bieb[atoom(exp)]) ~= 'function' then
 				return exp, bieb[atoom(exp)]
+			else
+				return nil, bieb[atoom(exp)]
 			end
 		end
 		return exp, nil

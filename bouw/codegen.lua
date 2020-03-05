@@ -77,7 +77,7 @@ function codegen(exp, exps)
 	end
 	rec(exp)
 
-	function codegen(exp, ins)
+	local function codegen(exp, ins)
 
 		if iscached[exp] then
 			ins[#ins+1] = X('ld', tostring(iscached[exp]))
@@ -105,6 +105,7 @@ function codegen(exp, exps)
 			local num = atoom(arg(exp))
 			if not argindex[num] then
 				argindex[num] = tostring(maakargindex())
+				--print('reg arg', argindex[num], num)
 			end
 			ins[#ins+1] = X('arg', argindex[num])
 			focus = focus + 1
@@ -151,6 +152,7 @@ function codegen(exp, exps)
 			local num = atoom(arg0(exp))
 			if not argindex[num] then
 				argindex[num] = tostring(maakargindex())
+				--print('reg fn', argindex[num], num)
 			end
 			ins[#ins+1] = X('fn', argindex[num])
 

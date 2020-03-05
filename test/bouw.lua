@@ -35,7 +35,7 @@ end
 
 function test(code, moetzijn)
 	-- niet optimaliseren aub
-	opt = {['0'] = true}
+	opt = {['0'] = false}
 	local im,fouten = vertaal(code)
 	assert(im, "onvertaalbaar: "..code)
 
@@ -77,8 +77,6 @@ function test(code, moetzijn)
 			print(asm)
 			print()
 		end
-
-		os.exit(0)
 	end
 
 end

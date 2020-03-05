@@ -176,6 +176,8 @@
 					var muisBeweegtNaar = null; //[0, 0];
 					var muisKlikBegin = false;
 					var muisKlikEind = false;
+					var vroeger = nu;
+					var dt = 0;
 
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
@@ -282,9 +284,11 @@
 					var f = (ev) => {
 						if (stop)
 							return;
-						var nu = new Date().getTime() / 1000;
+						var vroeger = nu;
+						nu = new Date().getTime() / 1000;
+						var dt = nu - vroeger;
 						var schermVerverst = true;
-						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos, dt]);
 						var na = new Date().getTime() / 1000;
 						//if (na - nu > 0.02)
 						//	console.log('traag..'+main);
