@@ -1,3 +1,5 @@
+; concentrische cirkels
+
 w = 18 ; breedte
 h = 10 ; hoogte
 frame := 0 ; huidige frame

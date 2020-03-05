@@ -1,3 +1,5 @@
+; Salvobal!
+
 hw = uit.breedte / 2
 
 links.x  := uit.breedte · 1 / 4
@@ -64,7 +66,7 @@ eind
 ldx = bal.x - links.x
 ldy = bal.y - links.y
 ldst = √(ldx²+ldy²)
-ldot = 2 ;bal.vx · ldx/ldst + bal.vy · ldy/ldst
+ldot = -2
 
 als ldst < 18 dan 
 	bal.vx := bal.vx - 2·ldot·ldx/ldst
@@ -75,7 +77,7 @@ eind
 rdx = bal.x - rechts.x
 rdy = bal.y - rechts.y
 rdst = √(rdx²+rdy²)
-rdot = 2 ;bal.vx · rdx/rdst + bal.vy · rdy/rdst
+rdot = -2
 
 als rdst < 18 dan 
 	bal.vx := bal.vx - 2·rdot·rdx/rdst

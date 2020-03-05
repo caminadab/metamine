@@ -1,6 +1,8 @@
+; 3D Buis
+
 ; loop met pijltjes en WASD
 veld2 = -2..3 × -2..3 × -2..3 × [1]
-veld = veld2 map ((A,B,C,D) → (X,Y,Z,1))
+veld = veld2 map ((((A,B),C),D) → (X,Y,Z,1))
 X = cos ((A/5+B/25)·τ+looptijd)
 Y = sin ((A/5+B/25)·τ+looptijd)
 Z = C/2
@@ -12,12 +14,12 @@ x := 0
 y := 0
 z := 0
 
-als toets.w dan z += 1 eind
-als toets.s dan z += -1 eind
-als toets.d dan x += -1 eind
-als toets.a dan x += 1 eind
-als toets.omhoog dan y += -10 eind
-als toets.omlaag dan y += 10 eind
+als toets.w dan z := z + .1 eind
+als toets.s dan z := z - .1 eind
+als toets.d dan x := x - .1 eind
+als toets.a dan x := x + .1 eind
+als toets.omhoog dan y := y - .1 eind
+als toets.omlaag dan y := y + .1 eind
 
 ; viewport
 rechts    = [10·cos x,0,10·sin x,0]
