@@ -188,8 +188,7 @@ function bieb()
 
 	['_t'] = function(a)
 		local num = a[2]
-		print('_t', a[1], a[2])
-		return string.byte(a[1]:sub(num+1,num+1))
+		return a:byte(b) or false
 	end;
 
 	['_f'] = function(a)
@@ -197,7 +196,6 @@ function bieb()
 	end;
 
 	['_u'] = function(a, b)
-		return a:byte(b) or false
 	end;
 
 	-- io

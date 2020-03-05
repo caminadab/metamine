@@ -668,7 +668,7 @@ function oplos(exp, voor)
 		end
 
 		-- optimiseer
-		if not opt or not opt['0'] then
+		if opt and opt['0'] then
 			val = optimiseer(val)
 		end
 

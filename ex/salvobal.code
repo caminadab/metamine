@@ -13,43 +13,43 @@ bal.y := 50
 
 
 
-; speler movement
-
-; links
-als scherm.ververst en toets.a en links.x > 10 dan
-	links.x := links.x - 1
-eind
-
-als scherm.ververst en toets.d en links.x < hw - 10 dan
-	links.x := links.x + 1
-eind
-
+; springen
 als toets.w.begin en links.y = 0 dan
 	links.y := 50
-eind
-
-als scherm.ververst en links.y > 0 dan
-	links.y := links.y - 1
-eind
-
-; rechts
-als scherm.ververst en toets.links en rechts.x > hw+10 dan
-	rechts.x := rechts.x - 1
-eind
-
-als scherm.ververst en toets.rechts en rechts.x < hw · 2 dan
-	rechts.x := rechts.x + 1
 eind
 
 als toets.omhoog.begin en rechts.y = 0 dan
 	rechts.y := 50
 eind
 
-als scherm.ververst en rechts.y > 0 dan
-	rechts.y := rechts.y - 1
+; speler beweging
+als scherm.ververst dan
+	; links
+	als toets.a en links.x > 10 dan
+		links.x := links.x - 1
+	eind
+
+	als toets.d en links.x < hw - 10 dan
+		links.x := links.x + 1
+	eind
+
+	als links.y > 0 dan
+		links.y := links.y - 1
+	eind
+
+	; rechts
+	als toets.links en rechts.x > hw+10 dan
+		rechts.x := rechts.x - 1
+	eind
+
+	als toets.rechts en rechts.x < hw · 2 dan
+		rechts.x := rechts.x + 1
+	eind
+
+	als rechts.y > 0 dan
+		rechts.y := rechts.y - 1
+	eind
 eind
-
-
 
 ; bal physics
 als bal.x < 0 dan

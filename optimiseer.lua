@@ -1,7 +1,7 @@
 require 'util'
 require 'bieb'
 local bieb = bieb()
-local makkelijk = set('+', '-', '·', '/', '%', '#', '_', '^',  '√', '∧', '∨', 'Σ', '>', '<', '≥', '≤', '=', '≠', '⇒', '⊤', '⊥', '_l', '_f', '_t')
+local makkelijk = set('+', '-', '·', '/', '%', '#', '_', '^',  '√', '∧', '∨', 'Σ', '>', '<', '≥', '≤', '=', '≠', '⇒', '⊤', '⊥', '_l', '_t', '_t')
 local dynamisch = set('looptijd', 'nu', 'starttijd', 'start', '∘',
 	'tcp.lees', 'tcp.schrijf', 'tcp.accepteer', 'tcp.bind',
 	'pad.begin', 'pad.eind', 'pad.rect', 'pad.vul', 'pad.verf',

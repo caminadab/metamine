@@ -51,34 +51,34 @@ function codegen(exp, exps)
 	local reused = {} -- exp → index
 	local focus = 1
 	local maakindex = maakindices(0)
+	local maakcacheindex = maakindices(0)
 
 	local bieb = bieb()
 
+	-- zoek dubbele
+	local exps = {}
+	local dubbel = {} -- exp → cacheindex
+	local iscached = {} -- exp → bit
+
+
+	local function rec(exp)
+		if exps[exp] then
+			if not isatoom(exp) then
+				dubbel[exp] = true
+				return
+			end
+		end
+		exps[exp] = true
+		for k,sub in subs(exp) do
+			rec(sub)
+		end
+	end
+	rec(exp)
+
 	function codegen(exp, ins)
 
-		-- al gedaan
-		if false and codeindex[exp] then
-			local cindex = codeindex[exp]
-
-			-- voeg sneaky toe
-			local index
-			if not reused[cindex] then
-				index = maakindex()
-				table.insert(ins, cindex+1, X('st', tostring(index)))
-				reused[cindex] = index
-				-- verschuif indices
-				--[[
-				for i=1,#codeindex do
-					if codeindex[i] >= cindex then
-						codeindex[i] = codeindex[i] + 1
-					end
-				end
-				]]
-			else
-				index = reused[cindex]
-			end
-			--ins[#ins+1] = X('ld', tostring(index))
-
+		if iscached[exp] then
+			ins[#ins+1] = X('ld', tostring(iscached[exp]))
 			return
 		end
 
@@ -88,13 +88,13 @@ function codegen(exp, exps)
 			ins[#ins+1] = X'dan'
 
 			-- met lege cache
-			local ci = codeindex
-			local r = reused
-			codeindex = {}
-			reused = {}
+			local ic = iscached
+			local d = dubbel
+			iscached = {}
+			dubbel = {}
 			codegen(arg1(exp), ins)
-			codeindex = ci
-			reused = r
+			iscached = ic
+			dubbel = d
 
 			ins[#ins+1] = X'einddan'
 			focus = focus - 1
@@ -184,11 +184,11 @@ function codegen(exp, exps)
 
 		codeindex[exp] = #ins
 
-		if false and exps[exp] then
-			index = maakindex()
-			ins[#ins+1] = X('st', tostring(index))
+		if dubbel[exp] and not isatoom(exp) then
+			iscached[exp] = maakcacheindex()
+			ins[#ins+1] = X('st', tostring(iscached[exp]))
 		end
-		
+
 		return ins, reused
 	end
 

@@ -1,2 +1,2 @@
-h = "hoi"
-main = h₀
+main = x + x + x
+x = 1 / 2
