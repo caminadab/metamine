@@ -412,14 +412,14 @@ function jsgen(sfc)
 			focus = focus - num + 1
 
 		elseif fn(ins) == 'arg' then
-			local var = varnaam(tonumber(atoom(arg(ins))))
+			local var = varnaam(1+tonumber(atoom(arg(ins))))
 			local naam = varnaam(focus)
 			L[#L+1] = tabs..'var '..naam..' = arg'..var..';'
 			focus = focus + 1
 
 		elseif fn(ins) == 'fn' then
 			local naam = varnaam(focus)
-			local var = varnaam(tonumber(atoom(arg(ins))))
+			local var = varnaam(1+tonumber(atoom(arg(ins))))
 			L[#L+1] = tabs..string.format("var %s = (%s) => {", naam, "arg"..var)
 			focus = focus + 1
 			tabs = tabs..'  '
@@ -452,16 +452,20 @@ function jsgen(sfc)
 
 	local function ins2js2(insA, insB)
 		if unops[atoom(insB)] then
-			local naam = atoom(insA)
-			local di = unops[atoom(insB)]:gsub('$1', naam)
-			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
-			focus = focus - 1
+			ins2js(insA)
+			ins2js(insB)
+			--local naam = atoom(insA)
+			--local di = unops[atoom(insB)]:gsub('$1', naam)
+			--L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
+			--focus = focus - 1
 
 		elseif binops2[atoom(insB)] then
-			local naama = varnaam(focus-1)
-			local naamb = atoom(insA)
-			local di = binops2[atoom(insB)]:gsub('$1', naama):gsub('$2', naamb)
-			L[#L+1] = tabs..di
+			ins2js(insA)
+			ins2js(insB)
+			--local naama = varnaam(focus-1)
+			--local naamb = atoom(insA)
+			--local di = binops2[atoom(insB)]:gsub('$1', naama):gsub('$2', naamb)
+			--L[#L+1] = tabs..di
 
 		elseif binops[atoom(insB)] then
 			local naama = varnaam(focus-1)
@@ -480,7 +484,7 @@ function jsgen(sfc)
 	local i = 1
 
 	while i <= #sfc do
-		if tonumber(atoom(sfc[i])) and sfc[i+1] then
+		if false and tonumber(atoom(sfc[i])) and sfc[i+1] then
 			ins2js2(sfc[i], sfc[i+1])
 			i = i + 1
 		else

@@ -147,7 +147,6 @@ function bieb()
 		
 	['⊤'] = true,
 	['sorteer'] = function (a) return table.sort(a[0], a[1]) end,
-	['dt'] = 1/60, -- terminal altijd
 	['⊥'] = false,
 	['log2'] = function (a) return math.log(a, 2) end,
 	['log10'] = math.log10,

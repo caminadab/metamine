@@ -52,6 +52,8 @@ function codegen(exp, exps)
 	local focus = 1
 	local maakindex = maakindices(0)
 	local maakcacheindex = maakindices(0)
+	local argindex = {} -- num → index
+	local maakargindex = maakindices(0)
 
 	local bieb = bieb()
 
@@ -100,16 +102,21 @@ function codegen(exp, exps)
 			focus = focus - 1
 
 		elseif fn(exp) == '_arg' then
-			ins[#ins+1] = X('arg', atoom(arg(exp)))
+			local num = atoom(arg(exp))
+			if not argindex[num] then
+				argindex[num] = tostring(maakargindex())
+			end
+			ins[#ins+1] = X('arg', argindex[num])
 			focus = focus + 1
 
 		-- portable functies
 		elseif binop[atoom(exp)] then
-			ins[#ins+1] = X('fn', '999')
-			ins[#ins+1] = X('arg', '999')
+			local index = tostring(maakargindex())
+			ins[#ins+1] = X('fn', index)
+			ins[#ins+1] = X('arg', index)
 			ins[#ins+1] = X('0')
 			ins[#ins+1] = X('_l')
-			ins[#ins+1] = X('arg', '999')
+			ins[#ins+1] = X('arg', index)
 			ins[#ins+1] = X('1')
 			ins[#ins+1] = X('_l')
 			ins[#ins+1] = exp
@@ -117,8 +124,9 @@ function codegen(exp, exps)
 			focus = focus + 1
 
 		elseif unop[atoom(exp)] then
-			ins[#ins+1] = X('fn', '999')
-			ins[#ins+1] = X('arg', '999')
+			local index = tostring(maakargindex())
+			ins[#ins+1] = X('fn', index)
+			ins[#ins+1] = X('arg', index)
 			ins[#ins+1] = exp
 			ins[#ins+1] = X('eind')
 			focus = focus + 1
@@ -140,16 +148,20 @@ function codegen(exp, exps)
 		-- _fn(1 +(1 _arg(1))) -> fn
 		-- functie
 		elseif fn(exp) == '_fn' then
-			ins[#ins+1] = X('fn', atoom(arg0(exp)))
+			local num = atoom(arg0(exp))
+			if not argindex[num] then
+				argindex[num] = tostring(maakargindex())
+			end
+			ins[#ins+1] = X('fn', argindex[num])
 
 			-- met lege cache
-			local ci = codeindex
-			local r = reused
+			local ic = iscached
+			local d = dubbel
 			codeindex = {}
 			reused = {}
 			codegen(arg1(exp), ins)
-			codeindex = ci
-			reused = r
+			iscached = ic
+			dubbel = d
 
 			ins[#ins+1] = X'eind'
 		
