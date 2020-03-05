@@ -179,6 +179,22 @@
 					var vroeger = nu;
 					var dt = 0;
 
+					function toString(obj) {
+						if (typeof(obj) == "string") {
+							return obj;
+						} else if (typeof(uitvoer)=="object" && uitvoer.has) {
+							return "{"+[...uitvoer].toString()+"}";
+						} else {
+							var j = JSON.stringify(obj);
+							if (j)
+								return j;
+							return 'niets';
+						}
+					}
+
+							//uit.innerHTML = (typeof(uitvoer)=="string" && uitvoer ||  || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+
+
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var toetsBegin = (keycode) => ev.keyCode == keycode;
@@ -190,7 +206,7 @@
 						uitvoer = uv[1];
 
 						if (!context)
-							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = toString(uitvoer);
 
 						return ev.keyCode > 96;
 					};
@@ -211,7 +227,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = toString(uitvoer);
 					};
 						
 					uit.onmouseup = (ev) => {
@@ -230,7 +246,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = toString(uitvoer);
 					};
 
 					uit.onmousemove = (ev) => {
@@ -248,7 +264,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = toString(uitvoer);
 
 						return ev.keyCode > 96;
 					};
@@ -264,7 +280,7 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 						if (!context)
-							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = toString(uitvoer);
 
 						return ev.keyCode > 96;
 					};
@@ -279,7 +295,7 @@
 					uitvoer = uv[1];
 
 					if (!context)
-							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+							uit.innerHTML = toString(uitvoer);
 
 					var f = (ev) => {
 						if (stop)
@@ -295,8 +311,10 @@
 						vars = uv[0];
 						uitvoer = uv[1];
 
-						if (!context)
-							uit.innerHTML = (typeof(uitvoer)=="object" && uitvoer.has && "{"+[...uitvoer].toString()+"}") || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
+						if (!context) {
+							uit.innerHTML = toString(uitvoer);
+							console.log(uit.innerHTML);
+						}
 
 						if (!stop)
 							requestAnimationFrame(f);
@@ -368,7 +386,9 @@
 	});
 
 	function onerror(e) {
-		speelknop.innerHTML = '▶';
+		//stopfunc();
+		stop = true;
+
 		speelknop.style.background = 'red';
 		speelknop.style.transitionDuration = '0.0s';
 
