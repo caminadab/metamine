@@ -27,8 +27,9 @@ eind
 ; canvas
 canvas.wis = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), kleur.zwart)
 
-teken = vormen → setcontext(canvas.wis ∘ (vormen vouw (∘)) )
-render = vormen → setcontext3d(vormen vouw (∘))
+teken = vormen → setcontext(canvas.wis ∘ (([fn.id] || vormen) vouw (∘)) )
+render = vormen2 → setcontext3d(vormen2 vouw (∘))
+fn.id = Fix → Fix
 
 ; muis
 muis.pos := (1/0,1/0)

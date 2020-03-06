@@ -64,7 +64,7 @@
 
 	var demoindex = 0;
 	var demos = [ 'salvobal', 'pong', 'buis', 'cirkels', 'paint',
-		'pe1', 'pe2', 'pe3', 'pe4' ] ;
+		'pe1', 'pe2', 'pe3', 'pe4', 'pe5', 'pe6' ] ;
 	var uit = document.getElementById('uit');
 
 	var speelknop = document.getElementById("speel");

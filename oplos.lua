@@ -542,7 +542,7 @@ function oplos(exp, voor)
 					-- pas vergelijking aan
 					for i in pairs(lam) do lam[i] = nil end
 					local var = maakvar()
-					lam.f = X('_fn')--..var)
+					lam.f = X('_fn')
 					lam.a = X(',', argindex, uit)
 					local naam = X('_arg', argindex)
 
