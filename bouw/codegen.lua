@@ -45,8 +45,8 @@ local binop  = set(
 )
 
 -- exps worden gecachet (voor debugging)
-function codegen(exp, exps)
-	local exps = exps or {}
+function codegen(exp, moes2naam)
+	local moes2naam = moes2naam or {}
 	local codeindex = {}
 	local reused = {} -- exp → index
 	local focus = 1
@@ -198,7 +198,10 @@ function codegen(exp, exps)
 
 		codeindex[exp] = #ins
 
-		if not isatoom(exp) and dubbel[exp] then
+		if not isatoom(exp) and dubbel[exp] or moes2naam[moes(exp)] then
+			if moes2naam[moes(exp)] then
+				print('debug', moes2naam[moes(exp)])
+			end
 			iscached[exp] = maakcacheindex()
 			ins[#ins+1] = X('st', tostring(iscached[exp]))
 		end

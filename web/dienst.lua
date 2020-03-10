@@ -37,12 +37,12 @@ local web = lees('bieb/std.code')
 --     oplosfout: { type="oplos", ? }
 -- 
 -- de "fout" als los interpretabel object
-function vt(code, naam)
+function vt(code, debug)
 
 	code = code .. '\n' .. web
 
 	local voor = socket.gettime()
-	local icode,fouten,naam2index = vertaal(code)
+	local icode,fouten,naam2index = vertaal(code, debug)
 	local na = socket.gettime()
 	local delta = math.floor((na - voor) * 1000)
 	print('compilen van '..#code..' bytes nam '..delta ..'ms in beslag')
@@ -58,6 +58,10 @@ function vt(code, naam)
 		naam2index = naam2index,
 		fouten = fouten,
 	}
+end
+
+function vtdebug(code)
+	vt(code, true)
 end
 
 local statusberichten = {
@@ -127,7 +131,11 @@ function serveer(sock)
 	local uit, inL, status
 
 	-- VERTAAL!
-	if pad == '/vt' then
+	if pad == '/vt' or pad == '/vt/debug' then
+		local vt = vt
+		if pad == '/vt/debug' then
+			vt = vtdebug
+		end
 		local internefout
 		local ok,j = xpcall(vt, debug.traceback, inn, "in")
 		if not ok then internefout = j end

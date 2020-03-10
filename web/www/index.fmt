@@ -27,7 +27,7 @@
 <div id="uit" tabIndex="2" >
 </div>
 
-<div style="height:100vh;">.</div>
+<div style="height:5; display: inline;"><input id="debug" type="checkbox"></input> debug </div>
 
 <!-- grondstoffen -->
 <div class="res">
@@ -82,6 +82,7 @@
 	var gras = document.createElement('img');
 	var muur = document.createElement('img');
 	var dodo = document.createElement('img');
+	var debug = document.getElementById('debug');
 	gras.setAttribute('src', 'res/gras.png');
 	muur.setAttribute('src', 'res/muur.png');
 	dodo.setAttribute('src', 'res/dodo.png');
@@ -89,13 +90,24 @@
 	//var muur = document.getElementById('muur');
 	//var dodo = document.getElementById('dodo');
 	var fotos = [gras, muur, dodo];
+	var naam;
+
+	setInterval(x => {
+		if (window.cache && window.naam2index && naam)
+			if (naam2index[naam])
+				preview.innerHTML = cache[naam2index[naam]];
+	}, 1000/60);
 
 
 	function playfunc() {
 		// suspense...
 		speelknop.style.backgroundColor = '#000E42';
+		
+		var path = '/vt';
+		if (debug.enabled)
+			path = '/vt/debug';
 
-		fetch('/vt', {method: "POST", body: editor.getValue()})
+		fetch(path, {method: "POST", body: editor.getValue()})
 			.then(x => x.json())
 			.then(j => {
 				if (j.fouten.length > 0) {
@@ -103,7 +115,7 @@
 					onerror();
 					return;
 				}
-				var naam2index = j.naam2index;
+				naam2index = j.naam2index;
 
 				stop = false;
 
@@ -114,14 +126,17 @@
 
 					var widgetpos = {line: pos.line, ch: token.start};
 					if (token.type == "variable") {
-						var naam = token.string;
-						if (naam2index[naam] && window.cache)
+						naam = token.string;
+						if (naam2index[naam] && window.debug)
 							preview.innerHTML = toString(cache[naam2index[naam]]);
-						else
+						else {
 							preview.innerHTML = '';
+							naam = null;
+						}
 					}
 					else {
 						preview.innerHTML = '';
+						naam = null;
 					}
 					editor.addWidget(widgetpos, preview);
 				};

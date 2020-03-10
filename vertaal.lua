@@ -24,11 +24,11 @@ function scope(x)
 end
 
 -- code → struct
-function vertaal(code, naam)
+function vertaal(code, debug)
 	local naam = naam or '?'
 	local maakvar = maakvars()
 
-	local asb,syntaxfouten,map = ontleed(code, naam)
+	local asb,syntaxfouten,map = ontleed(code)
 	--local scoped = scope(asb)
 	if type(asb) ~= 'table' then
 		return nil, { syntaxfout(nergens, "rommel"); }
@@ -52,23 +52,26 @@ function vertaal(code, naam)
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
 	end
 
-	local revmap = {}
-	for naam, exp in pairs(varmap) do
-		revmap[exp] = var
-		--print('revmap', moes(exp), var)
+	local moes2naam = {}
+
+	if debug then
+		for naam, exp in pairs(varmap) do
+			moes2naam[moes(exp)] = atoom(naam)
+			print('revmap', atoom(naam), moes(exp))
+		end
 	end
 		
 	-- cachemap: exp → cacheindex
-	local app,cachemap = codegen(exp, revmap)
+	local app,cachemap = codegen(exp, exp2naam)
 
 	local naam2cache = {}
 	for exp,index in pairs(cachemap) do
-		local naam = revmap[exp]
+		print('cachemap', unlisp(exp), index)
+		local naam = moes2naam[moes(exp)]
 		if naam then
 			naam2cache[naam] = index
-			--print('naam2cache', naam, index)
+			print('naam2cache', naam, index)
 		end
-		--print('cachemap', unlisp(exp), index)
 	end
 	
 	-- varmap: {varnaam → cacheindex}

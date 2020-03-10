@@ -327,7 +327,10 @@ end
 -- a
 -- f(a)
 -- f(,(1 2))
-function exp2string(exp)
+function exp2string(exp, klaar)
+	local klaar = klaar or {}
+	if klaar[exp] then return klaar[exp] end
+	klaar[exp] = '~'
 	if not exp then return '?' end
 	if isatoom(exp) then
 		return exp.v
