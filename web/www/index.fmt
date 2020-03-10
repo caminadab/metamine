@@ -92,10 +92,30 @@
 	var fotos = [gras, muur, dodo];
 	var naam;
 
+	function toString(obj) {
+		if (typeof(obj) == "string") {
+			return obj;
+		} else if (typeof(obj) == "function") {
+			return '<pre>' + obj.toString() + '</pre>';
+		} else if (typeof(obj)=="object" && obj.has) {
+			return "{"+[...obj].toString()+"}";
+		} else if (typeof(obj) == "number") {
+			return (Math.floor(obj*1000) / 1000).toString();
+		} else {
+			var j = JSON.stringify(obj);
+			if (j)
+				return j;
+			if (obj)
+				return obj.toString();
+			else
+				return 'niets';
+		}
+	}
+
 	setInterval(x => {
-		if (window.cache && window.naam2index && naam)
+		if (window.cache && window.naam2index && naam && !stop)
 			if (naam2index[naam])
-				preview.innerHTML = cache[naam2index[naam]];
+				preview.innerHTML = toString(cache[naam2index[naam]]);
 	}, 1000/60);
 
 
@@ -104,7 +124,7 @@
 		speelknop.style.backgroundColor = '#000E42';
 		
 		var path = '/vt';
-		if (debug.enabled)
+		if (debug.checked)
 			path = '/vt/debug';
 
 		fetch(path, {method: "POST", body: editor.getValue()})
@@ -199,24 +219,6 @@
 					var muisKlikEind = false;
 					var vroeger = nu;
 					var dt = 0;
-
-					function toString(obj) {
-						if (typeof(obj) == "string") {
-							return obj;
-						} else if (typeof(obj) == "function") {
-							return '<pre>' + obj.toString() + '</pre>';
-						} else if (typeof(uitvoer)=="object" && uitvoer.has) {
-							return "{"+[...uitvoer].toString()+"}";
-						} else {
-							var j = JSON.stringify(obj);
-							if (j)
-								return j;
-							if (obj)
-								return obj.toString();
-							else
-								return 'niets';
-						}
-					}
 
 							//uit.innerHTML = (typeof(uitvoer)=="string" && uitvoer ||  || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
 

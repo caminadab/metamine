@@ -24,7 +24,7 @@ function scope(x)
 end
 
 -- code → struct
-function vertaal(code, debug)
+function vertaal(code, isdebug)
 	local naam = naam or '?'
 	local maakvar = maakvars()
 
@@ -46,7 +46,7 @@ function vertaal(code, debug)
 	-- vectoriseer
 	local asb = vectoriseer(asb, types)
 
-	local exp,oplosfouten,varmap = oplos(asb, "main")
+	local exp,oplosfouten,varmap = oplos(asb, "main", isdebug)
 	
 	if #oplosfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
@@ -54,23 +54,23 @@ function vertaal(code, debug)
 
 	local moes2naam = {}
 
-	if debug then
+	if isdebug then
 		for naam, exp in pairs(varmap) do
 			moes2naam[moes(exp)] = atoom(naam)
-			print('revmap', atoom(naam), moes(exp))
+			--print('revmap', atoom(naam), moes(exp))
 		end
 	end
 		
 	-- cachemap: exp → cacheindex
-	local app,cachemap = codegen(exp, exp2naam)
+	local app,cachemap = codegen(exp, moes2naam)
 
 	local naam2cache = {}
 	for exp,index in pairs(cachemap) do
-		print('cachemap', unlisp(exp), index)
+		--print('cachemap', unlisp(exp), index)
 		local naam = moes2naam[moes(exp)]
 		if naam then
 			naam2cache[naam] = index
-			print('naam2cache', naam, index)
+			--print('naam2cache', naam, index)
 		end
 	end
 	

@@ -199,9 +199,6 @@ function codegen(exp, moes2naam)
 		codeindex[exp] = #ins
 
 		if not isatoom(exp) and dubbel[exp] or moes2naam[moes(exp)] then
-			if moes2naam[moes(exp)] then
-				print('debug', moes2naam[moes(exp)])
-			end
 			iscached[exp] = maakcacheindex()
 			ins[#ins+1] = X('st', tostring(iscached[exp]))
 		end

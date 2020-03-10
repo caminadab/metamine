@@ -11,7 +11,7 @@ require 'graaf'
 local bieb = bieb()
 
 -- oplos: exp → waarde,fouten
-function oplos(exp, voor)
+function oplos(exp, voor, isdebug)
 	local maakvar = maakvars()
 	local maakindex = maakindices()
 	local fouten = {}
@@ -601,7 +601,16 @@ function oplos(exp, voor)
 		val = substitueer(val0, naam, exp)
 		val.loc = assert(exp.loc or nergens)
 
-		varmap[naam] = exp
+		if isdebug then
+			varmap[naam] = exp
+
+			local varmap0 = {}
+			for n,v in pairs(varmap) do
+				varmap0[n] = substitueer(v, naam, exp)
+			end
+			varmap = varmap0
+		end
+
 	end
 
 	-- optimiseer

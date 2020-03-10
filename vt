@@ -142,7 +142,7 @@ if verbozeSyntax then
 	print()
 end
 
-local app,fouten = vertaal(code, bronnen[1])
+local app,fouten = vertaal(code)
 assert(app or #fouten > 0)
 
 -- foutjuhhs
