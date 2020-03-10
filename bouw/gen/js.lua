@@ -147,9 +147,17 @@ local noops = {
 	['alert'] = 'x => {if (!window.alertKlaar) {alert(x); alertKlaar = true; }}',
 
 	['label'] = [[ args => {
-  var x = args[0][0] * SCHAAL;
-  var y = (100 - args[0][1]) * SCHAAL;
-  var t = args[1];
+	var x, y, t;
+	if (args[2]) {
+		t = args[2];
+		x = args[0] * SCHAAL;
+		y = (100 - args[1]) * SCHAAL;
+	} else {
+		t = args[1];
+		x = args[0][0] * SCHAAL;
+		y = (100 - args[0][1]) * SCHAAL;
+	}
+
 	//if (typeof t == "object)
 //		t = [...t]
 //	alert("t = " + typeof t);

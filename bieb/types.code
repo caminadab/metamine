@@ -51,7 +51,7 @@ ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 rechthoek: (ℝ,ℝ),(ℝ,ℝ) → vorm
 lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
-label: (ℝ,ℝ), lijst(letter) → vorm
+;label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
 vouw: lijst,functie → iets
@@ -102,7 +102,6 @@ filter: lijst, (iets→bit) → lijst
 (:=) : (iets, iets) → bit
 (→) :  (iets, iets) → (iets → iets)
 
-succ: nat → nat
 sin :  getal → getal
 cos :  getal → getal
 tan :  getal → getal

@@ -97,6 +97,8 @@
 			return obj;
 		} else if (typeof(obj) == "function") {
 			return '<pre>' + obj.toString() + '</pre>';
+		} else if (Array.isArray(obj)) {
+			return "["+obj.map(toString)+"]";
 		} else if (typeof(obj)=="object" && obj.has) {
 			return "{"+[...obj].toString()+"}";
 		} else if (typeof(obj) == "number") {
