@@ -43,6 +43,15 @@ local noops = {
 	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
 	['model'] = 'x => (gl => drawModel(gl, x))',
 	['shader.programma'] = 'shaderProgram',
+	['herhaal'] = [[x => {
+	var value = x[0];
+	var len = x[1];
+  if (len == 0) return [];
+  var a = [value];
+  while (a.length * 2 <= len) a = a.concat(a);
+  if (a.length < len) a = a.concat(a.slice(0, len - a.length));
+  return a;
+	}]],
 
 	-- functioneel
 	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
@@ -60,6 +69,24 @@ local noops = {
 	['min'] = 'x => Math.min(x[0], x[1])',
 	['max'] = 'x => Math.max(x[0], x[1])',
 
+	-- webgl
+	['gl.createShader'] = 'gl => gl.createShader',
+	['gl.VertexShader'] = 'gl => gl.VERTEX_SHADER',
+	['gl.FragmentShader'] = 'gl => gl.FRAGMENT_SHADER',
+	['gl.ArrayBuffer'] = 'gl => gl.ARRAY_BUFFER',
+	['gl.createBuffer'] = 'gl => gl.createBuffer',
+	['gl.bindBuffer'] = 'args => (gl => {gl.bindBuffer(args[0], args[1]); return gl;})',
+	['gl.bufferData'] = 'args => (gl => gl.bufferData(args[0], new Float32Array(args[1]), gl.STATIC_DRAW)',
+	['gl.clearColor'] = 'args => (gl => {gl.clear(gl.COLOR_BUFFER_BIT); return gl.clearColor(args[0], args[1], args[2], args[3] || 1);})',
+  ['gl.enable'] = 'gl => gl.enable',
+	['gl.DepthTest'] = 'gl => gl.DEPTH_TEST',
+	['gl.ColorBufferBit'] = 'gl => gl.COLOR_BUFFER_BIT',
+	['gl.clear'] = 'gl => gl.clear(gl.COLOR_BUFFER_BIT)',
+	['gl.viewport'] = '(x,y,w,h) => (gl => gl.viewport(x,y,w,h))',
+	['gl.Triangles'] = 'gl => gl.TRIANGLES',
+
+   ['gl.drawArrays'] = 'gl => ((At, Ai, An) => gl.drawArrays(At,Ai,An))',
+   ['gl.drawTriangles'] = 'args => (gl => gl.drawArrays(gl.TRIANGLES, args[0], args[1]))',
 
 	 ['vanaf'] = 'x => x[0].slice(x[1])',
 	 ['tot'] = 'x => x[0].slice(0, x[1])',
@@ -100,14 +127,24 @@ local noops = {
 	['abs'] = 'Math.abs',
 	['tekst'] = 'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
 	['vierkant'] = [[ args => {
-  var r = args[1] * SCHAAL;
-  var x = args[0][0] * SCHAAL;
-  var y = (100 - args[0][1]) * SCHAAL - r;
+	var x, y, r;
+	if (args[2]) {
+		r = args[2] * SCHAAL;
+		x = args[0] * SCHAAL;
+		y = (100 - args[1]) * SCHAAL - r;
+	} else {
+		r = args[1] * SCHAAL;
+		x = args[0][0] * SCHAAL;
+		y = (100 - args[0][1]) * SCHAAL - r;
+	}
+
   return context => {
     context.fillRect(x,y,r,r);
     return context;
   }
   } ]],
+
+	['alert'] = 'x => {if (!window.alertKlaar) {alert(x); alertKlaar = true; }}',
 
 	['label'] = [[ args => {
   var x = args[0][0] * SCHAAL;

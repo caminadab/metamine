@@ -27,12 +27,12 @@ eind
 ; canvas
 canvas.wis = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), kleur.zwart)
 
-teken = vormen → setcontext(canvas.wis ∘ (([fn.id] || vormen) vouw (∘)) )
-render = vormen2 → setcontext3d(vormen2 vouw (∘))
+teken = Vormen1 → setcontext(canvas.wis ∘ (([fn.id] || Vormen1) vouw (∘)) )
+render = Vormen2 → setcontext3d(([fn.id] || Vormen2) vouw (∘))
 fn.id = Fix → Fix
 
 ; muis
-muis.pos := (1/0,1/0)
+muis.pos := (0,0)
 muis.x = muis.pos₀
 muis.y = muis.pos₁
 muis.klik := nee
@@ -57,7 +57,7 @@ starttijd := nu
 vec.dot = vda,vdb → Σ (vda zip vdb map (·))
 
 ; transformatie
-;transform.verplaats = tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(tv₀,tv₁,tv₂,1))
+verplaats = Tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(Tv₀,Tv₁,Tv₂,1))
 ;transform.schaal = tx,ty,tz → ((tx,0,0,0),(0,ty,0,0),(0,0,tz,0),(0,0,0,1))
 
 ; [a b 0]  [a 0 b]  [1 0 0]

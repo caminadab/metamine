@@ -1,2 +1,3 @@
-main = x + x + x
-x = 1 / 2
+f = x → x + 1
+main = x + 2
+

@@ -530,6 +530,7 @@ function oplos(exp, voor)
 		-- functies
 		local nieuw = {}
 		local afval = {}
+		local argindex2naam = {}
 
 		-- herschrijf a→a+1 naar _fn(0 +(_arg(0) 1))
 		for eq in pairs(eqs) do
@@ -549,6 +550,7 @@ function oplos(exp, voor)
 					-- complexe parameters
 					local paramhulp = X('=', naam, inn)
 					nieuw[paramhulp] = true
+					argindex2naam[argindex] = inn
 				end
 			end
 		end
@@ -574,10 +576,6 @@ function oplos(exp, voor)
 					end
 				end
 			end
-		end
-
-		for sub in pairs(subst) do
-			check(sub)
 		end
 
 		if verbozeKennis then
@@ -672,48 +670,40 @@ function oplos(exp, voor)
 			val = optimiseer(val)
 		end
 
+		-- check args
+		-- args: set
+		local function check(exp, def)
+			assert(def)
+			if fn(exp) == '_fn' then
+				local num = atoom(arg0(exp))
+				def[num] = true
+				for k, sub in subs(exp) do
+					check(sub, def)
+				end
+				def[num] = false
+			elseif fn(exp) == '_arg' then
+				local num = atoom(arg(exp))
+				if not def[num] then
+					local naam = argindex2naam[num]
+					local fout = oplosfout(naam.loc, '{exp} is ongedefinieerd buiten functie', naam)
+					fouten[#fouten+1] = fout
+				end
+			else
+				for k, sub in subs(exp) do
+					check(sub, def)
+				end
+			end
+		end
+		check(val, {})
+		if #fouten > 0 then
+			return nil, fouten, exp2naam
+		end
+
 		-- opgelost
 		if verbozeWaarde then
 			print('=== WAARDE ===')
 			print(unlisp(val))
 			print()
-
-		 	-- tree size
-			local function treesize(exp)
-				if isatoom(exp) then
-					return 1
-				elseif isobj(exp) then
-					local n = 1
-					for i,v in ipairs(exp) do
-						n = treesize(v) + n
-					end
-					return n
-				else -- fn
-					return 1 + treesize(arg(exp))
-				end
-			end
-
-		 	-- gecachte tree size
-			local klaar = {}
-			local function cachedtreesize(exp)
-				if klaar[exp] then
-					return 1
-				end
-				klaar[exp] = true
-				if isatoom(exp) then
-					return 1
-				elseif isobj(exp) then
-					local n = 1
-					for i,v in ipairs(exp) do
-						n = cachedtreesize(v) + n
-					end
-					return n
-				else -- fn
-					return 1 + cachedtreesize(arg(exp))
-				end
-			end
-			print('TREESIZE = '..treesize(val))
-			print('CACHEDTREESIZE = '..cachedtreesize(val))
 		end
 
 		return val,{},exp2naam

@@ -45,7 +45,7 @@ setcontext: functie
 ;verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
 
-vierkant: (ℝ,ℝ),ℝ → vorm
+;vierkant: (ℝ,ℝ),ℝ → vorm
 cirkel: (ℝ,ℝ),ℝ → vorm
 ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm

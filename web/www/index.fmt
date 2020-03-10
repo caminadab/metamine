@@ -146,6 +146,7 @@
 					}
 
 					var context3d;
+
 					function setcontext3d(transform) {
 						if (!context3d) {
 							var width = window.screen.width;
@@ -155,8 +156,9 @@
 
 							uit.innerHTML = '<canvas width="'+width+'" height="'+height+'"></canvas>'
 							context3d = uit.children[0].getContext("webgl");
-							alert(context3d);
+							gl = context3d;
 						}
+						context = context3d;
 						return transform(context3d);
 					}
 
@@ -182,13 +184,18 @@
 					function toString(obj) {
 						if (typeof(obj) == "string") {
 							return obj;
+						} else if (typeof(obj) == "function") {
+							return '<pre>' + obj.toString() + '</pre>';
 						} else if (typeof(uitvoer)=="object" && uitvoer.has) {
 							return "{"+[...uitvoer].toString()+"}";
 						} else {
 							var j = JSON.stringify(obj);
 							if (j)
 								return j;
-							return 'niets';
+							if (obj)
+								return obj.toString();
+							else
+								return 'niets';
 						}
 					}
 
@@ -340,6 +347,7 @@
 		wraps[0].onmousemove = undefined;
 		preview.innerHTML = '';
 		stop = true;
+		alertKlaar = false;
 		setErrors([]);
 		speelknop.innerHTML = "▶";
 		uit.onmousemove = undefined;

@@ -28,6 +28,20 @@ function bieb()
 	['canvas.fontsize'] = true,
 	['canvas.drawImage'] = true,
 
+	-- webgl
+	['alert'] = true,
+	['gl.drawArrays'] = true,
+	['gl.drawTriangles'] = true,
+	['gl.clearColor'] = true,
+	['gl.Triangles'] = true,
+	['gl.createShader'] = true,
+	['gl.attachShader'] = true,
+	['gl.linkProgram'] = true,
+	['gl.useProgram'] = true,
+
+	['gl.VertexShader'] = true,
+	['gl.FragmentShader'] = true,
+
 	-- functioneel
 	['fn.inc'] = function(x) return x + 1 end;
 	['fn.dec'] = function(x) return x - 1 end;
