@@ -196,19 +196,16 @@ function bieb()
 
 	['_l'] = function(a)
 		local num = a[2]
-		return a[1][num+1] or false
+		return a[1][num+1]
 	end;
 
 	['_t'] = function(a)
 		local num = a[2]
-		return a:byte(b) or false
+		return a:byte(b)
 	end;
 
 	['_f'] = function(a)
-		return a[1](a[2]) or false
-	end;
-
-	['_u'] = function(a, b)
+		return a[1](a[2])
 	end;
 
 	-- io
@@ -258,7 +255,7 @@ function bieb()
 	end,
 	['inverteer'] = true; -- sure
 	['sqrt'] = math.sqrt;
-	['niets'] = nil;
+	['niets'] = false;
 	['min'] = function(a) return math.min(a[1],a[2]) end;
 	['mod'] = function(a) return a[1] % a[2] end;
 
@@ -357,7 +354,6 @@ function bieb()
 
 	['|'] = function(a)
 		for i,v in ipairs(a) do
-			print('I', i, lenc(v))
 			if v ~= false then
 				return v
 			end
@@ -682,7 +678,7 @@ function bieb()
 		if x[1] then
 			return x[2]
 		else
-			return nil
+			return false
 		end
 	end;
 

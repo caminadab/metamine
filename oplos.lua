@@ -672,7 +672,10 @@ function oplos(exp, voor)
 
 		-- check args
 		-- args: set
+		local al = {}
 		local function check(exp, def)
+			if al[exp] then return end
+			al[exp] = true
 			assert(def)
 			if fn(exp) == '_fn' then
 				local num = atoom(arg0(exp))
@@ -690,7 +693,9 @@ function oplos(exp, voor)
 				end
 			else
 				for k, sub in subs(exp) do
-					check(sub, def)
+					if not al[sub] then
+						check(sub, def)
+					end
 				end
 			end
 		end

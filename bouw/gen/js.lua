@@ -516,7 +516,7 @@ function jsgen(sfc)
 		end
 	end
 
-	L[#L+1] = 'var cache = {};'
+	L[#L+1] = 'cache = {};'
 
 	local i = 1
 

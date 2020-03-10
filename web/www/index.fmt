@@ -104,6 +104,7 @@
 					onerror();
 					return;
 				}
+				var naam2index = j.naam2index;
 
 				stop = false;
 
@@ -114,10 +115,14 @@
 
 					var widgetpos = {line: pos.line, ch: token.start};
 					if (token.type == "variable") {
-						preview.innerHTML = token.string;
+						var naam = token.string;
+						if (naam2index[naam] && window.cache)
+							preview.innerHTML = toString(cache[naam2index[naam]]);
+						else
+							preview.innerHTML = '';
 					}
 					else {
-						preview.innerHTML = "";
+						preview.innerHTML = '';
 					}
 					editor.addWidget(widgetpos, preview);
 				};
@@ -321,7 +326,6 @@
 
 						if (!context) {
 							uit.innerHTML = toString(uitvoer);
-							console.log(uit.innerHTML);
 						}
 
 						if (!stop)

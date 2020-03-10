@@ -1,4 +1,5 @@
 require 'ontleed'
+require 'util'
 require 'bouw.gen.lua'
 require 'bouw.codegen'
 require 'vertaal'
@@ -15,10 +16,12 @@ local function test(code, moet)
 		for i,fout in ipairs(f) do
 			print(fout2ansi(fout))
 		end
+	else
+		print(color.cyan..code..color.white..' = '..color.green..lenc(moet)..color.white)
 	end
 		
 	local imm = doe(v)
-	if imm ~= moet then
+	if lenc(imm) ~= lenc(moet) then
 		print(string.format('vertaal("%s") moet %s zijn maar was %s. imcode: %s', code, moet, imm, table.concat(map(v,combineer), " ")))
 	end
 end
@@ -63,13 +66,14 @@ main = f(g(2, 3), f(g(1, 8), 2))
 test('main = "hoi"', 'hoi')
 test('main = "hoi" ‖ "ja"', 'hoija')
 test([[
-main = "fib(20) = " ‖ tekst(x) ‖ [10]
-x = fib 20
-fib = n → (f^n[0,1]) 0
-f = [a,b] → [b,a+b]
+main = fib 20
+fib = n → ((f^n) (0,1)) 0
+f = (a,b) → (b,a+b)
 ]], 6765)
 
+--[=[
 test([[
+succ = y → y + 1
 f = succ ∘ succ ∘ g
 g = x → x · 2
 main = f(1)
@@ -105,10 +109,11 @@ geschaald = (abs x)/10^m
 cijfer = m → '0' + (entier geschaald) mod 10
 ]]
 test(itoatoitoa, -3)
+]=]
 
 local plus260 = [[
 ; 10 x 26 blok van vergelijkingen
-app = a
+main = a
 a = b + b + b + b + b + b + b + b + b + b
 b = c + c + c + c + c + c + c + c + c + c 
 c = d + d + d + d + d + d + d + d + d + d 
@@ -137,4 +142,4 @@ y = z + z + z + z + z + z + z + z + z + z
 z = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
 ]]
 
-test(plus260, '1e+26')
+test(plus260, 1e+26)

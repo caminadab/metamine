@@ -198,12 +198,12 @@ function codegen(exp, exps)
 
 		codeindex[exp] = #ins
 
-		if dubbel[exp] and not isatoom(exp) then
+		if not isatoom(exp) and dubbel[exp] then
 			iscached[exp] = maakcacheindex()
 			ins[#ins+1] = X('st', tostring(iscached[exp]))
 		end
 
-		return ins, reused
+		return ins, iscached
 	end
 
 	local ins = {o='[]'}

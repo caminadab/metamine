@@ -42,7 +42,7 @@ function vt(code, naam)
 	code = code .. '\n' .. web
 
 	local voor = socket.gettime()
-	local icode,fouten,gen2bron = vertaal(code)
+	local icode,fouten,naam2index = vertaal(code)
 	local na = socket.gettime()
 	local delta = math.floor((na - voor) * 1000)
 	print('compilen van '..#code..' bytes nam '..delta ..'ms in beslag')
@@ -55,7 +55,7 @@ function vt(code, naam)
 
 	return {
 		js = js,
-		gen2bron = gen2bron,
+		naam2index = naam2index,
 		fouten = fouten,
 	}
 end
