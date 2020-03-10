@@ -101,16 +101,24 @@ eind
 ; score
 score1 := 0
 score2 := 0
+fk := rgb(0,0,0)
+flits = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), fk)
+
+als scherm.ververst en bal.y > 0 dan
+	fk := rgb(max(fk₀-.1,0), max(fk₁-.1,0),max(fk₂-.1,0))
+end
 
 als bal.y < 0 dan 
 	bal.x := 90
 	bal.y := 50
 
 	als bal.x < uit.breedte / 2 dan
+		fk := kleur.blauw
 		score1 := score1 + 1
 	eind
 
 	als bal.x > uit.breedte / 2 dan
+		fk := kleur.blauw
 		score2 := score2 + 1
 	eind
 
@@ -126,4 +134,4 @@ bal = verf(cirkel((bal.x, bal.y), 8), rgb(1,1,0))
 label1 = label((90-5,90), tekst(score1))
 label2 = label((90+5,90), tekst(score2))
 
-uit = teken [ links, rechts, net, bal, label1, label2 ]
+uit = teken [ flits, links, rechts, net, bal, label1, label2 ]
