@@ -135,7 +135,7 @@ function serveer(sock)
 		if not ok then
 			print(internefout)
 			status = 500
-			uit = json.encode {js="onerror(':(')",fouten={}}
+			uit = json.encode {js="interne fout",fouten={}}
 		else
 			status = 200
 			uit = json.encode(j) -- json(html, fouten)

@@ -27,16 +27,15 @@
 <div id="uit" tabIndex="2" >
 </div>
 
-<div style="height:100vh;">h</div>
+<div style="height:100vh;">.</div>
 
-	<pre id="code"> </pre>
+<!-- grondstoffen -->
+<div class="res">
+	<img id="gras" src="data/gras.png">
+	<img id="muur" src="data/muur.png">
+	<img id="dodo" src="data/dodo.png">
+</div>
 
-	<!-- grondstoffen -->
-	<div class="res">
-		<img id="gras" src="data/gras.png">
-		<img id="muur" src="data/muur.png">
-		<img id="dodo" src="data/dodo.png">
-	</div>
 </body>
 <link rel="stylesheet" href="lib/slang.css">
 <link rel="stylesheet" href="lib/codemirror.css">
