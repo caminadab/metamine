@@ -402,7 +402,7 @@
 		setErrors([]);
 		demoindex++;
 		demoindex = Math.min(demoindex, demos.length-1);
-		fetch('/ex/' + demos[demoindex] + cc + '.code')
+		fetch('/ex/' + demos[demoindex] + cc + '.code?t=' + Math.random())
 			.then(res => res.text())
 			.then(data => {editor.setValue(data); playfunc();});
 	});
@@ -411,7 +411,7 @@
 		setErrors([]);
 		demoindex--;
 		demoindex = Math.max(demoindex, 0);
-		fetch('/ex/' + demos[demoindex] + cc + '.code')
+		fetch('/ex/' + demos[demoindex] + cc + '.code?t=' + Math.random())
 			.then(res => res.text())
 			.then(data => {editor.setValue(data); playfunc();});
 	});
