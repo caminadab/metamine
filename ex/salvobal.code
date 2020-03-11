@@ -133,7 +133,7 @@ als bal.y < 0 dan
 	eind
 
 	als bal.x > uit.breedte / 2 dan
-		fk := kleur.blauw
+		fk := kleur.rood
 		score2 := score2 + 1
 	eind
 

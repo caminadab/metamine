@@ -97,6 +97,8 @@
 			return obj;
 		} else if (typeof(obj) == "function") {
 			return '<pre>' + obj.toString() + '</pre>';
+		} else if (obj == null) {
+			return 'niets';
 		} else if (Array.isArray(obj)) {
 			return "["+obj.map(toString)+"]";
 		} else if (typeof(obj)=="object" && obj.has) {
