@@ -54,7 +54,7 @@ lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 ;label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
-vouw: lijst,functie → iets
+;vouw: lijst,functie → iets
 
 requestAnimationFrame: (getal → lijst(letter)) → int
 contextVan: lijst(letter) → canvas

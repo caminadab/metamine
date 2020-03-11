@@ -10,26 +10,28 @@ links.vy := 0
 rechts.vy := 0
 
 ; bal pos
+bal.x := hw
+bal.y := 50
 bal.vx := 1
 bal.vy := 3
-bal.x := uit.breedte / 2
-bal.y := 50
 
+pauze.tot := looptijd + 1
+pauze = looptijd < pauze.tot
 
 
 ; springen
 als toets.w.begin en links.y = 0 dan
-	links.vy := 3
-	links.y := 3
+	links.vy := 2
+	links.y := 2
 eind
 
 als toets.omhoog.begin en rechts.y = 0 dan
-	rechts.vy := 3
-	rechts.y := 3
+	rechts.vy := 2
+	rechts.y := 2
 eind
 
 ; speler beweging
-als scherm.ververst dan
+als scherm.ververst en ¬ pauze dan
 	; links
 	als toets.a en links.x > 10 dan
 		links.x := links.x - 1
@@ -42,7 +44,7 @@ als scherm.ververst dan
 	; spring
 	als links.y > 0 dan
 		links.y := links.y + links.vy
-		links.vy := links.vy - .1
+		links.vy := links.vy - .05
 	eind
 	als links.y < 0 dan
 		links.y := 0
@@ -60,7 +62,7 @@ als scherm.ververst dan
 	; spring
 	als rechts.y > 0 dan
 		rechts.y := rechts.y + rechts.vy
-		rechts.vy := rechts.vy - .1
+		rechts.vy := rechts.vy - .05
 	eind
 	als rechts.y < 0 dan
 		rechts.y := 0
@@ -100,10 +102,10 @@ als rdst < 18 dan
 eind
 
 ; zwaartekracht & beweging
-als scherm.ververst en bal.y ≥ 0 dan
+als scherm.ververst en ¬pauze en bal.y ≥ 0 dan
 	bal.x := bal.x + bal.vx
 	bal.y := bal.y + bal.vy
-	bal.vy := bal.vy - 0.1
+	bal.vy := bal.vy - .05
 eind
 
 ; onderkant stuiter
@@ -117,24 +119,33 @@ eind
 score1 := 0
 score2 := 0
 fk := rgb(0,0,0)
-flits = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), fk)
+
+als fk = kleur.zwart dan
+	flits = rechthoek((0,0),(0,0))
+anders
+	flits = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), fk)
+eind
 
 als scherm.ververst en bal.y > 0 dan
-	fk := rgb(max(fk₀-.1,0), max(fk₁-.1,0),max(fk₂-.1,0))
+	fk := rgb(max(fk₀-.015,0), max(fk₁-.015,0),max(fk₂-.015,0))
 end
 
+; gescoord
 als bal.y < 0 dan 
-	bal.x := 90
 	bal.y := 50
+	bal.vx := 0
+	bal.vy := 0
 
 	als bal.x < uit.breedte / 2 dan
-		fk := kleur.blauw
 		score1 := score1 + 1
+		bal.x := hw / 2 · 3
+		fk := kleur.blauw
 	eind
 
 	als bal.x > uit.breedte / 2 dan
-		fk := kleur.rood
 		score2 := score2 + 1
+		bal.x := hw / 2
+		fk := kleur.geel
 	eind
 
 eind
@@ -142,11 +153,15 @@ eind
 
 
 ; teken
-links  = verf(boog((links.x,links.y), 10, τ/2, τ), rgb(1,0,0))
-rechts = verf(boog((rechts.x,rechts.y), 10, τ/2, τ), rgb(0,0,1))
+links  = verf(boog((links.x,links.y), 10, τ/2, τ), kleur.geel)
+rechts = verf(boog((rechts.x,rechts.y), 10, τ/2, τ), kleur.blauw)
 net = verf(rechthoek((uit.breedte/2-1,0),(uit.breedte/2+1,10)), rgb(1,1,1))
-bal = verf(cirkel((bal.x, bal.y), 8), rgb(1,1,0))
-label1 = label((90-5,90), tekst(score1))
-label2 = label((90+5,90), tekst(score2))
+bal = verf(cirkel((bal.x, bal.y), 8), balkleur)
+label1 = label(hw-5,90, tekst(score1))
+label2 = label(hw+5,90, tekst(score2))
+
+bal.f = √(bal.vx² + bal.vy²) / 10
+balkleur = rgb(1 - bal.f, bal.f, 0)
 
 uit = teken [ flits, links, rechts, net, bal, label1, label2 ]
+

@@ -335,16 +335,16 @@ function exp2string(exp, klaar)
 	if isatoom(exp) then
 		return exp.v
 	elseif isfn(exp) then
-		return string.format('%s(%s)', exp2string(exp.f), exp2string(exp.a))
+		return string.format('%s(%s)', exp2string(exp.f, klaar), exp2string(exp.a, klaar))
 	elseif isobj(exp) then
 		local t = {}
-		t[#t+1] = exp2string(exp.o)
+		t[#t+1] = exp2string(exp.o, klaar)
 		t[#t+1] = '('
 		for i,v in ipairs(exp) do
 			if i > 1 then
 				t[#t+1] = ' '
 			end
-			t[#t+1] = exp2string(v)
+			t[#t+1] = exp2string(v, klaar)
 		end
 		t[#t+1] = ')'
 		return table.concat(t)

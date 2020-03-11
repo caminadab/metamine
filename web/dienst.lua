@@ -45,7 +45,8 @@ function vt(code, isdebug)
 	local icode,fouten,naam2index = vertaal(code, isdebug)
 	local na = socket.gettime()
 	local delta = math.floor((na - voor) * 1000)
-	print('compilen van '..#code..' bytes nam '..delta ..'ms in beslag')
+	local speed = math.floor(#code / delta)
+	print(#code..' bytes in '..delta..'ms ('..speed ..' kB/s)')
 	local js = ''
 	if icode then
 		js = jsgen(icode)
