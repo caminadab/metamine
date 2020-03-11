@@ -64,6 +64,7 @@ local noops = {
 
 	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
 	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
+	['atan'] = 'x => Math.atan2(x[0], x[1])',
 
 	-- discreet
 	['min'] = 'x => Math.min(x[0], x[1])',
@@ -126,6 +127,21 @@ local noops = {
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
 	['tekst'] = 'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
+	['polygoon'] = [[ args => {
+		return context => {
+			context.beginPath();
+			for (var i = 0; i < args.length; i++) {
+				var x = args[i][0] * SCHAAL;
+				var y = (100 - args[i][1]) * SCHAAL;
+				if (i == 0)
+					context.moveTo(x, y);
+				else
+					context.lineTo(x, y);
+			}
+			context.closePath();
+			context.fill();
+		};
+	} ]],
 	['vierkant'] = [[ args => {
 	var x, y, r;
 	if (args[2]) {
@@ -270,7 +286,8 @@ local binops = {
 	['\\'] = 'new Set([...$1].filter(x => !$2.has(x)))',
 	['+v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] + $2[i]); return r;})()',
 	['+v1'] = '$1.map(x => x + $2)',
-	['·v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] * $2[i]); return r;})()',
+	['·v?']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] * $2[i]); return r;})()',
+	['·v']  = '(x => {var r = 0; for (var i = 0; i < $1.length; i++) r += ($1[i] * $2[i]); return r;})()',
 	['·v1'] = '$1.map(x => x * $2)',
 	['+f'] = '$1.map(x => x + $2)',
 	['·f1'] = '$1.map(x => x + $2)',

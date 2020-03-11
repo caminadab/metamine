@@ -174,6 +174,7 @@ function bieb()
 
 	rgb = true,
 
+	polygoon = function() return('polygoon') end;
 	vierkant = function() return('vierkant') end;
 	boog = function() return('boog') end;
 	label = function() return('label') end;
@@ -532,8 +533,8 @@ function bieb()
 	['cos'] = math.cos;
 	['acos'] = math.acos;
 	['tan'] = math.tan;
-	['atan'] = function(a,b)
-		if b then return math.atan2(a,b)
+	['atan'] = function(a)
+		if type(a) == 'table'  then return math.atan2(a[1], a[2])
 			else return math.atan(a)
 		end
 	end;

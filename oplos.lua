@@ -53,6 +53,11 @@ function oplos(exp, voor, isdebug)
 		end
 	end
 
+	-- gesorteerde vars
+	--for naam in spairs(schaduw) do
+--		print(naam)
+--	end
+
 	-- herschrijf (a += b) naar (a := a' + b / fps)
 	-- syntactic cocain
 	for eq in pairs(eqs) do
@@ -564,10 +569,12 @@ function oplos(exp, voor, isdebug)
 			print('HALV NAAR')
 			print(halfnaar:tekst())
 		end
-		--local a = stroom2html(halfvan)
-		--local b = stroom2html(halfnaar)
-		--file('halfvan.html', a)
-		--file('halfnaar.html', b)
+		--[[
+		local a = stroom2html(halfvan)
+		local b = stroom2html(halfnaar)
+		file('halfvan.html', a)
+		file('halfnaar.html', b)
+		]]
 		for punt in pairs(halfnaar.begin) do
 			if not halfvan.punten[punt] then
 				local def = bron2def[punt]

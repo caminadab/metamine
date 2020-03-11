@@ -18,7 +18,7 @@ local std = {}
 
 for i,feit in ipairs(stdbron.a) do
 	for eq in boompairs(feit) do
-		if fn(eq) == '_' and arg0(eq).v == 'lijst' then
+		if fn(eq) == '_' and atoom(arg0(eq)) == 'lijst' then
 			assign(eq, X('→', 'nat', arg1(eq)))
 		end
 		if atoom(eq) == 'lijst' then
@@ -47,8 +47,8 @@ end
 -- makkelijke types (getallen & standaardatomen)
 local function eztypeer(exp)
 	if isatoom(exp) then
-		if tonumber(exp.v) then
-			if exp.v % 1 == 0 then
+		if tonumber(atoom(exp)) then
+			if atoom(exp) % 1 == 0 then
 				return kopieer(symbool.int)
 			else
 				return kopieer(symbool.getal)
@@ -156,7 +156,13 @@ function typeer(exp)
 		elseif fn(exp) == '+' or fn(exp) == '·' or fn(exp) == '/' then
 			local A = moes(arg0(exp))
 			local B = moes(arg1(exp))
-			if types[A] and atoom(types[A]) ~= 'int' and atoom(types[A]) ~= 'getal' then
+			local geengetalA = atoom(types[A]) ~= 'int' and atoom(types[A]) ~= 'getal'
+			local geengetalB = atoom(types[B]) ~= 'int' and atoom(types[B]) ~= 'getal'
+
+			-- dot
+			if fn(exp) == '·' and geengetalA and geengetalB then
+				types[moes(exp)] = X'getal'
+			elseif types[A] and geengetalA then
 				types[moes(exp)] = types[A]
 			else
 				types[moes(exp)] = types[B]

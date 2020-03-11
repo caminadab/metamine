@@ -1,5 +1,5 @@
-main = tekst(x)
-x = fib 20
-fib = n → ((f^n) (0,1)) 0
-f = (a,b) → (b,a+b)
+bal.pos := (1,2)
+bal.x = bal.pos₀
+
+uit = bal.x
 

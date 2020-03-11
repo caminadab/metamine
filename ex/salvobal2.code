@@ -1,0 +1,76 @@
+; Salvobal!
+reflecteer = d,n → d - 2·(d·n)·n
+magnitude = v → v·v
+
+; omgeving
+w = uit.breedte
+grav = (0,-100)
+
+; spelers
+links.pos  := w / 4, 0
+rechts.pos := w · 3 / 4, 0
+
+; bal
+bal.pos := (w/2, 50)
+bal.vel := 0,100
+bal.x, bal.y = bal.pos
+
+; pauze
+pauze.tot := looptijd + 1
+pauze = looptijd < pauze.tot
+dt := .001
+vorig := nu
+
+als scherm.ververst dan
+	dt := nu - vorig
+	vorig := nu
+eind
+
+
+
+; update
+als scherm.ververst en ¬ pauze dan
+	bal.pos := bal.pos + bal.vel · dt
+	bal.vel := bal.vel + grav · dt
+	
+	als bal.pos₁ > 0 dan
+		als bal.pos₀ < w/2 dan
+			score2 := score2 + 1
+			bal.pos := (w·3/4, 50)
+		anders
+			score1 := score1 + 1
+			bal.pos := (w·1/4, 50)
+		eind
+	eind
+eind
+
+
+
+; score
+score1 := 0
+score2 := 0
+fk := rgb(0,0,0)
+
+als fk = kleur.zwart dan
+	flits = rechthoek((0,0),(0,0))
+anders
+	flits = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), fk)
+eind
+
+als scherm.ververst dan
+	fk := rgb(max(fk₀-.015,0), max(fk₁-.015,0),max(fk₂-.015,0))
+end
+
+
+; teken
+links  = verf(boog(links.pos, 10, τ/2, τ), kleur.geel)
+rechts = verf(boog(rechts.pos, 10, τ/2, τ), kleur.blauw)
+net = verf(rechthoek((uit.breedte/2-1,0),(uit.breedte/2+1,10)), rgb(1,1,1))
+bal = verf(cirkel(bal.pos, 8), balkleur)
+label1 = label(w/2-5,90, tekst(score1))
+label2 = label(w/2+5,90, tekst(score2))
+
+bal.f = magnitude(bal.vel) / 10
+balkleur = rgb(1 - bal.f, bal.f, 0)
+
+uit = teken [ flits, links, rechts, net, bal, label1, label2 ]
