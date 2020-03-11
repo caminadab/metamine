@@ -11,6 +11,11 @@ transformeer	transform
 sorteer	sort
 
 willekeurig	random
+gesorteerd	sorted
+Buis	Pipe
+punten	points
+concentrische	concentric
+cirkels	circles
 
 tcp.bind tcp.bind
 tcp.lees tcp.read
@@ -82,17 +87,21 @@ cirkel	circle
 boog	arc
 vierkant	square
 rechthoek	rectangle
+polygoon	polygon
 
 waarvoor	where
 kleur	color
-rood	red
-oranje	orange
-geel	yellow
-paars	purple
-zwart	black
-wit	white
+kleur.rood	color.red
+kleur.oranje	color.orange
+kleur.geel	color.yellow
+kleur.paars	color.purple
+kleur.zwart	color.black
+kleur.wit	color.white
+kleur.blauw	color.blue
 
 uit	out
+uit.breedte	out.width
+uit.hoogte	out.height
 
 scherm.ververst	screen.refreshes
 scherm.breedte	screen.width
