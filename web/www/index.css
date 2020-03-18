@@ -5,7 +5,7 @@
 }
 
 #vraag {
-	background: black;
+	background: #224;
 	border: none;
 	padding: 10px;
 	color: white;
@@ -106,7 +106,7 @@ textarea {
 	padding: 3px 4px;
 	height: 95vh;
 	color: white;
-	background: black;
+	background: #224;
 	border: none;
 	box-sizing: border-box;
 }
@@ -154,7 +154,7 @@ button:active {
 html, body {
 	background: #050070;
 	color: white;
-	font-family: Impace, Charcoal, sans-serif;
+	font-family: Impact, Charcoal, sans-serif;
 	font-size: 16px;
 	margin: 0px;
 	padding: 0px;

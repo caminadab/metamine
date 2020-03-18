@@ -599,7 +599,8 @@ function oplos(exp, voor, isdebug)
 	local val = X(voor)
 	local perexp = {[voor] = set(val)}
 	local varmap = {}
-	
+
+	-- le grande substituutsjon
 	for i=#substs,1,-1 do
 		local sub = pijl2subst[substs[i]]
 		--print('subst', combineer(sub))
@@ -610,18 +611,21 @@ function oplos(exp, voor, isdebug)
 		if perexp[naam] then
 			for exp in pairs(perexp[naam]) do
 				assign(exp, naar)
+			end
 
+			for exp in pairs(perexp[naam]) do
 				-- registreer nieuwe
 				for sub in boompairs(exp) do
 					local naam = atoom(sub)
-					if naam then
+					if naam and not tonumber(naam) then
 						perexp[naam] = perexp[naam] or {}
 						perexp[naam][sub] = true
 						--print('reg', naam, sub)
 					end
 				end
-
+				break
 			end
+
 		end
 		
 		varmap[van] = naar

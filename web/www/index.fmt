@@ -116,11 +116,11 @@
 		}
 	}
 
-	setInterval(x => {
+	/*setInterval(x => {
 		if (window.cache && window.naam2index && naam && !stop)
 			if (naam2index[naam])
 				preview.innerHTML = toString(cache[naam2index[naam]]);
-	}, 1000/60);
+	}, 1000/60);*/
 
 
 	function playfunc() {
@@ -347,6 +347,11 @@
 						if (!context) {
 							uit.innerHTML = toString(uitvoer);
 						}
+
+						// debug
+						if (window.cache && window.naam2index && naam && !stop)
+							if (naam2index[naam])
+								preview.innerHTML = toString(cache[naam2index[naam]]);
 
 						if (!stop)
 							requestAnimationFrame(f);

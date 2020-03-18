@@ -28,18 +28,52 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 
   // long list of standard functions from lua manual
   var builtins = wordRE([
-    "niets", "uit", "ja", "nee", "fout", "∅",
-		"tekst", "int", "getal", "cijfer", "letter", "witruimte",
-		"teken", "render",
+    'niets', 'uit', 'ja', 'nee', 'fout', '∅',
+		'tekst', 'int', 'looptijd', 'nu',
+		'teken', 'render', 'rgb',
+		'sorteer', 'tot', 'vanaf', 'deel',
+		'uit.breedte', 'uit.hoogte', 'willekeurig', 'scherm.ververst', 'verf',
 
-		// engels
-		"none", "out", "yes", "no", "error",
-		"text", "int", "number", "digit", "letter", "whitespace",
+		// muis
+		'muis.x', 'muis.y', 'muis.pos', 'muis.beweegt',
+		'muis.klik', 'muis.klik.begin', 'muis.klik.eind',
+
+		// keyboard
+		'toets.w', 'toets.a', 'toets.s', 'toets.d',
+		'toets.w.begin', 'toets.a.begin', 'toets.s.begin', 'toets.d.begin',
+		'toets.w.eind', 'toets.a.eind', 'toets.s.eind', 'toets.d.eind',
+		'toets.links', 'toets.rechts', 'toets.omhoog', 'toets.omlaag',
+		'toets.links.begin', 'toets.rechts.begin', 'toets.omhoog.begin', 'toets.omlaag.begin',
+		'toets.links.eind', 'toets.rechts.eind', 'toets.omhoog.eind', 'toets.omlaag.eind',
+		'toets.spatie', 'toets.spatie.begin', 'toets.spatie.eind',
 
 		// tekening
-		"cirkel", "rechthoek", "vierkant", "lijn", "label", "boog", "polygoon", "map", "zip", "vouw", "sin", "cos", "tan", "abs",
-		"atan",
+		'cirkel', 'rechthoek', "vierkant", "lijn", "label", "boog", "polygoon",
+		'map', "zip", 'vouw', 'filter',
+		'sin', "cos", "tan", 'atan',
+		'abs', 'mod',
 
+
+		// engels
+		'none', 'out', 'yes', 'no', 'error',
+		'text', 'int', 'runtime', 'now',
+		'fold',
+		'sort', 'from', 'til', 'slice',
+		'out.width', 'out.height', 'random', 'screen.refreshes', 'paint',
+
+		// muis
+		'mouse.x', 'mouse.y', 'mouse.pos', 'mouse.moves',
+		'mouse.click', 'mouse.click.begin', 'mouse.click.eind',
+
+		// keyboard
+		'toets.w', 'toets.a', 'toets.s', 'toets.d',
+		'toets.w.begin', 'toets.a.begin', 'toets.s.begin', 'toets.d.begin',
+		'toets.w.eind', 'toets.a.eind', 'toets.s.eind', 'toets.d.eind',
+		'toets.links', 'toets.rechts', 'toets.omhoog', 'toets.omlaag',
+		'toets.links.begin', 'toets.rechts.begin', 'toets.omhoog.begin', 'toets.omlaag.begin',
+		'toets.links.eind', 'toets.rechts.eind', 'toets.omhoog.eind', 'toets.omlaag.eind',
+		'toets.spatie', 'toets.spatie.begin', 'toets.spatie.eind',
+		 
 		// drawing
 		"draw", "render",
 		"circle", "rectangle", "square", "line", "label", "arc", "polygon", "map", "zip", "fold", "sin", "cos", "tan", "abs",
@@ -56,7 +90,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 
 	// getallen
 	var subp = new Set( ('∞ τ ₀ ₁ ₂ ₃ ₄ ² ³').split(' '));
-	var operatoren = new Set( (': = > < ≈ ≠ ≥ ≤ ≈ × → ↦ ⊂ ∪ ∩ ∧ ∨ Σ ∘ ⇒ Δ · ⌊ ⌋ ⌈ ⌉ ∏ ∐ ‖').split(' ') );
+	var operatoren = new Set( (': = > < ≈ ≠ ≥ ≤ ≈ × → ↦ ⊂ ∪ ∩ ∧ ∨ Σ √ ∘ ⇒ Δ · ⌊ ⌋ ⌈ ⌉ ∏ ∐ ‖').split(' ') );
 	var symbolen = new Set( ('ℝ ℕ ℤ ℚ 𝔹 ℍ ∅ ø ∞ τ ★ ☆').split(' ') );
 
   function normal(stream, state) {
@@ -85,19 +119,27 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
       return (state.cur = string(ch))(stream, state);
 
 	// number
-    if (/[A-F\d\:]/.test(ch)) {
+    if (false && /[A-F\d\:]/.test(ch)) {
       stream.eatWhile(/[A-F\d\:\.]/);
-	  if (stream.eat('h'))
-		return 'number';
+	  //if (stream.eat('h'))
+		//return 'number';
     }
+
 	if (ch == '⁻' && stream.eat('¹')) return 'number';
 	if (subp.has(ch)) return 'number';
 
-	if (/[\d]/.test(ch)) {
-		stream.eatWhile(/[\d\.]/);
-		stream.eat(/e\-?/);
-		stream.eat(/[\d\.]/);
-		stream.eatWhile('h');
+	if (/\d/.test(ch)) { // || stream.match(/\.\d/)) {
+		// main
+		stream.eatWhile(/[\d]/);
+		// frac
+		if (stream.match(/\.\d/)) {
+			stream.eat('.');
+			stream.eatWhile(/[\d]/);
+		}
+		// exp
+		if (stream.eat(/e\-?/)) {
+			stream.eatWhile(/[\d]/);
+		}
 		return 'number';
 	}
     if (/[\w]/.test(ch)) {

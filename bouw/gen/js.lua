@@ -15,8 +15,6 @@ local unops = {
   }
   return num;})($1)
 	]],
-	['Σ'] = '(x => {var sum = 0; for (var i = 0; i < $1.length; i++) { sum = sum + $1[i]; }; return sum;})()',
-	['|'] = '((alts) => { for (var i=0; i<alts.length; i++) {  var alt = alts[i]; if (alt != null) {return alt;} } })($1)',
 	['derdemachtswortel'] = 'Math.pow($1,1/3)',
 }
 
@@ -271,6 +269,11 @@ local noops = {
 	['vierde'] = '(typeof($1)=="function") ? $1(3) : $1[3]',
 }
 
+local unops2 = {
+	['Σ'] = [[var sum = 0; for (var i = 0; i < $1.length; i++) sum = sum + $1[i]; $1 = sum;]],
+	['|'] = 'for (var i = 0; i < $1.length; i++) if ($1[i] != null) { $1 = $1[i]; break; }',
+}
+
 local binops2 = {
 	['+'] = '$1 += $2;',
 	['·'] = '$1 *= $2;',
@@ -405,6 +408,11 @@ function jsgen(sfc)
 			local naam = varnaam(focus-1)
 			local di = unops[atoom(ins)]:gsub('$1', naam)
 			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
+
+		elseif unops2[atoom(ins)] then
+			local naam = varnaam(focus-1)
+			local di = unops2[atoom(ins)]:gsub('$1', naam)
+			L[#L+1] = tabs..di
 
 		elseif binops2[atoom(ins)] then
 			local naama = varnaam(focus-2)
