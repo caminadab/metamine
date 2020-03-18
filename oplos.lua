@@ -597,27 +597,34 @@ function oplos(exp, voor, isdebug)
 	local substs = stroom:topologisch()
 
 	local val = X(voor)
-	local naam2exp = {}
+	local perexp = {[voor] = set(val)}
 	local varmap = {}
 	
 	for i=#substs,1,-1 do
 		local sub = pijl2subst[substs[i]]
-			--print('subst', unlisp(sub))
-		local naam,exp = sub.a[1],sub.a[2]
-		local val0 = val
-		val = substitueer(val0, naam, exp)
-		val.loc = assert(exp.loc or nergens)
+		--print('subst', combineer(sub))
+		local van,naar = arg0(sub), arg1(sub)
+		local naam = atoom(van)
 
-		if isdebug then
-			varmap[naam] = exp
+		-- assign
+		if perexp[naam] then
+			for exp in pairs(perexp[naam]) do
+				assign(exp, naar)
 
-			local varmap0 = {}
-			for n,v in pairs(varmap) do
-				varmap0[n] = substitueer(v, naam, exp)
+				-- registreer nieuwe
+				for sub in boompairs(exp) do
+					local naam = atoom(sub)
+					if naam then
+						perexp[naam] = perexp[naam] or {}
+						perexp[naam][sub] = true
+						--print('reg', naam, sub)
+					end
+				end
+
 			end
-			varmap = varmap0
 		end
-
+		
+		varmap[van] = naar
 	end
 
 	-- optimiseer
