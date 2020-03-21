@@ -12,8 +12,8 @@ rechts.vy := 0
 ; bal pos
 bal.x := hw
 bal.y := 50
-bal.vx := 1
-bal.vy := 3
+bal.vx := 0
+bal.vy := 0
 
 pauze.tot := looptijd + 1
 pauze = looptijd < pauze.tot

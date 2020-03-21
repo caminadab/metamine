@@ -5,6 +5,8 @@ require 'func'
 require 'fout'
 require 'exp'
 
+function typeer(exp)
+
 local obj2sym = {
 	[','] = symbool.tupel,
 	['[]'] = X('→', 'nat', 'iets'),
@@ -62,7 +64,6 @@ local function eztypeer(exp)
 end
 
 -- exp → type, fouten
-function typeer(exp)
 	local typegraaf = linkbieb(maaktypegraaf())
 	local types = {} -- moes → type
 	local permoes = permoes(exp) -- moes → moezen

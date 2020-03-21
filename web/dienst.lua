@@ -168,6 +168,7 @@ From: vraag@metamine.nl
     pad = pad:gsub('%.%.', '%.')
 		pad = pad:match('([^?]+)%?') or pad
 		if pad == '/' then pad = '/index.html' end
+		if pad == '/en' then pad = '/index.en.html' end
     pad = 'web/www' .. pad
 		uit = file(pad)
 		status = 200
