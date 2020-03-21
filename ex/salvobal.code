@@ -1,9 +1,9 @@
 ; Salvobal!
 
-hw = uit.breedte / 2
+hw = scherm.breedte / 2
 
-links.x  := uit.breedte · 1 / 4
-rechts.x := uit.breedte · 3 / 4
+links.x  := scherm.breedte · 1 / 4
+rechts.x := scherm.breedte · 3 / 4
 links.y  := 0
 rechts.y := 0
 links.vy := 0
@@ -75,7 +75,7 @@ als bal.x < 0 dan
 	bal.vx := abs bal.vx
 end
 
-als bal.x > uit.breedte dan
+als bal.x > scherm.breedte dan
 	bal.vx := - abs bal.vx
 eind
 
@@ -123,7 +123,7 @@ fk := rgb(0,0,0)
 als fk = kleur.zwart dan
 	flits = rechthoek((0,0),(0,0))
 anders
-	flits = verf(rechthoek((0,0),(uit.breedte,uit.hoogte)), fk)
+	flits = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), fk)
 eind
 
 als scherm.ververst en bal.y > 0 dan
@@ -136,13 +136,13 @@ als bal.y < 0 dan
 	bal.vx := 0
 	bal.vy := 0
 
-	als bal.x < uit.breedte / 2 dan
+	als bal.x < scherm.breedte / 2 dan
 		score1 := score1 + 1
 		bal.x := hw / 2 · 3
 		fk := kleur.blauw
 	eind
 
-	als bal.x > uit.breedte / 2 dan
+	als bal.x > scherm.breedte / 2 dan
 		score2 := score2 + 1
 		bal.x := hw / 2
 		fk := kleur.geel
@@ -155,7 +155,7 @@ eind
 ; teken
 links  = verf(boog((links.x,links.y), 10, τ/2, τ), kleur.geel)
 rechts = verf(boog((rechts.x,rechts.y), 10, τ/2, τ), kleur.blauw)
-net = verf(rechthoek((uit.breedte/2-1,0),(uit.breedte/2+1,10)), rgb(1,1,1))
+net = verf(rechthoek((scherm.breedte/2-1,0),(scherm.breedte/2+1,10)), rgb(1,1,1))
 bal = verf(cirkel((bal.x, bal.y), 8), balkleur)
 label1 = label(hw-5,90, tekst(score1))
 label2 = label(hw+5,90, tekst(score2))

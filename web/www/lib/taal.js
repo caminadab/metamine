@@ -32,7 +32,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'tekst', 'int', 'looptijd', 'nu',
 		'teken', 'render', 'rgb',
 		'sorteer', 'tot', 'vanaf', 'deel',
-		'uit.breedte', 'uit.hoogte', 'willekeurig', 'scherm.ververst', 'verf',
+		'scherm.breedte', 'scherm.hoogte', 'willekeurig', 'scherm.ververst', 'verf',
 
 		// muis
 		'muis.x', 'muis.y', 'muis.pos', 'muis.beweegt',
@@ -52,6 +52,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'map', "zip", 'vouw', 'filter',
 		'sin', "cos", "tan", 'atan',
 		'abs', 'mod',
+		'max', 'min', 'klem',
 
 
 		// engels
@@ -59,7 +60,9 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'text', 'int', 'runtime', 'now',
 		'fold',
 		'sort', 'from', 'til', 'slice',
-		'out.width', 'out.height', 'random', 'screen.refreshes', 'paint',
+		'screen.width', 'screen.height', 'random', 'screen.refreshes', 'paint',
+		'clamp',
+
 
 		// muis
 		'mouse.x', 'mouse.y', 'mouse.pos', 'mouse.moves',

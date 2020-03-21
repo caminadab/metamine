@@ -91,6 +91,7 @@ polygoon	polygon
 
 waarvoor	where
 kleur	color
+kleuren	colors
 kleur.rood	color.red
 kleur.oranje	color.orange
 kleur.geel	color.yellow
@@ -100,8 +101,6 @@ kleur.wit	color.white
 kleur.blauw	color.blue
 
 uit	out
-uit.breedte	out.width
-uit.hoogte	out.height
 
 scherm.ververst	screen.refreshes
 scherm.breedte	screen.width

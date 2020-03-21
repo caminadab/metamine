@@ -37,6 +37,7 @@ local noops = {
 	-- niet goed
 	['misschien'] = 'Math.random() < 0.5',
 	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
+	['newindex2'] = 'x => { var t = {}; for (var i = 0; i< x[0].length; i++) { if (i != x[1]) t[i] = x[0][i]; else t[i] = x[2]; } return t; }',
 	['scherm.ververst'] = 'true',
 	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
 	['model'] = 'x => (gl => drawModel(gl, x))',
@@ -193,16 +194,22 @@ local noops = {
 	} ]],
 
 	['lijn'] = [[ args => {
-  var x1 = args[0][0] * SCHAAL;
-  var y1 = (100 - args[0][1]) * SCHAAL;
-  var x2 = args[1][0] * SCHAAL;
-  var y2 = (100 - args[1][1]) * SCHAAL;
   return context => {
-		context.moveTo(x1,y1);
-		context.lineTo(x2,y2);
+		context.beginPath();
+		for (var i = 0; i < args.length; i++) {
+			var x = args[i][0] * SCHAAL;
+			var y = (100 - args[i][1]) * SCHAAL;
+			if (i == 0)
+				context.moveTo(x,y);
+			else
+				context.lineTo(x,y);
+		}
 		context.stroke();
     return context;
   }
+	} ]],
+
+	['kubus'] = [[ args => {
 	} ]],
 
 	['cirkel'] = [[ args => {
@@ -240,6 +247,7 @@ local noops = {
 	['int'] = 'Math.floor',
 	['sin'] = 'Math.sin',
 	['cos'] = 'Math.cos',
+	['tan'] = 'Math.tan',
 
 	['fn.id'] = 'x => x',
 	['fn.constant'] = 'function() return $1 end',

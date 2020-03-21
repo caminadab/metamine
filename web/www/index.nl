@@ -4,6 +4,7 @@ welkom		Welkom
 welkom		Welkom
 kop1			Een nieuwe programmeertaal.
 kop2			Declaratief en intuïtief.
+uitleg		Metamine is een Rapid Application Development tool. Met simpele en declaratieve pseudocode bouw je vlot mooie applicaties, van games tot en met webservers.
 taalvlag	en.svg
 taallink	/en
 laden			laden...

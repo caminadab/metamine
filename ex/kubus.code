@@ -1,43 +1,31 @@
-; loop met pijltjes en W en S
-veld = -2..3 × -2..3 × -2..3 × [1]
-l = looptijd / 100
+punten = [50,80] × [50,80] × [50,80]
+punten2 = punten map (((x,y),z) → (x,y,z,1))
 
-a := 0
-b := 0
-c := 0
+camx = muis.x/10
+camy = muis.y/10
+camz := 0
+;als scherm.ververst en toets.a dan camx := camx - 1 eind
+;als scherm.ververst en toets.d dan camx := camx + 1 eind
+als scherm.ververst en toets.w dan camz := camz - .1 eind
+als scherm.ververst en toets.s dan camz := camz + .1 eind
+mat = verplaats(camx,camy,camz)
 
-mat4.transpose = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
+hw = scherm.breedte / 2
+toscreen = X,Y,Z,V → (X-hw)/(Z/100)+hw, (Y-50)/(Z/100)+50
 
-als toets.rechts dan a += -1 eind
-als toets.links dan a += 1 eind
-als toets.omhoog dan c += -10 eind
-als toets.omlaag dan c += 10 eind
-als toets.s dan b += -1 eind
-als toets.w dan b += 1 eind
+punten3 = punten2 map (punt → toscreen(mat mat4.vmul punt))
 
-rechts    = (10·cos a,0,10·sin a)
-boven     = (0,10,0)
-rechtdoor = (10·sin a,0,10·-cos a)
-pos       = (90,55+c,100-b·20,50)
+;indices = [[0,1,3,2],[0,4,5,1],[0,2,6,4]]
+poly1 = verf(lijn([0,1,3,2,0] map punten3), kleur.geel)
+poly2 = verf(lijn([0,4,5,1,0] map punten3), kleur.blauw)
+poly3 = verf(lijn([0,2,6,4,0] map punten3), kleur.groen)
+poly4 = verf(lijn(([0,1,3,2]+4) map punten3), kleur.rood)
+poly5 = verf(lijn(([0,4,5,1]+2) map punten3), kleur.paars)
+poly6 = verf(lijn(([0,2,6,4]+1) map punten3), kleur.cyaan)
+polys = [poly1,poly2,poly3,poly4,poly5,poly6]
+uit = teken(polys)
 
-matrix = mat4.transpose(rechts, boven, rechtdoor, pos)
-
-K = 20/pz-10
-k = rgb(K/w₀,K/w₁,K/w₂)
-h = matrix mat4.mulv w
-
-transformeer = w → h
-plot = px,py,pz·100,pw → verf(cirkel( ((px-90)/pz+90,(py-50)/pz+50), max(0,3/pz)), k)
-
-
-punten = veld2 map transformeer
-gesorteerd = punten sorteer ggg
-ggg = fa,fb → fa₂ < fb₂
-
-; util
-;mat2.mul = m,v → (m₀₀·v₀+m₀₁·v₁, m₁₀·v₀+m₁₁·v₁)
-;mat3.mul = m,v → (m₀₀·v₀+m₀₁·v₁+m₀₂, m₁₀·v₀+m₁₁·v₁+m₁₂, m₂₀·v₀+m₂₁·v₁+m₂₂) 
-dot4 = da,db → da₀·db₀+da₁·db₁+da₂·db₂+(da 3)·(db 3)
-mat4.mulv = m,v → (dot4(m₀,v), dot4(m₁, v), dot4(m₂, v), dot4((m 3), v)) 
-uit = teken (gesorteerd map plot)
-
+frame := 0
+als scherm.ververst dan
+	frame := frame + 1
+eind

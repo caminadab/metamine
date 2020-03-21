@@ -62,7 +62,8 @@
 	var cc = ("{cc}" == "nl") ? "" : ".en";
 
 	var demoindex = 0;
-	var demos = [ 'salvobal', 'pong', 'buis', 'cirkels', 'paint',
+	var demos = [ 'salvobal', 'pong', 'buis', 'cirkels',
+		'paint', 'paint2', 'grafiek', 'voer',
 		'pe1', 'pe2', 'pe3', 'pe4', 'pe5', 'pe6' ] ;
 	var uit = document.getElementById('uit');
 

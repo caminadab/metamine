@@ -117,7 +117,7 @@ function vectoriseer(asb, types)
 			end
 		end
 
-		-- (+) → +v | +v1 | +m | +m1 | +f
+		-- (·) → +v | +v1 | +m | +m1 | +f
 		if fn(exp) == '·' then
 			local atype = types[moes(arg0(exp))]
 			local btype = types[moes(arg1(exp))]
@@ -127,6 +127,8 @@ function vectoriseer(asb, types)
 			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
+			--local ismatA = atoom(arg0(atype)) == 'nat' and atoom
+			--local ismatB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
 
 			-- vector
 			if islijstA and islijstB then exp.f = X'·v' 

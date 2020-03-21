@@ -1,30 +1,75 @@
-; bord
-vakdata = 0..7·15+30 × 0..6·15 × [14]
-tekenvak = vak → verf(vierkant(vak), kleur.blauw)
-vakken = vakdata map tekenvak
-modx = ⌊(muis.x-30) / 15⌋
-snapx = max(0, min(6, modx))
-selx = 30 + snapx · 15 + 7.5
-selectie = cirkel((selx,95), 3)
-uit = teken (vakken ‖ stukken ‖ [selectie, statuslabel])
-statuslabel = label((0,90),status)
-
-stukken = (0..7 × 0..6) map (x,y → z)
-
-z = verf(cirkel((x·15+30,y·15)+7,5), ckleur)
-ckleur = palet(bord(y·7+x))
-palet = [kleur.zwart, kleur.rood, kleur.geel]
-
-
-
-; spel
-bord := (0..(6·7)) map (x → 0)
+; spel logica
+bord := (0..(6·7)) map (B → 0)
 aanzet := ja
 status := "aan zet"
 
+ckleur = palet(bord(y·7+x))
+palet  = [kleur.zwart, kleur.rood, kleur.geel]
+
+; kan de zet?
+kanzet = kbord,kx → (kbord(kx + 7·5) = 0)
+doezet = dbord,dx,dkleur → newindex(dbord, dx + dy·7, dkleur)
+dy = (|)[ (dbord(dx)=0 ⇒ 0), (dbord(dx+7)=0 ⇒ 1), (dbord(dx+14)=0 ⇒ 2), (dbord(dx+21)=0 ⇒ 3), (dbord(dx+28)=0 ⇒ 4), (dbord(dx+35)=0 ⇒ 5) ]
+
+als aanzet dan
+	kleur = 1
+anders
+	kleur = 2
+eind
+
+
+; wint er iemand ?
+wint = wbord,ws → (hwint of vwint of dwint of rwint)
+
+hindices = (0..4 × (0..6 · 7)) map (+)
+vindices = (0..7 × (0..3 · 7)) map (+)
+dindices = (0..4 × (0..3 · 7)) map (+)
+rindices = (3..7 × (0..3 · 7)) map (+)
+hwint = hindices map hwint1 vouw (of)
+vwint = vindices map vwint1 vouw (of)
+dwint = dindices map dwint1 vouw (of)
+rwint = rindices map rwint1 vouw (of)
+hwint1 = hs → (wbord(hs)=ws en wbord(hs+1)=ws en wbord(hs+2)=ws en wbord(hs+3)=ws)
+vwint1 = vs → (wbord(vs)=ws en wbord(vs+7)=ws en wbord(vs+14)=ws en wbord(vs+21)=ws)
+dwint1 = ds → (wbord(ds)=ws en wbord(ds+8)=ws en wbord(ds+16)=ws en wbord(ds+24)=ws)
+rwint1 = rs → (wbord(rs)=ws en wbord(rs+6)=ws en wbord(rs+12)=ws en wbord(rs+18)=ws)
+
 ; actie
-als muis.klik.begin en aanzet dan; bord(30 + snapx) = 0 en aanzet dan
-	bord := newindex(bord, snapx, 1)
+denkt := nee
+als muis.klik.begin en aanzet dan
+	bord := doezet(bord, snapx, 1)
 	aanzet := nee
 	status := "denken..."
 eind
+
+i := 0
+fictief := niets
+borden := niets
+bestezet := niets
+
+
+als muis.klik.begin en ¬ aanzet dan
+	bord := doezet(bord, snapx, 2)
+	aanzet := ja
+	status := "aan zet"
+eind
+
+
+; muis selectie
+modx  = ⌊(muis.x-30) / 15⌋
+snapx = klem(modx, 0, 6)
+selx  = 30 + snapx · 15 + 7.5
+
+; teken
+blauwbord = verf(rechthoek((30,0)-1.5, (135,90)), kleur.blauw)
+z         = verf(cirkel((x·15+30,y·15)+7,7), ckleur)
+stukken   = (0..7 × 0..6) map (x,y → z)
+selectie  = verf(cirkel((selx,95), 3), palet(kleur))
+
+statuslabel = label(0,90,status)
+infolabel1 = label(0,80,"wint(1) = " ‖ tekst(wint(bord,2)))
+infolabel2 = label(0,70,"wint(2) = " ‖ tekst(wint(bord,1)))
+
+uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2])
+
+

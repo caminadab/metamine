@@ -16,6 +16,9 @@ webdemos: web/www/ex/
 	./tolk ex/salvobal.code web/www/ex/salvobal.en.code
 	./tolk ex/buis.code web/www/ex/buis.en.code
 	./tolk ex/paint.code web/www/ex/paint.en.code
+	./tolk ex/paint2.code web/www/ex/paint2.en.code
+	./tolk ex/grafiek.code web/www/ex/grafiek.en.code
+	./tolk ex/voer.code web/www/ex/voer.en.code
 	./tolk ex/pe1.code web/www/ex/pe1.en.code
 	./tolk ex/pe2.code web/www/ex/pe2.en.code
 	./tolk ex/pe3.code web/www/ex/pe3.en.code

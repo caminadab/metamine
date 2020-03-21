@@ -50,7 +50,7 @@ cirkel: (ℝ,ℝ),ℝ → vorm
 ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 rechthoek: (ℝ,ℝ),(ℝ,ℝ) → vorm
-lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
+;lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 ;label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)
@@ -97,7 +97,7 @@ filter: lijst, (iets→bit) → lijst
 (×) : lijst, lijst → lijst
 ;(‖) :  lijst, lijst → lijst
 (∘) : functie, functie → functie
-(|) : iets,iets → iets
+(|) : lijst → iets
 (=) :  (iets, iets) → bit 
 (:=) : (iets, iets) → bit
 (→) :  (iets, iets) → (iets → iets)

@@ -1,0 +1,21 @@
+; kleur paint
+
+kleuren = [kleur.blauw, kleur.rood, kleur.groen, kleur.geel]
+lijnen := []
+punten := []
+kleurindex := 0
+
+als muis.klik.begin dan
+	punten := []
+eind
+
+als muis.klik en muis.beweegt dan
+	punten := punten ‖ [muis.pos]
+eind
+
+als muis.klik.eind dan
+	lijnen := lijnen ‖ [verf(polygoon(punten), kleuren(kleurindex))]
+	kleurindex := (kleurindex + 1) mod (# kleuren)
+eind
+
+uit = teken (lijnen ‖ [lijn(punten)])

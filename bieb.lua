@@ -30,6 +30,7 @@ function bieb()
 
 	-- webgl
 	['alert'] = true,
+	['kubus'] = true,
 	['gl.drawArrays'] = true,
 	['gl.drawTriangles'] = true,
 	['gl.clearColor'] = true,
@@ -252,6 +253,12 @@ function bieb()
 	['newindex'] = function(args)
 		local t,k,v = args[1], args[2], args[3]
 		t[k] = v
+		return v
+	end,
+	['newindex2'] = function(args)
+		local t,k,v = args[1], args[2], args[3]
+		t[k] = v
+		-- TODO kopieer
 		return v
 	end,
 	['inverteer'] = true; -- sure
