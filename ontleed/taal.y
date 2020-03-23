@@ -268,7 +268,7 @@ exp:
 | exp ',' exp  												{ if (xlua_isopen(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
 | single single  %prec CALL  					{ $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
 | single single single  %prec CALL  	{ $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @$), @$); }
-| single single single single 				{ $$ = A(L, "fout", @$); yyerrok; }
+| single single single single  %prec CALL  	{ $$ = FN2(L, A(L,"_",@2), $3, TN2(L, A(L,",",@2), FN2(L,A(L,"_",@1), $1, $2, @2), $4, @$), @$); }
 | single single single single single	{ $$ = FN2(L, A(L,"_",@4),
 																									$4,
 																									TN2(L, A(L,",",@2),

@@ -1,1 +1,5 @@
-main = [] vouw (+)
+main = a b c d
+a = x → x
+b = 2
+c = (+)
+d = 1

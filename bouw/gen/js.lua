@@ -37,7 +37,7 @@ local noops = {
 	-- niet goed
 	['misschien'] = 'Math.random() < 0.5',
 	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
-	['newindex2'] = 'x => { var t = {}; for (var i = 0; i< x[0].length; i++) { if (i != x[1]) t[i] = x[0][i]; else t[i] = x[2]; } return t; }',
+	['newindex2'] = 'x => { var t = []; for (var i = 0; i< x[0].length; i++) { if (i == x[1]) t[i] = x[2]; else t[i] = x[0][i]; } return t; }',
 	['scherm.ververst'] = 'true',
 	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
 	['model'] = 'x => (gl => drawModel(gl, x))',
@@ -139,6 +139,7 @@ local noops = {
 			}
 			context.closePath();
 			context.fill();
+			return context;
 		};
 	} ]],
 	['vierkant'] = [[ args => {
@@ -183,10 +184,18 @@ local noops = {
 	} ]],
 
 	['rechthoek'] = [[ args => {
-  var x = args[0][0] * SCHAAL;
-  var y = (100 - args[0][1]) * SCHAAL;
-  var w = args[1][0] * SCHAAL - x;
-  var h = (100 - args[1][1]) * SCHAAL - y;
+	var x, y, w, h;
+	if (args.length == 2) {
+		x = args[0][0] * SCHAAL;
+		y = (100 - args[0][1]) * SCHAAL;
+		w = args[1][0] * SCHAAL - x;
+		h = (100 - args[1][1]) * SCHAAL - y;
+	} else {
+		x = args[0] * SCHAAL;
+		y = (100 - args[1]) * SCHAAL;
+		w = args[2] * SCHAAL - x;
+		h = (100 - args[3]) * SCHAAL - y;
+	}
   return context => {
     context.fillRect(x,y,w,h);
     return context;
@@ -214,9 +223,16 @@ local noops = {
 
 	['cirkel'] = [[ args => {
 		return (function(c){
-			var x = args[0][0] * SCHAAL;
-			var y = (100 - args[0][1]) * SCHAAL;
-			var r = args[1] * SCHAAL;
+			var x, y, r;
+			if (args.length == 2) {
+				x = args[0][0] * SCHAAL;
+				y = (100 - args[0][1]) * SCHAAL;
+				r = args[1] * SCHAAL;
+			} else {
+				x = args[0] * SCHAAL;
+				y = (100 - args[1]) * SCHAAL;
+				r = args[2] * SCHAAL;
+			}
 			c.beginPath();
 			c.arc(x, y, r, 0, Math.PI * 2);
 			c.fill();

@@ -368,7 +368,7 @@
 					//uit.focus(); WAUW
 				} catch (e) {
 					onerror();
-					uit.innerHTML = e + '<br>' + '<pre>' + j.js + '</pre>';
+					uit.innerHTML = e;
 				}
 			})
 	}

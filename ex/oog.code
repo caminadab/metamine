@@ -1,0 +1,3 @@
+punten = ((0..1000) map f)
+f = i → (((looptijd · 10) mod scherm.breedte),50) + cossin(i/1000·τ+looptijd) · 30 · sin(i/10·looptijd)
+uit = teken [verf(polygoon(punten), rgb(.3,cos(looptijd·.7),sin looptijd))]

@@ -1,0 +1,28 @@
+; twee grafieken
+
+f = c → 50 + 10 · tan(c³) · sin(c²/10+looptijd)
+g = d → 50
+h = e → 50; + 30 · sin(e²-3+1.1^looptijd)
+i = E → 50; + klem(10·sin(E/10·looptijd),0,10)
+j = F → 50; + 20 · sin F/8 + 10 · sin (F/17) + (looptijd·F) mod 10
+
+x = 0..200
+y1 = x map f
+y2 = x map g
+y3 = x map h
+y4 = x map i
+y5 = x map j
+
+punten1 = x zip y1
+punten2 = x zip y2
+punten3 = x zip y3
+punten4 = x zip y4
+punten5 = x zip y5
+grafiek1 = verf(polygoon(punten1), kleur.rood)
+grafiek2 = verf(lijn(punten2), kleur.groen)
+grafiek3 = verf(lijn(punten3), kleur.blauw)
+grafiek4 = verf(lijn(punten4), kleur.geel)
+grafiek5 = verf(lijn(punten5), rgb(1,looptijd mod 1,1))
+
+uit = teken [grafiek1, grafiek2, grafiek3, grafiek4, grafiek5]
+
