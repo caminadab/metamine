@@ -68,6 +68,17 @@ local noops = {
 	-- discreet
 	['min'] = 'x => Math.min(x[0], x[1])',
 	['max'] = 'x => Math.max(x[0], x[1])',
+	['maxindex'] = [[x => {
+		var maxi = null;
+		var max = - Infinity;
+		for (var i = 0; i < x.length; i++) {
+			if (x[i] > max) {
+				maxi = i;
+				max = x[i];
+			}
+		}
+		return maxi;
+	}]],
 
 	-- webgl
 	['gl.createShader'] = 'gl => gl.createShader',
@@ -243,11 +254,20 @@ local noops = {
 
 	['boog'] = [[ args => {
 		return (function(c){
-			var x = args[0][0] * SCHAAL;
-			var y = (100 - args[0][1]) * SCHAAL;
-			var r = args[1] * SCHAAL;
-			var a1 = args[2];
-			var a2 = args[3];
+			var x, y, r, a1, a2;
+			if (args.length == 4) {
+				x = args[0][0] * SCHAAL;
+				y = (100 - args[0][1]) * SCHAAL;
+				r = args[1] * SCHAAL;
+				a1 = args[2];
+				a2 = args[3];
+			} else {
+				x = args[0] * SCHAAL;
+				y = (100 - args[1]) * SCHAAL;
+				r = args[2] * SCHAAL;
+				a1 = args[3];
+				a2 = args[4];
+			}
 			c.beginPath();
 			c.arc(x, y, r, a1, a2);
 			c.fill();
@@ -302,6 +322,31 @@ local binops2 = {
 	['+'] = '$1 += $2;',
 	['·'] = '$1 *= $2;',
 	['/'] = '$1 /= $2;',
+	['·m'] = [[
+var aNumRows = $1.length, aNumCols = $1[0].length,
+		bNumRows = $2.length, bNumCols = $2[0].length,
+		m = new Array(aNumRows);  // initialize array of rows
+for (var r = 0; r < aNumRows; ++r) {
+	m[r] = new Array(bNumCols); // initialize the current row
+	for (var c = 0; c < bNumCols; ++c) {
+		m[r][c] = 0;             // initialize the current cell
+		for (var i = 0; i < aNumCols; ++i) {
+			m[r][c] += $1[r][i] * $2[i][c];
+		}
+	}
+}
+$1 = m;]],
+	['·mv'] = [[
+var vec = new Array($2.length);
+var w = $1.length
+var h = $1[0].length;
+for (var y = 0; y < h; y++) {
+	vec[y] = 0;
+	for (var x = 0; x < w; x++) {
+		vec[y] += $1[x][y] * $2[y];
+	}
+}
+$1 = vec;]],
 }
 
 local binops = {

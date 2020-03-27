@@ -54,35 +54,23 @@ eind
 looptijd = nu - starttijd
 starttijd := nu
 
-; vec
-vec.dot = vda,vdb → Σ (vda zip vdb map (·))
-
 ; transformatie
-verplaats = Tv → ((1,0,0,0),(0,1,0,0),(0,0,1,0),(Tv₀,Tv₁,Tv₂,1))
-;transform.schaal = tx,ty,tz → ((tx,0,0,0),(0,ty,0,0),(0,0,tz,0),(0,0,0,1))
+transform.verplaats = Tv → [[1,0,0,0],[0,1,0,0],[0,0,1,0],[Tv₀,Tv₁,Tv₂,1]]
+transform.schaal = Tx,Ty,Tz → [[Tx,0,0,0],[0,Ty,0,0],[0,0,Tz,0],[0,0,0,1]]
 
 ; [a b 0]  [a 0 b]  [1 0 0]
 ; [c d 0]  [0 1 0]  [0 a b]
 ; [0 0 1]  [c 0 d]  [0 c d]
-xdraai = tdx → (1,0,0,0), (0, cos tdx, sin tdx, 0), (0, -sin tdx, cos tdx, 0), (0,0,0,1)
-ydraai = tdy → (cos tdy, 0, sin tdy, 0), (0,1,0,0), (-sin tdy, 0, cos tdy, 0), (0,0,0,1)
-zdraai = tdz → (cos tdz, sin tdz, 0, 0), (-sin tdz, cos tdz, 0, 0), (0,0,1,0), (0,0,0,1)
+xdraai = Tdx → [[1,0,0,0], [0, cos Tdx, sin Tdx, 0], [0, -sin Tdx, cos Tdx, 0], [0,0,0,1]]
+ydraai = Tdy → [[cos Tdy, 0, sin Tdy, 0], [0,1,0,0], [-sin Tdy, 0, cos Tdy, 0], [0,0,0,1]]
+zdraai = Tdz → [[cos Tdz, sin Tdz, 0, 0], [-sin Tdz, cos Tdz, 0, 0), [0,0,1,0], [0,0,0,1]]
 
 ; scherm
 ;scherm.frequentie = ?
 ;dt = scherm.frequentie
 
-; mat4
-mat4.vmul = mvm,mvv → (mat4.transponeer mvm) zip1 mvv map vec.dot
-mat4.mul = mma,mmb → (mat4.transponeer mma) zip mmb map vec.dot
-
-mat4.id = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1))
-mat4.transponeer = mta,mtb,mtc,mtd → ((mta₀,mtb₀,mtc₀,mtd₀),(mta₁,mtb₁,mtc₁,mtd₁),(mta₂,mtb₂,mtc₂,mtd₂),(mta₃,mtb₃,mtc₃,mtd₃))
-
-; vec
-vec2.unit = sincos
-
-uit.hoogte = 100
+mat4.id = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+mat4.transponeer = [mta,mtb,mtc,mtd] → [[mta₀,mtb₀,mtc₀,mtd₀],[mta₁,mtb₁,mtc₁,mtd₁],[mta₂,mtb₂,mtc₂,mtd₂],[mta₃,mtb₃,mtc₃,mtd₃]]
 
 ; kleuren
 kleur.beige = rgb(96%, 96%, 86%)

@@ -1,0 +1,6 @@
+punten = (0..1000) map f
+f = x → p1 + p2
+p1 = 90+10·sin(x/10), 50
+p2 = sin(x/0.7+looptijd)·looptijd·(x mod 20)·cossin(x)
+
+uit = teken [ polygoon(punten) verf kleur.geel ]

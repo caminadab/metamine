@@ -1,28 +1,27 @@
+	.file	"hoi1.c"
 	.intel_syntax noprefix
-
-.section .rdata
-msg: .string "hoi"
-title: .string "Titel"
-
-.section .text
-
 	.text
-	.global	_start
-
-_start:
-	sub rsp, 28
-
-	mov rcx, 0
-	mov rdx, msg[rip]
-	mov r8, 3
-	lea r9, [rsp]
-	push 0
-	call __imp_WriteConsoleA[rip]
-
-	mov rcx, 0       # hWnd = HWND_DESKTOP
-	lea rdx, msg[rip]     # LPCSTR lpText
-	lea r8,  title[rip]   # LPCSTR lpCaption
-	mov r9d, 0       # uType = MB_OK
-	call __imp_MessageBoxA[rip]
-	add rsp, 28 
+	.section .rdata,"dr"
+.LC0:
+	.ascii "hoi\0"
+	.text
+	.globl	__main
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.seh_proc	__main
+__main:
+	sub	rsp, 56
+	.seh_stackalloc	56
+	.seh_endprologue
+	mov	ecx, -11
+	call	[QWORD PTR __imp_GetStdHandle[rip]]
+	xor	r9d, r9d
+	mov	r8d, 3
+	lea	rdx, .LC0[rip]
+	mov	rcx, rax
+	mov	QWORD PTR 32[rsp], 0
+	call	[QWORD PTR __imp_WriteConsoleA[rip]]
+	xor	eax, eax
+	add	rsp, 56
 	ret
+	.seh_endproc
+	.ident	"GCC: (GNU) 8.3-win32 20191201"

@@ -2,13 +2,13 @@ linux: web/www/index.html web/www/index.en.html ontleed.so
 deploy: ontleed.so web/www/
 	scp -r web/www/* metamine.nl:/var/www/html/
 
-#ssh -f pi  'cd taal ; git pull ; make ; pkill luajit ; /etc/dienst'
+#ssh -f pi  'cd taal ; git pull ; make ; pkill lua ; /etc/dienst'
 
 run: linux
-	luajit web/dienst.lua
+	lua web/dienst.lua
 
 test: linux
-	luajit test.lua
+	lua test.lua
 
 webdemos: web/www/ex/
 	./tolk ex/pong.code web/www/ex/pong.en.code

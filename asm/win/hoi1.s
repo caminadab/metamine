@@ -1,35 +1,27 @@
 	.file	"hoi1.c"
+	.intel_syntax noprefix
 	.text
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 .LC0:
 	.ascii "hoi\0"
 	.text
-	.globl	main
-	.def	main;	.scl	2;	.type	32;	.endef
-	.seh_proc	main
-main:
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	movq	%rsp, %rbp
-	.seh_setframe	%rbp, 0
-	subq	$48, %rsp
-	.seh_stackalloc	48
+	.globl	__main
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.seh_proc	__main
+__main:
+	sub	rsp, 56
+	.seh_stackalloc	56
 	.seh_endprologue
-	call	__main
-	movl	$-11, %ecx
-	movq	__imp_GetStdHandle(%rip), %rax
-	call	*%rax
-	movq	$0, 32(%rsp)
-	movl	$0, %r9d
-	movl	$3, %r8d
-	leaq	.LC0(%rip), %rdx
-	movq	%rax, %rcx
-	movq	__imp_WriteConsoleA(%rip), %rax
-	call	*%rax
-	movl	$0, %eax
-	addq	$48, %rsp
-	popq	%rbp
+	mov	ecx, -11
+	call	[QWORD PTR __imp_GetStdHandle[rip]]
+	xor	r9d, r9d
+	mov	r8d, 3
+	lea	rdx, .LC0[rip]
+	mov	rcx, rax
+	mov	QWORD PTR 32[rsp], 0
+	call	[QWORD PTR __imp_WriteConsoleA[rip]]
+	xor	eax, eax
+	add	rsp, 56
 	ret
 	.seh_endproc
-	.ident	"GCC: (GNU) 8.3-win32 20190406"
+	.ident	"GCC: (GNU) 8.3-win32 20191201"

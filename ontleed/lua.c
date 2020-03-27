@@ -25,6 +25,8 @@ int xlua_reflijst(lua_State*L, int oid, int aid, YYLTYPE loc) {
 				lua_setfield(L, -2, "o");
 			xlua_pushloc(L, loc);
 				lua_setfield(L, -2, "loc");
+			lua_pushnil(L);
+				lua_setfield(L, -2, "open");
 			lua_pop(L, 1);
 		luaL_unref(L, LREG, oid);
 		return aid;

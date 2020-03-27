@@ -39,19 +39,17 @@ function test(code, moetzijn)
 	local im,fouten = vertaal(code)
 	assert(im, "onvertaalbaar: "..code)
 
-	local lua = luagen(im)
 	local js  = jsgen(im)
 	local asm = asmgen(im)
 
 
 	local imval = tostring(doe(im))
-	local luaval = tostring(doelua(lua))
 	local asmval = tostring(doeasm(asm))
 	local jsval = tostring(doejs(js))
 
 	print(code)
-	print('Im', 'Lua', 'Js', 'Asm')
-	print(imval, luaval, jsval, asmval)
+	print('Im', 'Js', 'Asm')
+	print(imval, jsval, asmval)
 	print()
 
 	if imval ~= luaval or imval ~= asmval or imval ~= jsval then

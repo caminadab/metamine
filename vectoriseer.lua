@@ -47,6 +47,8 @@ function vectoriseer(asb, types)
 			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
+			local ismatA = atoom(arg0(atype)) == 'nat' and atoom(arg0(arg1(atype))) == 'nat'
+			local ismatB = atoom(arg0(btype)) == 'nat' and atoom(arg0(arg1(btype))) == 'nat'
 
 			-- vector
 			if islijstA and islijstB then exp.f = X'+v' 
@@ -62,10 +64,10 @@ function vectoriseer(asb, types)
 				exp.f = X'+v1' 
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
-			-- matrix TODO
-			elseif isfuncA and isfuncB then exp.f = X'+m'
-			elseif isfuncA and isnumB then exp.f = X'+m1'
-			elseif isfuncB and isnumA then
+			-- matrix
+			elseif ismatA and ismatB then exp.f = X'+m'
+			elseif ismatA and isnumB then exp.f = X'+m1'
+			elseif isnumA and ismatB then
 				exp.f = X'+m1' 
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 			end
@@ -75,6 +77,7 @@ function vectoriseer(asb, types)
 			local type = types[moes(arg(exp))]
 			local isfunc = fn(type) == '→' or atoom(type) == 'functie'
 			local islijst = atoom(arg0(type)) == 'nat' or obj(type) == ','
+			local ismat = atoom(arg0(type)) == 'nat' and atoom(arg0(arg1(type))) == 'nat'
 
 			if islijst then
 				exp.f = X'-v'
@@ -94,8 +97,15 @@ function vectoriseer(asb, types)
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
 
+			-- matrix TODO
+			if isfuncA and isfuncB then exp.f = X'/m'
+			elseif isfuncA and isnumB then exp.f = X'/m1'
+			elseif isfuncB and isnumA then
+				exp.f = X'/m1' 
+				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
+
 			-- vector
-			if islijstA and islijstB then exp.f = X'/v' 
+			elseif islijstA and islijstB then exp.f = X'/v' 
 			elseif islijstA and isnumB then exp.f = X'/v1' 
 			elseif islijstB and isnumA then
 				exp.f = X'/v1' 
@@ -108,16 +118,10 @@ function vectoriseer(asb, types)
 				exp.f = X'/f1' 
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
-			-- matrix TODO
-			elseif isfuncA and isfuncB then exp.f = X'/m'
-			elseif isfuncA and isnumB then exp.f = X'/m1'
-			elseif isfuncB and isnumA then
-				exp.f = X'/m1' 
-				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 			end
 		end
 
-		-- (·) → +v | +v1 | +m | +m1 | +f
+		-- (·) → ·v | ·v1 | ·m | ·mv | ·m1 | ·f
 		if fn(exp) == '·' then
 			local atype = types[moes(arg0(exp))]
 			local btype = types[moes(arg1(exp))]
@@ -127,11 +131,23 @@ function vectoriseer(asb, types)
 			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
-			--local ismatA = atoom(arg0(atype)) == 'nat' and atoom
-			--local ismatB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
+			local ismatA = atoom(arg0(atype)) == 'nat' and atoom(arg0(arg1(atype))) == 'nat'
+			local ismatB = atoom(arg0(btype)) == 'nat' and atoom(arg0(arg1(btype))) == 'nat'
+			--print(combineer(atype), combineer(btype))
+
+			-- matrix
+			if ismatA and ismatB then exp.f = X'·m' -- matrix multiplication!!
+			elseif ismatA and islijstB then exp.f = X'·mv'
+			elseif islijstA and ismatB then
+				exp.f = X'·mv' 
+				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
+			elseif ismatA and isnumB then exp.f = X'·m1'
+			elseif isnumA and ismatB then
+				exp.f = X'·m1' 
+				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- vector
-			if islijstA and islijstB then exp.f = X'·v' 
+			elseif islijstA and islijstB then exp.f = X'·v' 
 			elseif islijstA and isnumB then exp.f = X'·v1' 
 			elseif islijstB and isnumA then
 				exp.f = X'·v1' 
@@ -144,15 +160,8 @@ function vectoriseer(asb, types)
 				exp.f = X'·f1' 
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
-			-- matrix TODO
-			elseif isfuncA and isfuncB then exp.f = X'·m'
-			elseif isfuncA and isnumB then exp.f = X'·m1'
-			elseif isfuncB and isnumA then
-				exp.f = X'·m1' 
-				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 			end
 		end
 	end
 	return asb
 end
-

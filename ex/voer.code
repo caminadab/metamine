@@ -1,14 +1,21 @@
-; spel logica
+;;;;;;;;;;;;;;;;;;;; SPEL LOGICA ;;;;;;;;;;;;;;;;;;;;
+
 bord := (0..(6·7)) map (B → 0)
 aanzet := ja
 status := "aan zet"
 
 ckleur = palet(bord(y·7+x))
-palet  = [kleur.zwart, kleur.rood, kleur.geel]
+palet  = [kleur.zwart, kleur.rood, kleur.geel, kleur.groen]
 
 ; kan de zet?
 kanzet = kbord,kx → (kbord(kx + 7·5) = 0)
-doezet = dbord,dx,dkleur → newindex2(dbord, dx + dy·7, dkleur)
+doezet = dbord,dx,dkleur → dbord0
+als kanzet(dbord,dx) dan
+	dbord0 = newindex2(dbord, dx + dy·7, dkleur)
+anders
+	dbord0 = newindex2(dbord, 0, 3)
+eind
+
 dy = (|)[ (dbord(dx)=0 ⇒ 0), (dbord(dx+7)=0 ⇒ 1), (dbord(dx+14)=0 ⇒ 2), (dbord(dx+21)=0 ⇒ 3), (dbord(dx+28)=0 ⇒ 4), (dbord(dx+35)=0 ⇒ 5) ]
 
 als aanzet dan
@@ -19,82 +26,127 @@ eind
 
 
 ; wint er iemand ?
-wint = wbord,ws → (hwint of vwint of dwint of rwint)
+wint1 = wbord1 → (hwint1 of vwint1 of dwint1 of rwint1)
+
+hwint1 = hindices map hwint01 vouw (of)
+vwint1 = vindices map vwint01 vouw (of)
+dwint1 = dindices map dwint01 vouw (of)
+rwint1 = rindices map rwint01 vouw (of)
+
+wint2 = wbord2 → (hwint2 of vwint2 of dwint2 of rwint2)
+
 hindices = (0..4 × (0..6 · 7)) map (+)
 vindices = (0..7 × (0..3 · 7)) map (+)
 dindices = (0..4 × (0..3 · 7)) map (+)
 rindices = (3..7 × (0..3 · 7)) map (+)
-hwint = hindices map hwint1 vouw (of)
-vwint = vindices map vwint1 vouw (of)
-dwint = dindices map dwint1 vouw (of)
-rwint = rindices map rwint1 vouw (of)
-hwint1 = hs → (wbord(hs)=ws en wbord(hs+1)=ws en wbord(hs+2)=ws en wbord(hs+3)=ws)
-vwint1 = vs → (wbord(vs)=ws en wbord(vs+7)=ws en wbord(vs+14)=ws en wbord(vs+21)=ws)
-dwint1 = ds → (wbord(ds)=ws en wbord(ds+8)=ws en wbord(ds+16)=ws en wbord(ds+24)=ws)
-rwint1 = rs → (wbord(rs)=ws en wbord(rs+6)=ws en wbord(rs+12)=ws en wbord(rs+18)=ws)
+hwint2 = hindices map hwint02 vouw (of)
+vwint2 = vindices map vwint02 vouw (of)
+dwint2 = dindices map dwint02 vouw (of)
+rwint2 = rindices map rwint02 vouw (of)
 
-; actie
+hwint01 = hs1 → (wbord1(hs1)=1 en wbord1(hs1+1)=1 en wbord1(hs1+2)=1 en wbord1(hs1+3)=1)
+vwint01 = vs1 → (wbord1(vs1)=1 en wbord1(vs1+7)=1 en wbord1(vs1+14)=1 en wbord1(vs1+21)=1)
+dwint01 = ds1 → (wbord1(ds1)=1 en wbord1(ds1+8)=1 en wbord1(ds1+16)=1 en wbord1(ds1+24)=1)
+rwint01 = rs1 → (wbord1(rs1)=1 en wbord1(rs1+6)=1 en wbord1(rs1+12)=1 en wbord1(rs1+18)=1)
+
+hwint02 = hs2 → (wbord2(hs2)=2 en wbord2(hs2+1)=2 en wbord2(hs2+2)=2 en wbord2(hs2+3)=2)
+vwint02 = vs2 → (wbord2(vs2)=2 en wbord2(vs2+7)=2 en wbord2(vs2+14)=2 en wbord2(vs2+21)=2)
+dwint02 = ds2 → (wbord2(ds2)=2 en wbord2(ds2+28)=2 en wbord2(ds2+16)=2 en wbord2(ds2+24)=2)
+rwint02 = rs2 → (wbord2(rs2)=2 en wbord2(rs2+6)=2 en wbord2(rs2+12)=2 en wbord2(rs2+18)=2)
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;  GUI  ;;;;;;;;;;;;;;;;;;;;
+
+; speler dropt coin
 als muis.klik.begin en aanzet dan
-	bord := doezet(bord, snapx, 1)
+	bord := doezet(bord, xsnap, 1)
 	status := "denken..."
 	aanzet := nee
-	nadenktot := nu + 1
+	nadenktot := nu + 0.3
 eind
 
-klaar = nadenktot < nu
 
-nadenktot := nu + 1
-als scherm.ververst en ¬ aanzet en klaar dan
-	bord := doezet(bord, 0, 2) ;bestezet(bord,2), 2)
+; computer dropt coin
+klaar := nee
+nadenktot := nu
+bz := 0
+
+als ¬ aanzet en nu > nadenktot dan
+	;scores := bscores
+	bord := doezet(bord, bestezet(bord,2), 2)
 	status := "aan zet"
 	aanzet := ja
+	;scores := (0..7 × 0..7) map (I0,J0 → score(Bbord1)) 
 eind
 
+;Bbord1 = doezet(doezet(bbord,I0,2),J0,1)
 
-i := 0
-borden := niets
 
-; ai
-bestezet = bbord,bspeler → bzet ;bscores ;bzet
-bscores = (0..7) map (I → score(doezet(bord,I,2),2))
-bzet = (0..7) zip bscores vouw ((bi1,bscore1),(bi2,bscore2) → (bi,bscore))
 
-als bscore1 > bscore2 dan
-	bi = bi1
-	bscore = bscore1
+;;;;;;;;;;;;;;;;;;;;  AI  ;;;;;;;;;;;;;;;;;;;;
+
+scores := []
+
+; beste zet berekenen
+bestezet = bbord,bspeler → bzet
+;bscores = (0..7 × 0..7 × 0..7 × 0..7) map (((I,J),K),L → score(bbord3))
+bscores = (0..7 × 0..7 × 0..7) map (((I,J),K) → score(bbord3))
+;bscores = (0..7 × 0..7) map (I,J → score(bbord1))
+;bscores = (0..7) map (I → score(bbord0))
+
+;bzet = ⌊(maxindex (bscores)) / 7²⌋
+bzet = (maxindex (bscores)) mod 7
+;bzet = maxindex bscores
+
+bbord1 = doezet(bbord,I,2)
+bbord2 = doezet(doezet(bbord,I,2),J,1)
+bbord3 = doezet(doezet(doezet(bbord,I,2),J,1),K,2)
+bbord4 = doezet(doezet(doezet(doezet(bbord,I,2),J,1),K,2),L,1)
+
+;scoorzet2 = (I → score(doezet(bord,I,2),2))
+;scoorzet1 = (J → 1000-score(doezet(bord,J,1),1))
+
+; score berekenen
+score = sbord → sscore
+
+; zet kan niet
+als sbord₀ = 3 dan
+	sscore = -100
 anders
-	bi = bi2
-	bscore = bscore2
-eind
-
-score = sbord,sspeler → sscore
-als wint(sbord, sspeler) dan
-	sscore = 1
-anders
-	als wint(sbord, 3-sspeler) dan
-		sscore = -1
+	als wint2(sbord) dan
+		sscore = 1
 	anders
-		sscore = willekeurig(-.1,.1)
-	eind	
+		als wint1(sbord) dan
+			sscore = -1
+		anders
+			sscore = willekeurig(0,.001)
+		eind	
+	eind
 eind
 
 
-; muis selectie
-modx  = ⌊(muis.x-30) / 15⌋
-snapx = klem(modx, 0, 6)
-selx  = 30 + snapx · 15 + 7.5
+
+;;;;;;;;;;;;;;;;;;;;  TEKENEN  ;;;;;;;;;;;;;;;;;;;;
+
+xmod  = ⌊(muis.x-30) / 15⌋
+xsnap = klem(xmod, 0, 6)
+xdraw  = 30 + xsnap · 15 + 7.5
 
 ; teken
-blauwbord = rechthoek(29,0,135,90) verf kleur.blauw
-selectie  = cirkel(selx, 95, 3) verf (palet(2 - kleur))
+blauwbord = rechthoek(29,0,135,90)   verf kleur.blauw
+selectie  = cirkel(xdraw, 95, 3)     verf (palet(2 - kleur))
 stuk      = cirkel(x·15+37,y·15+7,7) verf ckleur
 stukken   = (0..7 × 0..6) map (x,y → stuk)
 
 statuslabel = label(0,90,status)
-infolabel1  = label(0,80,"bestezet(2) = " ‖ tekst(bestezet(bord,2)))
-infolabel2  = label(0,70,"wint(1) = "     ‖ tekst(wint(bord,1)))
+infolabel1  = label(0,80,"wint(1) = " ‖ tekst(wint1(bord)))
+infolabel2  = label(0,75,"wint(2) = " ‖ tekst(wint2(bord)))
+infolabel3  = label(0,70,"scores  = " ‖ tekst(scores))
 
-uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2])
+uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2, infolabel3])
+
 
 
 

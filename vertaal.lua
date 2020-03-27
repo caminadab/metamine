@@ -28,11 +28,16 @@ function vertaal(code, isdebug)
 	local naam = naam or '?'
 	local maakvar = maakvars()
 
+	local prev = socket.gettime()
 	local asb,syntaxfouten,map = ontleed(code)
 	--local scoped = scope(asb)
 	if type(asb) ~= 'table' then
 		return nil, { syntaxfout(nergens, "rommel"); }
 	end
+	local delta = socket.gettime() - prev
+	local ms = math.floor(delta * 1000)
+	print('ontleed\t' ..ms..' ms')
+	local prev = socket.gettime()
 
 	-- vertaal
 	local asb = vertolk(asb)
@@ -43,11 +48,21 @@ function vertaal(code, isdebug)
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
 
+	local delta = socket.gettime() - prev
+	local ms = math.floor(delta * 1000)
+	print('typeer\t' ..ms..' ms')
+	local prev = socket.gettime()
+
 	-- vectoriseer
 	local asb = vectoriseer(asb, types)
 
 	local exp,oplosfouten,varmap = oplos(asb, "main", isdebug)
 	
+	local delta = socket.gettime() - prev
+	local ms = math.floor(delta * 1000)
+	print('oplos\t' ..ms..' ms')
+	local prev = socket.gettime()
+
 	if #oplosfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
 	end
@@ -63,6 +78,11 @@ function vertaal(code, isdebug)
 		
 	-- cachemap: exp → cacheindex
 	local app,cachemap = codegen(exp, moes2naam)
+
+	local delta = socket.gettime() - prev
+	local ms = math.floor(delta * 1000)
+	print('codegen\t' ..ms..' ms')
+	local prev = socket.gettime()
 
 	local naam2cache = {}
 	for exp,index in pairs(cachemap) do

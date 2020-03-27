@@ -69,7 +69,7 @@ int main ()
     switch (e->response_type & ~0x80) {
     case XCB_EXPOSE:
       xcb_poly_rectangle (c, win, foreground, 1, rectangles);
-      xcb_image_text_8 (c, string_len, win, background, 20, 20, string);
+      xcb_image_text_8 (c, string_len, win, background, 40, 40, string);
       xcb_flush (c);
       break;
     case XCB_KEY_PRESS:

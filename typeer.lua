@@ -160,8 +160,20 @@ end
 			local geengetalA = atoom(types[A]) ~= 'int' and atoom(types[A]) ~= 'getal'
 			local geengetalB = atoom(types[B]) ~= 'int' and atoom(types[B]) ~= 'getal'
 
+			local ismatA = atoom(arg0(types[A])) == 'nat' and atoom(arg0(arg1(types[A]))) == 'nat'
+			local ismatB = atoom(arg0(types[B])) == 'nat' and atoom(arg0(arg1(types[B]))) == 'nat'
+
+			-- matvec, matmat
+			if geengetalB then
+				types[moes(exp)] = types[B]
+				print('MATVEC/MAT', combineer(types[moes(exp)]))
+
+			-- mat1
+			elseif ismatA then
+				types[moes(exp)] = types[A]
+
 			-- dot
-			if fn(exp) == '·' and geengetalA and geengetalB then
+			elseif fn(exp) == '·' and geengetalA and geengetalB then
 				types[moes(exp)] = X'getal'
 			elseif types[A] and geengetalA then
 				types[moes(exp)] = types[A]

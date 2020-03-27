@@ -41,6 +41,7 @@ tekst: iets → lijst(letter)
 ;model: lijst(getal), lijst(getal) → iets
 
 setcontext: functie
+xdraai: getal → (nat → (nat → getal))
 
 ;verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
@@ -48,7 +49,7 @@ rgb: (getal, getal, getal) → kleur
 ;vierkant: (ℝ,ℝ),ℝ → vorm
 ;cirkel: (ℝ,ℝ),ℝ → vorm
 ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
-boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
+;boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 ;rechthoek: (ℝ,ℝ),(ℝ,ℝ) → vorm
 ;lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
 ;label: (ℝ,ℝ), lijst(letter) → vorm

@@ -243,7 +243,21 @@ function bieb()
 
 	-- wiskunde
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
-	max = function(args) return math.max(args[1], args[2]) end,
+	max = function(args) return math.max(table.unpack(args)) end,
+	maxindex = function(args)
+		if #args == 0 then
+			return nil
+		end
+		local maxi = 1
+		local max = args[1]
+		for i = 1, #args do
+			if args[i] > max then
+				maxi = i
+			end
+		end
+		return maxi
+	end;
+		
 	min = function(args) return math.min(args[1], args[2]) end,
 	int = math.floor,
 	abs = math.abs,

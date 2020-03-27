@@ -38,6 +38,7 @@ local web = lees('bieb/std.code')
 -- 
 -- de "fout" als los interpretabel object
 function vt(code, isdebug)
+	assert(code)
 
 	code = code .. '\n' .. web
 
@@ -136,8 +137,11 @@ function serveer(sock)
 		local isdebug = pad == '/vt/debug'
 		--print('DEBUG', isdebug)
 		local internefout
-		local ok,j = xpcall(vt, debug.traceback, inn, isdebug)
+		local vtuit
+		local vtinn = function() vtuit = vt(inn, isdebug) end
+		local ok = xpcall(vtinn, debug.traceback)
 		if not ok then internefout = j end
+		j = vtuit
 
 		if not ok then
 			print(internefout)

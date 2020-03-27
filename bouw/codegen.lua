@@ -41,7 +41,7 @@ local binop  = set(
 	'∪','∩',':','∈','\\',
 	'_f','_f2','_t','_l','^f',
 	'+v', '+v1', '·v', '·v1', '/v1',
-	'+m', '+m1', '·m1'
+	'+m', '+m1', '·m1', '·mv', '·m'
 )
 
 -- exps worden gecachet (voor debugging)

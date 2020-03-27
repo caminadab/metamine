@@ -52,7 +52,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'map', "zip", 'vouw', 'filter',
 		'sin', "cos", "tan", 'atan',
 		'abs', 'mod',
-		'max', 'min', 'klem',
+		'max', 'min', 'klem', 'maxindex',
 
 
 		// engels
