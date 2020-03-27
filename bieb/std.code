@@ -55,15 +55,15 @@ looptijd = nu - starttijd
 starttijd := nu
 
 ; transformatie
-transform.verplaats = Tv → [[1,0,0,0],[0,1,0,0],[0,0,1,0],[Tv₀,Tv₁,Tv₂,1]]
-transform.schaal = Tx,Ty,Tz → [[Tx,0,0,0],[0,Ty,0,0],[0,0,Tz,0],[0,0,0,1]]
+verplaats = Tvx,Tvy,Tvz → [[1,0,0,0],[0,1,0,0],[0,0,1,0],[Tvx,Tvy,Tvz,1]]
+schaal = Tx,Ty,Tz → [[Tx,0,0,0],[0,Ty,0,0],[0,0,Tz,0],[0,0,0,1]]
 
 ; [a b 0]  [a 0 b]  [1 0 0]
 ; [c d 0]  [0 1 0]  [0 a b]
 ; [0 0 1]  [c 0 d]  [0 c d]
 xdraai = Tdx → [[1,0,0,0], [0, cos Tdx, sin Tdx, 0], [0, -sin Tdx, cos Tdx, 0], [0,0,0,1]]
 ydraai = Tdy → [[cos Tdy, 0, sin Tdy, 0], [0,1,0,0], [-sin Tdy, 0, cos Tdy, 0], [0,0,0,1]]
-zdraai = Tdz → [[cos Tdz, sin Tdz, 0, 0], [-sin Tdz, cos Tdz, 0, 0), [0,0,1,0], [0,0,0,1]]
+zdraai = Tdz → [[cos Tdz, sin Tdz, 0, 0], [-sin Tdz, cos Tdz, 0, 0], [0,0,1,0], [0,0,0,1]]
 
 ; scherm
 ;scherm.frequentie = ?

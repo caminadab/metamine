@@ -153,6 +153,24 @@ end
 		elseif fn(exp) == '-' then
 			types[moes(exp)] = types[moes(arg(exp))]
 
+		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'map' then
+			-- lijst
+			local A = moes(arg1(exp)[1])
+			-- functie
+			local B = moes(arg1(exp)[2])
+
+			local lijsttype = arg1(types[A]) or X'iets'
+			local uittype = X'iets'
+
+			moetzijn(types[A], X('→', 'nat', lijsttype), exp)
+			moetzijn(types[B], X('→', lijsttype, uittype), exp)
+
+			--moetzijn(lijsttype, arg1(types[B]))
+
+			local type = typegraaf:maaktype(X('→', 'nat', arg1(types[B])))
+			types[moes(exp)] = type
+			--print('maptype', combineer(types[B]))
+
 		-- plus
 		elseif fn(exp) == '+' or fn(exp) == '·' or fn(exp) == '/' then
 			local A = moes(arg0(exp))

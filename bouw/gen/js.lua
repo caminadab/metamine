@@ -245,7 +245,7 @@ local noops = {
 				r = args[2] * SCHAAL;
 			}
 			c.beginPath();
-			c.arc(x, y, r, 0, Math.PI * 2);
+			c.arc(x, y, Math.max(r,0), 0, Math.PI * 2);
 			c.fill();
 			return c;
 		});
@@ -343,7 +343,7 @@ var h = $1[0].length;
 for (var y = 0; y < h; y++) {
 	vec[y] = 0;
 	for (var x = 0; x < w; x++) {
-		vec[y] += $1[x][y] * $2[y];
+		vec[y] += $1[y][x] * $2[x];
 	}
 }
 $1 = vec;]],

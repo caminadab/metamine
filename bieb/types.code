@@ -42,6 +42,10 @@ tekst: iets → lijst(letter)
 
 setcontext: functie
 xdraai: getal → (nat → (nat → getal))
+ydraai: getal → (nat → (nat → getal))
+zdraai: getal → (nat → (nat → getal))
+verplaats: getal,getal,getal → (nat → (nat → getal))
+schaal: getal,getal,getal → (nat → (nat → getal))
 
 ;verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
