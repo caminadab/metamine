@@ -67,6 +67,24 @@ function vertaal(code, isdebug)
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
 	end
 
+	-- optimiseer
+	if not opt or not opt['0'] then
+		exp = optimiseer(exp)
+
+		local delta = socket.gettime() - prev
+		local ms = math.floor(delta * 1000)
+		print('optimiseer\t' ..ms..' ms')
+		local prev = socket.gettime()
+	end
+
+	-- opgelost
+	if verbozeWaarde then
+		print('=== WAARDE ===')
+		print(unlisp(exp))
+		print()
+	end
+
+
 	local moes2naam = {}
 
 	if isdebug then

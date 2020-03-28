@@ -64,7 +64,8 @@ als muis.klik.begin en aanzet dan
 	bord := doezet(bord, xsnap, 1)
 	status := "denken..."
 	aanzet := nee
-	nadenktot := nu + 0.3
+	nadenktot := nu + 0.1
+	prev := nu
 eind
 
 
@@ -72,12 +73,15 @@ eind
 klaar := nee
 nadenktot := nu
 bz := 0
+prev := nu
+denktijd := 0
 
 als ¬ aanzet en nu > nadenktot dan
 	;scores := bscores
 	bord := doezet(bord, bestezet(bord,2), 2)
 	status := "aan zet"
 	aanzet := ja
+	denktijd := ⌊(nu - prev) · 1000⌋
 	;scores := (0..7 × 0..7) map (I0,J0 → score(Bbord1)) 
 eind
 
@@ -141,11 +145,14 @@ stuk      = cirkel(x·15+37,y·15+7,7) verf ckleur
 stukken   = (0..7 × 0..6) map (x,y → stuk)
 
 statuslabel = label(0,90,status)
-infolabel1  = label(0,80,"wint(1) = " ‖ tekst(wint1(bord)))
-infolabel2  = label(0,75,"wint(2) = " ‖ tekst(wint2(bord)))
-infolabel3  = label(0,70,"scores  = " ‖ tekst(scores))
+infolabel1  = label(0,80,"wint(1)   = " ‖ tekst(wint1(bord)))
+infolabel2  = label(0,75,"wint(2)   = " ‖ tekst(wint2(bord)))
+infolabel3  = label(0,70,"scores    = " ‖ tekst(scores))
+infolabel4  = label(0,65,"denktijd  = " ‖ tekst(denktijd))
 
-uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2, infolabel3])
+uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2, infolabel3, infolabel4])
+
+
 
 
 

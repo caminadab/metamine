@@ -1,0 +1,73 @@
+; demo
+fase = ⌊ looptijd·2 ⌋
+fasetijd = (looptijd·2) mod 1
+;fase = ⌊ muis.x / 100 · 5 ⌋
+;fasetijd = (muis.x / 100 · 5) mod 1
+
+als fase = 0 dan
+	uit = teken [ vierkant(0,0,9) ]
+eind
+
+x1 = 0..(fasetijd·18)·10
+
+als fase = 1 dan
+	uit = teken ( (x1 × [0] × [9]) map vierkant)
+eind
+
+x2 = 0..18·10
+y2 = 10·(0..(fasetijd·10))
+
+als fase = 2 dan
+	uit = teken ( (x2 × y2 × [9]) map vierkant)
+eind
+
+y3 = 0..10·10
+
+als fase = 3 dan
+	uit = teken ( (x2 × y3 × [9]) map vierkant)
+eind
+
+;als fase ≥ 5 dan
+	;uit = teken ( (x2 × y3 × [9]) filter isaan map vierkant)
+;eind
+
+
+; wegschalen
+uitschaal = (x,y),z → [x,y,z] · (1 - fasetijd · 0.9)
+als fase = 4 dan
+	uit = teken ( (x2 × y3 × [9+fasetijd]) map uitschaal map vierkant)
+eind
+
+dx = ix - 80
+dy = iy - 50
+dst = (dx²+dy²)/4
+isaan = (ix,iy),iz → ((fasetijd·100 - dst + 3000) mod 50) < 10 / fasetijd
+
+
+; klein infaden
+als fase = 5 dan
+	uit = teken ( (0..18 × 0..10 × [1.1]) filter isaan map vierkant)
+eind
+
+dx1 = ix1 - 80
+dy1 = iy1 - 50
+dst1 = (dx1²+dy1²)/4
+isaan2 = (ix1,iy1),iz1 → ((fasetijd·100 - dst1 + 3000) mod 50) < 10
+
+; klein opschalen
+als fase = 6 dan
+	uit = teken ( (0..(18+18·fasetijd·9) × 0..(10+10·fasetijd·10) × [1.1]) filter isaan2 map vierkant)
+eind
+
+; klaar
+als fase ≥ 7 dan
+	uit = teken ( (0..180 × 0..100 × [1.1]) filter isaan2 map vierkant)
+eind
+
+
+
+
+
+
+
+

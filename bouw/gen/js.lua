@@ -18,21 +18,49 @@ local unops = {
 	['derdemachtswortel'] = 'Math.pow($1,1/3)',
 }
 
-local fnops = {
-	['fn.nul'] = '$1(0)',
-	['fn.een'] = '$1(1)',
-	['fn.twee'] = '$1(2)',
-	['fn.drie'] = '$1(3)',
-
-	['l.eerste'] = '$1[0]',
-	['l.tweede'] = '$1[1]',
-	['l.derde'] = '$1[2]',
-	['l.vierde'] = '$1[3]',
-}
-
 local noops = {
+	['fn.nul'] = 'x => x(0)',
+	['fn.een'] = 'x => x(1)',
+	['fn.twee'] = 'x => x(2)',
+	['fn.drie'] = 'x => x(3)',
+
+	['l.eerste'] = 'x => x[0]',
+	['l.tweede'] = 'x => x[1]',
+	['l.derde'] = 'x => x[2]',
+	['l.vierde'] = 'x => x[3]',
+
+	['componeer'] = 'args => (x => { var res = x; for (var i = 0; i < args.length; i++) { res = args[i](res); }; return res; })',
+
 	['niets'] = 'null',
 	['omdraai'] = 'x => typeof(x) == "string" ? x.split("").reverse().join("") : x.reverse()',
+	['klok'] = 'x => { var begin = new Date().getTime(); x(); var eind = new Date().getTime(); return eind - begin; }',
+	['voor'] = [[x => {
+  var max = x[0];
+  var start = x[1];
+  var map = x[2];
+  var reduce = x[3];
+  var val = start;
+  for (var i = 0; i < max; i++) {
+		var w = map(i); //Array.isArray(map) ? map[i] : map(i);
+    val = reduce([val, w]);
+	}
+	return val;
+}
+
+]],
+
+	['lvoor'] = [[x => {
+  var max = x[0];
+  var start = x[1];
+  var map = x[2];
+  var reduce = x[3];
+  var val = [];
+  for (var i = 0; i < max; i++) {
+		var w = map(i);
+		val[i] = w;
+	}
+	return val;
+}]],
 
 	-- niet goed
 	['misschien'] = 'Math.random() < 0.5',
@@ -287,8 +315,8 @@ local noops = {
 
 	['fn.id'] = 'x => x',
 	['fn.constant'] = 'function() return $1 end',
-	['fn.merge'] = '{$1(x),$2(x)}',
-	['fn.plus'] = 'function(x) return function(y) return x + y end end',
+	['fn.merge'] = 'fns => (x => fns.map(fn => fn(x)))',
+	['fn.plus'] = 'x => y => x + y',
 	['-'] = 'function(x) return -x end',
 	['log10'] = 'math.log10',
 	['⊤'] = 'true',
@@ -347,6 +375,31 @@ for (var y = 0; y < h; y++) {
 	}
 }
 $1 = vec;]],
+
+	['..'] = [[
+if ($1 == $2) {
+	$1 = [];
+} else {
+	if ($1 <= $2) {
+		var res = [];
+		for (var i = 0; i < $2 - $1; i++)
+			res[i] = $1+i;
+		$1 = res;
+	} else {
+		var res = [];
+		for (var i = $1; i > $2 - $1; i--)
+			res[i] = $1+i;
+		$1 = res;
+	}
+} ]],
+	['×'] = [[
+var r = [];
+for (var i = 0; i < $1.length; i++) {
+	for (var j = 0; j < $2.length; j++) {
+		r.push([$1[i],$2[j] ]);
+	}
+}
+$1 = r; ]],
 }
 
 local binops = {
@@ -374,8 +427,7 @@ local binops = {
 	['·'] = '$1 * $2',
 	['/'] = '$1 / $2',
 	['^'] = '$1 ^ $2',
-	['×'] = '(ab => { var r = []; for (var i = 0; i < $1.length; i++) { for (var j = 0; j < $2.length; j++) { r.push([$1[i],$2[j]]); }} ; return r;})()',
-	['..'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
+	['..2'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
 
 	['^'] = 'Math.pow($1, $2)',
 	['^f'] = [[(function (f,n) {

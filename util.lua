@@ -59,7 +59,7 @@ function lenc(t)
 	elseif t == false then
 		return 'nee'
 	elseif type(t) == 'function' then
-		return 'functie'
+		return tostring(t):sub(13)--'FUNC'..tostring(t):sub(13+4) --string.dump(t) --'functie'
 	elseif type(t) == 'string' then
 		return string.format('%q', t)
 	elseif type(t) == 'table' then

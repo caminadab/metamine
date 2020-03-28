@@ -631,11 +631,6 @@ function oplos(exp, voor, isdebug)
 		varmap[van] = naar
 	end
 
-	-- optimiseer
-	if opt and opt['0'] then
-		val = optimiseer(val)
-	end
-
 	-- check args
 	-- args: set
 	local al = {}
@@ -668,13 +663,6 @@ function oplos(exp, voor, isdebug)
 	check(val, {})
 	if #fouten > 0 then
 		return nil, fouten, varmap
-	end
-
-	-- opgelost
-	if verbozeWaarde then
-		print('=== WAARDE ===')
-		print(unlisp(val))
-		print()
 	end
 
 	return val,{},varmap

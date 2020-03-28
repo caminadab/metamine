@@ -139,7 +139,7 @@ function serveer(sock)
 		local internefout
 		local vtuit
 		local vtinn = function() vtuit = vt(inn, isdebug) end
-		local ok = xpcall(vtinn, debug.traceback)
+		local ok,j = xpcall(vtinn, debug.traceback)
 		if not ok then internefout = j end
 		j = vtuit
 

@@ -44,12 +44,13 @@ function bieb()
 	['gl.FragmentShader'] = true,
 
 	-- functioneel
+	['fn.plus'] = function(x) return function(y) return x + y end end; -- fn.plus(3) = x -> x + 3
 	['fn.inc'] = function(x) return x + 1 end;
 	['fn.dec'] = function(x) return x - 1 end;
-	['fn.eerste'] = function(x) return x[1] end;
-	['fn.tweede'] = function(x) return x[2] end;
-	['fn.derde'] = function(x) return x[3] end;
-	['fn.vierde'] = function(x) return x[4] end;
+	['l.eerste'] = function(x) return x[1] end;
+	['l.tweede'] = function(x) return x[2] end;
+	['l.derde'] = function(x) return x[3] end;
+	['l.vierde'] = function(x) return x[4] end;
 	['fn.merge'] = function(fns)
 		return function(x)
 			local r = {}
@@ -57,7 +58,7 @@ function bieb()
 				if type(fn) == 'function' then
 					r[i] = fn(x)
 				else
-					r[i] = fn
+					r[i] = fn[x+1]
 				end
 			end
 			return r
@@ -364,6 +365,7 @@ function bieb()
 	end;
 
 	-- componeer
+	['componeer'] = function () error('TODO') end,
 	['∘'] = function(fns)
 		return function(x)
 			for i, fn in ipairs(fns) do
@@ -473,7 +475,34 @@ function bieb()
 		return r
 	end;
 
+	['klok'] = function(f)
+		local voor = socket.gettime()
+		f()
+		local na = socket.gettime()
+		local dt = math.floor((na - voor) * 1000)
+		return dt
+	end;
+
 	-- linq
+
+	['voor'] = function(a)
+		local max,start,map,reduce = a[1],a[2],a[3],a[4]
+		local val = start
+		for i=0,max-1 do
+			val = reduce({val,map(i)})
+		end
+		return val
+	end;
+
+	['lvoor'] = function(a)
+		local max,start,map = a[1],a[2],a[3],a[4]
+		local val = {}
+		for i=0,max-1 do
+			val[i] = map(i)
+		end
+		return val
+	end;
+
 	['omdraai'] = function(a)
 		local r = {}
 		for i=#a,1,-1 do

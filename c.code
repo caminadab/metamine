@@ -1,5 +1,1 @@
-xdraai = tdx → [[1,0,0,0], [0, cos tdx, sin tdx, 0], [0, -sin tdx, cos tdx, 0], [0,0,0,1]]
-
-mat = xdraai(1) ;[[1,0],[0,1]]
-vec = [1,2,3,4]
-main = mat · vec
+main = Σ (0..1000000) zip (0..1000000) map (+)

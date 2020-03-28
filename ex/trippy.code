@@ -1,0 +1,22 @@
+; concentric circles
+w = scherm.breedte
+h = scherm.hoogte
+pos = 0..w × 0..h ; every blockpositions
+
+
+; circlepattern
+f = 20 + 10 · sin(runtime)
+dx = x - 80
+dy = y - 50
+dst = (dx²+dy²)/4
+
+; is the block on (x,y) on?
+isblock = (x,y) → (-dst + runtime·100) mod 50 < 10
+blocks = pos filter isblock
+
+shape = square(a,b,1)
+disco = shape ;paint(shape, color)
+color = rgb(a/100,b/100,sin(runtime)/2+0.5)
+squares = blocks map ((a,b) → disco)
+out = draw squares
+

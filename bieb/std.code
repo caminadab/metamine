@@ -28,7 +28,8 @@ eind
 ; canvas
 canvas.wis = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), kleur.zwart)
 
-teken = Vormen1 → setcontext(canvas.wis ∘ (([fn.id] || Vormen1) vouw (∘)) )
+;teken = Vormen1 → setcontext(canvas.wis ∘ (([fn.id] || Vormen1) vouw (∘)) )
+teken = Vormen1 → setcontext(canvas.wis ∘ (componeer Vormen1))
 render = Vormen2 → setcontext3d(([fn.id] || Vormen2) vouw (∘))
 fn.id = Fix → Fix
 

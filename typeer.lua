@@ -184,7 +184,7 @@ end
 			-- matvec, matmat
 			if geengetalB then
 				types[moes(exp)] = types[B]
-				print('MATVEC/MAT', combineer(types[moes(exp)]))
+				--print('MATVEC/MAT', combineer(types[moes(exp)]))
 
 			-- mat1
 			elseif ismatA then

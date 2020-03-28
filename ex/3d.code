@@ -1,31 +1,14 @@
-; 3d
+C = verplaats(muis.x/100,looptijd,0)
+
+
+mat = C
+n = 5
+vecs = (0..n × 0..n) map (I,J → [I,0,J,1])
+
 hw = scherm.breedte/2
-punten0 = [40,60] × [40,60] × [40,60]
-punten = punten0 map ((X,Y),Z → X,Y,Z,1)
+zknijp = [x,y,z,w] → [(x-0.8)/(z/2) + 0.8, (y-0.5)/(z/2) + 0.5, .3/z, 1] · 100
 
-spunten = punten map (punt → mat mat4.vmul punt) map (x,y,z,w → (x-hw)/(z/100)+hw,(y-50)/(z/100)+50)
+data = vecs map (vec → zknijp(mat · vec))
+uit = teken ((data map cirkel) zip (data map kleur) map verf)
 
-mat = (verplaats(px,py,pz)); mat4.mul (xdraai looptijd) ;(verplaats(90,50,0)) mat4.mul (ydraai looptijd) ;mat4.id
-
-px := 0
-py := 0
-pz := 0
-
-als toets.w en scherm.ververst dan
-	pz := pz - 1
-eind
-als toets.s en scherm.ververst dan
-	pz := pz + 1
-eind
-als toets.d en scherm.ververst dan
-	px := px - 1
-eind
-als toets.a en scherm.ververst dan
-	px := px + 1
-eind
-
-;uit = teken ((spunten × [3]) map cirkel)
-b = spunten tot 4
-c = spunten vanaf 4
-uit = teken [verf(lijn(b),kleur.geel), verf(lijn(c),kleur.groen), label(0,0,tekst(b)),label(0,10,tekst(c))]
-
+kleur = [kx,ky,kz,kw] → rgb(kx/scherm.breedte,ky/100,kz/100)

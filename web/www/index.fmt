@@ -369,6 +369,7 @@
 				} catch (e) {
 					onerror();
 					uit.innerHTML = e;
+					console.trace();
 				}
 			})
 	}
