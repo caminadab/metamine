@@ -11,6 +11,10 @@ fotos.gras = in.fotos₀
 fotos.muur = in.fotos₁
 fotos.dodo = in.fotos₂
 
+; linq helpers
+maxindex = Ml → ((0..#Ml) zip Ml vouw Mfunc)₀
+Mfunc = ((Ma,Mb),(Mc,Md) → kies((Mb > Md), (Ma,Mb), (Mc,Md)))
+
 ; toetsenbord
 toetsen := {}
 toets.aan = toets → (toets ∈ toetsen)

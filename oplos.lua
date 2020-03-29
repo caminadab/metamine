@@ -18,7 +18,10 @@ function oplos(exp, voor, isdebug)
 
 	assert(fn(exp) == "⋀")
 
-	local eqs = set(table.unpack(exp.a))
+	local eqs = {}
+	for i,v in ipairs(exp.a) do
+		eqs[v] = true
+	end
 
 	local args = {}
 	local function invoer(val)

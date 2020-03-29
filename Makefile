@@ -18,6 +18,10 @@ webdemos: web/www/ex/
 	./tolk ex/paint.code web/www/ex/paint.en.code
 	./tolk ex/paint2.code web/www/ex/paint2.en.code
 	./tolk ex/grafiek.code web/www/ex/grafiek.en.code
+	./tolk ex/demo.code web/www/ex/demo.en.code
+	./tolk ex/leip.code web/www/ex/leip.en.code
+	./tolk ex/oog.code web/www/ex/oog.en.code
+	./tolk ex/schaken.code web/www/ex/schaken.en.code
 	./tolk ex/voer.code web/www/ex/voer.en.code
 	./tolk ex/pe1.code web/www/ex/pe1.en.code
 	./tolk ex/pe2.code web/www/ex/pe2.en.code

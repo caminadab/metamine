@@ -65,7 +65,7 @@ als muis.klik.begin en aanzet dan
 	status := "denken..."
 	aanzet := nee
 	nadenktot := nu + 0.1
-	prev := nu
+	prev := nu + 0.1
 eind
 
 
@@ -81,7 +81,7 @@ als ¬ aanzet en nu > nadenktot dan
 	bord := doezet(bord, bestezet(bord,2), 2)
 	status := "aan zet"
 	aanzet := ja
-	denktijd := ⌊(nu - prev) · 1000⌋
+	denktijd := klok(X → bestezet(bord,2))
 	;scores := (0..7 × 0..7) map (I0,J0 → score(Bbord1)) 
 eind
 
@@ -95,14 +95,17 @@ scores := []
 
 ; beste zet berekenen
 bestezet = bbord,bspeler → bzet
-;bscores = (0..7 × 0..7 × 0..7 × 0..7) map (((I,J),K),L → score(bbord3))
-bscores = (0..7 × 0..7 × 0..7) map (((I,J),K) → score(bbord3))
+bscores = (0..7 × 0..7 × 0..7 × 0..7) map (((I,J),K),L → score(bbord4))
+;bscores = (0..7 × 0..7 × 0..7) map (((I,J),K) → score(bbord3))
 ;bscores = (0..7 × 0..7) map (I,J → score(bbord1))
 ;bscores = (0..7) map (I → score(bbord0))
 
 ;bzet = ⌊(maxindex (bscores)) / 7²⌋
-bzet = (maxindex (bscores)) mod 7
+bzet = (maxindex2 (bscores)) mod 7
 ;bzet = maxindex bscores
+
+maxfunc = (i0,v0),(i1,v1) → kies((v0 < v1), (i0,v0), (i1,v1))
+maxindex2 = lijst → (0..#lijst) zip lijst vouw maxfunc
 
 bbord1 = doezet(bbord,I,2)
 bbord2 = doezet(doezet(bbord,I,2),J,1)
@@ -151,6 +154,7 @@ infolabel3  = label(0,70,"scores    = " ‖ tekst(scores))
 infolabel4  = label(0,65,"denktijd  = " ‖ tekst(denktijd))
 
 uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2, infolabel3, infolabel4])
+
 
 
 

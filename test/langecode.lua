@@ -1,3 +1,7 @@
+require 'vertaal'
+require 'doe'
+socket = require 'socket'
+
 function langecode(maxlen)
 	local len = 0
 	local bron = {}
@@ -20,3 +24,12 @@ function langecode(maxlen)
 	len = len + #bron[#bron]
 	return lang, #bron
 end
+
+-- 10 kb
+local code = langecode(10000)
+
+local voor = socket.gettime()
+uit = vertaal(code)
+local na = socket.gettime()
+local ms = math.floor((na - voor) * 1000)
+print('10 kB vertalen duurde '..ms..' ms')

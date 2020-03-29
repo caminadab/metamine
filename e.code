@@ -1,1 +1,1 @@
-main = Σ (0..10)
+main = maxindex[4,3,2,1]

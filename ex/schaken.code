@@ -1,6 +1,6 @@
 ; bord
 vakdata    = 0..8·10 × 0..8·10 × [10]
-kleurpalet = [rgb(.3,.2,.1), kleur.bruin]
+kleurpalet = [rgb(.3,.2,.1), rgb(.4,.3,.1)]
 
 indices      = (0..8 × 0..8) map (+)
 kleurindices = indices map (x → x mod 2)
@@ -16,28 +16,38 @@ sel = (vierkant(selpos·10,10)) verf (rgb(.1,.6,0))
 muis.schaakpos = ⌊muis.x/10⌋,⌊muis.y/10⌋
 
 selpos := (-1,-1)
-als muis.klik.begin dan
- selpos := muis.schaakpos
+als muis.klik.begin en selpos = (-1,-1) dan
+	selpos := muis.schaakpos
 eind
 
-als muis.klik.begin dan
- stukken := [(pion,(0,3))] ‖ (stukken vanaf 1)
+als muis.klik.begin en selpos ≠ (-1,-1) dan
+	bord := doezet(bord, selpos, muis.schaakpos)
+	selpos := (-1,-1)
 eind
 
+doezet = Bord → Bord ;Bord,
 
-pion = 0
-paard = 1
-loper = 2
-toren = 3
-dame = 4
-heer = 5
+als muis.klik.begin dan
+ ;stukken := [(pion,(0,3))] ‖ (stukken vanaf 1)
+eind
+
+pion,paard,loper,toren,dame,heer = 1,2,3,4,5,6
+zwart = 10
+
 
 ; [(type,pos)]
-achter = [toren, paard, loper, dame, heer, loper, paard, toren]
-startstukken = [pion] × (0..8 × [1]) ‖ ((0..8) map (i → (achter(i), (i,0))) )
-stukken := startstukken
-symbolen = ["♟","♞","♝","♜","♛","♚"]
-symbolen1 = ["♙","♘","♗","♖","♕","♔"]
-stuklabel = ptype,ppos → verf(canvas.fontsize(label(ppos·10, symbolen(ptype)), 10), kleur.wit)
+wit.achter = [toren, paard, loper, dame, heer, loper, paard, toren]
+wit.pionnen = (0..8) map (w → pion)
+wit.startstukken = wit.achter ‖ wit.pionnen
+zwart.achter = zwart + [toren, paard, loper, dame, heer, loper, paard, toren]
+zwart.pionnen = (0..8) map (w → zwart+pion)
+zwart.startstukken = zwart.pionnen ‖ zwart.achter
 
-uit =  teken(gekleurdevakjes ‖ [hover,sel] ‖ (stukken map stuklabel))
+bord := wit.startstukken ‖ (((0..8) × 2..6) map (x2,y2 → 0)) ‖ zwart.startstukken
+symbolen = ["","♟","♞","♝","♜","♛","♚","","","","","♙","♘","♗","♖","♕","♔"]
+stuklabel = ptype,(px,py) → verf(canvas.fontsize(label((px,py)·10, symbolen(ptype)), 10), kleur.wit)
+
+pos   = 0..8 × 0..8
+j = bord zip pos
+uit =  teken(gekleurdevakjes ‖ [hover,sel] ‖ (bord zip pos map stuklabel))
+

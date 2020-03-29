@@ -31,6 +31,7 @@ function bieb()
 	-- webgl
 	['alert'] = true,
 	['kubus'] = true,
+	['kies'] = true,
 	['gl.drawArrays'] = true,
 	['gl.drawTriangles'] = true,
 	['gl.clearColor'] = true,
@@ -245,7 +246,7 @@ function bieb()
 	-- wiskunde
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
 	max = function(args) return math.max(table.unpack(args)) end,
-	maxindex = function(args)
+	maxindexXXX = function(args)
 		if #args == 0 then
 			return nil
 		end
@@ -495,7 +496,7 @@ function bieb()
 	end;
 
 	['lvoor'] = function(a)
-		local max,start,map = a[1],a[2],a[3],a[4]
+		local max,map = a[1],a[2]
 		local val = {}
 		for i=0,max-1 do
 			val[i] = map(i)

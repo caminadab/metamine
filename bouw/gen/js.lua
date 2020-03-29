@@ -23,6 +23,9 @@ local noops = {
 	['fn.een'] = 'x => x(1)',
 	['fn.twee'] = 'x => x(2)',
 	['fn.drie'] = 'x => x(3)',
+	
+	['fn.kruid'] = 'fx => y => (fx[0](fx[1], y))',
+	['fn.kruidL'] = 'fx => y => (fx[0](y, fx[1]))',
 
 	['l.eerste'] = 'x => x[0]',
 	['l.tweede'] = 'x => x[1]',
@@ -51,9 +54,7 @@ local noops = {
 
 	['lvoor'] = [[x => {
   var max = x[0];
-  var start = x[1];
-  var map = x[2];
-  var reduce = x[3];
+  var map = x[1];
   var val = [];
   for (var i = 0; i < max; i++) {
 		var w = map(i);
@@ -63,6 +64,7 @@ local noops = {
 }]],
 
 	-- niet goed
+	['kies'] = 'x => x[0] ? x[1] : x[2]',
 	['misschien'] = 'Math.random() < 0.5',
 	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
 	['newindex2'] = 'x => { var t = []; for (var i = 0; i< x[0].length; i++) { if (i == x[1]) t[i] = x[2]; else t[i] = x[0][i]; } return t; }',
@@ -96,7 +98,7 @@ local noops = {
 	-- discreet
 	['min'] = 'x => Math.min(x[0], x[1])',
 	['max'] = 'x => Math.max(x[0], x[1])',
-	['maxindex'] = [[x => {
+	['maxindexXXX'] = [[x => {
 		var maxi = null;
 		var max = - Infinity;
 		for (var i = 0; i < x.length; i++) {
@@ -392,10 +394,11 @@ if ($1 == $2) {
 		$1 = res;
 	}
 } ]],
+	-- cart
 	['×'] = [[
 var r = [];
-for (var i = 0; i < $1.length; i++) {
-	for (var j = 0; j < $2.length; j++) {
+for (var j = 0; j < $2.length; j++) {
+	for (var i = 0; i < $1.length; i++) {
 		r.push([$1[i],$2[j] ]);
 	}
 }

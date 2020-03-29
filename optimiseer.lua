@@ -89,10 +89,10 @@ local function sourcegen(exp)
 		local len = sourcelen(arg0(exp))
 		local mod = X('_f', 'mod', X(',', X('_arg', '888'), len))
 		local modplus = X('+', mod, sourcegen(arg0(exp)))
-		local div = X'0'--X('_f', 'afrond.onder', X('/', X('_arg', '888'), sourcelen(arg0(exp))))
+		local div = X('_f', 'afrond.onder', X('/', X('_arg', '888'), sourcelen(arg0(exp))))
 		return X('_fn', '888', X(',', div, mod))
 	end
-	error(unlisp(exp))
+	--error(unlisp(exp))
 	return X'fn.id'
 end
 
@@ -100,13 +100,24 @@ function optimiseer(exp)
 	--do return exp end
 	local num = 0
 	local function rec(exp) 
+
+		if false and  fn(exp) ==  '..' then
+			local len = sourcelen(exp)
+			local gen = sourcegen(exp)
+			local nexp = X('_f', 'lvoor', X(',', len, '0', gen))
+
+			--print('cool', combineer(nexp))
+			assign(exp, nexp)
+			num = num + 1
+		end
+
 		if false and fnaam(exp) ==  'map' then
 			local lijst,map = arg1(exp)[1], arg1(exp)[2]
 			local len = sourcelen(lijst)
 			local gen = sourcegen(lijst)
-			local nexp = X('_f', 'lvoor', X(',', len, '0', X('∘', gen, map), '+'))
+			local nexp = X('_f', 'lvoor', X(',', len, X('∘', gen, map)))
 
-			--print('cool', combineer(nexp))
+			--print('cool', combineer(map))
 			assign(exp, nexp)
 			num = num + 1
 		end
@@ -115,7 +126,6 @@ function optimiseer(exp)
 			local lijst,vouw = arg1(exp)[1], arg1(exp)[2]
 			local len = sourcelen(lijst)
 			local gen = sourcegen(lijst)
-			-- voor(len-1, gen(1), plus(1) ∘ gen, 
 
 			local max = X('+', len, '-1')
 			local start = X('_', gen, '0')
@@ -123,18 +133,11 @@ function optimiseer(exp)
 			local vouw = vouw
 
 			local nexp = X('_f', 'voor', X(',', max, start, map, vouw))
-			--print('cool', combineer(nexp))
-
-			assign(exp, nexp)
-			num = num + 1
-		end
-
-		if fnaam(exp) == 'maxindex' then
-			local len = sourcelen(arg(exp))
-			local gen = sourcegen(arg(exp))
-
-			local nexp = X('_f', 'voor', X(',', len, '0', gen, '+'))
-			--print('cool', combineer(nexp))
+			print('cool')
+			print('max', combineer(max))
+			print('start', combineer(start))
+			print('map', combineer(map))
+			print('vouw', combineer(vouw))
 
 			assign(exp, nexp)
 			num = num + 1
