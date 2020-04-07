@@ -27,7 +27,8 @@
 <div id="uit" tabIndex="2" >
 </div>
 
-<div style="height:5; display: inline;"><input id="debug" type="checkbox"></input> debug </div>
+<div style="height:5; display: inline;"><input id="debug" type="checkbox" onclick="debugChange()"></input> debug </div>
+<div style="height:5; display: inline;"><a href="/cataloog.html">Catalogus</a></div>
 
 <!-- grondstoffen -->
 <div class="res">
@@ -94,6 +95,12 @@
 	var fotos = [gras, muur, dodo];
 	var naam;
 
+	function debugChange() {
+		if (debug.checked) {
+			playfunc();
+		}
+	}
+
 	function toString(obj) {
 		if (typeof(obj) == "string") {
 			return obj;
@@ -102,11 +109,14 @@
 		} else if (obj == null) {
 			return 'niets';
 		} else if (Array.isArray(obj)) {
-			return "["+obj.map(toString)+"]";
+			var res = "";
+			var lang = false;
+			obj.forEach(x => {var tmp = toString(x); lang = tmp.length > 5; res += ","; if (lang) res += " "; res += tmp; });
+			return "[" + res.substr(1) + (lang?" ":"") + "]";
 		} else if (typeof(obj)=="object" && obj.has) {
 			return "{"+[...obj].toString()+"}";
 		} else if (typeof(obj) == "number") {
-			return (Math.floor(obj*1000) / 1000).toString();
+			return (Math.floor(obj*10) / 10).toString();
 		} else {
 			var j = JSON.stringify(obj);
 			if (j)
@@ -225,9 +235,6 @@
 					var muisKlikEind = false;
 					var vroeger = nu;
 					var dt = 0;
-
-							//uit.innerHTML = (typeof(uitvoer)=="string" && uitvoer ||  || JSON.stringify(uitvoer) || (!uitvoer && 'niets') || '<pre>'+uitvoer.toString()+'</pre>';
-
 
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
@@ -531,7 +538,8 @@
 		"@": "∘",
 	};
 	var bimagisch = {
-		"niet": "¬",
+		"NIET": "¬",
+		"!!": "¬",
 		"II": "∩",
 		"UU": "∪",
 		"IN": "∈",
@@ -548,7 +556,6 @@
 		"tau": "τ",
 		"som": "Σ",
 		"sqrt": "√",
-		"niet": "¬",
 		"->": "→",
 		"-->": "↦",
 		">=": "≥",

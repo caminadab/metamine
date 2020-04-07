@@ -75,14 +75,22 @@ function vectoriseer(asb, types)
 
 		if fn(exp) == '-' then
 			local type = types[moes(arg(exp))]
+			local isnum = atoom(type) == 'int' or atoom(type) == 'getal'
 			local isfunc = fn(type) == '→' or atoom(type) == 'functie'
 			local islijst = atoom(arg0(type)) == 'nat' or obj(type) == ','
 			local ismat = atoom(arg0(type)) == 'nat' and atoom(arg0(arg1(type))) == 'nat'
+
+			--local type = types[moes(arg(exp))]
+			--local isfunc = fn(type) == '→' or atoom(type) == 'functie'
+			--local islijst = atoom(arg0(type)) == 'nat' or obj(type) == ','
+			--local ismat = atoom(arg0(type)) == 'nat' and atoom(arg0(arg1(type))) == 'nat'
 
 			if islijst then
 				exp.f = X'-v'
 			elseif isfunc then
 				exp.f = X'-f'
+			else
+				exp.f = X'-'
 			end
 		end
 
@@ -147,7 +155,7 @@ function vectoriseer(asb, types)
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- vector
-			elseif islijstA and islijstB then exp.f = X'·v' 
+			elseif islijstA and islijstB then exp.f = X'·v' ; print('DOT')
 			elseif islijstA and isnumB then exp.f = X'·v1' 
 			elseif islijstB and isnumA then
 				exp.f = X'·v1' 

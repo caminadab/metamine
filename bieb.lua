@@ -65,6 +65,7 @@ function bieb()
 			return r
 		end
 	end;
+
 	['fn.dup'] = function(x)
 		return {x, x}
 	end;
@@ -173,7 +174,6 @@ function bieb()
 	['misschien'] = true,
 	['fout'] = true,
 	['verf'] = true,
-	['schaal'] = true,
 
 	rgb = true,
 

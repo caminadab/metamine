@@ -11,25 +11,31 @@ gekleurdevakjes = vakjes zip kleuren map verf
 
 
 ; selectie
-hover = (vierkant(muis.schaakpos·10,10)) verf (rgb(.7,.6,.1))
-sel = (vierkant(selpos·10,10)) verf (rgb(.1,.6,0))
-muis.schaakpos = ⌊muis.x/10⌋,⌊muis.y/10⌋
+hover = (vierkant(muis.schaakpos2·10,10)) verf (rgb(.7,.6,.1))
+sel = (vierkant(selpos · 10,10)) verf (rgb(.1,.6,0))
 
+muis.schaakpos2 = klem(⌊muis.x/10⌋,0,7), ⌊muis.y/10⌋
+muis.schaakpos = muis.schaakx, muis.schaaky
+muis.schaakindex = muis.schaakx + 8 · muis.schaaky
+
+muis.schaakx = klem(⌊muis.x/10⌋, 0, 7)
+muis.schaaky = klem(⌊muis.y/10⌋, 0, 7)
+
+selindex := -1
 selpos := (-1,-1)
-als muis.klik.begin en selpos = (-1,-1) dan
+
+als muis.klik.begin en selindex = -1 en (muis.schaakindex) ≠ 0 dan
+	selindex := muis.schaakindex
 	selpos := muis.schaakpos
 eind
 
-als muis.klik.begin en selpos ≠ (-1,-1) dan
-	bord := doezet(bord, selpos, muis.schaakpos)
+als muis.klik.begin en selindex ≠ -1 dan
+	bord := doezet(bord, selindex, muis.schaakindex)
+	selindex := -1
 	selpos := (-1,-1)
 eind
 
-doezet = Bord → Bord ;Bord,
-
-als muis.klik.begin dan
- ;stukken := [(pion,(0,3))] ‖ (stukken vanaf 1)
-eind
+doezet = Bord,PosA,PosB → newindex(newindex(Bord,PosB,Bord(PosA)),PosA,0) ;Bord,
 
 pion,paard,loper,toren,dame,heer = 1,2,3,4,5,6
 zwart = 10
@@ -39,15 +45,20 @@ zwart = 10
 wit.achter = [toren, paard, loper, dame, heer, loper, paard, toren]
 wit.pionnen = (0..8) map (w → pion)
 wit.startstukken = wit.achter ‖ wit.pionnen
-zwart.achter = zwart + [toren, paard, loper, dame, heer, loper, paard, toren]
+zwart.achter = zwart + wit.achter
 zwart.pionnen = (0..8) map (w → zwart+pion)
 zwart.startstukken = zwart.pionnen ‖ zwart.achter
 
-bord := wit.startstukken ‖ (((0..8) × 2..6) map (x2,y2 → 0)) ‖ zwart.startstukken
+stukposities := 0..16
+leegte = ((0..8) × 2..6) map (x2,y2 → 0)
+bord := wit.startstukken ‖ leegte  ‖ zwart.startstukken
 symbolen = ["","♟","♞","♝","♜","♛","♚","","","","","♙","♘","♗","♖","♕","♔"]
-stuklabel = ptype,(px,py) → verf(canvas.fontsize(label((px,py)·10, symbolen(ptype)), 10), kleur.wit)
 
-pos   = 0..8 × 0..8
-j = bord zip pos
+slabel = label((px,py)·10, symbolen(ptype))
+flabel = canvas.fontsize(slabel, 10)
+stuklabel = ptype,(px,py) → verf(flabel, kleur.wit)
+
+pos = 0..8 × 0..8
 uit =  teken(gekleurdevakjes ‖ [hover,sel] ‖ (bord zip pos map stuklabel))
+
 

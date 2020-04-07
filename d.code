@@ -1,3 +1,2 @@
-;main = Σ ((5..10) map (√))
-;main = Σ (3..10 × 3..10) map (+)
-main = Σ ((3..10) zip (3..10) map (+))
+plus = x,y → x + y
+main = plus(1,2), plus(3,4)

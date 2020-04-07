@@ -1,0 +1,25 @@
+; 3d poging 999
+punten = [20,80] × [20,80] × [20,80]
+qpunten = punten map ((x,y),z → [x,y,z,2])
+tpunten = qpunten map (qpunt → mat · qpunt)
+spunten = tpunten map ([tx,ty,tz,tw] → [(tx-80)/tw+80,(ty-50)/tw+50])
+
+d = zdraai looptijd
+x = verplaats(0,0,2)
+cam = d ;x · d
+
+z1 = (0.1+1000)/(1000-0.1)
+z2 = (2·0.1·1000)/(1000-0.1)
+proj = [[1,0,0,0],[0,1,0,0],[0,0,z1,-1],[0,0,z2,0]]
+
+mat = cam · proj
+
+indices1 = [ [0,1,3,2], [0,1,5,4], [0,4,6,2] ]
+indices2 = [ indices1₀+4, indices1₁+2, indices1₂+1]
+indices = omdraai(indices1 ‖ indices2)
+pdata = indices map (is → is map spunten)
+kleuren = [kleur.rood, kleur.groen, kleur.blauw, kleur.geel, kleur.paars, kleur.cyaan]
+
+polygonen = pdata map polygoon
+kpolygonen = polygonen zip kleuren map verf
+uit = teken kpolygonen

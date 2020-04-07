@@ -47,6 +47,8 @@ zdraai: getal → (nat → (nat → getal))
 verplaats: getal,getal,getal → (nat → (nat → getal))
 schaal: getal,getal,getal → (nat → (nat → getal))
 
+;teken: (nat → functie) → functie
+teken: lijst(functie) → functie
 ;verf: vorm, kleur → vorm
 rgb: (getal, getal, getal) → kleur
 

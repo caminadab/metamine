@@ -373,7 +373,7 @@ var h = $1[0].length;
 for (var y = 0; y < h; y++) {
 	vec[y] = 0;
 	for (var x = 0; x < w; x++) {
-		vec[y] += $1[y][x] * $2[x];
+		vec[y] += $1[x][y] * $2[x];
 	}
 }
 $1 = vec;]],
@@ -412,10 +412,11 @@ local binops = {
 	['∪'] = 'new Set([...$1, ...$2])',
 	['-s'] = 'new Set([...$1].filter(x => !$2.has(x)))',
 	['\\'] = 'new Set([...$1].filter(x => !$2.has(x)))',
-	['+v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] + $2[i]); return r;})()',
+	['+v']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r[i] = $1[i] + $2[i]; return r;})()',
 	['+v1'] = '$1.map(x => x + $2)',
 	['·v?']  = '(x => {var r = []; for (var i = 0; i < $1.length; i++) r.push($1[i] * $2[i]); return r;})()',
-	['·v']  = '(x => {var r = 0; for (var i = 0; i < $1.length; i++) r += ($1[i] * $2[i]); return r;})()',
+	-- dot
+	['·v']  = '(x => {var r = 0; for (var i = 0; i < $1.length; i++) r += $1[i] * $2[i]; return r;})()',
 	['·v1'] = '$1.map(x => x * $2)',
 	['+f'] = '$1.map(x => x + $2)',
 	['·f1'] = '$1.map(x => x + $2)',

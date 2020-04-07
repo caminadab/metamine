@@ -29,6 +29,10 @@
 	width: 100%;
 }
 
+td:nth-child(1) {
+	/*font-family: "Lucida Console", Courier, monospace;*/
+}
+
 @media (max-width: 800px) {
 	.CodeMirror {
 		width: 100%;

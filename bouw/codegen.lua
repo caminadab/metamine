@@ -161,6 +161,7 @@ function codegen(exp, moes2naam)
 			local d = dubbel
 			codeindex = {}
 			reused = {}
+			dubbel = {}
 			codegen(arg1(exp), ins)
 			iscached = ic
 			dubbel = d

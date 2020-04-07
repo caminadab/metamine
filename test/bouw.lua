@@ -52,7 +52,7 @@ function test(code, moetzijn)
 	print(imval, jsval, asmval)
 	print()
 
-	if imval ~= luaval or imval ~= asmval or imval ~= jsval then
+	if imval ~= asmval or imval ~= jsval then
 
 		print('# Im')
 		for i,ins in ipairs(im) do
@@ -60,11 +60,6 @@ function test(code, moetzijn)
 		end
 		print()
 
-		if imval ~= luaval then
-			print('# Lua')
-			print(lua)
-			print()
-		end
 		if imval ~= jsval then
 			print('# Javascript')
 			print(js)
@@ -75,6 +70,8 @@ function test(code, moetzijn)
 			print(asm)
 			print()
 		end
+
+		assert(false)
 	end
 
 end

@@ -64,7 +64,7 @@ function doe(sfc, arg0, stack)
 		-- cache RETRIEVE
 		elseif fn(ins) == 'ld' then
 			local index = tonumber(atoom(arg(ins)))
-			stack[#stack+1] = cache[index]
+			stack[#stack+1] = assert(cache[index], index.." zit niet in de cache")
 			--print('cache load', index, lenc(stack[#stack]))
 
 		elseif atoom(ins) == '_l' then

@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<head>
+		<title>Taal</title>
+		<link rel="stylesheet" href="index.css">
+	</head>
+
+	<body>
+		<h1>Catalogus van Metamine</h1>
+		<div>
+			Dit is een lijst van alle functies beschikbaar in Metamine. Zie ook <a href="/operators.html">hier</a> voor een lijst van ingebouwde operators.
+		</div>
+		<h2>Intro</h2>
+		<div>
+			Een programma in Metamine is een lijst van regels. Deze 
+		</div>
+		<h2>Coördinaten</h2>
+		<div>
+			In de uitvoer van je app geldt: <b>(0,0)</b> is linksonder, <b>(0,100)</b> is linksboven, en <b>(scherm.breedte,100)</b> is rechtsboven.
+			Merk op dat de hoogte altijd 100 is, maar dat de breedte kan verschillen tussen schermformaten in.
+		</div>
+		<div>
+			<img width="400px" src="/coord.png"></img>
+		</div>
+			
+		<h2>Functies</h2>
+		<table>
+			<thead> <td>Naam</td> <td>Argument</td> <td>Beschrijving</td> </thead>
+			<tr> <td>cirkel</td> <td>x, y, r</td> <td>Teken een cirkel met centrum <b>(x,y)</b> en straal <b>r</b></td> </tr>
+			<tr> <td>label</td> <td>x, y, t</td> <td>Schrijf de tekst <b>t</b> een vierkant op positie <b>(x,y)</b></td> </tr>
+			<tr> <td>lijn</td> <td>punten</td> <td>Teken een lijn tussen de punten uit <b>punten</b></td> </tr>
+			<tr> <td>max</td> <td>a, b</td> <td>Neem de grootste waarde van <b>a</b> en <b>b</b></td> </tr>
+			<tr> <td>map</td> <td>a, b</td> <td>Mapt alle elementen uit <b>a</b> naar <b>b</b></td> </tr>
+			<tr> <td>min</td> <td>a, b</td> <td>Neem de kleinste waarde van <b>a</b> en <b>b</b></td>
+			<tr> <td>mod</td> <td>a, b</td> <td>Bereken de modulo van <b>a</b> en <b>b</b></td> </tr>
+			<tr> <td>sin</td> <td>a</td> <td>Bereken de sinus van <b>a</b></td> </tr>
+			<tr> <td>cos</td> <td>a</td> <td>Bereken de cosinus van <b>a</b></td> </tr>
+			<tr> <td>tan</td> <td>a</td> <td>Bereken de tangens van <b>a</b></td> </tr>
+			<tr> <td>polygoon</td> <td>punten</td> <td>Teken een polygoon aangegeven door een lijst van punten</td> </tr>
+			<tr> <td>rechthoek</td> <td>x1, y1, x2, y2</td> <td>Teken een rechthoek tussen posities <b>(x,y)</b> en <b>(x2,y2)</b></td> </tr>
+			<tr> <td>vierkant</td> <td>x, y, r</td> <td>Teken een vierkant op positie <b>(x,y)</b> met hoogte <b>r</b></td> </tr>
+		</table>
+	</body>
+
+	<script>
+
+	</script>
+</html>
