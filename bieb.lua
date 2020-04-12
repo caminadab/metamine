@@ -33,6 +33,7 @@ function bieb()
 	['alert'] = true,
 	['kubus'] = true,
 	['kies'] = true,
+	['superrender'] = true,
 	['gl.drawArrays'] = true,
 	['gl.drawTriangles'] = true,
 	['gl.clearColor'] = true,
@@ -41,6 +42,12 @@ function bieb()
 	['gl.attachShader'] = true,
 	['gl.linkProgram'] = true,
 	['gl.useProgram'] = true,
+
+	['vertexbuffer'] = true,
+	['vertexshader'] = true,
+	['fragmentshader'] = true,
+	['shaderprogram'] = true,
+	['shaderbind'] = true,
 
 	['gl.VertexShader'] = true,
 	['gl.FragmentShader'] = true,

@@ -19,6 +19,118 @@ local unops = {
 }
 
 local noops = {
+
+	['vertexshader'] = [[ code => {
+		if (shaderCache[code]) 
+			return shaderCache[code];
+		var vertShader = gl.createShader(gl.VERTEX_SHADER);
+		gl.shaderSource(vertShader, code);
+		gl.compileShader(vertShader);
+		shaderCache[code] = vertShader;
+		var msg = gl.getShaderInfoLog(vertShader);
+		if (gl.getError()) {
+			var msg = gl.getShaderInfoLog(vertShader);
+			throw msg;
+		}
+		return vertShader;
+	} ]],
+
+	['fragmentshader'] = [[ code => {
+		if (shaderCache[code])
+			return shaderCache[code];
+		var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+		gl.shaderSource(fragShader, code);
+		gl.compileShader(fragShader);
+		if (gl.getError()) {
+			var msg = gl.getShaderInfoLog(fragShader);
+			throw msg;
+		}
+		shaderCache[code] = fragShader;
+		return fragShader;
+	} ]],
+
+	['shaderprogram'] = [[ args => {
+		var vertShader = args[0];
+		var fragShader = args[1];
+		var cached = programCache[vertShader + fragShader];
+		if (cached)
+			return cached;
+		var shaderProgram = gl.createProgram();
+		gl.attachShader(shaderProgram, vertShader); 
+		gl.attachShader(shaderProgram, fragShader);
+
+		// Link both programs
+		gl.linkProgram(shaderProgram);
+		gl.useProgram(shaderProgram);
+
+		if ( !gl.getProgramParameter( shaderProgram, gl.LINK_STATUS) ) {
+			var info = gl.getProgramInfoLog(shaderProgram);
+			throw 'Could not compile WebGL program. \n\n' + info;
+		}
+
+		programCache[vertShader + fragShader] = shaderProgram;
+		return shaderProgram;
+	}
+	]],
+
+	['vertexbuffer'] = [[ vertices => {
+		var vertex_buffer = gl.createBuffer();
+
+		// Bind an empty array buffer to it
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+		return vertex_buffer;
+	}]],
+
+	['shaderbind'] = [[ args => {
+		var shaderProgram = args[0];
+		var name = args[1];
+		var vertex_buffer = args[2];
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+		var coord = gl.getAttribLocation(shaderProgram, name);
+
+		if (coord == -1) {
+			throw name + " not found in " + shaderProgram;
+		}
+
+		//point an attribute to the currently bound VBO
+		gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
+		gl.enableVertexAttribArray(coord);
+
+		return shaderProgram;
+	} ]],
+
+	['superrender'] = [[ args => {
+		var gl = args[0];
+		var vertex_buffer = args[1];
+		var shaderProgram = args[2];
+
+		if (!window.canvas) {
+		 window.canvas = document.getElementById('uit').children[0];
+		 //gl = canvas.getContext('webgl');
+		}
+
+         /* Step1: Prepare the canvas and get WebGL context */
+
+         /* Step 4: Associate the shader programs to buffer objects */
+
+         //Bind vertex buffer object
+         ////gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+         /* Step5: Drawing the required object (triangle) */
+
+         // Clear the canvas
+         gl.clearColor(0.5, 0.5, 0.5, 0.9);
+         gl.enable(gl.DEPTH_TEST); 
+         gl.clear(gl.COLOR_BUFFER_BIT);
+         gl.viewport(0,0,canvas.width,canvas.height);
+
+         // Draw the triangle
+         gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+			 }
+				]],
 	['grabbel'] = 'x => x[Math.floor(Math.random()*x.length)]',
 	['fn.nul'] = 'x => x(0)',
 	['fn.een'] = 'x => x(1)',

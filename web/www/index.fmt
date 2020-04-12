@@ -235,6 +235,8 @@
 					var muisKlikEind = false;
 					var vroeger = nu;
 					var dt = 0;
+					shaderCache = {};
+					programCache = {};
 
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;

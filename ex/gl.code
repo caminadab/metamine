@@ -1,0 +1,6 @@
+vert = vertexshader "attribute vec2 coordinates; void main(void) { gl_Position = vec4(coordinates, 0.0, 1.0); }"
+frag = fragmentshader "void main(void) { gl_FragColor = vec4(1.0,0.0,0.0,1.0); }"
+buf = vertexbuffer [ -0.5 + muis.x/100, 0.5, 0.5, 0.5, -0.5, -0.5 ]
+prog = shaderprogram(vert, frag)
+prog1 = shaderbind(prog, "coordinates", buf)
+uit = setcontext3d(x → superrender(x,buf,prog1))
