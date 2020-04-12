@@ -11,10 +11,9 @@ gekleurdevakjes = vakjes zip kleuren map verf
 
 
 ; selectie
-hover = (vierkant(muis.schaakpos2·10,10)) verf (rgb(.7,.6,.1))
-sel = (vierkant(selpos · 10,10)) verf (rgb(.1,.6,0))
+hover = (vierkant(muis.schaakx · 10, muis.schaaky · 10,10)) verf (rgb(.7,.6,.1))
+sel = (vierkant(selpos₀·10,selpos₁·10,10)) verf (rgb(.1,.6,0))
 
-muis.schaakpos2 = klem(⌊muis.x/10⌋,0,7), ⌊muis.y/10⌋
 muis.schaakpos = muis.schaakx, muis.schaaky
 muis.schaakindex = muis.schaakx + 8 · muis.schaaky
 
@@ -134,6 +133,7 @@ uit =  teken(gekleurdevakjes ‖ [hover,sel] ‖ ((bord₀) zip pos map stuklabe
 
 dbg = canvas.fontsize(label(0,90,tekst(dbgtekst)), 3)
 dbgtekst = bord.zetten(bord), bord.kanzet(bord, (8,16))
+
 
 
 

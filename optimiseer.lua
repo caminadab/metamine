@@ -97,7 +97,7 @@ local function sourcegen(exp)
 end
 
 function optimiseer(exp)
-	--do return exp end
+	do return exp end
 	local num = 0
 	local function rec(exp) 
 

@@ -152,21 +152,59 @@ end
 		elseif fn(exp) == '-' then
 			types[moes(exp)] = types[moes(arg(exp))]
 
-		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'map' then
-			-- lijst
-			local A = moes(arg1(exp)[1])
-			-- functie
-			local B = moes(arg1(exp)[2])
 
-			local lijsttype = arg1(types[A]) or X'iets'
+		-- _(zip, (lijst, fn))
+		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'zip' then
+			local A = moes(arg1(exp))
+			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
+
+			local lijstA = types[A][1]
+			local lijstB = types[A][2]
+
+			moetzijn(lijstA, X('→', 'nat', 'iets'), lijst or exp)
+			moetzijn(lijstB, X('→', 'nat', 'iets'), lijst or exp)
+
+			local uittype = X(',', arg1(lijstA), arg1(lijstB))
+			types[moes(exp)] = X('→', 'nat', uittype)
+			
+		-- _(map, (lijst, fn))
+		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'map' then
+			local A = moes(arg1(exp))
+			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
+
+			local lijst   = types[A][1]
+			local functie = types[A][2]
+
+			local intype = X'iets'
 			local uittype = X'iets'
 
-			moetzijn(types[A], X('→', 'nat', lijsttype), exp)
-			moetzijn(types[B], X('→', lijsttype, uittype), exp)
+			moetzijn(lijst, X('→', 'nat', intype), lijst)
+			moetzijn(functie, X('→', intype, uittype), functie)
+
+			types[moes(exp)] = X('→', 'nat', uittype)
+
+		-- _(map, (lijst, fn))
+		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'map2' then
+			local l = arg1(exp)[1]
+			local f = arg1(exp)[2]
+			-- lijst
+			local A = moes(l)
+			-- functie
+			local B = moes(f)
+
+			moetzijn(types[A], X('→', 'nat', 'iets'), arg0(exp))
+			local lijsttype = arg1(types[A])
+			moetzijn(types[B], X('→', lijsttype, 'iets'), arg1(exp))
+
+			local lijsttype = arg1(types[A])
+			local uittype = arg1(types[B]) or X'iets'
+
+			moetzijn(types[A], X('→', 'nat', lijsttype), arg0(exp))
+			moetzijn(types[B], X('→', lijsttype, uittype), arg1(exp))
 
 			--moetzijn(lijsttype, arg1(types[B]))
 
-			local type = typegraaf:maaktype(X('→', 'nat', arg1(types[B])))
+			local type = typegraaf:maaktype(X('→', 'nat', uittype)) --arg1(types[B])))
 			types[moes(exp)] = type
 			--print('maptype', combineer(types[B]))
 
@@ -269,7 +307,6 @@ end
 			types[B] = T
 			types[moes(exp)] = symbool.bit
 			types[moes(arg(exp))] = typegraaf:maaktype(X(',', T, T))
-			types[fn(exp)] = X'⊤'
 
 		elseif fn(exp) == '⋀' then
 			types[moes(exp)] = symbool.bit

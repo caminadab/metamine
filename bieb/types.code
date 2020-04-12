@@ -49,9 +49,9 @@ verplaats: getal,getal,getal → (nat → (nat → getal))
 schaal: getal,getal,getal → (nat → (nat → getal))
 
 ;teken: (nat → functie) → functie
-teken: lijst(functie) → functie
-;verf: vorm, kleur → vorm
-rgb: (getal, getal, getal) → kleur
+teken: (nat → functie) → functie
+verf: functie, (getal,getal,getal) → functie
+rgb: (getal, getal, getal) → (getal, getal, getal)
 
 ;vierkant: (ℝ,ℝ),ℝ → vorm
 ;cirkel: (ℝ,ℝ),ℝ → vorm
@@ -96,7 +96,7 @@ nee: bit
 iets → iets: functie
 (_fn) : (iets→iets),iets → iets
 (_) :  ((iets→iets), iets) → iets
-zip: iets, iets → lijst
+zip: lijst, lijst → lijst
 zip1: iets, iets → lijst
 rzip1: iets, iets → lijst
 map: lijst, (iets→iets) → lijst
@@ -154,13 +154,14 @@ set: verzameling
 ; lijst
 (Σ) : lijst getal → getal
 ;(∫) : (ontelbaar getal) → getal
-(..) : int, int → lijst int
+(..) : int, int → (nat → int)
 
 ; util
 abs: getal → getal
 absd: getal → getal
 max: (getal,getal) → getal
 min: (getal,getal) → getal
+klem: (getal,getal,getal) → getal
 afrond: getal → int
 afrond.boven: getal → int
 afrond.onder: getal → int
