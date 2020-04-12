@@ -97,7 +97,7 @@ local function sourcegen(exp)
 end
 
 function optimiseer(exp)
-	do return exp end
+	--do return exp end
 	local num = 0
 	local function rec(exp) 
 
@@ -117,7 +117,7 @@ function optimiseer(exp)
 			local gen = sourcegen(lijst)
 			local nexp = X('_f', 'lvoor', X(',', len, X('∘', gen, map)))
 
-			--print('cool', combineer(map))
+			print('cool', combineer(map))
 			assign(exp, nexp)
 			num = num + 1
 		end

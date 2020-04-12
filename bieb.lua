@@ -19,6 +19,7 @@ function bieb()
 
 	local bieb = {
 
+	['grabbel'] = function (lijst) return lijst[math.random(1, #lijst)] end,
 	-- canvas
 	['pad.begin'] = true,
 	--['context2d'] = true,

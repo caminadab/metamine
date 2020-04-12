@@ -3,6 +3,7 @@
 bord := (0..(6·7)) map (B → 0)
 aanzet := ja
 status := "aan zet"
+klaar := nee
 
 ckleur = palet(bord(y·7+x))
 palet  = [kleur.zwart, kleur.rood, kleur.geel, kleur.groen]
@@ -24,43 +25,38 @@ anders
 	kleur = 2
 eind
 
+als wint(bord,1) dan
+	status := "geel heeft gewonnen"
+	klaar := ja
+eind
+als wint(bord,2) dan
+	status := "rood heeft gewonnen"
+	klaar := ja
+eind
+
 
 ; wint er iemand ?
-wint1 = wbord1 → (hwint1 of vwint1 of dwint1 of rwint1)
-
-hwint1 = hindices map hwint01 vouw (of)
-vwint1 = vindices map vwint01 vouw (of)
-dwint1 = dindices map dwint01 vouw (of)
-rwint1 = rindices map rwint01 vouw (of)
-
-wint2 = wbord2 → (hwint2 of vwint2 of dwint2 of rwint2)
+wint = wbord,ws → (hwint of vwint of dwint of rwint)
 
 hindices = (0..4 × (0..6 · 7)) map (+)
 vindices = (0..7 × (0..3 · 7)) map (+)
 dindices = (0..4 × (0..3 · 7)) map (+)
 rindices = (3..7 × (0..3 · 7)) map (+)
-hwint2 = hindices map hwint02 vouw (of)
-vwint2 = vindices map vwint02 vouw (of)
-dwint2 = dindices map dwint02 vouw (of)
-rwint2 = rindices map rwint02 vouw (of)
 
-hwint01 = hs1 → (wbord1(hs1)=1 en wbord1(hs1+1)=1 en wbord1(hs1+2)=1 en wbord1(hs1+3)=1)
-vwint01 = vs1 → (wbord1(vs1)=1 en wbord1(vs1+7)=1 en wbord1(vs1+14)=1 en wbord1(vs1+21)=1)
-dwint01 = ds1 → (wbord1(ds1)=1 en wbord1(ds1+8)=1 en wbord1(ds1+16)=1 en wbord1(ds1+24)=1)
-rwint01 = rs1 → (wbord1(rs1)=1 en wbord1(rs1+6)=1 en wbord1(rs1+12)=1 en wbord1(rs1+18)=1)
+hwint = hindices map hwint0 vouw (of)
+vwint = vindices map vwint0 vouw (of)
+dwint = dindices map dwint0 vouw (of)
+rwint = rindices map rwint0 vouw (of)
 
-hwint02 = hs2 → (wbord2(hs2)=2 en wbord2(hs2+1)=2 en wbord2(hs2+2)=2 en wbord2(hs2+3)=2)
-vwint02 = vs2 → (wbord2(vs2)=2 en wbord2(vs2+7)=2 en wbord2(vs2+14)=2 en wbord2(vs2+21)=2)
-dwint02 = ds2 → (wbord2(ds2)=2 en wbord2(ds2+28)=2 en wbord2(ds2+16)=2 en wbord2(ds2+24)=2)
-rwint02 = rs2 → (wbord2(rs2)=2 en wbord2(rs2+6)=2 en wbord2(rs2+12)=2 en wbord2(rs2+18)=2)
-
-
-
+hwint0 = hs → (wbord(hs)=ws en wbord(hs+1)=ws en wbord(hs+2)=ws en wbord(hs+3)=ws)
+vwint0 = vs → (wbord(vs)=ws en wbord(vs+7)=ws en wbord(vs+14)=ws en wbord(vs+21)=ws)
+dwint0 = ds → (wbord(ds)=ws en wbord(ds+8)=ws en wbord(ds+16)=ws en wbord(ds+24)=1)
+rwint0 = rs → (wbord(rs)=ws en wbord(rs+6)=ws en wbord(rs+12)=ws en wbord(rs+18)=1)
 
 ;;;;;;;;;;;;;;;;;;;;  GUI  ;;;;;;;;;;;;;;;;;;;;
 
 ; speler dropt coin
-als muis.klik.begin en aanzet dan
+als ¬ klaar en muis.klik.begin en aanzet dan
 	bord := doezet(bord, xsnap, 1)
 	status := "denken..."
 	aanzet := nee
@@ -76,7 +72,7 @@ bz := 0
 prev := nu
 denktijd := 0
 
-als ¬ aanzet en nu > nadenktot dan
+als ¬ klaar en ¬ aanzet en nu > nadenktot dan
 	;scores := bscores
 	bord := doezet(bord, bestezet(bord,2), 2)
 	status := "aan zet"
@@ -91,47 +87,22 @@ eind
 
 ;;;;;;;;;;;;;;;;;;;;  AI  ;;;;;;;;;;;;;;;;;;;;
 
-scores := []
-
 ; beste zet berekenen
 bestezet = bbord,bspeler → bzet
-bscores = (0..7 × 0..7 × 0..7 × 0..7) map (((I,J),K),L → score(bbord4))
-;bscores = (0..7 × 0..7 × 0..7) map (((I,J),K) → score(bbord3))
-;bscores = (0..7 × 0..7) map (I,J → score(bbord1))
-;bscores = (0..7) map (I → score(bbord0))
 
-;bzet = ⌊(maxindex (bscores)) / 7²⌋
-bzet = (maxindex2 (bscores)) mod 7
-;bzet = maxindex bscores
+scores = (0..7) map (ii → score(bbord,ii))
+bzet = maxindex2 scores
 
-maxfunc = (i0,v0),(i1,v1) → kies((v0 < v1), (i0,v0), (i1,v1))
-maxindex2 = lijst → (0..#lijst) zip lijst vouw maxfunc
-
-bbord1 = doezet(bbord,I,2)
-bbord2 = doezet(doezet(bbord,I,2),J,1)
-bbord3 = doezet(doezet(doezet(bbord,I,2),J,1),K,2)
-bbord4 = doezet(doezet(doezet(doezet(bbord,I,2),J,1),K,2),L,1)
+maxfunc = (i0,v0),(i1,v1) → kies((v0 > v1), (i0,v0), (i1,v1))
+maxindex2 = lijst → ((0..#lijst) zip lijst vouw maxfunc)₀
 
 ;scoorzet2 = (I → score(doezet(bord,I,2),2))
 ;scoorzet1 = (J → 1000-score(doezet(bord,J,1),1))
 
 ; score berekenen
-score = sbord → sscore
+score = sbord,szet → predefscores(szet)
 
-; zet kan niet
-als sbord₀ = 3 dan
-	sscore = -100
-anders
-	als wint2(sbord) dan
-		sscore = 1
-	anders
-		als wint1(sbord) dan
-			sscore = -1
-		anders
-			sscore = willekeurig(0,.001)
-		eind	
-	eind
-eind
+predefscores = [3, 4, 5, 7, 5, 4, 3]
 
 
 
@@ -148,12 +119,13 @@ stuk      = cirkel(x·15+37,y·15+7,7) verf ckleur
 stukken   = (0..7 × 0..6) map (x,y → stuk)
 
 statuslabel = label(0,90,status)
-infolabel1  = label(0,80,"wint(1)   = " ‖ tekst(wint1(bord)))
-infolabel2  = label(0,75,"wint(2)   = " ‖ tekst(wint2(bord)))
-infolabel3  = label(0,70,"scores    = " ‖ tekst(scores))
+infolabel1  = label(0,80,"wint(1)   = " ‖ tekst(wint(bord,1)))
+infolabel2  = label(0,75,"wint(2)   = " ‖ tekst(wint(bord,2)))
+infolabel3  = label(0,70,"score     = " ‖ tekst(score(bord,0)))
 infolabel4  = label(0,65,"denktijd  = " ‖ tekst(denktijd))
 
 uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2, infolabel3, infolabel4])
+
 
 
 

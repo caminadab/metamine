@@ -78,6 +78,7 @@ function codegen(exp, moes2naam)
 	rec(exp)
 
 	local function codegen(exp, ins)
+		assert(exp)
 
 		if iscached[exp] then
 			ins[#ins+1] = X('ld', tostring(iscached[exp]))

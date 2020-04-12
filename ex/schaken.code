@@ -24,22 +24,88 @@ muis.schaaky = klem(⌊muis.y/10⌋, 0, 7)
 selindex := -1
 selpos := (-1,-1)
 
-als muis.klik.begin en selindex = -1 en (muis.schaakindex) ≠ 0 dan
+als muis.klik.begin en selindex = -1 en (muis.schaakindex) ≠ -1 dan
 	selindex := muis.schaakindex
 	selpos := muis.schaakpos
 eind
 
 als muis.klik.begin en selindex ≠ -1 dan
-	bord := doezet(bord, selindex, muis.schaakindex)
+	bord := doezet(bord, (selindex, muis.schaakindex))
 	selindex := -1
 	selpos := (-1,-1)
 eind
 
-doezet = Bord,PosA,PosB → newindex(newindex(Bord,PosB,Bord(PosA)),PosA,0) ;Bord,
+; doe zet
+doezet = (Bord,Stukken),(PosA,PosB) → NieuwBord1,NieuweStukken
+Stuk = Bord(PosA)
+Stuk1 = Bord(PosB)
+NieuwBord  = newindex2(Bord, PosB, Stuk)
+NieuwBord1 = newindex2(NieuwBord, PosA, -1)
+
+; stukken slaan
+als Stuk1 ≠ -1 dan
+	NieuweStukken1 = newindex(Stukken,Stuk1,-1)
+anders
+	NieuweStukken1 = Stukken
+eind
+NieuweStukken = newindex2(NieuweStukken1,Stuk,PosB)
 
 pion,paard,loper,toren,dame,heer = 1,2,3,4,5,6
 zwart = 10
+wit = 0
 
+; mogelijke zetten
+any = alijst, afunc → #(alijst filter afunc) > 0
+bord.kanzet = kzbord, kzet → bord.zetten(kzbord) any (kkzet → (kzet = kkzet))
+bord.zetten = zbord,zstukken → ;-pionstartzetten ‖ pionzetten ‖-; torenzetten
+
+pionstartzetten = (8..16) filter (Pi → (zstukken(Pi) = Pi)) map (pi → (pi,pi+16))
+pionzetten = (0..8) map (pi2 → (zstukken(pi2+8),zstukken(pi2+8)+8))
+
+; oh yeah torenzetten
+;torenzetten = (([zstukken(0)] × [wit] × [1,-1,8,-8]) map ((X,Y),Z → (X,Y,Z))) map lijnzetten vouw (‖);torenA ‖ torenB ‖ torenC ‖ torenD
+torenzetten = torenA ‖ torenB ‖ torenC ‖ torenD
+torenA = lijnzetten(zstukken(0),wit,1)
+torenB = lijnzetten(zstukken(0),wit,-1)
+torenC = lijnzetten(zstukken(0),wit,8)
+torenD = lijnzetten(zstukken(0),wit,-8)
+
+; horizontale zetten
+lijnzetten = (hpos, hkleur, dir) → tf([],hpos+dir,tf)
+tf = tz,ti,rec → tz0
+
+als hkleur = wit dan
+	lijnkanslaan = (zbord(hpos + ti · dir) ≥ 16)
+anders
+	lijnkanslaan = (zbord(hpos + ti · dir) < 16 en zbord(hpos + ti · dir) ≥ 0)
+eind
+
+xposmax = ⌈(hpos+1) / 8⌉ · 8 
+xposmin = ⌊hpos/8⌋ · 8
+
+yposmax = 7·8 + (hpos mod 8)
+yposmin = hpos mod 8 
+
+maxti = kies((abs(dir)<8), xposmax, kies(((dir mod 8) = 0), yposmax, min(xposmax, yposmax)))
+minti = kies((abs(dir)<8), xposmin, kies(((dir mod 8) = 0), yposmin, max(xposmax, yposmax)))
+
+als minti ≤ ti en ti < maxti dan
+	als lijnkanslaan dan
+		tz0 = tz ‖ [(hpos, ti)]
+	anders
+		als zbord(ti) = -1 dan 
+			tz0 = [(hpos, ti)] ‖ rec(tz,ti+dir,rec)
+		anders
+			tz0 = [(-1,-1)] vanaf 1
+		eind
+	eind
+anders
+	tz0 = [(-1,-1)] vanaf 1
+eind
+
+als toets.spatie.begin dan
+	bord := doezet(bord, grabbel(bord.zetten bord)) ;(willekeurig(0,#(bord.zetten bord))))
+eind
 
 ; [(type,pos)]
 wit.achter = [toren, paard, loper, dame, heer, loper, paard, toren]
@@ -50,15 +116,25 @@ zwart.pionnen = (0..8) map (w → zwart+pion)
 zwart.startstukken = zwart.pionnen ‖ zwart.achter
 
 stukposities := 0..16
-leegte = ((0..8) × 2..6) map (x2,y2 → 0)
-bord := wit.startstukken ‖ leegte  ‖ zwart.startstukken
+leegte = (0..8 × 2..6) map (x2,y2 → -1)
+; (pos2index,index2pos)
+bord := pos2index, index2pos ;wit.startstukken ‖ zwart.startstukken
+pos2index = 0..16 ‖ leegte ‖ 16..32
+index2pos = 0..16 ‖ 48+0..16
+index2type = [0] ‖ wit.startstukken ‖ zwart.startstukken
 symbolen = ["","♟","♞","♝","♜","♛","♚","","","","","♙","♘","♗","♖","♕","♔"]
 
-slabel = label((px,py)·10, symbolen(ptype))
+slabel = label((px,py)·10, stukcode)
+stukcode = symbolen(index2type(ptype+1))
 flabel = canvas.fontsize(slabel, 10)
 stuklabel = ptype,(px,py) → verf(flabel, kleur.wit)
 
 pos = 0..8 × 0..8
-uit =  teken(gekleurdevakjes ‖ [hover,sel] ‖ (bord zip pos map stuklabel))
+uit =  teken(gekleurdevakjes ‖ [hover,sel] ‖ ((bord₀) zip pos map stuklabel) ‖ dbg)
+
+dbg = canvas.fontsize(label(0,90,tekst(dbgtekst)), 3)
+dbgtekst = bord.zetten(bord), bord.kanzet(bord, (8,16))
+
+
 
 

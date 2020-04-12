@@ -1,0 +1,118 @@
+; lex
+in = "main = 3.5"
+lex = Code → Tokens
+
+modus := Niets
+i := 0
+iprev := 0
+tokens := []
+
+-1,0,1,2,3,4 = Klaar,Niets,Comment,CommentDeel,Var,Num
+
+als modus = Niets dan
+	i := i + 1
+	als 'a' ≤ in(i) en in(i) ≤ 'z' dan
+		iprev := i
+		modus := Var
+	eind
+	als '0' ≤ in(i) en in(i) ≤ '9' of in(i) = '.' dan
+		iprev := i
+		modus := Num
+	eind
+	als in(i) = ' ' dan
+		; niets
+	eind
+	als in(i) = 10 dan
+		tokens := tokens ‖ [ "\n" ]
+	eind
+	als in(i) = ';' dan
+		modus := Comment
+	eind
+	als in(i) = ';' en in(i+1) = '-' dan
+		modus := CommentDeel
+	eind
+	als in(i) = '-' of in(i) = '=' of in(i) = '+'  of in(i) = '>' of in(i) = '/' dan
+		tokens := tokens ‖ [ in vanaf i tot 1 ]
+	eind
+eind
+
+als i ≥ #in dan
+	modus := Klaar
+eind
+
+als modus = CommentDeel dan
+	als in(i) = '-' en in(i+1) = ';' dan
+		i := i + 2
+		modus := Niets
+	anders
+		i := i + 1
+	eind
+eind
+
+als modus = Comment dan
+	als in(i) = 10 dan
+		modus := Niets
+		i := i + 1
+		tokens := tokens ‖ [ "\n" ]
+	anders
+		i := i + 1
+	eind
+eind
+
+als modus = Var dan
+	als 'a' ≤ in(i) en in(i) ≤ 'z' dan
+		i := i + 1
+	anders
+		tokens := tokens ‖ [ in vanaf iprev tot (i - iprev) ]
+		modus := Niets
+	eind
+eind
+
+als modus = Num dan
+	als '0' ≤ in(i) en in(i) ≤ '9' of in(i) = '.' of in(i) = 'e' dan
+		i := i + 1
+	anders
+		tokens := tokens ‖ [ in vanaf iprev tot (i - iprev) ]
+		modus := Niets
+	eind
+eind
+
+
+; ontleed
+j := 0
+stats := [2]
+omodus := Niets
+
+als modus = 
+
+
+uit = tokens, stats
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

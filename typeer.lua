@@ -96,7 +96,6 @@ end
 
 		ta.var = ta.var or maakvar()
 
-		--print('moetzijn', combineer(ta), combineer(tb), combineer(exp))
 		check(ta)
 		check(tb)
 		check(exp)
@@ -170,6 +169,33 @@ end
 			local type = typegraaf:maaktype(X('→', 'nat', arg1(types[B])))
 			types[moes(exp)] = type
 			--print('maptype', combineer(types[B]))
+
+		-- cart
+		elseif fn(exp) == '×' then
+			local A = moes(arg0(exp))
+			local B = moes(arg1(exp))
+			moetzijn(types[A], X('→', 'nat', 'iets'), arg0(exp))
+			local lijsttypeA = arg1(types[A])
+
+			moetzijn(types[B], X('→', 'nat', 'iets'), arg1(exp))
+			local lijsttypeB = arg1(types[B])
+
+			--moetzijn(lijsttypeA, X'tupel', 
+
+			if obj(lijsttypeA) == ',' then
+				lijsttype =  {o=X','}
+				for i, v in ipairs(lijsttypeA) do
+					lijsttype[i] = v
+				end
+				lijsttype[#lijsttype+1] = lijsttypeB
+			else
+				lijsttype = X(',', lijsttypeA, lijsttypeB)
+			end
+
+			--print('LIJSTTYPE', combineer(lijsttype))
+
+			types[moes(exp)] = X('→', 'nat', lijsttype)
+			--error(combineer(types[moes(exp)]))
 
 		-- plus
 		elseif fn(exp) == '+' or fn(exp) == '·' or fn(exp) == '/' then

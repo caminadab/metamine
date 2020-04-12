@@ -19,6 +19,7 @@ local unops = {
 }
 
 local noops = {
+	['grabbel'] = 'x => x[Math.floor(Math.random()*x.length)]',
 	['fn.nul'] = 'x => x(0)',
 	['fn.een'] = 'x => x(1)',
 	['fn.twee'] = 'x => x(2)',
@@ -394,12 +395,19 @@ if ($1 == $2) {
 		$1 = res;
 	}
 } ]],
+
 	-- cart
 	['×'] = [[
 var r = [];
 for (var j = 0; j < $2.length; j++) {
 	for (var i = 0; i < $1.length; i++) {
-		r.push([$1[i],$2[j] ]);
+		if (Array.isArray($1[i])) {
+			var a = $1[i].slice();
+			a.push($2[j]);
+			r.push(a);
+		}
+		else
+			r.push([$1[i],$2[j] ]);
 	}
 }
 $1 = r; ]],
@@ -407,7 +415,7 @@ $1 = r; ]],
 
 local binops = {
 	-- set
-	['∈'] = '$2.has($1)',
+	['∈'] = 'Array.isArray($2) ? $2.includes($1) : $2.has($1)',
 	['∩'] = 'new Set([...$1].filter(x => $2.has(x)))',
 	['∪'] = 'new Set([...$1, ...$2])',
 	['-s'] = 'new Set([...$1].filter(x => !$2.has(x)))',

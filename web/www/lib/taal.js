@@ -33,6 +33,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'teken', 'render', 'rgb',
 		'sorteer', 'tot', 'vanaf', 'deel',
 		'scherm.breedte', 'scherm.hoogte', 'willekeurig', 'scherm.ververst', 'verf',
+		'grabbel', 'kies', 'type',
 
 		// muis
 		'muis.x', 'muis.y', 'muis.pos', 'muis.beweegt',

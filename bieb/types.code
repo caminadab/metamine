@@ -26,6 +26,7 @@ willekeurig: getal,getal → getal
 
 misschien: bit
 (!): int → int
+;(×): lijst, lijst → lijst
 
 ; verz
 verzameling: (→)
@@ -153,7 +154,7 @@ set: verzameling
 ; lijst
 (Σ) : lijst getal → getal
 ;(∫) : (ontelbaar getal) → getal
-(..) : int, int → lijst
+(..) : int, int → lijst int
 
 ; util
 abs: getal → getal
