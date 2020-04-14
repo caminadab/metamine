@@ -1,38 +1,44 @@
 ; lex
-in = "main = 3.5"
+in = "1 / 2 + 2 / 3\n"
 lex = Code → Tokens
 
 modus := Niets
 i := 0
 iprev := 0
-tokens := []
+tokens := [ "" ] vanaf 1
+types := []
 
--1,0,1,2,3,4 = Klaar,Niets,Comment,CommentDeel,Var,Num
+-1,0,1,2,3,4,5,6 = Klaar,Niets,Comment,CommentDeel,Var,Num,Op,Newline
 
 als modus = Niets dan
 	i := i + 1
 	als 'a' ≤ in(i) en in(i) ≤ 'z' dan
 		iprev := i
 		modus := Var
+		types := types ‖ [Var]
 	eind
 	als '0' ≤ in(i) en in(i) ≤ '9' of in(i) = '.' dan
 		iprev := i
 		modus := Num
+		types := types ‖ [Num]
 	eind
 	als in(i) = ' ' dan
 		; niets
 	eind
 	als in(i) = 10 dan
-		tokens := tokens ‖ [ "\n" ]
+		modus := Newline
+		types := types ‖ [Newline]
 	eind
 	als in(i) = ';' dan
 		modus := Comment
+		types := types ‖ [Newline]
 	eind
 	als in(i) = ';' en in(i+1) = '-' dan
 		modus := CommentDeel
 	eind
 	als in(i) = '-' of in(i) = '=' of in(i) = '+'  of in(i) = '>' of in(i) = '/' dan
-		tokens := tokens ‖ [ in vanaf i tot 1 ]
+		modus := Op
+		types := types ‖ [Op]
 	eind
 eind
 
@@ -50,13 +56,19 @@ als modus = CommentDeel dan
 eind
 
 als modus = Comment dan
-	als in(i) = 10 dan
+	als in(i) = 10 of in(i) = niets dan
 		modus := Niets
 		i := i + 1
 		tokens := tokens ‖ [ "\n" ]
 	anders
 		i := i + 1
 	eind
+eind
+
+als modus = Op of modus = Newline dan
+	;i := i + 1
+	modus := Niets
+	tokens := tokens ‖ [ in vanaf (i-1) tot 1 ]
 eind
 
 als modus = Var dan
@@ -80,13 +92,47 @@ eind
 
 ; ontleed
 j := 0
-stats := [2]
+stats := []
 omodus := Niets
 
-als modus = 
+valstack := ["ok"] vanaf 1
+opstack := ["ok"] vanaf 1
+res := ["ok"] vanaf 1
 
+prioriteit = px → pp
+als px = "=" dan pp = 1 eind
+als px = "+" dan pp = 2 eind
+als px = "/" dan pp = 3 eind
+als px = "" dan pp = 0 eind
 
-uit = tokens, stats
+als toets.spatie.begin en (types ⇒ j < #types) dan
+	als types(j) = Var then
+		valstack := valstack ‖ [ tokens(j) ]
+		j := j + 1
+	eind
+	als types(j) = Op then
+		als (opstack ⇒ #opstack = 0 of prioriteit(tokens(j)) > prioriteit(opstack(#opstack-1)) ) dan
+			opstack := [ tokens(j) ] ‖ opstack
+		anders
+			res := res ‖ valstack ‖ opstack
+			valstack := ["ok"] vanaf 1
+			opstack := [ tokens(j) ]
+		eind
+		j := j + 1
+	eind
+	als types(j) = Num then
+		valstack := valstack ‖ [ tokens(j) ]
+		j := j + 1
+	eind
+	als types(j) = Newline then
+		j := j + 1
+		res := res ‖ valstack ‖ opstack
+		valstack := ["ok"] vanaf 1
+		opstack := ["ok"] vanaf 1
+	eind
+eind
+
+uit = tokens, res, valstack, opstack
 
 
 

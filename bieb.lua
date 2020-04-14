@@ -28,6 +28,7 @@ function bieb()
 	['canvas.clear'] = true,
 	['canvas.fontsize'] = true,
 	['canvas.drawImage'] = true,
+	['plet'] = true,
 
 	-- webgl
 	['alert'] = true,
@@ -48,6 +49,8 @@ function bieb()
 	['fragmentshader'] = true,
 	['shaderprogram'] = true,
 	['shaderbind'] = true,
+	['uniformbind'] = true,
+	['matbind'] = true,
 
 	['gl.VertexShader'] = true,
 	['gl.FragmentShader'] = true,

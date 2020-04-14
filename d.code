@@ -1,2 +1,7 @@
-plus = x,y → x + y
-main = plus(1,2), plus(3,4)
+x := 0
+
+als scherm.ververst dan
+	x := x + 1
+eind
+
+uit = x

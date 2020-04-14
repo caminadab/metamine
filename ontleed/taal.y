@@ -238,6 +238,14 @@ unop:
 | "²" | "³"
 ;
 
+kankomma:
+	%empty
+| ',';
+
+witruimte:
+	%empty
+|	NEWLINE witruimte;
+
 single:
 	NAAM										{ $$ = LOC(L, $1, @1); }
 | "ℝ"
@@ -259,14 +267,14 @@ single:
 
 /* lijst */
 | '[' ']'							{ $$ = O(L, A(L,"[]",@$), @$); }
-| '[' exp ']'					{ $$ = LIJST(L, A(L,"[]",@$), $2, @$); }
+| '[' witruimte exp kankomma witruimte ']'					{ $$ = LIJST(L, A(L,"[]",@$), $3, @$); }
 | '{' '}'							{ $$ = O(L, A(L,"{}",@$), @$); }
 | '{' exp '}'					{ $$ = LIJST(L, A(L,"{}",@$), $2, @$); }
 
 
 exp:
 	single
-| exp ',' exp  												{ if (xlua_isopen(L,$1)) $$ = APPEND(L, $1, $3, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $3, @$); }
+| exp ',' witruimte exp  												{ if (xlua_isopen(L,$1)) $$ = APPEND(L, $1, $4, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $4, @$); }
 | single single  %prec CALL  					{ $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
 | single single single  %prec CALL  	{ $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @$), @$); }
 | single single single single  %prec CALL  	{ $$ = FN2(L, A(L,"_",@2), $3, TN2(L, A(L,",",@2), FN2(L,A(L,"_",@1), $1, $2, @2), $4, @$), @$); }

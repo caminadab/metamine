@@ -20,6 +20,7 @@ local unops = {
 
 local noops = {
 
+	['plet'] = 'args => { var res = []; for (var i = 0; i < args.length; i++) res = res.concat(args[i]); return res; }',
 	['vertexshader'] = [[ code => {
 		if (shaderCache[code]) 
 			return shaderCache[code];
@@ -33,6 +34,26 @@ local noops = {
 			throw msg;
 		}
 		return vertShader;
+	} ]],
+
+	['matbind'] = [[ args => {
+		var prog = args[0];
+		var name = args[1];
+		var val = args[2];
+
+		var loc = gl.getUniformLocation(prog, name);
+		gl.uniformMatrix4fv(loc, false, new Float32Array(val));
+		return prog;
+	} ]],
+
+	['uniformbind'] = [[ args => {
+		var prog = args[0];
+		var name = args[1];
+		var val = args[2];
+
+		var loc = gl.getUniformLocation(prog, name);
+		gl.uniform1f(loc, val);
+		return prog;
 	} ]],
 
 	['fragmentshader'] = [[ code => {
@@ -65,7 +86,9 @@ local noops = {
 
 		if ( !gl.getProgramParameter( shaderProgram, gl.LINK_STATUS) ) {
 			var info = gl.getProgramInfoLog(shaderProgram);
-			throw 'Could not compile WebGL program. \n\n' + info;
+			var shaderinfo1 = gl.getShaderInfoLog(vertShader);
+			var shaderinfo2 = gl.getShaderInfoLog(fragShader);
+			throw 'Could not compile WebGL program. \n\n' + info + '\n' + shaderinfo1 + '\n' + shaderinfo2;
 		}
 
 		programCache[vertShader + fragShader] = shaderProgram;
@@ -95,7 +118,7 @@ local noops = {
 		}
 
 		//point an attribute to the currently bound VBO
-		gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(coord);
 
 		return shaderProgram;
@@ -105,29 +128,25 @@ local noops = {
 		var gl = args[0];
 		var vertex_buffer = args[1];
 		var shaderProgram = args[2];
+		var num = args[3];
 
 		if (!window.canvas) {
 		 window.canvas = document.getElementById('uit').children[0];
-		 //gl = canvas.getContext('webgl');
 		}
 
          /* Step1: Prepare the canvas and get WebGL context */
 
          /* Step 4: Associate the shader programs to buffer objects */
 
-         //Bind vertex buffer object
-         ////gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-
          /* Step5: Drawing the required object (triangle) */
 
          // Clear the canvas
-         gl.clearColor(0.5, 0.5, 0.5, 0.9);
+         //gl.clearColor(0.5, 0.5, 0.5, 0.9);
          gl.enable(gl.DEPTH_TEST); 
          gl.clear(gl.COLOR_BUFFER_BIT);
-         gl.viewport(0,0,canvas.width,canvas.height);
 
          // Draw the triangle
-         gl.drawArrays(gl.TRIANGLES, 0, 3);
+         gl.drawArrays(gl.TRIANGLES, 0, num*3);
 
 			 }
 				]],
@@ -543,7 +562,7 @@ local binops = {
 	['/v1'] = '$1.map(x => x / $2)',
 	['_f'] = '$1($2)',
 	['_t'] = '$1.charCodeAt($2)',
-	['_l'] = '$1[$2]',
+	['_l'] = '$1 ? $1[$2] : null',
 	['_'] = 'typeof($1) == "function" ? $1($2) : (typeof($1) == "string" ? $1.charCodeAt($2) : $1[$2])',
 	['^r'] = '$1 ^ $2',
 	['∘'] = '((a,b) => (x => b(a(x))))($1,$2)',
