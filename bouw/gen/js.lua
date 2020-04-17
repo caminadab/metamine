@@ -36,7 +36,9 @@ local noops = {
 		return vertShader;
 	} ]],
 
-	['matbind'] = [[ args => {
+	['getal'] = 'parseFloat',
+	['splits'] = [[ args => args[0].split(args[1]) ]],
+	['matrixbind'] = [[ args => {
 		var prog = args[0];
 		var name = args[1];
 		var val = args[2];

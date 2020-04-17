@@ -32,6 +32,7 @@ function bieb()
 
 	-- webgl
 	['alert'] = true,
+	['splits'] = true,
 	['kubus'] = true,
 	['kies'] = true,
 	['superrender'] = true,
@@ -44,16 +45,14 @@ function bieb()
 	['gl.linkProgram'] = true,
 	['gl.useProgram'] = true,
 
+	['download'] = true,
 	['vertexbuffer'] = true,
 	['vertexshader'] = true,
 	['fragmentshader'] = true,
 	['shaderprogram'] = true,
 	['shaderbind'] = true,
 	['uniformbind'] = true,
-	['matbind'] = true,
-
-	['gl.VertexShader'] = true,
-	['gl.FragmentShader'] = true,
+	['matrixbind'] = true,
 
 	-- functioneel
 	['fn.plus'] = function(x) return function(y) return x + y end end; -- fn.plus(3) = x -> x + 3

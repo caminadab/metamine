@@ -30,13 +30,6 @@
 <div style="height:5; display: inline;"><input id="debug" type="checkbox" onclick="debugChange()"></input> debug </div>
 <div style="height:5; display: inline;"><a href="/cataloog.html">Catalogus</a></div>
 
-<!-- grondstoffen -->
-<div class="res">
-	<img id="gras" src="data/gras.png">
-	<img id="muur" src="data/muur.png">
-	<img id="dodo" src="data/dodo.png">
-</div>
-
 </body>
 <link rel="stylesheet" href="lib/slang.css">
 <link rel="stylesheet" href="lib/codemirror.css">
@@ -82,17 +75,7 @@
 	var wraps = document.getElementsByClassName("CodeMirror-wrap");
 
 	// fotos
-	var gras = document.createElement('img');
-	var muur = document.createElement('img');
-	var dodo = document.createElement('img');
 	var debug = document.getElementById('debug');
-	gras.setAttribute('src', 'res/gras.png');
-	muur.setAttribute('src', 'res/muur.png');
-	dodo.setAttribute('src', 'res/dodo.png');
-	//var gras = document.getElementById('gras');
-	//var muur = document.getElementById('muur');
-	//var dodo = document.getElementById('dodo');
-	var fotos = [gras, muur, dodo];
 	var naam;
 
 	function debugChange() {
@@ -221,6 +204,7 @@
 					var nu = new Date().getTime() / 1000;
 					var vars = [];
 					var uitvoer;
+					var fotos = [];
 
 					var schermVerverst = false;
 					var toetsCode = null;
@@ -236,6 +220,7 @@
 					var dt = 0;
 					shaderCache = {};
 					programCache = {};
+					resCache = {};
 
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
