@@ -46,6 +46,8 @@ function bieb()
 	['gl.useProgram'] = true,
 
 	['download'] = true,
+	['cubemap'] = true,
+	['texture'] = true,
 	['vertexbuffer'] = true,
 	['vertexshader'] = true,
 	['fragmentshader'] = true,
@@ -53,6 +55,8 @@ function bieb()
 	['shaderbind'] = true,
 	['uniformbind'] = true,
 	['matrixbind'] = true,
+	['texturebind'] = true,
+	['cubemapbind'] = true,
 
 	-- functioneel
 	['fn.plus'] = function(x) return function(y) return x + y end end; -- fn.plus(3) = x -> x + 3

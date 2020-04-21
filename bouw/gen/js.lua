@@ -36,6 +36,18 @@ local noops = {
 		return vertShader;
 	} ]],
 
+	['download'] = [[pad => {
+		if (resCache[pad])
+			return resCache[pad];
+
+		resCache[pad] = "";
+
+		fetch(pad)
+			.then(x => x.text())
+			.then(x => {resCache[pad] = x;});
+
+		return "";
+	} ]],
 	['getal'] = 'parseFloat',
 	['splits'] = [[ args => args[0].split(args[1]) ]],
 	['matrixbind'] = [[ args => {
@@ -54,7 +66,13 @@ local noops = {
 		var val = args[2];
 
 		var loc = gl.getUniformLocation(prog, name);
-		gl.uniform1f(loc, val);
+		if (Array.isArray(val)) {
+			if (val.length == 2) gl.uniform2fv(loc, val);
+			if (val.length == 3) gl.uniform3fv(loc, val);
+			if (val.length == 4) gl.uniform4fv(loc, val);
+		}
+		else
+			gl.uniform1f(loc, val);
 		return prog;
 	} ]],
 
@@ -106,6 +124,126 @@ local noops = {
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 		return vertex_buffer;
 	}]],
+	
+	['texturebind'] = [[ args => {
+		var shaderProgram = args[0];
+		var name = args[1];
+		var texture = args[2];
+
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		var loc = gl.getUniformLocation(shaderProgram, name);
+		gl.uniform1i(loc, 0);
+		return shaderProgram;
+	}
+	]],
+
+	['cubemapbind'] = [[ args => {
+		var shaderProgram = args[0];
+		var name = args[1];
+		var texture = args[2];
+
+		gl.activeTexture(gl.TEXTURE1);
+		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+		var loc = gl.getUniformLocation(shaderProgram, name);
+		gl.uniform1i(loc, 1);
+		return shaderProgram;
+	}
+	]],
+
+	['cubemap'] = [[ urls => {
+		if (textureCache[urls[0] ]) 
+			return textureCache[urls[0] ];
+
+		var tex = gl.createTexture();
+
+		gl.activeTexture(gl.TEXTURE1);
+		gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
+
+		textureCache[urls[0] ] = tex;
+
+		// single pixel before load
+		const level = 0;
+		const width = 1;
+		const height = 1;
+		const border = 0;
+		const srcFormat = gl.RGBA;
+		const srcType = gl.UNSIGNED_BYTE;
+
+		for (var i = 0; i < 6; i++) {
+			const pixel = new Uint8Array([i * (255/6), 0, 255, 255]);  // opaque blue
+			gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA,
+									width, height, border, srcFormat, srcType,
+									pixel);
+		}
+
+		var images = [];
+		var nog = 6;
+		for (var i = 0; i < 6; i++) {
+			(i => {
+				images[i] = new Image();
+				images[i].onload = (x => {
+					nog = nog - 1;
+					gl.activeTexture(gl.TEXTURE1);
+					gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
+					console.log(i + ', ' + images[i]);
+
+					// only max
+					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+
+					//gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA8, srcFormat, srcType, images[i]);
+
+					if (nog == 0)
+						gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+					return;
+				});
+				images[i].src = urls[i];
+			})(i);
+
+		}
+		return tex;
+	} ]],
+
+	['texture'] = [[ url => {
+		if (textureCache[url])  {
+			var tex = textureCache[url];
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, tex);
+			return tex;
+		}
+
+		var tex = gl.createTexture();
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, tex);
+
+		textureCache[url] = tex;
+
+		// single pixel before load
+		const level = 0;
+		const internalFormat = gl.RGBA;
+		const width = 1;
+		const height = 1;
+		const border = 0;
+		const srcFormat = gl.RGBA;
+		const srcType = gl.UNSIGNED_BYTE;
+		const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+		gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+									width, height, border, srcFormat, srcType,
+									pixel);
+
+		const image = new Image();
+		image.onload = function() {
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, tex);
+			gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+										srcFormat, srcType, image);
+		 gl.generateMipmap(gl.TEXTURE_2D);
+		};
+		image.src = url;
+		return tex;
+	} ]],
 
 	['shaderbind'] = [[ args => {
 		var shaderProgram = args[0];
@@ -128,7 +266,7 @@ local noops = {
 
 	['superrender'] = [[ args => {
 		var gl = args[0];
-		var vertex_buffer = args[1];
+		var tex = args[1];
 		var shaderProgram = args[2];
 		var num = args[3];
 
@@ -141,15 +279,22 @@ local noops = {
          /* Step 4: Associate the shader programs to buffer objects */
 
          /* Step5: Drawing the required object (triangle) */
+				 
+				 /* Texture */
+				 if (tex) {
+					gl.activeTexture(gl.TEXTURE0);
+					gl.bindTexture(gl.TEXTURE_2D, tex);
+				}
 
          // Clear the canvas
          //gl.clearColor(0.5, 0.5, 0.5, 0.9);
          gl.enable(gl.DEPTH_TEST); 
-         gl.clear(gl.COLOR_BUFFER_BIT);
+         //gl.clear(gl.COLOR_BUFFER_BIT);
 
          // Draw the triangle
          gl.drawArrays(gl.TRIANGLES, 0, num*3);
 
+	return gl;
 			 }
 				]],
 	['grabbel'] = 'x => x[Math.floor(Math.random()*x.length)]',

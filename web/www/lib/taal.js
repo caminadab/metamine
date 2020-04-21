@@ -35,6 +35,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'scherm.breedte', 'scherm.hoogte', 'willekeurig', 'scherm.ververst', 'verf',
 		'grabbel', 'kies', 'type', 'plet', 'canvas.fontsize', 'splits',
 		'vertexbuffer', 'shaderbind', 'shaderprogram', 'uniformbind', 'matrixbind',
+		'download', 'texturebind', 'texture', 'cubemap', 'cubemapbind',
 
 		// muis
 		'muis.x', 'muis.y', 'muis.pos', 'muis.beweegt',

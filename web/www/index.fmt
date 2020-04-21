@@ -185,7 +185,7 @@
 					}
 
 					function setcontext3d(transform) {
-						if (!context3d) {
+						if (!context3d || !gl) {
 							var width = window.screen.width;
 							var height = window.screen.height;
 							SCHAAL = height/100;
@@ -206,6 +206,7 @@
 					var uitvoer;
 					var fotos = [];
 
+					gl = {};
 					var schermVerverst = false;
 					var toetsCode = null;
 					var toetsBegint = false;
@@ -221,6 +222,7 @@
 					shaderCache = {};
 					programCache = {};
 					resCache = {};
+					textureCache = {};
 
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
@@ -380,6 +382,7 @@
 
 	function stopfunc() {
 		wraps[0].onmousemove = undefined;
+
 		preview.innerHTML = '';
 		stop = true;
 		alertKlaar = false;

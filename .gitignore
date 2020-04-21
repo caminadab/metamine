@@ -8,6 +8,8 @@
 ontleed/taal.c
 ontleed/taal.h
 
+res/
+
 web/www/index.nl.html
 web/www/index.en.html
 web/www/index.html

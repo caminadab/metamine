@@ -1,0 +1,169 @@
+vert = vertexshader "
+uniform mat4 proj;
+uniform mat4 cam;
+attribute vec3 normal;
+attribute vec3 pos;
+varying vec3 normalInterp;
+varying vec3 vertPos;
+varying vec3 lightpos;
+
+void main(void) {
+	gl_Position = proj * cam * vec4(pos - vec3(.5), 1.0);
+	highp float x = sqrt(3.0);
+	lightpos = (proj * cam * vec4(0.0, 0, 1, 0.0)).xyz;
+	normalInterp = normal;
+	vertPos = pos;
+}
+"
+
+;***
+frag = fragmentshader "
+uniform highp float time;
+varying highp vec3 normalInterp;
+varying highp vec3 vertPos;
+varying highp vec3 lightpos;
+void main(void) {
+	highp vec3 col = vec3(dot(lightpos, normalInterp));
+	gl_FragColor = vec4(sin(normalInterp/0.1)/2.0+0.5, 1.0); //vec4(vec3(0.5 - vertPos.y)+normalInterp/1000.0,1.0);
+}
+"
+
+r = scherm.breedte / scherm.hoogte
+mx = -1+muis.x/(100·r)·2
+my = -1+muis.y/100·2
+buf2 = vertexbuffer [
+	0,0,0, 1,1,0, 0,1,0, 0,0,0, 1,1,0, 1,0,0,
+	0,0,0, 1,0,1, 0,0,1, 0,0,0, 1,0,1, 1,0,0,
+	0,0,0, 0,1,1, 0,0,1, 0,0,0, 0,1,1, 0,1,0,
+	0,0,1, 1,1,1, 0,1,1, 0,0,1, 1,1,1, 1,0,1,
+	0,1,0, 1,1,1, 0,1,1, 0,1,0, 1,1,1, 1,1,0,
+	1,0,0, 1,1,1, 1,0,1, 1,0,0, 1,1,1, 1,1,0,
+]
+
+grid := plet(plet(tiles))
+numpolys3 = #grid / 9
+buf3 = vertexbuffer grid
+pa = [(0,h1,0), (0,h2,1), (1,h3,0), (1,h4,1), (1,h3,0), (0,h2,1)]
+h1 = hmap(h)
+h2 = hmap(h+n)
+h3 = hmap(h+1)
+h4 = hmap(h+n+1)
+
+n = 20
+hoogte = X,Y → 0.1 · (sin(X)+cos(Y)) ; -√((X-n/2)²+(Y-n/2)²)·0.7
+hmap := (0..n × 0..n) map hoogte
+hn = n/2
+tiles = (-hn ..hn × -hn ..hn) zip (0..n²) map ((i,j),h → pa map (pp → pp + (i,1,j)))
+
+;pn = cross(pa₂ - pa₀, pa₁ - pa₀)
+
+; aap
+prog = shaderprogram(vert, frag)
+prog1 = shaderbind(prog, "pos", buf)
+prog2 = shaderbind(prog1, "normal", buf)
+prog3 = matrixbind(prog2, "cam", plet cam)
+prog4 = matrixbind(prog3, "proj", plet proj)
+prog5 = uniformbind(prog4, "time", looptijd)
+
+; grid
+nprog1 = shaderbind(prog, "pos", buf3)
+nprog2 = shaderbind(nprog1, "normal", buf3)
+nprog3 = matrixbind(nprog2, "cam", plet cam)
+nprog4 = matrixbind(nprog3, "proj", plet proj)
+nprog5 = uniformbind(nprog4, "time", looptijd)
+uit = setcontext3d(x → y3d)
+x3d = superrender(x,buf,prog5,numpolys)
+y3d = superrender(x3d,buf3,nprog5,numpolys3)
+
+; matrix math
+;proj = schaal(.01,.01,.01)
+proj = projection(τ/8,1.778,.001,1000)
+cam = Mv · My · Mx
+
+; model
+Ms = schaal(.5, .5, .5)
+Mx = xdraai(xhoek)
+My = ydraai(yhoek)
+Mv = verplaats(xpos, ypos, zpos)
+
+yhoek = τ-muis.x/100·τ
+xhoek = klem((100-muis.y)/100·τ/2+τ·.25,τ·.25,τ·.75)
+
+xpos := -5
+ypos := 1.1
+zpos := -5
+
+; automove
+als scherm.ververst en toets.w dan
+	xpos := xpos + sin(yhoek) · .02
+	;ypos := ypos + sin(xhoek) · .02
+	ypos := hmap(⌊xpos⌋+⌊zpos⌋·20)
+	zpos := zpos + cos(yhoek) · .02
+eind
+als scherm.ververst en toets.s dan
+	xpos := xpos - sin(yhoek) · .02
+	zpos := zpos - cos(yhoek) · .02
+eind
+als scherm.ververst en toets.a dan
+	xpos := xpos + sin(yhoek+τ/4) · .02
+	zpos := zpos + cos(yhoek+τ/4) · .02
+eind
+als scherm.ververst en toets.d dan
+	xpos := xpos + sin(yhoek-τ/4) · .02
+	zpos := zpos + cos(yhoek-τ/4) · .02
+eind
+als scherm.ververst en toets.omhoog dan ypos := ypos + .02 eind
+als scherm.ververst en toets.omlaag dan ypos := ypos - .02 eind
+
+projection = (fov,ar,znear,zfar) → Proj
+	zf = 1 / tan(fov/2)
+	rangeinv = 1 / (znear - zfar)
+	z1 = (-znear-zfar)·rangeinv
+	z2 = 2·zfar·znear·rangeinv
+	Proj = ((zf/ar,0,0,0),(0,zf,0,0),(0,0,z1,1),(0,0,z2,0))
+
+
+; fps counter
+fps := 60
+frames := 0
+fpstijd := looptijd + 1
+als looptijd > fpstijd dan
+	fpstijd := looptijd + 1
+	fps := frames
+	frames := 0
+eind
+als scherm.ververst dan
+	frames := frames + 1
+eind
+
+obj = download "res/aap.obj"
+
+opon := [],[]
+als #obj > 0 en (opon ⇒ #opon₀ = 0) dan
+	opon := obj.decodeer(obj)
+eind
+
+obj.decodeer = Obj → plet Opunten, plet Onormals
+oregels   = Obj splits "\n"
+overtices = oregels filter (ovr → (ovr₀ = 'v' en ovr₁ ≠ 'n')) map overtice
+onormals = oregels filter (onr → (onr₀ = 'v' en onr₁ = 'n')) map onormal1
+ovfaces    = oregels filter (ovf → (ovf₀ = 'f')) map oface
+onfaces    = oregels filter (onf → (onf₀ = 'f')) map onormal
+Opunten    = (plet ovfaces) map dec map overtices
+Onormals   = (plet onfaces) map dec map onormals
+dec = Dx → Dx-1
+
+punten,normals = opon₀, opon₁
+numpolys = #punten/9
+
+buf = vertexbuffer(punten)
+nbuf = vertexbuffer(normals)
+
+splits = asdf,asdf2 → [asdf]
+overtice = vregel → (vregel splits " " vanaf 1) filter (vr → #vr > 0) map getal
+onormal1 = n1regel → (n1regel splits " " vanaf 1) filter (v1r → #v1r > 0) map getal
+oface    = fregel → (fregel splits " " vanaf 1) filter (fr → #fr > 0) map iface
+onormal  = nregel → (nregel splits " " vanaf 1) filter (nr → #nr > 0) map nface
+iface    = Iface → getal((Iface splits "/")₀)
+nface    = Nface → getal((Nface splits "/")₂)
+
