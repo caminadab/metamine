@@ -1,1 +1,1 @@
-main = "hoi"
+main = 10 mod 3

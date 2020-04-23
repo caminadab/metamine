@@ -34,6 +34,10 @@ for i,feit in ipairs(stdbron.a) do
 	end
 end
 
+local function fnaam(exp)
+	return fn(exp) == '_' or fn(exp) == '_f' and atoom(arg0(exp))
+end
+
 function linkbieb(typegraaf)
 	for i,feit in ipairs(stdbron.a) do
 		if fn(feit) == ':' then
@@ -154,7 +158,7 @@ end
 
 
 		-- _(zip, (lijst, fn))
-		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'zip' then
+		elseif fnaam(exp) == 'zip' then
 			local A = moes(arg1(exp))
 			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
 
@@ -166,9 +170,9 @@ end
 
 			local uittype = X(',', arg1(lijstA), arg1(lijstB))
 			types[moes(exp)] = X('→', 'nat', uittype)
-			
+
 		-- _(map, (lijst, fn))
-		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'map' then
+		elseif fnaam(exp) == 'map' then
 			local A = moes(arg1(exp))
 			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
 
@@ -182,6 +186,21 @@ end
 			moetzijn(functie, X('→', intype, uittype), functie)
 
 			types[moes(exp)] = X('→', 'nat', uittype)
+
+		-- _(filter, (lijst, fn))
+		elseif fnaam(exp) == 'filter' then
+			local A = moes(arg1(exp))
+			moetzijn(types[A], X('→', 'nat', 'iets'), exp)
+
+			local lijst   = types[A][1]
+			local functie = types[A][2]
+
+			local intype = X'iets'
+
+			moetzijn(lijst, X('→', 'nat', intype), lijst)
+			moetzijn(functie, X('→', intype, 'bit'), functie)
+
+			types[moes(exp)] = X('→', 'nat', intype)
 
 		-- _(map, (lijst, fn))
 		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'map2' then

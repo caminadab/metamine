@@ -20,7 +20,14 @@ local unops = {
 
 local noops = {
 
-	['plet'] = 'args => { var res = []; for (var i = 0; i < args.length; i++) res = res.concat(args[i]); return res; }',
+	['plet'] = [[args => {
+		var res = [];
+		var k = 0;
+		for (var i = 0; i < args.length; i++)
+			for (var j = 0; j < args[i].length; j++)
+				res[k++] = args[i][j];
+		return res;
+	} ]],
 	['vertexshader'] = [[ code => {
 		if (shaderCache[code]) 
 			return shaderCache[code];
@@ -193,7 +200,7 @@ local noops = {
 					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
-					//gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA8, srcFormat, srcType, images[i]);
+					gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA8, srcFormat, srcType, images[i]);
 
 					if (nog == 0)
 						gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
@@ -311,33 +318,132 @@ local noops = {
 	['l.derde'] = 'x => x[2]',
 	['l.vierde'] = 'x => x[3]',
 
-	['componeer'] = 'args => (x => { var res = x; for (var i = 0; i < args.length; i++) { res = args[i](res); }; return res; })',
+	-- hetzelde als boven
+	['componeer'] = [[args => (x => {
+		var res = x;
+		for (var i = 0; i < args.length; i++) {
+			if (Array.isArray(args[i]))
+				res = args[i][res];
+			else
+				res = args[i](res);
+		};
+		return res;
+	}) ]],
 
 	['niets'] = 'null',
 	['omdraai'] = 'x => typeof(x) == "string" ? x.split("").reverse().join("") : x.reverse()',
 	['klok'] = 'x => { var begin = new Date().getTime(); x(); var eind = new Date().getTime(); return eind - begin; }',
+
 	['voor'] = [[x => {
-  var max = x[0];
-  var start = x[1];
-  var map = x[2];
-  var reduce = x[3];
-  var val = start;
-  for (var i = 0; i < max; i++) {
-		var w = map(i); //Array.isArray(map) ? map[i] : map(i);
-    val = reduce([val, w]);
+  var max     = x[0];
+  var start   = x[1];
+  var filter1 = x[2];
+  var map     = x[3];
+  var filter2 = x[4];
+  var vouw    = x[5];
+  var val     = null;
+
+	if (Array.isArray(max)) {
+		if (max.length == 4) {
+			val = map([0,0,0,0]);
+			for (var i = 0; i < max[0]; i++) {
+				for (var j = 0; j < max[1]; j++) {
+					for (var k = 0; k < max[2]; k++) {
+						for (var l = 0; l < max[3]; l++) {
+							var w = map([i, j, k, l]);
+							val = vouw([val, w]);
+						}
+					}
+				}
+			}
+		}
+
+		else if (max.length == 3) {
+			val = map([0,0,0]);
+			for (var i = 0; i < max[0]; i++) {
+				for (var j = 0; j < max[1]; j++) {
+					for (var k = 0; k < max[2]; k++) {
+						var w = map([i, j, k]);
+						val = vouw([val, w]);
+					}
+				}
+			}
+		}
+
+		else if (max.length == 2) {
+			val = map([0,0]);
+			for (var i = 0; i < max[0]; i++) {
+				for (var j = 0; j < max[1]; j++) {
+					var w = map([i, j]);
+					val = vouw([val, w]);
+				}
+			}
+		}
+
+	} else {
+		val = map(0);
+		for (var i = 1; i < max; i++) {
+			var w = map(i); //Array.isArray(map) ? map[i] : map(i);
+			val = vouw([val, w]);
+		}
+		return val;
 	}
 	return val;
-}
-
-]],
+} ]],
 
 	['lvoor'] = [[x => {
-  var max = x[0];
-  var map = x[1];
+  var max  = x[0];
+	var filter1 = x[1];
+  var map = x[2];
+  var filter2 = x[3];
   var val = [];
-  for (var i = 0; i < max; i++) {
-		var w = map(i);
-		val[i] = w;
+	var index = 0;
+	if (Array.isArray(max)) {
+		if (max.length == 4) {
+			for (var i = 0; i < max[0]; i++) {
+				for (var j = 0; j < max[1]; j++) {
+					for (var k = 0; k < max[2]; k++) {
+						for (var l = 0; l < max[3]; l++) {
+							var w = map([i, j, k, l]);
+							val[index++] = w;
+						}
+					}
+				}
+			}
+		}
+
+		else if (max.length == 3) {
+			for (var i = 0; i < max[0]; i++) {
+				for (var j = 0; j < max[1]; j++) {
+					for (var k = 0; k < max[2]; k++) {
+						if (filter1([i, j, k])) {
+							var w = map([i, j, k]);
+							val[index++] = w;
+						}
+					}
+				}
+			}
+		}
+
+		else if (max.length == 2) {
+			for (var i = 0; i < max[0]; i++) {
+				for (var j = 0; j < max[1]; j++) {
+					if (filter1([i, j])) {
+						var w = map([i, j]);
+						val[index++] = w;
+					}
+				}
+			}
+		}
+	} else {
+		for (var I = 0; I < max; I++) {
+			if (filter1(I)) {
+				var w = map(I);
+				if (filter2(w)) {
+					val[index++] = w;
+				}
+			}
+		}
 	}
 	return val;
 }]],
@@ -349,8 +455,6 @@ local noops = {
 	['newindex2'] = 'x => { var t = []; for (var i = 0; i< x[0].length; i++) { if (i == x[1]) t[i] = x[2]; else t[i] = x[0][i]; } return t; }',
 	['scherm.ververst'] = 'true',
 	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
-	['model'] = 'x => (gl => drawModel(gl, x))',
-	['shader.programma'] = 'shaderProgram',
 	['herhaal'] = [[x => {
 	var value = x[0];
 	var len = x[1];
@@ -368,7 +472,16 @@ local noops = {
   ['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
   ['filter'] = '(function(a){return a[0].filter(a[1]);})',
   ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
-	['vouw'] = '(function(lf) {var l=lf[0]; if (l.length == 0) return false; var f=lf[1]; var r=l[0] ; for (var i=1; i < l.length; i++) r = f([r, l[i]]); ; return r;})',
+	['vouw'] = [[(function(lf) {
+		var l=lf[0];
+		if (l.length == 0)
+			return false;
+		var f=lf[1];
+		var r=l[0] ;
+		for (var i=1; i < l.length; i++)
+			r = f([r, l[i] ]);
+		return r;
+	}) ]],
 
 	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
 	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
@@ -472,6 +585,10 @@ local noops = {
 		r = args[1] * SCHAAL;
 		x = args[0][0] * SCHAAL;
 		y = (100 - args[0][1]) * SCHAAL - r;
+	}
+	if (!window.ASDF) {
+		window.ASDF = true;
+		alert(x + ', ' + y + ', ' + r);
 	}
 
   return context => {
@@ -595,9 +712,10 @@ local noops = {
 	['tan'] = 'Math.tan',
 
 	['fn.id'] = 'x => x',
-	['fn.constant'] = 'function() return $1 end',
+	['fn.constant'] = 'x => y => x',
 	['fn.merge'] = 'fns => (x => fns.map(fn => fn(x)))',
 	['fn.plus'] = 'x => y => x + y',
+	['fn.mul'] = 'x => y => x * y',
 	['-'] = 'function(x) return -x end',
 	['log10'] = 'math.log10',
 	['⊤'] = 'true',
@@ -606,14 +724,6 @@ local noops = {
 	['τ'] = 'Math.PI * 2',
 	['π'] = 'Math.PI',
 	['_f'] = '$1($2)',
-	['l.eerste'] = '$1[0]',
-	['l.tweede'] = '$1[1]',
-	['l.derde'] = '$1[2]',
-	['l.vierde'] = '$1[3]',
-	['fn.nul'] = '$1(0)',
-	['fn.een'] = '$1(1)',
-	['fn.twee'] = '$1(2)',
-	['fn.drie'] = '$1(3)',
 
 	-- dynamisch
 	['eerste'] = '(typeof($1)=="function") ? $1(0) : $1[0]',
@@ -712,12 +822,24 @@ local binops = {
 	['_l'] = '$1 ? $1[$2] : null',
 	['_'] = 'typeof($1) == "function" ? $1($2) : (typeof($1) == "string" ? $1.charCodeAt($2) : $1[$2])',
 	['^r'] = '$1 ^ $2',
-	['∘'] = '((a,b) => (x => b(a(x))))($1,$2)',
 	['+'] = '$1 + $2',
 	['·'] = '$1 * $2',
 	['/'] = '$1 / $2',
 	['^'] = '$1 ^ $2',
 	['..2'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
+
+	-- componeer
+	['∘'] = [[(args => z => {
+		var res = z;
+		for (var i = 0; i < args.length; i++) {
+			if (Array.isArray(args[i]))
+				res = args[i][res];
+			else
+				res = args[i](res);
+		};
+		return res;
+	})([$1,$2]) ]],
+
 
 	['^'] = 'Math.pow($1, $2)',
 	['^f'] = [[(function (f,n) {

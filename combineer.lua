@@ -116,7 +116,7 @@ local function combineerR(exp, t, kind)
 	elseif isfn(exp) then
 		if not exp.a then return '?' end
 		local op = fn(exp)
-		if op == '_' or op == '_l' and isobj(exp.a) then
+		if op == '_' or op == '_l' or op == '_f' and isobj(exp.a) then
 
 			if isfn(exp.a[1]) then
 				t[#t+1] = '('

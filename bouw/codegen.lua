@@ -78,6 +78,9 @@ function codegen(exp, moes2naam)
 	rec(exp)
 
 	local function codegen(exp, ins)
+		if not exp then
+			print('geen code!')
+		return end
 		assert(exp)
 
 		if iscached[exp] then

@@ -19,7 +19,7 @@ end
 function verwacht(im, val)
 	local lua = luagen(im)
 
-	local func, err = load(lua)
+	local func, err = loadstring(lua)
 	assert(not err, tostring(err) .. '\n' .. lua)
 
 	local ok,res = pcall(func)

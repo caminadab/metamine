@@ -1,7 +1,1 @@
-x := 0
-
-als scherm.ververst dan
-	x := x + 1
-eind
-
-uit = x
+main = (3..10 × 3..10 × 3..10) map fn.id
