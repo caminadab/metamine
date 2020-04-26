@@ -39,10 +39,11 @@ local binop  = set(
 	'+','·','/','^',
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
 	'∪','∩',':','∈','\\',
-	'_f','_f2','_t','_l','^f',
+	'_f','_t','_l','^f',
 	'+v', '+v1', '·v', '·v1', '/v1',
 	'+m', '+m1', '·m1', '·mv', '·m'
 )
+local triop  = set('_f2')
 
 -- exps worden gecachet (voor debugging)
 function codegen(exp, moes2naam)
@@ -54,6 +55,7 @@ function codegen(exp, moes2naam)
 	local maakcacheindex = maakindices(0)
 	local argindex = {} -- num → index
 	local maakargindex = maakindices(0)
+	local numcalls = 0
 
 	local bieb = bieb()
 
@@ -78,15 +80,11 @@ function codegen(exp, moes2naam)
 	rec(exp)
 
 	local function codegen(exp, ins)
-		if not exp then
-			print('geen code!')
-		return end
-		assert(exp)
-
 		if iscached[exp] then
 			ins[#ins+1] = X('ld', tostring(iscached[exp]))
 			return
 		end
+		numcalls = numcalls + 1
 
 		-- causatie
 		if fn(exp) == '⇒' then
@@ -145,6 +143,13 @@ function codegen(exp, moes2naam)
 			codegen(arg1(exp), ins)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 1
+
+		elseif triop[fn(exp)] then
+			codegen(arg0(exp), ins)
+			codegen(arg1(exp), ins)
+			codegen(arg2(exp), ins)
+			ins[#ins+1] = X(fn(exp))
+			focus = focus - 2
 
 		elseif unop[fn(exp)] then
 			codegen(arg(exp), ins)
@@ -212,5 +217,9 @@ function codegen(exp, moes2naam)
 	end
 
 	local ins = {o='[]'}
-	return codegen(exp, ins)
+	local a,b,c = codegen(exp, ins)
+	if opt and opt.D then
+		print('num codegen calls = '..numcalls + 1)
+	end
+	return a, b, c
 end

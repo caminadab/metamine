@@ -51,6 +51,7 @@ Opties:
     -x,	--demo				compileer naar demo
 		
     -O								optimaliseer uitvoer NIET
+    -D								klok de compilatiestappen
 
     -S                genereer assembly-code
     -R                genereer uitgebreid rapport
@@ -67,7 +68,6 @@ Opties:
     -T                print types
     -Y                print typegraaf
 
-    -D                print delta-tijd informatie
     -C                print de controlegraaf
 
     -I                print intermediaire code
@@ -173,7 +173,7 @@ end
 if opt.javascript then
 	uit = jsgen(app)
 	file('a.js', '\nperformance = {now: function() { return 0; }}\n'..uit)--{now: new Date().getTime()}')
-	print(uit)
+	--print(uit)
 	if opt.d then
 		os.execute('js a.js')
 	end

@@ -20,6 +20,15 @@ local unops = {
 
 local noops = {
 
+	['eval'] = 'eval',
+
+	['debugsom'] = [[x => {
+		var s = 0;
+		for (var i = 0; i < 1000000; i++)
+			s += i;
+		return s;
+	}]],
+
 	['plet'] = [[args => {
 		var res = [];
 		var k = 0;
@@ -57,6 +66,7 @@ local noops = {
 	} ]],
 	['getal'] = 'parseFloat',
 	['splits'] = [[ args => args[0].split(args[1]) ]],
+	['splits2'] = [[ (a, b) => a.split(b) ]],
 	['matrixbind'] = [[ args => {
 		var prog = args[0];
 		var name = args[1];
@@ -467,10 +477,13 @@ local noops = {
 
 	-- functioneel
 	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
+	['zip2'] = '(a, b) => { var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c; }',
   ['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
-  ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < b.length; i++) { c[i] = [a, b[i]]; }; return c;})',
+  ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;})',
   ['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
+  ['map2'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
   ['filter'] = '(function(a){return a[0].filter(a[1]);})',
+  ['filter2'] = '(a, b) => a.filter(b)',
   ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 	['vouw'] = [[(function(lf) {
 		var l=lf[0];
@@ -483,6 +496,24 @@ local noops = {
 		return r;
 	}) ]],
 
+	['vouw2'] = [[(l, f) => {
+		if (l.length == 0)
+			return false;
+		var r=l[0] ;
+		for (var i=1; i < l.length; i++)
+			r = f([r, l[i] ]);
+		return r;
+	}) ]],
+
+	['vouw22'] = [[(l, f) => {
+		if (l.length == 0)
+			return false;
+		var r=l[0] ;
+		for (var i=1; i < l.length; i++)
+			r = f(r, l[i] );
+		return r;
+	} ]],
+
 	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
 	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
 	['atan'] = 'x => Math.atan2(x[0], x[1])',
@@ -490,6 +521,8 @@ local noops = {
 	-- discreet
 	['min'] = 'x => Math.min(x[0], x[1])',
 	['max'] = 'x => Math.max(x[0], x[1])',
+	['min2'] = 'Math.min',
+	['max2'] = 'Math.max',
 	['maxindexXXX'] = [[x => {
 		var maxi = null;
 		var max = - Infinity;
@@ -522,7 +555,9 @@ local noops = {
    ['gl.drawTriangles'] = 'args => (gl => gl.drawArrays(gl.TRIANGLES, args[0], args[1]))',
 
 	 ['vanaf'] = 'x => x[0].slice(x[1])',
+	 ['vanaf2'] = '(x,y) => x.slice(y)',
 	 ['tot'] = 'x => x[0].slice(0, x[1])',
+	 ['tot2'] = '(x,y) => x.slice(0, y)',
 	 ['canvas.fontsize'] = [[
  (function(_args) {return (function(c){
   var vorm = _args[0];
@@ -547,6 +582,20 @@ local noops = {
 	c.fillStyle = 'white';
   c.strokeStyle = 'white';
   return c;});
+ })]],
+
+	 ['verf2'] = [[
+ (vorm, kleur) => (c => {
+  var r = kleur[0]*255;
+  var g = kleur[1]*255;
+  var b = kleur[2]*255;
+  var style = 'rgb('+r+','+g+','+b+')';
+  c.fillStyle = style;
+  c.strokeStyle = style;
+  vorm(c);
+	c.fillStyle = 'white';
+  c.strokeStyle = 'white';
+  return c;
  })]],
 
 
@@ -703,8 +752,9 @@ local noops = {
 
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
-	['sign'] = '$1 > 0 and 1 or -1',
+	['sign'] = '$1 > 0 ? 1 : -1',
 	['mod'] = 'x => x[0] % x[1]',
+	['mod2'] = '(x,y) => x % y',
 
 	['int'] = 'Math.floor',
 	['sin'] = 'Math.sin',
@@ -767,22 +817,10 @@ for (var y = 0; y < h; y++) {
 }
 $1 = vec;]],
 
-	['..'] = [[
-if ($1 == $2) {
-	$1 = [];
-} else {
-	if ($1 <= $2) {
-		var res = [];
-		for (var i = 0; i < $2 - $1; i++)
-			res[i] = $1+i;
-		$1 = res;
-	} else {
-		var res = [];
-		for (var i = $1; i > $2 - $1; i--)
-			res[i] = $1+i;
-		$1 = res;
-	}
-} ]],
+	['..'] = [[var res = [];
+for (var i = 0; i < $2 - $1; i++)
+  res[i] = $1 + i;
+$1 = res;]],
 
 	-- cart
 	['×'] = [[
@@ -819,7 +857,7 @@ local binops = {
 	['/v1'] = '$1.map(x => x / $2)',
 	['_f'] = '$1($2)',
 	['_t'] = '$1.charCodeAt($2)',
-	['_l'] = '$1 ? $1[$2] : null',
+	['_l'] = '$1[$2]',
 	['_'] = 'typeof($1) == "function" ? $1($2) : (typeof($1) == "string" ? $1.charCodeAt($2) : $1[$2])',
 	['^r'] = '$1 ^ $2',
 	['+'] = '$1 + $2',
@@ -954,6 +992,16 @@ function jsgen(sfc)
 			L[#L+1] = tabs..di
 			focus = focus - 1
 
+
+		-- call2
+		elseif atoom(ins) == '_f2' then
+			local naamf = varnaam(focus-3)
+			local naama = varnaam(focus-2)
+			local naamb = varnaam(focus-1)
+			L[#L+1] = tabs..string.format('var %s = %s(%s, %s);', naamf, naamf, naama, naamb)
+			focus = focus - 2
+
+
 		elseif binops[atoom(ins)] then
 			local naama = varnaam(focus-2)
 			local naamb = varnaam(focus-1)
@@ -1087,7 +1135,7 @@ function jsgen(sfc)
 	local i = 1
 
 	while i <= #sfc do
-		if false and tonumber(atoom(sfc[i])) and sfc[i+1] then
+		if true and tonumber(atoom(sfc[i])) and sfc[i+1] then
 			ins2js2(sfc[i], sfc[i+1])
 			i = i + 1
 		else

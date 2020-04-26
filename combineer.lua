@@ -53,6 +53,9 @@ end
 local function combineerR(exp, t, kind)
 	if not exp then
 		t[#t+1] = '?'
+	elseif fn(exp) == '→' and atoom(arg0(exp)) == 'nat' then
+		t[#t+1] =  'lijst '
+		combineerR(arg1(exp), t, true)
 	elseif isatoom(exp) and postop[exp.v] or binop[exp.v] or unop[exp.v] then
 		t[#t+1] = '('
 		t[#t+1] = exp.v

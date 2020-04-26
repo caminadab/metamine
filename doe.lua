@@ -56,6 +56,15 @@ function doe(sfc, arg0, stack)
 			stack[#stack] = nil
 			stack[#stack] = r
 
+		elseif atoom(ins) == '_f2' then
+			local f = stack[#stack-2]
+			local a = stack[#stack-1]
+			local b = stack[#stack-0]
+			local r = f(a, b)
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = r
+
 		-- cache STORE
 		elseif fn(ins) == 'st' then
 			local index = tonumber(atoom(arg(ins)))

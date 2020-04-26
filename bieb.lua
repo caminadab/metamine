@@ -19,6 +19,9 @@ function bieb()
 
 	local bieb = {
 
+	['debugsom'] = true,
+	['eval'] = true,
+
 	['grabbel'] = function (lijst) return lijst[math.random(1, #lijst)] end,
 	-- canvas
 	['pad.begin'] = true,
@@ -33,6 +36,7 @@ function bieb()
 	-- webgl
 	['alert'] = true,
 	['splits'] = true,
+	['splits2'] = true,
 	['kubus'] = true,
 	['kies'] = true,
 	['superrender'] = true,
@@ -186,6 +190,7 @@ function bieb()
 	['misschien'] = true,
 	['fout'] = true,
 	['verf'] = true,
+	['verf2'] = true,
 
 	rgb = true,
 
@@ -257,7 +262,9 @@ function bieb()
 
 	-- wiskunde
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
-	max = function(args) return math.max(table.unpack(args)) end,
+	['min2'] = function(a, b) return math.min(a, b) end,
+	['max2'] = function(a, b) return math.max(a, b) end,
+	['max'] = function(args) return math.max(table.unpack(args)) end,
 	maxindexXXX = function(args)
 		if #args == 0 then
 			return nil
@@ -294,6 +301,7 @@ function bieb()
 	['niets'] = false;
 	['min'] = function(a) return math.min(a[1],a[2]) end;
 	['mod'] = function(a) return a[1] % a[2] end;
+	['mod2'] = function(a, b) return a % b end;
 
 	['¬'] = function(b)
 		return not b
@@ -587,6 +595,15 @@ function bieb()
 		return aggr
 	end;
 
+	['vouw2'] = function(lijst, func)
+		local aggr = lijst[1]
+		for i = 2,#lijst do
+			aggr = func{aggr, lijst[i]}
+		end
+		return aggr
+	end;
+
+
 	['zip'] = function(a)
 		local a,b = a[1],a[2]
 		local v = {}
@@ -595,6 +612,15 @@ function bieb()
 		end
 		return v
 	end;
+
+	['zip2'] = function(a, b)
+		local v = {}
+		for i=#a,1,-1 do
+			v[i] = {a[i], b[i]}
+		end
+		return v
+	end;
+
 
 	['zip1'] = function(a)
 		local a,b = a[1],a[2]
@@ -614,6 +640,16 @@ function bieb()
 		return v
 	end;
 
+	['map2'] = function(a, b)
+		local r = {}
+		for i=1,#a do
+			local v = a[i]
+			local s = b(v)
+			r[i] = s
+		end
+		return r
+	end;
+
 	['map'] = function(a)
 		local a,b = a[1],a[2]
 		local r = {}
@@ -628,6 +664,16 @@ function bieb()
 	['filter'] = function(args)
 		local l = args[1]
 		local fn = args[2]
+		local r = {}
+		for i,v in ipairs(l) do
+			if fn(v) then
+				r[#r+1] = v
+			end
+		end
+		return r
+	end;
+
+	['filter2'] = function(l, fn)
 		local r = {}
 		for i,v in ipairs(l) do
 			if fn(v) then
@@ -821,7 +867,16 @@ function bieb()
 		return false
 	end;
 
-	['vanaf'] = function(a,van)
+	['vanaf'] = function(airgs)
+		local a, van = args[1], args[2]
+		local t = {f='[]'}
+		for i=van+1,#a do
+			t[#t+1] = a[i]
+		end
+		return t
+	end;
+
+	['vanaf2'] = function(a,van)
 		local t = {f='[]'}
 		for i=van+1,#a do
 			t[#t+1] = a[i]
@@ -834,7 +889,16 @@ function bieb()
 		return t
 	end;
 
-	['tot'] = function(a,tot)
+	['tot'] = function(args)
+		local t, tot = args[1], args[2]
+		local t = {f='[]'}
+		for i=1,tot do
+			t[#t+1] = a[i]
+		end
+		return t
+	end;
+
+	['tot2'] = function(args)
 		local t = {f='[]'}
 		for i=1,tot do
 			t[#t+1] = a[i]

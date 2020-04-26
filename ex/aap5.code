@@ -95,7 +95,8 @@ dist = √((X-hn)²+(Y-hn)²)
 hoogte = X,Y → 3 · cos(dist)·√dist/1000 ; -√((X-n/2)²+(Y-n/2)²)·0.7
 hmap := (-hn ..hn × -hn ..hn) map hoogte
 hn = n/2
-tiles = (-hn ..hn × -hn ..hn) zip (0..n²) map ((i,j),h → pa map (pp → pp·10 + (10·i,1,10·j)))
+tiles = (-hn ..hn × -hn ..hn) zip (0..n²) map tilefunc
+tilefunc = (i,j),h → pa map (pp → pp·10 + (10·i,1,10·j))
 tileuvs = (0..n²) map (tui → [(0,0,0),(1,0,0),(0,1,0),(1,1,0),(0,1,0),(1,0,0)])
 
 ;pn = cross(pa₂ - pa₀, pa₁ - pa₀)
@@ -239,4 +240,5 @@ onormal  = nregel → (nregel splits " " vanaf 1) filter (nr → #nr > 0) map nf
 iface    = Iface → getal((Iface splits "/")₀)
 uface    = Jface → getal((Jface splits "/")₁)
 nface    = Nface → getal((Nface splits "/")₂)
+
 
