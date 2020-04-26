@@ -239,7 +239,7 @@ end
 		-- _(filter, (lijst, fn))
 		elseif fnaam(exp) == 'filter' then
 			local A = moes(arg1(exp))
-			moetzijn(types[A], X('→', 'nat', 'iets'), exp)
+			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
 
 			local lijst   = types[A][1]
 			local functie = types[A][2]
@@ -249,7 +249,7 @@ end
 			moetzijn(lijst, X('→', 'nat', intype), lijst)
 			moetzijn(functie, X('→', intype, 'bit'), functie)
 
-			types[moes(exp)] = X('→', 'nat', intype)
+			types[moes(exp)] = lijst
 
 		-- _(map, (lijst, fn))
 		elseif fn(exp) == '_' and atoom(arg0(exp)) == 'map2' then
