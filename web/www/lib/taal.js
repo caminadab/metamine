@@ -31,7 +31,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
     'niets', 'uit', 'ja', 'nee', 'fout', '∅',
 		'tekst', 'int', 'looptijd', 'nu',
 		'teken', 'render', 'rgb',
-		'sorteer', 'tot', 'vanaf', 'deel',
+		'sorteer', 'tot', 'vanaf', 'deel', 'vind',
 		'scherm.breedte', 'scherm.hoogte', 'willekeurig', 'scherm.ververst', 'verf',
 		'grabbel', 'kies', 'type', 'plet', 'canvas.fontsize', 'splits',
 		'vertexbuffer', 'shaderbind', 'shaderprogram', 'uniformbind', 'matrixbind',

@@ -1,0 +1,15 @@
+midi = download "res/symf.mid"
+
+bytes2int = bytes → Σ [bytes₀,bytes₁,bytes₂,bytes₃] zip [2^24,2^16,2^8,2^0] map (·)
+
+brokken := []
+
+i := 0
+als i < #midi dan
+	brokken := brokken ‖ [(i, deel(midi,i,i+4), broklengte(midi,i))]
+	i := i + 8 + broklengte(midi,i)
+eind
+
+broklengte = Midi,I → bytes2int(deel(Midi,I+4,I+8))
+
+uit = i, brokken

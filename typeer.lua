@@ -35,7 +35,7 @@ for i,feit in ipairs(stdbron.a) do
 end
 
 local function fnaam(exp)
-	return fn(exp) == '_' or fn(exp) == '_f' and atoom(arg0(exp))
+	return (fn(exp) == '_' or fn(exp) == '_f' or fn(exp) == '_f2') and atoom(arg0(exp))
 end
 
 function linkbieb(typegraaf)
@@ -161,6 +161,50 @@ end
 			types[moes(exp)] = types[moes(arg(exp))]
 
 
+		-- vanaf: lijst(A), int → lijst(A)
+		elseif fnaam(exp) == 'vanaf' then
+			local A = moes(arg1(exp))
+			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
+
+			local lijst = types[A][1]
+			local index = types[A][2]
+
+			moetzijn(lijst, X('→', 'nat', 'iets'), lijst or exp)
+			moetzijn(index, X'int', lijst or exp)
+
+			types[moes(exp)] = lijst
+
+
+		-- tot: lijst(A), int → lijst(A)
+		elseif fnaam(exp) == 'tot' then
+			local A = moes(arg1(exp))
+			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
+
+			local lijst = types[A][1]
+			local index = types[A][2]
+
+			moetzijn(lijst, X('→', 'nat', 'iets'), lijst or exp)
+			moetzijn(index, X'int', lijst or exp)
+
+			types[moes(exp)] = lijst
+
+
+		-- deel: lijst(A), int, int → lijst(A)
+		elseif fnaam(exp) == 'deel' then
+			local A = moes(arg1(exp))
+			moetzijn(types[A], X(',', 'iets', 'iets', 'iets'), exp)
+
+			local lijst = types[A][1]
+			local van = types[A][2]
+			local tot = types[A][3]
+
+			moetzijn(lijst, X('→', 'nat', 'iets'), lijst or exp)
+			moetzijn(van, X'int', lijst or exp)
+			moetzijn(tot, X'int', lijst or exp)
+
+			types[moes(exp)] = lijst
+
+
 		-- _(zip, (lijst, fn))
 		elseif fnaam(exp) == 'zip' then
 			local A = moes(arg1(exp))
@@ -174,6 +218,7 @@ end
 
 			local uittype = X(',', arg1(lijstA), arg1(lijstB))
 			types[moes(exp)] = X('→', 'nat', uittype)
+
 
 		-- _(map, (lijst, fn))
 		elseif fnaam(exp) == 'map' then

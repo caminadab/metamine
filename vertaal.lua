@@ -9,7 +9,24 @@ require 'oplos'
 require 'vectoriseer'
 
 
-function scope(x)
+local function vars(exp)
+	local t = {}
+	local function vars(exp)
+		if isatoom(exp) then
+			if not tonumber(atoom(exp)) then
+				t[#t+1] = exp
+			end
+		else
+			for k, sub in subs(exp) do
+				vars(sub)
+			end
+		end
+	end
+	vars(exp)
+	return t
+end
+
+local function scope2(x)
 	local maakvar = maakvars()
 	for exp in boompairs(x) do
 		if fn(exp) == '→' then
@@ -23,6 +40,35 @@ function scope(x)
 	return x
 end
 
+local function scope(exp)
+	local maakscope = maakvars()
+	for exp in boompairs(exp) do
+		if fn(exp) == '→' then
+			local body = arg1(exp)
+			local scope = maakscope()..'_'
+			local vars = vars(arg0(exp))
+
+			for i,var in ipairs(vars) do
+				local varnaam = atoom(var)
+				local letter = varnaam:sub(1,1)
+				if string.upper(letter) == letter then
+					local nieuwenaam = X(scope .. varnaam)
+					assign(var, nieuwenaam)
+
+					for exp in boompairsdfs(body) do
+						if atoom(exp) == varnaam then
+							assign(exp, nieuwenaam)
+						end
+					end
+				end
+			end
+
+		end
+	end
+	return exp
+end
+
+
 -- code → struct
 function vertaal(code, isdebug)
 	local naam = naam or '?'
@@ -31,7 +77,8 @@ function vertaal(code, isdebug)
 
 	local prev = socket.gettime()
 	local asb,syntaxfouten,map = ontleed(code)
-	--local scoped = scope(asb)
+	local asb = scope(asb)
+
 	if type(asb) ~= 'table' then
 		return nil, { syntaxfout(nergens, "rommel"); }
 	end

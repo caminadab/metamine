@@ -23,6 +23,7 @@ tcp.schrijf: socket, lijst byte → socket
 tcp.lees: socket → lijst byte
 
 willekeurig: getal,getal → getal
+download: (nat → letter) → (nat → letter)
 
 misschien: bit
 (!): int → int
@@ -175,7 +176,7 @@ tekst: lijst letter
 
 looptijd : getal
 nu : getal
-vind : (lijst, lijst) → int
+vind : (lijst, iets) → int
 tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst
 deel : (lijst, (int, int)) → lijst

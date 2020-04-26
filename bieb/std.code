@@ -3,11 +3,11 @@
 main = (in.vars, start, nu, setcontext, setcontext3d, scherm.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind, in.fotos, dt) → (uit.vars, uit)
 
 scherm.hoogte = 100
-klem = Kv,Kl,Kh → min(max(Kv,Kl),Kh)
+klem = V,L,H → min(max(V,L),H)
 
 ; linq helpers
-maxindex = Ml → ((0..#Ml) zip Ml vouw Mfunc)₀
-Mfunc = ((Ma,Mb),(Mc,Md) → kies((Mb > Md), (Ma,Mb), (Mc,Md)))
+maxindex = M → ((0..#M) zip M lvouw Mfunc)₀
+Mfunc = (A,B),(C,D) → kies((B > D), (A,B), (C,D))
 
 ; toetsenbord
 toetsen := {}
@@ -26,9 +26,8 @@ eind
 ; canvas
 canvas.wis = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), kleur.zwart)
 
-;teken = Vormen1 → setcontext(canvas.wis ∘ (([fn.id] || Vormen1) vouw (∘)) )
-teken = Vormen1 → setcontext(canvas.wis ∘ (componeer Vormen1))
-render = Vormen2 → setcontext3d(([fn.id] || Vormen2) vouw (∘))
+teken = Vormen → setcontext(canvas.wis ∘ (componeer Vormen))
+render = Vormen → setcontext3d(([fn.id] || Vormen) vouw (∘))
 fn.id = Fix → Fix
 
 ; muis
@@ -60,16 +59,16 @@ schaal = Tx,Ty,Tz → [[Tx,0,0,0],[0,Ty,0,0],[0,0,Tz,0],[0,0,0,1]]
 ; [a b 0]  [a 0 b]  [1 0 0]
 ; [c d 0]  [0 1 0]  [0 a b]
 ; [0 0 1]  [c 0 d]  [0 c d]
-xdraai = Tdx → [[1,0,0,0], [0, cos Tdx, -sin Tdx, 0], [0, sin Tdx, cos Tdx, 0], [0,0,0,1]]
-ydraai = Tdy → [[cos Tdy, 0, sin Tdy, 0], [0,1,0,0], [-sin Tdy, 0, cos Tdy, 0], [0,0,0,1]]
-zdraai = Tdz → [[cos Tdz, sin Tdz, 0, 0], [-sin Tdz, cos Tdz, 0, 0], [0,0,1,0], [0,0,0,1]]
+xdraai = X → [[1,0,0,0], [0, cos X, -sin X, 0], [0, sin X, cos X, 0], [0,0,0,1]]
+ydraai = Y → [[cos Y, 0, sin Y, 0], [0,1,0,0], [-sin Y, 0, cos Y, 0], [0,0,0,1]]
+zdraai = Z → [[cos Z, sin Z, 0, 0], [-sin Z, cos Z, 0, 0], [0,0,1,0], [0,0,0,1]]
 
 ; scherm
 ;scherm.frequentie = ?
 ;dt = scherm.frequentie
 
 mat4.id = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
-mat4.transponeer = [mta,mtb,mtc,mtd] → [[mta₀,mtb₀,mtc₀,mtd₀],[mta₁,mtb₁,mtc₁,mtd₁],[mta₂,mtb₂,mtc₂,mtd₂],[mta₃,mtb₃,mtc₃,mtd₃]]
+mat4.transponeer = [A,B,C,D] → [[A₀,B₀,C₀,D₀],[A₁,B₁,C₁,D₁],[A₂,B₂,C₂,D₂],[A₃,B₃,C₃,D₃]]
 
 ; kleuren
 kleur.beige = rgb(96%, 96%, 86%)

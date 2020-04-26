@@ -554,6 +554,9 @@ local noops = {
    ['gl.drawArrays'] = 'gl => ((At, Ai, An) => gl.drawArrays(At,Ai,An))',
    ['gl.drawTriangles'] = 'args => (gl => gl.drawArrays(gl.TRIANGLES, args[0], args[1]))',
 
+	 ['deel'] = 'x => x[0].slice(x[1], x[2])',
+	 ['vind'] = 'x => x[0].indexOf(x[1])',
+	 ['vind2'] = '(x,y) => x.indexOf(y)',
 	 ['vanaf'] = 'x => x[0].slice(x[1])',
 	 ['vanaf2'] = '(x,y) => x.slice(y)',
 	 ['tot'] = 'x => x[0].slice(0, x[1])',

@@ -867,6 +867,22 @@ function bieb()
 		return false
 	end;
 
+	['vind2'] = function(a,b)
+		for i=1,#a-#b+1 do
+			local gevonden = true
+			for j=i,i+#b-1 do
+				if a[j] ~= b[j-i+1] then
+					gevonden = false
+					break
+				end
+			end
+			if gevonden then
+				return i-1
+			end
+		end
+		return false
+	end;
+
 	['vanaf'] = function(airgs)
 		local a, van = args[1], args[2]
 		local t = {f='[]'}
