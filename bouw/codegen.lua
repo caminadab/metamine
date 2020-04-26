@@ -39,10 +39,11 @@ local binop  = set(
 	'+','·','/','^',
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
 	'∪','∩',':','∈','\\',
-	'_f','_f2','_t','_l','^f',
+	'_f','_t','_l','^f',
 	'+v', '+v1', '·v', '·v1', '/v1',
 	'+m', '+m1', '·m1', '·mv', '·m'
 )
+local triop  = set('_f2')
 
 -- exps worden gecachet (voor debugging)
 function codegen(exp, moes2naam)
@@ -145,6 +146,13 @@ function codegen(exp, moes2naam)
 			codegen(arg1(exp), ins)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 1
+
+		elseif triop[fn(exp)] then
+			codegen(arg0(exp), ins)
+			codegen(arg1(exp), ins)
+			codegen(arg2(exp), ins)
+			ins[#ins+1] = X(fn(exp))
+			focus = focus - 2
 
 		elseif unop[fn(exp)] then
 			codegen(arg(exp), ins)

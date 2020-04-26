@@ -24,19 +24,23 @@ selindex := -1
 selpos := (-1,-1)
 
 als muis.klik.begin en selindex = -1 en (muis.schaakindex) ≠ -1 dan
-	selindex := muis.schaakindex
-	selpos := muis.schaakpos
+	als bord ⇒ (bord₀)(muis.schaakindex) ≠ -1 dan
+		selindex := muis.schaakindex
+		selpos := muis.schaakpos
+	end
 eind
 
 als muis.klik.begin en selindex ≠ -1 dan
-	bord := doezet(bord, (selindex, muis.schaakindex))
+	als bord ⇒ bord.kanzet(bord, (selindex, muis.schaakindex)) dan
+		bord := doezet(bord, (selindex, muis.schaakindex)) 
+	eind
 	selindex := -1
 	selpos := (-1,-1)
 eind
 
 ; doe zet
-doezet = (Bord,Stukken),(PosA,PosB) → NieuwBord1,NieuweStukken
-Stuk = Bord(PosA)
+doezet = (Bord,Stukken,IsZwart),(PosA,PosB) → (NieuwBord1,NieuweStukken,¬IsZwart)
+Stuk = kies((int(PosB/8) = 7 en 8 ≤ Bord(PosA) en Bord(PosA) < 16 ), dame, Bord(PosA))
 Stuk1 = Bord(PosB)
 NieuwBord  = newindex2(Bord, PosB, Stuk)
 NieuwBord1 = newindex2(NieuwBord, PosA, -1)
@@ -53,40 +57,85 @@ pion,paard,loper,toren,dame,heer = 1,2,3,4,5,6
 zwart = 10
 wit = 0
 
+; zetten
+viszetten = [] ;bord.zetten(bord) map bzlijn
+bzlijn = bzv,bzn → lijn(index2scherm(bzv), index2scherm(bzn))
+index2scherm = i2s → (i2x, i2y) · 10 + 5
+i2x = i2s mod 8
+i2y = int(i2s / 8)
+
+
 ; mogelijke zetten
 any = alijst, afunc → #(alijst filter afunc) > 0
 bord.kanzet = kzbord, kzet → bord.zetten(kzbord) any (kkzet → (kzet = kkzet))
-bord.zetten = zbord,zstukken → ;-pionstartzetten ‖ pionzetten ‖-; torenzetten
+bord.zetten = zbord,zstukken,iszwart → bordzetten
 
-pionstartzetten = (8..16) filter (Pi → (zstukken(Pi) = Pi)) map (pi → (pi,pi+16))
-pionzetten = (0..8) map (pi2 → (zstukken(pi2+8),zstukken(pi2+8)+8))
+als iszwart dan
+	bordzetten =  zpionzetten ‖ zpaardzetten0 ‖ zpaardzetten1 ‖ zloperzetten ‖ zdamezetten ‖ zkoningzetten
+anders
+	bordzetten =  pionstartzetten ‖ pionzetten ‖ paardzetten0 ‖ paardzetten1 ‖ loperzetten ‖ damezetten ‖ koningzetten
+eind
 
-; oh yeah torenzetten
-;torenzetten = (([zstukken(0)] × [wit] × [1,-1,8,-8]) map ((X,Y),Z → (X,Y,Z))) map lijnzetten vouw (‖);torenA ‖ torenB ‖ torenC ‖ torenD
-torenzetten = torenA ‖ torenB ‖ torenC ‖ torenD
-torenA = lijnzetten(zstukken(0),wit,1)
-torenB = lijnzetten(zstukken(0),wit,-1)
-torenC = lijnzetten(zstukken(0),wit,8)
-torenD = lijnzetten(zstukken(0),wit,-8)
+kpos = [1,9,8,7,-1,-9,-8,-7] ; koning loop
+ppos = [10,17,15,6,-10,-17,-15,-6] ; paard jump
+koningzetten = ((0..8) map (kz → zstukken(4)+kpos(kz))) filter isgoed rzip1 (zstukken(4))
+paardzetten0 = (((0..8) map (pz0 → zstukken(1)+ppos(pz0))) filter isgoed rzip1 (zstukken(1))) filter pisgoed
+paardzetten1 = (((0..8) map (pz1 → zstukken(6)+ppos(pz1))) filter isgoed rzip1 (zstukken(6))) filter pisgoed
+
+isgoed = (ispos → (ispos ≥ 0 en ispos < 64 en ((zbord(ispos) = -1) of (zbord(ispos) ≥ 16))))
+
+pisgoed = pisa,pisb → abs((pisa mod 8) - (pisb mod 8)) ≤ 2
+
+pionzetten = pionstartzetten ‖ pionlopen ‖ pionslazettenR ‖ pionslazettenL
+pionstartzetten = (8..16) filter (Pi → (zstukken(Pi) = Pi en zbord(Pi+8) = -1 en zbord(Pi+16) = -1)) map (pi → (pi,pi+16))
+pionlopen = (0..8) map (pi2 → (zstukken(pi2+8),zstukken(pi2+8)+8)) filter (pi3a,pi3b → (zbord(pi3b) = -1))
+pionslazettenR = (0..8) map (pi4 → (zstukken(pi4+8),zstukken(pi4+8)+9)) filter (pi5a,pi5b → (zbord(pi5b) ≥ 16))
+pionslazettenL = (0..8) map (pi6 → (zstukken(pi6+8),zstukken(pi6+8)+7)) filter (pi7a,pi7b → (zbord(pi7b) ≥ 16))
+
+
+torenzetten = ([zstukken(0), zstukken(7)] × [wit] × [1,-1,8,-8]) map lijnzetten vouw (‖)
+damezetten  = ([zstukken(3)] × [wit] × [1,7,8,9,-1,-7,-8,-9]) map lijnzetten vouw (‖)
+loperzetten = ([zstukken(2),zstukken(5)] × [wit] × [7,9,-7,-9]) map lijnzetten vouw (‖)
+
+; zwart
+
+zisgoed = (zispos → (zispos ≥ 0 en zispos < 64 en ((zbord(zispos) = -1) of (zbord(zispos) ≥ 0 en zbord(zispos) < 16))))
+
+; pion
+
+zpionzetten = zpionstartzetten ‖ zpionlopen ‖ zpionslazettenR ‖ zpionslazettenL
+zpionstartzetten = (0..8) filter (zpi0 → (zstukken(zpi0+16) = 48+zpi0 en zbord(48+zpi0-8) = -1 en zbord(48+zpi0-16) = -1)) map (zpi → (48+zpi,48+zpi-16))
+zpionlopen = (16..24) map (zpi2 → (zstukken(zpi2),zstukken(zpi2)-8)) filter (zpi3a,zpi3b → (zbord(zpi3b) = -1))
+zpionslazettenR = (16..24) map (zpi4 → (zstukken(zpi4),zstukken(zpi4)-9)) filter (zpi5a,zpi5b → (zbord(zpi5b) ≥ 0 en zbord(zpi5b) < 16))
+zpionslazettenL = (16..24) map (zpi6 → (zstukken(zpi6),zstukken(zpi6)-7)) filter (zpi7a,zpi7b → (zbord(zpi7b) ≥ 0 en zbord(zpi7b) < 16))
+
+zpaardzetten0 = (((0..8) map (zpz0 → zstukken(25)+ppos(zpz0))) filter zisgoed rzip1 (zstukken(25))) filter pisgoed
+zpaardzetten1 = (((0..8) map (zpz1 → zstukken(30)+ppos(zpz1))) filter zisgoed rzip1 (zstukken(30))) filter pisgoed
+
+ztorenzetten = ([zstukken(24), zstukken(31)] × [zwart] × [1,-1,8,-8]) map lijnzetten vouw (‖)
+zloperzetten = ([zstukken(26),zstukken(29)] × [zwart] × [7,9,-7,-9]) map lijnzetten vouw (‖)
+zdamezetten  = ([zstukken(27)] × [zwart] × [1,7,8,9,-1,-7,-8,-9]) map lijnzetten vouw (‖)
+
+zkoningzetten = ((0..8) map (zkz → zstukken(28)+kpos(zkz))) filter zisgoed rzip1 (zstukken(28))
 
 ; horizontale zetten
 lijnzetten = (hpos, hkleur, dir) → tf([],hpos+dir,tf)
 tf = tz,ti,rec → tz0
 
 als hkleur = wit dan
-	lijnkanslaan = (zbord(hpos + ti · dir) ≥ 16)
+	lijnkanslaan = (zbord(ti) ≥ 16)
 anders
-	lijnkanslaan = (zbord(hpos + ti · dir) < 16 en zbord(hpos + ti · dir) ≥ 0)
+	lijnkanslaan = (zbord(ti) < 16 en zbord(ti) ≥ 0)
 eind
 
 xposmax = ⌈(hpos+1) / 8⌉ · 8 
 xposmin = ⌊hpos/8⌋ · 8
 
-yposmax = 7·8 + (hpos mod 8)
+yposmax = 8·8 + (hpos mod 8)
 yposmin = hpos mod 8 
 
-maxti = kies((abs(dir)<8), xposmax, kies(((dir mod 8) = 0), yposmax, min(xposmax, yposmax)))
-minti = kies((abs(dir)<8), xposmin, kies(((dir mod 8) = 0), yposmin, max(xposmax, yposmax)))
+maxti = kies((abs(dir)<8), xposmax, kies(((dir mod 8) = 0), yposmax, max(xposmax, yposmax)))
+minti = kies((abs(dir)<8), xposmin, kies(((dir mod 8) = 0), yposmin, min(xposmin, yposmin)))
 
 als minti ≤ ti en ti < maxti dan
 	als lijnkanslaan dan
@@ -102,8 +151,14 @@ anders
 	tz0 = [(-1,-1)] vanaf 1
 eind
 
+bord.score = Bbord → #((Bbord₁)  filter (X → (X ≠ -1)))
+bord.bestezet = bzbord → bestezet
+bzscores = bord.zetten(bzbord) map bz
+bz = (bzzet → bord.score(doezet(bzbord, bzzet)))
+bestezet = (bord.zetten(bzbord))(maxindex bzscores)
+
 als toets.spatie.begin dan
-	bord := doezet(bord, grabbel(bord.zetten bord)) ;(willekeurig(0,#(bord.zetten bord))))
+	bord := doezet(bord, bord.bestezet(bord)) ;(willekeurig(0,#(bord.zetten bord))))
 eind
 
 ; [(type,pos)]
@@ -117,7 +172,7 @@ zwart.startstukken = zwart.pionnen ‖ zwart.achter
 stukposities := 0..16
 leegte = (0..8 × 2..6) map (x2,y2 → -1)
 ; (pos2index,index2pos)
-bord := pos2index, index2pos ;wit.startstukken ‖ zwart.startstukken
+bord := pos2index, index2pos, nee ;wit.startstukken ‖ zwart.startstukken
 pos2index = 0..16 ‖ leegte ‖ 16..32
 index2pos = 0..16 ‖ 48+0..16
 index2type = [0] ‖ wit.startstukken ‖ zwart.startstukken
@@ -129,10 +184,15 @@ flabel = canvas.fontsize(slabel, 10)
 stuklabel = ptype,(px,py) → verf(flabel, kleur.wit)
 
 pos = 0..8 × 0..8
-uit =  teken(gekleurdevakjes ‖ [hover,sel] ‖ ((bord₀) zip pos map stuklabel) ‖ dbg)
+uit =  teken(gekleurdevakjes ‖ viszetten ‖ [hover,sel] ‖ ((bord₀) zip pos map stuklabel) ‖ [dbg1,dbg2])
 
-dbg = canvas.fontsize(label(0,90,tekst(dbgtekst)), 3)
-dbgtekst = bord.zetten(bord), bord.kanzet(bord, (8,16))
+dbg1 = canvas.fontsize(label(0,95,dbgtekst1), 3)
+dbg2 = canvas.fontsize(label(0,90,dbgtekst2), 3)
+dbg3 = canvas.fontsize(label(0,85,dbgtekst3), 3)
+dbgtekst1 = "num zetten = " ‖ tekst(#bord.zetten(bord))
+dbgtekst2 = "beste zet = " ‖  tekst(bord.bestezet(bord))
+dbgtekst3 = "score = " ‖ tekst(bord.score(bord))
+
 
 
 

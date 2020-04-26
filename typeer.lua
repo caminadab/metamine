@@ -291,7 +291,7 @@ end
 			types[moes(exp)] = types[A]
 
 		-- concatenatie
-		elseif fn(exp) == '‖' then
+		elseif true and fn(exp) == '‖' then
 			local A = moes(arg0(exp))
 			local B = moes(arg1(exp))
 
@@ -312,6 +312,7 @@ end
 
 			--print("CAT", combineer(lijsttypeA), combineer(lijsttypeB), combineer(lijsttype))
 
+				--lijsttype = X('→', 'nat', 'iets')
 			types[moes(exp)] = lijsttype
 
 		elseif fn(exp) == '=' or fn(exp) == ':=' then

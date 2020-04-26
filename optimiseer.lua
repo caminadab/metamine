@@ -119,9 +119,8 @@ function optimiseer(exp, issub)
 			return exp
 		end
 
-
 		local nexp = X('_f', 'lvoor', X(',', max, filter1, map, filter2))
-		if false then
+		if true then
 			print('lvoor')
 			print('max', combineer(max))
 			print('filter1', combineer(filter1))

@@ -58,7 +58,7 @@ rgb: (getal, getal, getal) → (getal, getal, getal)
 ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 ;boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 ;rechthoek: (ℝ,ℝ),(ℝ,ℝ) → vorm
-;lijn: (ℝ,ℝ), (ℝ,ℝ) → vorm
+;lijn: iets → functie
 ;label: (ℝ,ℝ), lijst(letter) → vorm
 draai: vorm → vorm
 ;vouw: (lijst(A), (A → B)) → lijst(B)

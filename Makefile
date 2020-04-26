@@ -11,6 +11,7 @@ test: linux
 	lua test.lua
 
 webdemos: web/www/ex/
+	./tolk ex/aap5.code web/www/ex/aap5.en.code
 	./tolk ex/pong.code web/www/ex/pong.en.code
 	./tolk ex/cirkels.code web/www/ex/cirkels.en.code
 	./tolk ex/salvobal.code web/www/ex/salvobal.en.code

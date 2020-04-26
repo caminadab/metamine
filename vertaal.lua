@@ -58,7 +58,7 @@ function vertaal(code, isdebug)
 	local prev = socket.gettime()
 
 	-- vectoriseer
-	local asb = vectoriseer(asb, types)
+	local asb = vectoriseer(asb, types, isdebug)
 
 	check(asb)
 
