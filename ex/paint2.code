@@ -13,9 +13,12 @@ als muis.klik en muis.beweegt dan
 	punten := punten ‖ [muis.pos]
 eind
 
+
 als muis.klik.eind dan
 	lijnen := lijnen ‖ [verf(polygoon(punten), kleuren(kleurindex))]
 	kleurindex := (kleurindex + 1) mod (# kleuren)
+	punten := []
 eind
 
 uit = teken (lijnen ‖ [lijn(punten)])
+

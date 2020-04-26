@@ -5,12 +5,6 @@ main = (in.vars, start, nu, setcontext, setcontext3d, scherm.breedte, scherm.ver
 scherm.hoogte = 100
 klem = Kv,Kl,Kh → min(max(Kv,Kl),Kh)
 
-foto = ((Fx,Fy),Ff) → canvas.drawImage(Ff, Fx, Fy)
-
-fotos.gras = in.fotos₀
-fotos.muur = in.fotos₁
-fotos.dodo = in.fotos₂
-
 ; linq helpers
 maxindex = Ml → ((0..#Ml) zip Ml vouw Mfunc)₀
 Mfunc = ((Ma,Mb),(Mc,Md) → kies((Mb > Md), (Ma,Mb), (Mc,Md)))

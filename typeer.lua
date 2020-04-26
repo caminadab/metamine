@@ -150,7 +150,11 @@ end
 			end
 
 			local type = typegraaf:maaktype(X('→', 'nat', lijsttype))
-			types[moes(exp)] = type
+			if #exp > 0 then
+				types[moes(exp)] = type
+			else
+				types[moes(exp)] = X('→', 'nat', 'iets')
+			end
 
 		-- min
 		elseif fn(exp) == '-' then

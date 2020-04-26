@@ -225,6 +225,8 @@
 					resCache = {};
 					textureCache = {};
 
+					var id = x => x;
+
 					uit.onkeydown = (ev) => {
 						var nu = new Date().getTime() / 1000;
 						var toetsBegin = (keycode) => ev.keyCode == keycode;
@@ -254,8 +256,8 @@
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
 						var muisKlikBegin = true;
-						var setcontext = x => x;
-						var setcontext3d = x => x;
+						var setcontext = id;
+						var setcontext3d = id;
 						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
@@ -275,8 +277,8 @@
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
 						var muisKlikEind = true;
-						var setcontext = x => x;
-						var setcontext3d = x => x;
+						var setcontext = id;
+						var setcontext3d = id;
 						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
@@ -295,15 +297,10 @@
 						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
 						var muisY = 100 - muisY;
 						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
-						var setcontext = x => x;
-						var setcontext3d = x => x;
+						var setcontext = id;
+						var setcontext3d = id;
 						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 						vars = uv[0];
-						/*
-						uitvoer = uv[1];
-						if (!context)
-							uit.innerHTML = toString(uitvoer);
-*/
 						return true;
 					};
 						
@@ -313,9 +310,9 @@
 						var toetsEind = (keycode) => ev.keyCode == keycode;
 						var toetsCode = ev.keyCode;
 						var toetsEindigt = true;
-						var setcontext = x => x;
-						var setcontext3d = x => x;
-						var uv = main([vars, false, nu, x => x, x => x, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
+						var setcontext = id;
+						var setcontext3d = id;
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, fotos]);
 
 						vars = uv[0];
 						uitvoer = uv[1];
