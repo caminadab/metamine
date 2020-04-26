@@ -71,7 +71,7 @@ function test(code, moetzijn)
 			print()
 		end
 
-		assert(false)
+		--assert(false)
 	end
 
 end

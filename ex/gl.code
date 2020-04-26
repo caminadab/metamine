@@ -1,0 +1,152 @@
+vert = vertexshader "
+uniform mat4 proj;
+uniform mat4 cam;
+attribute vec3 normal;
+attribute vec3 pos;
+varying vec3 normalInterp;
+varying vec3 vertPos;
+varying vec3 lightpos;
+
+void main(void) {
+	gl_Position = proj * cam * vec4(pos - vec3(.5), 1.0);
+	highp float x = sqrt(3.0);
+	lightpos = (proj * cam * vec4(0.0, 0, 1, 0.0)).xyz;
+	normalInterp = normal;
+	vertPos = gl_Position.xyz;
+}
+"
+
+;***
+frag = fragmentshader "
+uniform highp float time;
+varying highp vec3 normalInterp;
+varying highp vec3 vertPos;
+varying highp vec3 lightpos;
+void main(void) {
+	highp float x = sqrt(3.0);
+	highp vec3 col = vec3(0.1,0.1,0.0) + vec3(abs(dot(lightpos, normalInterp))); // / 10000.0; //;cross(normalInterp, lightpos);
+	gl_FragColor = vec4(col/vertPos.z,1.0);
+}
+"
+
+frag2 = fragmentshader "
+varying highp vec3 normalInterp;
+varying highp vec3 vertPos;
+varying highp vec3 lightpos;
+
+const int mode = 1;
+
+const highp vec3 lightColor = vec3(1.0, 1.0, 1.0);
+const highp float lightPower = 40.0;
+const highp vec3 ambientColor = vec3(0.1, 0.0, 0.0);
+const highp vec3 diffuseColor = vec3(0.5, 0.0, 0.0);
+const highp vec3 specColor = vec3(1.0, 1.0, 1.0);
+const highp float shininess = 16.0;
+const highp float screenGamma = 2.2; // Assume the monitor is calibrated to the sRGB color space
+
+void main() {
+
+	highp vec3 lightPos = lightpos.xyz;
+  highp vec3 normal = normalize(normalInterp);
+  highp vec3 lightDir = lightPos - vertPos;
+  highp float distance = length(lightDir);
+  distance = distance * distance;
+  lightDir = normalize(lightDir);
+
+  highp float lambertian = max(dot(lightDir, normal), 0.0);
+  highp float specular = 0.0;
+
+  if (lambertian > 0.0) {
+
+    highp vec3 viewDir = normalize(-vertPos);
+
+    // this is blinn phong
+    highp vec3 halfDir = normalize(lightDir + viewDir);
+    highp float specAngle = max(dot(halfDir, normal), 0.0);
+    specular = pow(specAngle, shininess);
+       
+    // this is phong (for comparison)
+    if (mode == 2) {
+      highp vec3 reflectDir = reflect(-lightDir, normal);
+      specAngle = max(dot(reflectDir, viewDir), 0.0);
+      // note that the exponent is different here
+      specular = pow(specAngle, shininess/4.0);
+    }
+  }
+  highp vec3 colorLinear = ambientColor +
+                     diffuseColor * lambertian * lightColor * lightPower / distance +
+                     specColor * specular * lightColor * lightPower / distance;
+  // apply gamma correction (assume ambientColor, diffuseColor and specColor
+  // have been linearized, i.e. have no gamma correction in them)
+  highp vec3 colorGammaCorrected = pow(colorLinear, vec3(1.0 / screenGamma));
+  // use the gamma corrected color in the fragment
+  gl_FragColor = vec4(colorGammaCorrected, 1.0);
+}
+"
+r = scherm.breedte / scherm.hoogte
+mx = -1+muis.x/(100·r)·2
+my = -1+muis.y/100·2
+buf = vertexbuffer [
+	0,0,0, 1,1,0, 0,1,0, 0,0,0, 1,1,0, 1,0,0,
+	0,0,0, 1,0,1, 0,0,1, 0,0,0, 1,0,1, 1,0,0,
+	0,0,0, 0,1,1, 0,0,1, 0,0,0, 0,1,1, 0,1,0,
+	0,0,1, 1,1,1, 0,1,1, 0,0,1, 1,1,1, 1,0,1,
+	0,1,0, 1,1,1, 0,1,1, 0,1,0, 1,1,1, 1,1,0,
+	1,0,0, 1,1,1, 1,0,1, 1,0,0, 1,1,1, 1,1,0,
+]
+
+normalbuf = vertexbuffer(plet[
+	A,A,A,A,A,A,B,B,B,B,B,B,C,C,C,C,C,C,
+	D,D,D,D,D,D,E,E,E,E,E,E,F,F,F,F,F,F])
+A = (0,0,1)
+B = (0,1,0)
+C = (1,0,0)
+D = (0,0,-1)
+E = (0,-1,0)
+F = (-1,0,0)
+n = 0.5 + 0.5 · sin looptijd
+m = 0.5 + 0.5 · cos looptijd
+prog = shaderprogram(vert, frag)
+prog1 = shaderbind(prog, "pos", buf)
+prog2 = shaderbind(prog1, "normal", normalbuf)
+prog3 = matbind(prog2, "cam", plet cam)
+prog4 = matbind(prog3, "proj", plet proj)
+prog5 = uniformbind(prog4, "time", looptijd)
+uit = setcontext3d(x → superrender(x,buf,prog5,12))
+
+; matrix math
+;proj = schaal(.01,.01,.01)
+proj = projection(τ/4,1.778,.001,1000)
+cam = Ms · My · Mx · Mv 
+
+; model
+Ms = schaal(.5, .5, .5)
+Mx = xdraai(muis.y/100·τ)
+My = ydraai(muis.x/100·τ)
+Mv = verplaats(xpos, -0.1, zpos)
+
+fps := 60
+frames := 0
+fpstijd := looptijd + 1
+als looptijd > fpstijd dan
+	fpstijd := looptijd + 1
+	fps := frames
+	frames := 0
+eind
+als scherm.ververst dan
+	frames := frames + 1
+eind
+
+zpos := 1
+xpos := 0
+als scherm.ververst en toets.w dan zpos := zpos - .02 eind
+als scherm.ververst en toets.s dan zpos := zpos + .02 eind
+als scherm.ververst en toets.a dan xpos := xpos + .02 eind
+als scherm.ververst en toets.d dan xpos := xpos - .02 eind
+
+projection = (fov,ar,znear,zfar) → Proj
+	zf = 1 / tan(fov/2)
+	rangeinv = 1 / (znear - zfar)
+	z1 = (-znear-zfar)·rangeinv
+	z2 = 2·zfar·znear·rangeinv
+	Proj = ((zf/ar,0,0,0),(0,zf,0,0),(0,0,z1,1),(0,0,z2,0))

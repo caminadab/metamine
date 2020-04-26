@@ -1,29 +1,22 @@
 ; 3d poging 999
-punten = [-20,20] × [-20,20] × [-20,20]
-qpunten = punten map ((x,y),z → [x,y,z,1])
+qpunten = [-20,20] × [-20,20] × [-20,20] × [1]
 tpunten = qpunten map (qpunt → mat · qpunt)
-spunten = tpunten map ([tx,ty,tz,tw] → [(tx-80)/tw+80,(ty-50)/tw+50,tz])
+spunten = tpunten map naarscherm
 gpunten = spunten
 
-cam.x := 30
-cam.z := 100
-cam.hoek := 0
-
-als toets.a dan cam.x := cam.x - .7 eind
-als toets.d dan cam.x := cam.x + .7 eind
-als toets.w dan cam.z := cam.z - .7 eind
-als toets.s dan cam.z := cam.z + .7 eind
+naarscherm = tx,ty,tz,tw → (tx-80)/tw+80, (ty-50)/tw+50, tz
 
 als toets.links dan cam.hoek := cam.hoek - 0.03 eind
 als toets.rechts dan cam.hoek := cam.hoek + 0.03 eind
 
-v = verplaats(cam.x,0,cam.z) ;zdraai looptijd
-cam = ydraai(cam.hoek) · v ; · xdraai(looptijd) · v
+v = verplaats(30,0,100)
+cam = ydraai(looptijd) · v
 
+; matrix math
 z1 = (0.1+1000)/(1000-0.1)
 z2 = (2·0.1·1000)/(1000-0.1)
 proj = [[100,0,0,0],[0,100,0,0],[0,0,z1,-1],[0,0,z2,0]]
-
+a
 mat = cam · proj
 
 indices1 = [ [0,1,5,4], [0,4,6,2], [0,1,3,2]   ]
@@ -31,15 +24,18 @@ indices2 = [ indices1₀+2, indices1₁+1, indices1₂+4]
 indices = indices1 ‖ indices2
 pdata = indices map (is → is map gpunten)
 fdata = pdata filter zichtbaar
-zichtbaar = zp → ja ;(zc₂ ≠ 0)
-za = (zp₂ - zp₀)
+zichtbaar = zp → (zc₂ > 0)
+za = (zp₃ - zp₀)
 zb = (zp₁ - zp₀)
 zc = cross(za, zb)
 kleuren = [kleur.rood, kleur.groen, kleur.blauw, kleur.geel, kleur.paars, kleur.cyaan]
 
-cross = [ax,ay,az],[bx,by,bz] → [ay·bz-az·by, az·bx - ax·bz, ax·by-ay·bx]
-dot = [dx1,dy1,dz1],[dx2,dy2,dz2] → (dx1·dy1+dx2·dy2+dz1·dz2)
+cross = (ax,ay,az),(bx,by,bz) → (ay·bz-az·by, az·bx - ax·bz, ax·by-ay·bx)
 
 polygonen = fdata map polygoon
 kpolygonen = polygonen zip kleuren map verf
-uit = teken kpolygonen
+uit = teken (kpolygonen ‖ debug)
+
+debug = label(1,1,type(cross))
+P = pdata₀
+

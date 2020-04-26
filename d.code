@@ -1,2 +1,1 @@
-plus = x,y → x + y
-main = plus(1,2), plus(3,4)
+main = (3..10 × 3..10 × 3..10) map fn.id

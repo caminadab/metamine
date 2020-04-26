@@ -1,8 +1,21 @@
+require 'unicode'
 require 'exp'
 
 -- past types toe om operators te preoverloaden
 function vectoriseer(asb, types)
 	for exp in boompairsdfs(asb) do
+
+		-- rtti?
+		if fn(exp) == '_' and atoom(arg0(exp)) == 'type' then
+			local type = combineer(types[moes(arg1(exp))])
+			local tekst = {o=X'"'}
+
+			for i,u in utf8pairs(type) do
+				tekst[i] = X(tostring(u))
+			end
+			--error(unlisp(tekst))
+			assign(exp, tekst)
+		end
 
 		-- L_i → (_i)(L, i)
 		if fn(exp) == '_' then

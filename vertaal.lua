@@ -36,7 +36,9 @@ function vertaal(code, isdebug)
 	end
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	print('ontleed\t' ..ms..' ms')
+	if debugprint then
+		print('ontleed\t' ..ms..' ms')
+	end
 	local prev = socket.gettime()
 
 	-- vertaal
@@ -50,17 +52,23 @@ function vertaal(code, isdebug)
 
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	print('typeer\t' ..ms..' ms')
+	if debugprint then
+		print('typeer\t' ..ms..' ms')
+	end
 	local prev = socket.gettime()
 
 	-- vectoriseer
 	local asb = vectoriseer(asb, types)
 
+	check(asb)
+
 	local exp,oplosfouten,varmap = oplos(asb, "main", isdebug)
 	
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	print('oplos\t' ..ms..' ms')
+	if debugprint then
+		print('oplos\t' ..ms..' ms')
+	end
 	local prev = socket.gettime()
 
 	if #oplosfouten > 0 then
@@ -68,12 +76,14 @@ function vertaal(code, isdebug)
 	end
 
 	-- optimiseer
-	if not opt or not opt['0'] then
+	if not isdebug and (not opt or not opt['0']) then
 		exp = optimiseer(exp)
 
 		local delta = socket.gettime() - prev
 		local ms = math.floor(delta * 1000)
-		print('optimiseer\t' ..ms..' ms')
+		if debugprint then
+			print('optimiseer\t' ..ms..' ms')
+		end
 		local prev = socket.gettime()
 	end
 
@@ -99,7 +109,9 @@ function vertaal(code, isdebug)
 
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	print('codegen\t' ..ms..' ms')
+	if debugprint then
+		print('codegen\t' ..ms..' ms')
+	end
 	local prev = socket.gettime()
 
 	local naam2cache = {}

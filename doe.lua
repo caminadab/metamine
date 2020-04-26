@@ -1,4 +1,5 @@
 require 'bieb'
+require 'unicode'
 
 local postop = set("%","!",".","'")
 local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖","\\", "^f","_f","_l")
@@ -91,7 +92,7 @@ function doe(sfc, arg0, stack)
 			local r = {}
 			for i=1,num do
 				local top = stack[#stack]
-				r[num-i+1] = string.char(top)
+				r[num-i+1] = utf8encode(top)
 				stack[#stack] = nil
 			end
 			stack[#stack+1] = table.concat(r)

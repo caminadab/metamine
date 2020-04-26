@@ -19,6 +19,7 @@ function bieb()
 
 	local bieb = {
 
+	['grabbel'] = function (lijst) return lijst[math.random(1, #lijst)] end,
 	-- canvas
 	['pad.begin'] = true,
 	--['context2d'] = true,
@@ -27,11 +28,14 @@ function bieb()
 	['canvas.clear'] = true,
 	['canvas.fontsize'] = true,
 	['canvas.drawImage'] = true,
+	['plet'] = true,
 
 	-- webgl
 	['alert'] = true,
+	['splits'] = true,
 	['kubus'] = true,
 	['kies'] = true,
+	['superrender'] = true,
 	['gl.drawArrays'] = true,
 	['gl.drawTriangles'] = true,
 	['gl.clearColor'] = true,
@@ -41,8 +45,18 @@ function bieb()
 	['gl.linkProgram'] = true,
 	['gl.useProgram'] = true,
 
-	['gl.VertexShader'] = true,
-	['gl.FragmentShader'] = true,
+	['download'] = true,
+	['cubemap'] = true,
+	['texture'] = true,
+	['vertexbuffer'] = true,
+	['vertexshader'] = true,
+	['fragmentshader'] = true,
+	['shaderprogram'] = true,
+	['shaderbind'] = true,
+	['uniformbind'] = true,
+	['matrixbind'] = true,
+	['texturebind'] = true,
+	['cubemapbind'] = true,
 
 	-- functioneel
 	['fn.plus'] = function(x) return function(y) return x + y end end; -- fn.plus(3) = x -> x + 3
@@ -91,8 +105,6 @@ function bieb()
 	end;
 
 	-- net
-
-	['model'] = function () end,
 
 	-- host, poort → socket
 	['tcp.verbind'] = function (args)
@@ -331,7 +343,8 @@ function bieb()
 	['-'] = function(a) return -a end;
 	['·'] = function(a) return a[1] * a[2] end;
 	['/'] = function(a) return a[1] / a[2] end;
-	['√'] = function(a) return math.pow(a, 0.5) end;
+	['√'] = function(a) return math.sqrt(a) end;
+	['²'] = function(a) return a * a end;
 	['%'] = function(a) return a / 100 end;
 
 	['^'] = function(a)
@@ -484,22 +497,75 @@ function bieb()
 		return dt
 	end;
 
-	-- linq
-
 	['voor'] = function(a)
-		local max,start,map,reduce = a[1],a[2],a[3],a[4]
+		local max,start,filter1,map,filter2,reduce = a[1],a[2],a[3],a[4],a[5],a[6]
 		local val = start
-		for i=0,max-1 do
-			val = reduce({val,map(i)})
+
+		if type(max) == 'table' then
+			if #max == 2 then
+				for i=0,max[1]-1 do
+					for j=0,max[2]-1 do
+						if filter1{i,j} then
+							val = reduce{val, map{i,j}}
+						end
+					end
+				end
+			elseif #max == 3 then
+				for i=0,max[1]-1 do
+					for j=0,max[2]-1 do
+						for k=0,max[3]-1 do
+							if filter1{i,j,k} then
+								val = reduce{val,map{i,j,k}}
+							end
+						end
+					end
+				end
+			end
+		else
+			for i=0,max-1 do
+				if filter1(i) then
+					val = reduce{val,map(i)}
+				end
+			end
 		end
 		return val
 	end;
 
 	['lvoor'] = function(a)
-		local max,map = a[1],a[2]
+		local max,filter1,map,filter2 = a[1],a[2],a[3],a[4]
 		local val = {}
-		for i=0,max-1 do
-			val[i] = map(i)
+		if type(max) == 'table' then
+			local index = 0
+			if #max == 2 then
+				for i=0,max[1]-1 do
+					for j=0,max[2]-1 do
+						if filter1{i,j} then
+							val[k] = map{i,j}
+							if not filter2{i, j} then
+								val[index] = nil
+							end
+						end
+						index = index + 1
+					end
+				end
+			elseif #max == 3 then
+				for i=0,max[1]-1 do
+					for j=0,max[2]-1 do
+						for k=0,max[3]-1 do
+							if filter1{i,j,k} then
+								val[index] = map{i,j,k}
+								index = index + 1
+							end
+						end
+					end
+				end
+			else
+				error'NEE'
+			end
+		else
+			for i=0,max-1 do
+				val[i] = map(i)
+			end
 		end
 		return val
 	end;
@@ -559,8 +625,10 @@ function bieb()
 		return r
 	end;
 
-	['filter'] = function(l,fn)
-		local r = {f='[]'}
+	['filter'] = function(args)
+		local l = args[1]
+		local fn = args[2]
+		local r = {}
 		for i,v in ipairs(l) do
 			if fn(v) then
 				r[#r+1] = v
@@ -569,15 +637,17 @@ function bieb()
 		return r
 	end;
 
-	['reduceer'] = function(l,fn)
-		local r = {f='[]'}
-		for i,v in ipairs(l) do
-			if fn(v) then
-				r[#r+1] = v
-			end
+	['reduceer'] = function(args)
+		local lijst = args[1]
+		local reduceer = args[2]
+		local r = lijst[1]
+		local k = 1
+		for i=2,#lijst do
+			r = reduceer{r, lijst[i]}
 		end
 		return r
 	end;
+
 	-- trig
 	['sin'] = math.sin;
 	['asin'] = math.asin;

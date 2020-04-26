@@ -15,7 +15,18 @@
 		</div>
 		<h2>Intro</h2>
 		<div>
-			Een programma in Metamine is een lijst van regels. Deze 
+			Een programma in Metamine is een lijst van regels. Deze regels moeten samen <b>uit</b> definiëren. Een klein voorbeeld is:
+			<pre>
+				uit = "hullo wereld"
+			</pre>
+			Een simpele timer:
+			<pre>
+				uit = looptijd
+			</pre>
+			Een vierkant;
+			<pre>
+				uit = teken [ vierkant(0,0,10) ]
+			</pre>
 		</div>
 		<h2>Coördinaten</h2>
 		<div>
@@ -29,19 +40,91 @@
 		<h2>Functies</h2>
 		<table>
 			<thead> <td>Naam</td> <td>Argument</td> <td>Beschrijving</td> </thead>
+
+			<tr> <td>boog</td> <td> </td>  <td>todo</td> </tr>
 			<tr> <td>cirkel</td> <td>x, y, r</td> <td>Teken een cirkel met centrum <b>(x,y)</b> en straal <b>r</b></td> </tr>
+			<tr> <td>getal</td> <td>t</td> <td>Converteert de tekst <b>t</b> naar een getal.</td> </tr>
+			<tr> <td>int</td> <td>a</td> <td>Converteert <b>a</b> naar integer (geheel getal). Rondt af naar beneden.</td> </tr>
+			<tr> <td>ja</td> <td></td> <td>Ja. Representeert 1 als bit.</td> </tr>
 			<tr> <td>label</td> <td>x, y, t</td> <td>Schrijf de tekst <b>t</b> een vierkant op positie <b>(x,y)</b></td> </tr>
 			<tr> <td>lijn</td> <td>punten</td> <td>Teken een lijn tussen de punten uit <b>punten</b></td> </tr>
+			<tr> <td>looptijd</td> <td></td> <td>De looptijd van het programma, in seconden, precies tot op een milliseconde. Als de app start is dit 0.</td> </tr>
 			<tr> <td>max</td> <td>a, b</td> <td>Neem de grootste waarde van <b>a</b> en <b>b</b></td> </tr>
 			<tr> <td>map</td> <td>a, b</td> <td>Mapt alle elementen uit <b>a</b> naar <b>b</b></td> </tr>
 			<tr> <td>min</td> <td>a, b</td> <td>Neem de kleinste waarde van <b>a</b> en <b>b</b></td>
 			<tr> <td>mod</td> <td>a, b</td> <td>Bereken de modulo van <b>a</b> en <b>b</b></td> </tr>
+			<tr> <td>nee</td> <td></td> <td>Nee. Representeert 0 als bit.</td> </tr>
+			<tr> <td>nu</td> <td></td> <td>Representeert <b>nu</b> als getal in seconden vanaf 1970.</td> </tr>
+			<tr> <td>niets</td> <td></td> <td>Niets. Representeert de afwezigheid van een waarde.</td> </tr>
 			<tr> <td>sin</td> <td>a</td> <td>Bereken de sinus van <b>a</b></td> </tr>
 			<tr> <td>cos</td> <td>a</td> <td>Bereken de cosinus van <b>a</b></td> </tr>
 			<tr> <td>tan</td> <td>a</td> <td>Bereken de tangens van <b>a</b></td> </tr>
+			<tr> <td>teken</td> <td>vormen</td> <td>Tekent een lijst van <b>vormen</b>. Mogelijke vormen zijn <b>cirkel</b>, <b>vierkant</b>, <b>rechthoek</b>, <b>polygoon</b>, <b>boog</b>, <b>lijn</b>, <b>label</b>. </td> </tr>
+			<tr> <td>tekst</td> <td>a</td> <td>Converteert <b>a</b> naar tekst. <pre>tekst([1,2,3]) = "1,2,3"</pre></td> </tr>
+
+			<tr> <td>uit</td> <td></td> <td>De uitvoer van het programma. Dit moet je definiëren in je code, bijvoorbeeld "uit = 3".</td> </tr>
 			<tr> <td>polygoon</td> <td>punten</td> <td>Teken een polygoon aangegeven door een lijst van punten</td> </tr>
 			<tr> <td>rechthoek</td> <td>x1, y1, x2, y2</td> <td>Teken een rechthoek tussen posities <b>(x,y)</b> en <b>(x2,y2)</b></td> </tr>
+			<tr> <td>rgb</td> <td>r, g, b</td> <td>Maakt een kleur van de componenten rood (<b>r</b>), groen (<b>g</b>), blauw (<b>b</b>) </td> </tr>
+			<tr> <td>verf</td> <td>vorm, kleur</td> <td>Verft een vorm <b>vorm</b> in de kleur <b>kleur</b></td> </tr>
 			<tr> <td>vierkant</td> <td>x, y, r</td> <td>Teken een vierkant op positie <b>(x,y)</b> met hoogte <b>r</b></td> </tr>
+
+			<tr> <td>canvas.fontsize</td> <td>tekst, fontsize</td>  <td>Tekent <b>tekst</b> met grootte <b>fontsize</b> </td> </tr>
+			<tr> <td>fout</td> <td> </td>  <td>Representeert een fout.</td> </tr>
+			<tr> <td>∅</td> <td> </td>  <td>Een lege lijst.</td> </tr>
+			<tr> <td>render</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>sorteer</td> <td>lijst</td>  <td>Sorteert de <b>lijst</b>.</td> </tr>
+			<tr> <td>tot</td> <td>a, index</td> <td>Returnt een lijst met alle elementen in lijst <b>a</b> tot <b>index</b> </td>  </tr>
+			<tr> <td>vanaf</td> <td>a, index</td> <td>Returnt een lijst met alle elementen in lijst <b>a</b> vanaf <b>index</b> </td>  </tr>
+			<tr> <td>deel</td> <td>lijst, (van, tot)</td> <td>Returnt een sublijst van <b>lijst</b>, beginnent van <b>van</b> en tot <b>tot</b> </td>  </tr>
+			<tr> <td>scherm.breedte</td> <td> </td>  <td>De breedte van het uitvoerscherm. Typisch rondt de 177.</td> </tr>
+			<tr> <td>scherm.hoogte</td> <td> </td>  <td>De hoogte van het uitvoerscherm. Vastgezet op 100.</td> </tr>
+			<tr> <td>willekeurig</td> <td>laag, hoog</td>  <td>Genereert een willekeurig getal tussen <b>laag</b> en <b>hoog</b> </td> </tr>
+			<tr> <td>scherm.ververst</td> <td> </td>  <td>Is <b>ja</b> op het moment dat het beeldscherm ververst (meestal 60x per seconde), en anders <b>nee</b> </td> </tr>
+			<tr> <td>grabbel</td> <td>lijst</td>  <td>Pakt een willekeurig element uit de <b>lijst</b> </td> </tr>
+			<tr> <td>kies</td> <td>a, b, c</td>  <td>Als <b>a = ja</b>, is gelijk aan <b>b</b>, en anders <b>c</b> </td> </tr>
+			<tr> <td>type</td> <td>a</td>  <td>Een tekstuele beschrijving van het type van <b>a</b>. Bijvoorbeeld <pre>"int"</pre> </td> </tr>
+			<tr> <td>plet</td> <td>lijst(lijst)</td>  <td>Neemt als argument een lijst van lijsten. Maakt een lijst van alle elementen in alle lijsten, beginnent bij lijst 1. Bijvoorbeeld: <pre>plet([[1,2],[3,4],[5,6]) = [1,2,3,4,5,6]</pre></td> </tr>
+			<tr> <td>splits</td> <td>lijst, token</td>  <td>Splitst een lijst in een lijst van sublijsten. Bijvoorbeeld: <pre>split([1,2,0,3,0,4,5],0) = [[1,2], [3], [4,5]]</td> </tr>
+			<tr> <td>vertexbuffer</td> <td>punten</td>  <td>Maakt een GPU-buffer van een lijst van <b>punten</b>.</td> </tr>
+			<tr> <td>shaderbind</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>texture</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>shaderprogram</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>uniformbind</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>matrixbind</td> <td> </td>  <td>todo</td> </tr>
+
+			<tr> <td>muis.x</td> <td> </td>  <td>De x-positie van de muis. Typisch tussen de 0 en 177.</td> </tr>
+			<tr> <td>muis.y</td> <td> </td>  <td>De y-positie van de muis. Altijd tussen de 0 en 100.</td> </tr>
+			<tr> <td>muis.pos</td> <td> </td>  <td>Is gelijk aan (muis.x, muis.y).</td> </tr>
+			<tr> <td>muis.beweegt</td> <td> </td>  <td><b>ja</b> op de momenten dat de muis beweegt, en anders <b>nee</b> </td> </tr>
+			<tr> <td>muis.klik</td> <td> </td>  <td>Of de muis ingedrukt is</td> </tr>
+			<tr> <td>muis.klik.begin</td> <td> </td>  <td>Alleen <b>ja</b> op het moment dat de muis wordt ingedrukt</td> </tr>
+			<tr> <td>muis.klik.eind</td> <td> </td>  <td>Alleen <b>ja</b> op het moment dat de muis wordt losgelaten</td> </tr>
+
+		<tr> <td>toets.&lt;letter&gt;</td> <td></td> <td>Bijvoorbeeld <b>toets.a</b>, <b>toets.spatie</b>. Is <b>ja</b> als de toets aanstaat, en anders <b>nee</b>.
+		<tr> <td>toets.&lt;letter&gt;.begin</td> <td></td> <td>Bijvoorbeeld <b>toets.a.begin</b>, <b>toets.spatie.begin</b>. Is <b>ja</b> op het precieze moment dat de toets ingedrukt wordt, en anders <b>nee</b>.
+		<tr> <td>toets.&lt;letter&gt;.eind</td> <td></td> <td>Bijvoorbeeld <b>toets.a.eind</b>, <b>toets.spatie.eind</b>. Is <b>ja</b> op het precieze moment dat de toets losgelaten wordt. <b>nee</b>.
+
+			<tr> <td>abs</td> <td>a</td>  <td>De absolute waarde van a</td> </tr>
+			<tr> <td>filter</td> <td>lijst, predicaat</td> <td>Filtert een lijst middels <b>predicaat</b>(item → bit) dat aangeeft of een item voldoet. Bijvoorbeeld: <pre> [1,2,3,4] filter (x → x < 3) </pre> </td> </tr>
+			<tr> <td>lijn</td> <td>(x1,y1),(x2,y2), ...</td>  <td>todo</td> </tr>
+			<tr> <td>label</td> <td>x, y, t</td>  <td>todo</td> </tr>
+			<tr> <td>klem</td> <td>x, laag, hoog</td>  <td>todo</td> </tr>
+			<tr> <td>max</td> <td>x, hoog</td>  <td>todo</td> </tr>
+			<tr> <td>min</td> <td>x, laag</td>  <td>todo</td> </tr>
+			<tr> <td>mod</td> <td>x, y</td>  <td>todo</td> </tr>
+			<tr> <td>maxindex</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>map</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>polygoon</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>rechthoek</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>sin</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>cos</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>tan</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>atan</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>vouw</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>vierkant</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>zip</td> <td> </td>  <td>todo</td> </tr>
+
 		</table>
 	</body>
 

@@ -83,7 +83,7 @@ function subs(exp)
 end
 
 function checkr(e, p, k)
-assert(k)
+	assert(k)
 	if not e then
 		error(string.format('%s[%s] = nil', lenc(p), k))
 	end
