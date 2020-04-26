@@ -27,6 +27,7 @@ end
 function vertaal(code, isdebug)
 	local naam = naam or '?'
 	local maakvar = maakvars()
+	local opt = opt or {}
 
 	local prev = socket.gettime()
 	local asb,syntaxfouten,map = ontleed(code)
@@ -36,7 +37,7 @@ function vertaal(code, isdebug)
 	end
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	if debugprint then
+	if opt.D then
 		print('ontleed\t' ..ms..' ms')
 	end
 	local prev = socket.gettime()
@@ -52,7 +53,7 @@ function vertaal(code, isdebug)
 
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	if debugprint then
+	if opt.D then
 		print('typeer\t' ..ms..' ms')
 	end
 	local prev = socket.gettime()
@@ -66,7 +67,7 @@ function vertaal(code, isdebug)
 	
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	if debugprint then
+	if opt.D then
 		print('oplos\t' ..ms..' ms')
 	end
 	local prev = socket.gettime()
@@ -81,7 +82,7 @@ function vertaal(code, isdebug)
 
 		local delta = socket.gettime() - prev
 		local ms = math.floor(delta * 1000)
-		if debugprint then
+		if opt.D then
 			print('optimiseer\t' ..ms..' ms')
 		end
 		local prev = socket.gettime()
@@ -109,7 +110,7 @@ function vertaal(code, isdebug)
 
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)
-	if debugprint then
+	if opt.D then
 		print('codegen\t' ..ms..' ms')
 	end
 	local prev = socket.gettime()
