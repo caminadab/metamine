@@ -62,7 +62,7 @@ td:nth-child(1) {
 	font-width: bold;
 	background: #3a2299;
 	font-size: 48px;
-	padding: 12px;
+	padding: 0;
 	box-sizing: border-box;
 	word-wrap: break-word;
 }

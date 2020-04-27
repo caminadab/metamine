@@ -398,7 +398,7 @@
 
 	// make fullscreen
 	function fullscreen() {
-		uit.children[0].requestFullscreen();
+		uit.requestFullscreen();
 	}
 
 	function playorstop() {
