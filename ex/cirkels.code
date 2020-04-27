@@ -4,7 +4,6 @@ h = 10
 pos = 0..w × 0..h
 
 ; cirkelpatroon
-f = 2 + 3 · sin(looptijd)
 dx = x - muis.x/10 
 dy = y - muis.y/10
 dst = √(dx²+dy²)

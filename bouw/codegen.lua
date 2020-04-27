@@ -55,7 +55,6 @@ function codegen(exp, moes2naam)
 	local maakcacheindex = maakindices(0)
 	local argindex = {} -- num → index
 	local maakargindex = maakindices(0)
-	local numcalls = 0
 
 	local bieb = bieb()
 
@@ -84,7 +83,6 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X('ld', tostring(iscached[exp]))
 			return
 		end
-		numcalls = numcalls + 1
 
 		-- causatie
 		if fn(exp) == '⇒' then
@@ -217,9 +215,5 @@ function codegen(exp, moes2naam)
 	end
 
 	local ins = {o='[]'}
-	local a,b,c = codegen(exp, ins)
-	if opt and opt.D then
-		print('num codegen calls = '..numcalls + 1)
-	end
-	return a, b, c
+	return codegen(exp, ins)
 end

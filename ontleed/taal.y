@@ -247,17 +247,18 @@ witruimte:
 |	NEWLINE witruimte;
 
 single:
-	NAAM										{ $$ = LOC(L, $1, @1); }
+	NAAM								{ $$ = LOC(L, $1, @1); }
 | "ℝ"
 | "★"
 |	single ".." single  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-| '(' exp ')'							{ $$ = xlua_sluit(L, LOC(L, $2, @$)); }
-|	NAAM '.'								{ $$ = FN1(L, $2, $1, @$); }
+| '#' single 					{ $$ = FN1(L, $1, $2, @$); }
+| '(' exp ')'					{ $$ = xlua_sluit(L, LOC(L, $2, @$)); }
+|	NAAM '.'						{ $$ = FN1(L, $2, $1, @$); }
 |	NAAM '\''						{ $$ = FN1(L, $2, $1, @$); }
 |	NAAM '%'						{ $$ = FN1(L, $2, $1, @$); }
-|	single KWADRAAT				{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"2", @2), @$); }
-|	single DERDEMACHT				{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"3", @2), @$); }
-|	single INVERTEER												{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"-1", @2), @$); }
+|	single KWADRAAT			{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"2", @2), @$); }
+|	single DERDEMACHT		{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"3", @2), @$); }
+|	single INVERTEER		{ $$ = FN2(L, A(L,"^", @2), $1, A(L,"-1", @2), @$); }
 |	'(' op ')'					{ $$ = LOC(L,$2,@$); }
 |	'(' unop ')'				{ $$ = LOC(L,$2,@$);; }
 |	"⌈" exp "⌉"  { $$ = FN2(L, A(L,"_", @2), A(L,"afrond.boven", @2), $2, @$); }
@@ -329,7 +330,6 @@ exp:
 |	"√" exp  { $$ = FN1(L, $1, $2, @$); }
 |	"Σ" exp  { $$ = FN1(L, $1, $2, @$); }
 |	'-' exp  %prec NEG { $$ = FN1(L, LOC(L,$1,@1), $2, @$); }
-|	'#' exp  { $$ = FN1(L, LOC(L,$1,@1), $2, @$); }
 |	exp '!' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
 |	exp '%' { $$ = FN1(L, LOC(L,$2,@2), $1, @$); }
 

@@ -39,26 +39,27 @@ als muis.klik.begin en selindex ≠ -1 dan
 eind
 
 ; doe zet
-doezet = (Bord,Stukken,IsZwart),(PosA,PosB) → (NieuwBord1,NieuweStukken,¬IsZwart)
-Stuk = kies((int(PosB/8) = 7 en 8 ≤ Bord(PosA) en Bord(PosA) < 16 ), dame, Bord(PosA))
-Stuk1 = Bord(PosB)
-NieuwBord  = newindex2(Bord, PosB, Stuk)
-NieuwBord1 = newindex2(NieuwBord, PosA, -1)
+doezet = (dbord,dstukken,beurt),(posA,posB) → (nbord,nstukken,¬beurt)
+
+dstuk = kies((int(posB/8) = 7 en 8 ≤ dbord(posA) en dbord(posA) < 16 ), dame, dbord(posA))
+dstuk1 = dbord(posB)
+nbord0 = newindex2(dbord, posB, dstuk)
+nbord  = nbord0; newindex2(nbord0, posA, -1)
 
 ; stukken slaan
-als Stuk1 ≠ -1 dan
-	NieuweStukken1 = newindex(Stukken,Stuk1,-1)
+als dstuk1 ≠ -1 dan
+	nstukken0 = newindex(dstukken,dstuk1,-1)
 anders
-	NieuweStukken1 = Stukken
+	nstukken0 = dstukken
 eind
-NieuweStukken = newindex2(NieuweStukken1,Stuk,PosB)
+nstukken = newindex2(nstukken0,dstuk,posB)
 
 pion,paard,loper,toren,dame,heer = 1,2,3,4,5,6
 zwart = 10
 wit = 0
 
 ; zetten
-viszetten = [] ;bord.zetten(bord) map bzlijn
+viszetten = bord.zetten(bord) map bzlijn
 bzlijn = bzv,bzn → lijn(index2scherm(bzv), index2scherm(bzn))
 index2scherm = i2s → (i2x, i2y) · 10 + 5
 i2x = i2s mod 8
@@ -66,14 +67,14 @@ i2y = int(i2s / 8)
 
 
 ; mogelijke zetten
-any = alijst, afunc → #(alijst filter afunc) > 0
-bord.kanzet = kzbord, kzet → bord.zetten(kzbord) any (kkzet → (kzet = kkzet))
+any = Lijst, Func → #(Lijst filter Func) > 0
+bord.kanzet = Bord, Zet → bord.zetten(Bord) any (Potzet → (Zet = Potzet))
 bord.zetten = zbord,zstukken,iszwart → bordzetten
 
 als iszwart dan
-	bordzetten =  zpionzetten ‖ zpaardzetten0 ‖ zpaardzetten1 ‖ zloperzetten ‖ zdamezetten ‖ zkoningzetten
+	bordzetten =  zpionzetten ‖ zpaardzetten0 ‖ zpaardzetten1 ‖ zloperzetten ztorenzetten ‖ zdamezetten ‖ zkoningzetten
 anders
-	bordzetten =  pionstartzetten ‖ pionzetten ‖ paardzetten0 ‖ paardzetten1 ‖ loperzetten ‖ damezetten ‖ koningzetten
+	bordzetten =  pionzetten ‖ paardzetten0 ‖ paardzetten1 ‖ loperzetten ‖ torenzetten ‖ damezetten ‖ koningzetten
 eind
 
 kpos = [1,9,8,7,-1,-9,-8,-7] ; koning loop
@@ -184,14 +185,15 @@ flabel = canvas.fontsize(slabel, 10)
 stuklabel = ptype,(px,py) → verf(flabel, kleur.wit)
 
 pos = 0..8 × 0..8
-uit =  teken(gekleurdevakjes ‖ viszetten ‖ [hover,sel] ‖ ((bord₀) zip pos map stuklabel) ‖ [dbg1,dbg2])
+uit =  teken(gekleurdevakjes ‖ viszetten ‖ [hover,sel] ‖ ((bord₀) zip pos map stuklabel) ‖ [dbg1,dbg2,dbg3])
 
 dbg1 = canvas.fontsize(label(0,95,dbgtekst1), 3)
 dbg2 = canvas.fontsize(label(0,90,dbgtekst2), 3)
 dbg3 = canvas.fontsize(label(0,85,dbgtekst3), 3)
-dbgtekst1 = "num zetten = " ‖ tekst(#bord.zetten(bord))
+dbgtekst1 = "kanzet (8,16) = " ‖ tekst(bord.kanzet(bord,(8,16)))
 dbgtekst2 = "beste zet = " ‖  tekst(bord.bestezet(bord))
 dbgtekst3 = "score = " ‖ tekst(bord.score(bord))
+
 
 
 
