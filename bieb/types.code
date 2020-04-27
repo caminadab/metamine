@@ -176,7 +176,7 @@ tekst: lijst letter
 
 looptijd : getal
 nu : getal
-vind : (lijst, iets) → int
+;vind : (lijst, iets) → int
 tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst
 deel : (lijst, (int, int)) → lijst

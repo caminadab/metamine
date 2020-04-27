@@ -53,6 +53,7 @@ local noops = {
 	} ]],
 
 	['download'] = [[pad => {
+		pad = "res/" + pad;
 		if (resCache[pad])
 			return resCache[pad];
 
@@ -60,7 +61,7 @@ local noops = {
 
 		fetch(pad)
 			.then(x => x.text())
-			.then(x => {resCache[pad] = x;});
+			.then(x => resCache[pad] = x);
 
 		return "";
 	} ]],
@@ -554,8 +555,10 @@ local noops = {
    ['gl.drawArrays'] = 'gl => ((At, Ai, An) => gl.drawArrays(At,Ai,An))',
    ['gl.drawTriangles'] = 'args => (gl => gl.drawArrays(gl.TRIANGLES, args[0], args[1]))',
 
+	 ['jsonencodeer'] = 'x => { try { return JSON.stringify(x); } catch (e) {return e.message; }}',
+	 ['jsondecodeer'] = 'x => { try { return JSON.parse(x); } catch (e) {return e.message; }}',
 	 ['deel'] = 'x => x[0].slice(x[1], x[2])',
-	 ['vind'] = 'x => x[0].indexOf(x[1])',
+	 ['vind'] = 'x => x[0].indexOf(x[1], x[2])',
 	 ['vind2'] = '(x,y) => x.indexOf(y)',
 	 ['vanaf'] = 'x => x[0].slice(x[1])',
 	 ['vanaf2'] = '(x,y) => x.slice(y)',
@@ -791,6 +794,13 @@ local unops2 = {
 }
 
 local binops2 = {
+	['^l'] = [[var res = [];
+	var k = 0;
+	for (var i = 0; i < $2; i++)
+		for (var j = 0; j < $1.length; j++)
+			res[k++] = $1[j];
+	$1 = res;]],
+
 	['+'] = '$1 += $2;',
 	['·'] = '$1 *= $2;',
 	['/'] = '$1 /= $2;',

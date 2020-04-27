@@ -36,6 +36,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'grabbel', 'kies', 'type', 'plet', 'canvas.fontsize', 'splits',
 		'vertexbuffer', 'shaderbind', 'shaderprogram', 'uniformbind', 'matrixbind',
 		'download', 'texturebind', 'texture', 'cubemap', 'cubemapbind',
+		'jsonencodeer', 'jsondecodeer',
 
 		// muis
 		'muis.x', 'muis.y', 'muis.pos', 'muis.beweegt',
@@ -65,7 +66,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'sort', 'from', 'til', 'slice',
 		'screen.width', 'screen.height', 'random', 'screen.refreshes', 'paint',
 		'clamp',
-
+		'jsonencode', 'jsondecode',
 
 		// muis
 		'mouse.x', 'mouse.y', 'mouse.pos', 'mouse.moves',

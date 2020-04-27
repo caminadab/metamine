@@ -32,6 +32,8 @@ function bieb()
 	['canvas.fontsize'] = true,
 	['canvas.drawImage'] = true,
 	['plet'] = true,
+	['jsonencodeer'] = true,
+	['jsondecodeer'] = true,
 
 	-- webgl
 	['alert'] = true,
@@ -313,6 +315,20 @@ function bieb()
 			a = a * i
 		end
 		return a
+	end;
+
+	['^l'] = function(a)
+		local f, n = a[1], a[2]
+		return function(x)
+			local r = {}
+			for i = 1, n do
+				for j = 1, #f do
+					r[k] = f[j]
+					k = k + 1
+				end
+			end
+			return r
+		end
 	end;
 
 	['^f'] = function(a)

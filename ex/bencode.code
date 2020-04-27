@@ -1,0 +1,70 @@
+;tor = "d3:hoii123e3:abcli1ei2ei3eee" 
+tor = download "debian10.torrent"
+
+LIJST = 1
+DICT = 2
+
+isnaam := nee
+stack := []
+i := 0
+dec := " "
+slen := 0
+klaar := nee
+
+als i > 0 en i ≥ #tor dan
+	klaar := ja
+eind
+als tor(i) = 'd' dan
+	i := i + 1
+	dec := dec ‖ "{"
+	stack := stack ‖ [DICT]
+	isnaam := ja
+eind
+als dec ⇒ tor(i) = 'l' dan
+	i := i + 1
+	dec := dec ‖ "["
+	stack := stack ‖ [LIJST]
+eind
+als tor(i) = 'i' dan
+	i := vind(tor,"e",i)+1
+	dec := dec ‖ deel(tor,i+1,vind(tor,"e",i)) ‖ ","
+	isnaam := ja
+eind
+als '0' ≤ tor(i) en tor(i) ≤ '9' dan
+	i := vind(tor,":",i)
+	slen := int(deel(tor,i,vind(tor,":",i)))
+eind
+als dec ⇒ tor(i) = ':' dan
+	i := i + slen + 1
+	als isnaam dan
+		isnaam := nee
+		dec := dec ‖ jsonencode(deel(tor,i+1,i+slen+1)) ‖ ":"
+	anders
+		dec := dec ‖ jsonencode(deel(tor,i+1,i+slen+1)) ‖ ","
+		isnaam := (stack(#stack-1) = DICT)
+	eind
+eind
+als dec ⇒ tor(i) = 'e' dan
+	i := i + 1
+	stack := stack tot (#stack-1)
+	als dec ⇒ stack(#stack-1) = DICT dan
+		dec := dec ‖ "},"
+	anders
+		dec := dec ‖ "],"
+	eind
+eind
+
+torobj := 3
+als klaar dan
+	torobj := jsondecodeer("[]")
+eind
+
+;uit = klaar,i,dec,tor(0),(tor(0) = 'd')
+;uit = klaar,i,dec
+uit = klaar,i,#tor, ((i > 0 en i ≥ #tor) ⇒ jsondecodeer(dec ‖ ""))
+
+
+
+
+
+

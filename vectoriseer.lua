@@ -59,8 +59,11 @@ function vectoriseer(asb, types, debug)
 		-- (F^i) → (^)(F, i)
 		if fn(exp) == '^' then
 			local basetype = types[moes(arg0(exp))]
+			local islijst = atoom(arg0(basetype)) == 'nat' or obj(basetype) == ','
 			local isfunc = fn(basetype) == '→' or atoom(basetype) == 'functie'
-			if isfunc then
+			if islijst then
+				exp.f = X'^l'
+			elseif isfunc then
 				exp.f = X'^f'
 			elseif atoom(basetype) == 'getal' or atoom(basetype) == 'int' then
 				exp.f = X'^'

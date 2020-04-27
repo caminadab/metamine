@@ -47,12 +47,12 @@ function test(code, moetzijn)
 	local asmval = tostring(doeasm(asm))
 	local jsval = tostring(doejs(js))
 
-	print(code)
-	print('Im', 'Js', 'Asm')
-	print(imval, jsval, asmval)
-	print()
-
 	if imval ~= asmval or imval ~= jsval then
+		print(code)
+		print('Im', 'Js', 'Asm')
+		print(imval, jsval, asmval)
+		print()
+
 
 		print('# Im')
 		for i,ins in ipairs(im) do
@@ -67,7 +67,7 @@ function test(code, moetzijn)
 		end
 		if imval ~= asmval then
 			print('# Assembly')
-			print(asm)
+			print(asm:sub(1,100))
 			print()
 		end
 

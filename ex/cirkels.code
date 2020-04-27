@@ -1,10 +1,7 @@
 ; concentrische cirkels
-
-w = 18 ; breedte
-h = 10 ; hoogte
-frame := 0 ; huidige frame
-pos = 0..w × 0..h ; alle blokposities
-
+w = 18
+h = 10
+pos = 0..w × 0..h
 
 ; cirkelpatroon
 f = 2 + 3 · sin(looptijd)
@@ -13,17 +10,15 @@ dy = y - muis.y/10
 dst = √(dx²+dy²)
 
 ; staat het blok op (x,y) aan?
-isblok = (x,y) → (-dst + looptijd·10) mod 5 < sin(looptijd)+2
-blokken = pos filter isblok
+isaan = (x,y) → golf < sin(looptijd)+2
+golf = (looptijd·10 - dst) mod 5
+blokken = pos filter isaan
 
-; houdt bij welke frame dit is
-als scherm.ververst dan
-	frame := frame' + 1
-eind
-
-vorm = vierkant((a·10,b·10),9)
-disco = verf(vorm, kleur)
-kleur = rgb(a/10,b/10,sin(looptijd)/2+0.5)
-vierkanten = blokken map ((a,b) → disco)
+; blokken
+vorm = vierkant(a·10,b·10,9) verf kleur
+kleur = rgb(a/10,b/10,blauw)
+blauw = sin(looptijd)/2+0.5
+vierkanten = blokken map (a,b → vorm)
 uit = teken vierkanten
+
 
