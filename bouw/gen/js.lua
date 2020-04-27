@@ -190,7 +190,7 @@ local noops = {
 		const srcType = gl.UNSIGNED_BYTE;
 
 		for (var i = 0; i < 6; i++) {
-			const pixel = new Uint8Array([i * (255/6), 0, 255, 255]);  // opaque blue
+			const pixel = new Uint8Array([Math.random()*256, Math.random()*256, Math.random()*256, 255]);
 			gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA,
 									width, height, border, srcFormat, srcType,
 									pixel);
@@ -248,7 +248,7 @@ local noops = {
 		const border = 0;
 		const srcFormat = gl.RGBA;
 		const srcType = gl.UNSIGNED_BYTE;
-		const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+		const pixel = new Uint8Array([Math.random()*256, Math.random()*256, Math.random()*256, 255]);  // opaque blue
 		gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
 									width, height, border, srcFormat, srcType,
 									pixel);
