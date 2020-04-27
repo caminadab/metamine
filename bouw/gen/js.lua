@@ -161,22 +161,29 @@ local noops = {
 		var shaderProgram = args[0];
 		var name = args[1];
 		var texture = args[2];
+		var index = args[3];
 
-		gl.activeTexture(gl.TEXTURE1);
+		gl.activeTexture(gl.TEXTURE0 + index);
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 		var loc = gl.getUniformLocation(shaderProgram, name);
-		gl.uniform1i(loc, 1);
+		gl.uniform1i(loc, index);
 		return shaderProgram;
 	}
 	]],
 
-	['cubemap'] = [[ urls => {
-		if (textureCache[urls[0] ]) 
+	['cubemap'] = [[ args => {
+		var urls = args[0];
+		var index = args[1];
+
+		if (textureCache[urls[0] ] != null)  {
+			//gl.activeTexture(gl.TEXTURE0 + index);
+			//gl.bindTexture(gl.TEXTURE_CUBEMAP, tex);
 			return textureCache[urls[0] ];
+		}
 
 		var tex = gl.createTexture();
 
-		gl.activeTexture(gl.TEXTURE1);
+		gl.activeTexture(gl.TEXTURE0 + index);
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
 
 		textureCache[urls[0] ] = tex;
@@ -187,13 +194,18 @@ local noops = {
 		const height = 1;
 		const border = 0;
 		const srcFormat = gl.RGBA;
+		const internalFormat = gl.RGBA;
 		const srcType = gl.UNSIGNED_BYTE;
 
 		for (var i = 0; i < 6; i++) {
+			var code = gl.getError();
 			const pixel = new Uint8Array([Math.random()*256, Math.random()*256, Math.random()*256, 255]);
 			gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA,
 									width, height, border, srcFormat, srcType,
 									pixel);
+			var code = gl.getError();
+			if (code)
+				throw "cubemap: OpenGL error " + code;
 		}
 
 		var images = [];
@@ -202,40 +214,66 @@ local noops = {
 			(i => {
 				images[i] = new Image();
 				images[i].onload = (x => {
+					// clear error
+					var code0 = gl.getError();
+
 					nog = nog - 1;
-					gl.activeTexture(gl.TEXTURE1);
+
+					//XXXgl.activeTexture(gl.TEXTURE0 + index);
 					gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
-					console.log(i + ', ' + images[i]);
+					//console.log('cubemap #' + i + ', ' + images[i]);
 
 					// only max
-					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+					gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 					//gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
-					gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA8, srcFormat, srcType, images[i]);
+					//gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA,
+					//	srcFormat, srcType, images[i]);
+
+					const pixel = new Uint8Array([Math.random()*256, Math.random()*256, Math.random()*256, 255]);
+					gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA,
+									width, height, border, srcFormat, srcType,
+									pixel);
+
+					gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, level, gl.RGBA,
+						srcFormat, srcType, images[i]);
+
+					var code = gl.getError();
+					if (code)
+						throw "cubemap laad: OpenGL error " + code;
 
 					if (nog == 0)
 						gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+
+					var code = gl.getError();
+					if (code)
+						throw "cubemap gen mipmap: OpenGL error " + code;
+
 					return;
 				});
-				images[i].src = urls[i];
+				images[i].src = 'res/' + urls[i];
 			})(i);
 
 		}
 		return tex;
 	} ]],
 
-	['texture'] = [[ url => {
+	['texture'] = [[ args => {
+		var url = args[0];
+		var id = args[1];
 		url = 'res/' + url;
-		if (textureCache[url])  {
+
+		if (textureCache[url] != null)  {
 			var tex = textureCache[url];
-			gl.activeTexture(gl.TEXTURE0);
+			gl.activeTexture(gl.TEXTURE0 + id);
 			gl.bindTexture(gl.TEXTURE_2D, tex);
+			var code0 = gl.getError();
 			return tex;
 		}
 
 		var tex = gl.createTexture();
-		gl.activeTexture(gl.TEXTURE0);
+		gl.activeTexture(gl.TEXTURE0 + id);
 		gl.bindTexture(gl.TEXTURE_2D, tex);
 
 		textureCache[url] = tex;
@@ -255,11 +293,16 @@ local noops = {
 
 		const image = new Image();
 		image.onload = function() {
-			gl.activeTexture(gl.TEXTURE0);
+			var code0 = gl.getError();
+			gl.activeTexture(gl.TEXTURE0 + id);
 			gl.bindTexture(gl.TEXTURE_2D, tex);
 			gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
 										srcFormat, srcType, image);
-		 gl.generateMipmap(gl.TEXTURE_2D);
+			gl.generateMipmap(gl.TEXTURE_2D);
+
+			var code = gl.getError();
+			if (code)
+				throw "texture laad: OpenGL error " + code;
 		};
 		image.src = url;
 		return tex;
@@ -273,9 +316,8 @@ local noops = {
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 		var coord = gl.getAttribLocation(shaderProgram, name);
 
-		if (coord == -1) {
+		if (coord == -1)
 			throw name + " not found in " + shaderProgram;
-		}
 
 		//point an attribute to the currently bound VBO
 		gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 0, 0);
@@ -299,9 +341,11 @@ local noops = {
          /* Step 4: Associate the shader programs to buffer objects */
 
          /* Step5: Drawing the required object (triangle) */
+				 gl.activeTexture(gl.TEXTURE0);
+				 gl.bindTexture(gl.TEXTURE0, tex);
 				 
 				 /* Texture */
-				 if (tex) {
+				 if (false && tex) {
 					gl.activeTexture(gl.TEXTURE0);
 					gl.bindTexture(gl.TEXTURE_2D, tex);
 				}
@@ -309,6 +353,7 @@ local noops = {
          // Clear the canvas
          //gl.clearColor(0.5, 0.5, 0.5, 0.9);
          gl.enable(gl.DEPTH_TEST); 
+         //gl.enable(gl.CULL_FACE); 
          //gl.clear(gl.COLOR_BUFFER_BIT);
 
          // Draw the triangle
@@ -539,24 +584,6 @@ local noops = {
 	}]],
 
 	-- webgl
-	['gl.createShader'] = 'gl => gl.createShader',
-	['gl.VertexShader'] = 'gl => gl.VERTEX_SHADER',
-	['gl.FragmentShader'] = 'gl => gl.FRAGMENT_SHADER',
-	['gl.ArrayBuffer'] = 'gl => gl.ARRAY_BUFFER',
-	['gl.createBuffer'] = 'gl => gl.createBuffer',
-	['gl.bindBuffer'] = 'args => (gl => {gl.bindBuffer(args[0], args[1]); return gl;})',
-	['gl.bufferData'] = 'args => (gl => gl.bufferData(args[0], new Float32Array(args[1]), gl.STATIC_DRAW)',
-	['gl.clearColor'] = 'args => (gl => {gl.clear(gl.COLOR_BUFFER_BIT); return gl.clearColor(args[0], args[1], args[2], args[3] || 1);})',
-  ['gl.enable'] = 'gl => gl.enable',
-	['gl.DepthTest'] = 'gl => gl.DEPTH_TEST',
-	['gl.ColorBufferBit'] = 'gl => gl.COLOR_BUFFER_BIT',
-	['gl.clear'] = 'gl => gl.clear(gl.COLOR_BUFFER_BIT)',
-	['gl.viewport'] = '(x,y,w,h) => (gl => gl.viewport(x,y,w,h))',
-	['gl.Triangles'] = 'gl => gl.TRIANGLES',
-
-   ['gl.drawArrays'] = 'gl => ((At, Ai, An) => gl.drawArrays(At,Ai,An))',
-   ['gl.drawTriangles'] = 'args => (gl => gl.drawArrays(gl.TRIANGLES, args[0], args[1]))',
-
 	 ['jsonencodeer'] = 'x => { try { return JSON.stringify(x); } catch (e) {return e.message; }}',
 	 ['jsondecodeer'] = 'x => { try { return JSON.parse(x); } catch (e) {return e.message; }}',
 	 ['deel'] = 'x => x[0].slice(x[1], x[2])',
