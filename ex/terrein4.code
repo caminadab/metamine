@@ -37,7 +37,7 @@ uniform highp float time;
 
 void main(void) {
 	gl_Position = proj * view * model * vec4(pos,1.0);
-	lightPos = (vec4(1.0, -1.0, 1.2, 1.0)).xyz;
+	lightPos = (vec4(100.0, 100.0, 1.2, 1.0)).xyz;
 	Pos = (model * vec4(pos,1)).xyz;
 	Uv = uv;
 	Normal = normal;
@@ -66,14 +66,15 @@ void main(void) {
 	lowp vec3 aapAlbedo = texture2D(albedo, vec2(Uv.x,1.0-Uv.y) / 0.1).xyz;
 	lowp vec3 rotsAlbedo = texture2D(rotsAlbedo, vec2(Uv.x,1.0-Uv.y) / 0.1).xyz;
 
-	highp float stijlheid = clamp(1.0  * dot(Normal.xz, vec2(1)), 0.0, 1.0);
+	highp float factor = dot(abs(Normal.xz), vec2(1));
+	highp float stijlheid = clamp(pow(factor,3.0), 0.0, 1.0);
 	lowp vec3 albedo = stijlheid * rotsAlbedo + (1.0 - stijlheid) * aapAlbedo;
 
 	highp vec3 lightDir = normalize(lightPos-Pos);
 	highp float diff = max(dot(Normal, lightDir), 0.0);
 	highp vec3 diffuse = diff * lightColor; 
 
-	lowp vec3 ambient = 1.0 * albedo * lightColor;
+	lowp vec3 ambient = 0.7 * lightColor;
 
 	highp vec3 viewDir = normalize((vec4(viewPos,1)).xyz - Pos);
 	highp vec3 reflectDir = reflect(lightDir,Normal);
@@ -81,7 +82,7 @@ void main(void) {
 	highp float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 	highp vec3 specular = 0.5 * spec * lightColor;
 
-	highp vec3 res = (ambient) * albedo * 1.0;
+	highp vec3 res = (ambient + diffuse) * albedo *  0.8;
 	highp vec3 npos = Pos;
 	npos.y *= -1.0;
 	lowp vec4 achtergrond = textureCube(achtergrond, npos);
@@ -154,10 +155,15 @@ skyprog  = uniformbind(skyprog6, "isAchtergrond", 1)
 gras  = texture ("gras2.jpg", 0)
 rots = texture ("rock.jpg", 1)
 
-achtergrond = cubemap ([
+achtergrond2 = cubemap ([
 	"skybox/front.jpg", "skybox/back.jpg",
 	"skybox/top.jpg", "skybox/bottom.jpg",
 	"skybox/left.jpg", "skybox/right.jpg"
+], 2)
+achtergrond = cubemap ([
+	"clouds1/clouds1_north.jpg", "clouds1/clouds1_south.jpg",
+	"clouds1/clouds1_up.jpg", "clouds1/clouds1_down.jpg",
+	"clouds1/clouds1_west.jpg", "clouds1/clouds1_east.jpg",
 ], 2)
 
 uit = setcontext3d(x3d → z3d)
@@ -248,9 +254,11 @@ verticepalet = oregels filter (ovr→(ovr₀='v' en ovr₁≠'n' en ovr₁≠'t'
 uvpalet      = oregels filter (onr→(onr₀='v' en onr₁='t')) map uvpalet1
 normalpalet  = oregels filter (our→(our₀='v' en our₁='n')) map onormal1
 
-ovfaces    = oregels filter (ovf → (ovf₀ = 'f')) map oface
-oufaces    = oregels filter (ouf → (ouf₀ = 'f')) map ouv
-onfaces    = oregels filter (onf → (onf₀ = 'f')) map onormal
+isface     = Regel → (Regel₀ = 'f')
+faceregels = oregels filter isface
+ovfaces    = faceregels map oface
+oufaces    = faceregels map ouv
+onfaces    = faceregels map onormal
 overtices  = (plet ovfaces) map dec map verticepalet
 ouvs       = (plet oufaces) map dec map uvpalet
 onormals   = (plet onfaces) map dec map normalpalet
