@@ -1,8 +1,8 @@
 require 'util'
 
-function isatoom(exp) return exp and exp.v ~= nil end
-function isfn(exp) return exp and exp.f ~= nil end
-function isobj(exp) return exp and exp.o ~= nil end
+function isatoom(exp) return exp.v ~= nil end
+function isfn(exp) return exp.f ~= nil end
+function isobj(exp) return exp.o ~= nil end
 
 local insert = table.insert
 local concat = table.concat

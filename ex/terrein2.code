@@ -1,0 +1,261 @@
+vert = vertexshader "
+uniform mat4 proj;
+uniform mat4 view;
+uniform mat4 model;
+uniform vec3 camPos;
+attribute vec3 pos;
+attribute vec3 uv;
+attribute vec3 normal;
+varying vec3 Pos;
+varying vec3 Normal;
+varying vec3 Uv;
+varying vec3 lightPos;
+uniform highp float time;
+
+void main(void) {
+	gl_Position = proj * view * model * vec4(pos,1.0);
+	lightPos = (vec4(1.0, -1.0, 1.2, 1.0)).xyz;
+	Pos = (model * vec4(pos,1)).xyz;
+	Uv = uv;
+	Normal = normal;
+}
+"
+
+;***
+frag = fragmentshader "
+uniform sampler2D grasAlbedo;
+uniform sampler2D rotsAlbedo;
+uniform samplerCube achtergrond;
+uniform highp mat4 model;
+uniform highp float time;
+uniform highp vec3 viewPos;
+varying highp vec3 Pos;
+varying highp vec3 Uv;
+varying highp vec3 Normal;
+varying highp vec3 lightPos;
+highp float dpi = 3.14159265358979323846264338327950 / 0.5;
+
+
+void main(void) {
+	highp vec3 lightColor = vec3(1,1,1);
+	lowp vec3 gras = texture2D(grasAlbedo, vec2(Uv.x,1.0-Uv.y) / 1.).xyz;
+	lowp vec3 rots = texture2D(rotsAlbedo, vec2(Uv.x,1.0-Uv.y) / 1.).xyz;
+
+	highp vec3 lightDir = normalize(lightPos-Pos);
+	highp float diff = max(dot(Normal, lightDir), 0.0);
+	highp vec3 diffuse = diff * lightColor; 
+
+	highp float schuinheid = clamp(abs(dot(Normal, vec3(1,0,1))),0.,1.);
+	highp vec3 albedo = rots * schuinheid + rots * (1.0 - schuinheid);
+
+	lowp vec3 ambient = 0.3 * albedo * lightColor;
+
+	highp vec3 viewDir = normalize((vec4(viewPos,1)).xyz - Pos);
+	highp vec3 reflectDir = reflect(viewDir,Normal);
+
+	highp float spec = pow(max(dot(viewDir, reflectDir), 0.0), 2.0);
+	highp vec3 specular = 0.5 * spec * lightColor;
+
+	
+
+	highp vec3 res = (ambient + diffuse + specular) * albedo * 1.0001;
+	gl_FragColor = vec4(res, 1.0);// + textureCube(achtergrond, reflectDir);
+
+}
+"
+
+r = scherm.breedte / scherm.hoogte
+mx = -1+muis.x/(100·r)·2
+my = -1+muis.y/100·2
+buf2 = vertexbuffer [
+	0,0,0, 1,1,0, 0,1,0, 0,0,0, 1,1,0, 1,0,0,
+	0,0,0, 1,0,1, 0,0,1, 0,0,0, 1,0,1, 1,0,0,
+	0,0,0, 0,1,1, 0,0,1, 0,0,0, 0,1,1, 0,1,0,
+	0,0,1, 1,1,1, 0,1,1, 0,0,1, 1,1,1, 1,0,1,
+	0,1,0, 1,1,1, 0,1,1, 0,1,0, 1,1,1, 1,1,0,
+	1,0,0, 1,1,1, 1,0,1, 1,0,0, 1,1,1, 1,1,0,
+]
+
+grid := plet(plet(tiles))
+ugrid := plet(plet(tileuvs))
+numpolys3 = #grid / 9
+gridposbuf = vertexbuffer grid
+griduvbuf = vertexbuffer ugrid
+gridnormalbuf = vertexbuffer ngrid
+pa = [(0,h1,0), (0,h2,1), (1,h3,0), (1,h4,1), (1,h3,0), (0,h2,1)]
+h1 = hmap(h)
+h2 = hmap(h+n)
+h3 = hmap(h+1)
+h4 = hmap(h+n+1)
+
+; tile normals
+Nlengte = √(Nx²+Ny²+Nz²)
+ngrid := plet((0..n × 0..n × 0..6) map (ng → 0,1,0)) ;(nx,ny,ni → (cross(nga, ngb) )))
+nga = (1,hoogte(nx+1,ny),0)
+ngb = (0,hoogte(nx,ny+1,1))
+
+normaliseer = (Nx,Ny,Nz) → (Nx,Ny,Nz)/Nlengte
+cross = (ax,ay,az),(bx,by,bz) → (ay·bz-az·by, az·bx - ax·bz, ax·by-ay·bx)
+
+n = 0
+dist = √((x-hn)²+(y-hn)²)
+hoogte = x,y → 3 · cos(dist)·√dist/1000 ; -√((X-n/2)²+(Y-n/2)²)·0.7
+hmap := (-hn ..hn × -hn ..hn) map hoogte
+hn = n/2
+tiles = (-hn ..hn × -hn ..hn) zip (0..n²) map tilefunc
+tilefunc = (i,j),h → pa map (pp → pp·10 + (10·i,1,10·j))
+tileuvs = (0..n²) map (tui → [(0,0,0),(1,0,0),(0,1,0),(1,1,0),(0,1,0),(1,0,0)])
+
+;pn = cross(pa₂ - pa₀, pa₁ - pa₀)
+
+; aap
+aappos = (0,0,0)
+aapmov = verplaats(aappos)
+
+prog0 = shaderprogram(vert, frag)
+prog1 = shaderbind(prog0, "pos", buf)
+prog2 = shaderbind(prog1, "uv", ubuf)
+prog3 = shaderbind(prog2, "normal", nbuf)
+prog4 = matrixbind(prog3, "model", plet aapmov)
+prog5 = matrixbind(prog4, "view", plet cam)
+prog6 = matrixbind(prog5, "proj", plet (proj · aapmov))
+prog7 = uniformbind(prog6, "time", looptijd)
+prog8 = texturebind(prog7, "albedo", rots)
+prog9 = cubemapbind(prog8, "achtergrond", achtergrond)
+prog10 = uniformbind(prog9, "viewPos", [xpos,ypos,zpos])
+prog11 = texturebind(prog10, "rotsAlbedo", rots)
+prog = uniformbind(prog11, "viewPos", [xpos,ypos,zpos])
+
+; grid
+nprog1 = shaderbind(prog0, "pos", gridposbuf)
+nprog2 = shaderbind(nprog1, "uv", griduvbuf)
+nprog3 = shaderbind(nprog2, "normal", gridnormalbuf)
+nprog4 = matrixbind(nprog3, "cam", plet cam)
+nprog5 = matrixbind(nprog4, "proj", plet proj)
+nprog6 = uniformbind(nprog5, "time", looptijd)
+nprog7 = texturebind(nprog6, "albedo", rots)
+nprog  = matrixbind(nprog7, "model", plet mat4.id)
+
+gras  = texture "res/gras2.jpg"
+rots = texture "res/hoogtemap.png"
+
+achtergrond = cubemap [
+	"res/skybox/front.jpg", "res/skybox/back.jpg",
+	"res/skybox/top.jpg", "res/skybox/bottom.jpg",
+	"res/skybox/left.jpg", "res/skybox/right.jpg"
+]
+
+uit = setcontext3d(x3d → z3d)
+y3d = superrender(x3d,rots,prog,numpolys)
+z3d = superrender(y3d,gras,nprog,numpolys3)
+
+; matrix math
+;proj = schaal(.01,.01,.01)
+proj = projection(τ/8,1.778,.001,10000)
+cam = Mv · My · Mx
+
+; model
+Ms = schaal(.5, .5, .5)
+Mx = xdraai(xhoek)
+My = ydraai(yhoek)
+Mv = verplaats(xpos, ypos, zpos)
+
+yhoek = τ-muis.x/100·τ
+xhoek = klem((100-muis.y)/100·τ/2+τ·.25,τ·.25,τ·.75)
+
+xpos := -5
+ypos := 10
+zpos := -5
+
+; automove
+mov = .2
+als scherm.ververst en toets.w dan
+	xpos := xpos + sin(yhoek) · mov
+	;ypos := ypos + sin(xhoek) · .02
+	;ypos := 10 · hoogte(zpos/10, xpos/10)
+	;ypos := hoogte(xpos/10, zpos/10)
+	zpos := zpos + cos(yhoek) · mov
+eind
+als scherm.ververst en toets.s dan
+	xpos := xpos - sin(yhoek) · mov
+	zpos := zpos - cos(yhoek) · mov
+eind
+als scherm.ververst en toets.a dan
+	xpos := xpos + sin(yhoek+τ/4) · mov
+	zpos := zpos + cos(yhoek+τ/4) · mov
+eind
+als scherm.ververst en toets.d dan
+	xpos := xpos + sin(yhoek-τ/4) · mov
+	zpos := zpos + cos(yhoek-τ/4) · mov
+eind
+als scherm.ververst en toets.omhoog dan ypos := ypos + mov eind
+als scherm.ververst en toets.omlaag dan ypos := ypos - mov eind
+
+projection = (fov,ar,znear,zfar) → Proj
+	zf = 1 / tan(fov/2)
+	rangeinv = 1 / (znear - zfar)
+	z1 = (-znear-zfar)·rangeinv
+	z2 = 2·zfar·znear·rangeinv
+	Proj = ((zf/ar,0,0,0),(0,zf,0,0),(0,0,z1,1),(0,0,z2,0))
+
+
+; fps counter
+fps := 60
+frames := 0
+fpstijd := looptijd + 1
+als looptijd > fpstijd dan
+	fpstijd := looptijd + 1
+	fps := frames
+	frames := 0
+eind
+als scherm.ververst dan
+	frames := frames + 1
+eind
+
+obj = download "res/level.obj"
+levelobj = download "res/level.obj"
+
+opon := [],[],[]
+als #obj > 0 en (opon ⇒ #(opon₀) = 0) dan
+	opon := obj.decodeer(obj)
+eind
+
+level := [],[],[]
+als #levelobj > 0 en (level ⇒ #(level₀) = 0) dan
+	level := obj.decodeer(levelobj)
+end
+
+
+; obj file parsing
+obj.decodeer = dobj → plet overtices, plet ouvs, plet onormals
+oregels   = dobj splits "\n"
+verticepalet = oregels filter (ovr→(ovr₀='v' en ovr₁≠'n' en ovr₁≠'t')) map overtice
+uvpalet      = oregels filter (onr→(onr₀='v' en onr₁='t')) map uvpalet1
+normalpalet  = oregels filter (our→(our₀='v' en our₁='n')) map onormal1
+
+ovfaces    = oregels filter (ovf → (ovf₀ = 'f')) map oface
+oufaces    = oregels filter (ouf → (ouf₀ = 'f')) map ouv
+onfaces    = oregels filter (onf → (onf₀ = 'f')) map onormal
+overtices  = (plet ovfaces) map dec map verticepalet
+ouvs       = (plet oufaces) map dec map uvpalet
+onormals   = (plet onfaces) map dec map normalpalet
+dec = Dx → Dx-1
+
+punten,uvs,normals = opon₀, opon₁, opon₂
+numpolys = #punten/9
+
+buf = vertexbuffer(punten)
+ubuf = vertexbuffer(uvs)
+nbuf = vertexbuffer(normals)
+
+overtice = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map getal
+onormal1 = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map getal
+uvpalet1 = Regel → (((Regel splits " " vanaf 1) filter (T → #T > 0) map getal)) ‖ [0]
+oface    = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map iface
+ouv      = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map uface
+onormal  = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map nface
+iface    = Face → getal((Face splits "/")₀)
+uface    = Face → getal((Face splits "/")₁)
+nface    = Face → getal((Face splits "/")₂)
+
+

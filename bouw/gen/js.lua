@@ -147,11 +147,12 @@ local noops = {
 		var shaderProgram = args[0];
 		var name = args[1];
 		var texture = args[2];
+		var index = args[3];
 
-		gl.activeTexture(gl.TEXTURE0);
+		gl.activeTexture(gl.TEXTURE0 + index);
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		var loc = gl.getUniformLocation(shaderProgram, name);
-		gl.uniform1i(loc, 0);
+		gl.uniform1i(loc, index);
 		return shaderProgram;
 	}
 	]],
@@ -225,6 +226,7 @@ local noops = {
 	} ]],
 
 	['texture'] = [[ url => {
+		url = 'res/' + url;
 		if (textureCache[url])  {
 			var tex = textureCache[url];
 			gl.activeTexture(gl.TEXTURE0);
