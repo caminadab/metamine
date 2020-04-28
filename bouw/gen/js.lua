@@ -588,7 +588,15 @@ local noops = {
 	 ['jsonencodeer'] = 'x => { try { return JSON.stringify(x); } catch (e) {return e.message; }}',
 	 ['jsondecodeer'] = 'x => { try { return JSON.parse(x); } catch (e) {return e.message; }}',
 	 ['deel'] = 'x => x[0].slice(x[1], x[2])',
-	 ['vind'] = 'x => x[0].indexOf(x[1], x[2])',
+	 ['vind'] = [[x => {
+		 var doel = JSON.stringify(x[1]);
+		 for (var i = x[2] || 0; i < x[0].length; i++) {
+			if (JSON.stringify(x[0][i]) == doel)
+				return i;
+			}
+			return null;
+		}]],
+	 
 	 ['vind2'] = '(x,y) => x.indexOf(y)',
 	 ['vanaf'] = 'x => x[0].slice(x[1])',
 	 ['vanaf2'] = '(x,y) => x.slice(y)',

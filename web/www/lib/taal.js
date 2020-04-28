@@ -63,9 +63,10 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'none', 'out', 'yes', 'no', 'error',
 		'text', 'int', 'runtime', 'now',
 		'fold',
-		'sort', 'from', 'til', 'slice',
+		'sort', 'from', 'til', 'slice', 'find',
 		'screen.width', 'screen.height', 'random', 'screen.refreshes', 'paint',
-		'clamp',
+		'teken', 'render', 'rgb',
+		'grab', 'choose', 'type', 'flatten', 'canvas.fontsize', 'split',
 		'jsonencode', 'jsondecode',
 
 		// muis
@@ -80,7 +81,16 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'toets.links.begin', 'toets.rechts.begin', 'toets.omhoog.begin', 'toets.omlaag.begin',
 		'toets.links.eind', 'toets.rechts.eind', 'toets.omhoog.eind', 'toets.omlaag.eind',
 		'toets.spatie', 'toets.spatie.begin', 'toets.spatie.eind',
-		 
+
+		// keyboard engels
+		'key.w', 'key.a', 'key.s', 'key.d',
+		'key.w.begin', 'key.a.begin', 'key.s.begin', 'key.d.begin',
+	'key.w.end', 'key.a.end', 'key.s.end', 'key.d.end',
+		'key.left', 'key.right', 'key.up', 'toets.down',
+		'key.left.begin', 'key.right.begin', 'key.up.begin', 'key.down.begin',
+		'key.left.end', 'key.right.end', 'key.up.end', 'key.down.end',
+		'key.space', 'key.space.begin', 'key.space.end',
+	 
 		// drawing
 		"draw", "render",
 		"circle", "rectangle", "square", "line", "label", "arc", "polygon", "map", "zip", "fold", "sin", "cos", "tan", "abs",
