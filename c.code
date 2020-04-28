@@ -1,3 +1,9 @@
-f = x → x + 1
-g = x → x / 2
-main = (f ∘ g)(3)
+; snake
+snake := [1,2,3]
+newsnake = [snake(0), snake(1)]
+
+if yes then
+	snake := newsnake
+end
+
+uit = snake

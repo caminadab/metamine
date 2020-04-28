@@ -144,6 +144,8 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 
 "ja"		{ *yylval = A(GL, "⊤", nergens); return NAAM; }
 "nee"		{ *yylval = A(GL, "⊥", nergens); return NAAM; }
+"yes"		{ *yylval = A(GL, "⊤", nergens); return NAAM; }
+"no"		{ *yylval = A(GL, "⊥", nergens); return NAAM; }
 "⊤"			{ *yylval = A(GL, "⊤", nergens); return NAAM; }
 "⊥"			{ *yylval = A(GL, "⊥", nergens); return NAAM; }
 "τ"			{ *yylval = A(GL, "τ", nergens); return NAAM; }
