@@ -100,6 +100,9 @@ end
 
 function optimiseer(exp, issub)
 	--do return exp end
+	if fn(exp) == '_l' and atoom(arg1(exp)) == '0' then
+		assign(exp, X('_l0', arg0(exp)))
+	end
 
 	if fn(exp) == 'Σ' then
 		local nexp = X('_f', 'vouw', X(',', arg(exp), '+'))

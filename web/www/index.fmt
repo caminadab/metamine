@@ -328,9 +328,12 @@
 					if (!main)
 						alert("Compilation error! " + j.js);
 
+
 					vars = uv[0];
 					uitvoer = uv[1];
 
+					//alert("startvars: " + vars);
+					
 					if (!context)
 							uit.innerHTML = toString(uitvoer);
 

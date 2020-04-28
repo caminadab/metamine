@@ -50,11 +50,19 @@ function oplos(exp, voor, isdebug)
 	for eq in pairs(eqs) do
 		if fn(eq) == ':=' then
 			local naam = atoom(arg0(eq))
-			local index = maakindex()
 			vars[naam] = eq
-			schaduw[naam] = index
 		end
 	end
+
+	-- bouw in.startvars
+	local startvars = {o=X'[]'}
+	local neq = X('=', 'in.startvars', startvars)
+	for naam, eq in spairs(vars) do
+		local index = maakindex()
+		schaduw[naam] = index
+		startvars[index] = arg1(eq)
+	end
+	eqs[neq] = true
 
 	-- gesorteerde vars
 	--for naam in spairs(schaduw) do
@@ -91,21 +99,6 @@ function oplos(exp, voor, isdebug)
 	end
 
 	-- a' is niet op momenten gedefinieerd maar alleen vlak ervoor
-
-	-- herschrijf (a := b) naar (a |:= (start ⇒ b))
-	for eq in pairs(eqs) do
-		if fn(eq) == ':=' then
-			local a, b = eq.a[1], eq.a[2]
-
-			-- local neq = 
-			--local neq = X(sym.ass, a, X(sym.map, maakvar(), X(sym.dan, X(sym.is, 'looptijd', '0'), b)))
-			local neq = X('|:=', a, X('⇒', 'start', b))
-			neq.start = true
-			--print(e2s(neq))
-			oud[eq] = true
-			nieuw[neq] = true
-		end
-	end
 
 	-- herschrijf types
 	for eq in pairs(eqs) do
@@ -353,12 +346,16 @@ function oplos(exp, voor, isdebug)
 	local maakindex = maakindices()
 	local map = {} -- k → [v]
 	local oud = {}
+	-- zorg dat allemaal bestaan
+	for naam,eq in pairs(vars) do
+		map[naam] = {}
+	end
 	for eq in pairs(eqs) do
 		-- a |:= b
 		if fn(eq) == '|:=' then
 			local a,b = eq.a[1], eq.a[2]
-			map[a.v or a] = map[a.v or a] or {}
-			local v = map[a.v or a]
+			local naam = atoom(a)
+			local v = map[naam]
 			--print('VAAG', e2s(eq))
 			if eq.start then
 				table.insert(v, 1, b)
@@ -380,7 +377,9 @@ function oplos(exp, voor, isdebug)
 
 			local index = schaduw[naam]
 			assert(index, 'geen index voor variabele '..naam)
-			local eq = X('=', naam, X('|', alts))
+			local eq = X('=', 'uit.'..naam, X('|', alts))
+			eqs[eq] = true
+			local eq = X('=', naam, X('_l', 'in.vars', tostring(schaduw[naam]-1)))
 			eqs[eq] = true
 		end
 	end
@@ -473,7 +472,7 @@ function oplos(exp, voor, isdebug)
 	local ivars = {o=X'[]'}
 	for var in spairs(vars) do
 		local i = schaduw[var]
-		ivars[i] = X(var)
+		ivars[i] = X('uit.'..var)
 	end
 	local eq = X('=', 'uit.vars', ivars)
 	nieuw[eq] = true
@@ -534,10 +533,14 @@ function oplos(exp, voor, isdebug)
 
 	if verbozeKennis then
 		print('=== VOORGEKAUWD ===')
+		local teqs = {}
 		for eq in pairs(eqs) do
-			print(combineer(eq))
+			teqs[#teqs+1] = combineer(eq)
 		end
-		print()
+		table.sort(teqs)
+		for i,teq in ipairs(teqs) do
+			print(teq)
+		end
 	end
 
 	-- maak graaf

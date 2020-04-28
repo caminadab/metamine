@@ -221,6 +221,9 @@ function bieb()
 		local num = a[2]
 		return a[1][num+1]
 	end;
+	['_l0'] = function(a)
+		return a[0]
+	end;
 
 	['_t'] = function(a)
 		local num = a[2]
