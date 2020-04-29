@@ -78,7 +78,7 @@ function codegen(exp, moes2naam)
 	end
 	rec(exp)
 
-	local function codegen(exp, ins)
+	local function codegen(exp, ins, callarg)
 		if iscached[exp] then
 			ins[#ins+1] = X('ld', tostring(iscached[exp]))
 			return
@@ -94,12 +94,15 @@ function codegen(exp, moes2naam)
 			local d = dubbel
 			iscached = {}
 			dubbel = {}
-			codegen(arg1(exp), ins)
+			codegen(arg1(exp), ins, callarg)
 			iscached = ic
 			dubbel = d
 
 			ins[#ins+1] = X'einddan'
 			focus = focus - 1
+
+		elseif fn(exp) == '_arg' and exp.a.v == callarg then
+			--ins[#ins+1] = 
 
 		elseif fn(exp) == '_arg' then
 			local num = atoom(arg(exp))
@@ -109,6 +112,25 @@ function codegen(exp, moes2naam)
 			end
 			ins[#ins+1] = X('arg', argindex[num])
 			focus = focus + 1
+
+		-- optimisatie
+		-- llus: (num) -> (nlijst)
+		elseif fn(exp) == 'llus' then
+			local num = arg0(exp)
+			local func = arg1(exp)
+			local iscomplex = fn(func) == '_fn'
+			local argindex, body = atoom(arg0(func)), arg1(func)
+
+			codegen(num, ins, callarg)
+			ins[#ins+1] = X('llus')
+			if iscomplex then
+				codegen(body, ins, callarg)
+			else
+				ins[#ins+1] = func
+				ins[#ins+1] = X'_fr'
+			end
+			ins[#ins+1] = X('eindllus')
+			focus = focus + 0
 
 		-- portable functies
 		elseif binop[atoom(exp)] then
@@ -137,20 +159,20 @@ function codegen(exp, moes2naam)
 			focus = focus + 1
 
 		elseif binop[fn(exp)] then
-			codegen(arg0(exp), ins)
-			codegen(arg1(exp), ins)
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 1
 
 		elseif triop[fn(exp)] then
-			codegen(arg0(exp), ins)
-			codegen(arg1(exp), ins)
-			codegen(arg2(exp), ins)
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
+			codegen(arg2(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 2
 
 		elseif unop[fn(exp)] then
-			codegen(arg(exp), ins)
+			codegen(arg(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
 
 		-- _fn(1 +(1 _arg(1))) -> fn
@@ -169,7 +191,7 @@ function codegen(exp, moes2naam)
 			codeindex = {}
 			reused = {}
 			dubbel = {}
-			codegen(arg1(exp), ins)
+			codegen(arg1(exp), ins, callarg)
 			iscached = ic
 			dubbel = d
 
@@ -182,7 +204,7 @@ function codegen(exp, moes2naam)
 		elseif isobj(exp) then
 			for i=1,#exp do
 				local sub = exp[i]
-				codegen(sub, ins)
+				codegen(sub, ins, callarg)
 			end
 			if     obj(exp) == ',' then
 				ins[#ins+1] = X('tupel', tostring(#exp))

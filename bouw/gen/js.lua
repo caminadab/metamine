@@ -23,10 +23,19 @@ local noops = {
 
 	['eval'] = 'eval',
 
+	['herhaal'] = [[args => {
+		var max = args[0];
+		var vouw = args[1];
+		var res = 0;
+		for (var i = 0; i < max; i++)
+			res = res + i;
+		return res;
+	}]],
+
 	['debugsom'] = [[x => {
 		var s = 0;
 		for (var i = 0; i < 1000000; i++)
-			s += i;
+			s += i + 10;
 		return s;
 	}]],
 
@@ -514,7 +523,7 @@ local noops = {
 	['newindex2'] = 'x => { var t = []; for (var i = 0; i< x[0].length; i++) { if (i == x[1]) t[i] = x[2]; else t[i] = x[0][i]; } return t; }',
 	['scherm.ververst'] = 'true',
 	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
-	['herhaal'] = [[x => {
+	['herhaal2'] = [[x => {
 	var value = x[0];
 	var len = x[1];
   if (len == 0) return [];
@@ -801,7 +810,6 @@ local noops = {
 	['cos'] = 'Math.cos',
 	['tan'] = 'Math.tan',
 
-	['fn.id'] = 'x => x',
 	['fn.constant'] = 'x => y => x',
 	['fn.merge'] = 'fns => (x => fns.map(fn => fn(x)))',
 	['fn.plus'] = 'x => y => x + y',
@@ -903,6 +911,7 @@ local binops = {
 	['·f1'] = '$1.map(x => x + $2)',
 	['/v1'] = '$1.map(x => x / $2)',
 	['_f'] = '$1($2)',
+	['_fr'] = '$2($1)',
 	['_t'] = '$1.charCodeAt($2)',
 	['_l'] = '$1[$2]',
 	['_'] = 'typeof($1) == "function" ? $1($2) : (typeof($1) == "string" ? $1.charCodeAt($2) : $1[$2])',
@@ -1048,6 +1057,40 @@ function jsgen(sfc)
 			L[#L+1] = tabs..string.format('var %s = %s(%s, %s);', naamf, naamf, naama, naamb)
 			focus = focus - 2
 
+		-- coole lussen
+		elseif atoom(ins) == 'llus' then
+			local maxnaam = varnaam(focus-1)
+			local lijstnaam = varnaam(focus+0)
+			local indexnaam = varnaam(focus+1)
+			local modindex = varnaam(focus+2)
+			L[#L+1] = tabs..string.format("var %s = [];", lijstnaam)
+			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
+			tabs = tabs .. '  '
+			L[#L+1] = tabs..string.format("var %s = %s;", modindex, indexnaam)
+			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
+
+		elseif atoom(ins) == 'eindllus' then
+			local ret = varnaam(focus-4)
+			local lijst = varnaam(focus-3)
+			local index = varnaam(focus-2)
+			local val = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("%s[%s] = %s;", lijst, index, val)
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs.."}"
+			L[#L+1] = tabs..string.format("var %s = %s;", ret, lijst)
+			focus = focus - 3
+
+		elseif atoom(ins) == 'lus' then
+			local maxnaam = varnaam(focus-1)
+			local lijstnaam = varnaam(focus)
+			local indexnaam = varnaam(focus+1)
+			local modindex = varnaam(focus+2)
+			L[#L+1] = tabs..string.format("var %s = [];", lijstnaam)
+			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
+			tabs = tabs .. '  '
+			L[#L+1] = tabs..string.format("var %s = %s;", modindex, indexnaam)
+			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
+
 
 		elseif binops[atoom(ins)] then
 			local naama = varnaam(focus-2)
@@ -1087,7 +1130,6 @@ function jsgen(sfc)
 			end
 			L[#L+1] = tabs..string.format("var %s = new Set([%s]);", naam, table.concat(set, ","))
 			focus = focus - num + 1
-
 
 		elseif fn(ins) == 'tupel' or fn(ins) == 'lijst' then
 			local tupel = {}

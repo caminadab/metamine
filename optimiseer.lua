@@ -1,8 +1,9 @@
+require 'defunc'
 
 local altijdja = X('_fn', '12358', '⊤')
 
 local function fnaam(exp)
-	return (fn(exp) == '_' or fn(exp) == '_f') and atoom(arg0(exp))
+	return (fn(exp) == '_' or fn(exp) == '_f' or fn(exp) == '_f2') and atoom(arg0(exp))
 end
 
 local function sourcelen(exp)
@@ -109,7 +110,14 @@ function optimiseer(exp, issub)
 		return optimiseer(nexp, true)
 	end
 
-	if fnaam(exp) == 'map' then
+	if true and fnaam(exp) == 'map2' then
+		local num = atoom(arg1(arg1(exp)))
+		--local nexp = X('llus', num,  defunc(arg2(exp)))
+		local nexp = X('llus', num,  arg2(exp))
+		assign(exp, nexp)
+	end
+
+	if false and fnaam(exp) == 'map' then
 		local lijst = arg1(exp)[1]
 		local func  = arg1(exp)[2]
 		local gen = sourcegen(lijst)
@@ -133,7 +141,7 @@ function optimiseer(exp, issub)
 		return nexp
 	end
 
-	if fnaam(exp) == 'vouw' then
+	if false and fnaam(exp) == 'vouw' then
 		local lijst = arg1(exp)[1]
 		local vouw  = arg1(exp)[2]
 		local map = sourcegen(lijst)

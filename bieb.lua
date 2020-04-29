@@ -89,9 +89,6 @@ function bieb()
 	['fn.dup'] = function(x)
 		return {x, x}
 	end;
-	['fn.id'] = function(x)
-		return x
-	end;
 	['fn.constant'] = function(x)
 		return function()
 			return x

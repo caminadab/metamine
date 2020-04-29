@@ -172,7 +172,7 @@ end
 -- nieuwe lage JS
 if opt.javascript then
 	uit = jsgen(app)
-	file('a.js', '\nperformance = {now: function() { return 0; }}\n'..uit)--{now: new Date().getTime()}')
+	file('a.js', uit)
 	--print(uit)
 	if opt.d then
 		os.execute('js a.js')

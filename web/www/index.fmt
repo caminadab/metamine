@@ -127,7 +127,15 @@
 			path = '/vt/debug';
 
 		fetch(path, {method: "POST", body: editor.getValue()})
-			.then(x => x.json())
+			.then(x => {
+				if (!x.ok) 
+					onerror();
+				else
+					return x.json();
+			})
+			.catch(x => {
+				onerror();
+			})
 			.then(j => {
 				if (j.fouten.length > 0) {
 					setErrors(j.fouten);
@@ -373,9 +381,10 @@
 					}, 100);
 
 					//uit.focus(); WAUW
+
 				} catch (e) {
 					onerror();
-					uit.innerHTML = e;
+					uit.innerHTML = e + e.stack; 
 					console.trace();
 				}
 			})

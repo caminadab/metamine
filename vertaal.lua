@@ -71,7 +71,7 @@ end
 
 -- code → struct
 function vertaal(code, isdebug)
-	opt = {D=true}
+	if not opt then opt = {D=true} end
 	local naam = naam or '?'
 	local maakvar = maakvars()
 	local opt = opt or {}

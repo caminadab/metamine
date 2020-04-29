@@ -10,6 +10,8 @@ nee	false
 transformeer	transform
 sorteer	sort
 
+vouw	fold
+misschien	maybe
 vind	find
 willekeurig	random
 gesorteerd	sorted
@@ -43,7 +45,7 @@ of	or
 en	and
 niet	not
 
-getal	double
+getal	number
 int	int
 byte	byte
 
