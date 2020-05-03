@@ -561,9 +561,9 @@ local noops = {
 		for (var i=1; i < l.length; i++)
 			r = f([r, l[i] ]);
 		return r;
-	}) ]],
+	} ]],
 
-	['vouw22'] = [[(l, f) => {
+	['vouw2x2'] = [[(l, f) => {
 		if (l.length == 0)
 			return false;
 		var r=l[0] ;
@@ -836,6 +836,7 @@ local unops2 = {
 }
 
 local binops2 = {
+	['append'] = '$1[$1.length] = $2;',
 	['^l'] = [[var res = [];
 	var k = 0;
 	for (var i = 0; i < $2; i++)
@@ -907,8 +908,13 @@ local binops = {
 	-- dot
 	['·v']  = '(x => {var r = 0; for (var i = 0; i < $1.length; i++) r += $1[i] * $2[i]; return r;})()',
 	['·v1'] = '$1.map(x => x * $2)',
-	['+f'] = '$1.map(x => x + $2)',
-	['·f1'] = '$1.map(x => x + $2)',
+	['+f'] = 'x => $1(x) + $2(x)',
+	['+f1'] = 'x => $1(x) + $2',
+	['·f'] = 'x => $1(x) * $2(x)',
+	['·f1'] = 'x => $1(x) * $2',
+	['/f'] = 'x => $1(x) / $2(x)',
+	['/f1'] = 'x => $1(x) / $2',
+	['-f'] = 'x => -$1(x)',
 	['/v1'] = '$1.map(x => x / $2)',
 	['_f'] = '$1($2)',
 	['_fr'] = '$2($1)',
@@ -923,16 +929,16 @@ local binops = {
 	['..2'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
 
 	-- componeer
-	['∘'] = [[(args => z => {
+	['∘'] = [[((f,g) => z => {
 		var res = z;
-		for (var i = 0; i < args.length; i++) {
-			if (Array.isArray(args[i]))
-				res = args[i][res];
+		for (var i = 0; i < 2; i++) {
+			if (Array.isArray(i==0?f:g))
+				res = (i==0?f:g)[res];
 			else
-				res = args[i](res);
+				res = (i==0?f:g)(res);
 		};
 		return res;
-	})([$1,$2]) ]],
+	})($1,$2) ]],
 
 
 	['^'] = 'Math.pow($1, $2)',
@@ -950,7 +956,8 @@ local binops = {
 	['>'] = '$1 > $2',
 	['≥'] = '$1 >= $2',
 	['='] = 'JSON.stringify($1) == JSON.stringify($2)',
-	['≠'] = 'JSON.stringify($1) != JSON.stringify($2)',
+	['=g'] = '$1 === $2',
+	['≠g'] = '$1 != $2',
 	['≤'] = '$1 <= $2',
 	['<'] = '$1 < $2',
 
@@ -1058,16 +1065,43 @@ function jsgen(sfc)
 			focus = focus - 2
 
 		-- coole lussen
+
+		elseif atoom(ins) == 'lus' then
+			-- ok
+			focus = focus + 0
+
+		elseif atoom(ins) == 'eindlus' then
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs..'}'
+
+		-- igen(10)
+		elseif fn(ins) == 'igen' then
+			focus = focus + 1
+			local maxnaam = atoom(arg(ins))
+			local indexnaam = varnaam(focus-1)
+			local nieuwnaam = varnaam(focus+0)
+			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
+			tabs = tabs .. '  '
+			--L[#L+1] = tabs..string.format("var %s = %s;", nieuwnaam, indexnaam)
+			--focus = focus + 1
+
+		elseif atoom(ins) == 'ifilter' then
+			local lijstnaam = varnaam(focus-2)
+			local prednaam = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("if (!%s) ", prednaam)
+			L[#L+1] = tabs..'  '..'continue;'
+			focus = focus - 1
+
 		elseif atoom(ins) == 'llus' then
-			local maxnaam = varnaam(focus-1)
-			local lijstnaam = varnaam(focus+0)
-			local indexnaam = varnaam(focus+1)
-			local modindex = varnaam(focus+2)
+			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
+			local maxnaam = varnaam(focus-4)
+			local lijstnaam = varnaam(focus-3)
+			local indexnaam = varnaam(focus-2)
+			local modindex = varnaam(focus-1)
 			L[#L+1] = tabs..string.format("var %s = [];", lijstnaam)
 			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
 			tabs = tabs .. '  '
 			L[#L+1] = tabs..string.format("var %s = %s;", modindex, indexnaam)
-			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
 
 		elseif atoom(ins) == 'eindllus' then
 			local ret = varnaam(focus-4)
@@ -1080,17 +1114,28 @@ function jsgen(sfc)
 			L[#L+1] = tabs..string.format("var %s = %s;", ret, lijst)
 			focus = focus - 3
 
-		elseif atoom(ins) == 'lus' then
-			local maxnaam = varnaam(focus-1)
-			local lijstnaam = varnaam(focus)
-			local indexnaam = varnaam(focus+1)
-			local modindex = varnaam(focus+2)
-			L[#L+1] = tabs..string.format("var %s = [];", lijstnaam)
+		elseif atoom(ins) == 'slus' then
+			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
+			local maxnaam = varnaam(focus-4)
+			local lijstnaam = varnaam(focus-3)
+			local indexnaam = varnaam(focus-2)
+			local modindex = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("var %s = 0;", lijstnaam)
 			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
 			tabs = tabs .. '  '
 			L[#L+1] = tabs..string.format("var %s = %s;", modindex, indexnaam)
-			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
 
+		elseif atoom(ins) == 'eindslus' then
+			local ret = varnaam(focus-4)
+			local lijst = varnaam(focus-3)
+			local index = varnaam(focus-2)
+			local val = varnaam(focus-1)
+			local add = varnaam(focus+0)
+			L[#L+1] = tabs..string.format("%s += %s;", lijst, val)
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs.."}"
+			L[#L+1] = tabs..string.format("var %s = %s;", ret, lijst)
+			focus = focus - 3
 
 		elseif binops[atoom(ins)] then
 			local naama = varnaam(focus-2)

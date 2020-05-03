@@ -22,6 +22,14 @@ function bieb()
 	['debugsom'] = true,
 	['eval'] = true,
 
+	['+f1'] = function(args)
+		local afunc = args[1]
+		local b = args[2]
+		return function (x)
+			return afunc(x) + b
+		end
+	end,
+
 	['grabbel'] = function (lijst) return lijst[math.random(1, #lijst)] end,
 	-- canvas
 	['pad.begin'] = true,
@@ -441,6 +449,9 @@ function bieb()
 			return a[1] == a[2]
 		end
 		return lenc(a[1]) == lenc(a[2])
+	end;
+	['=g'] = function(a)
+		return a[1] == a[2]
 	end;
 	['>'] = function(a) return a[1] > a[2] end;
 	['<'] = function(a) return a[1] < a[2] end;

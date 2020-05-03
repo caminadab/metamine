@@ -206,17 +206,10 @@ function moes(exp)
 	return exp.moes
 end
 
-function arg0(exp)
-	return exp.a and exp.a[1]
-end
-
-function arg1(exp)
-	return exp.a and exp.a[2]
-end
-
-function arg2(exp)
-	return exp.a and exp.a[3]
-end
+function arg0(exp) return exp.a and exp.a[1] end
+function arg1(exp) return exp.a and exp.a[2] end
+function arg2(exp) return exp.a and exp.a[3] end
+function arg3(exp) return exp.a and exp.a[4] end
 
 function assign(a, b)
 	if a == b then return a end

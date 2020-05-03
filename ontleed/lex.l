@@ -149,6 +149,7 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "⊤"			{ *yylval = A(GL, "⊤", nergens); return NAAM; }
 "⊥"			{ *yylval = A(GL, "⊥", nergens); return NAAM; }
 "τ"			{ *yylval = A(GL, "τ", nergens); return NAAM; }
+"⎔"			{ *yylval = A(GL, "⎔", nergens); return NAAM; }
 
 "als"					{ return ALS; }
 "dan"					{ return DAN; }

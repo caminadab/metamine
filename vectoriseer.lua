@@ -72,7 +72,27 @@ function vectoriseer(asb, types, debug)
 			end
 		end
 
+		-- (1 = 2) ⇒ (1 =g 2)
+		if false and fn(exp) == '=' or fn(exp) == '≠' then
+			local type   = types[moes(exp)]
+			local atype  = types[moes(arg0(exp))]
+			local btype  = types[moes(arg1(exp))]
+			local agetal = atoom(atype) == 'getal' or atoom(atype) == 'int' 
+			local bgetal = atoom(btype) == 'getal' or atoom(btype) == 'int' 
+
+			if moes(type) ~= 'ok' then
+
+				if agetal or bgetal then
+					exp.f = X(fn(exp)..'g')
+				elseif atoom(atype) == 'bit' then
+					--exp.f = X(fn(exp)..'g')
+				end
+			end
+		end
+
+
 		-- TODO set -
+
 
 		-- (+) → +v | +v1 | +m | +m1 | +f
 		if fn(exp) == '+' then
@@ -81,7 +101,7 @@ function vectoriseer(asb, types, debug)
 			local isnumA = atoom(atype) == 'int' or atoom(atype) == 'getal'
 			local isnumB = atoom(btype) == 'int' or atoom(btype) == 'getal'
 			local isfuncA = fn(atype) == '→' or atoom(atype) == 'functie'
-			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
+			local isfuncB = fn(btype) == '→' or atoom(btype) == 'functie'
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
 			local ismatA = atoom(arg0(atype)) == 'nat' and atoom(arg0(arg1(atype))) == 'nat'
@@ -95,10 +115,10 @@ function vectoriseer(asb, types, debug)
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- functie
-			elseif isfuncA and isfuncB then exp.f = X'+v'
-			elseif isfuncA and isnumB then exp.f = X'+v1'
+			elseif isfuncA and isfuncB then exp.f = X'+f'
+			elseif isfuncA and isnumB then exp.f = X'+f1'
 			elseif isfuncB and isnumA then
-				exp.f = X'+v1' 
+				exp.f = X'+f1' 
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- matrix

@@ -106,12 +106,18 @@ function vertaal(code, isdebug)
 	end
 	local prev = socket.gettime()
 
-	-- vectoriseer
-	local asb = vectoriseer(asb, types, isdebug)
+
 
 	check(asb)
 
+local asb = vectoriseer(asb, types, isdebug)
+
+
 	local exp,oplosfouten,varmap = oplos(asb, "main", isdebug)
+
+	-- vectoriseer
+--	local exp = vectoriseer(exp, types, isdebug)
+
 	
 	local delta = socket.gettime() - prev
 	local ms = math.floor(delta * 1000)

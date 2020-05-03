@@ -102,6 +102,7 @@ zip1: iets, iets → lijst
 rzip1: iets, iets → lijst
 map: lijst, (iets→iets) → lijst
 filter: lijst, (iets→bit) → lijst
+vouw: lijst, (iets→iets) → iets
 
 ; lijst
 (×) : lijst, lijst → lijst
