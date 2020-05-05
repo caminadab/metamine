@@ -40,7 +40,7 @@ function readfn(sfc, i)
 end
 
 -- sfc → func
-function doe(sfc, arg0, stack)
+function doe(sfc, stack, arg0, arg1, ...)
 	local stack = stack or {}
 	local i = 1
 	local bieb = bieb()
@@ -95,6 +95,11 @@ function doe(sfc, arg0, stack)
 
 		elseif fn(ins) == 'arg' then
 			stack[#stack+1] = arg0
+
+		elseif fn(ins) == 'arg0' then
+			stack[#stack+1] = arg0
+		elseif fn(ins) == 'arg1' then
+			stack[#stack+1] = arg1
 
 		elseif fn(ins) == 'string' then
 			local num = atoom(arg(ins))
@@ -164,7 +169,7 @@ function doe(sfc, arg0, stack)
 			i = i + 1
 			proc,i = readfn(sfc, i)
 
-			stack[#stack+1] = function(x) return doe(proc, x, stack) end
+			stack[#stack+1] = function(...) return doe(proc, stack, ...) end
 			
 		elseif tonumber(atoom(ins)) then
 			stack[#stack+1] = tonumber(atoom(ins))

@@ -1,5 +1,5 @@
 main = Σ (0..10) map k
-k = f ∘ g ∘ h ∘ i
+k = f ∘ g ∘ h ∘ i ∘ f ∘ g
 f = x → x + 1
 g = y → y / 2 
 h = z → z · 2 

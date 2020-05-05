@@ -29,8 +29,6 @@ als toets.eindigt dan
 	toetsen := toetsen \ {toets.code}
 eind
 
-;uit = tekst | function(el → el)
-
 ; canvas
 canvas.wis = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), kleur.zwart)
 

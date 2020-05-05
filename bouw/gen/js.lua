@@ -538,10 +538,8 @@ local noops = {
 	['zip2'] = '(a, b) => { var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c; }',
   ['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
   ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;})',
-  ['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
-  ['map2'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
-  ['filter'] = '(function(a){return a[0].filter(a[1]);})',
-  ['filter2'] = '(a, b) => a.filter(b)',
+  ['map'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
+  ['filter'] = '(a, b) => a.filter(b)',
   ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
 	['vouw'] = [[(function(lf) {
 		var l=lf[0];
@@ -929,7 +927,8 @@ local binops = {
 	['..2'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
 
 	-- componeer
-	['∘'] = [[((f,g) => z => {
+	['∘'] = '((f,g) => (x,y,z,w) => g(f(x,y,z,w)))($1,$2)',
+	['∘2'] = [[((f,g) => z => {
 		var res = z;
 		for (var i = 0; i < 2; i++) {
 			if (Array.isArray(i==0?f:g))
@@ -1063,6 +1062,22 @@ function jsgen(sfc)
 			local naamb = varnaam(focus-1)
 			L[#L+1] = tabs..string.format('var %s = %s(%s, %s);', naamf, naamf, naama, naamb)
 			focus = focus - 2
+		elseif atoom(ins) == '_f3' then
+			local naamf = varnaam(focus-4)
+			local naama = varnaam(focus-3)
+			local naamb = varnaam(focus-2)
+			local naamc = varnaam(focus-1)
+			L[#L+1] = tabs..string.format('var %s = %s(%s, %s, %s);', naamf, naamf, naama, naamb, naamc)
+			focus = focus - 3
+		elseif atoom(ins) == '_f4' then
+			local naamf = varnaam(focus-5)
+			local naama = varnaam(focus-4)
+			local naamb = varnaam(focus-3)
+			local naamc = varnaam(focus-2)
+			local naamd = varnaam(focus-1)
+			L[#L+1] = tabs..string.format('var %s = %s(%s, %s, %s, %s);', naamf, naamf, naama, naamb, naamc, naamd)
+			focus = focus - 4
+
 
 		-- coole lussen
 
@@ -1197,15 +1212,39 @@ function jsgen(sfc)
 			focus = focus - num + 1
 
 		elseif fn(ins) == 'arg' then
-			local var = varnaam(1+tonumber(atoom(arg(ins))))
+			local var = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
 			local naam = varnaam(focus)
-			L[#L+1] = tabs..'var '..naam..' = arg'..var..';'
+			L[#L+1] = tabs..'var '..naam..' = '..var..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg0' then
+			local naamA = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamA..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg1' then
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'1'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamB..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg2' then
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'2'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamB..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg3' then
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'3'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamB..';'
 			focus = focus + 1
 
 		elseif fn(ins) == 'fn' then
 			local naam = varnaam(focus)
-			local var = varnaam(1+tonumber(atoom(arg(ins))))
-			L[#L+1] = tabs..string.format("var %s = (%s) => {", naam, "arg"..var)
+			--print('NAAMA', atoom(arg(ins)))
+			local naamA = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'1'
+			local naamC = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'2'
+			local naamD = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'3'
+			L[#L+1] = tabs..string.format("var %s = (%s, %s, %s, %s) => {", naam, naamA, naamB, naamC, naamD)
 			focus = focus + 1
 			tabs = tabs..'  '
 

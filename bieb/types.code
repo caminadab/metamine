@@ -118,7 +118,7 @@ cos :  getal → getal
 tan :  getal → getal
 sincos :  getal → getal, getal
 cossin :  getal → getal, getal
-;(+) :  getal, getal → getal
+(+) :  iets, iets → iets
 ;(+) :  int, int → getal
 ;(-) :  getal → getal
 ;(·) :  (getal, getal) → getal

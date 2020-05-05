@@ -534,13 +534,14 @@ function oplos(exp, voor, isdebug)
 	if verbozeKennis then
 		print('=== VOORGEKAUWD ===')
 		local teqs = {}
-		for eq in pairs(eqs) do
+		for eq in pairs(subst) do
 			teqs[#teqs+1] = combineer(eq)
 		end
 		table.sort(teqs)
 		for i,teq in ipairs(teqs) do
 			print(teq)
 		end
+		print()
 	end
 
 	-- maak graaf

@@ -613,23 +613,13 @@ function bieb()
 		return r
 	end;
 
-	['vouw'] = function(a)
-		local lijst, func = a[1],a[2]
+	['vouw'] = function(lijst, func)
 		local aggr = lijst[1]
 		for i = 2,#lijst do
-			aggr = func{aggr, lijst[i]}
+			aggr = func(aggr, lijst[i])
 		end
 		return aggr
 	end;
-
-	['vouw2'] = function(lijst, func)
-		local aggr = lijst[1]
-		for i = 2,#lijst do
-			aggr = func{aggr, lijst[i]}
-		end
-		return aggr
-	end;
-
 
 	['zip'] = function(a)
 		local a,b = a[1],a[2]
@@ -677,8 +667,7 @@ function bieb()
 		return r
 	end;
 
-	['map'] = function(a)
-		local a,b = a[1],a[2]
+	['map'] = function(a, b)
 		local r = {}
 		for i=1,#a do
 			local v = a[i]

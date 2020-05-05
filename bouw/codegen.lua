@@ -114,7 +114,24 @@ function codegen(exp, moes2naam)
 				argindex[num] = tostring(maakargindex())
 				--print('reg arg', argindex[num], num)
 			end
-			ins[#ins+1] = X('arg', argindex[num])
+			ins[#ins+1] = X('arg', num) --argindex[num])
+			focus = focus + 1
+
+		elseif fn(exp) == '_arg0' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg0', num) --argindex[num])
+			focus = focus + 1
+		elseif fn(exp) == '_arg1' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg1', num) --argindex[num])
+			focus = focus + 1
+		elseif fn(exp) == '_arg2' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg2', num) --argindex[num])
+			focus = focus + 1
+		elseif fn(exp) == '_arg3' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg3', num) --argindex[num])
 			focus = focus + 1
 
 		elseif atoom(exp) == 'id' then
@@ -185,18 +202,14 @@ function codegen(exp, moes2naam)
 			focus = focus + 0
 
 		-- portable functies
-		elseif true and binop[atoom(exp)] then
+		elseif callarg and binop[atoom(exp)] then
 			ins[#ins+1] = X(atoom(exp))
 
-		elseif false and binop[atoom(exp)] then
+		elseif binop[atoom(exp)] then
 			local index = tostring(maakargindex())
 			ins[#ins+1] = X('fn', index)
-			ins[#ins+1] = X('arg', index)
-			ins[#ins+1] = X('0')
-			ins[#ins+1] = X('_l')
-			ins[#ins+1] = X('arg', index)
-			ins[#ins+1] = X('1')
-			ins[#ins+1] = X('_l')
+			ins[#ins+1] = X('arg0', index)
+			ins[#ins+1] = X('arg1', index)
 			ins[#ins+1] = exp
 			ins[#ins+1] = X('eind')
 			focus = focus + 1
@@ -226,6 +239,23 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 2
 
+		elseif fn(exp) == '_f3' then
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
+			codegen(arg2(exp), ins, callarg)
+			codegen(arg3(exp), ins, callarg)
+			ins[#ins+1] = X(fn(exp))
+			focus = focus - 3
+
+		elseif fn(exp) == '_f4' then
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
+			codegen(arg2(exp), ins, callarg)
+			codegen(arg3(exp), ins, callarg)
+			codegen(arg4(exp), ins, callarg)
+			ins[#ins+1] = X(fn(exp))
+			focus = focus - 4
+
 		elseif unop[fn(exp)] then
 			codegen(arg(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
@@ -238,7 +268,7 @@ function codegen(exp, moes2naam)
 				argindex[num] = tostring(maakargindex())
 				--print('reg fn', argindex[num], num)
 			end
-			ins[#ins+1] = X('fn', argindex[num])
+			ins[#ins+1] = X('fn', num)--argindex[num])
 
 			-- met lege cache
 			local ic = iscached

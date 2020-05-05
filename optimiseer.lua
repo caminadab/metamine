@@ -46,10 +46,16 @@ function compopt(exp, maakindex)
 		local barg = atoom(arg0(b))
 		local cindex = tostring(maakindex())
 		local carg = X('_arg', cindex)
+		local carg0 = X('_arg0', cindex)
+		local carg1 = X('_arg1', cindex)
 		
 		local nbody = kloon(bbody)
+
 		local aabody = kloon(abody)
 		local aabody = substitueer(aabody, X('_arg', aarg), carg)
+		local aabody = substitueer(aabody, X('_arg0', aarg), carg0)
+		local aabody = substitueer(aabody, X('_arg1', aarg), carg1)
+
 		local cbody = substitueer(nbody, X('_arg', barg), aabody)
 		local c = X('_fn', cindex, cbody)
 		--print(combineer(abody))
@@ -59,7 +65,7 @@ function compopt(exp, maakindex)
 		return c
 
 	-- (-) ∘ (-) = (x → -(-(x)))
-	elseif isatoom(a) and isatoom(b) then
+	elseif false and isatoom(a) and isatoom(b) then
 		local index = tostring(maakindex())
 		local anaam = atoom(a)
 		local bnaam = atoom(b)
@@ -68,6 +74,10 @@ function compopt(exp, maakindex)
 		local c
 		if unop[anaam] then
 			c = X(anaam, arg)
+		elseif binop[anaam] then
+			local argA = X('arg0', index)
+			local argB = X('arg1', index)
+			c = X(anaam, argA, argB)
 		else
 			c = X('_f', anaam, arg)
 		end
