@@ -62,7 +62,7 @@ function compopt(exp, maakindex)
 		return c
 
 	-- (-) ∘ (-) = (x → -(-(x)))
-	elseif false and isatoom(a) and isatoom(b) then
+	elseif isatoom(a) and isatoom(b) then
 		local index = tostring(maakindex())
 		local anaam = atoom(a)
 		local bnaam = atoom(b)

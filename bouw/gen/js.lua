@@ -23,9 +23,7 @@ local noops = {
 
 	['eval'] = 'eval',
 
-	['herhaal'] = [[args => {
-		var max = args[0];
-		var vouw = args[1];
+	['herhaal'] = [[(max, vouw) => {
 		var res = 0;
 		for (var i = 0; i < max; i++)
 			res = res + i;
@@ -76,23 +74,15 @@ local noops = {
 		return "";
 	} ]],
 	['getal'] = 'parseFloat',
-	['splits'] = [[ args => args[0].split(args[1]) ]],
-	['splits2'] = [[ (a, b) => a.split(b) ]],
-	['matrixbind'] = [[ args => {
-		var prog = args[0];
-		var name = args[1];
-		var val = args[2];
+	['splits'] = [[ (a, b) => a.split(b) ]],
 
+	['matrixbind'] = [[ (prog, name, val) => {
 		var loc = gl.getUniformLocation(prog, name);
 		gl.uniformMatrix4fv(loc, false, new Float32Array(val));
 		return prog;
 	} ]],
 
-	['uniformbind'] = [[ args => {
-		var prog = args[0];
-		var name = args[1];
-		var val = args[2];
-
+	['uniformbind'] = [[ (prog, name, val) => {
 		var loc = gl.getUniformLocation(prog, name);
 		if (Array.isArray(val)) {
 			if (val.length == 2) gl.uniform2fv(loc, val);
@@ -118,9 +108,7 @@ local noops = {
 		return fragShader;
 	} ]],
 
-	['shaderprogram'] = [[ args => {
-		var vertShader = args[0];
-		var fragShader = args[1];
+	['shaderprogram'] = [[ (vertShader, fragShader) => {
 		var cached = programCache[vertShader + fragShader];
 		if (cached)
 			return cached;
@@ -153,12 +141,7 @@ local noops = {
 		return vertex_buffer;
 	}]],
 	
-	['texturebind'] = [[ args => {
-		var shaderProgram = args[0];
-		var name = args[1];
-		var texture = args[2];
-		var index = args[3];
-
+	['texturebind'] = [[ (shaderProgram, name, texture, index) => {
 		gl.activeTexture(gl.TEXTURE0 + index);
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		var loc = gl.getUniformLocation(shaderProgram, name);
@@ -167,12 +150,7 @@ local noops = {
 	}
 	]],
 
-	['cubemapbind'] = [[ args => {
-		var shaderProgram = args[0];
-		var name = args[1];
-		var texture = args[2];
-		var index = args[3];
-
+	['cubemapbind'] = [[ (shaderProgram, name, texture, index) => {
 		gl.activeTexture(gl.TEXTURE0 + index);
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 		var loc = gl.getUniformLocation(shaderProgram, name);
@@ -181,10 +159,7 @@ local noops = {
 	}
 	]],
 
-	['cubemap'] = [[ args => {
-		var urls = args[0];
-		var index = args[1];
-
+	['cubemap'] = [[ (urls, index) => {
 		if (textureCache[urls[0] ] != null)  {
 			//gl.activeTexture(gl.TEXTURE0 + index);
 			//gl.bindTexture(gl.TEXTURE_CUBEMAP, tex);
@@ -269,9 +244,7 @@ local noops = {
 		return tex;
 	} ]],
 
-	['texture'] = [[ args => {
-		var url = args[0];
-		var id = args[1];
+	['texture'] = [[ (url, id) => {
 		url = 'res/' + url;
 
 		if (textureCache[url] != null)  {
@@ -318,10 +291,7 @@ local noops = {
 		return tex;
 	} ]],
 
-	['shaderbind'] = [[ args => {
-		var shaderProgram = args[0];
-		var name = args[1];
-		var vertex_buffer = args[2];
+	['shaderbind'] = [[ (shaderProgram,name,vertex_buffer) => {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 		var coord = gl.getAttribLocation(shaderProgram, name);
@@ -336,12 +306,7 @@ local noops = {
 		return shaderProgram;
 	} ]],
 
-	['superrender'] = [[ args => {
-		var gl = args[0];
-		var tex = args[1];
-		var shaderProgram = args[2];
-		var num = args[3];
-
+	['superrender'] = [[ (gl, tex, shaderProgram, num) => {
 		if (!window.canvas) {
 		 window.canvas = document.getElementById('uit').children[0];
 		}
@@ -372,6 +337,7 @@ local noops = {
 	return gl;
 			 }
 				]],
+
 	['grabbel'] = 'x => x[Math.floor(Math.random()*x.length)]',
 	['fn.nul'] = 'x => x(0)',
 	['fn.een'] = 'x => x(1)',
@@ -517,12 +483,12 @@ local noops = {
 }]],
 
 	-- niet goed
-	['kies'] = 'x => x[0] ? x[1] : x[2]',
+	['kies'] = '(p,x,y) => p ? x : y',
 	['misschien'] = 'Math.random() < 0.5',
-	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
-	['newindex2'] = 'x => { var t = []; for (var i = 0; i< x[0].length; i++) { if (i == x[1]) t[i] = x[2]; else t[i] = x[0][i]; } return t; }',
+	['newindex']  = '(lijst,index,val) => { lijst[ index ] = val; return lijst; }',
+	['newindex2'] = '(lijst,index,val) => { var t = []; for (var i = 0; i< lijst.length; i++) { if (i == index) t[i] = val; else t[i] = lijst[i]; } return t; }',
 	['scherm.ververst'] = 'true',
-	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
+	['canvas.drawImage'] = '(i,x,y) => (c => c.drawImage(x, SCHAAL*x, SCHAAL*(100-y)))',
 	['herhaal2'] = [[x => {
 	var value = x[0];
 	var len = x[1];
@@ -534,15 +500,14 @@ local noops = {
 	}]],
 
 	-- functioneel
-	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
-	['zip2'] = '(a, b) => { var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c; }',
-  ['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
-  ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;})',
+	['zip'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;}',
+  ['zip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;}',
+  ['rzip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;}',
   ['map'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
   ['map4'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(x => b(x[0], x[1], x[2], x[3])); }',
   ['filter'] = '(a, b) => a.filter(b)',
   ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
-  ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
+  ['reduceer'] = '(a, b) => a.reduce(b)',
 	['vouw'] = [[(l, f) => {
 		if (l.length == 0)
 			return false;
@@ -611,22 +576,6 @@ local noops = {
  })]],
 
 	 ['verf'] = [[
- (function(_args) {return (function(c){
-  var vorm = _args[0];
-  var kleur = _args[1];
-  var r = kleur[0]*255;
-  var g = kleur[1]*255;
-  var b = kleur[2]*255;
-  var style = 'rgb('+r+','+g+','+b+')';
-  c.fillStyle = style;
-  c.strokeStyle = style;
-  vorm(c);
-	c.fillStyle = 'white';
-  c.strokeStyle = 'white';
-  return c;});
- })]],
-
-	 ['verf2'] = [[
  (vorm, kleur) => (c => {
   var r = kleur[0]*255;
   var g = kleur[1]*255;
@@ -640,8 +589,7 @@ local noops = {
   return c;
  })]],
 
-
-	['rgb'] = [[ (function(_args) { return _args; }) ]],
+	['rgb'] = '(r,g,b) => [r,g,b]',
 	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
 	['afrond.onder'] = 'Math.floor',
 	['afrond']       = 'Math.round',
@@ -666,7 +614,13 @@ local noops = {
 			return context;
 		};
 	} ]],
-	['vierkant'] = [[ (a,b,c) => {
+
+	['vierkant'] = [[ args => {
+	var a = args[0];
+	var b = args[1];
+	var c = args[2];
+	var d = args[3];
+
 	var x,y,r;
 	if (c) {
 		r = c * SCHAAL;
@@ -697,10 +651,6 @@ local noops = {
 		x = args[0][0] * SCHAAL;
 		y = (100 - args[0][1]) * SCHAAL;
 	}
-
-	//if (typeof t == "object)
-//		t = [...t]
-//	alert("t = " + typeof t);
   return context => {
     context.fillText(t,x,y);
     return context;
@@ -708,17 +658,20 @@ local noops = {
 	} ]],
 
 	['rechthoek'] = [[ args => {
-	var x, y, w, h;
-	if (args.length == 2) {
-		x = args[0][0] * SCHAAL;
-		y = (100 - args[0][1]) * SCHAAL;
-		w = args[1][0] * SCHAAL - x;
-		h = (100 - args[1][1]) * SCHAAL - y;
+	var a = args[0];
+	var b = args[1];
+	var c = args[2];
+	var d = args[3];
+	if (c == null) {
+		x = a[0] * SCHAAL;
+		y = (100 - a[1]) * SCHAAL;
+		w = b[0] * SCHAAL - x;
+		h = (100 - b[1]) * SCHAAL - y;
 	} else {
-		x = args[0] * SCHAAL;
-		y = (100 - args[1]) * SCHAAL;
-		w = args[2] * SCHAAL - x;
-		h = (100 - args[3]) * SCHAAL - y;
+		x = a * SCHAAL;
+		y = (100 - b) * SCHAAL;
+		w = c * SCHAAL - x;
+		h = (100 - d) * SCHAAL - y;
 	}
   return context => {
     context.fillRect(x,y,w,h);
@@ -791,8 +744,7 @@ local noops = {
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
 	['sign'] = '$1 > 0 ? 1 : -1',
-	['mod'] = 'x => x[0] % x[1]',
-	['mod2'] = '(x,y) => x % y',
+	['mod'] = '(x,y) => x % y',
 
 	['int'] = 'Math.floor',
 	['sin'] = 'Math.sin',

@@ -100,7 +100,7 @@
 		} else if (typeof(obj)=="object" && obj.has) {
 			return "{"+[...obj].toString()+"}";
 		} else if (typeof(obj) == "number") {
-			return (Math.floor(obj*10) / 10).toString();
+			return (Math.floor(obj*100) / 100).toString();
 		} else {
 			var j = JSON.stringify(obj);
 			if (j)

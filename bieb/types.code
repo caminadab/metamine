@@ -15,6 +15,25 @@ kommagetal: getal
 τ: getal
 π: getal
 
+; webGL
+vertexshader: tekst → vshader
+fragmentshader: tekst → fshader
+shaderprogram: vshader, fshader → sprog
+
+vertexbuffer: lijst getal → vbuffer
+texture: tekst, index → texture ; url
+cubemap: lijst tekst, index → cubemap ; urls
+
+uniformbind: sprog, tekst, iets → prog
+texturebind: sprog, tekst, texture, int → prog
+cubemapbind: sprog, tekst, texture, int → prog
+matrixbind:  sprog, tekst, iets → prog
+shaderbind:  sprog,tekst,vbuffer → prog
+superrender: iets, texture, sprog, int → iets
+
+; lol/lijst
+grabbel: lijst, int → iets
+
 ; net
 socket: int
 tcp.bind: int, int → socket
