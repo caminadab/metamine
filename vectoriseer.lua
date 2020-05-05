@@ -18,14 +18,14 @@ function vectoriseer(asb, types, debug)
 	for exp in boompairsdfs(asb) do
 
 		-- filter2,3,4
-		if fnaam(exp) == 'filter' then
+		if fnaam(exp) == 'filter' or fnaam(exp) == 'map' then
 			local type  = types[moes(exp)]
 			local atype = types[moes(arg0(exp))]
 
 			local functype = types[moes(arg1(exp)[2])]
 			local num = numargs(functype)
 			if num > 1 then
-				exp.a[1] = X'filter4'
+				exp.a[1] = X(atoom(exp.a[1])..'4')
 
 				types[moes(exp)] = type
 				types[moes(arg0(exp))] = atype

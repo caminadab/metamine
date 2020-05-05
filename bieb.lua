@@ -667,6 +667,7 @@ function bieb()
 		return r
 	end;
 
+	['map4'] = true,
 	['map'] = function(a, b)
 		local r = {}
 		for i=1,#a do

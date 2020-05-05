@@ -539,6 +539,7 @@ local noops = {
   ['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
   ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;})',
   ['map'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
+  ['map4'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(x => b(x[0], x[1], x[2], x[3])); }',
   ['filter'] = '(a, b) => a.filter(b)',
   ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
   ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',

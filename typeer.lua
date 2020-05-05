@@ -135,7 +135,7 @@ end
 			for i,sub in ipairs(exp) do
 				local subtype = assert(types[moes(sub)], 'geen type voor kind '..moes(sub))
 				local fout
-				lijsttype,fout = typegraaf:unie(subtype, lijsttype, sub) --moetzijn(lijsttype, subtype, sub)
+				lijsttype,fout = typegraaf:intersectie(subtype, lijsttype, sub) --moetzijn(lijsttype, subtype, sub)
 				if not lijsttype then
 					lijsttype = X'iets'
 					fouten[#fouten+1] = fout
@@ -352,7 +352,7 @@ end
 
 			local lijsttypeA = types[A]
 			local lijsttypeB = types[B]
-			local lijsttype = typegraaf:unie(lijsttypeA, lijsttypeB, exp)
+			local lijsttype = typegraaf:intersectie(lijsttypeA, lijsttypeB, exp)
 			if not lijsttype then
 				local fout = typeerfout(exp.loc, "{code}: ongeldige concatenatie van {exp} en {exp}", bron(exp), lijsttypeA, lijsttypeB)
 				fouten[#fouten+1] = fout
