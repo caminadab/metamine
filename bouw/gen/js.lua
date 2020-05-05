@@ -540,24 +540,14 @@ local noops = {
   ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;})',
   ['map'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
   ['filter'] = '(a, b) => a.filter(b)',
+  ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
   ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
-	['vouw'] = [[(function(lf) {
-		var l=lf[0];
-		if (l.length == 0)
-			return false;
-		var f=lf[1];
-		var r=l[0] ;
-		for (var i=1; i < l.length; i++)
-			r = f([r, l[i] ]);
-		return r;
-	}) ]],
-
-	['vouw2'] = [[(l, f) => {
+	['vouw'] = [[(l, f) => {
 		if (l.length == 0)
 			return false;
 		var r=l[0] ;
 		for (var i=1; i < l.length; i++)
-			r = f([r, l[i] ]);
+			r = f(r, l[i]);
 		return r;
 	} ]],
 
@@ -675,16 +665,16 @@ local noops = {
 			return context;
 		};
 	} ]],
-	['vierkant'] = [[ args => {
-	var x, y, r;
-	if (args[2]) {
-		r = args[2] * SCHAAL;
-		x = args[0] * SCHAAL;
-		y = (100 - args[1]) * SCHAAL - r;
+	['vierkant'] = [[ (a,b,c) => {
+	var x,y,r;
+	if (c) {
+		r = c * SCHAAL;
+		x = a * SCHAAL;
+		y = (100 - b) * SCHAAL - r;
 	} else {
-		r = args[1] * SCHAAL;
-		x = args[0][0] * SCHAAL;
-		y = (100 - args[0][1]) * SCHAAL - r;
+		r = b * SCHAAL;
+		x = a[0] * SCHAAL;
+		y = (100 - a[1]) * SCHAAL - r;
 	}
 
   return context => {

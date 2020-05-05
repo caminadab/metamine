@@ -265,7 +265,7 @@ onormals   = (plet onfaces) map dec map normalpalet
 dec = Dx → Dx-1
 
 ; terrein
-lpunten,luvs,lnormals = leveal₀, level₁, level₂
+lpunten,luvs,lnormals = level₀, level₁, level₂
 numpolys = #lpunten/9
 
 terreinposbuf = vertexbuffer(lpunten)

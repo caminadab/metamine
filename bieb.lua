@@ -677,6 +677,7 @@ function bieb()
 		return r
 	end;
 
+	['filter4'] = true,
 	['filter'] = function(args)
 		local l = args[1]
 		local fn = args[2]

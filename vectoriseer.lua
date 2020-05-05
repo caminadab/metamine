@@ -3,11 +3,36 @@ require 'exp'
 
 local vbieb = bieb()
 
+function numargs(functype)
+	local argtype = arg0(functype)
+	if fn(functype) == '→' and isobj(argtype) then
+		if #argtype <= 4 then
+			return #argtype
+		end
+	end
+	return 1
+end
+
 -- past types toe om operators te preoverloaden
 function vectoriseer(asb, types, debug)
 	for exp in boompairsdfs(asb) do
 
-		-- call2
+		-- filter2,3,4
+		if fnaam(exp) == 'filter' then
+			local type  = types[moes(exp)]
+			local atype = types[moes(arg0(exp))]
+
+			local functype = types[moes(arg1(exp)[2])]
+			local num = numargs(functype)
+			if num > 1 then
+				exp.a[1] = X'filter4'
+
+				types[moes(exp)] = type
+				types[moes(arg0(exp))] = atype
+			end
+		end
+
+		-- call2,3,4
 		if fn(exp) == '_' then
 			local type = types[moes(arg0(exp))]
 			local argtype = arg0(type)

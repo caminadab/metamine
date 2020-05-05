@@ -1,10 +1,7 @@
+require 'exp'
 require 'symbool'
 
 local altijdja = X('_fn', '12358', '⊤')
-
-local function fnaam(exp)
-	return (fn(exp) == '_' or fn(exp) == '_f' or fn(exp) == '_f2') and atoom(arg0(exp))
-end
 
 function devec(exp)
 	if fnaam(exp) == 'map2' then

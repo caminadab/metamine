@@ -80,7 +80,7 @@
 	var naam;
 
 	function debugChange() {
-		if (debug.checked) {
+		if (!stop) {
 			playfunc();
 		}
 	}
