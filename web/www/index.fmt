@@ -9,11 +9,11 @@
 <body>
 
 <div class="paneel">
-	<button id="vorige">⏮</button>
+	<button id="vorige" class="skip">⏮</button>
 	<button id="engels" onclick="localStorage.setItem('cc', '{anderecc}'); document.location='{taallink}';"><img id="vlag" src="{taalvlag}"></img></button>
 	<button id="speel">▶</button>
 	<button id="fullscreen" onclick="fullscreen()">⇲</button><!--⛶-->
-	<button id="volgende">⏭</button>
+	<button id="volgende" class="skip">⏭</button>
 	<!--<button id="opnieuw">⟲</button>-->
 	<!--<button id="info">🛈</button>-->
 </div>
@@ -27,7 +27,7 @@
 <div id="uit" tabIndex="2" >
 </div>
 
-<div style="height:5; display: inline;"><input id="debug" type="checkbox" onclick="debugChange()"></input> debug </div>
+<div class="debug"><input id="debug" type="checkbox" onclick="debugChange()"></input> debug </div>
 <div style="height:5; display: inline;"><a href="/cataloog.html">Catalogus</a></div>
 
 </body>
@@ -57,7 +57,7 @@
 
 	var demoindex = 0;
 	var demos = [
-		'aap5', 'salvobal', 'pong', 'buis', 'cirkels',
+		'terrein', 'salvobal', 'pong', 'buis', 'cirkels',
 		'paint', 'paint2', 'grafiek', 'voer',
 		'schaken', 'leip', 'oog', 'demo',
 		'pe1', 'pe2', 'pe3', 'pe4', 'pe5', 'pe6' ] ;
@@ -398,6 +398,8 @@
 		alertKlaar = false;
 		setErrors([]);
 		speelknop.innerHTML = "▶";
+		uit.onmousedown = undefined;
+		uit.onmouseup = undefined;
 		uit.onmousemove = undefined;
 		uit.onkeydown = undefined;
 		uit.onkeyup = undefined;

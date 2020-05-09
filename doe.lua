@@ -2,7 +2,7 @@ require 'bieb'
 require 'unicode'
 
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖","\\", "^f","_f","_l", "+f","+f1","·f","·f1")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖","\\", "^f","_f","_l", "+f","+f1","·f","·f1","+v1")
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
 
 function lenc2(exp)
@@ -64,6 +64,33 @@ function doe(sfc, stack, arg0, arg1, ...)
 			stack[#stack] = nil
 			stack[#stack] = nil
 			stack[#stack] = r
+
+		elseif atoom(ins) == '_f3' then
+			local f = stack[#stack-3]
+			local a = stack[#stack-2]
+			local b = stack[#stack-1]
+			local c = stack[#stack-0]
+			local r = f(a, b, c)
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = r
+
+		elseif atoom(ins) == '_f4' then
+			local f = stack[#stack-4]
+			local a = stack[#stack-3]
+			local b = stack[#stack-2]
+			local c = stack[#stack-1]
+			local d = stack[#stack-0]
+			local r = f(a, b, c, d)
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = r
+
+		elseif atoom(ins) == 'lus' then
+			-- niets
 
 		-- cache STORE
 		elseif fn(ins) == 'st' then
@@ -147,9 +174,8 @@ function doe(sfc, stack, arg0, arg1, ...)
 			local f = atoom(ins)
 			local a = stack[#stack-1]
 			local b = stack[#stack]
-			local args = {a, b}
 			stack[#stack] = nil
-			stack[#stack] = bieb[f](args)
+			stack[#stack] = bieb[f](a, b)
 
 		elseif unop[atoom(ins)] then
 			local f = atoom(ins)

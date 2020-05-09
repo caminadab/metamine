@@ -5,8 +5,10 @@ exp |= { loc, val }
 require 'lisp'
 require 'util'
 
+local calls = set('_', '_f', '_f2', '_f3', '_f4')
+
 function fnaam(exp)
-	return (fn(exp) == '_' or fn(exp) == '_f' or fn(exp) == '_f2') and atoom(arg0(exp))
+	return calls[fn(exp)] and atoom(arg0(exp))
 end
 
 function fn(exp) if isfn(exp) then return exp.f.v end end

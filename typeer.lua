@@ -312,6 +312,9 @@ end
 
 			local ismatA = atoom(arg0(types[A])) == 'nat' and atoom(arg0(arg1(types[A]))) == 'nat'
 			local ismatB = atoom(arg0(types[B])) == 'nat' and atoom(arg0(arg1(types[B]))) == 'nat'
+			
+			--print(A, B, geengetalA, geengetalB, ismatA, ismatB)
+			--error'OK'
 
 			-- matvec, matmat
 			if geengetalB then

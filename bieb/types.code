@@ -15,24 +15,29 @@ kommagetal: getal
 τ: getal
 π: getal
 
+; html
+canvas.fontsize: functie, getal → functie
+canvas.linewidth: functie, getal → functie
+
 ; webGL
-vertexshader: tekst → vshader
-fragmentshader: tekst → fshader
+vertexshader: (nat → letter) → vshader
+fragmentshader: (nat → letter) → fshader
 shaderprogram: vshader, fshader → sprog
 
-vertexbuffer: lijst getal → vbuffer
-texture: tekst, index → texture ; url
-cubemap: lijst tekst, index → cubemap ; urls
+vertexbuffer: (nat → getal) → vbuffer
+texture: lijst letter, int → texture ; url
+cubemap: (nat → (nat → letter)), int → cubemap ; urls
 
-uniformbind: sprog, tekst, iets → prog
-texturebind: sprog, tekst, texture, int → prog
-cubemapbind: sprog, tekst, texture, int → prog
-matrixbind:  sprog, tekst, iets → prog
-shaderbind:  sprog,tekst,vbuffer → prog
+uniformbind: sprog, lijst letter, iets → sprog
+texturebind: sprog, lijst letter, texture, int → sprog
+cubemapbind: sprog, lijst letter, cubemap, int → sprog
+matrixbind:  sprog, lijst letter, iets → sprog
+shaderbind:  sprog, lijst letter, vbuffer → sprog
 superrender: iets, texture, sprog, int → iets
 
 ; lol/lijst
 grabbel: lijst, int → iets
+splits: lijst, iets → lijst
 
 ; net
 socket: int
@@ -75,14 +80,16 @@ rgb: (getal, getal, getal) → (getal, getal, getal)
 
 ;vierkant: (ℝ,ℝ),ℝ → vorm
 ;cirkel: (ℝ,ℝ),ℝ → vorm
-ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
+;ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
 ;boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 ;rechthoek: (ℝ,ℝ),(ℝ,ℝ) → vorm
-lijn: iets → functie
-label: iets → functie
+lijn: (nat → getal,getal) → functie
+newindex: lijst, nat, iets → lijst
+newindex2: lijst, nat, iets → lijst
+;label: iets → functie
 draai: vorm → vorm
-;vouw: (lijst(A), (A → B)) → lijst(B)
-;vouw: lijst,functie → iets
+vouw: lijst,(iets,iets → iets) → iets
+reduceer: iets,lijst,(iets,iets → iets) → iets
 kies: bit,iets,iets → iets
 
 requestAnimationFrame: (getal → lijst(letter)) → int
@@ -121,7 +128,6 @@ zip1: iets, iets → lijst
 rzip1: iets, iets → lijst
 map: lijst, (iets→iets) → lijst
 filter: lijst, (iets→bit) → lijst
-vouw: lijst, (iets→iets) → iets
 
 ; lijst
 (×) : lijst, lijst → lijst
@@ -137,7 +143,7 @@ cos :  getal → getal
 tan :  getal → getal
 sincos :  getal → getal, getal
 cossin :  getal → getal, getal
-(+) :  iets, iets → iets
+;(+) :  iets, iets → iets
 ;(+) :  int, int → getal
 ;(-) :  getal → getal
 ;(·) :  (getal, getal) → getal
@@ -197,10 +203,10 @@ tekst: lijst letter
 
 looptijd : getal
 nu : getal
-;vind : (lijst, iets) → int
+vind : (lijst, iets, int) → int
 tot : (lijst, int) → lijst
 vanaf : (lijst, int) → lijst
-deel : (lijst, (int, int)) → lijst
+deel : (lijst, int, int) → lijst
 
 ;herhaal : ((→) → (→))
 ;herhaal : ((→), int) → (→)

@@ -110,7 +110,7 @@ function vertaal(code, isdebug)
 
 	check(asb)
 
-local asb = vectoriseer(asb, types, isdebug)
+	local asb = vectoriseer(asb, types, isdebug)
 
 
 	local exp,oplosfouten,varmap = oplos(asb, "main", isdebug)

@@ -89,6 +89,7 @@ straal	radius
 vorm	shape
 canvas	canvas
 cirkel	circle
+ovaal	oval
 boog	arc
 vierkant	square
 rechthoek	rectangle

@@ -27,6 +27,6 @@ anders
 	ispriem := ja
 eind
 
-priemmod = priems vouw (·)
+priemmod = priems reduceer (·)
 
 uit = (n, ispriem, deler, priems, priemmod)

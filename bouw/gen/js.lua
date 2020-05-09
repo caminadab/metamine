@@ -507,15 +507,15 @@ local noops = {
   ['map4'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(x => b(x[0], x[1], x[2], x[3])); }',
   ['filter'] = '(a, b) => a.filter(b)',
   ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
-  ['reduceer'] = '(a, b) => a.reduce(b)',
-	['vouw'] = [[(l, f) => {
-		if (l.length == 0)
-			return false;
-		var r=l[0] ;
-		for (var i=1; i < l.length; i++)
-			r = f(r, l[i]);
-		return r;
-	} ]],
+  ['vouw'] = '(a, b) => a.reduce(b)',
+	['reduceer'] = [[(i, l, f) => {
+if (l.length <= 1)
+  return i;
+var r = i;
+for (var i=1; i < l.length; i++)
+  r = f(r, l[i]);
+return r;
+} ]],
 
 	['vouw2x2'] = [[(l, f) => {
 		if (l.length == 0)
@@ -528,13 +528,11 @@ local noops = {
 
 	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
 	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
-	['atan'] = 'x => Math.atan2(x[0], x[1])',
+	['atan'] = 'Math.atan2',
 
 	-- discreet
-	['min'] = 'x => Math.min(x[0], x[1])',
-	['max'] = 'x => Math.max(x[0], x[1])',
-	['min2'] = 'Math.min',
-	['max2'] = 'Math.max',
+	['min'] = 'Math.min',
+	['max'] = 'Math.max',
 	['maxindexXXX'] = [[x => {
 		var maxi = null;
 		var max = - Infinity;
@@ -550,30 +548,25 @@ local noops = {
 	-- webgl
 	 ['jsonencodeer'] = 'x => { try { return JSON.stringify(x); } catch (e) {return e.message; }}',
 	 ['jsondecodeer'] = 'x => { try { return JSON.parse(x); } catch (e) {return e.message; }}',
-	 ['deel'] = 'x => x[0].slice(x[1], x[2])',
-	 ['vind'] = [[x => {
-		 var doel = JSON.stringify(x[1]);
-		 for (var i = x[2] || 0; i < x[0].length; i++) {
-			if (JSON.stringify(x[0][i]) == doel)
+	 ['deel'] = 'x,y,z => x.slice(y, z)',
+	 ['vind'] = [[(lijst, doel, index) => {
+		 var doel = JSON.stringify(doel);
+		 for (var i = index || 0; i < lijst.length; i++) {
+			if (JSON.stringify(lijst[i]) == doel)
 				return i;
-			}
 			return null;
 		}]],
 	 
-	 ['vind2'] = '(x,y) => x.indexOf(y)',
-	 ['vanaf'] = 'x => x[0].slice(x[1])',
-	 ['vanaf2'] = '(x,y) => x.slice(y)',
-	 ['tot'] = 'x => x[0].slice(0, x[1])',
-	 ['tot2'] = '(x,y) => x.slice(0, y)',
-	 ['canvas.fontsize'] = [[
- (function(_args) {return (function(c){
-  var vorm = _args[0];
-  var fontsize = _args[1] * SCHAAL;
-  var font = fontsize+'px Arial';
-  c.font = font;
-  vorm(c);
-  return c;});
- })]],
+	 ['vind'] = '(x,y) => x.indexOf(y)',
+	 ['vanaf'] = '(x,y) => x.slice(y)',
+	 ['tot'] = '(x,y) => x.slice(0, y)',
+	 ['canvas.linewidth'] = [[ (lijn, linewidth) => {
+	 return c => {
+		c.lineWidth = linewidth * SCHAAL;
+		lijn(c);
+		return c;
+	}
+ }]],
 
 	 ['verf'] = [[
  (vorm, kleur) => (c => {
@@ -594,7 +587,7 @@ local noops = {
 	['afrond.onder'] = 'Math.floor',
 	['afrond']       = 'Math.round',
 	['afrond.boven'] = 'Math.ceil',
-	['willekeurig'] = 'x => Math.random()*(x[1]-x[0]) + x[0]',
+	['willekeurig'] = '(x, y) => Math.random()*(y-x) + x',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
 	['tekst'] = 'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
@@ -662,6 +655,7 @@ local noops = {
 	var b = args[1];
 	var c = args[2];
 	var d = args[3];
+	var x, y, w, h;
 	if (c == null) {
 		x = a[0] * SCHAAL;
 		y = (100 - a[1]) * SCHAAL;
@@ -717,6 +711,36 @@ local noops = {
 		});
 	}]],
 
+	['ovaal'] = [[ args => {
+	var a = args[0];
+	var b = args[1];
+	var c = args[2];
+	var d = args[3];
+	var e = args[4];
+
+	var x, y, w, h, r;
+	if (Array.isArray(a)) {
+		x = a[0] * SCHAAL;
+		y = (100 - a[1]) * SCHAAL;
+		w = b * SCHAAL;
+		h = c * SCHAAL;
+		t = d;
+	} else {
+		x = a * SCHAAL;
+		y = (100 - b) * SCHAAL;
+		w = c * SCHAAL;
+		h = d * SCHAAL;
+		t = e;
+		console.log("x="+x+",y="+y+",w="+w+",h="+h+",t="+t)
+	}
+  return c => {
+    c.beginPath();
+		c.ellipse(x,y,w,h,t,0,Math.PI*2);
+		c.fill();
+    return c;
+  }
+	} ]],
+
 
 	['boog'] = [[ args => {
 		return (function(c){
@@ -744,7 +768,7 @@ local noops = {
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
 	['sign'] = '$1 > 0 ? 1 : -1',
-	['mod'] = '(x,y) => x % y',
+	['mod'] = '(x,y) => x < 0 ? (x % y + y) % y : x % y',
 
 	['int'] = 'Math.floor',
 	['sin'] = 'Math.sin',

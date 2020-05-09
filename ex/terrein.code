@@ -1,3 +1,26 @@
+; sky shaders
+skyvert = vertexshader "
+uniform mat4 proj;
+uniform mat4 view;
+uniform mat4 model;
+attribute vec3 pos;
+varying highp vec3 Pos;
+void main() {
+	gl_Position = proj * view * model * vec4(pos,1.0);
+	Pos = gl_Position.xyz;
+}
+"
+
+skyfrag = fragmentshader "
+uniform samplerCube achtergrond;
+uniform highp vec3 viewPos;
+varying highp vec3 Pos;
+void main() {
+	gl_FragColor = textureCube(achtergrond, normalize(Pos));
+}
+"
+
+; obj shaders
 vert = vertexshader "
 uniform mat4 proj;
 uniform mat4 view;
@@ -14,7 +37,7 @@ uniform highp float time;
 
 void main(void) {
 	gl_Position = proj * view * model * vec4(pos,1.0);
-	lightPos = (vec4(1.0, -1.0, 1.2, 1.0)).xyz;
+	lightPos = (vec4(100.0, 100.0, 1.2, 1.0)).xyz;
 	Pos = (model * vec4(pos,1)).xyz;
 	Uv = uv;
 	Normal = normal;
@@ -24,10 +47,12 @@ void main(void) {
 ;***
 frag = fragmentshader "
 uniform sampler2D albedo;
+uniform sampler2D rotsAlbedo;
 uniform samplerCube achtergrond;
 uniform highp mat4 model;
 uniform highp float time;
 uniform highp vec3 viewPos;
+uniform highp float isAchtergrond;
 varying highp vec3 Pos;
 varying highp vec3 Uv;
 varying highp vec3 Normal;
@@ -37,13 +62,19 @@ highp float dpi = 3.14159265358979323846264338327950 / 0.5;
 
 void main(void) {
 	highp vec3 lightColor = vec3(1,1,1);
-	lowp vec3 albedo = texture2D(albedo, vec2(Uv.x,1.0-Uv.y) / 0.1).xyz;
+
+	lowp vec3 aapAlbedo = texture2D(albedo, vec2(Uv.x,1.0-Uv.y) / 0.1).xyz;
+	lowp vec3 rotsAlbedo = texture2D(rotsAlbedo, vec2(Uv.x,1.0-Uv.y) / 0.1).xyz;
+
+	highp float factor = dot(abs(Normal.xz), vec2(1));
+	highp float stijlheid = clamp(pow(factor,3.0), 0.0, 1.0);
+	lowp vec3 albedo = stijlheid * rotsAlbedo + (1.0 - stijlheid) * aapAlbedo;
 
 	highp vec3 lightDir = normalize(lightPos-Pos);
 	highp float diff = max(dot(Normal, lightDir), 0.0);
 	highp vec3 diffuse = diff * lightColor; 
 
-	lowp vec3 ambient = 0.3 * albedo * lightColor;
+	lowp vec3 ambient = 0.7 * lightColor;
 
 	highp vec3 viewDir = normalize((vec4(viewPos,1)).xyz - Pos);
 	highp vec3 reflectDir = reflect(lightDir,Normal);
@@ -51,23 +82,15 @@ void main(void) {
 	highp float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 	highp vec3 specular = 0.5 * spec * lightColor;
 
-	highp vec3 res = (ambient + specular) * albedo * 1.0;
-	gl_FragColor = vec4(res, 1.0);
+	highp vec3 res = (ambient + diffuse) * albedo *  0.8;
+	highp vec3 npos = Pos;
+	npos.y *= -1.0;
+	lowp vec4 achtergrond = textureCube(achtergrond, npos);
+
+	gl_FragColor = mix(vec4(res, 1.0), achtergrond, isAchtergrond);
 
 }
 "
-
-r = scherm.breedte / scherm.hoogte
-mx = -1+muis.x/(100·r)·2
-my = -1+muis.y/100·2
-buf2 = vertexbuffer [
-	0,0,0, 1,1,0, 0,1,0, 0,0,0, 1,1,0, 1,0,0,
-	0,0,0, 1,0,1, 0,0,1, 0,0,0, 1,0,1, 1,0,0,
-	0,0,0, 0,1,1, 0,0,1, 0,0,0, 0,1,1, 0,1,0,
-	0,0,1, 1,1,1, 0,1,1, 0,0,1, 1,1,1, 1,0,1,
-	0,1,0, 1,1,1, 0,1,1, 0,1,0, 1,1,1, 1,1,0,
-	1,0,0, 1,1,1, 1,0,1, 1,0,0, 1,1,1, 1,1,0,
-]
 
 grid := plet(plet(tiles))
 ugrid := plet(plet(tileuvs))
@@ -101,43 +124,51 @@ tileuvs = (0..n²) map (tui → [(0,0,0),(1,0,0),(0,1,0),(1,1,0),(0,1,0),(1,0,0)
 
 ;pn = cross(pa₂ - pa₀, pa₁ - pa₀)
 
-; aap
+; level
 aappos = (0,0,0)
 aapmov = verplaats(aappos)
 
-prog = shaderprogram(vert, frag)
-prog1 = shaderbind(prog, "pos", buf)
-prog2 = shaderbind(prog1, "uv", ubuf)
-prog3 = shaderbind(prog2, "normal", nbuf)
-prog4 = matrixbind(prog3, "model", plet aapmov)
+prog0 = shaderprogram(vert, frag)
+prog1 = shaderbind(prog0, "pos", terreinposbuf)
+prog2 = shaderbind(prog1, "uv", terreinuvbuf)
+prog3 = shaderbind(prog2, "normal", terreinnormalbuf)
+prog4 = matrixbind(prog3, "model", plet mat4.id)
 prog5 = matrixbind(prog4, "view", plet cam)
 prog6 = matrixbind(prog5, "proj", plet (proj · aapmov))
 prog7 = uniformbind(prog6, "time", looptijd)
-prog8 = texturebind(prog7, "albedo", aap)
-prog9 = cubemapbind(prog8, "achtergrond", achtergrond)
-prog10 = uniformbind(prog9, "viewPos", [xpos,ypos,zpos])
+prog8 = texturebind(prog7, "albedo", gras, 0)
+prog9 = texturebind(prog8, "rotsAlbedo", rots, 1)
+progA = cubemapbind(prog9, "achtergrond", achtergrond, 2)
+progB = uniformbind(progA, "viewPos", [xpos,ypos,zpos])
+prog  = uniformbind(progB, "isAchtergrond", 0)
 
-; grid
-nprog1 = shaderbind(prog, "pos", gridposbuf)
-nprog2 = shaderbind(nprog1, "uv", griduvbuf)
-nprog3 = shaderbind(nprog2, "normal", gridnormalbuf)
-nprog4 = matrixbind(nprog3, "cam", plet cam)
-nprog5 = matrixbind(nprog4, "proj", plet proj)
-nprog6 = uniformbind(nprog5, "time", looptijd)
-nprog7 = texturebind(nprog6, "albedo", gras)
-nprog8 = matrixbind(nprog7, "model", plet mat4.id)
+; sky
+skyprog0 = shaderprogram(vert,frag)
+skyprog1 = shaderbind(skyprog0, "pos", skyposbuf)
+skyprog2 = matrixbind(skyprog1, "proj", plet proj)
+skyprog3 = matrixbind(skyprog2, "view", plet (My · Mx))
+skyprog4 = matrixbind(skyprog3, "model", plet mat4.id)
+skyprog5 = cubemapbind(skyprog4, "achtergrond", achtergrond, 2)
+skyprog6 = uniformbind(skyprog5, "viewPos", [xpos,ypos,zpos])
+skyprog  = uniformbind(skyprog6, "isAchtergrond", 1)
 
-aap  = texture "res/gras2.jpg"
-gras = texture "res/gras.jpg"
-achtergrond = cubemap [
-	"res/skybox/front.jpg", "res/skybox/back.jpg",
-	"res/skybox/top.jpg", "res/skybox/bottom.jpg",
-	"res/skybox/left.jpg", "res/skybox/right.jpg"
-]
+gras  = texture ("gras2.jpg", 0)
+rots = texture ("rock.jpg", 1)
+
+achtergrond2 = cubemap ([
+	"skybox/front.jpg", "skybox/back.jpg",
+	"skybox/top.jpg", "skybox/bottom.jpg",
+	"skybox/left.jpg", "skybox/right.jpg"
+], 2)
+achtergrond = cubemap ([
+	"clouds1/clouds1_north.jpg", "clouds1/clouds1_south.jpg",
+	"clouds1/clouds1_up.jpg", "clouds1/clouds1_down.jpg",
+	"clouds1/clouds1_west.jpg", "clouds1/clouds1_east.jpg",
+], 2)
 
 uit = setcontext3d(x3d → z3d)
-y3d = superrender(x3d,aap,prog10,numpolys)
-z3d = superrender(y3d,gras,nprog8,numpolys3)
+y3d = superrender(x3d,gras,prog,numpolys)
+z3d = superrender(y3d,rots,skyprog,snumpolys)
 
 ; matrix math
 ;proj = schaal(.01,.01,.01)
@@ -154,7 +185,7 @@ yhoek = τ-muis.x/100·τ
 xhoek = klem((100-muis.y)/100·τ/2+τ·.25,τ·.25,τ·.75)
 
 xpos := -5
-ypos := 1.1
+ypos := 10
 zpos := -5
 
 ; automove
@@ -202,12 +233,12 @@ als scherm.ververst dan
 	frames := frames + 1
 eind
 
-obj = download "res/level.obj"
-levelobj = download "res/level.obj"
+skyobj = download "skybox.obj"
+levelobj = download "level.obj"
 
-opon := [],[],[]
-als #obj > 0 en (opon ⇒ #(opon₀) = 0) dan
-	opon := obj.decodeer(obj)
+skybox := [],[],[]
+als #skyobj > 0 en (skybox ⇒ #(skybox₀) = 0) dan
+	skybox := obj.decodeer(skyobj)
 eind
 
 level := [],[],[]
@@ -223,20 +254,31 @@ verticepalet = oregels filter (ovr→(ovr₀='v' en ovr₁≠'n' en ovr₁≠'t'
 uvpalet      = oregels filter (onr→(onr₀='v' en onr₁='t')) map uvpalet1
 normalpalet  = oregels filter (our→(our₀='v' en our₁='n')) map onormal1
 
-ovfaces    = oregels filter (ovf → (ovf₀ = 'f')) map oface
-oufaces    = oregels filter (ouf → (ouf₀ = 'f')) map ouv
-onfaces    = oregels filter (onf → (onf₀ = 'f')) map onormal
+isface     = Regel → (Regel₀ = 'f')
+faceregels = oregels filter isface
+ovfaces    = faceregels map oface
+oufaces    = faceregels map ouv
+onfaces    = faceregels map onormal
 overtices  = (plet ovfaces) map dec map verticepalet
 ouvs       = (plet oufaces) map dec map uvpalet
 onormals   = (plet onfaces) map dec map normalpalet
 dec = Dx → Dx-1
 
-punten,uvs,normals = opon₀, opon₁, opon₂
-numpolys = #punten/9
+; terrein
+lpunten,luvs,lnormals = level₀, level₁, level₂
+numpolys = #lpunten/9
 
-buf = vertexbuffer(punten)
-ubuf = vertexbuffer(uvs)
-nbuf = vertexbuffer(normals)
+terreinposbuf = vertexbuffer(lpunten)
+terreinuvbuf = vertexbuffer(luvs)
+terreinnormalbuf = vertexbuffer(lnormals)
+
+; skybox
+spunten,suvs,snormals = skybox₀, skybox₁, skybox₂
+snumpolys = #spunten/9
+
+skyposbuf = vertexbuffer(spunten)
+skyuvbuf = vertexbuffer(suvs)
+skynormalbuf = vertexbuffer(snormals)
 
 overtice = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map getal
 onormal1 = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map getal

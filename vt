@@ -173,7 +173,9 @@ end
 if opt.javascript then
 	uit = jsgen(app)
 	file('a.js', uit)
-	--print(uit)
+	if opt.u then
+		print(uit)
+	end
 	if opt.d then
 		os.execute('js a.js')
 	end

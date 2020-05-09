@@ -151,10 +151,16 @@ function codegen(exp, moes2naam)
 			local gen = arg1(exp)
 			local col = arg2(exp)
 
+			local colarg = fn(col) == '_fn' and atoom(arg0(col))
+			local col    = fn(col) == '_fn' and arg1(col) or col
+				
+
+			--error(combineer(col))
+
 			ins[#ins+1] = X'lus'
 			codegen(start, ins, callarg)
 			codegen(gen, ins, callarg)
-			codegen(col, ins, callarg)
+			codegen(col, ins, colarg)
 			ins[#ins+1] = X'eindlus'
 
 		-- optimisatie

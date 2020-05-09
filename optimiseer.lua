@@ -3,8 +3,14 @@ require 'symbool'
 
 local altijdja = X('_fn', '12358', '⊤')
 
+function destart(exp)
+	if fn(exp) == '..' then
+		return arg0(exp)
+	end
+end
+
 function devec(exp)
-	if fnaam(exp) == 'map2' then
+	if false and fnaam(exp) == 'map2' then
 		local lijst = arg1(exp)
 		local func  = arg2(exp)
 
@@ -21,6 +27,7 @@ function devec(exp)
 		if delijst then
 			return X('ifilter', delijst, func)
 		end
+
 	elseif fn(exp) == '..' then
 		if atoom(arg0(exp)) == '0' then
 			return X('igen', arg1(exp))
@@ -117,7 +124,7 @@ function optimiseer(exp)
 			end
 		end
 	end
-do return exp end
+	do return exp end
 	for exp in boompairsbfs(exp) do
 		if fn(exp) == 'Σ' then
 			local lijst = arg(exp)
@@ -130,7 +137,18 @@ do return exp end
 				assign(exp, nexp)
 			end
 
-		elseif fnaam(exp) == 'map2' or fnaam(exp) == 'filter2' then
+		elseif fnaam(exp) == 'reduceer' then
+			local start = arg1(exp)
+			local lijst = arg2(exp)
+			local func  = arg3(exp)
+			local gen   = devec(lijst)
+
+			if gen then
+				local nexp = X('lus', start, gen, func)
+				assign(exp, nexp)
+			end
+
+		elseif fnaam(exp) == 'map' or fnaam(exp) == 'filter' then
 			local lijst = arg1(exp)
 			local func = arg2(exp)
 

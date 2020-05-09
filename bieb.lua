@@ -21,6 +21,7 @@ function bieb()
 
 	['debugsom'] = true,
 	['eval'] = true,
+	['append'] = function(lijst,item) lijst[#lijst] = item end,
 
 	['+f1'] = function(args)
 		local afunc = args[1]
@@ -28,6 +29,14 @@ function bieb()
 		return function (x)
 			return afunc(x) + b
 		end
+	end,
+
+	['+v1'] = function(alijst, b)
+		local c = {}
+		for i,v in ipairs(alijst) do
+			c[i] = v + b
+		end
+		return c
 	end,
 
 	['grabbel'] = function (lijst) return lijst[math.random(1, #lijst)] end,
@@ -38,6 +47,7 @@ function bieb()
 	['canvas.fillRect'] = true,
 	['canvas.clear'] = true,
 	['canvas.fontsize'] = true,
+	['canvas.linewidth'] = true,
 	['canvas.drawImage'] = true,
 	['plet'] = true,
 	['jsonencodeer'] = true,
@@ -207,6 +217,7 @@ function bieb()
 	label = function() return('label') end;
 	rechthoek = function() return('rechthoek') end;
 	cirkel = function() return('cirkel') end;
+	ovaal = function() return('ovaal') end;
 	lijn = function() return('lijn') end;
 
 	['_'] = function(a)
@@ -237,6 +248,10 @@ function bieb()
 
 	['_f'] = function(a)
 		return a[1](a[2])
+	end;
+
+	['_f3'] = function(f, a, b, c)
+		return f(a, b, c)
 	end;
 
 	-- io
@@ -272,9 +287,8 @@ function bieb()
 
 	-- wiskunde
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
-	['min2'] = function(a, b) return math.min(a, b) end,
-	['max2'] = function(a, b) return math.max(a, b) end,
-	['max'] = function(args) return math.max(table.unpack(args)) end,
+	['min'] = math.min,
+	['max'] = math.max,
 	maxindexXXX = function(args)
 		if #args == 0 then
 			return nil
@@ -289,7 +303,6 @@ function bieb()
 		return maxi
 	end;
 		
-	min = function(args) return math.min(args[1], args[2]) end,
 	int = math.floor,
 	abs = math.abs,
 	absd = math.abs,
@@ -371,10 +384,10 @@ function bieb()
 		return t
 	end;
 			
-	['+'] = function(a) return a[1] + a[2] end;
+	['+'] = function(a,b) return a + b end;
 	['-'] = function(a) return -a end;
-	['·'] = function(a) return a[1] * a[2] end;
-	['/'] = function(a) return a[1] / a[2] end;
+	['·'] = function(a,b) return a * b end;
+	['/'] = function(a,b) return a / b end;
 	['√'] = function(a) return math.sqrt(a) end;
 	['²'] = function(a) return a * a end;
 	['%'] = function(a) return a / 100 end;
@@ -458,8 +471,7 @@ function bieb()
 	['≠'] = function(a) return a[1] ~= a[2] end;
 	['≈'] = function(a) return math.abs(a[1]-a[2]) < 1e-7 end;
 
-	['..'] = function(a)
-		local a,b = a[1], a[2]
+	['..'] = function(a, b)
 		local r = {}
 		if a > b then
 			for i=a-1,b,-1 do
@@ -621,8 +633,7 @@ function bieb()
 		return aggr
 	end;
 
-	['zip'] = function(a)
-		local a,b = a[1],a[2]
+	['zip'] = function(a, b)
 		local v = {}
 		for i=#a,1,-1 do
 			v[i] = {a[i], b[i]}
@@ -630,17 +641,7 @@ function bieb()
 		return v
 	end;
 
-	['zip2'] = function(a, b)
-		local v = {}
-		for i=#a,1,-1 do
-			v[i] = {a[i], b[i]}
-		end
-		return v
-	end;
-
-
-	['zip1'] = function(a)
-		local a,b = a[1],a[2]
+	['zip1'] = function(a, b)
 		local v = {}
 		for i=#a,1,-1 do
 			v[i] = {a[i], b}
@@ -648,23 +649,12 @@ function bieb()
 		return v
 	end;
 
-	['rzip1'] = function(a)
-		local a,b = a[1],a[2]
+	['rzip1'] = function(a, b)
 		local v = {}
 		for i=#b,1,-1 do
 			v[i] = {a, b[i]}
 		end
 		return v
-	end;
-
-	['map2'] = function(a, b)
-		local r = {}
-		for i=1,#a do
-			local v = a[i]
-			local s = b(v)
-			r[i] = s
-		end
-		return r
 	end;
 
 	['map4'] = true,
@@ -679,9 +669,7 @@ function bieb()
 	end;
 
 	['filter4'] = true,
-	['filter'] = function(args)
-		local l = args[1]
-		local fn = args[2]
+	['filter'] = function(l, fn)
 		local r = {}
 		for i,v in ipairs(l) do
 			if fn(v) then
@@ -691,29 +679,26 @@ function bieb()
 		return r
 	end;
 
-	['filter2'] = function(l, fn)
-		local r = {}
-		for i,v in ipairs(l) do
-			if fn(v) then
-				r[#r+1] = v
-			end
-		end
-		return r
-	end;
-
-	['reduceer'] = function(args)
-		local lijst = args[1]
-		local reduceer = args[2]
+	['vouw'] = function(lijst, func)
 		local r = lijst[1]
 		local k = 1
 		for i=2,#lijst do
-			r = reduceer{r, lijst[i]}
+			r = func(r, lijst[i])
+		end
+		return r
+	end;
+
+	['reduceer'] = function(init, lijst, func)
+		local r = init
+		local k = 1
+		for i=1,#lijst do
+			r = func(r, lijst[i])
 		end
 		return r
 	end;
 
 	-- trig
-	['sin'] = math.sin;
+	['sin'] = math.sinh;
 	['asin'] = math.asin;
 	['cos'] = math.cos;
 	['acos'] = math.acos;
@@ -940,7 +925,7 @@ function bieb()
 		return t
 	end;
 
-	['deel'] = function(a,b)
+	['deel'] = function(a,b,c)
 		local van,tot = b[1],b[2]
 		local t = {f='[]'}
 		for i=van+1,tot do
