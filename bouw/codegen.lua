@@ -34,16 +34,18 @@ local function peil(waarde)
 	return diepte
 end
 
-local unop   = set('-','#','¬','Σ','|','√','!','%','-v','-m','_l0')
-local binop  = set(
+unop   = set('-','#','¬','Σ','|','√','!','%','-v','-m','_l0')
+binop  = set(
 	'+','·','/','^',
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
+	'=g','≠g',
 	'∪','∩',':','∈','\\',
 	'_f','_t','_l','^f', '^l',
 	'+v', '+v1', '·v', '·v1', '/v1',
+	'+f', '+f1', '·f', '·f1',
 	'+m', '+m1', '·m1', '·mv', '·m'
 )
-local triop  = set('_f2')
+triop  = set('_f2')
 
 -- exps worden gecachet (voor debugging)
 function codegen(exp, moes2naam)
@@ -78,7 +80,7 @@ function codegen(exp, moes2naam)
 	end
 	rec(exp)
 
-	local function codegen(exp, ins)
+	local function codegen(exp, ins, callarg)
 		if iscached[exp] then
 			ins[#ins+1] = X('ld', tostring(iscached[exp]))
 			return
@@ -86,7 +88,7 @@ function codegen(exp, moes2naam)
 
 		-- causatie
 		if fn(exp) == '⇒' then
-			codegen(arg0(exp), ins)
+			codegen(arg0(exp), ins, callarg)
 			ins[#ins+1] = X'dan'
 
 			-- met lege cache
@@ -94,32 +96,126 @@ function codegen(exp, moes2naam)
 			local d = dubbel
 			iscached = {}
 			dubbel = {}
-			codegen(arg1(exp), ins)
+			codegen(arg1(exp), ins, callarg)
 			iscached = ic
 			dubbel = d
 
 			ins[#ins+1] = X'einddan'
 			focus = focus - 1
 
-		elseif fn(exp) == '_arg' then
+		elseif fn(exp) == '_arg' and exp.a.v == callarg then
+			--ins[#ins+1] = 
+			--error'OK'
+			focus = focus + 1
+
+    elseif fn(exp) == '_arg' then
 			local num = atoom(arg(exp))
 			if not argindex[num] then
 				argindex[num] = tostring(maakargindex())
 				--print('reg arg', argindex[num], num)
 			end
-			ins[#ins+1] = X('arg', argindex[num])
+			ins[#ins+1] = X('arg', num) --argindex[num])
 			focus = focus + 1
 
+		elseif fn(exp) == '_arg0' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg0', num) --argindex[num])
+			focus = focus + 1
+		elseif fn(exp) == '_arg1' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg1', num) --argindex[num])
+			focus = focus + 1
+		elseif fn(exp) == '_arg2' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg2', num) --argindex[num])
+			focus = focus + 1
+		elseif fn(exp) == '_arg3' then
+			local num = atoom(arg(exp))
+			ins[#ins+1] = X('arg3', num) --argindex[num])
+			focus = focus + 1
+
+		elseif atoom(exp) == 'id' then
+			-- ok
+
+		elseif fn(exp) == 'ifilter' then
+			local gen = arg0(exp)
+			local pred = arg1(exp)
+			local predindex = atoom(arg0(pred))
+
+			codegen(gen, ins, callarg)
+			codegen(arg1(pred), ins, predindex)
+			ins[#ins+1] = X'ifilter'
+
+		elseif fn(exp) == 'lus' then
+			local start = arg0(exp)
+			local gen = arg1(exp)
+			local col = arg2(exp)
+
+			local colarg = fn(col) == '_fn' and atoom(arg0(col))
+			local col    = fn(col) == '_fn' and arg1(col) or col
+				
+
+			--error(combineer(col))
+
+			ins[#ins+1] = X'lus'
+			codegen(start, ins, callarg)
+			codegen(gen, ins, callarg)
+			codegen(col, ins, colarg)
+			ins[#ins+1] = X'eindlus'
+
+		-- optimisatie
+		-- llus: (num) -> (nlijst)
+		elseif fn(exp) == 'llus' then
+			local num = arg0(exp)
+			local func = arg1(exp)
+			local iscomplex = fn(func) == '_fn'
+			local argindex, body = atoom(arg0(func)), arg1(func)
+			local callarg = argindex
+
+			assert(num, combineer(exp))
+
+			codegen(num, ins, callarg)
+			ins[#ins+1] = X'llus'
+			if iscomplex then
+				codegen(body, ins, callarg)
+			else
+				ins[#ins+1] = func
+				ins[#ins+1] = X'_fr'
+			end
+			ins[#ins+1] = X'eindllus'
+			focus = focus + 0
+
+		-- slus: (num) -> (res)
+		elseif fn(exp) == 'slus' then
+			local num = arg(exp)
+			local iscomplex = fn(func) == '_fn'
+			local argindex, body = atoom(arg0(func)), arg1(func)
+			local callarg = argindex
+
+			assert(num, combineer(exp))
+
+			codegen(num, ins, callarg)
+			ins[#ins+1] = X'slus'
+			if true then
+			--
+			elseif iscomplex then
+				codegen(body, ins, callarg)
+			else
+				ins[#ins+1] = func
+				ins[#ins+1] = X'_fr'
+			end
+			ins[#ins+1] = X'eindslus'
+			focus = focus + 0
+
 		-- portable functies
+		elseif callarg and binop[atoom(exp)] then
+			ins[#ins+1] = X(atoom(exp))
+
 		elseif binop[atoom(exp)] then
 			local index = tostring(maakargindex())
 			ins[#ins+1] = X('fn', index)
-			ins[#ins+1] = X('arg', index)
-			ins[#ins+1] = X('0')
-			ins[#ins+1] = X('_l')
-			ins[#ins+1] = X('arg', index)
-			ins[#ins+1] = X('1')
-			ins[#ins+1] = X('_l')
+			ins[#ins+1] = X('arg0', index)
+			ins[#ins+1] = X('arg1', index)
 			ins[#ins+1] = exp
 			ins[#ins+1] = X('eind')
 			focus = focus + 1
@@ -137,20 +233,37 @@ function codegen(exp, moes2naam)
 			focus = focus + 1
 
 		elseif binop[fn(exp)] then
-			codegen(arg0(exp), ins)
-			codegen(arg1(exp), ins)
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 1
 
 		elseif triop[fn(exp)] then
-			codegen(arg0(exp), ins)
-			codegen(arg1(exp), ins)
-			codegen(arg2(exp), ins)
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
+			codegen(arg2(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 2
 
+		elseif fn(exp) == '_f3' then
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
+			codegen(arg2(exp), ins, callarg)
+			codegen(arg3(exp), ins, callarg)
+			ins[#ins+1] = X(fn(exp))
+			focus = focus - 3
+
+		elseif fn(exp) == '_f4' then
+			codegen(arg0(exp), ins, callarg)
+			codegen(arg1(exp), ins, callarg)
+			codegen(arg2(exp), ins, callarg)
+			codegen(arg3(exp), ins, callarg)
+			codegen(arg4(exp), ins, callarg)
+			ins[#ins+1] = X(fn(exp))
+			focus = focus - 4
+
 		elseif unop[fn(exp)] then
-			codegen(arg(exp), ins)
+			codegen(arg(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
 
 		-- _fn(1 +(1 _arg(1))) -> fn
@@ -161,7 +274,7 @@ function codegen(exp, moes2naam)
 				argindex[num] = tostring(maakargindex())
 				--print('reg fn', argindex[num], num)
 			end
-			ins[#ins+1] = X('fn', argindex[num])
+			ins[#ins+1] = X('fn', num)--argindex[num])
 
 			-- met lege cache
 			local ic = iscached
@@ -169,7 +282,7 @@ function codegen(exp, moes2naam)
 			codeindex = {}
 			reused = {}
 			dubbel = {}
-			codegen(arg1(exp), ins)
+			codegen(arg1(exp), ins, callarg)
 			iscached = ic
 			dubbel = d
 
@@ -182,7 +295,7 @@ function codegen(exp, moes2naam)
 		elseif isobj(exp) then
 			for i=1,#exp do
 				local sub = exp[i]
-				codegen(sub, ins)
+				codegen(sub, ins, callarg)
 			end
 			if     obj(exp) == ',' then
 				ins[#ins+1] = X('tupel', tostring(#exp))

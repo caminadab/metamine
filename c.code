@@ -1,9 +1,6 @@
-; snake
-snake := [1,2,3]
-newsnake = [snake(0), snake(1)]
-
-if yes then
-	snake := newsnake
-end
-
-uit = snake
+main = Σ (0..10) map k
+k = f ∘ g ∘ h ∘ i ∘ f ∘ g
+f = x → x + 1
+g = y → y / 2 
+h = z → z · 2 
+i = w → w - 1 

@@ -3,25 +3,51 @@ require 'exp'
 
 local vbieb = bieb()
 
+function numargs(functype)
+	local argtype = arg0(functype)
+	if fn(functype) == '→' and isobj(argtype) then
+		if #argtype <= 4 then
+			return #argtype
+		end
+	end
+	return 1
+end
+
 -- past types toe om operators te preoverloaden
 function vectoriseer(asb, types, debug)
 	for exp in boompairsdfs(asb) do
 
-		-- call2
-		if not debug and fn(exp) == '_' then
+		-- filter2,3,4
+		if fnaam(exp) == 'filter' or fnaam(exp) == 'map' then
+			local type  = types[moes(exp)]
+			local atype = types[moes(arg0(exp))]
+
+			local functype = types[moes(arg1(exp)[2])]
+			local num = numargs(functype)
+			if num > 1 then
+				exp.a[1] = X(atoom(exp.a[1])..'4')
+
+				types[moes(exp)] = type
+				types[moes(arg0(exp))] = atype
+			end
+		end
+
+		-- call2,3,4
+		if fn(exp) == '_' then
 			local type = types[moes(arg0(exp))]
 			local argtype = arg0(type)
-			if argtype and isobj(argtype) and #argtype == 2 then
+			if argtype and isobj(argtype) then
 				local args = arg1(exp)
-				if isobj(args) and #args == 2 then
-					local naam2 = atoom(arg0(exp)) .. '2'
-					if vbieb[naam2] then
-						local type = types[moes(exp)]
-						assign(exp, X('_f2', atoom(arg0(exp))..'2', args[1], args[2]))
-						types[moes(exp)] = type
-					else
-						--print('kan beter: ', unlisp(exp))
+				if isobj(args) then
+					local type = types[moes(exp)]
+					if #args == 2 then
+						assign(exp, X('_f2', arg0(exp), args[1], args[2]))
+					elseif #args == 3 then
+						assign(exp, X('_f3', arg0(exp), args[1], args[2], args[3]))
+					elseif #args == 4 then
+						assign(exp, X('_f4', arg0(exp), args[1], args[2], args[3], args[4]))
 					end
+					types[moes(exp)] = type
 				end
 			end
 		end
@@ -72,7 +98,27 @@ function vectoriseer(asb, types, debug)
 			end
 		end
 
+		-- (1 = 2) ⇒ (1 =g 2)
+		if false and fn(exp) == '=' or fn(exp) == '≠' then
+			local type   = types[moes(exp)]
+			local atype  = types[moes(arg0(exp))]
+			local btype  = types[moes(arg1(exp))]
+			local agetal = atoom(atype) == 'getal' or atoom(atype) == 'int' 
+			local bgetal = atoom(btype) == 'getal' or atoom(btype) == 'int' 
+
+			if moes(type) ~= 'ok' then
+
+				if agetal or bgetal then
+					exp.f = X(fn(exp)..'g')
+				elseif atoom(atype) == 'bit' then
+					--exp.f = X(fn(exp)..'g')
+				end
+			end
+		end
+
+
 		-- TODO set -
+
 
 		-- (+) → +v | +v1 | +m | +m1 | +f
 		if fn(exp) == '+' then
@@ -81,7 +127,7 @@ function vectoriseer(asb, types, debug)
 			local isnumA = atoom(atype) == 'int' or atoom(atype) == 'getal'
 			local isnumB = atoom(btype) == 'int' or atoom(btype) == 'getal'
 			local isfuncA = fn(atype) == '→' or atoom(atype) == 'functie'
-			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
+			local isfuncB = fn(btype) == '→' or atoom(btype) == 'functie'
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
 			local ismatA = atoom(arg0(atype)) == 'nat' and atoom(arg0(arg1(atype))) == 'nat'
@@ -95,10 +141,10 @@ function vectoriseer(asb, types, debug)
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- functie
-			elseif isfuncA and isfuncB then exp.f = X'+v'
-			elseif isfuncA and isnumB then exp.f = X'+v1'
+			elseif isfuncA and isfuncB then exp.f = X'+f'
+			elseif isfuncA and isnumB then exp.f = X'+f1'
 			elseif isfuncB and isnumA then
-				exp.f = X'+v1' 
+				exp.f = X'+f1' 
 				arg(exp)[1], arg(exp)[2] = arg(exp)[2], arg(exp)[1]
 
 			-- matrix

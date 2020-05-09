@@ -26,11 +26,11 @@ anders
 eind
 
 als wint(bord,1) dan
-	status := "geel heeft gewonnen"
+	status := "rood heeft gewonnen"
 	klaar := ja
 eind
 als wint(bord,2) dan
-	status := "rood heeft gewonnen"
+	status := "geel heeft gewonnen"
 	klaar := ja
 eind
 
@@ -43,10 +43,10 @@ vindices = (0..7 × (0..3 · 7)) map (+)
 dindices = (0..4 × (0..3 · 7)) map (+)
 rindices = (3..7 × (0..3 · 7)) map (+)
 
-hwint = hindices map hwint0 vouw (of)
-vwint = vindices map vwint0 vouw (of)
-dwint = dindices map dwint0 vouw (of)
-rwint = rindices map rwint0 vouw (of)
+hwint = hindices map hwint0 reduceer (of)
+vwint = vindices map vwint0 reduceer (of)
+dwint = dindices map dwint0 reduceer (of)
+rwint = rindices map rwint0 reduceer (of)
 
 hwint0 = hs → (wbord(hs)=ws en wbord(hs+1)=ws en wbord(hs+2)=ws en wbord(hs+3)=ws)
 vwint0 = vs → (wbord(vs)=ws en wbord(vs+7)=ws en wbord(vs+14)=ws en wbord(vs+21)=ws)
@@ -94,7 +94,7 @@ scores = (0..7) map (ii → score(bbord,ii))
 bzet = maxindex2 scores
 
 maxfunc = (i0,v0),(i1,v1) → kies((v0 > v1), (i0,v0), (i1,v1))
-maxindex2 = lijst → ((0..#lijst) zip lijst vouw maxfunc)₀
+maxindex2 = lijst → ((0..#lijst) zip lijst reduceer maxfunc)₀
 
 ;scoorzet2 = (I → score(doezet(bord,I,2),2))
 ;scoorzet1 = (J → 1000-score(doezet(bord,J,1),1))

@@ -2,7 +2,7 @@ require 'bieb'
 require 'unicode'
 
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖","\\", "^f","_f","_l")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖","\\", "^f","_f","_l", "+f","+f1","·f","·f1","+v1")
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
 
 function lenc2(exp)
@@ -40,7 +40,7 @@ function readfn(sfc, i)
 end
 
 -- sfc → func
-function doe(sfc, arg0, stack)
+function doe(sfc, stack, arg0, arg1, ...)
 	local stack = stack or {}
 	local i = 1
 	local bieb = bieb()
@@ -64,6 +64,33 @@ function doe(sfc, arg0, stack)
 			stack[#stack] = nil
 			stack[#stack] = nil
 			stack[#stack] = r
+
+		elseif atoom(ins) == '_f3' then
+			local f = stack[#stack-3]
+			local a = stack[#stack-2]
+			local b = stack[#stack-1]
+			local c = stack[#stack-0]
+			local r = f(a, b, c)
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = r
+
+		elseif atoom(ins) == '_f4' then
+			local f = stack[#stack-4]
+			local a = stack[#stack-3]
+			local b = stack[#stack-2]
+			local c = stack[#stack-1]
+			local d = stack[#stack-0]
+			local r = f(a, b, c, d)
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = nil
+			stack[#stack] = r
+
+		elseif atoom(ins) == 'lus' then
+			-- niets
 
 		-- cache STORE
 		elseif fn(ins) == 'st' then
@@ -95,6 +122,11 @@ function doe(sfc, arg0, stack)
 
 		elseif fn(ins) == 'arg' then
 			stack[#stack+1] = arg0
+
+		elseif fn(ins) == 'arg0' then
+			stack[#stack+1] = arg0
+		elseif fn(ins) == 'arg1' then
+			stack[#stack+1] = arg1
 
 		elseif fn(ins) == 'string' then
 			local num = atoom(arg(ins))
@@ -142,9 +174,8 @@ function doe(sfc, arg0, stack)
 			local f = atoom(ins)
 			local a = stack[#stack-1]
 			local b = stack[#stack]
-			local args = {a, b}
 			stack[#stack] = nil
-			stack[#stack] = bieb[f](args)
+			stack[#stack] = bieb[f](a, b)
 
 		elseif unop[atoom(ins)] then
 			local f = atoom(ins)
@@ -164,7 +195,7 @@ function doe(sfc, arg0, stack)
 			i = i + 1
 			proc,i = readfn(sfc, i)
 
-			stack[#stack+1] = function(x) return doe(proc, x, stack) end
+			stack[#stack+1] = function(...) return doe(proc, stack, ...) end
 			
 		elseif tonumber(atoom(ins)) then
 			stack[#stack+1] = tonumber(atoom(ins))

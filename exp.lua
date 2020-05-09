@@ -5,6 +5,12 @@ exp |= { loc, val }
 require 'lisp'
 require 'util'
 
+local calls = set('_', '_f', '_f2', '_f3', '_f4')
+
+function fnaam(exp)
+	return calls[fn(exp)] and atoom(arg0(exp))
+end
+
 function fn(exp) if isfn(exp) then return exp.f.v end end
 function arg(exp) return exp.a end
 function obj(exp) if isobj(exp) then return exp.o.v end end
@@ -206,17 +212,11 @@ function moes(exp)
 	return exp.moes
 end
 
-function arg0(exp)
-	return exp.a and exp.a[1]
-end
-
-function arg1(exp)
-	return exp.a and exp.a[2]
-end
-
-function arg2(exp)
-	return exp.a and exp.a[3]
-end
+function arg0(exp) return exp.a and exp.a[1] end
+function arg1(exp) return exp.a and exp.a[2] end
+function arg2(exp) return exp.a and exp.a[3] end
+function arg3(exp) return exp.a and exp.a[4] end
+function arg4(exp) return exp.a and exp.a[5] end
 
 function assign(a, b)
 	if a == b then return a end

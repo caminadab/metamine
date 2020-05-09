@@ -1,0 +1,37 @@
+uit = teken (balken ‖ noten)
+
+basepos = 20,20
+bb = .3
+h = 3
+
+; teken balk
+balken = 0..5 map balklijn
+balklijn = bh → balk
+balk = canvas.linewidth(balk0, bb)
+balk0 = lijn[basepos+(0,bh·h),basepos+(100,bh·h)]
+noten =  plet (muziek map noot)
+
+muziek = [(0,dy),(1,1),(2,2),(3,4),(4,2),(5,1)]
+dy := 0
+als toets.omhoog.begin dan
+	dy := dy + 1
+eind
+als toets.omlaag.begin dan
+	dy := dy - 1
+eind
+
+; teken noot
+noot = nootx,nooty → [ ovaal(nootpos,2,3/2,5.8), nootlijn ] ‖ lagebalken ‖ hogebalken
+nootpos = basepos + (10·(1+nootx),h·(nooty-2)/2)
+lijnpos = nootpos + (3-1.4,0)
+
+lvan = ⌈nooty/2⌉-1
+lnaar = ⌊nooty/2⌋
+lagebalken = (lvan .. 0) map lagebalk
+hogebalken = (5 .. lnaar) map lagebalk
+lagebalk0 = lijn[nootpos0+(-3,lb·h), nootpos0+(3,lb·h)]
+nootpos0 = nootpos₀, basepos₁
+lagebalk = lb → canvas.linewidth(lagebalk0,bb)
+nootlijn = canvas.linewidth(nootlijn0, 0.7)
+nootlijn0 =  lijn[lijnpos,lijnpos+(0,lh)]
+lh = kies((nooty < 6), h·3.5, -h·3.5)

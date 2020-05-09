@@ -67,8 +67,13 @@ function defunc(exp, argindex, klaar)
 	local res
 	local num = isfn(exp) and arg1(exp) and isatoom(arg1(exp)) and tonumber(atoom(arg1(exp)))
 
+	if fn(exp) == '_fn' then
+		local argindex = arg0(exp)
+		print('DEFUNC', unlisp(arg1(exp)), unlisp(argindex))
+		return defunc(arg1(exp), argindex, klaar)
+
 	-- constanten worden ingepakt
-	if isatoom(exp) then
+	elseif isatoom(exp) then
 		res = X('fn.constant', atoom(exp))
 
 	-- C(exp) = 
@@ -90,7 +95,7 @@ function defunc(exp, argindex, klaar)
 		end
 
 	-- fn.id
-	elseif fn(exp) == '_arg' and atoom(arg(exp)) == argindex then
+	elseif fn(exp) == '_arg' and atoom(arg(exp)) == atoom(argindex) then
 		res = id
 
 	-- fn.nul t/m fn.drie

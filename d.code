@@ -1,2 +1,2 @@
-x := 0
-uit = x
+main = reduceer(0, 0..11, g)
+g = x, y → x + y

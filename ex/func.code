@@ -1,0 +1,8 @@
+uit = Σ (0..10 × 0..10) map call
+
+als looptijd mod 2 < 1 dan
+	call = (+)
+anders
+	call = x,y → - x - y
+eind
+

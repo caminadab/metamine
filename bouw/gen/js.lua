@@ -23,10 +23,17 @@ local noops = {
 
 	['eval'] = 'eval',
 
+	['herhaal'] = [[(max, vouw) => {
+		var res = 0;
+		for (var i = 0; i < max; i++)
+			res = res + i;
+		return res;
+	}]],
+
 	['debugsom'] = [[x => {
 		var s = 0;
 		for (var i = 0; i < 1000000; i++)
-			s += i;
+			s += i + 10;
 		return s;
 	}]],
 
@@ -67,23 +74,15 @@ local noops = {
 		return "";
 	} ]],
 	['getal'] = 'parseFloat',
-	['splits'] = [[ args => args[0].split(args[1]) ]],
-	['splits2'] = [[ (a, b) => a.split(b) ]],
-	['matrixbind'] = [[ args => {
-		var prog = args[0];
-		var name = args[1];
-		var val = args[2];
+	['splits'] = [[ (a, b) => a.split(b) ]],
 
+	['matrixbind'] = [[ (prog, name, val) => {
 		var loc = gl.getUniformLocation(prog, name);
 		gl.uniformMatrix4fv(loc, false, new Float32Array(val));
 		return prog;
 	} ]],
 
-	['uniformbind'] = [[ args => {
-		var prog = args[0];
-		var name = args[1];
-		var val = args[2];
-
+	['uniformbind'] = [[ (prog, name, val) => {
 		var loc = gl.getUniformLocation(prog, name);
 		if (Array.isArray(val)) {
 			if (val.length == 2) gl.uniform2fv(loc, val);
@@ -109,9 +108,7 @@ local noops = {
 		return fragShader;
 	} ]],
 
-	['shaderprogram'] = [[ args => {
-		var vertShader = args[0];
-		var fragShader = args[1];
+	['shaderprogram'] = [[ (vertShader, fragShader) => {
 		var cached = programCache[vertShader + fragShader];
 		if (cached)
 			return cached;
@@ -144,12 +141,7 @@ local noops = {
 		return vertex_buffer;
 	}]],
 	
-	['texturebind'] = [[ args => {
-		var shaderProgram = args[0];
-		var name = args[1];
-		var texture = args[2];
-		var index = args[3];
-
+	['texturebind'] = [[ (shaderProgram, name, texture, index) => {
 		gl.activeTexture(gl.TEXTURE0 + index);
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		var loc = gl.getUniformLocation(shaderProgram, name);
@@ -158,12 +150,7 @@ local noops = {
 	}
 	]],
 
-	['cubemapbind'] = [[ args => {
-		var shaderProgram = args[0];
-		var name = args[1];
-		var texture = args[2];
-		var index = args[3];
-
+	['cubemapbind'] = [[ (shaderProgram, name, texture, index) => {
 		gl.activeTexture(gl.TEXTURE0 + index);
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 		var loc = gl.getUniformLocation(shaderProgram, name);
@@ -172,10 +159,7 @@ local noops = {
 	}
 	]],
 
-	['cubemap'] = [[ args => {
-		var urls = args[0];
-		var index = args[1];
-
+	['cubemap'] = [[ (urls, index) => {
 		if (textureCache[urls[0] ] != null)  {
 			//gl.activeTexture(gl.TEXTURE0 + index);
 			//gl.bindTexture(gl.TEXTURE_CUBEMAP, tex);
@@ -260,9 +244,7 @@ local noops = {
 		return tex;
 	} ]],
 
-	['texture'] = [[ args => {
-		var url = args[0];
-		var id = args[1];
+	['texture'] = [[ (url, id) => {
 		url = 'res/' + url;
 
 		if (textureCache[url] != null)  {
@@ -309,10 +291,7 @@ local noops = {
 		return tex;
 	} ]],
 
-	['shaderbind'] = [[ args => {
-		var shaderProgram = args[0];
-		var name = args[1];
-		var vertex_buffer = args[2];
+	['shaderbind'] = [[ (shaderProgram,name,vertex_buffer) => {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 		var coord = gl.getAttribLocation(shaderProgram, name);
@@ -327,12 +306,7 @@ local noops = {
 		return shaderProgram;
 	} ]],
 
-	['superrender'] = [[ args => {
-		var gl = args[0];
-		var tex = args[1];
-		var shaderProgram = args[2];
-		var num = args[3];
-
+	['superrender'] = [[ (gl, tex, shaderProgram, num) => {
 		if (!window.canvas) {
 		 window.canvas = document.getElementById('uit').children[0];
 		}
@@ -363,6 +337,7 @@ local noops = {
 	return gl;
 			 }
 				]],
+
 	['grabbel'] = 'x => x[Math.floor(Math.random()*x.length)]',
 	['fn.nul'] = 'x => x(0)',
 	['fn.een'] = 'x => x(1)',
@@ -508,13 +483,13 @@ local noops = {
 }]],
 
 	-- niet goed
-	['kies'] = 'x => x[0] ? x[1] : x[2]',
+	['kies'] = '(p,x,y) => p ? x : y',
 	['misschien'] = 'Math.random() < 0.5',
-	['newindex'] = 'x => {x[0][ x[1] ] = x[2]; return x[0]; }',
-	['newindex2'] = 'x => { var t = []; for (var i = 0; i< x[0].length; i++) { if (i == x[1]) t[i] = x[2]; else t[i] = x[0][i]; } return t; }',
+	['newindex']  = '(lijst,index,val) => { lijst[ index ] = val; return lijst; }',
+	['newindex2'] = '(lijst,index,val) => { var t = []; for (var i = 0; i< lijst.length; i++) { if (i == index) t[i] = val; else t[i] = lijst[i]; } return t; }',
 	['scherm.ververst'] = 'true',
-	['canvas.drawImage'] = 'x => (c => c.drawImage(x[0], SCHAAL*x[1], SCHAAL*(100-x[2])))',
-	['herhaal'] = [[x => {
+	['canvas.drawImage'] = '(i,x,y) => (c => c.drawImage(x, SCHAAL*x, SCHAAL*(100-y)))',
+	['herhaal2'] = [[x => {
 	var value = x[0];
 	var len = x[1];
   if (len == 0) return [];
@@ -525,36 +500,24 @@ local noops = {
 	}]],
 
 	-- functioneel
-	['zip'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;})',
-	['zip2'] = '(a, b) => { var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c; }',
-  ['zip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;})',
-  ['rzip1'] = '(function(args){ var a = args[0]; var b = args[1]; var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;})',
-  ['map'] = '(function(a){ if (Array.isArray(a[1])) return a[0].map(x => a[1][x]); else return a[0].map(a[1]); })',
-  ['map2'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
-  ['filter'] = '(function(a){return a[0].filter(a[1]);})',
-  ['filter2'] = '(a, b) => a.filter(b)',
-  ['reduceer'] = '(function(a){return a[0].reduce(a[1]);})',
-	['vouw'] = [[(function(lf) {
-		var l=lf[0];
-		if (l.length == 0)
-			return false;
-		var f=lf[1];
-		var r=l[0] ;
-		for (var i=1; i < l.length; i++)
-			r = f([r, l[i] ]);
-		return r;
-	}) ]],
+	['zip'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;}',
+  ['zip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;}',
+  ['rzip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;}',
+  ['map'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
+  ['map4'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(x => b(x[0], x[1], x[2], x[3])); }',
+  ['filter'] = '(a, b) => a.filter(b)',
+  ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
+  ['vouw'] = '(a, b) => a.reduce(b)',
+	['reduceer'] = [[(i, l, f) => {
+if (l.length <= 1)
+  return i;
+var r = i;
+for (var i=1; i < l.length; i++)
+  r = f(r, l[i]);
+return r;
+} ]],
 
-	['vouw2'] = [[(l, f) => {
-		if (l.length == 0)
-			return false;
-		var r=l[0] ;
-		for (var i=1; i < l.length; i++)
-			r = f([r, l[i] ]);
-		return r;
-	}) ]],
-
-	['vouw22'] = [[(l, f) => {
+	['vouw2x2'] = [[(l, f) => {
 		if (l.length == 0)
 			return false;
 		var r=l[0] ;
@@ -565,13 +528,11 @@ local noops = {
 
 	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
 	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
-	['atan'] = 'x => Math.atan2(x[0], x[1])',
+	['atan'] = 'Math.atan2',
 
 	-- discreet
-	['min'] = 'x => Math.min(x[0], x[1])',
-	['max'] = 'x => Math.max(x[0], x[1])',
-	['min2'] = 'Math.min',
-	['max2'] = 'Math.max',
+	['min'] = 'Math.min',
+	['max'] = 'Math.max',
 	['maxindexXXX'] = [[x => {
 		var maxi = null;
 		var max = - Infinity;
@@ -587,48 +548,27 @@ local noops = {
 	-- webgl
 	 ['jsonencodeer'] = 'x => { try { return JSON.stringify(x); } catch (e) {return e.message; }}',
 	 ['jsondecodeer'] = 'x => { try { return JSON.parse(x); } catch (e) {return e.message; }}',
-	 ['deel'] = 'x => x[0].slice(x[1], x[2])',
-	 ['vind'] = [[x => {
-		 var doel = JSON.stringify(x[1]);
-		 for (var i = x[2] || 0; i < x[0].length; i++) {
-			if (JSON.stringify(x[0][i]) == doel)
+	 ['deel'] = 'x,y,z => x.slice(y, z)',
+	 ['vind'] = [[(lijst, doel, index) => {
+		 var doel = JSON.stringify(doel);
+		 for (var i = index || 0; i < lijst.length; i++) {
+			if (JSON.stringify(lijst[i]) == doel)
 				return i;
-			}
 			return null;
 		}]],
 	 
-	 ['vind2'] = '(x,y) => x.indexOf(y)',
-	 ['vanaf'] = 'x => x[0].slice(x[1])',
-	 ['vanaf2'] = '(x,y) => x.slice(y)',
-	 ['tot'] = 'x => x[0].slice(0, x[1])',
-	 ['tot2'] = '(x,y) => x.slice(0, y)',
-	 ['canvas.fontsize'] = [[
- (function(_args) {return (function(c){
-  var vorm = _args[0];
-  var fontsize = _args[1] * SCHAAL;
-  var font = fontsize+'px Arial';
-  c.font = font;
-  vorm(c);
-  return c;});
- })]],
+	 ['vind'] = '(x,y) => x.indexOf(y)',
+	 ['vanaf'] = '(x,y) => x.slice(y)',
+	 ['tot'] = '(x,y) => x.slice(0, y)',
+	 ['canvas.linewidth'] = [[ (lijn, linewidth) => {
+	 return c => {
+		c.lineWidth = linewidth * SCHAAL;
+		lijn(c);
+		return c;
+	}
+ }]],
 
 	 ['verf'] = [[
- (function(_args) {return (function(c){
-  var vorm = _args[0];
-  var kleur = _args[1];
-  var r = kleur[0]*255;
-  var g = kleur[1]*255;
-  var b = kleur[2]*255;
-  var style = 'rgb('+r+','+g+','+b+')';
-  c.fillStyle = style;
-  c.strokeStyle = style;
-  vorm(c);
-	c.fillStyle = 'white';
-  c.strokeStyle = 'white';
-  return c;});
- })]],
-
-	 ['verf2'] = [[
  (vorm, kleur) => (c => {
   var r = kleur[0]*255;
   var g = kleur[1]*255;
@@ -642,13 +582,12 @@ local noops = {
   return c;
  })]],
 
-
-	['rgb'] = [[ (function(_args) { return _args; }) ]],
+	['rgb'] = '(r,g,b) => [r,g,b]',
 	['sorteer'] = '(function(a){ return a[0].sort(function (c,d) { return a[1]([c, d]); }); })',
 	['afrond.onder'] = 'Math.floor',
 	['afrond']       = 'Math.round',
 	['afrond.boven'] = 'Math.ceil',
-	['willekeurig'] = 'x => Math.random()*(x[1]-x[0]) + x[0]',
+	['willekeurig'] = '(x, y) => Math.random()*(y-x) + x',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
 	['tekst'] = 'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
@@ -668,16 +607,22 @@ local noops = {
 			return context;
 		};
 	} ]],
+
 	['vierkant'] = [[ args => {
-	var x, y, r;
-	if (args[2]) {
-		r = args[2] * SCHAAL;
-		x = args[0] * SCHAAL;
-		y = (100 - args[1]) * SCHAAL - r;
+	var a = args[0];
+	var b = args[1];
+	var c = args[2];
+	var d = args[3];
+
+	var x,y,r;
+	if (c) {
+		r = c * SCHAAL;
+		x = a * SCHAAL;
+		y = (100 - b) * SCHAAL - r;
 	} else {
-		r = args[1] * SCHAAL;
-		x = args[0][0] * SCHAAL;
-		y = (100 - args[0][1]) * SCHAAL - r;
+		r = b * SCHAAL;
+		x = a[0] * SCHAAL;
+		y = (100 - a[1]) * SCHAAL - r;
 	}
 
   return context => {
@@ -699,10 +644,6 @@ local noops = {
 		x = args[0][0] * SCHAAL;
 		y = (100 - args[0][1]) * SCHAAL;
 	}
-
-	//if (typeof t == "object)
-//		t = [...t]
-//	alert("t = " + typeof t);
   return context => {
     context.fillText(t,x,y);
     return context;
@@ -710,17 +651,21 @@ local noops = {
 	} ]],
 
 	['rechthoek'] = [[ args => {
+	var a = args[0];
+	var b = args[1];
+	var c = args[2];
+	var d = args[3];
 	var x, y, w, h;
-	if (args.length == 2) {
-		x = args[0][0] * SCHAAL;
-		y = (100 - args[0][1]) * SCHAAL;
-		w = args[1][0] * SCHAAL - x;
-		h = (100 - args[1][1]) * SCHAAL - y;
+	if (c == null) {
+		x = a[0] * SCHAAL;
+		y = (100 - a[1]) * SCHAAL;
+		w = b[0] * SCHAAL - x;
+		h = (100 - b[1]) * SCHAAL - y;
 	} else {
-		x = args[0] * SCHAAL;
-		y = (100 - args[1]) * SCHAAL;
-		w = args[2] * SCHAAL - x;
-		h = (100 - args[3]) * SCHAAL - y;
+		x = a * SCHAAL;
+		y = (100 - b) * SCHAAL;
+		w = c * SCHAAL - x;
+		h = (100 - d) * SCHAAL - y;
 	}
   return context => {
     context.fillRect(x,y,w,h);
@@ -766,6 +711,36 @@ local noops = {
 		});
 	}]],
 
+	['ovaal'] = [[ args => {
+	var a = args[0];
+	var b = args[1];
+	var c = args[2];
+	var d = args[3];
+	var e = args[4];
+
+	var x, y, w, h, r;
+	if (Array.isArray(a)) {
+		x = a[0] * SCHAAL;
+		y = (100 - a[1]) * SCHAAL;
+		w = b * SCHAAL;
+		h = c * SCHAAL;
+		t = d;
+	} else {
+		x = a * SCHAAL;
+		y = (100 - b) * SCHAAL;
+		w = c * SCHAAL;
+		h = d * SCHAAL;
+		t = e;
+		console.log("x="+x+",y="+y+",w="+w+",h="+h+",t="+t)
+	}
+  return c => {
+    c.beginPath();
+		c.ellipse(x,y,w,h,t,0,Math.PI*2);
+		c.fill();
+    return c;
+  }
+	} ]],
+
 
 	['boog'] = [[ args => {
 		return (function(c){
@@ -793,15 +768,13 @@ local noops = {
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
 	['sign'] = '$1 > 0 ? 1 : -1',
-	['mod'] = 'x => x[0] % x[1]',
-	['mod2'] = '(x,y) => x % y',
+	['mod'] = '(x,y) => x < 0 ? (x % y + y) % y : x % y',
 
 	['int'] = 'Math.floor',
 	['sin'] = 'Math.sin',
 	['cos'] = 'Math.cos',
 	['tan'] = 'Math.tan',
 
-	['fn.id'] = 'x => x',
 	['fn.constant'] = 'x => y => x',
 	['fn.merge'] = 'fns => (x => fns.map(fn => fn(x)))',
 	['fn.plus'] = 'x => y => x + y',
@@ -828,6 +801,7 @@ local unops2 = {
 }
 
 local binops2 = {
+	['append'] = '$1[$1.length] = $2;',
 	['^l'] = [[var res = [];
 	var k = 0;
 	for (var i = 0; i < $2; i++)
@@ -899,10 +873,16 @@ local binops = {
 	-- dot
 	['·v']  = '(x => {var r = 0; for (var i = 0; i < $1.length; i++) r += $1[i] * $2[i]; return r;})()',
 	['·v1'] = '$1.map(x => x * $2)',
-	['+f'] = '$1.map(x => x + $2)',
-	['·f1'] = '$1.map(x => x + $2)',
+	['+f'] = 'x => $1(x) + $2(x)',
+	['+f1'] = 'x => $1(x) + $2',
+	['·f'] = 'x => $1(x) * $2(x)',
+	['·f1'] = 'x => $1(x) * $2',
+	['/f'] = 'x => $1(x) / $2(x)',
+	['/f1'] = 'x => $1(x) / $2',
+	['-f'] = 'x => -$1(x)',
 	['/v1'] = '$1.map(x => x / $2)',
 	['_f'] = '$1($2)',
+	['_fr'] = '$2($1)',
 	['_t'] = '$1.charCodeAt($2)',
 	['_l'] = '$1[$2]',
 	['_'] = 'typeof($1) == "function" ? $1($2) : (typeof($1) == "string" ? $1.charCodeAt($2) : $1[$2])',
@@ -914,16 +894,17 @@ local binops = {
 	['..2'] = '$1 == $2 ? [] : ($1 <= $2 ? Array.from(new Array(Math.max(0,Math.floor($2 - $1))), (x,i) => $1 + i) : Array.from(new Array(Math.max(0,Math.floor($1 - $2))), (x,i) => $1 - 1 - i))',
 
 	-- componeer
-	['∘'] = [[(args => z => {
+	['∘'] = '((f,g) => (x,y,z,w) => g(f(x,y,z,w)))($1,$2)',
+	['∘2'] = [[((f,g) => z => {
 		var res = z;
-		for (var i = 0; i < args.length; i++) {
-			if (Array.isArray(args[i]))
-				res = args[i][res];
+		for (var i = 0; i < 2; i++) {
+			if (Array.isArray(i==0?f:g))
+				res = (i==0?f:g)[res];
 			else
-				res = args[i](res);
+				res = (i==0?f:g)(res);
 		};
 		return res;
-	})([$1,$2]) ]],
+	})($1,$2) ]],
 
 
 	['^'] = 'Math.pow($1, $2)',
@@ -941,7 +922,8 @@ local binops = {
 	['>'] = '$1 > $2',
 	['≥'] = '$1 >= $2',
 	['='] = 'JSON.stringify($1) == JSON.stringify($2)',
-	['≠'] = 'JSON.stringify($1) != JSON.stringify($2)',
+	['=g'] = '$1 === $2',
+	['≠g'] = '$1 != $2',
 	['≤'] = '$1 <= $2',
 	['<'] = '$1 < $2',
 
@@ -1047,7 +1029,95 @@ function jsgen(sfc)
 			local naamb = varnaam(focus-1)
 			L[#L+1] = tabs..string.format('var %s = %s(%s, %s);', naamf, naamf, naama, naamb)
 			focus = focus - 2
+		elseif atoom(ins) == '_f3' then
+			local naamf = varnaam(focus-4)
+			local naama = varnaam(focus-3)
+			local naamb = varnaam(focus-2)
+			local naamc = varnaam(focus-1)
+			L[#L+1] = tabs..string.format('var %s = %s(%s, %s, %s);', naamf, naamf, naama, naamb, naamc)
+			focus = focus - 3
+		elseif atoom(ins) == '_f4' then
+			local naamf = varnaam(focus-5)
+			local naama = varnaam(focus-4)
+			local naamb = varnaam(focus-3)
+			local naamc = varnaam(focus-2)
+			local naamd = varnaam(focus-1)
+			L[#L+1] = tabs..string.format('var %s = %s(%s, %s, %s, %s);', naamf, naamf, naama, naamb, naamc, naamd)
+			focus = focus - 4
 
+
+		-- coole lussen
+
+		elseif atoom(ins) == 'lus' then
+			-- ok
+			focus = focus + 0
+
+		elseif atoom(ins) == 'eindlus' then
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs..'}'
+
+		-- igen(10)
+		elseif fn(ins) == 'igen' then
+			focus = focus + 1
+			local maxnaam = atoom(arg(ins))
+			local indexnaam = varnaam(focus-1)
+			local nieuwnaam = varnaam(focus+0)
+			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
+			tabs = tabs .. '  '
+			--L[#L+1] = tabs..string.format("var %s = %s;", nieuwnaam, indexnaam)
+			--focus = focus + 1
+
+		elseif atoom(ins) == 'ifilter' then
+			local lijstnaam = varnaam(focus-2)
+			local prednaam = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("if (!%s) ", prednaam)
+			L[#L+1] = tabs..'  '..'continue;'
+			focus = focus - 1
+
+		elseif atoom(ins) == 'llus' then
+			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
+			local maxnaam = varnaam(focus-4)
+			local lijstnaam = varnaam(focus-3)
+			local indexnaam = varnaam(focus-2)
+			local modindex = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("var %s = [];", lijstnaam)
+			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
+			tabs = tabs .. '  '
+			L[#L+1] = tabs..string.format("var %s = %s;", modindex, indexnaam)
+
+		elseif atoom(ins) == 'eindllus' then
+			local ret = varnaam(focus-4)
+			local lijst = varnaam(focus-3)
+			local index = varnaam(focus-2)
+			local val = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("%s[%s] = %s;", lijst, index, val)
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs.."}"
+			L[#L+1] = tabs..string.format("var %s = %s;", ret, lijst)
+			focus = focus - 3
+
+		elseif atoom(ins) == 'slus' then
+			focus = focus + 3 -- 1 eraf (n2m), 1 erbij (index)
+			local maxnaam = varnaam(focus-4)
+			local lijstnaam = varnaam(focus-3)
+			local indexnaam = varnaam(focus-2)
+			local modindex = varnaam(focus-1)
+			L[#L+1] = tabs..string.format("var %s = 0;", lijstnaam)
+			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
+			tabs = tabs .. '  '
+			L[#L+1] = tabs..string.format("var %s = %s;", modindex, indexnaam)
+
+		elseif atoom(ins) == 'eindslus' then
+			local ret = varnaam(focus-4)
+			local lijst = varnaam(focus-3)
+			local index = varnaam(focus-2)
+			local val = varnaam(focus-1)
+			local add = varnaam(focus+0)
+			L[#L+1] = tabs..string.format("%s += %s;", lijst, val)
+			tabs = tabs:sub(3)
+			L[#L+1] = tabs.."}"
+			L[#L+1] = tabs..string.format("var %s = %s;", ret, lijst)
+			focus = focus - 3
 
 		elseif binops[atoom(ins)] then
 			local naama = varnaam(focus-2)
@@ -1088,7 +1158,6 @@ function jsgen(sfc)
 			L[#L+1] = tabs..string.format("var %s = new Set([%s]);", naam, table.concat(set, ","))
 			focus = focus - num + 1
 
-
 		elseif fn(ins) == 'tupel' or fn(ins) == 'lijst' then
 			local tupel = {}
 			local num = tonumber(atoom(arg(ins)))
@@ -1110,15 +1179,39 @@ function jsgen(sfc)
 			focus = focus - num + 1
 
 		elseif fn(ins) == 'arg' then
-			local var = varnaam(1+tonumber(atoom(arg(ins))))
+			local var = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
 			local naam = varnaam(focus)
-			L[#L+1] = tabs..'var '..naam..' = arg'..var..';'
+			L[#L+1] = tabs..'var '..naam..' = '..var..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg0' then
+			local naamA = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamA..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg1' then
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'1'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamB..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg2' then
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'2'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamB..';'
+			focus = focus + 1
+		elseif fn(ins) == 'arg3' then
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'3'
+			local naam = varnaam(focus)
+			L[#L+1] = tabs..'var '..naam..' = '..naamB..';'
 			focus = focus + 1
 
 		elseif fn(ins) == 'fn' then
 			local naam = varnaam(focus)
-			local var = varnaam(1+tonumber(atoom(arg(ins))))
-			L[#L+1] = tabs..string.format("var %s = (%s) => {", naam, "arg"..var)
+			--print('NAAMA', atoom(arg(ins)))
+			local naamA = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
+			local naamB = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'1'
+			local naamC = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'2'
+			local naamD = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'3'
+			L[#L+1] = tabs..string.format("var %s = (%s, %s, %s, %s) => {", naam, naamA, naamB, naamC, naamD)
 			focus = focus + 1
 			tabs = tabs..'  '
 

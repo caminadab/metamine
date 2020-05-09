@@ -2,6 +2,8 @@
 ;main = herhaal.langzaam(ververs)
 main = (in.vars, start, nu, setcontext, setcontext3d, scherm.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind, in.fotos, dt) → mainuit
 
+id = X → X
+
 als start dan
 	mainuit = in.startvars,niets ;(uit.vars, uit)
 anders
@@ -27,13 +29,11 @@ als toets.eindigt dan
 	toetsen := toetsen \ {toets.code}
 eind
 
-;uit = tekst | function(el → el)
-
 ; canvas
 canvas.wis = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), kleur.zwart)
 
 teken = Vormen → setcontext(canvas.wis ∘ (componeer Vormen))
-render = Vormen → setcontext3d(([fn.id] || Vormen) vouw (∘))
+render = Vormen → setcontext3d(reduceer(Vormen, fn.id, (∘)))
 fn.id = Fix → Fix
 
 ; muis

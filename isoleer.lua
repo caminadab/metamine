@@ -69,12 +69,25 @@ function isoleer(eq,naam)
 					break
 				end
 			end
+
 		-- lijst
 		elseif isobj(L) then
 			-- a = [x,b]
 			for i,el in ipairs(L) do
 				if bevat(el,naam) then
-					eq0 = X('=', el, X('_l', R, tostring(i-1)))
+					if fn(R) == '_arg' and #L <= 4 then
+						if i == 1 then
+							eq0 = X('=', el, X('_arg0', arg(R)))
+						elseif i == 2 then
+							eq0 = X('=', el, X('_arg1', arg(R)))
+						elseif i == 3 then
+							eq0 = X('=', el, X('_arg2', arg(R)))
+						elseif i == 4 then
+							eq0 = X('=', el, X('_arg3', arg(R)))
+						end
+					else
+						eq0 = X('=', el, X('_l', R, tostring(i-1)))
+					end
 					break
 				end
 			end
