@@ -49,14 +49,14 @@ function doe(sfc, stack, arg0, arg1, ...)
 	while i <= #sfc do
 		local ins = sfc[i]
 
-		if atoom(ins) == '_f' then
+		if atoom(ins) == 'call' then
 			local a = stack[#stack-1]
 			local b = stack[#stack-0]
 			local r = a(b)
 			stack[#stack] = nil
 			stack[#stack] = r
 
-		elseif atoom(ins) == '_f2' then
+		elseif atoom(ins) == 'call2' then
 			local f = stack[#stack-2]
 			local a = stack[#stack-1]
 			local b = stack[#stack-0]
@@ -65,7 +65,7 @@ function doe(sfc, stack, arg0, arg1, ...)
 			stack[#stack] = nil
 			stack[#stack] = r
 
-		elseif atoom(ins) == '_f3' then
+		elseif atoom(ins) == 'call3' then
 			local f = stack[#stack-3]
 			local a = stack[#stack-2]
 			local b = stack[#stack-1]
@@ -76,7 +76,7 @@ function doe(sfc, stack, arg0, arg1, ...)
 			stack[#stack] = nil
 			stack[#stack] = r
 
-		elseif atoom(ins) == '_f4' then
+		elseif atoom(ins) == 'call4' then
 			local f = stack[#stack-4]
 			local a = stack[#stack-3]
 			local b = stack[#stack-2]

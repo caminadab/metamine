@@ -71,7 +71,6 @@ end
 
 -- code → struct
 function vertaal(code, isdebug)
-	if not opt then opt = {D=true} end
 	local naam = naam or '?'
 	local maakvar = maakvars()
 	local opt = opt or {}
@@ -140,6 +139,10 @@ function vertaal(code, isdebug)
 			print('optimiseer\t' ..ms..' ms')
 		end
 		local prev = socket.gettime()
+
+	else
+		exp = refunc(exp)
+
 	end
 
 	-- opgelost

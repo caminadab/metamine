@@ -34,8 +34,9 @@ for i,feit in ipairs(stdbron.a) do
 	end
 end
 
+local calls = set('call', 'call2', 'call3', 'call4')
 local function fnaam(exp)
-	return (fn(exp) == '_' or fn(exp) == '_f' or fn(exp) == '_f2') and atoom(arg0(exp))
+	return (fn(exp) == '_' or calls[fn(exp)]) and atoom(arg0(exp))
 end
 
 function linkbieb(typegraaf)

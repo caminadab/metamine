@@ -35,17 +35,18 @@ function vectoriseer(asb, types, debug)
 		-- call2,3,4
 		if fn(exp) == '_' then
 			local type = types[moes(arg0(exp))]
-			local argtype = arg0(type)
+			--local argtype = arg0(type)
+			local argtype = types[moes(arg1(exp))]
 			if argtype and isobj(argtype) then
 				local args = arg1(exp)
 				if isobj(args) then
 					local type = types[moes(exp)]
 					if #args == 2 then
-						assign(exp, X('_f2', arg0(exp), args[1], args[2]))
+						assign(exp, X('call2', arg0(exp), args[1], args[2]))
 					elseif #args == 3 then
-						assign(exp, X('_f3', arg0(exp), args[1], args[2], args[3]))
+						assign(exp, X('call3', arg0(exp), args[1], args[2], args[3]))
 					elseif #args == 4 then
-						assign(exp, X('_f4', arg0(exp), args[1], args[2], args[3], args[4]))
+						assign(exp, X('call4', arg0(exp), args[1], args[2], args[3], args[4]))
 					end
 					types[moes(exp)] = type
 				end
@@ -72,7 +73,7 @@ function vectoriseer(asb, types, debug)
 			local isfunc = fn(fntype) == '→' and atoom(arg0(fntype)) ~= 'nat'
 
 			if isfunc then
-				exp.f = X'_f'
+				exp.f = X'call'
 			elseif istekst then
 				exp.f = X'_t'
 			elseif islijst then

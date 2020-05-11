@@ -21,7 +21,7 @@ require 'bouw.codegen'
 require 'bouw.assembleer'
 require 'bouw.link'
 
-opt,bronnen = getopt({...}, "u")
+opt,bronnen = getopt({...}, "o")
 
 for i,bron in pairs(bronnen) do
 	if bron:sub(-5) ~= '.code' then
@@ -94,13 +94,17 @@ else
 	bronnen[#bronnen+1] = 'bieb/n.code'
 end
 
+if opt.n then
+	opt.u = true
+end
+
 if opt.d or opt.doe then
 	doemeteen = true
 end
 if opt.v or opt.verboos then
 	verboos = true
 end
-if opt.j then opt.javascript = true end
+if opt.javascript then opt.j = true end
 
 if opt.R then verbozeRapport = true end
 if opt.S then verbozeSyntax = true end
@@ -170,7 +174,7 @@ if verbozeIntermediair then
 end
 
 -- nieuwe lage JS
-if opt.javascript then
+if opt.j then
 	uit = jsgen(app)
 	file('a.js', uit)
 	if opt.u then

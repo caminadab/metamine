@@ -40,12 +40,12 @@ binop  = set(
 	'∨','∧','×','..','→','∘','_','‖','⇒','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
 	'=g','≠g',
 	'∪','∩',':','∈','\\',
-	'_f','_t','_l','^f', '^l',
+	'call','_t','_l','^f', '^l',
 	'+v', '+v1', '·v', '·v1', '/v1',
 	'+f', '+f1', '·f', '·f1',
 	'+m', '+m1', '·m1', '·mv', '·m'
 )
-triop  = set('_f2')
+triop  = set('call2')
 
 -- exps worden gecachet (voor debugging)
 function codegen(exp, moes2naam)
@@ -116,6 +116,10 @@ function codegen(exp, moes2naam)
 			end
 			ins[#ins+1] = X('arg', num) --argindex[num])
 			focus = focus + 1
+
+		elseif fn(exp) == '_arg0' and callarg == atoom(arg(exp)) then
+		elseif fn(exp) == '_arg1' and callarg == atoom(arg(exp)) then
+			-- klaar
 
 		elseif fn(exp) == '_arg0' then
 			local num = atoom(arg(exp))
@@ -207,27 +211,6 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X'eindslus'
 			focus = focus + 0
 
-		-- portable functies
-		elseif callarg and binop[atoom(exp)] then
-			ins[#ins+1] = X(atoom(exp))
-
-		elseif binop[atoom(exp)] then
-			local index = tostring(maakargindex())
-			ins[#ins+1] = X('fn', index)
-			ins[#ins+1] = X('arg0', index)
-			ins[#ins+1] = X('arg1', index)
-			ins[#ins+1] = exp
-			ins[#ins+1] = X('eind')
-			focus = focus + 1
-
-		elseif unop[atoom(exp)] then
-			local index = tostring(maakargindex())
-			ins[#ins+1] = X('fn', index)
-			ins[#ins+1] = X('arg', index)
-			ins[#ins+1] = exp
-			ins[#ins+1] = X('eind')
-			focus = focus + 1
-
 		elseif bieb[atoom(exp)] then
 			ins[#ins+1] = exp
 			focus = focus + 1
@@ -245,7 +228,7 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 2
 
-		elseif fn(exp) == '_f3' then
+		elseif fn(exp) == 'call3' then
 			codegen(arg0(exp), ins, callarg)
 			codegen(arg1(exp), ins, callarg)
 			codegen(arg2(exp), ins, callarg)
@@ -253,7 +236,7 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X(fn(exp))
 			focus = focus - 3
 
-		elseif fn(exp) == '_f4' then
+		elseif fn(exp) == 'call4' then
 			codegen(arg0(exp), ins, callarg)
 			codegen(arg1(exp), ins, callarg)
 			codegen(arg2(exp), ins, callarg)

@@ -2,6 +2,7 @@ require 'exp'
 require 'symbool'
 
 local altijdja = X('_fn', '12358', '⊤')
+local calls = set('call', 'call2', 'call3', 'call4')
 
 function destart(exp)
 	if fn(exp) == '..' then
@@ -37,10 +38,45 @@ function devec(exp)
 	end
 end
 
+local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
+local postop = set("%","!",".","'")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖")
+local op     = unie(binop, unie(postop, unop))
+
+function stub2func(exp, maakindex)
+	local naam = atoom(exp)
+	local index = tostring(maakindex())
+	if binop[naam] then
+		local a0 = X('_arg0', index)
+		local a1 = X('_arg1', index)
+		return X('_fn', index, X(naam, a0, a1))
+	elseif unop[naam] or postop[naam] then
+		local a = X('_arg', index)
+		return X('_fn', index, X(naam, a))
+	else
+		error('onbekende operator "'..naam..'"')
+	end
+end
+
+-- atoom -> functie
+function refunc(exp, maakindex)
+	local klaar = {}
+	local maakindex = maakindex or maakindices(444)
+
+	for exp in boompairs(exp) do
+		if op[atoom(exp)] then
+			local nexp = stub2func(exp, maakindex)
+			assign(exp, nexp)
+		end
+	end
+
+	return exp
+end
+
 -- (+), id 
 
 -- optimiseer compositie
-function compopt(exp, maakindex)
+local function compopt0(exp, maakindex)
 	local a = arg0(exp)
 	local b = arg1(exp)
 	if fn(a) == '_fn' and fn(b) == '_fn' then
@@ -83,13 +119,13 @@ function compopt(exp, maakindex)
 			local argB = X('arg1', index)
 			c = X(anaam, argA, argB)
 		else
-			c = X('_f', anaam, arg)
+			c = X('call', anaam, arg)
 		end
 		local d
 		if unop[bnaam] then
 			d = X(bnaam, c)
 		else
-			d = X('_f', bnaam, c)
+			d = X('call', bnaam, c)
 		end
 
 		return X('_fn', index, d)
@@ -112,56 +148,96 @@ function compopt(exp, maakindex)
 	end
 end
 
--- lus: gen,map,col
-function optimiseer(exp)
-	local maakindex = maakindices(1000)
+function compopt(exp, maakindex)
 	for exp in boompairsdfs(exp) do
 		if fn(exp) == '∘' then
-			local nexp = compopt(exp, maakindex)
+			local nexp = compopt0(exp, maakindex)
 			if nexp then
-				--error(combineer(nexp))
 				assign(exp, nexp)
 			end
 		end
 	end
-	do return exp end
-	for exp in boompairsbfs(exp) do
+	return exp
+end
+
+local function multiopt(exp, maakindex)
+	for exp in boompairsdfs(exp) do
+		-- som
 		if fn(exp) == 'Σ' then
-			local lijst = arg(exp)
-			local start = X'0'
-			local gen = devec(lijst)
-			local col = X'+'
+			local nexp = X('_f3', 'reduceer', '0', arg(exp), '+')
+			assign(exp, nexp)
+		end
 
-			if gen then
-				local nexp = X('lus', start, gen, col)
-				assign(exp, nexp)
-			end
+		-- map/reduce
+		if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'map' then
+			-- reduceer(S,map(L,F),G), G=(X,Y → Z)
+			-- > reduceer(S,L,H), H=(V,W → G(V, F(W)))
+			local S = arg1(exp)
+			local L = arg1(arg2(exp))
+			local F = arg2(arg2(exp))
+			local G = arg3(exp)
 
-		elseif fnaam(exp) == 'reduceer' then
-			local start = arg1(exp)
-			local lijst = arg2(exp)
-			local func  = arg3(exp)
-			local gen   = devec(lijst)
+			local I = tostring(maakindex())
+			local V = X('_arg0', I)
+			local W = X('_arg1', I)
 
-			if gen then
-				local nexp = X('lus', start, gen, func)
-				assign(exp, nexp)
-			end
+			local hbody = X('_f2', G, V, X('_f', F, W))
+			local H = X('_fn', I, hbody)
+			local nexp = X('_f3', 'reduceer', S, L, H)
 
-		elseif fnaam(exp) == 'map' or fnaam(exp) == 'filter' then
-			local lijst = arg1(exp)
-			local func = arg2(exp)
+			assign(exp, nexp)
+		end
 
-			local gen = devec(lijst)
-			local start = {o=X'[]'}
-			local col = X('∘', func, X'append')
-
-			if gen then
-				local nexp = X('lus', start, gen, col)
-				assign(exp, nexp)
-			end
+		-- map/map
+		if fnaam(exp) == 'map' and fnaam(arg1(exp)) == 'map' then
+			-- map(map(A,B),C) → map(A, B ∘ C)
+			local A = arg1(arg1(exp))
+			local B = arg2(arg1(exp))
+			local C = arg2(exp)
+			local BC = X('∘', B, C)
+			local nexp = X('_f2', 'map', A, BC)
+			assign(exp, nexp)
 		end
 	end
+
+	return exp
+end
+
+-- _f2(_fn(1 X) Y) X[_arg(1)=Y]
+local function callopt(exp, maakindex)
+	for exp in boompairs(exp) do
+		if calls[fn(exp)] and arg0(exp) and fn(arg0(exp)) == '_fn' then
+			local index = atoom(arg0(arg0(exp)))
+			local lichaam = arg1(arg0(exp))
+
+			local narg1 = arg1(exp)
+			local narg2 = arg2(exp)
+			local narg3 = arg3(exp)
+			local narg4 = arg4(exp)
+
+			local nexp = kloon(lichaam)
+			local nexp = substitueer(nexp, X('_arg', index), narg1)
+			local nexp = substitueer(nexp, X('_arg0', index), narg1)
+			local nexp = substitueer(nexp, X('_arg1', index), narg2)
+			local nexp = substitueer(nexp, X('_arg2', index), narg3)
+			local nexp = substitueer(nexp, X('_arg3', index), narg4)
+
+			assign(exp, nexp)
+		end
+	end
+
+	return exp
+end
+
+
+-- lus: gen,map,col
+function optimiseer(exp)
+	local maakindex = maakindices(333)
+	local exp = multiopt(exp, maakindex)
+	local exp = refunc(exp, maakindex)
+	local exp = compopt(exp, maakindex)
+	local exp = callopt(exp, maakindex)
+
 	return exp
 end
 

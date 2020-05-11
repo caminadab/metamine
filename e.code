@@ -1,0 +1,5 @@
+lijst = 0..10 map verdubbel
+verdubbel = X → X · 2
+main = reduceer(0, lijst, (+))
+
+

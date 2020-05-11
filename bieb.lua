@@ -56,7 +56,6 @@ function bieb()
 	-- webgl
 	['alert'] = true,
 	['splits'] = true,
-	['splits2'] = true,
 	['kubus'] = true,
 	['kies'] = true,
 	['superrender'] = true,
@@ -207,7 +206,6 @@ function bieb()
 	['misschien'] = true,
 	['fout'] = true,
 	['verf'] = true,
-	['verf2'] = true,
 
 	rgb = true,
 
@@ -886,16 +884,7 @@ function bieb()
 		return false
 	end;
 
-	['vanaf'] = function(airgs)
-		local a, van = args[1], args[2]
-		local t = {f='[]'}
-		for i=van+1,#a do
-			t[#t+1] = a[i]
-		end
-		return t
-	end;
-
-	['vanaf2'] = function(a,van)
+	['vanaf'] = function(a,van)
 		local t = {f='[]'}
 		for i=van+1,#a do
 			t[#t+1] = a[i]

@@ -45,6 +45,7 @@ local noops = {
 				res[k++] = args[i][j];
 		return res;
 	} ]],
+
 	['vertexshader'] = [[ code => {
 		if (shaderCache[code]) 
 			return shaderCache[code];
@@ -508,24 +509,7 @@ local noops = {
   ['filter'] = '(a, b) => a.filter(b)',
   ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
   ['vouw'] = '(a, b) => a.reduce(b)',
-	['reduceer'] = [[(i, l, f) => {
-if (l.length <= 1)
-  return i;
-var r = i;
-for (var i=1; i < l.length; i++)
-  r = f(r, l[i]);
-return r;
-} ]],
-
-	['vouw2x2'] = [[(l, f) => {
-		if (l.length == 0)
-			return false;
-		var r=l[0] ;
-		for (var i=1; i < l.length; i++)
-			r = f(r, l[i] );
-		return r;
-	} ]],
-
+	['reduceer'] = '(i, l, f) => l.reduce(f, i)',
 	['sincos'] = 'x => [Math.cos(x), Math.sin(x)]',
 	['cossin'] = 'x => [Math.sin(x), Math.cos(x)]',
 	['atan'] = 'Math.atan2',
@@ -548,7 +532,7 @@ return r;
 	-- webgl
 	 ['jsonencodeer'] = 'x => { try { return JSON.stringify(x); } catch (e) {return e.message; }}',
 	 ['jsondecodeer'] = 'x => { try { return JSON.parse(x); } catch (e) {return e.message; }}',
-	 ['deel'] = 'x,y,z => x.slice(y, z)',
+	 ['deel'] = '(x,y,z) => x.slice(y, z)',
 	 ['vind'] = [[(lijst, doel, index) => {
 		 var doel = JSON.stringify(doel);
 		 for (var i = index || 0; i < lijst.length; i++) {
@@ -786,7 +770,6 @@ return r;
 	['∅'] = '{}',
 	['τ'] = 'Math.PI * 2',
 	['π'] = 'Math.PI',
-	['_f'] = '$1($2)',
 
 	-- dynamisch
 	['eerste'] = '(typeof($1)=="function") ? $1(0) : $1[0]',
@@ -798,6 +781,7 @@ return r;
 local unops2 = {
 	['Σ'] = [[var sum = 0; for (var i = 0; i < $1.length; i++) sum = sum + $1[i]; $1 = sum;]],
 	['|'] = 'for (var i = 0; i < $1.length; i++) if ($1[i] != null) { $1 = $1[i]; break; }',
+	['-'] = '$1 = -$1;',
 }
 
 local binops2 = {
@@ -881,7 +865,7 @@ local binops = {
 	['/f1'] = 'x => $1(x) / $2',
 	['-f'] = 'x => -$1(x)',
 	['/v1'] = '$1.map(x => x / $2)',
-	['_f'] = '$1($2)',
+	['call'] = '$1($2)',
 	['_fr'] = '$2($1)',
 	['_t'] = '$1.charCodeAt($2)',
 	['_l'] = '$1[$2]',
@@ -1004,15 +988,15 @@ function jsgen(sfc)
 			local naamb = varnaam(focus + num)
 			L[#L+1] = tabs..string.format('var %s,%s = %s,%s;', naama, naamb, naamb, naama)
 
-		elseif unops[atoom(ins)] then
-			local naam = varnaam(focus-1)
-			local di = unops[atoom(ins)]:gsub('$1', naam)
-			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
-
 		elseif unops2[atoom(ins)] then
 			local naam = varnaam(focus-1)
 			local di = unops2[atoom(ins)]:gsub('$1', naam)
 			L[#L+1] = tabs..di
+
+		elseif unops[atoom(ins)] then
+			local naam = varnaam(focus-1)
+			local di = unops[atoom(ins)]:gsub('$1', naam)
+			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
 
 		elseif binops2[atoom(ins)] then
 			local naama = varnaam(focus-2)
@@ -1023,20 +1007,20 @@ function jsgen(sfc)
 
 
 		-- call2
-		elseif atoom(ins) == '_f2' then
+		elseif atoom(ins) == 'call2' then
 			local naamf = varnaam(focus-3)
 			local naama = varnaam(focus-2)
 			local naamb = varnaam(focus-1)
 			L[#L+1] = tabs..string.format('var %s = %s(%s, %s);', naamf, naamf, naama, naamb)
 			focus = focus - 2
-		elseif atoom(ins) == '_f3' then
+		elseif atoom(ins) == 'call3' then
 			local naamf = varnaam(focus-4)
 			local naama = varnaam(focus-3)
 			local naamb = varnaam(focus-2)
 			local naamc = varnaam(focus-1)
 			L[#L+1] = tabs..string.format('var %s = %s(%s, %s, %s);', naamf, naamf, naama, naamb, naamc)
 			focus = focus - 3
-		elseif atoom(ins) == '_f4' then
+		elseif atoom(ins) == 'call4' then
 			local naamf = varnaam(focus-5)
 			local naama = varnaam(focus-4)
 			local naamb = varnaam(focus-3)
@@ -1179,9 +1163,12 @@ function jsgen(sfc)
 			focus = focus - num + 1
 
 		elseif fn(ins) == 'arg' then
-			local var = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
+			local index = 1 + tonumber(atoom(arg(ins)))
+			local b = 'arg'..varnaam(index)
+			local var = string.format('%s1 ? %s2 ? %s3 ? [%s0, %s1, %s2, %s3] : [%s0, %s1, %s2] : [%s0, %s1] : %s0',
+				b, b, b, b, b, b, b, b, b, b, b, b, b)
 			local naam = varnaam(focus)
-			L[#L+1] = tabs..'var '..naam..' = '..var..';'
+			L[#L+1] = string.format('%svar %s = %s;', tabs, naam, var)
 			focus = focus + 1
 		elseif fn(ins) == 'arg0' then
 			local naamA = 'arg'..varnaam(1+tonumber(atoom(arg(ins))))..'0'
