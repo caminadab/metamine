@@ -659,9 +659,15 @@ function bieb()
 	['map'] = function(a, b)
 		local r = {}
 		for i=1,#a do
-			local v = a[i]
-			local s = b(v)
-			r[i] = s
+			r[i] = b(a[i])
+		end
+		return r
+	end;
+
+	['lmap'] = function(a, b)
+		local r = {}
+		for i=1,#a do
+			r[i] = b[a[i]+1]
 		end
 		return r
 	end;

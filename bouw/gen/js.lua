@@ -504,7 +504,9 @@ local noops = {
 	['zip'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;}',
   ['zip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;}',
   ['rzip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;}',
-  ['map'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(b); }',
+  --['map'] = '(a, b) => a.map(b)',
+  ['map'] = '(a, b) => { var r = []; for (var i = 0; i < a.length; i++) r[i] = b(i); return r;}',
+	['lmap'] = '(a, b) => a.map(x => b[x])',
   ['map4'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(x => b(x[0], x[1], x[2], x[3])); }',
   ['filter'] = '(a, b) => a.filter(b)',
   ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
@@ -1165,7 +1167,7 @@ function jsgen(sfc)
 		elseif fn(ins) == 'arg' then
 			local index = 1 + tonumber(atoom(arg(ins)))
 			local b = 'arg'..varnaam(index)
-			local var = string.format('%s1 ? %s2 ? %s3 ? [%s0, %s1, %s2, %s3] : [%s0, %s1, %s2] : [%s0, %s1] : %s0',
+			local var = string.format('%s1 != null ? %s2 != null ? %s3 != null ? [%s0, %s1, %s2, %s3] : [%s0, %s1, %s2] : [%s0, %s1] : %s0',
 				b, b, b, b, b, b, b, b, b, b, b, b, b)
 			local naam = varnaam(focus)
 			L[#L+1] = string.format('%svar %s = %s;', tabs, naam, var)

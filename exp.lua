@@ -5,7 +5,7 @@ exp |= { loc, val }
 require 'lisp'
 require 'util'
 
-local calls = set('_', '_f', '_f2', '_f3', '_f4')
+local calls = set('_', 'call', 'call2', 'call3', 'call4')
 
 function fnaam(exp)
 	return calls[fn(exp)] and atoom(arg0(exp))

@@ -83,6 +83,14 @@ function vectoriseer(asb, types, debug)
 			end
 		end
 
+		-- (X map [1,2,3]) → (X lmap [1,2,3])
+		if fnaam(exp) == 'map' then
+			local maptype = types[moes(arg2(exp))]
+			if fn(maptype) == '→' and atoom(arg0(maptype)) == 'nat' then
+				exp.a[1] = X'lmap'
+			end
+		end
+
 		-- (F^i) → (^)(F, i)
 		if fn(exp) == '^' then
 			local basetype = types[moes(arg0(exp))]

@@ -250,7 +250,6 @@ single:
 	NAAM								{ $$ = LOC(L, $1, @1); }
 | "ℝ"
 | "★"
-|	single ".." single  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	single I0						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"0", @2), @$); }
 |	single I1						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"1", @2), @$); }
 |	single I2						{ $$ = FN2(L, A(L,"_", @2), $1, A(L,"2", @2), @$); }
@@ -281,6 +280,7 @@ single:
 
 exp:
 	single
+|	exp ".." exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 | exp ',' witruimte exp  												{ if (xlua_isopen(L,$1)) $$ = APPEND(L, $1, $4, @$); else $$ = TN2(L, LOC(L,$2,@2), $1, $4, @$); }
 | single single  %prec CALL  					{ $$ = FN2(L, A(L,"_", @$), $1, $2, @$); }
 | single single single  %prec CALL  	{ $$ = FN2(L, A(L,"_",@2), $2, TN2(L, A(L,",",@2), $1, $3, @$), @$); }

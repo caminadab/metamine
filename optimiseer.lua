@@ -141,7 +141,7 @@ local function compopt0(exp, maakindex)
 		if unop[bnaam] then
 			c = X('_fn', aarg, X(bnaam, cbody))
 		else
-			c = X('_fn', aarg, X('_f', bnaam, cbody))
+			c = X('_fn', aarg, X('call', bnaam, cbody))
 		end
 
 		return c
@@ -181,9 +181,9 @@ local function multiopt(exp, maakindex)
 			local V = X('_arg0', I)
 			local W = X('_arg1', I)
 
-			local hbody = X('_f2', G, V, X('_f', F, W))
+			local hbody = X('call2', G, V, X('call', F, W))
 			local H = X('_fn', I, hbody)
-			local nexp = X('_f3', 'reduceer', S, L, H)
+			local nexp = X('call3', 'reduceer', S, L, H)
 
 			assign(exp, nexp)
 		end
@@ -195,7 +195,7 @@ local function multiopt(exp, maakindex)
 			local B = arg2(arg1(exp))
 			local C = arg2(exp)
 			local BC = X('∘', B, C)
-			local nexp = X('_f2', 'map', A, BC)
+			local nexp = X('call2', 'map', A, BC)
 			assign(exp, nexp)
 		end
 	end

@@ -1,2 +1,2 @@
-main = id2 (1)
+main = [0,1] map id2
 id2 = x → x
