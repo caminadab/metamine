@@ -110,6 +110,7 @@ local function compopt0(exp, maakindex)
 
 	-- (-) ∘ (-) = (x → -(-(x)))
 	elseif isatoom(a) and isatoom(b) then
+		error'OK'
 		local index = tostring(maakindex())
 		local anaam = atoom(a)
 		local bnaam = atoom(b)
@@ -136,6 +137,7 @@ local function compopt0(exp, maakindex)
 
 	-- (x → x + 1) ∘ (-) = (x → -(x + 1))
 	elseif fn(a) == '_fn' and isatoom(b) then
+		error'OK'
 		local aarg  = atoom(arg0(a))
 		local abody = arg1(a)
 		local bnaam = atoom(b)
@@ -165,10 +167,18 @@ function compopt(exp, maakindex)
 end
 
 local function multiopt(exp, maakindex)
-	for exp in boompairsdfs(exp) do
+	for exp in boompairsbfs(exp) do
 		-- som
 		if fn(exp) == 'Σ' then
 			local nexp = X('call3', 'reduceer', '0', arg(exp), '+')
+			assign(exp, nexp)
+		end
+
+		-- lengte
+		if false and fn(exp) == '#' then
+			local index = tostring(maakindex())
+			local plus = X('_fn', index, X('+', X('_arg0', index), '1'))
+			local nexp = X('call3', 'reduceer', '0', arg(exp), plus)
 			assign(exp, nexp)
 		end
 
@@ -190,6 +200,27 @@ local function multiopt(exp, maakindex)
 			local nexp = X('call3', 'reduceer', S, L, H)
 
 			assign(exp, nexp)
+		end
+
+		-- filter/reduce
+		if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'filter' then
+			--reduce(S,filter(L,F),G), G=(X,Y → Z)
+			-- > reduceer(S,L,H), H=(V,W → kies(F(W),G(V,W),V))
+			local S = arg1(exp)
+			local L = arg1(arg2(exp))
+			local F = arg2(arg2(exp))
+			local G = arg3(exp)
+
+			local I = tostring(maakindex())
+			local V = X('_arg0', I)
+			local W = X('_arg1', I)
+
+			local hbody = X('call3', 'kies', X('call', F, W), X('call2',G,V,W), V)
+			local H = X('_fn', I, hbody)
+			local nexp = X('call3', 'reduceer', S, L, H)
+			
+			assign(exp, nexp)
+
 		end
 
 		-- map/map

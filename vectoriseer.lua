@@ -47,7 +47,7 @@ function vectoriseer(asb, types, debug)
 				local args = arg1(exp)
 				if issimpel(argtype) then
 					local type = types[moes(exp)]
-					--local nexp = substitueer(arg0(exp), X('_arg', 
+					--local nexp = substitueer(arg0(exp), X('_arg'), X('_arg0'))
 					assign(exp, X('call1', arg0(exp), args))
 					types[moes(exp)] = type
 				end

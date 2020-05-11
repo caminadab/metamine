@@ -286,6 +286,7 @@ function bieb()
 
 	-- wiskunde
 	atoom = function(id) return setmetatable({id=id}, {__tostring=function()return 'atoom'..id end}) end,
+	['call1'] = function(a, b) return a(b) end;
 	['min'] = math.min,
 	['max'] = math.max,
 	maxindexXXX = function(args)

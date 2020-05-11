@@ -1,1 +1,1 @@
-main = sin 3
+main = Σ (0..10) filter (x → x < 5)

@@ -171,10 +171,10 @@ set: verzameling
 ; logica
 (¬) : bit → bit
 ;(') : iets → iets
-(>) : getal, getal → bit
+;(>) : getal, getal → bit
 (≥) : getal, getal → bit
 (≤) : getal, getal → bit
-(<) : getal, getal → bit
+;(<) : getal, getal → bit
 (∧) : bit, bit → bit
 (∨) : bit, bit → bit
 (⋀) : verzameling bit → bit

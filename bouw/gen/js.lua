@@ -603,7 +603,7 @@ local noops = {
 	var d = args[3];
 
 	var x,y,r;
-	if (c) {
+	if (d) {
 		r = c * SCHAAL;
 		x = a * SCHAAL;
 		y = (100 - b) * SCHAAL - r;
@@ -1169,8 +1169,9 @@ function jsgen(sfc)
 		elseif fn(ins) == 'arg' then
 			local index = 1 + tonumber(atoom(arg(ins)))
 			local b = 'arg'..varnaam(index)
-			local var = string.format('%s1 != null ? %s2 != null ? %s3 != null ? [%s0, %s1, %s2, %s3] : [%s0, %s1, %s2] : [%s0, %s1] : %s0',
-				b, b, b, b, b, b, b, b, b, b, b, b, b)
+			--local var = string.format('%s1 != null ? %s2 != null ? %s3 != null ? [%s0, %s1, %s2, %s3] : [%s0, %s1, %s2] : [%s0, %s1] : %s0',
+			--	b, b, b, b, b, b, b, b, b, b, b, b, b)
+			local var = b .. '0'
 			local naam = varnaam(focus)
 			L[#L+1] = string.format('%svar %s = %s;', tabs, naam, var)
 			focus = focus + 1
