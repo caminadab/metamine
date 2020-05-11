@@ -11,25 +11,7 @@ function destart(exp)
 end
 
 function devec(exp)
-	if false and fnaam(exp) == 'map2' then
-		local lijst = arg1(exp)
-		local func  = arg2(exp)
-
-		local delijst = devec(lijst)
-		if delijst then
-			--return X('imap', delijst, func)
-		end
-		--return X'ok'
-
-	elseif false and fnaam(exp) == 'filter2' then
-		local lijst = arg1(exp)
-		local func  = arg2(exp)
-		local delijst = devec(lijst)
-		if delijst then
-			return X('ifilter', delijst, func)
-		end
-
-	elseif fn(exp) == '..' then
+	if fn(exp) == '..' then
 		if atoom(arg0(exp)) == '0' then
 			return X('igen', arg1(exp))
 		else
@@ -215,7 +197,7 @@ local function multiopt(exp, maakindex)
 			local V = X('_arg0', I)
 			local W = X('_arg1', I)
 
-			local hbody = X('call3', 'kies', X('call', F, W), X('call2',G,V,W), V)
+			local hbody = X('kies', X('call', F, W), X('call2',G,V,W), V)
 			local H = X('_fn', I, hbody)
 			local nexp = X('call3', 'reduceer', S, L, H)
 			
@@ -232,6 +214,15 @@ local function multiopt(exp, maakindex)
 			local BC = X('∘', B, C)
 			local nexp = X('call2', 'map', A, BC)
 			assign(exp, nexp)
+		end
+
+		-- lus
+		if fnaam(exp) == 'reduceer' then
+			local gen = devec(arg2(exp))
+			if gen then
+				local nexp = X('lus', arg1(exp), gen, arg3(exp))
+				assign(exp, nexp)
+			end
 		end
 	end
 

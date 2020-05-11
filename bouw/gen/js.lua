@@ -486,7 +486,6 @@ local noops = {
 }]],
 
 	-- niet goed
-	['kies'] = '(p,x,y) => p ? x : y',
 	['misschien'] = 'Math.random() < 0.5',
 	['newindex']  = '(lijst,index,val) => { lijst[ index ] = val; return lijst; }',
 	['newindex2'] = '(lijst,index,val) => { var t = []; for (var i = 0; i< lijst.length; i++) { if (i == index) t[i] = val; else t[i] = lijst[i]; } return t; }',
@@ -519,8 +518,8 @@ local noops = {
 	['atan'] = 'Math.atan2',
 
 	-- discreet
-	['min'] = 'Math.min',
-	['max'] = 'Math.max',
+	['min'] = '(x, y) => Math.min(x, y)',
+	['max'] = '(x, y) => Math.max(x, y)',
 	['maxindexXXX'] = [[x => {
 		var maxi = null;
 		var max = - Infinity;
@@ -1041,8 +1040,14 @@ function jsgen(sfc)
 			focus = focus + 0
 
 		elseif atoom(ins) == 'eindlus' then
+			local naamc = varnaam(focus-3)
+			local naamb = varnaam(focus-2)
+			local naama = varnaam(focus-1)
+			L[#L+1] = string.format('%s%s = %s(%s, %s);', tabs, naamc, naama, naamb, naamc)
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs..'}'
+			--L[#L+1] = string.format('%s%s = tmp;', tabs, naamc)
+			focus = focus - 2
 
 		-- igen(10)
 		elseif fn(ins) == 'igen' then
@@ -1212,6 +1217,14 @@ function jsgen(sfc)
 			local naam = varnaam(focus)
 			L[#L+1] = tabs..string.format("if (%s) {", naam)
 			tabs = tabs..'  '
+
+		elseif atoom(ins) == 'kies' then
+			local cond = varnaam(focus-3)
+			local a = varnaam(focus-2)
+			local b = varnaam(focus-1)
+			local naam = cond
+			L[#L+1] = tabs..string.format("var %s = %s ? %s : %s;", naam, cond, a, b)
+			focus = focus - 2
 
 		-- cache
 		elseif fn(ins) == 'ld' then

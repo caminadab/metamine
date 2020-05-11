@@ -45,7 +45,7 @@ binop  = set(
 	'+f', '+f1', '·f', '·f1',
 	'+m', '+m1', '·m1', '·mv', '·m'
 )
-triop  = set('call2')
+triop  = set('call2', 'kies')
 
 -- exps worden gecachet (voor debugging)
 function codegen(exp, moes2naam)
@@ -103,7 +103,7 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X'einddan'
 			focus = focus - 1
 
-		elseif fn(exp) == '_arg' and exp.a.v == callarg then
+		elseif false and fn(exp) == '_arg' and exp.a.v == callarg then
 			--ins[#ins+1] = 
 			--error'OK'
 			focus = focus + 1
@@ -117,8 +117,8 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X('arg', num) --argindex[num])
 			focus = focus + 1
 
-		elseif fn(exp) == '_arg0' and callarg == atoom(arg(exp)) then
-		elseif fn(exp) == '_arg1' and callarg == atoom(arg(exp)) then
+		elseif false and fn(exp) == '_arg0' and callarg == atoom(arg(exp)) then
+		elseif false and fn(exp) == '_arg1' and callarg == atoom(arg(exp)) then
 			-- klaar
 
 		elseif fn(exp) == '_arg0' then
@@ -156,7 +156,7 @@ function codegen(exp, moes2naam)
 			local col = arg2(exp)
 
 			local colarg = fn(col) == '_fn' and atoom(arg0(col))
-			local col    = fn(col) == '_fn' and arg1(col) or col
+			--local col    = fn(col) == '_fn' and arg1(col) or col
 				
 
 			--error(combineer(col))

@@ -1,0 +1,2 @@
+main = Σ (0..100) filter f 
+f = X → (X mod 2 = 0)

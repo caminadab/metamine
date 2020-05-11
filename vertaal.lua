@@ -131,6 +131,13 @@ function vertaal(code, isdebug)
 
 	-- optimiseer
 	if not isdebug and (not opt or not opt['0']) then
+		-- opgelost
+		if verbozeWaarde then
+			print('=== ORIGINELE WAARDE ===')
+			print(unlisp(exp))
+			print()
+		end
+
 		exp = optimiseer(exp)
 
 		local delta = socket.gettime() - prev
