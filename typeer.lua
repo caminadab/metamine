@@ -220,6 +220,32 @@ end
 			local uittype = X(',', arg1(lijstA), arg1(lijstB))
 			types[moes(exp)] = X('→', 'nat', uittype)
 
+		-- _(reduceer, (init, lijst, func))
+		elseif fnaam(exp) == 'reduceer' then
+			local redarg = arg1(exp)
+			local I = moes(redarg[1])
+			local L = moes(redarg[2])
+			local F = moes(redarg[3])
+
+			local inittype  = types[I]
+			local lijsttype = types[L]
+			local functype  = types[F]
+
+			local itemtype = arg1(lijsttype) or arg1(functype)
+
+			-- reduceer(I, (N→B), (I,B → I))
+			-- I@1 = I@3
+			-- I@3 = I@3
+			-- B@2 = B@3
+			moetzijn(lijsttype, X('→', 'nat', itemtype), arg1(exp)[2])
+			moetzijn(functype, X('→', X(',', inittype, itemtype), inittype), arg1(exp)[3])
+
+			print('init',combineer(inittype))
+			print('lijst',combineer(lijsttype))
+			print('func',combineer(functype))
+			print('item',combineer(itemtype))
+
+			types[moes(exp)] = typegraaf:maaktype(inittype)
 
 		-- _(map, (lijst, fn))
 		elseif fnaam(exp) == 'map' then

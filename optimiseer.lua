@@ -164,7 +164,7 @@ local function multiopt(exp, maakindex)
 	for exp in boompairsdfs(exp) do
 		-- som
 		if fn(exp) == 'Σ' then
-			local nexp = X('_f3', 'reduceer', '0', arg(exp), '+')
+			local nexp = X('call3', 'reduceer', '0', arg(exp), '+')
 			assign(exp, nexp)
 		end
 

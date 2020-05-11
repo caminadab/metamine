@@ -21,7 +21,8 @@ function bieb()
 
 	['debugsom'] = true,
 	['eval'] = true,
-	['append'] = function(lijst,item) lijst[#lijst] = item end,
+	['append'] = function(lijst,item) lijst[#lijst] = item; return lijst; end;
+	['prepend'] = function(lijst,item) table.insert(lijst, 1, item); return lijst; end;
 
 	['+f1'] = function(args)
 		local afunc = args[1]
@@ -435,6 +436,7 @@ function bieb()
 
 	['|'] = function(a)
 		for i,v in ipairs(a) do
+			print('alt', v)
 			if v ~= false then
 				return v
 			end
@@ -804,8 +806,7 @@ function bieb()
 	end;
 
 	-- unie
-	['∪'] = function(ab)
-		local a,b = ab[1],ab[2]
+	['∪'] = function(a, b)
 		local s = {}
 		for v in pairs(a) do s[v] = true end
 		for v in pairs(b) do s[v] = true end

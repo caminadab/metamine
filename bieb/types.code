@@ -38,6 +38,8 @@ superrender: iets, texture, sprog, int → iets
 ; lol/lijst
 grabbel: lijst, int → iets
 splits: lijst, iets → lijst
+append: lijst, iets → lijst
+prepend: lijst, iets → lijst
 
 ; net
 socket: int

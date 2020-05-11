@@ -20,6 +20,8 @@ local unops = {
 }
 
 local noops = {
+	['append'] = '(x, y) => {x.push(y); return x;}',
+	['prepend'] = '(x, y) => {x.unshift(y); return x;}',
 
 	['eval'] = 'eval',
 
@@ -787,7 +789,6 @@ local unops2 = {
 }
 
 local binops2 = {
-	['append'] = '$1[$1.length] = $2;',
 	['^l'] = [[var res = [];
 	var k = 0;
 	for (var i = 0; i < $2; i++)

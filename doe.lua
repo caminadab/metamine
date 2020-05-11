@@ -89,6 +89,9 @@ function doe(sfc, stack, arg0, arg1, ...)
 			stack[#stack] = nil
 			stack[#stack] = r
 
+		elseif atoom(ins) == 'niets' then
+			stack[#stack+1] = 0
+
 		elseif atoom(ins) == 'lus' then
 			-- niets
 

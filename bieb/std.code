@@ -33,8 +33,7 @@ eind
 canvas.wis = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), kleur.zwart)
 
 teken = Vormen → setcontext(canvas.wis ∘ (componeer Vormen))
-render = Vormen → setcontext3d(reduceer(Vormen, fn.id, (∘)))
-fn.id = Fix → Fix
+;render = Vormen → setcontext3d(reduceer(Vormen, id, (∘)))
 
 ; muis
 muis.pos := (0,0)
