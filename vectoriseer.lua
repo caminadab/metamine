@@ -13,6 +13,12 @@ function numargs(functype)
 	return 1
 end
 
+local simpel = set('getal', 'int', 'bit', 'functie')
+
+local function issimpel(type)
+	return not not simpel[atoom(type)]
+end
+
 -- past types toe om operators te preoverloaden
 function vectoriseer(asb, types, debug)
 	for exp in boompairsdfs(asb) do
@@ -32,13 +38,20 @@ function vectoriseer(asb, types, debug)
 			end
 		end
 
-		-- call2,3,4
+		-- call1,2,3,4
 		if fn(exp) == '_' then
 			local type = types[moes(arg0(exp))]
 			--local argtype = arg0(type)
 			local argtype = types[moes(arg1(exp))]
-			if argtype and isobj(argtype) then
+			if argtype then
 				local args = arg1(exp)
+				if issimpel(argtype) then
+					local type = types[moes(exp)]
+					--local nexp = substitueer(arg0(exp), X('_arg', 
+					assign(exp, X('call1', arg0(exp), args))
+					types[moes(exp)] = type
+				end
+
 				if isobj(args) then
 					local type = types[moes(exp)]
 					if #args == 2 then

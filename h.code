@@ -1,1 +1,2 @@
-main = reduceer(ja, 0..10, (+))
+main = Σ (( 1.. 1000) filter multiple)
+multiple = i → ((i mod 3 = 0) of (i mod 5 = 0))

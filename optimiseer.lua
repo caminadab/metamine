@@ -2,7 +2,7 @@ require 'exp'
 require 'symbool'
 
 local altijdja = X('_fn', '12358', '⊤')
-local calls = set('call', 'call2', 'call3', 'call4')
+local calls = set('call', 'call1', 'call2', 'call3', 'call4')
 
 function destart(exp)
 	if fn(exp) == '..' then
@@ -88,6 +88,8 @@ local function compopt0(exp, maakindex)
 		local carg = X('_arg', cindex)
 		local carg0 = X('_arg0', cindex)
 		local carg1 = X('_arg1', cindex)
+		local carg2 = X('_arg2', cindex)
+		local carg3 = X('_arg3', cindex)
 		
 		local nbody = kloon(bbody)
 
@@ -95,6 +97,8 @@ local function compopt0(exp, maakindex)
 		local aabody = substitueer(aabody, X('_arg', aarg), carg)
 		local aabody = substitueer(aabody, X('_arg0', aarg), carg0)
 		local aabody = substitueer(aabody, X('_arg1', aarg), carg1)
+		local aabody = substitueer(aabody, X('_arg2', aarg), carg2)
+		local aabody = substitueer(aabody, X('_arg3', aarg), carg3)
 
 		local cbody = substitueer(nbody, X('_arg', barg), aabody)
 		local c = X('_fn', cindex, cbody)

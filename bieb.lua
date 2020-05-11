@@ -321,9 +321,8 @@ function bieb()
 	['inverteer'] = true; -- sure
 	['sqrt'] = math.sqrt;
 	['niets'] = false;
-	['min'] = function(a) return math.min(a[1],a[2]) end;
-	['mod'] = function(a) return a[1] % a[2] end;
-	['mod2'] = function(a, b) return a % b end;
+	['min'] = math.min;
+	['mod'] = function(a, b) return a % b end;
 
 	['¬'] = function(b)
 		return not b
@@ -457,19 +456,19 @@ function bieb()
 	end;
 
 	['#'] = function(a) return #a end;
-	['='] = function(a)
-		if tonumber(a[1]) and tonumber(a[2]) then
-			return a[1] == a[2]
+	['='] = function(a, b)
+		if tonumber(a) and tonumber(b) then
+			return a == b
 		end
-		return lenc(a[1]) == lenc(a[2])
+		return lenc(a) == lenc(b)
 	end;
-	['=g'] = function(a)
-		return a[1] == a[2]
+	['=g'] = function(a, b)
+		return a == b
 	end;
-	['>'] = function(a) return a[1] > a[2] end;
-	['<'] = function(a) return a[1] < a[2] end;
-	['≠'] = function(a) return a[1] ~= a[2] end;
-	['≈'] = function(a) return math.abs(a[1]-a[2]) < 1e-7 end;
+	['>'] = function(a, b) return a > b end;
+	['<'] = function(a, b) return a < b end;
+	['≠'] = function(a, b) return a ~= b end;
+	['≈'] = function(a, b) return math.abs(a-b) < 1e-7 end;
 
 	['..'] = function(a, b)
 		local r = {}
