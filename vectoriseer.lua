@@ -5,7 +5,7 @@ local vbieb = bieb()
 
 function numargs(functype)
 	local argtype = arg0(functype)
-	if fn(functype) == '→' and isobj(argtype) then
+	if fn(functype) == '→' and isobj(argtype) and obj(argtype) == ',' then
 		if #argtype <= 4 then
 			return #argtype
 		end
@@ -52,7 +52,7 @@ function vectoriseer(asb, types, debug)
 					types[moes(exp)] = type
 				end
 
-				if isobj(args) then
+				if obj(args) == ',' then
 					local type = types[moes(exp)]
 					if #args == 2 then
 						assign(exp, X('call2', arg0(exp), args[1], args[2]))

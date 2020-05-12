@@ -219,8 +219,7 @@ function bieb()
 	ovaal = function() return('ovaal') end;
 	lijn = function() return('lijn') end;
 
-	['_'] = function(a)
-		local a,b = a[1],a[2]
+	['_'] = function(a, b)
 		if type(a) == 'string' then
 			return a:byte(b+1)
 		elseif type(a) == 'table' then
@@ -423,7 +422,15 @@ function bieb()
 	end;
 
 	-- componeer
-	['componeer'] = function () error('TODO') end,
+	['componeer'] = function(fns)
+		return function(x)
+			for i, fn in ipairs(fns) do
+				--print('TUSSENRESULTAAT', lenc(x))
+				x = fn(x)
+			end
+			return x
+		end
+	end;
 	['∘'] = function(fns)
 		return function(x)
 			for i, fn in ipairs(fns) do

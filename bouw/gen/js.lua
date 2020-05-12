@@ -357,6 +357,10 @@ local noops = {
 
 	-- hetzelde als boven
 	['componeer'] = [[args => (x => {
+		if (!window.TMP) {
+			alert("args = " + JSON.stringify(args));
+			window.TMP = true;
+		}
 		var res = x;
 		for (var i = 0; i < args.length; i++) {
 			if (Array.isArray(args[i]))
@@ -595,14 +599,9 @@ local noops = {
 		};
 	} ]],
 
-	['vierkant'] = [[ args => {
-	var a = args[0];
-	var b = args[1];
-	var c = args[2];
-	var d = args[3];
-
+	['vierkant'] = [[ (a, b, c) => {
 	var x,y,r;
-	if (d) {
+	if (c) {
 		r = c * SCHAAL;
 		x = a * SCHAAL;
 		y = (100 - b) * SCHAAL - r;
@@ -620,16 +619,16 @@ local noops = {
 
 	['alert'] = 'x => {if (!window.alertKlaar) {alert(x); alertKlaar = true; }}',
 
-	['label'] = [[ args => {
+	['label'] = [[ (a, b, c) => {
 	var x, y, t;
-	if (args[2]) {
-		t = args[2];
-		x = args[0] * SCHAAL;
-		y = (100 - args[1]) * SCHAAL;
+	if (c != null) {
+		t = c
+		x = a * SCHAAL;
+		y = (100 - b) * SCHAAL;
 	} else {
-		t = args[1];
-		x = args[0][0] * SCHAAL;
-		y = (100 - args[0][1]) * SCHAAL;
+		t = b;
+		x = a[0] * SCHAAL;
+		y = (100 - a[1]) * SCHAAL;
 	}
   return context => {
     context.fillText(t,x,y);
@@ -637,11 +636,7 @@ local noops = {
   }
 	} ]],
 
-	['rechthoek'] = [[ args => {
-	var a = args[0];
-	var b = args[1];
-	var c = args[2];
-	var d = args[3];
+	['rechthoek'] = [[ (a, b, c, d) => {
 	var x, y, w, h;
 	if (c == null) {
 		x = a[0] * SCHAAL;
@@ -679,23 +674,23 @@ local noops = {
 	['kubus'] = [[ args => {
 	} ]],
 
-	['cirkel'] = [[ args => {
-		return (function(c){
+	['cirkel'] = [[ (a, b, c) => {
+		return ctx => {
 			var x, y, r;
-			if (args.length == 2) {
-				x = args[0][0] * SCHAAL;
-				y = (100 - args[0][1]) * SCHAAL;
-				r = args[1] * SCHAAL;
+			if (c == null) {
+				x = a[0] * SCHAAL;
+				y = (100 - a[1]) * SCHAAL;
+				r = b * SCHAAL;
 			} else {
-				x = args[0] * SCHAAL;
-				y = (100 - args[1]) * SCHAAL;
-				r = args[2] * SCHAAL;
+				x = a * SCHAAL;
+				y = (100 - b) * SCHAAL;
+				r = c * SCHAAL;
 			}
-			c.beginPath();
-			c.arc(x, y, Math.max(r,0), 0, Math.PI * 2);
-			c.fill();
+			ctx.beginPath();
+			ctx.arc(x, y, Math.max(r,0), 0, Math.PI * 2);
+			ctx.fill();
 			return c;
-		});
+		};
 	}]],
 
 	['ovaal'] = [[ args => {
