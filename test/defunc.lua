@@ -1,3 +1,4 @@
+do return end
 require 'ontleed'
 require 'defunc'
 

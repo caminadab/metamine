@@ -150,55 +150,107 @@ end
 -- reduceer(S,map(L,F),G), G=(X,Y → Z)
 -- > reduceer(S,L,H), H=(V,W → G(V, F(W)))
 local function mapreduceer(exp, maakindex)
-	local S = arg1(exp)
-	local L = arg1(arg2(exp))
-	local F = arg2(arg2(exp))
-	local G = arg3(exp)
+	if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'map' then
+		local S = arg1(exp)
+		local L = arg1(arg2(exp))
+		local F = arg2(arg2(exp))
+		local G = arg3(exp)
 
-	local I = tostring(maakindex())
-	local V = X('_arg0', I)
-	local W = X('_arg1', I)
+		local I = tostring(maakindex())
+		local V = X('_arg0', I)
+		local W = X('_arg1', I)
 
-	local hbody = X('call2', G, V, X('call', F, W))
-	local H = X('_fn', I, hbody)
-	local nexp = X('call3', 'reduceer', S, L, H)
-	assign(exp, nexp)
+		local hbody = X('call2', G, V, X('call', F, W))
+		local H = X('_fn', I, hbody)
+		local nexp = X('call3', 'reduceer', S, L, H)
+		assign(exp, nexp)
+	end
+	return exp
 end
 
+
+-- reduceer(S,lmap(L,F),G), G=(X,Y → Z)
+-- > reduceer(S,L,H), H=(V,W → G(V, F[W]))
+local function lmapreduceer(exp, maakindex)
+	if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'lmap' then
+		local S = arg1(exp)
+		local L = arg1(arg2(exp))
+		local F = arg2(arg2(exp))
+		local G = arg3(exp)
+
+		local I = tostring(maakindex())
+		local V = X('_arg0', I)
+		local W = X('_arg1', I)
+
+		local hbody = X('call2', G, V, X('_l', F, W))
+		local H = X('_fn', I, hbody)
+		local nexp = X('call3', 'reduceer', S, L, H)
+		assign(exp, nexp)
+	end
+	return exp
+end
 
 -- vouw(map(L,F),G), G=(X,Y → Z)
 -- > vouw(L,H), H=(V,W → G(V, F(W)))
 local function mapvouw(exp, maakindex)
-	local L = arg1(arg1(exp))
-	local F = arg2(arg1(exp))
-	local G = arg2(exp)
+	if fnaam(exp) == 'vouw' and fnaam(arg1(exp)) == 'map' then
+		local L = arg1(arg1(exp))
+		local F = arg2(arg1(exp))
+		local G = arg2(exp)
 
-	local I = tostring(maakindex())
-	local V = X('_arg0', I)
-	local W = X('_arg1', I)
+		local I = tostring(maakindex())
+		local V = X('_arg0', I)
+		local W = X('_arg1', I)
 
-	local hbody = X('call2', G, V, X('call', F, W))
-	local H = X('_fn', I, hbody)
-	local nexp = X('call2', 'vouw', L, H)
-	assign(exp, nexp)
+		local hbody = X('call2', G, V, X('call', F, W))
+		local H = X('_fn', I, hbody)
+		local nexp = X('call2', 'vouw', L, H)
+		assign(exp, nexp)
+	end
+	return exp
 end
 
 local function filtervouw(exp, maakindex)
-	--vouw(filter(L,F),G), G=(X,Y → Z)
-	-- > vouw(L,H), H=(V,W → (⇒)(F(W),G(V,W),V))
-	local L = arg1(arg1(exp))
-	local F = arg2(arg1(exp))
-	local G = arg2(exp)
+	if fnaam(exp) == 'vouw' and fnaam(arg1(exp)) == 'filter' then
+		--vouw(filter(L,F),G), G=(X,Y → Z)
+		-- > vouw(L,H), H=(V,W → (⇒)(F(W),G(V,W),V))
+		local L = arg1(arg1(exp))
+		local F = arg2(arg1(exp))
+		local G = arg2(exp)
 
-	local I = tostring(maakindex())
-	local V = X('_arg0', I)
-	local W = X('_arg1', I)
+		local I = tostring(maakindex())
+		local V = X('_arg0', I)
+		local W = X('_arg1', I)
 
-	local hbody = X('⇒', X('call', F, W), X('call2',G,V,W), V)
-	local H = X('_fn', I, hbody)
-	local nexp = X('call2', 'vouw', L, H)
-	
-	assign(exp, nexp)
+		local hbody = X('⇒', X('call', F, W), X('call2',G,V,W), V)
+		local H = X('_fn', I, hbody)
+		local nexp = X('call2', 'vouw', L, H)
+		
+		assign(exp, nexp)
+	end
+	return exp
+end
+
+local function filterreduceer(exp, maakindex)
+	if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'filter' then
+		--reduceer(S, filter(L,F),G), G=(X,Y → Z)
+		-- > reduceer(S,L,H), H=(V,W → (⇒)(F(W),G(V,W),V))
+		local S = arg1(exp)
+		local L = arg1(arg2(exp))
+		local F = arg2(arg2(exp))
+		local G = arg3(exp)
+
+		local I = tostring(maakindex())
+		local V = X('_arg0', I)
+		local W = X('_arg1', I)
+
+		local hbody = X('⇒', X('call', F, W), X('call2',G,V,W), V)
+		local H = X('_fn', I, hbody)
+		local nexp = X('call3', 'reduceer', S, L, H)
+		
+		assign(exp, nexp)
+	end
+	return exp
 end
 
 
@@ -219,22 +271,15 @@ local function multiopt(exp, maakindex)
 		end
 
 		-- map/reduce
-		if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'map' then
-			mapreduceer(exp, maakindex)
-		end
-		-- map/vouw
-		if fnaam(exp) == 'vouw' and fnaam(arg1(exp)) == 'map' then
-			mapvouw(exp, maakindex)
-		end
+		exp = mapreduceer(exp, maakindex)
+		exp = lmapreduceer(exp, maakindex)
+		exp = filterreduceer(exp, maakindex)
 
-
-		-- filter/vouw
-		if fnaam(exp) == 'vouw' and fnaam(arg2(exp)) == 'filter' then
-			filtervouw(exp, maakindex)
-		end
+		exp = mapvouw(exp, maakindex)
+		exp = filtervouw(exp, maakindex)
 
 		-- map/map
-		if fnaam(exp) == 'map' and fnaam(arg1(exp)) == 'map' then
+		if (fnaam(exp) == 'map' or fnaam(exp) == 'map') and (fnaam(arg1(exp)) == 'map' or fnaam(arg1(exp)) == 'lmap') then
 			-- map(map(A,B),C) → map(A, B ∘ C)
 			local A = arg1(arg1(exp))
 			local B = arg2(arg1(exp))

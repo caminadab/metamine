@@ -1,1 +1,7 @@
-main = reduceer(0, (0..10), (+))
+als willekeurig(0,1) > .1 dan
+	x = 8
+anders
+	x = 10
+eind
+
+main = x

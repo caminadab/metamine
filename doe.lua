@@ -161,6 +161,8 @@ function doe(sfc, stack, arg0, arg1, ...)
 			end
 			stack[#stack+1] = r
 
+		elseif atoom(ins) == 'anders' then
+
 		elseif atoom(ins) == 'dan' then
 			if stack[#stack] == false then
 				-- skip tot 'einddan'

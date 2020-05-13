@@ -344,8 +344,7 @@ function bieb()
 		end
 	end;
 
-	['^f'] = function(a)
-		local f, n = a[1], a[2]
+	['^f'] = function(f, n)
 		return function(x)
 			local r = x
 			for i = 1, n do
@@ -918,7 +917,7 @@ function bieb()
 	end;
 
 	['deel'] = function(a,b,c)
-		local van,tot = b[1],b[2]
+		local van,tot = b, c
 		local t = {f='[]'}
 		for i=van+1,tot do
 			t[#t+1] = a[i]
@@ -926,8 +925,8 @@ function bieb()
 		return t
 	end;
 
-	['willekeurig'] = function(t)
-		return math.random(t[1], t[2]-1)
+	['willekeurig'] = function(a, b)
+		return math.random(a, b-1)
 	end;
 
 	['recursief'] = function(rec)

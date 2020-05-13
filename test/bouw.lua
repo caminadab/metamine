@@ -1,3 +1,4 @@
+do return end
 require 'bouw.assembleer'
 require 'bouw.link'
 require 'bouw.gen.asm'

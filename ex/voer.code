@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;; SPEL LOGICA ;;;;;;;;;;;;;;;;;;;;
 
-bord := (0..(6·7)) map (B → 0)
+bord := [0]^42
 aanzet := ja
 status := "aan zet"
 klaar := nee

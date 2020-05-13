@@ -21,6 +21,23 @@ end
 
 -- past types toe om operators te preoverloaden
 function vectoriseer(asb, types, debug)
+	local primair = {}
+	local function rec(exp)
+		primair[exp] = true
+		if fn(exp) == '⇒' then
+			rec(arg1(exp))
+			if arg2(exp) then
+				rec(arg2(exp))
+			end
+		end
+		if fn(exp) == '⋀' then
+			for i, sub in ipairs(arg(exp)) do
+				rec(sub)
+			end
+		end
+	end
+	rec(asb)
+
 	for exp in boompairsdfs(asb) do
 
 		-- filter2,3,4
@@ -121,7 +138,7 @@ function vectoriseer(asb, types, debug)
 		end
 
 		-- (1 = 2) ⇒ (1 =g 2)
-		if false and fn(exp) == '=' or fn(exp) == '≠' then
+		if not primair[exp] and fn(exp) == '=' or fn(exp) == '≠' then
 			local type   = types[moes(exp)]
 			local atype  = types[moes(arg0(exp))]
 			local btype  = types[moes(arg1(exp))]
