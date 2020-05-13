@@ -1055,10 +1055,23 @@ function jsgen(sfc)
 		elseif fn(ins) == 'igen' then
 			focus = focus + 1
 			local maxnaam = atoom(arg(ins))
-			local funcindex = atoom(arg1(ins))
 			local indexnaam = varnaam(focus-1)
 			local nieuwnaam = varnaam(focus+0)
 			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
+			tabs = tabs .. '  '
+			--L[#L+1] = tabs..string.format("var %s = %s;", nieuwnaam, indexnaam)
+			--focus = focus + 1
+
+		-- igeni(10, 1)
+		elseif fn(ins) == 'igeni' then
+			focus = focus + 1
+			local minnaam = atoom(arg0(ins))
+			local maxnaam = atoom(arg1(ins))
+			assert(minnaam)
+			assert(maxnaam)
+			local indexnaam = varnaam(focus-1)
+			local nieuwnaam = varnaam(focus+0)
+			L[#L+1] = tabs..string.format("for (var %s = %s; %s < %s; %s++) {", indexnaam, minnaam, indexnaam, maxnaam, indexnaam)
 			tabs = tabs .. '  '
 			--L[#L+1] = tabs..string.format("var %s = %s;", nieuwnaam, indexnaam)
 			--focus = focus + 1

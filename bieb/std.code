@@ -17,8 +17,6 @@ klem = V,L,H → min(max(V,L),H)
 maxindex = M → ((0..#M) zip M vouw Mfunc)₀
 Mfunc = (A,B),(C,D) → kies((B > D), (A,B), (C,D))
 
-vouw = X, Y → reduceer(X₀, X vanaf 1, Y)
-
 ; toetsenbord
 toetsen := {}
 toets.aan = toets → (toets ∈ toetsen)

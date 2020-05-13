@@ -10,12 +10,28 @@ function destart(exp)
 	end
 end
 
-function devec(exp)
-	if fn(exp) == '..' then
-		if atoom(arg0(exp)) == '0' then
+function devec(exp, i)
+	local i = i or 0
+	local van = tonumber(atoom(arg0(exp)))
+	if fn(exp) == '..' and van then
+		if van == 0 and i == 0 then
 			return X('igen', arg1(exp))
+		elseif i == 0 then
+			return X('igeni', X(tostring(van)), arg1(exp))
+		elseif van == 0 then
+			return X('igeni', X(tostring(i or 0)), arg1(exp))
 		else
-			return X('igeni', arg2(exp), arg1(exp))
+			return X('igeni', tostring(i + van), arg1(exp))
+		end
+	end
+end
+
+function defirst(exp, i)
+	if fn(exp) == '..' then
+		if i and i ~= 0 then
+			return X('+', arg0(exp), tostring(i))
+		else
+			return arg0(exp)
 		end
 	end
 end
@@ -131,6 +147,61 @@ function compopt(exp, maakindex)
 	return exp
 end
 
+-- reduceer(S,map(L,F),G), G=(X,Y → Z)
+-- > reduceer(S,L,H), H=(V,W → G(V, F(W)))
+local function mapreduceer(exp, maakindex)
+	local S = arg1(exp)
+	local L = arg1(arg2(exp))
+	local F = arg2(arg2(exp))
+	local G = arg3(exp)
+
+	local I = tostring(maakindex())
+	local V = X('_arg0', I)
+	local W = X('_arg1', I)
+
+	local hbody = X('call2', G, V, X('call', F, W))
+	local H = X('_fn', I, hbody)
+	local nexp = X('call3', 'reduceer', S, L, H)
+	assign(exp, nexp)
+end
+
+
+-- vouw(map(L,F),G), G=(X,Y → Z)
+-- > vouw(L,H), H=(V,W → G(V, F(W)))
+local function mapvouw(exp, maakindex)
+	local L = arg1(arg1(exp))
+	local F = arg2(arg1(exp))
+	local G = arg2(exp)
+
+	local I = tostring(maakindex())
+	local V = X('_arg0', I)
+	local W = X('_arg1', I)
+
+	local hbody = X('call2', G, V, X('call', F, W))
+	local H = X('_fn', I, hbody)
+	local nexp = X('call2', 'vouw', L, H)
+	assign(exp, nexp)
+end
+
+local function filtervouw(exp, maakindex)
+	--vouw(filter(L,F),G), G=(X,Y → Z)
+	-- > vouw(L,H), H=(V,W → (⇒)(F(W),G(V,W),V))
+	local L = arg1(arg1(exp))
+	local F = arg2(arg1(exp))
+	local G = arg2(exp)
+
+	local I = tostring(maakindex())
+	local V = X('_arg0', I)
+	local W = X('_arg1', I)
+
+	local hbody = X('⇒', X('call', F, W), X('call2',G,V,W), V)
+	local H = X('_fn', I, hbody)
+	local nexp = X('call2', 'vouw', L, H)
+	
+	assign(exp, nexp)
+end
+
+
 local function multiopt(exp, maakindex)
 	for exp in boompairsbfs(exp) do
 		-- som
@@ -149,43 +220,17 @@ local function multiopt(exp, maakindex)
 
 		-- map/reduce
 		if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'map' then
-			-- reduceer(S,map(L,F),G), G=(X,Y → Z)
-			-- > reduceer(S,L,H), H=(V,W → G(V, F(W)))
-			local S = arg1(exp)
-			local L = arg1(arg2(exp))
-			local F = arg2(arg2(exp))
-			local G = arg3(exp)
-
-			local I = tostring(maakindex())
-			local V = X('_arg0', I)
-			local W = X('_arg1', I)
-
-			local hbody = X('call2', G, V, X('call', F, W))
-			local H = X('_fn', I, hbody)
-			local nexp = X('call3', 'reduceer', S, L, H)
-
-			assign(exp, nexp)
+			mapreduceer(exp, maakindex)
+		end
+		-- map/vouw
+		if fnaam(exp) == 'vouw' and fnaam(arg1(exp)) == 'map' then
+			mapvouw(exp, maakindex)
 		end
 
-		-- filter/reduce
-		if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'filter' then
-			--reduce(S,filter(L,F),G), G=(X,Y → Z)
-			-- > reduceer(S,L,H), H=(V,W → kies(F(W),G(V,W),V))
-			local S = arg1(exp)
-			local L = arg1(arg2(exp))
-			local F = arg2(arg2(exp))
-			local G = arg3(exp)
 
-			local I = tostring(maakindex())
-			local V = X('_arg0', I)
-			local W = X('_arg1', I)
-
-			local hbody = X('⇒', X('call', F, W), X('call2',G,V,W), V)
-			local H = X('_fn', I, hbody)
-			local nexp = X('call3', 'reduceer', S, L, H)
-			
-			assign(exp, nexp)
-
+		-- filter/vouw
+		if fnaam(exp) == 'vouw' and fnaam(arg2(exp)) == 'filter' then
+			filtervouw(exp, maakindex)
 		end
 
 		-- map/map
@@ -197,6 +242,16 @@ local function multiopt(exp, maakindex)
 			local BC = X('∘', B, C)
 			local nexp = X('call2', 'map', A, BC)
 			assign(exp, nexp)
+		end
+
+		-- lus
+		if fnaam(exp) == 'vouw' then
+			local gen = devec(arg1(exp), 1)
+			local first = defirst(arg1(exp))
+			if gen then
+				local nexp = X('lus', first, gen, arg2(exp))
+				assign(exp, nexp)
+			end
 		end
 
 		-- lus
