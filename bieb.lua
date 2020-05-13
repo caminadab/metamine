@@ -384,16 +384,16 @@ function bieb()
 	['²'] = function(a) return a * a end;
 	['%'] = function(a) return a / 100 end;
 
-	['^'] = function(a)
-		if type(a[1]) == 'function' then
+	['^'] = function(a, b)
+		if type(a) == 'function' then
 			return function (x)
-				for i=1,a[2] do
-					x = (a[1])(x)
+				for i=1,b do
+					x = a(x)
 				end
 				return x
 			end
 		else
-			return a[1] ^ a[2]
+			return a ^ b
 		end
 	end;
 
@@ -425,13 +425,9 @@ function bieb()
 			return x
 		end
 	end;
-	['∘'] = function(fns)
+	['∘'] = function(a, b)
 		return function(x)
-			for i, fn in ipairs(fns) do
-				--print('TUSSENRESULTAAT', lenc(x))
-				x = fn(x)
-			end
-			return x
+			return b(a(x))
 		end
 	end;
 
@@ -626,14 +622,6 @@ function bieb()
 		return r
 	end;
 
-	['vouw'] = function(lijst, func)
-		local aggr = lijst[1]
-		for i = 2,#lijst do
-			aggr = func(aggr, lijst[i])
-		end
-		return aggr
-	end;
-
 	['zip'] = function(a, b)
 		local v = {}
 		for i=#a,1,-1 do
@@ -658,7 +646,15 @@ function bieb()
 		return v
 	end;
 
-	['map4'] = true,
+	['map4'] = function(a, b)
+		local r = {}
+		for i=1,#a do
+			r[i] = b(table.unpack(a[i]))
+		end
+		return r
+	end;
+
+
 	['map'] = function(a, b)
 		local r = {}
 		for i=1,#a do
@@ -696,12 +692,11 @@ function bieb()
 	end;
 
 	['reduceer'] = function(init, lijst, func)
-		local r = init
 		local k = 1
 		for i=1,#lijst do
-			r = func(r, lijst[i])
+			init = func(init, lijst[i])
 		end
-		return r
+		return init
 	end;
 
 	-- trig

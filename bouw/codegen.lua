@@ -96,7 +96,17 @@ function codegen(exp, moes2naam)
 			local d = dubbel
 			iscached = {}
 			dubbel = {}
+
 			codegen(arg1(exp), ins, callarg)
+
+			ins[#ins+1] = X'anders'
+			if arg2(exp) then
+				codegen(arg2(exp), ins, callarg)
+			else
+				codegen(X'niets', ins, callarg)
+			end
+
+
 			iscached = ic
 			dubbel = d
 
@@ -157,6 +167,7 @@ function codegen(exp, moes2naam)
 
 			local colarg = fn(col) == '_fn' and atoom(arg0(col))
 			--local col    = fn(col) == '_fn' and arg1(col) or col
+			--callarg[atoom(arg0(col))] = 
 				
 
 			--error(combineer(col))
@@ -164,7 +175,7 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X'lus'
 			codegen(start, ins, callarg)
 			codegen(gen, ins, callarg)
-			codegen(col, ins, colarg)
+			codegen(col, ins, 2)
 			ins[#ins+1] = X'eindlus'
 
 		-- optimisatie
@@ -249,6 +260,10 @@ function codegen(exp, moes2naam)
 			codegen(arg(exp), ins, callarg)
 			ins[#ins+1] = X(fn(exp))
 
+		elseif fn(exp) == '_fn' and callarg == 2 then
+			ins[#ins+1] = X('stargs', arg0(exp))
+			codegen(arg1(exp), ins, 2)
+
 		-- _fn(1 +(1 _arg(1))) -> fn
 		-- functie
 		elseif fn(exp) == '_fn' then
@@ -311,5 +326,5 @@ function codegen(exp, moes2naam)
 	end
 
 	local ins = {o='[]'}
-	return codegen(exp, ins)
+	return codegen(exp, ins, {})
 end

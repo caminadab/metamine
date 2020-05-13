@@ -1000,6 +1000,15 @@ function jsgen(sfc)
 			L[#L+1] = tabs..di
 			focus = focus - 1
 
+		elseif fn(ins) == 'stargs' then
+			local naama = varnaam(focus-2)
+			local naamb = varnaam(focus-1)
+			local index = 1 + tonumber(atoom(arg(ins)))
+			local a = 'arg'..varnaam(index)..'0'
+			local b = 'arg'..varnaam(index)..'1'
+			L[#L+1] = tabs..string.format('var %s = %s;', a, naama)
+			L[#L+1] = tabs..string.format('var %s = %s;', b, naamb)
+
 
 		-- call2
 		elseif atoom(ins) == 'call2' then
@@ -1032,19 +1041,21 @@ function jsgen(sfc)
 			focus = focus + 0
 
 		elseif atoom(ins) == 'eindlus' then
+			local naamd = varnaam(focus-4)
 			local naamc = varnaam(focus-3)
 			local naamb = varnaam(focus-2)
 			local naama = varnaam(focus-1)
-			L[#L+1] = string.format('%s%s = %s(%s, %s);', tabs, naamc, naama, naamb, naamc)
+			--L[#L+1] = string.format('%s%s = %s(%s, %s);', tabs, naamc, naama, naamb, naamc)
+			L[#L+1] = string.format('%s%s = %s;', tabs, naamc, naama)
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs..'}'
-			--L[#L+1] = string.format('%s%s = tmp;', tabs, naamc)
 			focus = focus - 2
 
 		-- igen(10)
 		elseif fn(ins) == 'igen' then
 			focus = focus + 1
 			local maxnaam = atoom(arg(ins))
+			local funcindex = atoom(arg1(ins))
 			local indexnaam = varnaam(focus-1)
 			local nieuwnaam = varnaam(focus+0)
 			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
@@ -1119,13 +1130,18 @@ function jsgen(sfc)
 			L[#L+1] = tabs.."}"
 			focus = focus - 1
 
+		elseif atoom(ins) == 'anders' then
+			local naam = varnaam(focus-1)
+			L[#L+1] = tabs .. "tmp = " .. naam .. ';'
+			L[#L+1] = tabs:sub(3) .. '} else {'
+			focus = focus - 1
+
 		elseif atoom(ins) == 'einddan' then
 			local naam = varnaam(focus-1)
-			local tempnaam = 'tmp'
-			L[#L+1] = tabs .. tempnaam .. " = " .. naam .. ';'
+			L[#L+1] = tabs .. "tmp = " .. naam .. ';'
 			tabs = tabs:sub(3)
-			L[#L+1] = tabs.."} else tmp = null;"
-			L[#L+1] = tabs..'var ' .. naam .. " = " .. tempnaam .. ';'
+			L[#L+1] = tabs.."}"
+			L[#L+1] = tabs..'var ' .. naam .. ' = tmp;'
 			focus = focus
 
 		-- biebfuncties?

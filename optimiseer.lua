@@ -116,23 +116,6 @@ local function compopt0(exp, maakindex)
 		end
 
 		return X('_fn', index, d)
-
-	-- (x → x + 1) ∘ (-) = (x → -(x + 1))
-	elseif fn(a) == '_fn' and isatoom(b) then
-		error'OK'
-		local aarg  = atoom(arg0(a))
-		local abody = arg1(a)
-		local bnaam = atoom(b)
-		local cbody = kloon(abody)
-
-		local c
-		if unop[bnaam] then
-			c = X('_fn', aarg, X(bnaam, cbody))
-		else
-			c = X('_fn', aarg, X('call', bnaam, cbody))
-		end
-
-		return c
 	end
 end
 
@@ -197,7 +180,7 @@ local function multiopt(exp, maakindex)
 			local V = X('_arg0', I)
 			local W = X('_arg1', I)
 
-			local hbody = X('kies', X('call', F, W), X('call2',G,V,W), V)
+			local hbody = X('⇒', X('call', F, W), X('call2',G,V,W), V)
 			local H = X('_fn', I, hbody)
 			local nexp = X('call3', 'reduceer', S, L, H)
 			
