@@ -231,26 +231,20 @@ function bieb()
 		end
 	end;
 
-	['_l'] = function(a)
-		local num = a[2]
-		return a[1][num+1]
+	['_l'] = function(a, b)
+		return a[b+1]
 	end;
 	['_l0'] = function(a)
 		return a[0]
 	end;
 
-	['_t'] = function(a)
-		local num = a[2]
+	['_t'] = function(a, b)
 		return a:byte(b)
 	end;
 
-	['_f'] = function(a)
-		return a[1](a[2])
-	end;
-
-	['_f3'] = function(f, a, b, c)
-		return f(a, b, c)
-	end;
+	['call'] = function(a, b) return a(b) end;
+	['call2'] = function(f, a, b) return f(a, b) end;
+	['call3'] = function(f, a, b, c) return f(a, b, c) end;
 
 	-- io
 	['stduit.schrijf'] = function(a)

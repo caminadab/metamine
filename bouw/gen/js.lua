@@ -357,10 +357,7 @@ local noops = {
 
 	-- hetzelde als boven
 	['componeer'] = [[args => (x => {
-		if (!window.TMP) {
-			alert("args = " + JSON.stringify(args));
-			window.TMP = true;
-		}
+		//console.log("args = " + JSON.stringify(args));
 		var res = x;
 		for (var i = 0; i < args.length; i++) {
 			if (Array.isArray(args[i]))
@@ -510,7 +507,7 @@ local noops = {
   ['zip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;}',
   ['rzip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;}',
   --['map'] = '(a, b) => a.map(b)',
-  ['map'] = '(a, b) => { var r = []; for (var i = 0; i < a.length; i++) r[i] = b(i); return r;}',
+  ['map'] = '(a, b) => { var r = []; for (var i = 0; i < a.length; i++) r[i] = b(a[i]); return r;}',
 	['lmap'] = '(a, b) => a.map(x => b[x])',
   ['map4'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(x => b(x[0], x[1], x[2], x[3])); }',
   ['filter'] = '(a, b) => a.filter(b)',
@@ -689,7 +686,7 @@ local noops = {
 			ctx.beginPath();
 			ctx.arc(x, y, Math.max(r,0), 0, Math.PI * 2);
 			ctx.fill();
-			return c;
+			return ctx;
 		};
 	}]],
 
@@ -713,7 +710,7 @@ local noops = {
 		w = c * SCHAAL;
 		h = d * SCHAAL;
 		t = e;
-		console.log("x="+x+",y="+y+",w="+w+",h="+h+",t="+t)
+		//console.log("x="+x+",y="+y+",w="+w+",h="+h+",t="+t)
 	}
   return c => {
     c.beginPath();
@@ -916,7 +913,7 @@ local binops = {
 
 	-- exp
 	-- concatenate
-	['‖'] = [[typeof($1) == "string" ? $1 + $2 : $1.concat($2)]],
+	['‖'] = 'typeof($1) == "string" ? $1 + $2 : $1.concat($2)',
 	['‖u'] = '$1 .. $2',
 	['‖i'] = '(for i,v in ipairs(b) do a[#+1] = v)($1,$2)',
 	['mapuu'] = '(function() { var totaal = ""; for (int i = 0; i < $1.length; i++) { totaal += $2($1[i]); }; return totaal; })() ', -- TODO werkt dit?
