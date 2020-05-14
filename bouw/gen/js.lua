@@ -2,7 +2,7 @@ require 'func'
 
 local unops = {
 	['#'] = '$1.length',
-	['_l0'] = '$1[0]',
+	['index0'] = '$1[0]',
 	['√'] = 'Math.sqrt($1)',
 	['%'] = '$1 / 100;',
 	['-'] = '- $1',
@@ -521,7 +521,7 @@ local noops = {
 	-- discreet
 	['min'] = '(x, y) => Math.min(x, y)',
 	['max'] = '(x, y) => Math.max(x, y)',
-	['maxindexXXX'] = [[x => {
+	['maxindex'] = [[x => {
 		var maxi = null;
 		var max = - Infinity;
 		for (var i = 0; i < x.length; i++) {
@@ -863,7 +863,7 @@ local binops = {
 	['call1'] = '$1($2)',
 	['_fr'] = '$2($1)',
 	['_t'] = '$1.charCodeAt($2)',
-	['_l'] = '$1[$2]',
+	['index'] = '$1[$2]',
 	['_'] = 'typeof($1) == "function" ? $1($2) : (typeof($1) == "string" ? $1.charCodeAt($2) : $1[$2])',
 	['^r'] = '$1 ^ $2',
 	['+'] = '$1 + $2',
@@ -1001,7 +1001,7 @@ function jsgen(sfc)
 			focus = focus - 1
 
 		elseif fn(ins) == 'stargs' then
-			local naama = varnaam(focus-2)
+			local naama = varnaam(focus-4)
 			local naamb = varnaam(focus-1)
 			local index = 1 + tonumber(atoom(arg(ins)))
 			local a = 'arg'..varnaam(index)..'0'
@@ -1041,34 +1041,32 @@ function jsgen(sfc)
 			focus = focus + 0
 
 		elseif atoom(ins) == 'eindlus' then
+			local naame = varnaam(focus-5)
 			local naamd = varnaam(focus-4)
 			local naamc = varnaam(focus-3)
 			local naamb = varnaam(focus-2)
 			local naama = varnaam(focus-1)
 			--L[#L+1] = string.format('%s%s = %s(%s, %s);', tabs, naamc, naama, naamb, naamc)
-			L[#L+1] = string.format('%s%s = %s;', tabs, naamc, naama)
+			L[#L+1] = string.format('%s%s = %s;', tabs, naame, naama)
 			tabs = tabs:sub(3)
 			L[#L+1] = tabs..'}'
-			focus = focus - 2
+			focus = focus - 4
 
 		-- igen(10)
-		elseif fn(ins) == 'igen' then
+		elseif atoom(ins) == 'igen' then
 			focus = focus + 1
-			local maxnaam = atoom(arg(ins))
+			local maxnaam = varnaam(focus-2)
 			local indexnaam = varnaam(focus-1)
 			local nieuwnaam = varnaam(focus+0)
 			L[#L+1] = tabs..string.format("for (var %s = 0; %s < %s; %s++) {", indexnaam, indexnaam, maxnaam, indexnaam)
 			tabs = tabs .. '  '
 			--L[#L+1] = tabs..string.format("var %s = %s;", nieuwnaam, indexnaam)
-			--focus = focus + 1
 
 		-- igeni(10, 1)
-		elseif fn(ins) == 'igeni' then
+		elseif atoom(ins) == 'igeni' then
 			focus = focus + 1
-			local minnaam = atoom(arg0(ins))
-			local maxnaam = atoom(arg1(ins))
-			assert(minnaam)
-			assert(maxnaam)
+			local minnaam = varnaam(focus-3)
+			local maxnaam = varnaam(focus-2)
 			local indexnaam = varnaam(focus-1)
 			local nieuwnaam = varnaam(focus+0)
 			L[#L+1] = tabs..string.format("for (var %s = %s; %s < %s; %s++) {", indexnaam, minnaam, indexnaam, maxnaam, indexnaam)

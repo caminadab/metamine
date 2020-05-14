@@ -107,7 +107,7 @@ function vectoriseer(asb, types, debug)
 			elseif istekst then
 				exp.f = X'_t'
 			elseif islijst then
-				exp.f = X'_l'
+				exp.f = X'index'
 			else
 				--print('Waarschuwing: vectortype van '..unlisp(exp)..' kon niet eenduidig worden bepaald')
 			end

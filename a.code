@@ -1,7 +1,2 @@
-als willekeurig(0,1) > .1 dan
-	x = 8
-anders
-	x = 10
-eind
-
-main = x
+maxindex = M → reduceer((0,M₀), (1..#M), ((I,V),W → (⇒)( M(W) > V, W, I)))
+main = maxindex [1, 2, 3]

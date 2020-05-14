@@ -301,7 +301,7 @@ function oplos(exp, voor, isdebug)
 			local naam = atoom(exp)
 			if vars[naam] then
 				exp.v = nil
-				exp.f = X('_l')
+				exp.f = X('index')
 				assert(schaduw[naam], naam .. ' is geen variabele')
 				exp.a = X(',', 'in.vars', tostring(schaduw[naam]-1))
 			end
@@ -373,13 +373,13 @@ function oplos(exp, voor, isdebug)
 			alsvar(alts)
 
 			-- voeg de oude waarde toe 
-			alts[#alts+1] = X('_l', 'in.vars', tostring(schaduw[naam]-1))
+			alts[#alts+1] = X('index', 'in.vars', tostring(schaduw[naam]-1))
 
 			local index = schaduw[naam]
 			assert(index, 'geen index voor variabele '..naam)
 			local eq = X('=', 'uit.'..naam, X('|', alts))
 			eqs[eq] = true
-			local eq = X('=', naam, X('_l', 'in.vars', tostring(schaduw[naam]-1)))
+			local eq = X('=', naam, X('index', 'in.vars', tostring(schaduw[naam]-1)))
 			eqs[eq] = true
 		end
 	end

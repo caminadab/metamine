@@ -1,0 +1,4 @@
+main =  z → Σ (0..10) map m filter f map p
+f = w → (w = 1)
+m = y → y mod 2
+p = x → [3,8](x)

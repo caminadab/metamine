@@ -196,6 +196,7 @@ afrond: getal → int
 afrond.boven: getal → int
 afrond.onder: getal → int
 (:): (iets,iets) → bit
+maxindex: (nat → iets) → iets
 
 (iets → iets) : iets
 (iets → int) : iets

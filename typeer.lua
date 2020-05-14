@@ -240,10 +240,10 @@ end
 			moetzijn(lijsttype, X('→', 'nat', itemtype), arg1(exp)[2])
 			moetzijn(functype, X('→', X(',', inittype, itemtype), inittype), arg1(exp)[3])
 
-			print('init',combineer(inittype))
-			print('lijst',combineer(lijsttype))
-			print('func',combineer(functype))
-			print('item',combineer(itemtype))
+			--print('init',combineer(inittype))
+			--print('lijst',combineer(lijsttype))
+			--print('func',combineer(functype))
+			--print('item',combineer(itemtype))
 
 			types[moes(exp)] = typegraaf:maaktype(inittype)
 
@@ -420,6 +420,7 @@ end
 		elseif fn(exp) == '⇒' then
 			local A = types[moes(arg0(exp))]
 			local B = types[moes(arg1(exp))]
+			local C = arg2(exp) and types[moes(arg2(exp))]
 
 			moetzijn(A, symbool.iets, arg0(exp)) -- TODO bit
 			types[fn(exp)] = X'functie'

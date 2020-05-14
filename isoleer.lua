@@ -86,7 +86,7 @@ function isoleer(eq,naam)
 							eq0 = X('=', el, X('_arg3', arg(R)))
 						end
 					else
-						eq0 = X('=', el, X('_l', R, tostring(i-1)))
+						eq0 = X('=', el, X('index', R, tostring(i-1)))
 					end
 					break
 				end

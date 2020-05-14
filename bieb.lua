@@ -1,6 +1,5 @@
 require 'exp'
 require 'util'
-socket = require 'socket'
 
 local niets = {}
 
@@ -231,10 +230,10 @@ function bieb()
 		end
 	end;
 
-	['_l'] = function(a, b)
+	['index'] = function(a, b)
 		return a[b+1]
 	end;
-	['_l0'] = function(a)
+	['index0'] = function(a)
 		return a[0]
 	end;
 

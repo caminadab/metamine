@@ -7,6 +7,7 @@ require 'optimiseer'
 require 'vertolk'
 require 'oplos'
 require 'vectoriseer'
+local socket = require 'socket'
 
 
 local function vars(exp)

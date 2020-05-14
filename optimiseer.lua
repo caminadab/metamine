@@ -15,7 +15,7 @@ function devec(exp, i)
 	local van = tonumber(atoom(arg0(exp)))
 	if fn(exp) == '..' and van then
 		if van == 0 and i == 0 then
-			return X('igen', arg1(exp))
+			return X('igeni', '0', arg1(exp))
 		elseif i == 0 then
 			return X('igeni', X(tostring(van)), arg1(exp))
 		elseif van == 0 then
@@ -182,7 +182,7 @@ local function lmapreduceer(exp, maakindex)
 		local V = X('_arg0', I)
 		local W = X('_arg1', I)
 
-		local hbody = X('call2', G, V, X('_l', F, W))
+		local hbody = X('call2', G, V, X('index', F, W))
 		local H = X('_fn', I, hbody)
 		local nexp = X('call3', 'reduceer', S, L, H)
 		assign(exp, nexp)
@@ -255,7 +255,7 @@ end
 
 
 local function multiopt(exp, maakindex)
-	for exp in boompairsbfs(exp) do
+	for exp in boompairsdfs(exp) do
 		-- som
 		if fn(exp) == 'Σ' then
 			local nexp = X('call3', 'reduceer', '0', arg(exp), '+')
@@ -278,8 +278,10 @@ local function multiopt(exp, maakindex)
 		exp = mapvouw(exp, maakindex)
 		exp = filtervouw(exp, maakindex)
 
+		exp = mapreduceer(exp, maakindex)
+
 		-- map/map
-		if (fnaam(exp) == 'map' or fnaam(exp) == 'map') and (fnaam(arg1(exp)) == 'map' or fnaam(arg1(exp)) == 'lmap') then
+		if (fnaam(exp) == 'map' or fnaam(exp) == 'lmap') and (fnaam(arg1(exp)) == 'map' or fnaam(arg1(exp)) == 'lmap') then
 			-- map(map(A,B),C) → map(A, B ∘ C)
 			local A = arg1(arg1(exp))
 			local B = arg2(arg1(exp))
