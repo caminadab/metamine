@@ -620,7 +620,7 @@ function bieb()
 		return r
 	end;
 
-	['zip'] = function(a, b)
+	['rits'] = function(a, b)
 		local v = {}
 		for i=#a,1,-1 do
 			v[i] = {a[i], b[i]}
@@ -628,7 +628,7 @@ function bieb()
 		return v
 	end;
 
-	['zip1'] = function(a, b)
+	['rits1'] = function(a, b)
 		local v = {}
 		for i=#a,1,-1 do
 			v[i] = {a[i], b}
@@ -636,7 +636,7 @@ function bieb()
 		return v
 	end;
 
-	['rzip1'] = function(a, b)
+	['rrits1'] = function(a, b)
 		local v = {}
 		for i=#b,1,-1 do
 			v[i] = {a, b[i]}

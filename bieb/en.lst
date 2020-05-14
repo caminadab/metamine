@@ -21,6 +21,7 @@ concentrische	concentric
 cirkels	circles
 jsonencodeer	jsonencode
 jsondecodeer	jsondecode
+rits	zip
 
 tcp.bind tcp.bind
 tcp.lees tcp.read

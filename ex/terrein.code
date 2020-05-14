@@ -118,7 +118,7 @@ dist = √((x-hn)²+(y-hn)²)
 hoogte = x,y → 3 · cos(dist)·√dist/1000 ; -√((X-n/2)²+(Y-n/2)²)·0.7
 hmap := (-hn ..hn × -hn ..hn) map hoogte
 hn = n/2
-tiles = (-hn ..hn × -hn ..hn) zip (0..n²) map tilefunc
+tiles = (-hn ..hn × -hn ..hn) rits (0..n²) map tilefunc
 tilefunc = (i,j),h → pa map (pp → pp·10 + (10·i,1,10·j))
 tileuvs = (0..n²) map (tui → [(0,0,0),(1,0,0),(0,1,0),(1,1,0),(0,1,0),(1,0,0)])
 

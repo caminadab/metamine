@@ -126,9 +126,9 @@ nee: bit
 iets → iets: functie
 (_fn) : (iets→iets),iets → iets
 (_) :  ((iets→iets), iets) → iets
-zip: lijst, lijst → lijst
-zip1: iets, iets → lijst
-rzip1: iets, iets → lijst
+rits: lijst, lijst → lijst
+rits1: iets, iets → lijst
+rrits1: iets, iets → lijst
 map: lijst, (iets→iets) → lijst
 filter: lijst, (iets→bit) → lijst
 

@@ -11,7 +11,7 @@
 	<body>
 		<h1>Catalogus van Metamine</h1>
 		<div>
-			Dit is een lijst van alle functies beschikbaar in Metamine. Zie ook <a href="/operators.html">hier</a> voor een lijst van ingebouwde operators.
+			Dit is een lijst van alle functies beschikbaar in Metamine.
 		</div>
 		<h2>Intro</h2>
 		<div>
@@ -25,7 +25,8 @@
 			</pre>
 			Een vierkant;
 			<pre>
-				uit = teken [ vierkant(0,0,10) ]
+				uit = teken [ v ]
+				v = vierkant(0,0,10)
 			</pre>
 		</div>
 		<h2>Coördinaten</h2>
@@ -36,6 +37,66 @@
 		<div>
 			<img width="400px" src="/coord.png"></img>
 		</div>
+
+		<h2>Operators</h2>
+		Hieronder een lijst van alle operators. De kolom "Notatie" geeft aan hoe je het symbool kan typen in de editor: het symbool <b>·</b> typ je door <b>*</b> te typen.
+		<table>
+			<thead> <td>Operator</td> <td>Notatie</td> <td>Beschrijving</td> </thead>
+			<tr>    <td>x + y</td>    <td></td>        <td>Berekent x plus y</td>
+			<tr>    <td>x · y</td>    <td>*</td>       <td>Berekent x maal y</td>
+			<tr>    <td>x / y</td>    <td></td>        <td>Berekent x gedeeld door y</td>
+			<tr>    <td>x - y</td>    <td></td>        <td>Berekent x min y</td>
+			<tr>    <td>x ^ y</td>    <td></td>        <td>Berekent x tot de macht y</td>
+			<tr>    <td>√ x</td>      <td>sqrt</td>    <td>Berekent de wortel van x</td>
+			<tr>    <td>x ²</td>      <td>^2</td>      <td>Berekent het kwadraat van x</td>
+			<tr>    <td>x ³</td>      <td>^3</td>      <td>Berekent de derde macht van x</td>
+			<tr>    <td>f(x)</td>     <td></td>        <td>Roept de functie f aan met argument x. Als f een lijst is, neemt het x'ste element uit de lijst </td>
+			<tr>    <td>f(x,y)</td>   <td></td>      <td>Roept de functie f aan met argument (x,y)</td>
+
+			<!-- lijst -->
+			<tr>    <td>x₀</td>       <td>_0</td>      <td>Berekent x(0)</td>
+			<tr>    <td>x₁</td>       <td>_1</td>      <td>Berekent x(1)</td>
+			<tr>    <td>x₂</td>       <td>_2</td>      <td>Berekent x(2)</td>
+			<tr>    <td>x₃</td>       <td>_3</td>      <td>Berekent x(3)</td>
+			<tr>    <td># x</td>      <td></td>      <td>Berekent de lengte van lijst x</td>
+			<tr>    <td>x ‖ y</td>    <td>||</td>     <td>Plakt de lijsten x en y achter elkaar: [1,2,3] ‖ [4,5] = [1,2,3,4,5]</td>
+			<tr>    <td>x !</td>      <td></td>       <td>Berekent de faculteit van x</td>
+			<tr>    <td>a .. b</td>   <td></td>       <td>Genereert een lijst met getallen tussen a en b. Bijvoorbeeld: <pre>0..3 = [0, 1, 2]</pre> </td>
+			<tr>    <td>a × b</td>    <td>xx</td>       <td>Berekent het cartesische product van a en b. Bijvoorbeeld: <pre>[1,2] × [3,4] = [(1,3), (1,4), (2,3), (2,4)]</pre> </td>
+
+			<!-- conv -->
+			<tr>    <td>⌊x⌋</td>      <td>|_ _|</td>  <td>Rondt x af naar beneden</td>
+			<tr>    <td>⌈x⌉</td>      <td>|^ ^|</td>  <td>Rondt x af naar boven</td>
+			<tr>    <td>⌊x⌉</td>      <td>|_ ^|</td>  <td>Rondt x af</td>
+
+			<!-- symbolen -->
+			<tr>    <td>∅</td>        <td>0/</td>     <td>Is een lege collectie</td>
+			<tr>    <td>∞</td>        <td>ooo</td>    <td>Representeert "oneindig"</td>
+			<tr>    <td>τ</td>        <td>tau</td>    <td>Tau, oftewel twee keer pi</td>
+
+			<!-- set -->
+			<tr>    <td>x ∪ y</td>    <td>UU</td>     <td>Berekent de unie van de sets x en y</td>
+			<tr>    <td>x ∩ y</td>    <td>NN</td>     <td>Berekent de intersectie van de sets x en y</td>
+			<tr>    <td>x \ y</td>    <td></td>       <td>Berekent het verschil tussen de sets x en y</td>
+
+
+			<!-- logica -->
+			<tr>    <td>x ∧ y</td>  <td>/ \</td>   <td>Is "ja" als x en y "ja" zijn</td>
+			<tr>    <td>x ∨ y</td>  <td>\ /</td>   <td>Is "ja" als x of y "ja" is</td>
+			<tr>    <td>¬ x</td>  <td>!!</td>   <td>Is "ja" als x "nee" is en "nee" als x "ja" is</td>
+
+			<!-- cmp -->
+			<tr>    <td>x &gt; y</td>  <td>;</td>   <td>Berekent of x groter is dan y</td>
+			<tr>    <td>x ≥ y</td>  <td>&gt;=</td>   <td>Berekent of x groter of gelijk is aan y</td>
+			<tr>    <td>x = y</td>  <td></td>   <td>Berekent of x gelijk is aan y</td>
+			<tr>    <td>x ≠ y</td>  <td>=/</td>   <td>Berekent of x ongelijk is aan y</td>
+			<tr>    <td>x ≤ y</td>  <td>&lt;=</td>   <td>Berekent of x kleiner of gelijk is aan y</td>
+			<tr>    <td>x < y</td>  <td></td>   <td>Berekent of x kleiner is dan y</td>
+
+			<!-- functie -->
+			<tr>    <td>x → y</td>    <td>&dash; &gt;</td>    <td>Maakt een functie die, gegeven x, y berekent. Bijvoorbeeld: <pre>f = x → x · 2</pre> is een functie die zijn invoer verdubbelt.</td>
+			<tr>    <td>f ∘ g</td>    <td>@</td>       <td>Componeert f en g. Dit geeft een functie die, gegeven een argument x, f(g(x)) berekent. </td>
+		</table>
 			
 		<h2>Functies</h2>
 		<table>
@@ -47,7 +108,7 @@
 			<tr> <td>int</td> <td>a</td> <td>Converteert <b>a</b> naar integer (geheel getal). Rondt af naar beneden.</td> </tr>
 			<tr> <td>ja</td> <td></td> <td>Ja. Representeert 1 als bit.</td> </tr>
 			<tr> <td>label</td> <td>x, y, t</td> <td>Schrijf de tekst <b>t</b> een vierkant op positie <b>(x,y)</b></td> </tr>
-			<tr> <td>lijn</td> <td>punten</td> <td>Teken een lijn tussen de punten uit <b>punten</b></td> </tr>
+			<tr> <td>lijn</td> <td>punten</td> <td>Teken een lijn tussen de gegeven <b>punten</b>. Voorbeeld: <pre>uit = teken [ lijn[(0,0), (10,10), (20, 10) ] ]</td> </tr>
 			<tr> <td>looptijd</td> <td></td> <td>De looptijd van het programma, in seconden, precies tot op een milliseconde. Als de app start is dit 0.</td> </tr>
 			<tr> <td>max</td> <td>a, b</td> <td>Neem de grootste waarde van <b>a</b> en <b>b</b></td> </tr>
 			<tr> <td>map</td> <td>a, b</td> <td>Mapt alle elementen uit <b>a</b> naar <b>b</b></td> </tr>
@@ -64,7 +125,7 @@
 
 			<tr> <td>uit</td> <td></td> <td>De uitvoer van het programma. Dit moet je definiëren in je code, bijvoorbeeld "uit = 3".</td> </tr>
 			<tr> <td>polygoon</td> <td>punten</td> <td>Teken een polygoon aangegeven door een lijst van punten</td> </tr>
-			<tr> <td>rechthoek</td> <td>x1, y1, x2, y2</td> <td>Teken een rechthoek tussen posities <b>(x,y)</b> en <b>(x2,y2)</b></td> </tr>
+			<tr> <td>rechthoek</td> <td>x1, y1, x2, y2</td> <td>Teken een rechthoek tussen <b>(x,y)</b> en <b>(x2,y2)</b></td> </tr>
 			<tr> <td>rgb</td> <td>r, g, b</td> <td>Maakt een kleur van de componenten rood (<b>r</b>), groen (<b>g</b>), blauw (<b>b</b>) </td> </tr>
 			<tr> <td>verf</td> <td>vorm, kleur</td> <td>Verft een vorm <b>vorm</b> in de kleur <b>kleur</b></td> </tr>
 			<tr> <td>vierkant</td> <td>x, y, r</td> <td>Teken een vierkant op positie <b>(x,y)</b> met hoogte <b>r</b></td> </tr>
@@ -77,13 +138,13 @@
 			<tr> <td>tot</td> <td>a, index</td> <td>Returnt een lijst met alle elementen in lijst <b>a</b> tot <b>index</b> </td>  </tr>
 			<tr> <td>vanaf</td> <td>a, index</td> <td>Returnt een lijst met alle elementen in lijst <b>a</b> vanaf <b>index</b> </td>  </tr>
 			<tr> <td>deel</td> <td>lijst, (van, tot)</td> <td>Returnt een sublijst van <b>lijst</b>, beginnent van <b>van</b> en tot <b>tot</b> </td>  </tr>
-			<tr> <td>scherm.breedte</td> <td> </td>  <td>De breedte van het uitvoerscherm. Typisch rondt de 177.</td> </tr>
+			<tr> <td>scherm.breedte</td> <td> </td>  <td>De breedte van het uitvoerscherm. Typisch rondt de 160 (als je een 16:10 monitor hebt).</td> </tr>
 			<tr> <td>scherm.hoogte</td> <td> </td>  <td>De hoogte van het uitvoerscherm. Vastgezet op 100.</td> </tr>
 			<tr> <td>willekeurig</td> <td>laag, hoog</td>  <td>Genereert een willekeurig getal tussen <b>laag</b> en <b>hoog</b> </td> </tr>
 			<tr> <td>scherm.ververst</td> <td> </td>  <td>Is <b>ja</b> op het moment dat het beeldscherm ververst (meestal 60x per seconde), en anders <b>nee</b> </td> </tr>
 			<tr> <td>grabbel</td> <td>lijst</td>  <td>Pakt een willekeurig element uit de <b>lijst</b> </td> </tr>
 			<tr> <td>kies</td> <td>a, b, c</td>  <td>Als <b>a = ja</b>, is gelijk aan <b>b</b>, en anders <b>c</b> </td> </tr>
-			<tr> <td>type</td> <td>a</td>  <td>Een tekstuele beschrijving van het type van <b>a</b>. Bijvoorbeeld <pre>"int"</pre> </td> </tr>
+			<tr> <td>type</td> <td>a</td>  <td>Een tekstuele beschrijving van het type van <b>a</b>. Bijvoorbeeld <pre>type(3) = "int"</pre> </td> </tr>
 			<tr> <td>plet</td> <td>lijst(lijst)</td>  <td>Neemt als argument een lijst van lijsten. Maakt een lijst van alle elementen in alle lijsten, beginnent bij lijst 1. Bijvoorbeeld: <pre>plet([[1,2],[3,4],[5,6]) = [1,2,3,4,5,6]</pre></td> </tr>
 			<tr> <td>splits</td> <td>lijst, token</td>  <td>Splitst een lijst in een lijst van sublijsten. Bijvoorbeeld: <pre>split([1,2,0,3,0,4,5],0) = [[1,2], [3], [4,5]]</td> </tr>
 			<tr> <td>vertexbuffer</td> <td>punten</td>  <td>Maakt een GPU-buffer van een lijst van <b>punten</b>.</td> </tr>
@@ -107,23 +168,21 @@
 
 			<tr> <td>abs</td> <td>a</td>  <td>De absolute waarde van a</td> </tr>
 			<tr> <td>filter</td> <td>lijst, predicaat</td> <td>Filtert een lijst middels <b>predicaat</b>(item → bit) dat aangeeft of een item voldoet. Bijvoorbeeld: <pre> [1,2,3,4] filter (x → x < 3) </pre> </td> </tr>
-			<tr> <td>lijn</td> <td>(x1,y1),(x2,y2), ...</td>  <td>todo</td> </tr>
-			<tr> <td>label</td> <td>x, y, t</td>  <td>todo</td> </tr>
-			<tr> <td>klem</td> <td>x, laag, hoog</td>  <td>todo</td> </tr>
-			<tr> <td>max</td> <td>x, hoog</td>  <td>todo</td> </tr>
-			<tr> <td>min</td> <td>x, laag</td>  <td>todo</td> </tr>
+			<tr> <td>klem</td> <td>x, laag, hoog</td>  <td>zorgt dat x altijd binnen het bereik [laag, hoog] zit</td> </tr>
+			<tr> <td>label</td> <td>x, y, t</td>  <td>teken een stuk tekst op positie (x,y)</td> </tr>
+			<tr> <td>map</td> <td>lijst, functie</td>  <td>past functie toe op elk element uit de lijst en stopt de resultaten in een nieuwe lijst</td> </tr>
+			<tr> <td>max</td> <td>x, y</td>  <td>neem de maximale waarde van x en y</td> </tr>
+			<tr> <td>maxindex</td> <td>l</td>  <td>neemt de index van de maximumwaarde uit de lijst l</td> </tr>
+			<tr> <td>min</td> <td>x, y</td>  <td>neem de minimale waarde van x en y</td> </tr>
 			<tr> <td>mod</td> <td>x, y</td>  <td>todo</td> </tr>
-			<tr> <td>maxindex</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>map</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>polygoon</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>rechthoek</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>sin</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>cos</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>tan</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>atan</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>vouw</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>vierkant</td> <td> </td>  <td>todo</td> </tr>
-			<tr> <td>zip</td> <td> </td>  <td>todo</td> </tr>
+			<tr> <td>polygoon</td> <td>punten</td> <td>teken een polygoon (veelhoek) tussen de punten uit de lijst</td> </tr>
+			<tr> <td>sin</td> <td>x</td>  <td>berekent de sinus van x</td> </tr>
+			<tr> <td>cos</td> <td>x</td>  <td>berekent de cosinus van x</td> </tr>
+			<tr> <td>tan</td> <td>x</td>  <td>berekent de tangens van x</td> </tr>
+			<tr> <td>atan</td> <td>x</td>  <td>berekent de arctangens (inverse tangent) van x</td> </tr>
+			<tr> <td>vouw</td> <td>lijst, functie</td>  <td>vouwt de elementen uit de lijst samen tot een enkele waarde door de functie toe te passen op elk element en het vorige element</td> </tr>
+			<tr> <td>vierkant</td> <td>x, y, r</td>  <td>tekent een vierkant op positie (x,y) met breedte en hoogte r</td> </tr>
+			<tr> <td>rits</td> <td>x, y</td>  <td>"ritst" de lijsten x en y samen: maakt een lijst met tupels gevuld met elementen uit x en y</td> </tr>
 
 		</table>
 	</body>

@@ -13,11 +13,11 @@ y3 = x map h
 y4 = x map i
 y5 = x map j
 
-punten1 = x zip y1
-punten2 = x zip y2
-punten3 = x zip y3
-punten4 = x zip y4
-punten5 = x zip y5
+punten1 = x rits y1
+punten2 = x rits y2
+punten3 = x rits y3
+punten4 = x rits y4
+punten5 = x rits y5
 grafiek1 = verf(polygoon(punten1), kleur.rood)
 grafiek2 = verf(lijn(punten2), kleur.groen)
 grafiek3 = verf(lijn(punten3), kleur.blauw)

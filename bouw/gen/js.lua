@@ -503,9 +503,9 @@ local noops = {
 	}]],
 
 	-- functioneel
-	['zip'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;}',
-  ['zip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;}',
-  ['rzip1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;}',
+	['rits'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b[i]]; }; return c;}',
+  ['rits1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [a[i], b]; }; return c;}',
+  ['rrits1'] = '(a, b) => {  var c = []; for (var i = 0; i < a.length; i++) { c[i] = [b, a[i]]; }; return c;}',
   --['map'] = '(a, b) => a.map(b)',
   ['map'] = '(a, b) => { var r = []; for (var i = 0; i < a.length; i++) r[i] = b(a[i]); return r;}',
 	['lmap'] = '(a, b) => a.map(x => b[x])',

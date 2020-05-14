@@ -7,8 +7,8 @@ x = 0..200
 y1 = x map f
 y2 = x map g
 
-punten1 = x zip y1
-punten2 = x zip y2
+punten1 = x rits y1
+punten2 = x rits y2
 grafiek1 = verf(lijn(punten1), kleur.rood)
 grafiek2 = verf(lijn(punten2), kleur.groen)
 
