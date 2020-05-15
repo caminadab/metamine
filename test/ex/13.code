@@ -1,5 +1,3 @@
-main = h(3,4) + h(2,4)
-f = X,Y → X + Y
-g = (-)
-h = f ∘ g ∘ g
-
+x = 14
+y = 1
+main = x - y

@@ -1,3 +1,1 @@
-main = val₀ + val₁
-val = [(0,0),(1,1)] map (id ∘ (+))
-id = x → x
+2 = main

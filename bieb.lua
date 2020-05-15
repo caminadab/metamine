@@ -329,18 +329,16 @@ function bieb()
 		return a
 	end;
 
-	['^l'] = function(a)
-		local f, n = a[1], a[2]
-		return function(x)
-			local r = {}
-			for i = 1, n do
-				for j = 1, #f do
-					r[k] = f[j]
-					k = k + 1
-				end
+	['^l'] = function(f, n)
+		local r = {}
+		local k = 1
+		for i = 1, n do
+			for j = 1, #f do
+				r[k] = f[j]
+				k = k + 1
 			end
-			return r
 		end
+		return r
 	end;
 
 	['^f'] = function(f, n)
@@ -484,8 +482,7 @@ function bieb()
 	end;
 
 	-- concatenate
-	['‖'] = function(a)
-		local a,b = a[1], a[2]
+	['‖'] = function(a, b)
 		if type(a) == 'string' or type(b) == 'string' then
 			if type(b) == 'table' then
 				return a .. string.char(table.unpack(b))

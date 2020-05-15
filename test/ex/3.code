@@ -1,5 +1,3 @@
-main = f(0) + b + b + b + b
-
-b = 1/2
-
-f = x → b + b
+a = 3
+b = a
+main = b

@@ -2,7 +2,7 @@ require 'bieb'
 require 'unicode'
 
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖","\\", "^f","_f","index", "+f","+f1","·f","·f1","+v1","call1")
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖","\\", "^f","_f","index", "+f","+f1","·f","·f1","+v1","call1","^l")
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
 
 function lenc2(exp)
@@ -40,7 +40,7 @@ function readfn(sfc, i)
 end
 
 -- sfc → func
-function doe(sfc, stack, arg0, arg1, ...)
+function doe(sfc, stack, arg0, arg1, arg2, arg3)
 	local stack = stack or {}
 	local i = 1
 	local bieb = bieb()
@@ -130,6 +130,10 @@ function doe(sfc, stack, arg0, arg1, ...)
 			stack[#stack+1] = arg0
 		elseif fn(ins) == 'arg1' then
 			stack[#stack+1] = arg1
+		elseif fn(ins) == 'arg2' then
+			stack[#stack+1] = arg2
+		elseif fn(ins) == 'arg3' then
+			stack[#stack+1] = arg3
 
 		elseif fn(ins) == 'string' then
 			local num = atoom(arg(ins))
@@ -161,17 +165,23 @@ function doe(sfc, stack, arg0, arg1, ...)
 			end
 			stack[#stack+1] = r
 
-		elseif atoom(ins) == 'anders' then
-
 		elseif atoom(ins) == 'dan' then
 			if stack[#stack] == false then
+				-- skip tot 'einddan'
+				while atoom(ins) ~= 'einddan' and atoom(ins) ~= 'anders' do
+					i=i+1
+					ins = sfc[i]
+				end
+				stack[#stack] = false
+			end
+
+		elseif atoom(ins) == 'anders' then
+			if stack[#stack] ~= false then
 				-- skip tot 'einddan'
 				while atoom(ins) ~= 'einddan' do
 					i=i+1
 					ins = sfc[i]
 				end
-				--i=i+1
-				--ins = sfc[i]
 				stack[#stack] = false
 			end
 

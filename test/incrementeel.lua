@@ -1,6 +1,6 @@
 require 'util'
 
-local files = io.popen('ls test/ex/')
+local files = io.popen('ls -v test/ex')
 
 local function assert(cond, msg)
 	if not cond then
@@ -13,13 +13,15 @@ opt = {['0'] = true}
 for pad in files:lines() do
 	local moetzijn = pad:match('[^.]*')
 	local moetzijn = tonumber(moetzijn)
-	print(moetzijn)
+	io.write(moetzijn, '\n')
 	local code = file('test/ex/'..pad)
 	local icode = vertaal(code) 
 	local ok, is =  pcall(doe, icode)
 	assert(ok, is)
 	if ok then
-		assert(lenc(is) == lenc(moetzijn), 'waarde was '..is..' maar moest '..moetzijn..' zijn')
+		local is = lenc(is)
+		local moetzijn = lenc(moetzijn)
+		assert(is == moetzijn, 'waarde was '..is..' maar moest '..moetzijn..' zijn')
 	end
 end
 
