@@ -28,11 +28,11 @@ vertexbuffer: (nat → getal) → vbuffer
 texture: lijst letter, int → texture ; url
 cubemap: (nat → (nat → letter)), int → cubemap ; urls
 
-uniformbind: sprog, lijst letter, iets → sprog
-texturebind: sprog, lijst letter, texture, int → sprog
-cubemapbind: sprog, lijst letter, cubemap, int → sprog
-matrixbind:  sprog, lijst letter, iets → sprog
-shaderbind:  sprog, lijst letter, vbuffer → sprog
+uniformbind: sprog, (nat → letter), iets → sprog
+matrixbind:  sprog, (nat → letter), iets → sprog
+shaderbind:  sprog, (nat → letter), vbuffer → sprog
+texturebind: sprog, (nat → letter), texture, int → sprog
+cubemapbind: sprog, (nat → letter), cubemap, int → sprog
 superrender: iets, texture, sprog, int → iets
 
 ; lol/lijst

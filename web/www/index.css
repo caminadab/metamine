@@ -4,14 +4,6 @@
 	display: inline;
 }
 
-thead {
-	font-weight: bold;
-}
-
-tr:nth-child(even) {
-	background-color: #103;
-}
-
 #vraag {
 	background: #224;
 	border: none;

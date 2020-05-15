@@ -33,7 +33,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'teken', 'render', 'rgb',
 		'sorteer', 'tot', 'vanaf', 'deel', 'vind', 'reduceer',
 		'scherm.breedte', 'scherm.hoogte', 'willekeurig', 'misschien', 'scherm.ververst', 'verf',
-		'grabbel', 'kies', 'type', 'plet', 'canvas.fontsize', 'canvas.linewidth', 'splits',
+		'grabbel', 'kies', 'type', 'plet', 'canvas.fontsize', 'canvas.linewidth', 'splits', 'split',
 		'ovaal',
 		'vertexbuffer', 'shaderbind', 'shaderprogram', 'uniformbind', 'matrixbind',
 		'download', 'texturebind', 'texture', 'cubemap', 'cubemapbind',
