@@ -57,7 +57,6 @@ function bieb()
 	['alert'] = true,
 	['splits'] = true,
 	['kubus'] = true,
-	['kies'] = true,
 	['superrender'] = true,
 	['gl.drawArrays'] = true,
 	['gl.drawTriangles'] = true,

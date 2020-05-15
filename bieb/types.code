@@ -83,7 +83,7 @@ rgb: (getal, getal, getal) → (getal, getal, getal)
 
 ;vierkant: (ℝ,ℝ),ℝ → vorm
 ;cirkel: (ℝ,ℝ),ℝ → vorm
-;ovaal: ((ℝ,ℝ), (ℝ,ℝ)) → vorm
+;ovaal: ((ℝ,ℝ), ℝ, ℝ, ℝ) → functie
 ;boog: ((ℝ,ℝ),ℝ,ℝ,ℝ) → vorm
 ;rechthoek: (ℝ,ℝ),(ℝ,ℝ) → vorm
 lijn: (nat → getal,getal) → functie
@@ -93,7 +93,6 @@ newindex2: lijst, nat, iets → lijst
 draai: vorm → vorm
 vouw: lijst,(iets,iets → iets) → iets
 reduceer: iets,lijst,(iets,iets → iets) → iets
-kies: bit,iets,iets → iets
 
 requestAnimationFrame: (getal → lijst(letter)) → int
 contextVan: lijst(letter) → canvas
