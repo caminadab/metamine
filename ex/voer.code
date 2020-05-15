@@ -91,10 +91,7 @@ eind
 bestezet = bbord,bspeler → bzet
 
 scores = (0..7) map (ii → score(bbord,ii))
-bzet = maxindex2 scores
-
-maxfunc = (i0,v0),(i1,v1) → kies((v0 > v1), (i0,v0), (i1,v1))
-maxindex2 = lijst → ((0..#lijst) zip lijst vouw maxfunc)₀
+bzet = maxindex scores
 
 ;scoorzet2 = (I → score(doezet(bord,I,2),2))
 ;scoorzet1 = (J → 1000-score(doezet(bord,J,1),1))

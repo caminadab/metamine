@@ -38,8 +38,9 @@ end
 
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
 local postop = set("%","!",".","'")
-local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖")
-local op     = unie(binop, unie(postop, unop))
+local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖")
+local triop  = set('⇒')
+local op     = unie(unie(binop, unie(postop, unop)), triop)
 
 function stub2func(exp, maakindex)
 	local naam = atoom(exp)
@@ -48,6 +49,11 @@ function stub2func(exp, maakindex)
 		local a0 = X('_arg0', index)
 		local a1 = X('_arg1', index)
 		return X('_fn', index, X(naam, a0, a1))
+	elseif triop[naam] then
+		local a0 = X('_arg0', index)
+		local a1 = X('_arg1', index)
+		local a2 = X('_arg2', index)
+		return X('_fn', index, X(naam, a0, a1, a2))
 	elseif unop[naam] or postop[naam] then
 		local a = X('_arg', index)
 		return X('_fn', index, X(naam, a))
@@ -106,32 +112,6 @@ local function compopt0(exp, maakindex)
 
 		return c
 
-	-- (-) ∘ (-) = (x → -(-(x)))
-	elseif isatoom(a) and isatoom(b) then
-		error'OK'
-		local index = tostring(maakindex())
-		local anaam = atoom(a)
-		local bnaam = atoom(b)
-
-		local arg = X('_arg', index)
-		local c
-		if unop[anaam] then
-			c = X(anaam, arg)
-		elseif binop[anaam] then
-			local argA = X('arg0', index)
-			local argB = X('arg1', index)
-			c = X(anaam, argA, argB)
-		else
-			c = X('call', anaam, arg)
-		end
-		local d
-		if unop[bnaam] then
-			d = X(bnaam, c)
-		else
-			d = X('call', bnaam, c)
-		end
-
-		return X('_fn', index, d)
 	end
 end
 
@@ -206,6 +186,7 @@ local function mapvouw(exp, maakindex)
 		local H = X('_fn', I, hbody)
 		local nexp = X('call2', 'vouw', L, H)
 		assign(exp, nexp)
+		--error(combineer(nexp))
 	end
 	return exp
 end
@@ -275,8 +256,8 @@ local function multiopt(exp, maakindex)
 		exp = lmapreduceer(exp, maakindex)
 		exp = filterreduceer(exp, maakindex)
 
-		exp = mapvouw(exp, maakindex)
-		exp = filtervouw(exp, maakindex)
+		--exp = mapvouw(exp, maakindex)
+		--exp = filtervouw(exp, maakindex)
 
 		exp = mapreduceer(exp, maakindex)
 
