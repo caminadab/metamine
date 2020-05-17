@@ -13,6 +13,9 @@ end
 function devec(exp, i)
 	local i = i or 0
 	local van = tonumber(atoom(arg0(exp)))
+	if fn(exp) == '×' then
+		return X(',', devec(arg0(exp)), devec(arg1(exp)))
+	end
 	if fn(exp) == '..' and van then
 		if van == 0 and i == 0 then
 			return X('igeni', '0', arg1(exp))
@@ -127,10 +130,11 @@ function compopt(exp, maakindex)
 	return exp
 end
 
+local mappen = set('map', 'lmap', 'map4', 'mapl')
 -- reduceer(S,map(L,F),G), G=(X,Y → Z)
 -- > reduceer(S,L,H), H=(V,W → G(V, F(W)))
 local function mapreduceer(exp, maakindex)
-	if fnaam(exp) == 'reduceer' and fnaam(arg2(exp)) == 'map' then
+	if fnaam(exp) == 'reduceer' and mappen[fnaam(arg2(exp))] then
 		local S = arg1(exp)
 		local L = arg1(arg2(exp))
 		local F = arg2(arg2(exp))
@@ -302,6 +306,34 @@ local function multiopt(exp, maakindex)
 				assign(exp, nexp)
 			end
 		end
+
+		-- vlus
+		if fnaam(exp) == 'map' then
+			local gen = devec(arg1(exp))
+			if gen then
+				local idx = tostring(maakindex())
+				local lijst = X('[]', '0')
+				lijst[1] = nil
+				local nexp = X('lus', lijst, gen, X('_fn', idx, X('||=', X('_arg0',idx), X('_arg1',idx))))
+				assign(exp, nexp)
+			end
+		end
+
+		-- vlus
+		if fnaam(exp) == 'filter' then
+			local gen = devec(arg1(exp))
+			local func = arg2(exp)
+			local body = arg1(func)
+			if gen then
+				local idx = tostring(maakindex())
+				local lijst = X('[]', '0')
+				lijst[1] = nil
+				local kies = X('⇒', body, X('||=', X('_arg0',idx), X('_arg1',idx)))
+				local nexp = X('lus', lijst, gen, X('_fn', idx, kies))
+				assign(exp, nexp)
+			end
+		end
+
 	end
 
 	return exp

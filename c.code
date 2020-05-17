@@ -1,0 +1,1 @@
+main = (0..10) filter (x → (x mod 2 = 0))

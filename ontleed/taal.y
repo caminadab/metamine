@@ -374,4 +374,10 @@ exp:
 |	exp '_' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp '^' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "⇒" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
+
+|	exp "mod" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp "map" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp "reduceer" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp "vouw" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
+|	exp "filter" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 ;

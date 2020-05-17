@@ -785,6 +785,7 @@ local unops2 = {
 }
 
 local binops2 = {
+	['||='] = '$1.push($2);',
 	['^l'] = [[var res = [];
 	var k = 0;
 	for (var i = 0; i < $2; i++)

@@ -151,6 +151,14 @@ _			{ *yylval = A(GL, "_", nergens); return '_'; }
 "τ"			{ *yylval = A(GL, "τ", nergens); return NAAM; }
 "⎔"			{ *yylval = A(GL, "⎔", nergens); return NAAM; }
 
+"map"			{ *yylval = A(GL, "map", nergens); return NAAM; }
+"reduceer"			{ *yylval = A(GL, "reduceer", nergens); return NAAM; }
+"reduce"			{ *yylval = A(GL, "reduceer", nergens); return NAAM; }
+"vouw"			{ *yylval = A(GL, "vouw", nergens); return NAAM; }
+"fold"			{ *yylval = A(GL, "vouw", nergens); return NAAM; }
+"filter"			{ *yylval = A(GL, "filter", nergens); return NAAM; }
+"mod"			{ *yylval = A(GL, "mod", nergens); return NAAM; }
+
 "als"					{ return ALS; }
 "dan"					{ return DAN; }
 "andersals"			{ return ANDERSALS; }
