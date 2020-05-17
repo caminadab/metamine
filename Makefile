@@ -8,7 +8,7 @@ run: linux
 	lua web/dienst.lua
 
 test: linux
-	luajit test.lua
+	lua test.lua
 
 webdemos: web/www/ex/
 	./tolk ex/aap5.code web/www/ex/aap5.en.code

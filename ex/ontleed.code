@@ -1,63 +1,63 @@
 ; lex
 in = "1 / 2 + 2 / 3\n"
-lex = Code → Tokens
+lex = code → tokens
 
-modus := Niets
+modus := nniets
 i := 0
 iprev := 0
 tokens := [ "" ] vanaf 1
 types := []
 
--1,0,1,2,3,4,5,6 = Klaar,Niets,Comment,CommentDeel,Var,Num,Op,Newline
+-1,0,1,2,3,4,5,6 = klaar,nniets,comment,commentdeel,var,num,op,newline
 
-als modus = Niets dan
+als modus = nniets dan
 	i := i + 1
 	als 'a' ≤ in(i) en in(i) ≤ 'z' dan
 		iprev := i
-		modus := Var
-		types := types ‖ [Var]
+		modus := var
+		types := types ‖ [var]
 	eind
 	als '0' ≤ in(i) en in(i) ≤ '9' of in(i) = '.' dan
 		iprev := i
-		modus := Num
-		types := types ‖ [Num]
+		modus := num
+		types := types ‖ [num]
 	eind
 	als in(i) = ' ' dan
 		; niets
 	eind
 	als in(i) = 10 dan
-		modus := Newline
-		types := types ‖ [Newline]
+		modus := newline
+		types := types ‖ [newline]
 	eind
 	als in(i) = ';' dan
-		modus := Comment
-		types := types ‖ [Newline]
+		modus := comment
+		types := types ‖ [newline]
 	eind
 	als in(i) = ';' en in(i+1) = '-' dan
-		modus := CommentDeel
+		modus := commentdeel
 	eind
 	als in(i) = '-' of in(i) = '=' of in(i) = '+'  of in(i) = '>' of in(i) = '/' dan
-		modus := Op
-		types := types ‖ [Op]
+		modus := op
+		types := types ‖ [op]
 	eind
 eind
 
 als i ≥ #in dan
-	modus := Klaar
+	modus := klaar
 eind
 
-als modus = CommentDeel dan
+als modus = commentdeel dan
 	als in(i) = '-' en in(i+1) = ';' dan
 		i := i + 2
-		modus := Niets
+		modus := nniets
 	anders
 		i := i + 1
 	eind
 eind
 
-als modus = Comment dan
-	als in(i) = 10 of in(i) = niets dan
-		modus := Niets
+als modus = comment dan
+	als in(i) = 10 of in(i) = nniets dan
+		modus := nniets
 		i := i + 1
 		tokens := tokens ‖ [ "\n" ]
 	anders
@@ -65,27 +65,27 @@ als modus = Comment dan
 	eind
 eind
 
-als modus = Op of modus = Newline dan
+als modus = op of modus = newline dan
 	;i := i + 1
-	modus := Niets
+	modus := nniets
 	tokens := tokens ‖ [ in vanaf (i-1) tot 1 ]
 eind
 
-als modus = Var dan
+als modus = var dan
 	als 'a' ≤ in(i) en in(i) ≤ 'z' dan
 		i := i + 1
 	anders
 		tokens := tokens ‖ [ in vanaf iprev tot (i - iprev) ]
-		modus := Niets
+		modus := nniets
 	eind
 eind
 
-als modus = Num dan
+als modus = num dan
 	als '0' ≤ in(i) en in(i) ≤ '9' of in(i) = '.' of in(i) = 'e' dan
 		i := i + 1
 	anders
 		tokens := tokens ‖ [ in vanaf iprev tot (i - iprev) ]
-		modus := Niets
+		modus := nniets
 	eind
 eind
 
@@ -93,11 +93,11 @@ eind
 ; ontleed
 j := 0
 stats := []
-omodus := Niets
+omodus := nniets
 
-valstack := ["ok"] vanaf 1
-opstack := ["ok"] vanaf 1
-res := ["ok"] vanaf 1
+valstack := []
+opstack := []
+res := []
 
 prioriteit = px → pp
 als px = "=" dan pp = 1 eind
@@ -106,11 +106,11 @@ als px = "/" dan pp = 3 eind
 als px = "" dan pp = 0 eind
 
 als toets.spatie.begin en (types ⇒ j < #types) dan
-	als types(j) = Var then
+	als types(j) = var then
 		valstack := valstack ‖ [ tokens(j) ]
 		j := j + 1
 	eind
-	als types(j) = Op then
+	als types(j) = op then
 		als (opstack ⇒ #opstack = 0 of prioriteit(tokens(j)) > prioriteit(opstack(#opstack-1)) ) dan
 			opstack := [ tokens(j) ] ‖ opstack
 		anders
@@ -120,11 +120,11 @@ als toets.spatie.begin en (types ⇒ j < #types) dan
 		eind
 		j := j + 1
 	eind
-	als types(j) = Num then
+	als types(j) = num then
 		valstack := valstack ‖ [ tokens(j) ]
 		j := j + 1
 	eind
-	als types(j) = Newline then
+	als types(j) = newline then
 		j := j + 1
 		res := res ‖ valstack ‖ opstack
 		valstack := ["ok"] vanaf 1
