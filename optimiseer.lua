@@ -243,6 +243,18 @@ local function multiopt(exp, maakindex)
 			assign(exp, nexp)
 		end
 
+		-- en
+		if fn(exp) == '⋀' then
+			local nexp = X('call3', 'reduceer', '⊤', arg(exp), '∧')
+			assign(exp, nexp)
+		end
+
+		-- of
+		if fn(exp) == '⋁' then
+			local nexp = X('call3', 'reduceer', '⊥', arg(exp), '∨')
+			assign(exp, nexp)
+		end
+
 		-- lengte
 		if false and fn(exp) == '#' then
 			local index = tostring(maakindex())
@@ -256,8 +268,8 @@ local function multiopt(exp, maakindex)
 		exp = lmapreduceer(exp, maakindex)
 		exp = filterreduceer(exp, maakindex)
 
-		--exp = mapvouw(exp, maakindex)
-		--exp = filtervouw(exp, maakindex)
+		exp = mapvouw(exp, maakindex)
+		exp = filtervouw(exp, maakindex)
 
 		exp = mapreduceer(exp, maakindex)
 

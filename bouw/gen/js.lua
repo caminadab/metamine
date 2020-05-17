@@ -86,6 +86,7 @@ local noops = {
 	} ]],
 
 	['uniformbind'] = [[ (prog, name, val) => {
+	Σ
 		var loc = gl.getUniformLocation(prog, name);
 		if (Array.isArray(val)) {
 			if (val.length == 2) gl.uniform2fv(loc, val);
@@ -774,7 +775,11 @@ local noops = {
 }
 
 local unops2 = {
+
+	-- som
 	['Σ'] = [[var sum = 0; for (var i = 0; i < $1.length; i++) sum = sum + $1[i]; $1 = sum;]],
+	['⋀'] = [[var sum = true; for (var i = 0; i < $1.length; i++) sum = sum && $1[i]; $1 = sum;]],
+	['⋁'] = [[var sum = false; for (var i = 0; i < $1.length; i++) sum = sum || $1[i]; $1 = sum;]],
 	['|'] = 'for (var i = 0; i < $1.length; i++) if ($1[i] != null) { $1 = $1[i]; break; }',
 	['-'] = '$1 = -$1;',
 }

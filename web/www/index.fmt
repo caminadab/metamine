@@ -589,7 +589,11 @@
 		"BB": "𝔹",
 		"QQ": "ℚ",
 		"HH": "ℍ",
+
+		"EN": "⋀",
+		"OF": "⋁"
 	};
+
 	editor.on("beforeChange", (cm,change) => {
 		if (magisch[change.text]) {
 			//cm.replaceRange(magisch[change.text], change.from, change.to);

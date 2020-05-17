@@ -67,39 +67,60 @@ als scherm.ververst en ¬ pauze dan
 	als rechts.y < 0 dan
 		rechts.y := 0
 	eind
+	
+	als muis.klik dan
+		bal.x := muis.x
+		bal.y := muis.y
+		bal.vx := 0
+		bal.vy := 0
+	eind
 
-eind
+	; bal physics
+	als bal.x < 0 dan
+		bal.vx := abs bal.vx
+	end
+	
+	als bal.y > 200 dan
+		bal.y := 200
+		bal.vy := 0
+	eind
 
-; bal physics
-als bal.x < 0 dan
-	bal.vx := abs bal.vx
-end
-
-als bal.x > scherm.breedte dan
-	bal.vx := - abs bal.vx
+	als bal.x > scherm.breedte dan
+		bal.vx := - abs bal.vx
+	eind
+	als ldst < 18 dan 
+		bal.x := bal.x + lnx·ldst
+		bal.y := bal.y + lny·ldst
+		bal.vx := bal.vx - 2·ldot·lnx/1000
+		bal.vy := bal.vy - 2·ldot·lny/1000
+	eind
+	als rdst < 18 dan
+		bal.x := bal.x + rnx·rdst
+		bal.y := bal.y + rny·rdst
+		bal.vx := bal.vx - 2·rdot·rnx
+		bal.vy := bal.vy - 2·rdot·rny
+	eind
 eind
 
 ; stuiter links
+lnx = ldx/ldst
+lny = ldy/ldst
 ldx = bal.x - links.x
 ldy = bal.y - links.y
 ldst = √(ldx²+ldy²)
-ldot = -2
+ldot = ldx·lnx+ldy·lny
 
-als ldst < 18 dan 
-	bal.vx := bal.vx - 2·ldot·ldx/ldst
-	bal.vy := bal.vy - 2·ldot·ldy/ldst
-eind
+
 
 ; stuiter rechts
+rnx = rdx/rdst
+rny = rdy/rdst
 rdx = bal.x - rechts.x
 rdy = bal.y - rechts.y
 rdst = √(rdx²+rdy²)
-rdot = -2
+rdot = rdx·rnx+rdy·rny
 
-als rdst < 18 dan 
-	bal.vx := bal.vx - 2·rdot·rdx/rdst
-	bal.vy := bal.vy - 2·rdot·rdy/rdst
-eind
+
 
 ; zwaartekracht & beweging
 als scherm.ververst en ¬pauze en bal.y ≥ 0 dan
@@ -118,12 +139,12 @@ eind
 ; score
 score1 := 0
 score2 := 0
-fk := rgb(0,0,0)
+fk := kleur.zwart
 
 als fk = kleur.zwart dan
-	flits = rechthoek((0,0),(0,0))
+	flits = rechthoek(0,0,0,0)
 anders
-	flits = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), fk)
+	flits = verf(rechthoek(0,0,scherm.breedte,scherm.hoogte), fk)
 eind
 
 als scherm.ververst en bal.y > 0 dan
@@ -164,5 +185,6 @@ bal.f = √(bal.vx² + bal.vy²) / 10
 balkleur = rgb(1 - bal.f, bal.f, 0)
 
 uit = teken [ flits, links, rechts, net, bal, label1, label2 ]
+
 
 

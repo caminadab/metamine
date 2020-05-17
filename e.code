@@ -1,2 +1,0 @@
-main = reduceer([], 0..10, f)
-f = X,Y → append(X,Y)

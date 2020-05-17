@@ -1,1 +1,0 @@
-main = (0..10) map (x → x > 4) vouw (of)
