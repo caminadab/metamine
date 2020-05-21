@@ -310,11 +310,12 @@ local function multiopt(exp, maakindex)
 		-- vlus
 		if fnaam(exp) == 'map' then
 			local gen = devec(arg1(exp))
+			local func = arg2(exp)
 			if gen then
 				local idx = tostring(maakindex())
 				local lijst = X('[]', '0')
 				lijst[1] = nil
-				local nexp = X('lus', lijst, gen, X('_fn', idx, X('||=', X('_arg0',idx), X('_arg1',idx))))
+				local nexp = X('lus', lijst, gen, X('_fn', idx, X('||=', X('_arg0',idx), X('call', func, X('_arg1',idx)))))
 				assign(exp, nexp)
 			end
 		end

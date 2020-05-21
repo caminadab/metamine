@@ -55,6 +55,17 @@ function vectoriseer(asb, types, debug)
 			end
 		end
 
+		-- cart tuple
+		-- ((a,b)[] × c) -> ([(a,b)[] ×t c)
+		-- ×l
+		if fn(exp) == '×' then
+			local atype    = types[moes(arg0(exp))]
+			local itemtype = arg1(atype)
+			if fn(atype) == '→' and obj(itemtype) == ',' then
+				assign(exp.f, X'×t')
+			end
+		end
+
 		-- call1,2,3,4
 		if fn(exp) == '_' then
 			local type = types[moes(arg0(exp))]

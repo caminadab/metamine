@@ -67,6 +67,7 @@ function bieb()
 	['gl.linkProgram'] = true,
 	['gl.useProgram'] = true,
 
+	['loadimage'] = true,
 	['download'] = true,
 	['cubemap'] = true,
 	['texture'] = true,
@@ -213,6 +214,7 @@ function bieb()
 	boog = function() return('boog') end;
 	label = function() return('label') end;
 	rechthoek = function() return('rechthoek') end;
+	afbeelding = function() return('rechthoek') end;
 	cirkel = function() return('cirkel') end;
 	ovaal = function() return('ovaal') end;
 	lijn = function() return('lijn') end;

@@ -510,7 +510,7 @@ local noops = {
   --['map'] = '(a, b) => a.map(b)',
   ['map'] = '(a, b) => { var r = []; for (var i = 0; i < a.length; i++) r[i] = b(a[i]); return r;}',
 	['lmap'] = '(a, b) => a.map(x => b[x])',
-  ['map4'] = '(a, b) => { if (Array.isArray(b)) return a.map(x => b[x]); else return a.map(x => b(x[0], x[1], x[2], x[3])); }',
+  ['map4'] = '(a, b) => a.map(x => b(x[0], x[1], x[2], x[3]))',
   ['filter'] = '(a, b) => a.filter(b)',
   ['filter4'] = '(a, b) => a.filter(x => b(x[0], x[1], x[2], x[3]))',
   ['vouw'] = '(a, b) => a.reduce(b)',
@@ -633,6 +633,37 @@ local noops = {
     return context;
   }
 	} ]],
+
+	['loadimage'] = [[ url => {
+		url = "res/" + url;
+		if (imgCache[url]) 
+			return imgCache[url];
+		var image = new Image();
+		image.src = url;
+		imgCache[url] = image;
+		return image;
+	}]],
+
+	['afbeelding'] = [[ (a, b, c, d, e) => {
+		var img, x, y, w, h;
+		img = a;
+		if (Array.isArray(b)) {
+			x = b[0] * SCHAAL;
+			y = (100 - b[1]) * SCHAAL;
+			w = c ? c * SCHAAL : null;
+			h = d ? d * SCHAAL : null;
+		} else {
+			x = b * SCHAAL;
+			y = (100 - c) * SCHAAL;
+			w = d ? d * SCHAAL : null;
+			h = e ? e * SCHAAL : null;
+		}
+		return context => {
+			context.drawImage(img, x, y, w, h);
+			return context;
+		}
+	} ]],
+
 
 	['rechthoek'] = [[ (a, b, c, d) => {
 	var x, y, w, h;
@@ -822,26 +853,32 @@ for (var y = 0; y < h; y++) {
 }
 $1 = vec;]],
 
-	['..'] = [[var res = [];
-for (var i = 0; i < $2 - $1; i++)
-  res[i] = $1 + i;
-$1 = res;]],
+	['..'] = [[var r = [];
+var k = 0;
+for (var i = $1; i < $2; i++)
+  r[k++] = i;
+$1 = r;]],
 
 	-- cart
 	['×'] = [[
 var r = [];
+for (var j = 0; j < $2.length; j++)
+	for (var i = 0; i < $1.length; i++)
+		r.push([$1[i],$2[j] ]);
+$1 = r; ]],
+
+	-- cart tuple
+	['×t'] = [[
+var r = [];
 for (var j = 0; j < $2.length; j++) {
 	for (var i = 0; i < $1.length; i++) {
-		if (Array.isArray($1[i])) {
-			var a = $1[i].slice();
-			a.push($2[j]);
-			r.push(a);
-		}
-		else
-			r.push([$1[i],$2[j] ]);
+		var a = $1[i].slice();
+		a.push($2[j]);
+		r.push(a);
 	}
 }
 $1 = r; ]],
+
 }
 
 local binops = {

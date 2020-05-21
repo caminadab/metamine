@@ -18,8 +18,10 @@ kommagetal: getal
 ; html
 canvas.fontsize: functie, getal → functie
 canvas.linewidth: functie, getal → functie
+loadimage: (nat → letter) → image
 
 ; webGL
+vertexshader: (nat → letter) → vshader
 vertexshader: (nat → letter) → vshader
 fragmentshader: (nat → letter) → fshader
 shaderprogram: vshader, fshader → sprog
