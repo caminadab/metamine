@@ -106,7 +106,7 @@ function unparse_work(exp, maxlen, tabs, res, klaar)
 	klaar = klaar or {}
   tabs = tabs or 0
   res = res or {}
-	if klaar[exp] then
+	if klaar[moes(exp)] then
 		if isatoom(exp) then
 			insert(res, '~'..atoom(exp))
 		else
@@ -114,7 +114,7 @@ function unparse_work(exp, maxlen, tabs, res, klaar)
 		end
 		return
 	end
-	klaar[exp] = true
+	klaar[moes(exp)] = true
   if isatoom(exp) then
     insert(res,atoom(exp))
 	elseif fn(exp) == '""' then

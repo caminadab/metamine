@@ -67,13 +67,14 @@ function codegen(exp, moes2naam)
 
 
 	local function rec(exp)
-		if exps[exp] then
+		if exps[moes(exp)] then
 			if not isatoom(exp) then
-				dubbel[exp] = true
+				dubbel[moes(exp)] = true
+				--print('DUBBEL', combineer(exp))
 				return
 			end
 		end
-		exps[exp] = true
+		exps[moes(exp)] = true
 		for k,sub in subs(exp) do
 			rec(sub)
 		end
@@ -81,8 +82,8 @@ function codegen(exp, moes2naam)
 	rec(exp)
 
 	local function codegen(exp, ins, callarg)
-		if iscached[exp] then
-			ins[#ins+1] = X('ld', tostring(iscached[exp]))
+		if iscached[moes(exp)] then
+			ins[#ins+1] = X('ld', tostring(iscached[moes(exp)]))
 			return
 		end
 
@@ -95,7 +96,7 @@ function codegen(exp, moes2naam)
 			local ic = iscached
 			local d = dubbel
 			iscached = {}
-			dubbel = {}
+			--dubbel = {}
 
 			codegen(arg1(exp), ins, callarg)
 
@@ -279,7 +280,7 @@ function codegen(exp, moes2naam)
 			local d = dubbel
 			codeindex = {}
 			reused = {}
-			dubbel = {}
+			--dubbel = {}
 			codegen(arg1(exp), ins, callarg)
 			iscached = ic
 			dubbel = d
@@ -317,9 +318,9 @@ function codegen(exp, moes2naam)
 
 		codeindex[exp] = #ins
 
-		if not isatoom(exp) and dubbel[exp] or moes2naam[moes(exp)] then
-			iscached[exp] = maakcacheindex()
-			ins[#ins+1] = X('st', tostring(iscached[exp]))
+		if not isatoom(exp) and dubbel[moes(exp)] or moes2naam[moes(exp)] then
+			iscached[moes(exp)] = maakcacheindex()
+			ins[#ins+1] = X('st', tostring(iscached[moes(exp)]))
 		end
 
 		return ins, iscached

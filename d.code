@@ -1,0 +1,4 @@
+main = f ∘ g 
+f = x → b + b
+g = y → b + b + b
+b = x + 2

@@ -579,7 +579,7 @@ local noops = {
 	['willekeurig'] = '(x, y) => Math.random()*(y-x) + x',
 	['int'] = 'Math.floor',
 	['abs'] = 'Math.abs',
-	['tekst'] = 'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
+	['tekst'] = 'toString', --'x => (typeof(x)=="object" && x.has && "{"+[...x].toString()+"}") || JSON.stringify(x) || (x || "niets").toString()',
 	['polygoon'] = [[ args => {
 		return context => {
 			context.beginPath();

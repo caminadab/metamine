@@ -183,7 +183,7 @@ function vertaal(code, isdebug)
 	local naam2cache = {}
 	for exp,index in pairs(cachemap) do
 		--print('cachemap', unlisp(exp), index)
-		local naam = moes2naam[moes(exp)]
+		local naam = moes2naam[exp]
 		if naam then
 			naam2cache[naam] = index
 			--print('naam2cache', naam, index)
