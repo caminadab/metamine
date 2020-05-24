@@ -5,8 +5,8 @@ bal.x.min = 15
 bal.y.min = 5
 bal.x.max = scherm.breedte - 15
 bal.y.max = scherm.hoogte - 5
-bal.vx := 1
-bal.vy := willekeurig(-1,1)
+bal.vx := 3
+bal.vy := willekeurig(-3,3)
 
 ; speler variabelen
 speler.y.start = speler.y.max / 2

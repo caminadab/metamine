@@ -114,6 +114,25 @@ function vectoriseer(asb, types, debug)
 			local isfunc = fn(fntype) == '→' and atoom(arg0(fntype)) ~= 'nat'
 
 			if isfunc then
+				local nargs = #arg0(fntype)
+				if nargs > 4 then
+					nargs = 1
+				end
+				--exp.f = X('call'..nargs)
+				--exp.f = X('call')
+				local args = exp.a[2]
+				--print(moes(exp.a[2]))
+					--error(combineer(exp))
+				if false and nargs > 1 then
+					-- clear
+					for i,v in ipairs(exp.a) do
+						exp.a[i] = nil
+					end
+					-- vul
+					for i=1,nargs do
+						exp.a[i] = X(',', X('index', args, tostring(i)))
+					end
+				end
 				exp.f = X'call'
 			elseif istekst then
 				exp.f = X'_t'

@@ -197,7 +197,6 @@ afrond: getal → int
 afrond.boven: getal → int
 afrond.onder: getal → int
 (:): (iets,iets) → bit
-maxindex: (nat → iets) → iets
 
 (iets → iets) : iets
 (iets → int) : iets
@@ -215,6 +214,5 @@ deel : (lijst, int, int) → lijst
 
 ;herhaal : ((→) → (→))
 ;herhaal : ((→), int) → (→)
-maxindex: (nat → iets), nat
 waarvoor : ((nat → iets), (iets → bit)) → (nat → iets)
 mod : getal, getal → getal

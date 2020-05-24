@@ -86,7 +86,10 @@ end
 			if false and k == 'uit' and moes(v) ~= 'iets' then
 				assert(false)
 			end
-			print('TYPEER', k..': '..combineer(v))
+			local f = debug.traceback():gmatch(':(%d+):')
+			f()
+			local l = f()
+			print('TYPEER', 'L'..l.. '\t'.. k..'\t'..combineer(v))
 			_types[k] = v
 		end
 	})
@@ -207,7 +210,7 @@ end
 
 
 		-- _(zip, (lijst, fn))
-		elseif fnaam(exp) == 'zip' then
+		elseif fnaam(exp) == 'rits' then
 			local A = moes(arg1(exp))
 			moetzijn(types[A], X(',', 'iets', 'iets'), exp)
 
@@ -358,7 +361,18 @@ end
 			elseif types[A] and geengetalA then
 				types[moes(exp)] = types[A]
 			else
-				types[moes(exp)] = types[B]
+				-- twee getallen
+				if fn(exp) == '/' then
+					types[moes(exp)] = X'getal'
+				elseif fn(exp) == '·' then
+					if atoom(types[A]) == 'int' and atoom(types[B]) == 'int' then
+						types[moes(exp)] = X'int'
+					elseif not geengetalA and not geengetalB then
+						types[moes(exp)] = X'getal'
+					end
+				else
+					types[moes(exp)] = types[A]
+				end
 			end
 
 		-- machtsverheffing
@@ -527,22 +541,37 @@ end
 
 		-- indexeer
 		-- a _ b  :  ((X→Y) _ X) :  Y
+		-- A: X → Y
+		-- B: A _ X
+		-- C: (B : Y)
 		elseif fn(exp) == '_' then
 			local functype = types[moes(arg0(exp))] -- type(a)  = X→Y
 			local argtype = types[moes(arg1(exp))]  -- type(b)  = X
+			local funcarg, returntype
+
 			assert(functype)
 			assert(argtype)
 
-			--print('____', combineer(argtype), combineer(functype), combineer(exp), combineer(argtype))
+			local returntype = X'iets' --X(color.green..'iets'..color.white)
 
-			local funcarg, returntype
+			moetzijn(functype, X('→', argtype, returntype), exp)
+			types[moes(arg0(exp))] = functype
+			--types[moes(exp)] = func
+			
+			--error(combineer(functype))
+
+			--print('____', combineer(argtype), combineer(functype), combineer(exp), combineer(argtype))
+			--types[moes(arg0(exp))] = functype
+
 
 			if fn(functype) == '→' then
 				funcarg = moetzijn(argtype, arg0(functype), arg1(exp))
+				returntype = arg1(functype)
 				functype.a[1] = funcarg
+
 				returntype = arg1(functype)
 
-				--error(C(arg0(functype)))
+				--error(C(functype))
 
 			elseif obj(functype) == ',' then
 				returntype = X'iets' --{f=X'|', a=functype}
@@ -589,7 +618,7 @@ end
 			-- tg : B → C
 			local tf = types[F]
 			local ta = types[A]
-			
+
 			-- a → b
 			local ftype = X('→', tf, ta)
 			--moetzijn(a, 10)
@@ -609,6 +638,7 @@ end
  
 		elseif ez then
 			types[moes(exp)] = ez
+			--moetzijn(types[moes(e
 
 		-- standaardtypes
 		elseif std[fn(exp)] then
@@ -664,7 +694,7 @@ end
 
 	if verbozeTypes then
 		print '# Eindtypes'
-		for moes,type in pairs(_types or types) do
+		for moes,type in spairs(_types or types) do
 			print('EINDTYPE', type.var, moes, combineer(type))
 		end
 	end

@@ -110,7 +110,7 @@ xsnap = klem(xmod, 0, 6)
 xdraw  = 30 + xsnap · 15 + 7.5
 
 ; teken
-blauwbord = rechthoek(29,0,135,90)   verf kleur.blauw
+blauwbord = rechthoek((29,0),(135,90))   verf kleur.blauw
 selectie  = cirkel(xdraw, 95, 3)     verf (palet(2 - kleur))
 stuk      = cirkel(x·15+37,y·15+7,7) verf ckleur
 stukken   = (0..7 × 0..6) map (x,y → stuk)
@@ -122,6 +122,7 @@ infolabel3  = label(0,70,"score     = " ‖ tekst(score(bord,0)))
 infolabel4  = label(0,65,"denktijd  = " ‖ tekst(denktijd))
 
 uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2, infolabel3, infolabel4])
+
 
 
 

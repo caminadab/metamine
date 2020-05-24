@@ -142,9 +142,9 @@ score2 := 0
 fk := kleur.zwart
 
 als fk = kleur.zwart dan
-	flits = rechthoek(0,0,0,0)
+	flits = rechthoek((0,0),(0,0))
 anders
-	flits = verf(rechthoek(0,0,scherm.breedte,scherm.hoogte), fk)
+	flits = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), fk)
 eind
 
 als scherm.ververst en bal.y > 0 dan
@@ -176,7 +176,7 @@ eind
 ; teken
 links  = boog(links.x,links.y, 10, τ/2, τ)   verf kleur.geel
 rechts = boog(rechts.x,rechts.y, 10, τ/2, τ) verf kleur.blauw
-net    = rechthoek(hw-1,0,hw+1,10)           verf kleur.wit
+net    = rechthoek((hw-1,0),(hw+1,10))           verf kleur.wit
 bal    = cirkel(bal.x, bal.y, 8)             verf balkleur
 label1 = label(hw-5,90, tekst(score1))
 label2 = label(hw+5,90, tekst(score2))
@@ -185,6 +185,7 @@ bal.f = √(bal.vx² + bal.vy²) / 10
 balkleur = rgb(1 - bal.f, bal.f, 0)
 
 uit = teken [ flits, links, rechts, net, bal, label1, label2 ]
+
 
 
 

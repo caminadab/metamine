@@ -16,8 +16,9 @@ klem = V,L,H → min(max(V,L),H)
 ; linq helpers
 ;maxindex = M → ((0..#M) zip M vouw Mfunc)₀
 ;maxindex = M → reduceer((0,M₀), 1..#M, ((A,B),(C,D) → (⇒)((B > D), (A,B), (C,D))))
-maxindex = M → reduceer(0, 1..#M, (I,W → (⇒)( (M(W) > M(I)), W, I)))
+;maxindex = M → reduceer(0, M, (I,W → (⇒)( ((M W) > (M I)), W, I)))
 ;maxindex = M → reduceer((0,M₀), 1..#M, (I,W → (⇒)( (M(W) > M(I)), W, I)))
+maxindex = L → reduceer(0, L, (A,B → (⇒)(((L A) > (L B)), A, B)))
 
 ; toetsenbord
 toetsen := {}

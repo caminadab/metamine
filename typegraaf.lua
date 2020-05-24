@@ -240,6 +240,14 @@ function metatypegraaf:intersectie(a, b, exp)
 		end
 	end
 
+	if obj(a) == ',' and fn(b) == '→' then
+		return a
+	end
+	if obj(b) == ',' and fn(a) == '→' then
+		assign(a, b)
+		return a
+	end
+
 	-- functie
 	if fn(a) == '→' and atoom(b) == 'functie' then return a end
 	if fn(b) == '→' and atoom(a) == 'functie' then assign(a, kopieer(b)) ; return a end

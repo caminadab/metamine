@@ -1,5 +1,6 @@
 require 'exp'
 require 'symbool'
+require 'constoptm'
 
 local altijdja = X('_fn', '12358', '⊤')
 local calls = set('call', 'call1', 'call2', 'call3', 'call4')
@@ -340,6 +341,20 @@ local function multiopt(exp, maakindex)
 	return exp
 end
 
+local function argopt(exp, maakindex)
+	for exp in boompairs(exp) do
+		if fn(exp) == 'call' and obj(arg1(exp)) == ',' then
+			local nargs = #arg1(exp)
+			if 2 <= nargs and nargs <= 4 then
+				exp.f = X('call'..tostring(nargs))
+				local o = arg1(exp)
+				exp.a = X(',', arg0(exp), o[1], o[2], o[3], o[4])
+			end
+		end
+	end
+	return exp
+end
+
 -- _f2(_fn(1 X) Y) X[_arg(1)=Y]
 local function callopt(exp, maakindex)
 	for exp in boompairs(exp) do
@@ -373,7 +388,9 @@ function optimiseer(exp)
 	local exp = multiopt(exp, maakindex)
 	local exp = refunc(exp, maakindex)
 	local exp = compopt(exp, maakindex)
-	local exp = callopt(exp, maakindex)
+	local exp = argopt(exp, maakindex)
+	--local exp = callopt(exp, maakindex)
+	--local exp = constoptm(exp)
 
 	return exp
 end

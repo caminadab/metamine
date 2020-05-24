@@ -1,1 +1,4 @@
-main = (0..10) map (x → x · 2)
+speler = (1,1,0, 1,0)
+tank = X,Y,D, E,F → X + Y + D
+
+main = tank(speler)

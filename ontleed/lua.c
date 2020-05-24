@@ -1,6 +1,11 @@
+#define _POSIX_C_SOURCE 199309L
 #include <lua.h>
 #include <lauxlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/sysinfo.h>
+#include <stddef.h>
 
 #include "loc.h"
 #include "lua.h"
@@ -553,6 +558,14 @@ int lua_ontleedexp(lua_State* L) {
 	//
 }
 
+int lua_nu(lua_State* L) {
+	struct timespec tp;
+	clock_gettime(CLOCK_REALTIME, &tp);
+	double nu = (double)tp.tv_sec + (double)tp.tv_nsec / 1e9;
+	lua_pushnumber(L, nu);
+	return 1;
+}
+
 int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, const char* yymsg) {
 	lua_createtable(L, 0, 3);
 		lua_pushliteral(L, "syntax");
@@ -582,6 +595,7 @@ int yyerror(YYLTYPE* loc, lua_State* L, int* ref, int* fouten, void* scanner, co
 EXPORT int luaopen_ontleed(lua_State* L) {
 	lua_pushcfunction(L, lua_ontleed); lua_setglobal(L, "ontleed");
 	lua_pushcfunction(L, lua_ontleedexp); lua_setglobal(L, "ontleedexp");
+	lua_pushcfunction(L, lua_nu); lua_setglobal(L, "nu");
 	return 1;
 }
 

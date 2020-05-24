@@ -92,38 +92,6 @@ void main(void) {
 }
 "
 
-grid := plet(plet(tiles))
-ugrid := plet(plet(tileuvs))
-numpolys3 = #grid / 9
-gridposbuf = vertexbuffer grid
-griduvbuf = vertexbuffer ugrid
-gridnormalbuf = vertexbuffer ngrid
-pa = [(0,h1,0), (0,h2,1), (1,h3,0), (1,h4,1), (1,h3,0), (0,h2,1)]
-h1 = hmap(h)
-h2 = hmap(h+n)
-h3 = hmap(h+1)
-h4 = hmap(h+n+1)
-
-; tile normals
-Nlengte = √(Nx²+Ny²+Nz²)
-ngrid := plet((0..n × 0..n × 0..6) map (ng → 0,1,0)) ;(nx,ny,ni → (cross(nga, ngb) )))
-nga = (1,hoogte(nx+1,ny),0)
-ngb = (0,hoogte(nx,ny+1,1))
-
-normaliseer = (Nx,Ny,Nz) → (Nx,Ny,Nz)/Nlengte
-cross = (ax,ay,az),(bx,by,bz) → (ay·bz-az·by, az·bx - ax·bz, ax·by-ay·bx)
-
-n = 0
-dist = √((x-hn)²+(y-hn)²)
-hoogte = x,y → 3 · cos(dist)·√dist/1000 ; -√((X-n/2)²+(Y-n/2)²)·0.7
-hmap := (-hn ..hn × -hn ..hn) map hoogte
-hn = n/2
-tiles = (-hn ..hn × -hn ..hn) rits (0..n²) map tilefunc
-tilefunc = (i,j),h → pa map (pp → pp·10 + (10·i,1,10·j))
-tileuvs = (0..n²) map (tui → [(0,0,0),(1,0,0),(0,1,0),(1,1,0),(0,1,0),(1,0,0)])
-
-;pn = cross(pa₂ - pa₀, pa₁ - pa₀)
-
 ; level
 aappos = (0,0,0)
 aapmov = verplaats(aappos)
@@ -289,5 +257,6 @@ onormal  = Regel → (Regel splits " " vanaf 1) filter (T → #T > 0) map nface
 iface    = Face → getal((Face splits "/")₀)
 uface    = Face → getal((Face splits "/")₁)
 nface    = Face → getal((Face splits "/")₂)
+
 
 

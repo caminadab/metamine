@@ -7,7 +7,6 @@ require 'optimiseer'
 require 'vertolk'
 require 'oplos'
 require 'vectoriseer'
-local socket = require 'socket'
 
 
 local function vars(exp)
@@ -76,19 +75,19 @@ function vertaal(code, isdebug)
 	local maakvar = maakvars()
 	local opt = opt or {}
 
-	local prev = socket.gettime()
+	local prev = nu()
 	local asb,syntaxfouten,map = ontleed(code)
 	local asb = scope(asb)
 
 	if type(asb) ~= 'table' then
 		return nil, { syntaxfout(nergens, "rommel"); }
 	end
-	local delta = socket.gettime() - prev
+	local delta = nu() - prev
 	local ms = math.floor(delta * 1000)
 	if opt.D then
 		print('ontleed\t' ..ms..' ms')
 	end
-	local prev = socket.gettime()
+	local prev = nu()
 
 	-- vertaal
 	local asb = vertolk(asb)
@@ -99,12 +98,12 @@ function vertaal(code, isdebug)
 		return nil, cat(syntaxfouten, typeerfouten)
 	end
 
-	local delta = socket.gettime() - prev
+	local delta = nu() - prev
 	local ms = math.floor(delta * 1000)
 	if opt.D then
 		print('typeer\t' ..ms..' ms')
 	end
-	local prev = socket.gettime()
+	local prev = nu()
 
 
 
@@ -119,12 +118,12 @@ function vertaal(code, isdebug)
 --	local exp = vectoriseer(exp, types, isdebug)
 
 	
-	local delta = socket.gettime() - prev
+	local delta = nu() - prev
 	local ms = math.floor(delta * 1000)
 	if opt.D then
 		print('oplos\t' ..ms..' ms')
 	end
-	local prev = socket.gettime()
+	local prev = nu()
 
 	if #oplosfouten > 0 then
 		return nil, cat(syntaxfouten, typeerfouten, oplosfouten)
@@ -141,12 +140,12 @@ function vertaal(code, isdebug)
 
 		exp = optimiseer(exp)
 
-		local delta = socket.gettime() - prev
+		local delta = nu() - prev
 		local ms = math.floor(delta * 1000)
 		if opt.D then
 			print('optimiseer\t' ..ms..' ms')
 		end
-		local prev = socket.gettime()
+		local prev = nu()
 
 	else
 		exp = refunc(exp)
@@ -173,12 +172,12 @@ function vertaal(code, isdebug)
 	-- cachemap: exp → cacheindex
 	local app,cachemap = codegen(exp, moes2naam)
 
-	local delta = socket.gettime() - prev
+	local delta = nu() - prev
 	local ms = math.floor(delta * 1000)
 	if opt.D then
 		print('codegen\t' ..ms..' ms')
 	end
-	local prev = socket.gettime()
+	local prev = nu()
 
 	local naam2cache = {}
 	for exp,index in pairs(cachemap) do
