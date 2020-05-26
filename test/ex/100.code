@@ -1,0 +1,5 @@
+ispriem = x → ⋀ bereik map rest
+bereik  = 2 .. √(x + 1)
+rest    = n → (x mod n ≠ 0)
+
+main = (⇒)(ispriem 2147483647, 100, 0)

@@ -309,7 +309,7 @@ local function multiopt(exp, maakindex)
 		end
 
 		-- vlus
-		if fnaam(exp) == 'map' then
+		if false and fnaam(exp) == 'map' then
 			local gen = devec(arg1(exp))
 			local func = arg2(exp)
 			if gen then
@@ -322,7 +322,7 @@ local function multiopt(exp, maakindex)
 		end
 
 		-- vlus
-		if fnaam(exp) == 'filter' then
+		if false and fnaam(exp) == 'filter' then
 			local gen = devec(arg1(exp))
 			local func = arg2(exp)
 			local body = arg1(func)
@@ -389,7 +389,7 @@ function optimiseer(exp)
 	local exp = refunc(exp, maakindex)
 	local exp = compopt(exp, maakindex)
 	local exp = argopt(exp, maakindex)
-	--local exp = callopt(exp, maakindex)
+	local exp = callopt(exp, maakindex)
 	--local exp = constoptm(exp)
 
 	return exp

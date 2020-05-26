@@ -1,0 +1,14 @@
+hist := [(10,10,10)]
+
+prev := (0,0)
+
+lengte = X,Y → √(X²+Y²)
+
+als muis.beweegt dan
+	prev := muis.pos
+	hist := [nieuw] ‖ (hist tot 1000)
+eind
+nieuw = muis.pos ‖ [l]
+l = lengte(muis.pos - prev) / 5
+
+uit = teken (hist map cirkel)

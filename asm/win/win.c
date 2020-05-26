@@ -20,10 +20,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstance2, PSTR pCmdLine, int
 		wc.hCursor = LoadIcon(NULL, IDC_ARROW);
 		
 		SetConsoleOutputCP(CP_UTF8);
-		WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), "hoi", 3, NULL, 0);
+		WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), L"hoi", 3, NULL, 0);
 
 		unsigned int num;
-		WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), "hoi\n", 4, &num, 0);
+		WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), L"hoi\n", 4, &num, 0);
 
     RegisterClass(&wc);
 

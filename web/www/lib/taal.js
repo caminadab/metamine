@@ -38,6 +38,7 @@ CodeMirror.defineMode("taal", function(config, parserConfig) {
 		'vertexbuffer', 'shaderbind', 'shaderprogram', 'uniformbind', 'matrixbind',
 		'download', 'texturebind', 'texture', 'cubemap', 'cubemapbind',
 		'jsonencodeer', 'jsondecodeer',
+		'id',
 
 		// muis
 		'muis.x', 'muis.y', 'muis.pos', 'muis.beweegt',

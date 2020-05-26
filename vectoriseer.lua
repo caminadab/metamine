@@ -14,9 +14,14 @@ function numargs(functype)
 end
 
 local simpel = set('getal', 'int', 'bit', 'functie')
+local cmp = set('>', '<', '=g', '≠', '≥', '≤')
 
 local function issimpel(type)
 	return not not simpel[atoom(type)]
+end
+
+local function isfunctie(exp)
+	return atoom(exp) == 'functie' or fn(exp) == '→'
 end
 
 -- past types toe om operators te preoverloaden
@@ -39,6 +44,19 @@ function vectoriseer(asb, types, debug)
 	rec(asb)
 
 	for exp in boompairsdfs(asb) do
+
+		-- cmp
+		if cmp[fn(exp)] then
+			local atype  = types[moes(arg0(exp))]
+			local btype  = types[moes(arg1(exp))]
+			if isfunctie(atype) then
+				if isfunctie(btype) then
+					exp.f = X(fn(exp)..'f')
+				else
+					exp.f = X(fn(exp)..'f1')
+				end
+			end
+		end
 
 		-- filter2,3,4
 		if fnaam(exp) == 'filter' or fnaam(exp) == 'map' then
@@ -133,7 +151,12 @@ function vectoriseer(asb, types, debug)
 						exp.a[i] = X(',', X('index', args, tostring(i)))
 					end
 				end
-				exp.f = X'call'
+
+				if nargs > 1 then
+					exp.f = X'callm'
+				else
+					exp.f = X'call'
+				end
 			elseif istekst then
 				exp.f = X'_t'
 			elseif islijst then
@@ -253,7 +276,7 @@ function vectoriseer(asb, types, debug)
 			local isnumA = atoom(atype) == 'int' or atoom(atype) == 'getal'
 			local isnumB = atoom(btype) == 'int' or atoom(btype) == 'getal'
 			local isfuncA = fn(atype) == '→' or atoom(atype) == 'functie'
-			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
+			local isfuncB = fn(btype) == '→' or atoom(btype) == 'functie'
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
 			local ismatA = atoom(arg0(atype)) == 'nat' and atoom(arg0(arg1(atype))) == 'nat'
@@ -295,7 +318,7 @@ function vectoriseer(asb, types, debug)
 			local isnumA = atoom(atype) == 'int' or atoom(atype) == 'getal'
 			local isnumB = atoom(btype) == 'int' or atoom(btype) == 'getal'
 			local isfuncA = fn(atype) == '→' or atoom(atype) == 'functie'
-			local isfuncB = fn(atype) == '→' or atoom(atype) == 'functie'
+			local isfuncB = fn(btype) == '→' or atoom(btype) == 'functie'
 			local islijstA = atoom(arg0(atype)) == 'nat' or obj(atype) == ','
 			local islijstB = atoom(arg0(btype)) == 'nat' or obj(btype) == ','
 			local ismatA = atoom(arg0(atype)) == 'nat' and atoom(arg0(arg1(atype))) == 'nat'

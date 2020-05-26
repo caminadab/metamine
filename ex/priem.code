@@ -1,2 +1,5 @@
-ispriem = x → ⋀ (2..√x) map (y → (x mod y ≠ 0))
-uit = ispriem 101
+ispriem = x → ⋀ bereik map rest
+bereik = 2 .. √(x + 1)
+rest = n → (x mod n ≠ 0)
+
+uit = ispriem ;(99999199999)

@@ -71,7 +71,7 @@ td:nth-child(1) {
 #uit {
 	font-width: bold;
 	background: #113;
-	font-size: 36px;
+	/*font-size: 36px;*/
 	padding: 0;
 	box-sizing: border-box;
 	word-wrap: break-word;

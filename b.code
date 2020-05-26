@@ -1,4 +1,5 @@
-speler = (1,1,0, 1,0)
-tank = X,Y,D, E,F → X + Y + D
+ispriem = x → ⋀ bereik map rest
+bereik = 2.. √(x + 1)
+rest = n → (x mod n ≠ 0)
 
-main = tank(speler)
+uit = ispriem(10)

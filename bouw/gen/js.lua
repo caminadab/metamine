@@ -779,7 +779,8 @@ local noops = {
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
 	['sign'] = '$1 > 0 ? 1 : -1',
-	['mod'] = '(x,y) => x < 0 ? (x % y + y) % y : x % y',
+	--['mod'] = '(x,y) => x < 0 ? (x % y + y) % y : x % y',
+	['mod'] = '(x,y) => x % y',
 
 	['int'] = 'Math.floor',
 	['sin'] = 'Math.sin',
@@ -816,6 +817,17 @@ local unops2 = {
 }
 
 local binops2 = {
+	['>f']  = 'var $1 = x => $1(x) > $2(x);',
+	['>f1'] = 'var a = $1; var $1 = x => a(x) > $2;',
+	['=f']  = 'var $1 = x => $1(x) == $2(x);',
+	['=f1'] = '$1 = x => $1(x) == $2;',
+	['+f']  = 'var a = $1; var b = $2; var $1 = x => a(x) + b(x);',
+	['+f1'] = 'var a = $1; var $1 = x => a(x) + $2;',
+	['·f']  = 'var a = $1; var b = $2; var $1 = x => a(x) * b(x);',
+	['·f1'] = 'var a = $1; var $1 = x => a(x) * $2;',
+	['/f']  = 'var a = $1; var b = $2; var $1 = x => a(x) / b(x);',
+	['/f1'] = 'var a = $1; var $1 = x => a(x) / $2;',
+
 	['||='] = '$1.push($2);',
 	['^l'] = [[var res = [];
 	var k = 0;
@@ -894,15 +906,10 @@ local binops = {
 	-- dot
 	['·v']  = '(x => {var r = 0; for (var i = 0; i < $1.length; i++) r += $1[i] * $2[i]; return r;})()',
 	['·v1'] = '$1.map(x => x * $2)',
-	['+f'] = 'x => $1(x) + $2(x)',
-	['+f1'] = 'x => $1(x) + $2',
-	['·f'] = 'x => $1(x) * $2(x)',
-	['·f1'] = 'x => $1(x) * $2',
-	['/f'] = 'x => $1(x) / $2(x)',
-	['/f1'] = 'x => $1(x) / $2',
 	['-f'] = 'x => -$1(x)',
 	['/v1'] = '$1.map(x => x / $2)',
 	['call'] = '$1($2)',
+	['callm'] = '$1($2[0], $2[1], $2[2], $2[3])',
 	['call1'] = '$1($2)',
 	['_fr'] = '$2($1)',
 	['_t'] = '$1.charCodeAt($2)',
