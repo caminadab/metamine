@@ -1,43 +1,10 @@
 require 'func'
 
-local unops = {
-	['#'] = '$1.length',
-	['index0'] = '$1[0]',
-	['√'] = 'Math.sqrt($1)',
-	['%'] = '$1 / 100;',
-	['-'] = '- $1',
-	['¬'] = '! $1',
-	['-v'] = '$1.map(x => -x)',
-	['!'] = [[(num => {
-  if (num === 0 || num === 1)
-    return 1;
-  for (var i = num - 1; i >= 1; i--) {
-    num *= i;
-  }
-  return num;})($1)
-	]],
-	['derdemachtswortel'] = 'Math.pow($1,1/3)',
-}
-
 local noops = {
 	['append'] = '(x, y) => {x.push(y); return x;}',
 	['prepend'] = '(x, y) => {x.unshift(y); return x;}',
 
 	['eval'] = 'eval',
-
-	['herhaal'] = [[(max, vouw) => {
-		var res = 0;
-		for (var i = 0; i < max; i++)
-			res = res + i;
-		return res;
-	}]],
-
-	['debugsom'] = [[x => {
-		var s = 0;
-		for (var i = 0; i < 1000000; i++)
-			s += i + 10;
-		return s;
-	}]],
 
 	['plet'] = [[args => {
 		var res = [];
@@ -86,7 +53,6 @@ local noops = {
 	} ]],
 
 	['uniformbind'] = [[ (prog, name, val) => {
-	Σ
 		var loc = gl.getUniformLocation(prog, name);
 		if (Array.isArray(val)) {
 			if (val.length == 2) gl.uniform2fv(loc, val);
@@ -488,7 +454,6 @@ local noops = {
 }]],
 
 	-- niet goed
-	['misschien'] = 'Math.random() < 0.5',
 	['newindex']  = '(lijst,index,val) => { lijst[ index ] = val; return lijst; }',
 	['newindex2'] = '(lijst,index,val) => { var t = []; for (var i = 0; i< lijst.length; i++) { if (i == index) t[i] = val; else t[i] = lijst[i]; } return t; }',
 	['scherm.ververst'] = 'true',
@@ -806,14 +771,21 @@ local noops = {
 	['vierde'] = '(typeof($1)=="function") ? $1(3) : $1[3]',
 }
 
-local unops2 = {
+local unops = {
+	['#'] = 'var $1 = $1.length',
+	['index0'] = 'var $1 = $1[0];',
+	['√'] = 'var $1 = Math.sqrt($1);',
+	['%'] = 'var $1 = $1 / 100;',
+	['¬'] = 'var $1 = ! $1;',
+	['-v'] = 'var $1 = $1.map(x => -x);',
+	['!'] = 'var $1 = num; for (var i = num - 1; i >= 1; i--) $1 *= i;',
 
 	-- som
 	['Σ'] = [[var sum = 0; for (var i = 0; i < $1.length; i++) sum = sum + $1[i]; $1 = sum;]],
 	['⋀'] = [[var sum = true; for (var i = 0; i < $1.length; i++) sum = sum && $1[i]; $1 = sum;]],
 	['⋁'] = [[var sum = false; for (var i = 0; i < $1.length; i++) sum = sum || $1[i]; $1 = sum;]],
 	['|'] = 'for (var i = 0; i < $1.length; i++) if ($1[i] != null) { $1 = $1[i]; break; }',
-	['-'] = '$1 = -$1;',
+	['-'] = 'var $1 = -$1;',
 }
 
 local binops2 = {
@@ -999,25 +971,6 @@ function jsgen(sfc)
 			L[#L+1] = tabs..'var '..varnaam(focus) .. " = " .. atoom(ins) .. ';'
 			focus = focus + 1
 
-		elseif fn(ins) == 'rep' then
-			local res = {}
-			local num = tonumber(atoom(arg(ins)))
-			assert(num, unlisp(ins))
-			for i = 1, num-1 do
-				L[#L+1] = tabs..string.format('var %s = %s;', varnaam(focus+i), varnaam(focus))
-				focus = focus + 1
-			end
-
-		elseif atoom(ins) == 'dup' then
-			L[#L+1] = tabs..string.format('var %s = %s;', varnaam(focus), varnaam(focus-1))
-			focus = focus + 1
-
-		elseif fn(ins) == 'kp' then
-			local num = tonumber(atoom(arg(ins)))
-			L[#L+1] = tabs..string.format('var %s = %s;', varnaam(focus-num+1), varnaam(focus-1))
-			focus = focus + 1
-
-
 		elseif fn(ins) == '∘' then
 			local funcs = arg(ins)
 			L[#L+1] = tabs..string.format('function %s(x) {')
@@ -1027,21 +980,10 @@ function jsgen(sfc)
 			end
 			L[#L+1] = tabs..string.format('function %s(x) {')
 
-		elseif fn(ins) == 'wissel' then
-			local naama = varnaam(focus)
-			local num = atoom(arg(ins))
-			local naamb = varnaam(focus + num)
-			L[#L+1] = tabs..string.format('var %s,%s = %s,%s;', naama, naamb, naamb, naama)
-
-		elseif unops2[atoom(ins)] then
-			local naam = varnaam(focus-1)
-			local di = unops2[atoom(ins)]:gsub('$1', naam)
-			L[#L+1] = tabs..di
-
 		elseif unops[atoom(ins)] then
 			local naam = varnaam(focus-1)
 			local di = unops[atoom(ins)]:gsub('$1', naam)
-			L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
+			L[#L+1] = tabs..di
 
 		elseif binops2[atoom(ins)] then
 			local naama = varnaam(focus-2)
@@ -1349,7 +1291,7 @@ function jsgen(sfc)
 	local i = 1
 
 	while i <= #sfc do
-		if true and tonumber(atoom(sfc[i])) and sfc[i+1] then
+		if tonumber(atoom(sfc[i])) and sfc[i+1] then
 			ins2js2(sfc[i], sfc[i+1])
 			i = i + 1
 		else

@@ -203,7 +203,6 @@ function bieb()
 	['τ'] = math.pi*2,
 	['∅'] = {},
 	['π'] = math.pi,
-	['misschien'] = true,
 	['fout'] = true,
 	['verf'] = true,
 

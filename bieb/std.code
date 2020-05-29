@@ -1,6 +1,6 @@
 ;ververs = moment → schrijf(tekst(uit))
 ;main = herhaal.langzaam(ververs)
-main = (in.vars, start, nu, setcontext, setcontext3d, scherm.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind, in.fotos, dt) → mainuit
+main = (in.vars, start, nu, setcontext, setcontext3d, scherm.breedte, scherm.ververst, toets.code, toets.begint, toets.eindigt, toets.begin, toets.eind, muis.beweegt, muis.beweegt.naar, muis.klik.begin, muis.klik.eind, misschien, dt) → mainuit
 
 id = X → X
 
