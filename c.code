@@ -1,1 +1,3 @@
-uit = 1
+uit = fib(10)
+f = x,y → y,x+y
+fib = n → (f^4)(0, 1)

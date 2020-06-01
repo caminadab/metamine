@@ -34,7 +34,7 @@ local function peil(waarde)
 	return diepte
 end
 
-unop   = set('-','#','¬','Σ','⋁','⋀','|','√','!','%','-v','-m','index0','igen')
+unop   = set('-','#','¬','Σ','⋁','⋀','|','√','!','%','-v','-m','index0','igen','²','³')
 binop  = set(
 	'+','·','/','^','^l',
 	'∨','∧','×','×t','..','→','∘','_','‖','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
@@ -42,7 +42,7 @@ binop  = set(
 	'∪','∩',':','∈','\\', '||=',
 	'call','callm','call1','_t','index','^f', '^l','igeni',
 	'+v', '+v1', '·v', '·v1', '/v1',
-	'+f', '+f1', '·f', '·f1',
+	'+f', '+f1', '·f', '·f1', '/f', '/f1',
 	'+m', '+m1', '·m1', '·mv', '·m',
 	'>f', '<f', '≤f', '≥f', '=f',
 	'>f1', '<f1', '≤f1', '≥f1', '=f1'
@@ -313,6 +313,7 @@ function codegen(exp, moes2naam)
 			focus = focus + 1
 		
 		else
+			error('hoe gaan we dit doen? '..combineer(exp))
 			ins[#ins+1] = exp
 			focus = focus + 1
 

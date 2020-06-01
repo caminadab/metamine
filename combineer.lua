@@ -2,7 +2,7 @@ require 'exp'
 require 'func'
 require 'set'
 
-local postop = set("%","!",".","'")
+local postop = set("%","!",".","'",'²','³')
 local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_","⇒",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖")
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
 
@@ -51,6 +51,11 @@ function codepoint_to_utf8(c)
 end
 
 local function combineerR(exp, t, kind)
+	if (combal[exp] or 0) > 3 then
+		t[#t+1] = '...'
+		return
+	end
+	combal[exp] = (combal[exp] or 0) + 1
 	if not exp then
 		t[#t+1] = '?'
 	elseif fn(exp) == '→' and atoom(arg0(exp)) == 'nat' then
@@ -176,6 +181,7 @@ end
 
 function combineer(exp)
 	local t = {}
+	combal = {}
 	combineerR(exp, t, false)
 	return table.concat(t)
 end

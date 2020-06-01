@@ -221,9 +221,9 @@ canvas {
 	width: 100%;
 	/*height: 100%;*/
 }
-.syntaxfout { background: #800; color: #A80; }
+.syntaxfout { background: #800; color: #FAA; }
 .oplosfout { background: #049; color: #AFF; }
-.typeerfout { background: #805; color: #FBF; }
+.typeerfout { background: #805; color: #FAF; }
 .fouticoon { background: #800; color: #F88; }
 
 .loc { cursor: pointer; text-decoration: underline; font-weight: bold; }

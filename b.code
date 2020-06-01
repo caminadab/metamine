@@ -1,5 +1,3 @@
-ispriem = x → ⋀ bereik map rest
-bereik = 2.. √(x + 1)
-rest = n → (x mod n ≠ 0)
-
-uit = ispriem(10)
+a = Σ ((1..101) map (²))
+b = (Σ 1..101)²
+uit = a - b

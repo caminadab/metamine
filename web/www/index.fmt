@@ -129,7 +129,10 @@
 		fetch(path, {method: "POST", body: editor.getValue()})
 			.then(x => {
 				if (!x.ok) 
+				{
+					uit.innerHTML = "Interne fout!";
 					onerror();
+				}
 				else
 					return x.json();
 			})

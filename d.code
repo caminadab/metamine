@@ -1,4 +1,1 @@
-main = f ∘ g 
-f = x → b + b
-g = y → b + b + b
-b = x + 2
+uit = Σ (1 .. 1000) filter (x → (x = 0))

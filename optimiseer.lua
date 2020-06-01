@@ -41,7 +41,7 @@ function defirst(exp, i)
 end
 
 local unop   = set("-","#","¬","Σ","|","⋀","⋁","√","|")
-local postop = set("%","!",".","'")
+local postop = set("%","!",".","'",'²','³')
 local binop  = set("+","·","/","^","∨","∧","×","..","→","∘","_",">","≥","=","≠","≈","≤","<",":=","+=","|=","|:=", "∪","∩",":","∈","‖")
 local triop  = set('⇒')
 local op     = unie(unie(binop, unie(postop, unop)), triop)

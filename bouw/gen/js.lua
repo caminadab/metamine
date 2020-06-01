@@ -773,6 +773,8 @@ local noops = {
 
 local unops = {
 	['#'] = 'var $1 = $1.length',
+	['²'] = 'var $1 = $1 * $1;',
+	['³'] = 'var $1 = $1 * $1 * $1;',
 	['index0'] = 'var $1 = $1[0];',
 	['√'] = 'var $1 = Math.sqrt($1);',
 	['%'] = 'var $1 = $1 / 100;',
@@ -910,8 +912,8 @@ local binops = {
 
 	['^'] = 'Math.pow($1, $2)',
 	['^f'] = [[(function (f,n) {
-		return function(x) {
-			var r = x;
+		return function(x,y,z,w) {
+			var r = y != null ? [x, y, z, w] : x;
 			for (var i = 0; i < n; i++) {
 				r = f(r);
 			}

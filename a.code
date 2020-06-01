@@ -1,1 +1,1 @@
-uit = Σ (0 .. 10000000) filter (x → (x mod 3 = 0 of x mod 5 = 0))
+uit = sin(sin)
