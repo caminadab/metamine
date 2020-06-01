@@ -548,17 +548,27 @@ function oplos(exp, voor, isdebug)
 	local kennisgraaf = vhgraaf()
 	local pijl2subst = {}
 	local bron2def = {}
+	local alfout = {}
 	for subst in pairs(subst) do
 		local naam,waarde = subst.a[1],subst.a[2]
 		local bron0 = var(waarde,invoer)
 		local bron = {}
+		local ok = true
 		for k in pairs(bron0) do -- alleen naam is nodig
 			--assert(type(k.v) == 'string', see(k.v))
+			if k.v == naam.v and not alfout[k.v] then
+				alfout[k.v] = true
+				ok = false
+				local fout = oplosfout(k.loc, '{exp} is recursief gedefinieerd', k)
+				fouten[#fouten+1] = fout
+			end
 			bron[k.v] = true
 			bron2def[k.v] = k
 		end
-		local pijl = kennisgraaf:link(bron, naam.v)
-		pijl2subst[pijl] = subst
+		if ok then
+			local pijl = kennisgraaf:link(bron, naam.v)
+			pijl2subst[pijl] = subst
+		end
 	end
 
 	-- ULTIEME KENNISGRAAF
@@ -569,7 +579,6 @@ function oplos(exp, voor, isdebug)
 	local stroom,halfvan,halfnaar = kennisgraaf:sorteer(invoer,voor)
 
 	if not stroom then
-		local fouten = {}
 		if false then
 			print('HALV VAN')
 			print(halfvan:tekst())
@@ -582,6 +591,7 @@ function oplos(exp, voor, isdebug)
 		file('halfvan.html', a)
 		file('halfnaar.html', b)
 		]]
+
 		for punt in pairs(halfnaar.begin) do
 			if not halfvan.punten[punt] then
 				local def = bron2def[punt]
@@ -589,12 +599,9 @@ function oplos(exp, voor, isdebug)
 				fouten[#fouten+1] = fout
 			end
 		end
+
 		if #fouten == 0 then
 			--print(halfnaar:tekst())
-			for punt in pairs(halfnaar.punten) do
-				local fout = oplosfout(nergens, '{code} was goed', punt)
-				fouten[#fouten+1] = fout
-			end
 			
 			local fout = oplosfout(nergens, 'kon niet oplossen')
 			fouten[#fouten+1] = fout

@@ -51,7 +51,7 @@ function codepoint_to_utf8(c)
 end
 
 local function combineerR(exp, t, kind)
-	if (combal[exp] or 0) > 3 then
+	if (combal[exp] or 0) >= 3 then
 		t[#t+1] = '...'
 		return
 	end

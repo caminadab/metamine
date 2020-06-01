@@ -88,6 +88,10 @@
 	function toString(obj) {
 		if (typeof(obj) == "string") {
 			return obj;
+		} else if (obj === true) {
+			return "ja";
+		} else if (obj === false) {
+			return "nee";
 		} else if (typeof(obj) == "function") {
 			return '<pre>' + obj.toString() + '</pre>';
 		} else if (obj == null) {
@@ -126,7 +130,11 @@
 		if (debug.checked)
 			path = '/vt/debug';
 
-		fetch(path, {method: "POST", body: editor.getValue()})
+		var broncode = editor.getValue();
+		if (!broncode)
+			broncode = " ";
+
+		fetch(path, {method: "POST", body: broncode})
 			.then(x => {
 				if (!x.ok) 
 				{

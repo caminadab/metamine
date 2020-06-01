@@ -283,7 +283,7 @@ function metatypegraaf:intersectie(a, b, exp)
 		--error('ok')
 		if obj(a) ~= obj(b) or #a ~= #b then
 			local fout = typeerfout(exp.loc,
-					'{code} is {exp} maar moet {exp} zijn!!!',
+					'{code} is {exp} maar moet {exp} zijn',
 					bron(exp), a, b)
 			return false, fout
 
