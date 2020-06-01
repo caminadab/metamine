@@ -39,13 +39,6 @@ function kloon(exp)
 	return t
 end
 
--- checkuhh
-local atomen = {}
-local lst, fout = file('atomen.lst') or file('../atomen.lst')
-for atoom in lst:gmatch('[^\n]+') do
-	atomen[atoom] = true
-end
-
 -- itereer kinderen
 function subs(exp)
 

@@ -1,13 +1,1 @@
-x := 0
-
-als toets.spatie dan
-	x := 10
-eind
-
-als x < 100 dan
-	x := x + 1
-eind
-
-in.vars = []
-
-main = x
+uit = Σ (0 .. 10000000) filter (x → (x mod 3 = 0 of x mod 5 = 0))

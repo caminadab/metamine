@@ -744,8 +744,8 @@ local noops = {
 	['canvas.clear'] = '(function(c) { c.clearRect(0,0,1900,1200); return c; })',
 
 	['sign'] = '$1 > 0 ? 1 : -1',
-	--['mod'] = '(x,y) => x < 0 ? (x % y + y) % y : x % y',
-	['mod'] = '(x,y) => x % y',
+	['mod'] = '(x,y) => x < 0 ? (x % y + y) % y : x % y',
+	--['mod'] = '(x,y) => x % y',
 
 	['int'] = 'Math.floor',
 	['sin'] = 'Math.sin',

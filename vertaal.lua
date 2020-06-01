@@ -1,7 +1,6 @@
 require 'util'
 require 'ontleed'
 require 'typeer'
-require 'bouw.arch'
 require 'bouw.codegen'
 require 'optimiseer'
 require 'vertolk'

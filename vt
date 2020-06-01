@@ -15,8 +15,6 @@ require 'bouw.gen.js'
 require 'bouw.gen.lua'
 require 'bouw.gen.asm'
 
-require 'bouw.focus'
-require 'bouw.arch'
 require 'bouw.codegen'
 require 'bouw.assembleer'
 require 'bouw.link'
