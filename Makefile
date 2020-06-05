@@ -5,7 +5,7 @@ deploy: ontleed.so web/www/
 #ssh -f pi  'cd taal ; git pull ; make ; pkill lua ; /etc/dienst'
 
 run: linux
-	luajit web/dienst.lua
+	luajit web/dienst.lua || lua web/dienst.lua
 
 test: linux
 	luajit test.lua

@@ -143,6 +143,9 @@ function metastroom:topologisch()
 		-- alle bronnen bekend?
 		local ok = true
 		for bron in pairs(pijl.van) do
+			if bron == pijl.naar then
+				ok = false
+			end
 			if not bekend[bron] and not van[bron] then
 				ok = false
 				--print('  NEE: '.. bron..' is onbekend')

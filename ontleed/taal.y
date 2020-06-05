@@ -117,7 +117,7 @@
 %left ALS DAN ANDERS
 %left "⇒"
 %left SOM INTERSECTIEE UNIEE WORTEL
-%left EN OF EXOF NOCH NIET
+%left EN OF EXOF NOCH NIET "⋀" "⋁"
 %left '=' "≠" "≈"
 %left ":=" "*=" "/=" "+=" "-=" "|=" "&=" "||="
 %left "∘"
@@ -348,10 +348,8 @@ exp:
 |	exp '>' exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 
 |	exp "‖" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-|	exp "⋀" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "∧" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "∨" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
-|	exp "⋁" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "⋂" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "∩" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
 |	exp "∪" exp  { $$ = FN2(L, LOC(L,$2,@2), $1, $3, @$); }
