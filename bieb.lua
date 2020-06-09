@@ -20,6 +20,7 @@ function bieb()
 
 	['html.requestAnimationFrame'] = function(f) requestAnimationFrame(f) end,
 	['eval'] = true,
+	['icode'] = true,
 	['append'] = function(lijst,item) lijst[#lijst] = item; return lijst; end;
 	['prepend'] = function(lijst,item) table.insert(lijst, 1, item); return lijst; end;
 

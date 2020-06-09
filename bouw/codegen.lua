@@ -4,6 +4,7 @@ require 'graaf'
 require 'symbool'
 require 'bieb'
 require 'combineer'
+require 'unicode'
 
 -- diepte bepalen
 local function peil(waarde)
@@ -181,6 +182,27 @@ function codegen(exp, moes2naam)
 			codegen(col, ins, 2)
 			ins[#ins+1] = X'eindlus'
 
+		elseif fn(exp) == 'lusbreak' then
+			local start = arg0(exp)
+			local gen = arg1(exp)
+			local col = arg2(exp)
+			local breakk = arg3(exp)
+			error'OK'
+
+			local colarg = fn(col) == '_fn' and atoom(arg0(col))
+			--local col    = fn(col) == '_fn' and arg1(col) or col
+			--callarg[atoom(arg0(col))] = 
+				
+
+			--error(combineer(col))
+
+			ins[#ins+1] = X'lus'
+			codegen(start, ins, callarg)
+			codegen(breakk, ins, callarg)
+			codegen(gen, ins, callarg)
+			codegen(col, ins, 2)
+			ins[#ins+1] = X'eindlus'
+
 		-- optimisatie
 		-- llus: (num) -> (nlijst)
 		elseif fn(exp) == 'llus' then
@@ -311,7 +333,20 @@ function codegen(exp, moes2naam)
 		elseif isatoom(exp) then
 			ins[#ins+1] = exp
 			focus = focus + 1
-		
+
+		elseif fn(exp) == 'icode' then
+			--for i= 1, 
+			local jns = {}
+			codegen(arg(exp), jns, nil)
+			for i=1,#jns do
+				local m = moes(jns[i])
+				for i, char in utf8pairs(m) do
+					ins[#ins+1] = X(tostring(char))
+				end
+				ins[#ins+1] = X('string', tostring(#m))
+			end
+			ins[#ins+1] = X('lijst', tostring(#jns))
+
 		else
 			error('hoe gaan we dit doen? '..combineer(exp))
 			ins[#ins+1] = exp

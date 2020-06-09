@@ -133,6 +133,7 @@ end
 
 local mappen = set('map', 'lmap', 'map4', 'mapl')
 -- reduceer(S,map(L,F),G), G=(X,Y → Z)
+
 -- > reduceer(S,L,H), H=(V,W → G(V, F(W)))
 local function mapreduceer(exp, maakindex)
 	if fnaam(exp) == 'reduceer' and mappen[fnaam(arg2(exp))] then
@@ -148,6 +149,24 @@ local function mapreduceer(exp, maakindex)
 		local hbody = X('call2', G, V, X('call', F, W))
 		local H = X('_fn', I, hbody)
 		local nexp = X('call3', 'reduceer', S, L, H)
+		assign(exp, nexp)
+	end
+-- reduceerbreak(S,map(L,F),G,B), G=(X,Y → Z)
+-- > reduceerbreak(S,L,H,B), H=(V,W → G(V, F(W)))
+	if fnaam(exp) == 'reduceerbreak' and mappen[fnaam(arg2(exp))] then
+		local S = arg1(exp)
+		local L = arg1(arg2(exp))
+		local F = arg2(arg2(exp))
+		local G = arg3(exp)
+		local B = arg3(exp)
+
+		local I = tostring(maakindex())
+		local V = X('_arg0', I)
+		local W = X('_arg1', I)
+
+		local hbody = X('call2', G, V, X('call', F, W))
+		local H = X('_fn', I, hbody)
+		local nexp = X('call4', 'reduceerbreak', S, L, H, B)
 		assign(exp, nexp)
 	end
 	return exp
@@ -241,7 +260,9 @@ end
 
 
 local function multiopt(exp, maakindex)
+	local klaar = {}
 	for exp in boompairsdfs(exp) do
+
 		-- som
 		if fn(exp) == 'Σ' then
 			local nexp = X('call3', 'reduceer', '0', arg(exp), '+')
@@ -250,7 +271,7 @@ local function multiopt(exp, maakindex)
 
 		-- en
 		if fn(exp) == '⋀' then
-			local nexp = X('call3', 'reduceer', '⊤', arg(exp), '∧')
+			local nexp = X('call4', 'reduceer', '⊤', arg(exp), '∧')
 			assign(exp, nexp)
 		end
 
@@ -304,6 +325,17 @@ local function multiopt(exp, maakindex)
 			local gen = devec(arg2(exp))
 			if gen then
 				local nexp = X('lus', arg1(exp), gen, arg3(exp))
+				assign(exp, nexp)
+			end
+		end
+
+		-- lus
+		if fnaam(exp) == 'reduceerbreak' then
+			--error(unlisp(devec(arg2(exp))))
+			local gen = devec(arg2(exp))
+			local cond = devec(arg3(exp))
+			if gen then
+				local nexp = X('lusbreak', arg1(exp), gen, arg3(exp), cond)
 				assign(exp, nexp)
 			end
 		end

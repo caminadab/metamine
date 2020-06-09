@@ -1,1 +1,2 @@
-uit = sin(sin)
+x = Σ 0..101
+uit = x + x

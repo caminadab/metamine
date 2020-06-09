@@ -127,7 +127,7 @@ function vectoriseer(asb, types, debug)
 		-- L_i → (_i)(L, i)
 		if fn(exp) == '_' then
 			local fntype = types[moes(arg0(exp))]
-			local islijst = atoom(arg0(fntype)) == 'nat' or obj(fntype) == ','
+			local islijst = arg0(fntype) and atoom(arg0(fntype)) == 'nat' or obj(fntype) == ','
 			local istekst = fn(fntype) == '→' and atoom(arg0(fntype)) == 'nat' and atoom(arg1(fntype)) == 'letter'
 			local isfunc = fn(fntype) == '→' and atoom(arg0(fntype)) ~= 'nat'
 
@@ -152,7 +152,11 @@ function vectoriseer(asb, types, debug)
 					end
 				end
 
-				if nargs > 1 then
+				if atoom(arg0(exp)) == 'icode' then
+					local oud = types[moes(exp)]
+					assign(exp, X('icode', arg1(exp)))
+					types[moes(exp)] = oud
+				elseif nargs > 1 then
 					exp.f = X'callm'
 				else
 					exp.f = X'call'

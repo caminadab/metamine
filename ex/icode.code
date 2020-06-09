@@ -1,0 +1,4 @@
+v = Σ 0..100
+uit = print(icode(v))
+
+print = z → (["=== icode ==="] ‖ z) vouw (x,y → x ‖ "<br>" ‖ y)

@@ -262,28 +262,17 @@ function maakindices(i)
 	end
 end
 
--- depth first search
-function boompairsdfs(exp, t)
-	local t = t or {}
-	for k,sub in subs(exp) do
-		boompairsdfs(sub, t)
-	end
-	t[#t+1] = exp
-
-	local i = 1
-	return function()
-		i = i + 1
-		return t[i-1]
-	end
-end
-
 -- breadth first search
-function boompairsbfs(exp, t)
+function boompairsbfs(exp, t, al)
 	local t = t or {}
-	for k,sub in subs(exp) do
-		boompairsdfs(sub, t)
+	local al = al or {}
+	if not al[exp] then
+		for k,sub in subs(exp) do
+			boompairsbfs(sub, t, al)
+		end
+		t[#t+1] = exp
+		al[exp] = true
 	end
-	t[#t+1] = exp
 
 	local i = 1
 	return function()
@@ -376,4 +365,81 @@ if test then
 	assert(b)
 	assert(a.v == '1', e2s(a))
 	assert(b.v == '2', e2s(b))
+end
+
+-- depth first search
+function boompairsdfs1(exp, t, al)
+	local t = t or {}
+	local al = al or {}
+	
+	if not al[exp] then
+		for k,sub in subs(exp) do
+			boompairsdfs1(sub, t, al)
+		end
+		t[#t+1] = exp
+		al[exp] = true
+	end
+
+	local i = 1
+	return function()
+		i = i + 1
+		return t[i-1]
+	end
+end
+
+-- werkt niet omdat exp gemuteerd word
+function boompairsdfs2(exp)
+	local function rec(exp)
+		for k, sub in subs(exp) do
+			rec(sub)
+		end
+		--print('YIELD', moes(exp))
+		coroutine.yield(exp)
+	end
+	
+	local co = coroutine.create(rec)
+	return function()
+		local ok,sub = coroutine.resume(co, exp)
+		--print('SUB', ok, sub)
+		if ok then
+			return sub
+		end
+	end
+end
+
+boompairsdfs = boompairsdfs1
+
+
+function boompairs(exp)
+	local function rec(exp)
+		for k, sub in subs(exp) do
+			rec(sub)
+		end
+		coroutine.yield(exp)
+	end
+	
+	local co = coroutine.create(rec)
+	return function()
+		local ok,sub = coroutine.resume(co, exp)
+		if ok then
+			return sub
+		end
+	end
+end
+
+function boompairsbfs(exp)
+	local function rec(exp)
+		coroutine.yield(exp)
+		for k, sub in subs(exp) do
+			rec(sub)
+		end
+	end
+	
+	local co = coroutine.create(rec)
+	return function()
+		local ok,sub = coroutine.resume(co, exp)
+		if ok then
+			return sub
+		end
+	end
 end
