@@ -1,4 +1,8 @@
-v = Σ 0..100
-uit = print(icode(v))
+f = x → x · 3
+g = y → y / 2
+v = f ∘ g²
 
-print = z → (["=== icode ==="] ‖ z) vouw (x,y → x ‖ "<br>" ‖ y)
+
+print = ins → ins vouw (a,b → a ‖ "<br>" ‖ b)
+uit = "=== icode === <br><br>" ‖ print(icode(v)) ; ‖ "<br><br>=== javascript === " ‖ tekst(v)
+
