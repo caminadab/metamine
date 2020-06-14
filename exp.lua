@@ -266,13 +266,18 @@ end
 function boompairsbfs(exp, t, al)
 	local t = t or {}
 	local al = al or {}
-	if not al[exp] then
-		for k,sub in subs(exp) do
-			boompairsbfs(sub, t, al)
+
+	local function rec(exp)
+		if not al[exp] then
+			for k,sub in subs(exp) do
+				rec(sub)
+			end
+			t[#t+1] = exp
+			al[exp] = true
 		end
-		t[#t+1] = exp
-		al[exp] = true
 	end
+
+	rec(exp)
 
 	local i = 1
 	return function()
@@ -372,13 +377,17 @@ function boompairsdfs1(exp, t, al)
 	local t = t or {}
 	local al = al or {}
 	
-	if not al[exp] then
-		for k,sub in subs(exp) do
-			boompairsdfs1(sub, t, al)
+	local function rec(exp)
+		if not al[exp] then
+			for k,sub in subs(exp) do
+				rec(sub)
+			end
+			t[#t+1] = exp
+			al[exp] = true
 		end
-		t[#t+1] = exp
-		al[exp] = true
 	end
+
+	rec(exp)
 
 	local i = 1
 	return function()

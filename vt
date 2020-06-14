@@ -127,6 +127,7 @@ if opt.i or opt.n then opt.veilig = true end
 if opt.g or opt.debug or opt.ontkever then
 	opt.g = true
 	ontkever = true
+	isdebug = true
 end
 
 local code = table.concat(map(bronnen, lees), '\n')
@@ -144,7 +145,7 @@ if verbozeSyntax then
 	print()
 end
 
-local app,fouten = vertaal(code)
+local app,fouten = vertaal(code, isdebug)
 assert(app or #fouten > 0)
 
 -- foutjuhhs

@@ -66,7 +66,7 @@ function codegen(exp, moes2naam)
 	-- zoek dubbele
 	local exps = {}
 	local dubbel = {} -- exp → cacheindex
-	local iscached = {} -- exp → bit
+	local cachemap = {} -- exp → int
 
 
 	local function rec(exp)
@@ -85,8 +85,8 @@ function codegen(exp, moes2naam)
 	rec(exp)
 
 	local function codegen(exp, ins, callarg)
-		if iscached[moes(exp)] then
-			ins[#ins+1] = X('ld', tostring(iscached[moes(exp)]))
+		if cachemap[moes(exp)] then
+			ins[#ins+1] = X('ld', tostring(cachemap[moes(exp)]))
 			return
 		end
 
@@ -96,9 +96,9 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X'dan'
 
 			-- met lege cache
-			local ic = iscached
+			local ic = cachemap
 			local d = dubbel
-			iscached = {}
+			cachemap = {}
 			--dubbel = {}
 
 			codegen(arg1(exp), ins, callarg)
@@ -111,7 +111,7 @@ function codegen(exp, moes2naam)
 			end
 
 
-			iscached = ic
+			cachemap = ic
 			dubbel = d
 
 			ins[#ins+1] = X'einddan'
@@ -300,13 +300,13 @@ function codegen(exp, moes2naam)
 			ins[#ins+1] = X('fn', num)--argindex[num])
 
 			-- met lege cache
-			local ic = iscached
+			local ic = cachemap
 			local d = dubbel
 			codeindex = {}
 			reused = {}
 			--dubbel = {}
 			codegen(arg1(exp), ins, callarg)
-			iscached = ic
+			cachemap = ic
 			dubbel = d
 
 			ins[#ins+1] = X'eind'
@@ -357,11 +357,11 @@ function codegen(exp, moes2naam)
 		codeindex[exp] = #ins
 
 		if not isatoom(exp) and dubbel[moes(exp)] or moes2naam[moes(exp)] then
-			iscached[moes(exp)] = maakcacheindex()
-			ins[#ins+1] = X('st', tostring(iscached[moes(exp)]))
+			cachemap[moes(exp)] = maakcacheindex()
+			ins[#ins+1] = X('st', tostring(cachemap[moes(exp)]))
 		end
 
-		return ins, iscached
+		return ins, cachemap
 	end
 
 	local ins = {o='[]'}

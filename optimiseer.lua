@@ -71,6 +71,8 @@ function refunc(exp, maakindex)
 	local klaar = {}
 	local maakindex = maakindex or maakindices(444)
 
+	print('BOOMPAIRS', unlisp(exp))
+
 	for exp in boompairs(exp) do
 		if op[atoom(exp)] then
 			local nexp = stub2func(exp, maakindex)
