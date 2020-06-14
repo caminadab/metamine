@@ -324,8 +324,9 @@ local noops = {
 
 	-- hetzelde als boven
 	['componeer'] = [[args => (x => {
-		//console.log("args = " + JSON.stringify(args));
 		var res = x;
+		if (!Array.isArray(args))
+			args = [args];
 		for (var i = 0; i < args.length; i++) {
 			if (Array.isArray(args[i]))
 				res = args[i][res];
@@ -1269,18 +1270,10 @@ function jsgen(sfc)
 		if unops[atoom(insB)] then
 			ins2js(insA)
 			ins2js(insB)
-			--local naam = atoom(insA)
-			--local di = unops[atoom(insB)]:gsub('$1', naam)
-			--L[#L+1] = tabs..string.format('var %s = %s;', naam, di)
-			--focus = focus - 1
 
 		elseif binops2[atoom(insB)] then
 			ins2js(insA)
 			ins2js(insB)
-			--local naama = varnaam(focus-1)
-			--local naamb = atoom(insA)
-			--local di = binops2[atoom(insB)]:gsub('$1', naama):gsub('$2', naamb)
-			--L[#L+1] = tabs..di
 
 		elseif binops[atoom(insB)] then
 			local naama = varnaam(focus-1)
