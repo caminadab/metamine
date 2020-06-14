@@ -15,7 +15,7 @@ function devec(exp, i)
 	local i = i or 0
 	local van = tonumber(atoom(arg0(exp)))
 	if fn(exp) == '×' then
-		return X(',', devec(arg0(exp)), devec(arg1(exp)))
+		return nil --X(',', devec(arg0(exp)), devec(arg1(exp)))
 	end
 	if fn(exp) == '..' and van then
 		if van == 0 and i == 0 then
@@ -68,10 +68,7 @@ end
 
 -- atoom -> functie
 function refunc(exp, maakindex)
-	local klaar = {}
 	local maakindex = maakindex or maakindices(444)
-
-	print('BOOMPAIRS', unlisp(exp))
 
 	for exp in boompairs(exp) do
 		if op[atoom(exp)] then
@@ -133,7 +130,7 @@ function compopt(exp, maakindex)
 	return exp
 end
 
-local mappen = set('map', 'lmap', 'map4', 'mapl')
+local mappen = set('map', 'lmap', 'mapl')
 -- reduceer(S,map(L,F),G), G=(X,Y → Z)
 
 -- > reduceer(S,L,H), H=(V,W → G(V, F(W)))

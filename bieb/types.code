@@ -181,8 +181,8 @@ set: verzameling
 ;(<) : getal, getal → bit
 (∧) : bit, bit → bit
 (∨) : bit, bit → bit
-(⋀) : verzameling bit → bit
-(⋁) : verzameling bit → bit
+(⋀) : (nat → bit) → bit
+(⋁) : (nat → bit) → bit
 
 ; lijst
 (Σ) : lijst getal → getal

@@ -1,54 +1,54 @@
-require 'exp'
-require 'util'
-require 'graaf'
-require 'symbool'
-require 'bieb'
-require 'combineer'
-require 'unicode'
+	require 'exp'
+	require 'util'
+	require 'graaf'
+	require 'symbool'
+	require 'bieb'
+	require 'combineer'
+	require 'unicode'
 
--- diepte bepalen
-local function peil(waarde)
-	-- bepaal diepte
-	local diepte = {}
+	-- diepte bepalen
+	local function peil(waarde)
+		-- bepaal diepte
+		local diepte = {}
 
-	for exp in boompairsdfs(waarde) do
-		-- bladwaarden krijgen 1
-		if isatoom(exp) then
-			diepte[exp] = 1
-		else
-			diepte[exp] = 0
-			local gelijk = false
-			-- bepaal rec diepte
-			for i,v in ipairs(exp) do
-				if diepte[v] > diepte[exp] then gelijk = false
-				elseif diepte[v] == diepte[exp] then gelijk = true
+		for exp in boompairsdfs(waarde) do
+			-- bladwaarden krijgen 1
+			if isatoom(exp) then
+				diepte[exp] = 1
+			else
+				diepte[exp] = 0
+				local gelijk = false
+				-- bepaal rec diepte
+				for i,v in ipairs(exp) do
+					if diepte[v] > diepte[exp] then gelijk = false
+					elseif diepte[v] == diepte[exp] then gelijk = true
+					end
+					diepte[exp] = math.max(diepte[exp], diepte[v])
 				end
-				diepte[exp] = math.max(diepte[exp], diepte[v])
-			end
-			-- als ze zelfde zijn is er 1 extra nodig (voor phi?)
-			if gelijk
-				then diepte[exp] = diepte[exp] + 1
+				-- als ze zelfde zijn is er 1 extra nodig (voor phi?)
+				if gelijk
+					then diepte[exp] = diepte[exp] + 1
+				end
 			end
 		end
+		
+		return diepte
 	end
-	
-	return diepte
-end
 
-unop   = set('-','#','¬','Σ','⋁','⋀','|','√','!','%','-v','-m','index0','igen','²','³')
-binop  = set(
-	'+','·','/','^','^l',
-	'∨','∧','×','×t','..','→','∘','_','‖','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
-	'=g','≠g',
-	'∪','∩',':','∈','\\', '||=',
-	'call','callm','call1','_t','index','^f', '^l','igeni',
-	'+v', '+v1', '·v', '·v1', '/v1',
-	'+f', '+f1', '·f', '·f1', '/f', '/f1',
-	'+m', '+m1', '·m1', '·mv', '·m',
-	'>f', '<f', '≤f', '≥f', '=f',
-	'>f1', '<f1', '≤f1', '≥f1', '=f1'
-)
-triop  = set('call2', 'kies', '⇒')
+	unop   = set('-','#','¬','Σ','⋁','⋀','|','√','!','%','-v','-m','index0','igen','²','³')
+	binop  = set(
+		'+','·','/','^','^l',
+		'∨','∧','×','×t','..','→','∘','_','‖','>','≥','=','≠','≈','≤','<',':=','+=','|:=',
+		'=g','≠g',
+		'∪','∩',':','∈','\\', '||=',
+		'call','callm','call1','_t','index','^f', '^l','igeni',
+		'+v', '+v1', '·v', '·v1', '/v1',
+		'+f', '+f1', '·f', '·f1', '/f', '/f1',
+		'+m', '+m1', '·m1', '·mv', '·m',
+		'>f', '<f', '≤f', '≥f', '=f',
+		'>f1', '<f1', '≤f1', '≥f1', '=f1'
+	)
+	triop  = set('call2', 'kies', '⇒')
 
 -- exps worden gecachet (voor debugging)
 function codegen(exp, moes2naam)
@@ -99,7 +99,7 @@ function codegen(exp, moes2naam)
 			local ic = cachemap
 			local d = dubbel
 			cachemap = {}
-			--dubbel = {}
+			dubbel = {}
 
 			codegen(arg1(exp), ins, callarg)
 

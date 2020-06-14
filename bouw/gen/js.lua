@@ -913,10 +913,16 @@ local binops = {
 	['^'] = 'Math.pow($1, $2)',
 	['^f'] = [[(function (f,n) {
 		return function(x,y,z,w) {
-			var r = y != null ? [x, y, z, w] : x;
-			for (var i = 0; i < n; i++) {
-				r = f(r);
+			if (y != null) {
+				var r = [x,y,z,w];
+				for (var i = 0; i < n; i++)
+					r = f(r[0], r[1], r[2], r[3]);
+			} else {
+				var r = x;
+				for (var i = 0; i < n; i++)
+					r = f(r);
 			}
+
 			return r;
 		}
 	})($1,$2)]],
