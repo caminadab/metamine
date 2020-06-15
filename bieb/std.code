@@ -61,8 +61,8 @@ looptijd = nu - starttijd
 starttijd := nu
 
 ; transformatie
-verplaats = Tvx,Tvy,Tvz → [[1,0,0,0],[0,1,0,0],[0,0,1,0],[Tvx,Tvy,Tvz,1]]
-schaal = Tx,Ty,Tz → [[Tx,0,0,0],[0,Ty,0,0],[0,0,Tz,0],[0,0,0,1]]
+verplaats = Px,Py,Pz → [[1,0,0,0],[0,1,0,0],[0,0,1,0],[Px,Py,Pz,1]]
+schaal = Sx,Sy,Sz → [[Sx,0,0,0],[0,Sy,0,0],[0,0,Sz,0],[0,0,0,1]]
 
 ; [a b 0]  [a 0 b]  [1 0 0]
 ; [c d 0]  [0 1 0]  [0 a b]

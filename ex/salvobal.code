@@ -6,7 +6,10 @@ links.x  := scherm.breedte · 1 / 4
 rechts.x := scherm.breedte · 3 / 4
 links.y  := 0
 rechts.y := 0
-links.vy := 0
+
+links.vx  := 0
+links.vy  := 0
+rechts.vx := 0
 rechts.vy := 0
 
 ; bal pos
@@ -31,9 +34,9 @@ als toets.omhoog.begin en rechts.y = 0 dan
 eind
 
 ; speler beweging
-als scherm.ververst en ¬ pauze dan
+als scherm.ververst en ¬ pauze en bal.y > 0 dan
 	; links
-	als toets.a en links.x > 10 dan
+	als toets.a en links.x > 0 dan
 		links.x := links.x - 1
 	eind
 
@@ -68,6 +71,7 @@ als scherm.ververst en ¬ pauze dan
 		rechts.y := 0
 	eind
 	
+	; bal update
 	als muis.klik dan
 		bal.x := muis.x
 		bal.y := muis.y
@@ -85,56 +89,50 @@ als scherm.ververst en ¬ pauze dan
 		bal.vy := 0
 	eind
 
+	
 	als bal.x > scherm.breedte dan
 		bal.vx := - abs bal.vx
 	eind
+	
 	als ldst < 18 dan 
-		bal.x := bal.x + lnx·ldst
-		bal.y := bal.y + lny·ldst
-		bal.vx := bal.vx - 2·ldot·lnx/1000
-		bal.vy := bal.vy - 2·ldot·lny/1000
+		bal.x := links.x + lnx·18.1
+		bal.y := links.y + lny·18.1
+		bal.vx := bal.vx - 2·ldot·lnx
+		bal.vy := bal.vy - 2·ldot·lny
 	eind
+	
 	als rdst < 18 dan
-		bal.x := bal.x + rnx·rdst
-		bal.y := bal.y + rny·rdst
+		bal.x := rechts.x + rnx·18.1
+		bal.y := rechts.y + rny·18.1
 		bal.vx := bal.vx - 2·rdot·rnx
 		bal.vy := bal.vy - 2·rdot·rny
 	eind
+	
+	als ldst > 18 en rdst > 18 dan
+		bal.x := bal.x + bal.vx
+		bal.y := bal.y + bal.vy
+		bal.vy := bal.vy - .05
+	eind
+
 eind
 
 ; stuiter links
-lnx = ldx/ldst
-lny = ldy/ldst
 ldx = bal.x - links.x
 ldy = bal.y - links.y
 ldst = √(ldx²+ldy²)
-ldot = ldx·lnx+ldy·lny
+lnx = ldx/ldst
+lny = ldy/ldst
+ldot = bal.vx·lnx+bal.vy·lny
 
 
 
 ; stuiter rechts
-rnx = rdx/rdst
-rny = rdy/rdst
 rdx = bal.x - rechts.x
 rdy = bal.y - rechts.y
 rdst = √(rdx²+rdy²)
-rdot = rdx·rnx+rdy·rny
-
-
-
-; zwaartekracht & beweging
-als scherm.ververst en ¬pauze en bal.y ≥ 0 dan
-	bal.x := bal.x + bal.vx
-	bal.y := bal.y + bal.vy
-	bal.vy := bal.vy - .05
-eind
-
-; onderkant stuiter
-als scherm.ververst en bal.y < 0 dan
-	bal.vy := 0.8 · abs bal.vy
-	bal.y := 0
-eind
-
+rnx = rdx/rdst
+rny = rdy/rdst
+rdot = bal.vx·rnx+bal.vy·rny
 
 ; score
 score1 := 0
@@ -176,7 +174,7 @@ eind
 ; teken
 links  = boog(links.x,links.y, 10, τ/2, τ)   verf kleur.geel
 rechts = boog(rechts.x,rechts.y, 10, τ/2, τ) verf kleur.blauw
-net    = rechthoek((hw-1,0),(hw+1,10))           verf kleur.wit
+net    = rechthoek((hw-1,0),(hw+1,10))       verf kleur.wit
 bal    = cirkel(bal.x, bal.y, 8)             verf balkleur
 label1 = label(hw-5,90, tekst(score1))
 label2 = label(hw+5,90, tekst(score2))
@@ -185,6 +183,7 @@ bal.f = √(bal.vx² + bal.vy²) / 10
 balkleur = rgb(1 - bal.f, bal.f, 0)
 
 uit = teken [ flits, links, rechts, net, bal, label1, label2 ]
+
 
 
 

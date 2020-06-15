@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
-	<title>Taal</title>
+	<title>Metamine</title>
 	<link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -44,12 +44,6 @@
 <script src="lib/vim.js"></script>
 <script src="webgl.js"></script>
 <script>
-
-	// autoherleid engels
-	if (localStorage.getItem("cc") != "{cc}") {
-		localStorage.setItem("cc", "{anderecc}");
-		document.location='{taallink}';
-	}
 
 	// demoindex
 
@@ -99,12 +93,12 @@
 		} else if (Array.isArray(obj)) {
 			var res = "";
 			var lang = false;
-			obj.forEach(x => {var tmp = toString(x); res += ", "; res += tmp; });
-			return "[" + res.substr(2) + "]";
+			obj.forEach(x => {var tmp = toString(x); lang = tmp.length > 5; res += ","; if (lang) res += " "; res += tmp; });
+			return "[" + res.substr(1) + (lang?" ":"") + "]";
 		} else if (typeof(obj)=="object" && obj.has) {
 			return "{"+[...obj].toString()+"}";
 		} else if (typeof(obj) == "number") {
-			return obj.toString();
+			return (Math.floor(obj*100) / 100).toString();
 		} else {
 			var j = JSON.stringify(obj);
 			if (j)

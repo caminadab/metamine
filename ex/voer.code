@@ -43,10 +43,10 @@ vindices = (0..7 × (0..3 · 7)) map (+)
 dindices = (0..4 × (0..3 · 7)) map (+)
 rindices = (3..7 × (0..3 · 7)) map (+)
 
-hwint = hindices map hwint0 vouw (of)
-vwint = vindices map vwint0 vouw (of)
-dwint = dindices map dwint0 vouw (of)
-rwint = rindices map rwint0 vouw (of)
+hwint = ⋁ hindices map hwint0
+vwint = ⋁ vindices map vwint0
+dwint = ⋁ dindices map dwint0
+rwint = ⋁ rindices map rwint0
 
 hwint0 = hs → (wbord(hs)=ws en wbord(hs+1)=ws en wbord(hs+2)=ws en wbord(hs+3)=ws)
 vwint0 = vs → (wbord(vs)=ws en wbord(vs+7)=ws en wbord(vs+14)=ws en wbord(vs+21)=ws)
@@ -122,6 +122,7 @@ infolabel3  = label(0,70,"score     = " ‖ tekst(score(bord,0)))
 infolabel4  = label(0,65,"denktijd  = " ‖ tekst(denktijd))
 
 uit = teken ([blauwbord] ‖ stukken ‖ [selectie, statuslabel, infolabel1, infolabel2, infolabel3, infolabel4])
+
 
 
 
