@@ -15,6 +15,13 @@ local noops = {
 		return res;
 	} ]],
 
+	['canvas.fontsize'] = [[ (function(vorm, fontsize) {return (function(c){
+  var font = fontsize * SCHAAL + 'px Arial';
+  c.font = font;
+  vorm(c);
+  return c;});
+ })]],
+
 	['vertexshader'] = [[ code => {
 		if (shaderCache[code]) 
 			return shaderCache[code];
@@ -340,123 +347,11 @@ local noops = {
 	['omdraai'] = 'x => typeof(x) == "string" ? x.split("").reverse().join("") : x.reverse()',
 	['klok'] = 'x => { var begin = new Date().getTime(); x(); var eind = new Date().getTime(); return eind - begin; }',
 
-	['voor'] = [[x => {
-  var max     = x[0];
-  var start   = x[1];
-  var filter1 = x[2];
-  var map     = x[3];
-  var filter2 = x[4];
-  var vouw    = x[5];
-  var val     = null;
 
-	if (Array.isArray(max)) {
-		if (max.length == 4) {
-			val = map([0,0,0,0]);
-			for (var i = 0; i < max[0]; i++) {
-				for (var j = 0; j < max[1]; j++) {
-					for (var k = 0; k < max[2]; k++) {
-						for (var l = 0; l < max[3]; l++) {
-							var w = map([i, j, k, l]);
-							val = vouw([val, w]);
-						}
-					}
-				}
-			}
-		}
-
-		else if (max.length == 3) {
-			val = map([0,0,0]);
-			for (var i = 0; i < max[0]; i++) {
-				for (var j = 0; j < max[1]; j++) {
-					for (var k = 0; k < max[2]; k++) {
-						var w = map([i, j, k]);
-						val = vouw([val, w]);
-					}
-				}
-			}
-		}
-
-		else if (max.length == 2) {
-			val = map([0,0]);
-			for (var i = 0; i < max[0]; i++) {
-				for (var j = 0; j < max[1]; j++) {
-					var w = map([i, j]);
-					val = vouw([val, w]);
-				}
-			}
-		}
-
-	} else {
-		val = map(0);
-		for (var i = 1; i < max; i++) {
-			var w = map(i); //Array.isArray(map) ? map[i] : map(i);
-			val = vouw([val, w]);
-		}
-		return val;
-	}
-	return val;
-} ]],
-
-	['lvoor'] = [[x => {
-  var max  = x[0];
-	var filter1 = x[1];
-  var map = x[2];
-  var filter2 = x[3];
-  var val = [];
-	var index = 0;
-	if (Array.isArray(max)) {
-		if (max.length == 4) {
-			for (var i = 0; i < max[0]; i++) {
-				for (var j = 0; j < max[1]; j++) {
-					for (var k = 0; k < max[2]; k++) {
-						for (var l = 0; l < max[3]; l++) {
-							var w = map([i, j, k, l]);
-							val[index++] = w;
-						}
-					}
-				}
-			}
-		}
-
-		else if (max.length == 3) {
-			for (var i = 0; i < max[0]; i++) {
-				for (var j = 0; j < max[1]; j++) {
-					for (var k = 0; k < max[2]; k++) {
-						if (filter1([i, j, k])) {
-							var w = map([i, j, k]);
-							val[index++] = w;
-						}
-					}
-				}
-			}
-		}
-
-		else if (max.length == 2) {
-			for (var i = 0; i < max[0]; i++) {
-				for (var j = 0; j < max[1]; j++) {
-					if (filter1([i, j])) {
-						var w = map([i, j]);
-						val[index++] = w;
-					}
-				}
-			}
-		}
-	} else {
-		for (var I = 0; I < max; I++) {
-			if (filter1(I)) {
-				var w = map(I);
-				if (filter2(w)) {
-					val[index++] = w;
-				}
-			}
-		}
-	}
-	return val;
-}]],
 
 	-- niet goed
-	['newindex']  = '(lijst,index,val) => { lijst[ index ] = val; return lijst; }',
-	['newindex2'] = '(lijst,index,val) => { var t = []; for (var i = 0; i< lijst.length; i++) { if (i == index) t[i] = val; else t[i] = lijst[i]; } return t; }',
+	['newindex2']  = '(lijst,index,val) => { lijst[ index ] = val; return lijst; }',
+	['newindex'] = '(lijst,index,val) => { var t = []; for (var i = 0; i< lijst.length; i++) { if (i == index) t[i] = val; else t[i] = lijst[i]; } return t; }',
 	['scherm.ververst'] = 'true',
 	['canvas.drawImage'] = '(i,x,y) => (c => c.drawImage(x, SCHAAL*x, SCHAAL*(100-y)))',
 	['herhaal2'] = [[x => {
@@ -932,6 +827,7 @@ local binops = {
 	['>'] = '$1 > $2',
 	['≥'] = '$1 >= $2',
 	['='] = 'JSON.stringify($1) == JSON.stringify($2)',
+	['≠'] = 'JSON.stringify($1) != JSON.stringify($2)',
 	['=g'] = '$1 === $2',
 	['≠g'] = '$1 != $2',
 	['≤'] = '$1 <= $2',

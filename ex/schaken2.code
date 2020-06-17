@@ -1,0 +1,128 @@
+; constant
+leeg,pion,paard,loper,toren,dame,heer = 0,1,2,3,4,5,6
+wit = 0
+zwart = 10
+w = 12.5
+symbolen = [
+	"","♟","♞","♝","♜","♛","♚","","","",
+	"","♙","♘","♗","♖","♕","♔"
+]
+
+; startdata
+wit.achter   = [toren,paard,loper,dame,heer,loper,paard,toren]
+wit.pionnen  = [pion]^8
+wit.start    = wit.achter ‖ wit.pionnen
+zwart.achter  = zwart + wit.achter
+zwart.pionnen = [zwart+pion]^8
+zwart.start   = zwart.pionnen ‖ zwart.achter
+
+; startbord
+startgrid  = 1..17 ‖ [0]^32 ‖ 17..33
+startposs  = [0] ‖ 0..16 ‖ 48..64
+starttypes = [0] ‖ wit.start ‖ zwart.start
+startbord  = startgrid, startposs, starttypes, nee
+
+
+
+bord := startbord
+pos := -1,-1
+
+
+
+
+; teken
+bordsymbolen = bord₀ map starttypes map symbolen
+borddata = (0..8·w × 0..8·w) zip bordsymbolen
+labels   = borddata map label
+flabels  = (labels × [14]) map canvas.fontsize
+
+hover    = vierkant(posx·w, posy·w, w) verf kleur.geel
+selectie = vierkant(pos₀·w, pos₁·w, w) verf kleur.groen
+
+vaksom  = (0..8 × 0..8) map (+)
+indices = (vaksom × [2]) map mod
+palet   = [ rgb(.7,.3,.1), rgb(.8,.4,.1) ]
+kleuren = indices map palet
+
+vakken  = (0..8·w × 0..8·w × [w]) map vierkant
+kvakken = vakken zip kleuren map verf
+
+
+
+
+; zet
+doezet = dzBord, (posA, posB) → ndzBord
+dzBord   = (dzGrid, dzPos, dzTypes, aanzet)
+ndzBord  = ndzGrid, ndzPos, dzTypes, ¬aanzet
+ndzGrid0 = newindex(dzGrid,   posB, dzGrid(posA))
+ndzGrid  = newindex(ndzGrid0, posA, 0)
+ndzPos0  = newindex(dzPos,   dzGrid(posA), posB)
+ndzPos   = newindex(ndzPos0, dzGrid(posB), 0)
+
+kanzet = kzBord,(kzA,kzB) → (kzA ≠ kzB)
+
+
+zetten = zBord → zZetten ;[(16,24)]
+zBord = (zGrid, zPos, zTypes, zAanzet)
+
+als zAanzet dan
+	;zZetten = (0..8) zip (16..24)
+	zZetten = [[16,24],(17,25)]
+anders
+	zZetten = [(48,32)]
+eind
+
+
+; GUI
+posx = klem(⌊muis.x/12.5⌋, 0, 7)
+posy = klem(⌊muis.y/12.5⌋, 0, 7)
+posi = posx + posy · 8
+seli := -1
+
+als muis.klik.begin en seli = -1 en (bord₀)(posi) > 0 dan
+	pos  := posx, posy
+	seli := posi
+eind
+
+hist := []
+als muis.klik.begin en seli ≠ -1 dan
+	als kanzet(bord, (seli,posi)) dan
+		bord := doezet(bord, (seli, posi))
+		hist := hist ‖ [bord]
+	eind
+	seli := -1
+	pos  := -1,-1
+eind
+
+als toets.spatie.begin en #hist > 0 dan
+	bord := hist(#hist-1)
+	hist := hist tot (#hist-1)
+eind
+
+als toets.w.begin dan
+	;bord := doezet(bord, (zetten(bord))₀ )
+	hist := hist ‖ [bord]
+eind
+
+; debug
+debug1 = label((100,90),type(zetten)) canvas.fontsize 3
+debug2 = label((100,80),tekst(zetten(bord))) canvas.fontsize 3
+
+uit = teken(kvakken ‖ [hover, selectie] ‖ flabels ‖ [debug1, debug2])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

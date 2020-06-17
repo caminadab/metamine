@@ -357,12 +357,19 @@ function oplos(exp, voor, isdebug)
 			local naam = atoom(a)
 			local v = map[naam]
 			--print('VAAG', e2s(eq))
-			if eq.start then
-				table.insert(v, 1, b)
+
+			if not v then
+				local fout = oplosfout(eq.loc, '{code} is geen variabele', naam)
+				fouten[#fouten+1] = fout
 			else
-				v[#v+1] = b
+				if eq.start then
+					table.insert(v, 1, b)
+				else
+					v[#v+1] = b
+				end
+				oud[eq] = true
 			end
-			oud[eq] = true
+
 		end
 	end
 	local eqs = complement(eqs, oud)

@@ -130,7 +130,7 @@ function compopt(exp, maakindex)
 	return exp
 end
 
-local mappen = set('map', 'lmap', 'mapl')
+local mappen = set('map') --, 'mapl')
 -- reduceer(S,map(L,F),G), G=(X,Y → Z)
 
 -- > reduceer(S,L,H), H=(V,W → G(V, F(W)))
@@ -299,7 +299,7 @@ local function multiopt(exp, maakindex)
 		exp = mapreduceer(exp, maakindex)
 
 		-- map/map
-		if (fnaam(exp) == 'map' or fnaam(exp) == 'lmap') and (fnaam(arg1(exp)) == 'map' or fnaam(arg1(exp)) == 'lmap') then
+		if fnaam(exp) == 'map' and fnaam(arg1(exp)) == 'map' then
 			-- map(map(A,B),C) → map(A, B ∘ C)
 			local A = arg1(arg1(exp))
 			local B = arg2(arg1(exp))

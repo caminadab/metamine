@@ -574,7 +574,15 @@ end
 				--error(C(functype))
 
 			elseif obj(functype) == ',' then
-				returntype = X'iets' --{f=X'|', a=functype}
+				local index = atoom(arg1(exp))
+				local n = tonumber(index)
+				if not n then
+					local fout = typeerfout(exp.loc, "tupels kunnen niet dynamisch worden geïndexeerd", bron(exp))
+					fouten[#fouten+1] = fout
+					returntype = X'iets'
+				else
+					returntype = functype[n+1]
+				end
 
 			else
 

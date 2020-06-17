@@ -12,9 +12,9 @@ palet  = [kleur.zwart, kleur.rood, kleur.geel, kleur.groen]
 kanzet = kbord,kx → (kbord(kx + 7·5) = 0)
 doezet = dbord,dx,dkleur → dbord0
 als kanzet(dbord,dx) dan
-	dbord0 = newindex2(dbord, dx + dy·7, dkleur)
+	dbord0 = newindex(dbord, dx + dy·7, dkleur)
 anders
-	dbord0 = newindex2(dbord, 0, 3)
+	dbord0 = newindex(dbord, 0, 3)
 eind
 
 dy = (|)[ (dbord(dx)=0 ⇒ 0), (dbord(dx+7)=0 ⇒ 1), (dbord(dx+14)=0 ⇒ 2), (dbord(dx+21)=0 ⇒ 3), (dbord(dx+28)=0 ⇒ 4), (dbord(dx+35)=0 ⇒ 5) ]

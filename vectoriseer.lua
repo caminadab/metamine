@@ -131,7 +131,9 @@ function vectoriseer(asb, types, debug)
 			local istekst = fn(fntype) == '→' and atoom(arg0(fntype)) == 'nat' and atoom(arg1(fntype)) == 'letter'
 			local isfunc = fn(fntype) == '→' and atoom(arg0(fntype)) ~= 'nat'
 
-			if isfunc then
+			if islijst then
+				exp.f = X'index'
+			elseif isfunc then
 				local nargs = #arg0(fntype)
 				if nargs > 4 then
 					nargs = 1
@@ -163,8 +165,6 @@ function vectoriseer(asb, types, debug)
 				end
 			elseif istekst then
 				exp.f = X'_t'
-			elseif islijst then
-				exp.f = X'index'
 			else
 				--print('Waarschuwing: vectortype van '..unlisp(exp)..' kon niet eenduidig worden bepaald')
 			end

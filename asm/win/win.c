@@ -93,6 +93,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+3));
 
+						// draw text
+						RECT rect;
+						GetClientRect(hwnd, &rect);
+						wchar_t * text = L"Schaak ♞";
+						DrawTextW(hdc, text, -1, &rect, DT_CENTER | DT_VCENTER);
+
+						// draw poly
 						HBRUSH hBrush = CreateSolidBrush(RGB(200,0,50));
 						SelectObject(hdc, hBrush);
 						POINT x = {0, 0};
