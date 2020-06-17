@@ -20,7 +20,7 @@ zwart.start   = zwart.pionnen ‖ zwart.achter
 startgrid  = 1..17 ‖ [0]^32 ‖ 17..33
 startposs  = [0] ‖ 0..16 ‖ 48..64
 starttypes = [0] ‖ wit.start ‖ zwart.start
-startbord  = startgrid, startposs, starttypes, nee
+startbord  = startgrid, startposs, starttypes, ja
 
 
 
@@ -52,8 +52,8 @@ kvakken = vakken zip kleuren map verf
 
 ; zet
 doezet = dzBord, (posA, posB) → ndzBord
-dzBord   = (dzGrid, dzPos, dzTypes, aanzet)
-ndzBord  = ndzGrid, ndzPos, dzTypes, ¬aanzet
+dzBord   = (dzGrid, dzPos, dzTypes, dzAanzet)
+ndzBord  = ndzGrid, ndzPos, dzTypes, ¬dzAanzet
 ndzGrid0 = newindex(dzGrid,   posB, dzGrid(posA))
 ndzGrid  = newindex(ndzGrid0, posA, 0)
 ndzPos0  = newindex(dzPos,   dzGrid(posA), posB)
@@ -62,14 +62,16 @@ ndzPos   = newindex(ndzPos0, dzGrid(posB), 0)
 kanzet = kzBord,(kzA,kzB) → (kzA ≠ kzB)
 
 
-zetten = zBord → zZetten ;[(16,24)]
+zetten = zBord → zZetten
 zBord = (zGrid, zPos, zTypes, zAanzet)
 
-als zAanzet dan
-	;zZetten = (0..8) zip (16..24)
-	zZetten = [[16,24],(17,25)]
+
+; zetten
+
+als bord₃ dan ;TODO
+	zZetten = (8..16) zip (24..32)
 anders
-	zZetten = [(48,32)]
+	zZetten = (48..56) zip (32..40)
 eind
 
 
@@ -85,6 +87,8 @@ als muis.klik.begin en seli = -1 en (bord₀)(posi) > 0 dan
 eind
 
 hist := []
+log := []
+
 als muis.klik.begin en seli ≠ -1 dan
 	als kanzet(bord, (seli,posi)) dan
 		bord := doezet(bord, (seli, posi))
@@ -100,15 +104,19 @@ als toets.spatie.begin en #hist > 0 dan
 eind
 
 als toets.w.begin dan
-	;bord := doezet(bord, (zetten(bord))₀ )
+	bord := doezet(bord, (zetten(bord))₀ )
 	hist := hist ‖ [bord]
+	log := log ‖ [ (zetten(bord))₀ ]
 eind
 
 ; debug
-debug1 = label((100,90),type(zetten)) canvas.fontsize 3
-debug2 = label((100,80),tekst(zetten(bord))) canvas.fontsize 3
+debug1 = label((105,90),type(zetten)) canvas.fontsize 3
+debug2 = label((105,85),"aanzet = "‖tekst(x)) canvas.fontsize 3
+debug3 = label((105,80),"log = "‖tekst(log)) canvas.fontsize 3
+debug4 = label((105,75),"zetten = "‖tekst(zetten(bord))) canvas.fontsize 3
+x = bord₃
 
-uit = teken(kvakken ‖ [hover, selectie] ‖ flabels ‖ [debug1, debug2])
+uit = teken(kvakken ‖ [hover, selectie] ‖ flabels ‖ [debug1, debug2, debug3, debug4])
 
 
 

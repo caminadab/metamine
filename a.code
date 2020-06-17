@@ -1,2 +1,1 @@
-x = [1, 2]
-uit = tekst(x)
+uit = grabbel [1,2,3]

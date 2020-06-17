@@ -161,7 +161,7 @@ function vectoriseer(asb, types, debug)
 					assign(exp, X('icode', arg1(exp)))
 					types[moes(exp)] = oud
 				elseif nargs > 1 then
-					exp.f = X'callm'
+					exp.f = X'call'
 				else
 					exp.f = X'call'
 				end
