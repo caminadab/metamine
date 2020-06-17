@@ -133,7 +133,9 @@ function vectoriseer(asb, types, debug)
 
 			if islijst then
 				exp.f = X'index'
-			elseif isfunc then
+			elseif istekst then
+				exp.f = X'_t'
+			elseif isfunc or true then
 				local nargs = #arg0(fntype)
 				if nargs > 4 then
 					nargs = 1
@@ -163,9 +165,8 @@ function vectoriseer(asb, types, debug)
 				else
 					exp.f = X'call'
 				end
-			elseif istekst then
-				exp.f = X'_t'
 			else
+				error'NEE'
 				--print('Waarschuwing: vectortype van '..unlisp(exp)..' kon niet eenduidig worden bepaald')
 			end
 		end
