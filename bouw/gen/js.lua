@@ -315,7 +315,7 @@ local noops = {
 			 }
 				]],
 
-	['grabbel'] = 'x => x[Math.floor(Math.random()*x.length)]',
+	['grabbel'] = 'x => [Math.floor(Math.random()*x.length)]',
 	['fn.nul'] = 'x => x(0)',
 	['fn.een'] = 'x => x(1)',
 	['fn.twee'] = 'x => x(2)',
