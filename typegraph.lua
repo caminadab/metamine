@@ -234,7 +234,7 @@ function metatypegraph:intersectie(a, b, exp)
 			--print(self)
 			--error(deparse(a)..','..deparse(b))
 			local fout = typifyfout(exp.loc,
-					'{code} is {exp} maar moet {exp} zijn',
+					'{code} is {exp} but should be {exp}',
 					bron(exp), a, b)
 			return false, fout
 		end
@@ -274,7 +274,7 @@ function metatypegraph:intersectie(a, b, exp)
 
 	if (isatom(a) and not isatom(b)) or (not isatom(a) and isatom(b)) then
 		local fout = typifyfout(exp.loc,
-			'{code} is {exp} maar moet {exp} zijn',
+			'{code} is {exp} but should be {exp}',
 			bron(exp), a, b)
 		return false, fout
 	end
@@ -283,7 +283,7 @@ function metatypegraph:intersectie(a, b, exp)
 		--error('ok')
 		if obj(a) ~= obj(b) or #a ~= #b then
 			local fout = typifyfout(exp.loc,
-					'{code} is {exp} maar moet {exp} zijn',
+					'{code} is {exp} but should be {exp}',
 					bron(exp), a, b)
 			return false, fout
 
@@ -319,7 +319,7 @@ function metatypegraph:intersectie(a, b, exp)
 	if self:issubtype(b, a) then assign(a, copy(b)) ; return a end
 
 	local fout = typifyfout(exp.loc,
-		'{code} is {exp} maar moet {exp} zijn',
+		'{code} is {exp} but should be {exp}',
 		bron(exp), a, b)
 
 	return false, fout
@@ -343,7 +343,7 @@ function metatypegraph:paramtype(type, paramtype)
 		doel = nieuwdoel
 	end
 	do return X'iets' end
-	error('geen param gevonden voor type '..exp2string(paramtype))
+	error('no paramter found for '..exp2string(paramtype))
 end
 
 -- typegraph:

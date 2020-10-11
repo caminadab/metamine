@@ -129,7 +129,7 @@ end
 			local m = hash(exp)
 			local t = {o=X','}
 			for i,sub in ipairs(exp) do
-				local subtype = assert(types[hash(sub)], 'geen type voor kind '..hash(sub))
+				local subtype = assert(types[hash(sub)], 'no type for node '..hash(sub))
 				t[i] = subtype
 			end
 			types[m] = t
@@ -137,7 +137,7 @@ end
 		elseif obj(exp) == '[]' then
 			local lijsttype = exp[1] and types[hash(exp[1])] or X'iets'
 			for i,sub in ipairs(exp) do
-				local subtype = assert(types[hash(sub)], 'geen type voor kind '..hash(sub))
+				local subtype = assert(types[hash(sub)], 'no type for node '..hash(sub))
 				local fout
 				lijsttype,fout = typegraph:intersectie(subtype, lijsttype, sub) --moetzijn(lijsttype, subtype, sub)
 				if not lijsttype then
@@ -149,7 +149,7 @@ end
 
 			-- metamine ondersteunt geen gemixte lijsten; gebruik tupels!
 			if false and atom(lijsttype) == 'iets' then
-				local fout = typifyfout(exp.loc, "type van {code} is onzeker", bron(exp))
+				local fout = typifyfout(exp.loc, "type of {code} is uncertain", bron(exp))
 				errors[#errors+1] = fout
 			end
 
@@ -462,7 +462,7 @@ end
 				
 			if not (inA and uitA and inB and uitB) then
 				local fout = typifyfout(exp.loc,
-					"compositiefout in {code}: kan {exp} en {exp} niet componeren",
+					"compose error in {code}: cannot compose {exp} and {exp}",
 					bron(exp), A, B)
 				errors[#errors+1] = fout
 				types[hash(exp)] = copy(symbol.iets)
@@ -693,7 +693,7 @@ end
 				--and hash:sub(1,1) ~= ',' then
 			local exp = exps[1]
 			local fout = typifyfout(exp.loc or nergens,
-				"kon type niet bepalen van {code}",
+				"cannot determine type of {code}",
 				isobj(exp) and deparse(exp) or locsub(exp.code, exp.loc)
 			)
 			errors[#errors+1] = fout
