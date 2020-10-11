@@ -1,12 +1,12 @@
 ; paint
-cirkels := []
+circles := []
 
-als muis.klik dan
- cirkels := cirkels ‖ [ cirkel(muis.pos, 3) ]
-eind
+if mouse.click then
+ circles := circles ‖ [ circle(mouse.pos, 3) ]
+end
 
-als toets.spatie dan
- cirkels := []
-eind
+if key.space then
+ circles := []
+end
 
-uit = teken cirkels
+out = draw circles

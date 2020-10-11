@@ -28,9 +28,9 @@ void main(void) {
 }
 "
 
-r = scherm.breedte / scherm.hoogte
-mx = -1+muis.x/(100·r)·2
-my = -1+muis.y/100·2
+r = screen.width / screen.height
+mx = -1+mouse.x/(100·r)·2
+my = -1+mouse.y/100·2
 buf2 = vertexbuffer [
 	0,0,0, 1,1,0, 0,1,0, 0,0,0, 1,1,0, 1,0,0,
 	0,0,0, 1,0,1, 0,0,1, 0,0,0, 1,0,1, 1,0,0,
@@ -50,8 +50,8 @@ h3 = hmap(h+1)
 h4 = hmap(h+n+1)
 
 n = 20
-hoogte = X,Y → 0.1 · (sin(X)+cos(Y)) ; -√((X-n/2)²+(Y-n/2)²)·0.7
-hmap := (0..n × 0..n) map hoogte
+height = X,Y → 0.1 · (sin(X)+cos(Y)) ; -√((X-n/2)²+(Y-n/2)²)·0.7
+hmap := (0..n × 0..n) map height
 hn = n/2
 tiles = (-hn ..hn × -hn ..hn) zip (0..n²) map ((i,j),h → pa map (pp → pp + (i,1,j)))
 
@@ -63,15 +63,15 @@ prog1 = shaderbind(prog, "pos", buf)
 prog2 = shaderbind(prog1, "normal", buf)
 prog3 = matrixbind(prog2, "cam", plet cam)
 prog4 = matrixbind(prog3, "proj", plet proj)
-prog5 = uniformbind(prog4, "time", looptijd)
+prog5 = uniformbind(prog4, "time", runtime)
 
 ; grid
 nprog1 = shaderbind(prog, "pos", buf3)
 nprog2 = shaderbind(nprog1, "normal", buf3)
 nprog3 = matrixbind(nprog2, "cam", plet cam)
 nprog4 = matrixbind(nprog3, "proj", plet proj)
-nprog5 = uniformbind(nprog4, "time", looptijd)
-uit = setcontext3d(x → y3d)
+nprog5 = uniformbind(nprog4, "time", runtime)
+out = setcontext3d(x → y3d)
 x3d = superrender(x,buf,prog5,numpolys)
 y3d = superrender(x3d,buf3,nprog5,numpolys3)
 
@@ -86,34 +86,34 @@ Mx = xdraai(xhoek)
 My = ydraai(yhoek)
 Mv = verplaats(xpos, ypos, zpos)
 
-yhoek = τ-muis.x/100·τ
-xhoek = klem((100-muis.y)/100·τ/2+τ·.25,τ·.25,τ·.75)
+yhoek = τ-mouse.x/100·τ
+xhoek = klem((100-mouse.y)/100·τ/2+τ·.25,τ·.25,τ·.75)
 
 xpos := -5
 ypos := 1.1
 zpos := -5
 
 ; automove
-als scherm.ververst en toets.w dan
+if screen.refreshes and key.w then
 	xpos := xpos + sin(yhoek) · .02
 	;ypos := ypos + sin(xhoek) · .02
 	ypos := hmap(⌊xpos⌋+⌊zpos⌋·20)
 	zpos := zpos + cos(yhoek) · .02
-eind
-als scherm.ververst en toets.s dan
+end
+if screen.refreshes and key.s then
 	xpos := xpos - sin(yhoek) · .02
 	zpos := zpos - cos(yhoek) · .02
-eind
-als scherm.ververst en toets.a dan
+end
+if screen.refreshes and key.a then
 	xpos := xpos + sin(yhoek+τ/4) · .02
 	zpos := zpos + cos(yhoek+τ/4) · .02
-eind
-als scherm.ververst en toets.d dan
+end
+if screen.refreshes and key.d then
 	xpos := xpos + sin(yhoek-τ/4) · .02
 	zpos := zpos + cos(yhoek-τ/4) · .02
-eind
-als scherm.ververst en toets.omhoog dan ypos := ypos + .02 eind
-als scherm.ververst en toets.omlaag dan ypos := ypos - .02 eind
+end
+if screen.refreshes and key.up then ypos := ypos + .02 end
+if screen.refreshes and key.down then ypos := ypos - .02 end
 
 projection = (fov,ar,znear,zfar) → Proj
 	zf = 1 / tan(fov/2)
@@ -126,44 +126,44 @@ projection = (fov,ar,znear,zfar) → Proj
 ; fps counter
 fps := 60
 frames := 0
-fpstijd := looptijd + 1
-als looptijd > fpstijd dan
-	fpstijd := looptijd + 1
+fpstijd := runtime + 1
+if runtime > fpstijd then
+	fpstijd := runtime + 1
 	fps := frames
 	frames := 0
-eind
-als scherm.ververst dan
+end
+if screen.refreshes then
 	frames := frames + 1
-eind
+end
 
 obj = download "res/aap.obj"
 
 opon := [],[]
-als #obj > 0 en (opon ⇒ #opon₀ = 0) dan
+if #obj > 0 and (opon ⇒ #opon₀ = 0) then
 	opon := obj.decodeer(obj)
-eind
+end
 
 obj.decodeer = Obj → plet Opunten, plet Onormals
 oregels   = Obj splits "\n"
-overtices = oregels filter (ovr → (ovr₀ = 'v' en ovr₁ ≠ 'n')) map overtice
-onormals = oregels filter (onr → (onr₀ = 'v' en onr₁ = 'n')) map onormal1
+overtices = oregels filter (ovr → (ovr₀ = 'v' and ovr₁ ≠ 'n')) map overtice
+onormals = oregels filter (onr → (onr₀ = 'v' and onr₁ = 'n')) map onormal1
 ovfaces    = oregels filter (ovf → (ovf₀ = 'f')) map oface
 onfaces    = oregels filter (onf → (onf₀ = 'f')) map onormal
 Opunten    = (plet ovfaces) map dec map overtices
 Onormals   = (plet onfaces) map dec map onormals
 dec = Dx → Dx-1
 
-punten,normals = opon₀, opon₁
-numpolys = #punten/9
+points,normals = opon₀, opon₁
+numpolys = #points/9
 
-buf = vertexbuffer(punten)
+buf = vertexbuffer(points)
 nbuf = vertexbuffer(normals)
 
 splits = asdf,asdf2 → [asdf]
-overtice = vregel → (vregel splits " " vanaf 1) filter (vr → #vr > 0) map getal
-onormal1 = n1regel → (n1regel splits " " vanaf 1) filter (v1r → #v1r > 0) map getal
-oface    = fregel → (fregel splits " " vanaf 1) filter (fr → #fr > 0) map iface
-onormal  = nregel → (nregel splits " " vanaf 1) filter (nr → #nr > 0) map nface
-iface    = Iface → getal((Iface splits "/")₀)
-nface    = Nface → getal((Nface splits "/")₂)
+overtice = vregel → (vregel splits " " from 1) filter (vr → #vr > 0) map number
+onormal1 = n1regel → (n1regel splits " " from 1) filter (v1r → #v1r > 0) map number
+oface    = fregel → (fregel splits " " from 1) filter (fr → #fr > 0) map iface
+onormal  = nregel → (nregel splits " " from 1) filter (nr → #nr > 0) map nface
+iface    = Iface → number((Iface splits "/")₀)
+nface    = Nface → number((Nface splits "/")₂)
 

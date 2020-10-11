@@ -1,14 +1,14 @@
-require 'vertaal'
-require 'bouw.codegen'
+require 'compile'
+require 'build.codegen'
 require 'doe'
-require 'optimiseer'
-require 'combineer' require 'ontleed'
+require 'optimise'
+require 'deparse' require 'parse'
 require 'util'
 
 opt = {['0'] = false}
 
 local function T(x)
-	local code,err = vertaal("main = "..x)
+	local code,err = compile("main = "..x)
 	for i,msg in ipairs(err) do
 		print(fout2ansi(msg))
 	end

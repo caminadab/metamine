@@ -1,5 +1,5 @@
-require 'bouw.gen.lua'
-require 'ontleed'
+require 'build.gen.lua'
+require 'parse'
 
 function imparse(imcode)
 	local im = X'[]'
@@ -29,7 +29,7 @@ function verwacht(im, val)
 		print(string.format('moet %s zijn maar was %s', lenc(val), lenc(res)))
 		print('Im:')
 		for i,ins in ipairs(im) do
-			print(combineer(ins))
+			print(deparse(ins))
 		end
 		print('Lua:')
 		print(lua)

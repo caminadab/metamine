@@ -1,58 +1,58 @@
 ; Pong Deluxe
 
-; bal variabelen
-bal.x.min = 15
-bal.y.min = 5
-bal.x.max = scherm.breedte - 15
-bal.y.max = scherm.hoogte - 5
-bal.vx := 3
-bal.vy := willekeurig(-3,3)
+; ball variables
+ball.x.min = 15
+ball.y.min = 5
+ball.x.max = screen.width - 15
+ball.y.max = screen.height - 5
+ball.vx := 3
+ball.vy := random(-3,3)
 
-; speler variabelen
-speler.y.start = speler.y.max / 2
-speler.y.max = scherm.hoogte - 25
+; player variables
+player.y.start = player.y.max / 2
+player.y.max = screen.height - 25
 
-; bal verplaatsing
-bal.x := scherm.breedte / 2
-bal.y := scherm.hoogte / 2
+; ball movement
+ball.x := screen.width / 2
+ball.y := screen.height / 2
 
-; pauze
-pauze.tot := looptijd + 1
-pauze = looptijd < pauze.tot
+; pause
+pause.til := runtime + 1
+pause = runtime < pause.til
 
-als scherm.ververst en ¬ pauze dan
- bal.x := bal.x + bal.vx
- bal.y := bal.y + bal.vy
-eind
+if screen.refreshes and ¬ pause then
+ ball.x := ball.x + ball.vx
+ ball.y := ball.y + ball.vy
+end
 
-; raakt bal de spelers?
-rechts.raakt = (bal.y > rechts.y en bal.y < rechts.y + 25)
-links.raakt = (bal.y > links.y en bal.y < links.y + 25)
+; hits ball the players?
+right.hits = (ball.y > right.y and ball.y < right.y + 25)
+left.hits = (ball.y > left.y and ball.y < left.y + 25)
 
-; rechts stuiter
-bal.x.min = 0 + 5 + 10
-bal.x.max = scherm.breedte - 5 - 10
+; right bounce
+ball.x.min = 0 + 5 + 10
+ball.x.max = screen.width - 5 - 10
 
-als bal.x > bal.x.max en rechts.raakt dan
- bal.x := bal.x.max
- bal.vx := - abs bal.vx
- bal.vy := -(rechts.y - bal.y + 25/2) / 8
-eind
+if ball.x > ball.x.max and right.hits then
+ ball.x := ball.x.max
+ ball.vx := - abs ball.vx
+ ball.vy := -(right.y - ball.y + 25/2) / 8
+end
 
-; links stuiter
-als bal.x < bal.x.min en links.raakt dan
- bal.x := bal.x.min
- bal.vx := abs bal.vx
- bal.vy := -(links.y - bal.y + 25/2) / 8
-eind
+; left bounce
+if ball.x < ball.x.min and left.hits then
+ ball.x := ball.x.min
+ ball.vx := abs ball.vx
+ ball.vy := -(left.y - ball.y + 25/2) / 8
+end
 
-; top en onder stuiter
-als bal.y < bal.y.min dan
- bal.vy := abs bal.vy
-eind
-als bal.y > bal.y.max dan
- bal.vy := - abs bal.vy
-eind
+; top and below bounce
+if ball.y < ball.y.min then
+ ball.vy := abs ball.vy
+end
+if ball.y > ball.y.max then
+ ball.vy := - abs ball.vy
+end
 
 
 ; score
@@ -60,39 +60,39 @@ score1 := 0
 score2 := 0
 
 ; er wordt gescoord
-als bal.x < 0 of bal.x > scherm.breedte dan
-	bal.x := 90
-	bal.y := 50
-	pauze.tot := looptijd + 1
-eind
-als bal.x < 0              dan score1 := score1 + 1 eind
-als bal.x > scherm.breedte dan score2 := score2 + 1 eind
+if ball.x < 0 or ball.x > screen.width then
+	ball.x := 90
+	ball.y := 50
+	pause.til := runtime + 1
+end
+if ball.x < 0              then score1 := score1 + 1 end
+if ball.x > screen.width then score2 := score2 + 1 end
 
-; spelers
-links.y := speler.y.start
-rechts.y := speler.y.start
+; players
+left.y := player.y.start
+right.y := player.y.start
 
-; besturing
-als scherm.ververst en toets.omlaag en rechts.y > 0						dan rechts.y := rechts.y - 2 eind
-als scherm.ververst en toets.omhoog en rechts.y < speler.y.max dan rechts.y := rechts.y + 2 eind
-als scherm.ververst en toets.s en links.y > 0									dan links.y := links.y - 2 eind
-als scherm.ververst en toets.w en links.y < speler.y.max				dan links.y := links.y + 2 eind
+; controls
+if screen.refreshes and key.down and right.y > 0						then right.y := right.y - 2 end
+if screen.refreshes and key.up and right.y < player.y.max then right.y := right.y + 2 end
+if screen.refreshes and key.s and left.y > 0									then left.y := left.y - 2 end
+if screen.refreshes and key.w and left.y < player.y.max				then left.y := left.y + 2 end
  
-; teken spelers
-links.min = (0, links.y)
-links.max = (10, links.y + 25)
-rechts.min = (scherm.breedte - 10, rechts.y)
-rechts.max = (scherm.breedte, rechts.y + 25)
+; draw players
+left.min = (0, left.y)
+left.max = (10, left.y + 25)
+right.min = (screen.width - 10, right.y)
+right.max = (screen.width, right.y + 25)
 
-rechts = rechthoek(rechts.min, rechts.max)
-links = rechthoek(links.min, links.max)
+right = rectangle(right.min, right.max)
+left = rectangle(left.min, left.max)
 
-; teken bal
-bal = cirkel((bal.x, bal.y), 5)
+; draw ball
+ball = circle((ball.x, ball.y), 5)
 
-label1 = label((90-9, 90), tekst(score2))
+label1 = label((90-9, 90), string(score2))
 label2 = label((90-2, 90), "-")
-label3 = label((90+3, 90), tekst(score1))
+label3 = label((90+3, 90), string(score1))
 
-uit = teken [ links, rechts, bal, label1, label2, label3 ]
+out = draw [ left, right, ball, label1, label2, label3 ]
 

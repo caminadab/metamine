@@ -1,8 +1,8 @@
 require 'util'
-require 'bieb'
-local bieb = bieb()
+require 'lib'
+local lib = lib()
 local makkelijk = set('+', '-', '·', '/', '%', '#', '_', '^',  '√', '∧', '∨', 'Σ', '>', '<', '≥', '≤', '=', '≠', '⇒', '⊤', '⊥', '_l', '_t', '_t')
-local dynamisch = set('looptijd', 'nu', 'starttijd', 'start', '∘',
+local dynamic = set('looptijd', 'nu', 'starttijd', 'start', '∘',
 	'tcp.lees', 'tcp.schrijf', 'tcp.accepteer', 'tcp.bind',
 	'pad.begin', 'pad.eind', 'pad.rect', 'pad.vul', 'pad.verf',
 	'canvas.context', 'html',
@@ -42,14 +42,14 @@ local function w2exp(w)
 	return uit
 end
 
-local function fnaam(exp)
-	return isfn(exp) and fn(exp):sub(1,1) == '_' and atoom(arg0(exp))
+local function fname(exp)
+	return isfn(exp) and fn(exp):sub(1,1) == '_' and atom(arg0(exp))
 end
 
 
 function constoptm(exp)
 	local constants = {}
-	for exp in boompairsdfs(exp) do
+	for exp in treepairsdfs(exp) do
 
 	end
 end
@@ -57,17 +57,17 @@ end
 -- constanten vouwen
 function constoptm2(exp)
 	-- literals
-	if isatoom(exp) then
-		if tonumber(atoom(exp)) then
-			return exp, tonumber(atoom(exp))
+	if isatom(exp) then
+		if tonumber(atom(exp)) then
+			return exp, tonumber(atom(exp))
 		end
-		if atoom(exp) == "⊤" then return exp, true end
-		if atoom(exp) == "⊥" then return exp, false end
-		if bieb[atoom(exp)] and not dynamisch[atoom(exp)] then
-			if type(bieb[atoom(exp)]) ~= 'function' then
-				return exp, bieb[atoom(exp)]
+		if atom(exp) == "⊤" then return exp, true end
+		if atom(exp) == "⊥" then return exp, false end
+		if lib[atom(exp)] and not dynamic[atom(exp)] then
+			if type(lib[atom(exp)]) ~= 'function' then
+				return exp, lib[atom(exp)]
 			else
-				return nil, bieb[atoom(exp)]
+				return nil, lib[atom(exp)]
 			end
 		end
 		return exp, nil
@@ -110,9 +110,9 @@ function constoptm2(exp)
 		local nexp, wexp
 		if makkelijk[fn(exp)] and warg then
 			if type(warg) == 'table'  then
-				wexp = bieb[fn(exp)](warg[1], warg[2], warg[3], warg[4])
+				wexp = lib[fn(exp)](warg[1], warg[2], warg[3], warg[4])
 			else
-				wexp = bieb[fn(exp)](warg)
+				wexp = lib[fn(exp)](warg)
 			end
 			nexp = w2exp(wexp)
 			if nexp == nil then
@@ -123,7 +123,7 @@ function constoptm2(exp)
 				wexp = nil
 			end
 			--nexp = {f=exp.f, a=narg} --X(fn(exp), narg)
-			--error(combineer(exp))
+			--error(deparse(exp))
 			nexp = exp
 			--wexp = nil
 		end

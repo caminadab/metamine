@@ -1,16 +1,16 @@
-require 'ontleed'
+require 'parse'
 require 'util'
-require 'bouw.gen.lua'
-require 'bouw.codegen'
-require 'vertaal'
+require 'build.gen.lua'
+require 'build.codegen'
+require 'compile'
 require 'doe'
 
 -- fouten
-local _,f = vertaal('app = )')
+local _,f = compile('app = )')
 assert(#f > 0)
 
 local function test(code, moet)
-	local v,f = vertaal(code)
+	local v,f = compile(code)
 	if not v and #f > 0 then
 		print('tijdens testen van '..code..':')
 		for i,fout in ipairs(f) do
@@ -22,7 +22,7 @@ local function test(code, moet)
 		
 	local imm = doe(v)
 	if lenc(imm) ~= lenc(moet) then
-		print(string.format('vertaal("%s") moet %s zijn maar was %s. imcode: %s', code, moet, imm, table.concat(map(v,combineer), " ")))
+		print(string.format('compile("%s") moet %s zijn maar was %s. imcode: %s', code, moet, imm, table.concat(map(v,deparse), " ")))
 	end
 end
 
@@ -82,13 +82,13 @@ main = f(1)
 local itoatoitoa = [[
 main = "looptijd: " ‖ itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
 
-; tekst -> integer
+; text -> integer
 atoi = b → i
 ; negatief?
 negatief = (b₀ = '-')
 sign = als negatief dan -1 anders 1
 
-; cijfers van de tekst
+; cijfers van de text
 tekens = als negatief dan (b vanaf 1) anders (b)
 cijfers = tekens map (t → t - '0')
 
@@ -100,7 +100,7 @@ j = #tekens - k - 1
 pos = 0 .. #tekens
 i = sign · Σ (pos map waarde)
 
-; integer -> tekst
+; integer -> text
 itoa = x → a
 n = 1 + entier(log10(max(abs x, 1)))
 neg = als x < 0 dan "-" anders ""

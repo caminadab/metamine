@@ -1,0 +1,22 @@
+#!/usr/bin/lua
+require 'util'
+local fmt,lst,uit = ...
+local gebruik = "usage: template [SJABLOON] [LIJST] [UITVOER]\n\tThe list must be in the format:\n\ttitel [TAB] Terminator\n\tgenre [TAB] tragikomedie"
+assert(fmt, gebruik)
+assert(lst, gebruik)
+assert(uit, gebruik)
+
+fmt = assert(file(fmt), 'niet gevonden: '..fmt)
+lst = assert(file(lst), 'niet gevonden: '..lst)
+
+require 'template'
+
+local dict = {}
+
+for naam, tekst in lst:gmatch('(%w+)\t+(.-)\n') do
+	dict[naam] = unescape(tekst)
+end
+
+local res = template(fmt, dict)
+assert(res, 'fout!')
+file(uit, res)

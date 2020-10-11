@@ -1,24 +1,24 @@
-; kleur paint
+; color paint
 
-kleuren = [kleur.blauw, kleur.rood, kleur.groen, kleur.geel]
+colors = [color.blue, color.red, color.green, color.yellow]
 lijnen := []
-punten := []
+points := []
 kleurindex := 0
 
-als muis.klik.begin dan
-	punten := []
-eind
+if mouse.click.begin then
+	points := []
+end
 
-als muis.klik en muis.beweegt dan
-	punten := punten ‖ [muis.pos]
-eind
+if mouse.click and mouse.moves then
+	points := points ‖ [mouse.pos]
+end
 
 
-als muis.klik.eind dan
-	lijnen := lijnen ‖ [verf(polygoon(punten), kleuren(kleurindex))]
-	kleurindex := (kleurindex + 1) mod (# kleuren)
-	punten := []
-eind
+if mouse.click.end then
+	lijnen := lijnen ‖ [paint(polygon(points), colors(kleurindex))]
+	kleurindex := (kleurindex + 1) mod (# colors)
+	points := []
+end
 
-uit = teken (lijnen ‖ [lijn(punten)])
+out = draw (lijnen ‖ [line(points)])
 

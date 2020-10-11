@@ -1,23 +1,23 @@
-; concentrische cirkels
+; concentric circles
 w = 18
 h = 10
 pos = 0..w × 0..h
 
-; cirkelpatroon
-dx = x - muis.x/10 
-dy = y - muis.y/10
+; circlepattern
+dx = x - mouse.x/10 
+dy = y - mouse.y/10
 dst = √(dx²+dy²)
 
-; staat het blok op (x,y) aan?
-isaan = (x,y) → golf < sin(looptijd)+2
-golf = (looptijd·10 - dst) mod 5
-blokken = pos filter isaan
+; is the block on (x,y) on?
+isaan = (x,y) → golf < sin(runtime)+2
+golf = (runtime·10 - dst) mod 5
+blocks = pos filter isaan
 
-; blokken
-vorm = vierkant(a·10,b·10,9) verf kleur
-kleur = rgb(a/10,b/10,blauw)
-blauw = sin(looptijd)/2+0.5
-vierkanten = blokken map (a,b → vorm)
-uit = teken vierkanten
+; blocks
+shape = square(a·10,b·10,9) paint color
+color = rgb(a/10,b/10,blue)
+blue = sin(runtime)/2+0.5
+squares = blocks map (a,b → shape)
+out = draw squares
 
 

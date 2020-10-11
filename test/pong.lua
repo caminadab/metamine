@@ -1,21 +1,21 @@
 require 'util'
-require 'vertaal'
+require 'compile'
 require 'doe'
 local socket = require 'socket'
 
 local pong = file 'ex/pong.code'
-local bieb = file 'bieb/std.code'
-local prog = pong .. bieb
+local lib = file 'lib/std.code'
+local prog = pong .. lib
 
 do
 	local _,numlines = prog:gsub('\n', ' ')
-	print('==== vertaal(pong) ====')
+	print('==== compile(pong) ====')
 	print('bron: '..numlines..' lines, '..#prog..' bytes')
 end
 
 local voor = socket.gettime()
 
-local app = vertaal(prog)
+local app = compile(prog)
 local n = 0
 assert(app, 'pong kon niet eens gecompileerd worden')
 for i,ins in ipairs(app) do
@@ -25,6 +25,6 @@ print('resultaat: '..n..' bytes')
 
 local na = socket.gettime()
 local dt = math.floor((na - voor)*1000)
-print('vertaal(pong) duurde '..dt..'ms')
+print('compile(pong) duurde '..dt..'ms')
 
 

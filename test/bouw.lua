@@ -1,10 +1,10 @@
 do return end
-require 'bouw.assembleer'
-require 'bouw.link'
-require 'bouw.gen.asm'
-require 'bouw.gen.lua'
-require 'bouw.gen.js'
-require 'vertaal'
+require 'build.assembleer'
+require 'build.link'
+require 'build.gen.asm'
+require 'build.gen.lua'
+require 'build.gen.js'
+require 'compile'
 require 'doe'
 
 function doelua(lua)
@@ -37,8 +37,8 @@ end
 function test(code, moetzijn)
 	-- niet optimaliseren aub
 	opt = {['0'] = false}
-	local im,fouten = vertaal(code)
-	assert(im, "onvertaalbaar: "..code)
+	local im,fouten = compile(code)
+	assert(im, "oncompilebaar: "..code)
 
 	local js  = jsgen(im)
 	local asm = asmgen(im)
@@ -121,7 +121,7 @@ main = sgn 3
 test('main = -3' --[[
 main = itoa(atoi(itoa(atoi(itoa(atoi(itoa(-3)))))))
 
-; tekst -> integer
+; text -> integer
 atoi = b → i
 	; negatief?
 	als b₀ = '-' dan
@@ -132,7 +132,7 @@ atoi = b → i
 		tekens = b
 	eind
 
-	; cijfers van de tekst
+	; cijfers van de text
   cijfers = tekens map (t → t - '0')
 	cijfers = tekens zip1 ('0') map (-)
 
@@ -144,7 +144,7 @@ atoi = b → i
 	pos = 0 .. #tekens
   i = sign · Σ (pos map waarde)
 
-; integer -> tekst
+; integer -> text
 itoa = x → a
   n = 1 + ⌊log10(max(abs x, 1))⌋
 	als x < 0 dan

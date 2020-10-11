@@ -43,8 +43,8 @@ local _comp = function(a,b)
 end
 local javascript = function(broncode)
     -- ^_^
-    require 'bieb'
-    return bieb.javascript(broncode)
+    require 'lib'
+    return lib.javascript(broncode)
 end
 local tabel = function(t)
     local t = t or {}
@@ -118,7 +118,7 @@ local vind = function(a,b)
     return false
 end
 
-local tekst = function (a)
+local text = function (a)
     local t = tostring(a)
     return {string.byte(t,1,#t)}
 end

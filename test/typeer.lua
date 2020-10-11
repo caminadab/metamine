@@ -1,16 +1,16 @@
-require 'combineer'
-require 'ontleed'
-require 'typeer'
+require 'deparse'
+require 'parse'
+require 'typify'
 require 'fout'
 
 function moettypezijn(code, typecode)
-	local moettype = ontleedexp(typecode)
-	local type,fouten = typeer(ontleedexp(code))
+	local moettype = parseexp(typecode)
+	local type,fouten = typify(parseexp(code))
 	local istype = type
 
-	if moes(istype) ~= moes(moettype) then
+	if hash(istype) ~= hash(moettype) then
 		print(string.format('type van "%s" is "%s" maar moet "%s" zijn',
-			code, combineer(istype), combineer(moettype)))
+			code, deparse(istype), deparse(moettype)))
 		print('typefouten:')
 		if #fouten > 0 then
 			for i,fout in ipairs(fouten) do
@@ -38,20 +38,20 @@ moettypezijn('x → x + 1', 'getal → getal')
 
 
 -- kijk of exp's gelijk worden
-local exp = ontleedexp('a = a')
-local _,fouten,types = typeer(exp)
+local exp = parseexp('a = a')
+local _,fouten,types = typify(exp)
 assert(types[arg0(exp)] == types[arg1(exp)])
 
-local exp = ontleedexp('a = a + 1')
-local _,fouten,types = typeer(exp)
+local exp = parseexp('a = a + 1')
+local _,fouten,types = typify(exp)
 assert(types[arg0(exp)] == types[arg0(arg1(exp))])
 
-local exp = ontleedexp('a → a')
-local _,fouten,types = typeer(exp)
+local exp = parseexp('a → a')
+local _,fouten,types = typify(exp)
 assert(types[arg0(exp)] == types[arg1(exp)])
 
-local exp = ontleedexp('x → x + 1')
-local _,fouten,types = typeer(exp)
+local exp = parseexp('x → x + 1')
+local _,fouten,types = typify(exp)
 assert(types[arg0(exp)] == types[arg0(arg1(exp))])
 
 
@@ -67,14 +67,14 @@ moettypezijn('[1, 2, 0.5] || [1]', 'nat → getal')
 
 
 -- compositiefout check
-local type,fouten = typeer(ontleed[[
+local type,fouten = typify(parse[[
 f = x → x + 1
 g = a, b → a + b
 uit = (f ∘ g)(3)
 ]])
 assert(#fouten > 0, C(type)) 
 
--- tekst types
+-- text types
 moettypezijn('"hoi"', 'nat → letter')
 local fouten = moettypezijn(' "hoi" || "ja" ', 'nat → letter')
 if #fouten > 0 then
@@ -84,7 +84,7 @@ end
 
 
 -- foutjes
-local t,f = typeer(ontleed([[
+local t,f = typify(parse([[
 w = 177.78
 h = 100
 spelerW = 5
@@ -100,22 +100,22 @@ uit = teken [links, rechts]
 
 
 -- functie type mismatch
-local t,f = typeer(ontleed([[
+local t,f = typify(parse([[
 uit = f(3)
 f = sin
 f = cirkel
 ]]))
 assert(#f > 0, 'geen typefouten in ongeldig programma!')
 
-local t,f,types = typeer(ontleed([[
+local t,f,types = typify(parse([[
 uit = a + b
 a = (1,2)
 b = (3,4)
 ]]))
-assert(#f == 0, 'fouten maar moest niet')
+assert(#f == 0, 'fouten maar hasht niet')
 
 -- vouw mismatch
-local t,f = typeer(ontleed([[
+local t,f = typify(parse([[
 L = [1, 2, 3]
 uit = (L vouw (>))
 ]]))

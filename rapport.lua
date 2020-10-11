@@ -1,9 +1,9 @@
-require 'combineer'
+require 'deparse'
 
--- graaf2html
--- stroom2html
+-- graph2html
+-- flow2html
 
-local function tag(naam,id,props,autoclose)
+local function tag(name,id,props,autoclose)
 	if type(id) == 'table' then
 		props = id
 		id = nil
@@ -12,7 +12,7 @@ local function tag(naam,id,props,autoclose)
 		-- schrijffunctie
 		return function(t)
 			t[#t+1] = '<'
-			t[#t+1] = naam
+			t[#t+1] = name
 			if id then
 				t[#t+1] = ' id="'
 				t[#t+1] = id
@@ -42,7 +42,7 @@ local function tag(naam,id,props,autoclose)
 
 			if not autoclose then
 				t[#t+1] = '</'
-				t[#t+1] = naam
+				t[#t+1] = name
 				t[#t+1] = '>'
 			end
 		end
@@ -83,16 +83,16 @@ function rid()
 	return 'x'..math.random()
 end
 
-function graaf2js(graaf, id, layout, map)
+function graph2js(graph, id, layout, map)
 	local layout = layout or 'cose'
 	-- punten
 	local d = {}
-	for punt in spairs(graaf.punten) do
+	for punt in spairs(graph.punten) do
 		d[#d+1] = "{ data: {id: "..string.format('%q', tostring(punt)).."}, classes: 'waarde' },"
 	end
 
 	-- pijlen
-	for pijl in spairs(graaf.pijlen) do
+	for pijl in spairs(graph.pijlen) do
 		local haspseudo = not next(pijl.van) or next(pijl.van, next(pijl.van))
 		local pseudo
 		if haspseudo then
@@ -174,18 +174,18 @@ function graaf2js(graaf, id, layout, map)
 	]]
 end
 
-function stroom2html(stroom, naam)
-	return graaf2html(stroom, naam, 'dagre')
+function flow2html(flow, name)
+	return graph2html(flow, name, 'dagre')
 end
 
--- vt: (code, kennisgraaf, infostroom)
-function graaf2html(graaf, naam, type)
+-- vt: (code, kennisgraph, infoflow)
+function graph2html(graph, name, type)
 	local deel = tag('div', nil, {class='deel'})
 
 	return html {
 		head {
 			meta_charset(),
-			title(naam),
+			title(name),
 			css [[
 				.deel {
 					width: calc(100% - 50px);
@@ -211,13 +211,13 @@ function graaf2html(graaf, naam, type)
 			--deel { pre(unlisp(feiten)) },
 			--deel { pre(unlisp(dfeiten)) },
 			--div('afh', {class='deel'}),
-			--div('infostroom', {class='deel'}),
+			--div('infoflow', {class='deel'}),
 			--deel { typetabel },
 			div('afh', {class='deel'}),
-			js (graaf2js(graaf, 'afh', type, map)),
-			--js (graaf2js(vt.infostroom, 'infostroom', 'dagre', map)),
+			js (graph2js(graph, 'afh', type, map)),
+			--js (graph2js(vt.infoflow, 'infoflow', 'dagre', map)),
 			js [[
-				infostroom.on('mouseover', 'node', function(event) {
+				infoflow.on('mouseover', 'node', function(event) {
 					var node = event.cyTarget || [];
 					$(this).each(function() {$(this).qtip({content:'hello'});});
 					$.qtip({

@@ -1,12 +1,12 @@
-require 'bouw.gen.js'
-require 'vertaal'
-require 'vertolk'
-require 'combineer'
+require 'build.gen.js'
+require 'compile'
+require 'translate'
+require 'deparse'
 require 'json'
 
-require 'ontleed'
-require 'typeer'
-require 'oplos'
+require 'parse'
+require 'typify'
+require 'solve'
 
 local socket = require 'socket'
 local server = socket.bind('127.0.0.1','1237')
@@ -25,16 +25,16 @@ local function cat(...)
 	return r
 end
 
-local web = lees('bieb/std.code')
+local web = lees('lib/std.code')
 
 -- DE webfunctie
 -- vt: code → {html?, fouten?}
 --   fouten: [ fout... ]
---   fout: syntaxfout | typefout | oplosfout
---     syntaxfout: { type="syntax", loc, waarom, waarde }
+--   fout: syntaxerror | typefout | solvefout
+--     syntaxerror: { type="syntax", loc, waarom, waarde }
 --       loc: codemirror-locatie
---     typefout: { type="typeer", ? }
---     oplosfout: { type="oplos", ? }
+--     typefout: { type="typify", ? }
+--     solvefout: { type="solve", ? }
 -- 
 -- de "fout" als los interpretabel object
 function vt(code, isdebug)
@@ -43,7 +43,7 @@ function vt(code, isdebug)
 	code = code .. '\n' .. web
 
 	local voor = socket.gettime()
-	local icode,fouten,naam2index = vertaal(code, isdebug)
+	local icode,fouten,name2index = compile(code, isdebug)
 	local na = socket.gettime()
 	local delta = math.floor((na - voor) * 1000)
 	local speed = math.floor(#code / delta)
@@ -57,7 +57,7 @@ function vt(code, isdebug)
 
 	return {
 		js = js,
-		naam2index = naam2index,
+		name2index = name2index,
 		fouten = fouten,
 	}
 end
@@ -172,7 +172,6 @@ From: vraag@metamine.nl
     pad = pad:gsub('%.%.', '%.')
 		pad = pad:match('([^?]+)%?') or pad
 		if pad == '/' then pad = '/index.html' end
-		if pad == '/en' then pad = '/index.en.html' end
     pad = 'web/www' .. pad
 		uit = file(pad)
 		status = 200

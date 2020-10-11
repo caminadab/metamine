@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+	<title>Metamine</title>
+	<link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<div class="paneel">
+	<button id="vorige" class="skip">⏮</button>
+	<button id="pause" onclick="paused = !paused;">⏸︎</button>
+	<button id="speel">▶</button>
+	<button id="fullscreen" onclick="fullscreen()">⇲</button><!--⛶-->
+	<button id="volgende" class="skip">⏭</button>
+	<!--<button id="opnieuw">⟲</button>-->
+	<!--<button id="info">🛈</button>-->
+</div>
+
+<!-- in -->
+<div class="in" tabindex="1">
+	<textarea id="broncode" name="broncode">{laden}</textarea> 
+</div>
+
+<!-- uit! -->
+<div id="uit" tabIndex="2" >
+</div>
+
+<div class="debug"><input id="debug" type="checkbox" onclick="debugChange()"></input> debug </div>
+<div style="height:5; display: inline;"><a href="/cataloog.html">Catalogus</a></div>
+
+</body>
+<link rel="stylesheet" href="lib/slang.css">
+<link rel="stylesheet" href="lib/codemirror.css">
+
+<script src="lib/fastclick.js"></script>
+<script src="lib/codemirror.js"></script>
+<script src="lib/addon/edit/matchbrackets.js"></script>
+<script src="lib/addon/selection/active-line.js"></script>
+<script src="lib/addon/search/search.js"></script>
+<script src="lib/addon/search/searchcursor.js"></script>
+<script src="lib/taal.js"></script>
+<script src="lib/vim.js"></script>
+<script src="webgl.js"></script>
+<script>
+
+	var demoindex = 0;
+	var demos = [
+		'salvobal', 'pong', 'buis', 'cirkels',
+		'paint', 'paint2', 'grafiek', 'voer',
+		'schaken', 'leip', 'oog', 'demo',
+		'pe1', 'pe2', 'pe3', 'pe4', 'pe5', 'pe6' ] ;
+	var uit = document.getElementById('uit');
+
+	var speelknop = document.getElementById("speel");
+	var vorigeknop = document.getElementById("vorige");
+	var volgendeknop = document.getElementById("volgende");
+	var cknop = '#012ED4';
+	var laadbalk = document.getElementById("laadbalk");
+	var js = document.getElementById("js");
+
+	var preview = document.createElement("div", "preview");
+	preview.className = "preview";
+	var stop = true;
+	var paused = false;
+	var wraps = document.getElementsByClassName("CodeMirror-wrap");
+
+	// fotos
+	var debug = document.getElementById('debug');
+	var naam;
+
+	function debugChange() {
+		if (!stop) {
+			playfunc();
+		}
+	}
+
+	function toString(obj) {
+		if (typeof(obj) == "string") {
+			return obj;
+		} else if (obj === true) {
+			return "ja";
+		} else if (obj === false) {
+			return "nee";
+		} else if (typeof(obj) == "function") {
+			return '<pre>' + obj.toString() + '</pre>';
+		} else if (obj == null) {
+			return 'niets';
+		} else if (Array.isArray(obj)) {
+			var res = "";
+			var lang = false;
+			obj.forEach(x => {var tmp = toString(x); res += ", "; res += tmp; });
+			return "[" + res.substr(2) + "]";
+		} else if (typeof(obj)=="object" && obj.has) {
+			return "{"+[...obj].toString()+"}";
+		} else if (typeof(obj) == "number") {
+			return obj.toString();
+		} else {
+			var j = JSON.stringify(obj);
+			if (j)
+				return j;
+			if (obj)
+				return obj.toString();
+			else
+				return 'niets';
+		}
+	}
+
+	/*setInterval(x => {
+		if (window.cache && window.naam2index && naam && !stop)
+			if (naam2index[naam])
+				preview.innerHTML = toString(cache[naam2index[naam]]);
+	}, 1000/60);*/
+
+	function playfunc() {
+		// suspense...
+		speelknop.style.backgroundColor = '#000E42';
+		
+		var path = '/vt';
+		if (debug.checked)
+			path = '/vt/debug';
+
+		var broncode = editor.getValue();
+		if (!broncode)
+			broncode = " ";
+
+		fetch(path, {method: "POST", body: broncode})
+			.then(x => {
+				if (!x.ok) 
+				{
+					uit.innerHTML = "Interne fout!";
+					onerror();
+				}
+				else
+					return x.json();
+			})
+			.catch(x => {
+				onerror();
+			})
+			.then(j => {
+				if (j.fouten.length > 0) {
+					setErrors(j.fouten);
+					onerror();
+					return;
+				}
+				naam2index = j.naam2index;
+
+				stop = false;
+
+				// debug info
+				wraps[0].onmousemove = (ev) => {
+					var pos = editor.coordsChar({left: ev.clientX, top: ev.clientY});
+					var token = editor.getTokenAt(pos);
+
+					var widgetpos = {line: pos.line, ch: token.start};
+					if (token.type == "variable") {
+						naam = token.string;
+						if (naam2index[naam] && window.debug)
+							preview.innerHTML = toString(cache[naam2index[naam]]);
+						else {
+							preview.innerHTML = '';
+							naam = null;
+						}
+					}
+					else {
+						preview.innerHTML = '';
+						naam = null;
+					}
+					editor.addWidget(widgetpos, preview);
+				};
+
+				try {
+					// context
+					SCHAAL = 7.2;
+					var uitBreedte = 178;
+					var context;
+					var context3d;
+
+
+					function setcontext(transform) {
+						if (!context) {
+							var width = window.screen.width;
+							var height = window.screen.height;
+							SCHAAL = height/100;
+							uitBreedte = width / height * 100;
+
+							uit.innerHTML = '<canvas width="'+width+'" height="'+height+'"></canvas>'
+							context = uit.children[0].getContext("2d");
+							context.fillStyle = 'white';
+							context.strokeStyle = 'white';
+							context.font = '48px Arial';
+							context.lineWidth = '4';
+						}
+						return transform(context);
+					}
+
+					function setcontext3d(transform) {
+						if (!context3d || !gl) {
+							var width = window.screen.width;
+							var height = window.screen.height;
+							SCHAAL = height/100;
+							uitBreedte = width / height * 100;
+
+							uit.innerHTML = '<canvas width="'+width+'" height="'+height+'"></canvas>'
+							context3d = uit.children[0].getContext("webgl2");
+							context = context3d;
+							gl = context3d;
+						}
+						return transform(context3d);
+					}
+
+					var main = new Function("IN", j.js)();
+					MAIN = main;
+					var nu = new Date().getTime() / 1000;
+					var vars = [];
+					var uitvoer;
+					gl = {};
+					var schermVerverst = false;
+					var toetsCode = null;
+					var toetsBegint = false;
+					var toetsEindigt = false;
+					var toetsBegin = (toetscode) => false;
+					var toetsEind = (toetscode) => false;
+					var muisBeweegt = false;
+					var muisBeweegtNaar = null; //[0, 0];
+					var muisKlikBegin = false;
+					var muisKlikEind = false;
+					var vroeger = nu;
+					var dt = 0;
+					var misschien = Math.random() < 0.5;
+					imgCache = {};
+					shaderCache = {};
+					programCache = {};
+					resCache = {};
+					textureCache = {};
+
+					var id = x => x;
+
+					uit.onkeydown = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						var toetsBegin = (keycode) => ev.keyCode == keycode;
+						var toetsCode = ev.keyCode;
+						var toetsBegint = true;
+						var setcontext = x => x;
+						var setcontext3d = x => x;
+						var misschien = Math.random() < 0.5;
+						var uv = main([vars, false, nu, x => x, x => x, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, misschien]);
+
+						vars = uv[0];
+						uitvoer = uv[1];
+
+						if (!context)
+							uit.innerHTML = toString(uitvoer);
+
+						return ev.keyCode > 96;
+					};
+
+					uit.onmousedown = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						var muisBeweegt = true;
+						var canvas = uit.children[0] || uit;
+						var b = canvas.getBoundingClientRect();
+						EV = ev;
+						var muisX = (ev.clientX - b.left) / canvas.clientHeight * 100;
+						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
+						var muisY = 100 - muisY;
+						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
+						var muisKlikBegin = true;
+						var setcontext = id;
+						var setcontext3d = id;
+						var misschien = Math.random() < 0.5;
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, misschien]);
+
+						vars = uv[0];
+						uitvoer = uv[1];
+						if (!context)
+							uit.innerHTML = toString(uitvoer);
+					};
+						
+					uit.onmouseup = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						var muisBeweegt = true;
+						var canvas = uit.children[0] || uit;
+						var b = canvas.getBoundingClientRect();
+						EV = ev;
+						var muisX = (ev.clientX - b.left) / canvas.clientHeight * 100;
+						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
+						var muisY = 100 - muisY;
+						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
+						var muisKlikEind = true;
+						var setcontext = id;
+						var setcontext3d = id;
+						var misschien = Math.random() < 0.5;
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, misschien]);
+
+						vars = uv[0];
+						uitvoer = uv[1];
+						if (!context)
+							uit.innerHTML = toString(uitvoer);
+					};
+
+					uit.onmousemove = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						muisBeweegt = true;
+						var canvas = uit.children[0] || uit;
+						var b = canvas.getBoundingClientRect();
+						EV = ev;
+						var muisX = (ev.clientX - b.left) / canvas.clientHeight * 100;
+						var muisY = (ev.clientY - b.top) / canvas.clientHeight * 100;
+						var muisY = 100 - muisY;
+						var muisBeweegtNaar = [+muisX.toFixed(3), +muisY.toFixed(3)];
+						var setcontext = id;
+						var setcontext3d = id;
+						var misschien = Math.random() < 0.5;
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, misschien]);
+						vars = uv[0];
+						return true;
+					};
+						
+
+					uit.onkeyup = (ev) => {
+						var nu = new Date().getTime() / 1000;
+						var toetsEind = (keycode) => ev.keyCode == keycode;
+						var toetsCode = ev.keyCode;
+						var toetsEindigt = true;
+						var setcontext = id;
+						var setcontext3d = id;
+						var misschien = Math.random() < 0.5;
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, misschien]);
+
+						vars = uv[0];
+						uitvoer = uv[1];
+						if (!context)
+							uit.innerHTML = toString(uitvoer);
+
+						return ev.keyCode > 96;
+					};
+
+					// start
+					var uv = main([vars, true, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, misschien]);
+
+					if (!main)
+						alert("Compilation error! " + j.js);
+
+
+					vars = uv[0];
+					uitvoer = uv[1];
+
+					//alert("startvars: " + vars);
+					
+					if (!context)
+							uit.innerHTML = toString(uitvoer);
+
+					var f = (ev) => {
+						if (stop)
+							return;
+						if (paused) {
+							requestAnimationFrame(f);
+							return;
+						}
+						var vroeger = nu;
+						nu = new Date().getTime() / 1000;
+						var dt = nu - vroeger;
+						var schermVerverst = true;
+						var misschien = Math.random() < 0.5;
+
+						var uv = main([vars, false, nu, setcontext, setcontext3d, uitBreedte, schermVerverst, toetsCode, toetsBegint, toetsEindigt, toetsBegin, toetsEind, muisBeweegt, muisBeweegtNaar, muisKlikBegin, muisKlikEind, misschien, dt]);
+						var na = new Date().getTime() / 1000;
+						muisBeweegt = false;
+						//if (na - nu > 0.02)
+						//	console.log('traag..'+main);
+						vars = uv[0];
+						uitvoer = uv[1];
+
+						if (!context) {
+							uit.innerHTML = toString(uitvoer);
+						}
+
+						// debug
+						if (window.cache && window.naam2index && naam && !stop)
+							if (naam2index[naam])
+								preview.innerHTML = toString(cache[naam2index[naam]]);
+
+						if (!stop)
+							requestAnimationFrame(f);
+					}
+					requestAnimationFrame(f);
+
+					setTimeout(() => {
+						speelknop.innerHTML = "■";
+						speelknop.style.background = 'green';
+						speelknop.style.transitionDuration = '0.0s';
+					}, 100);
+
+					//uit.focus(); WAUW
+
+				} catch (e) {
+					onerror();
+					uit.innerHTML = e + e.stack; 
+					console.trace();
+				}
+			})
+	}
+
+	function stopfunc() {
+		wraps[0].onmousemove = undefined;
+
+		preview.innerHTML = '';
+
+		paused = false;
+		stop = true;
+
+		alertKlaar = false;
+		setErrors([]);
+		speelknop.innerHTML = "▶";
+		uit.onmousedown = undefined;
+		uit.onmouseup = undefined;
+		uit.onmousemove = undefined;
+		uit.onkeydown = undefined;
+		uit.onkeyup = undefined;
+		uit.innerHTML = "";
+		nieuw = null;
+		tekst = null;
+		speelknop.style.background = cknop;
+		speelknop.style.transitionDuration = '1.0s';
+	}
+
+	// make fullscreen
+	function fullscreen() {
+		uit.requestFullscreen();
+	}
+
+	function playorstop() {
+		if (stop) {
+			playfunc();
+		} else {
+			stopfunc(); 
+		}
+	}
+	
+	speelknop.addEventListener("mousedown", playorstop);
+
+	volgendeknop.addEventListener("mousedown", function() {
+		stopfunc();
+		setErrors([]);
+		demoindex++;
+		demoindex = Math.min(demoindex, demos.length-1);
+		fetch('/ex/' + demos[demoindex] + '.code?t=' + Math.random())
+			.then(res => res.text())
+			.then(data => {editor.setValue(data); playfunc();});
+	});
+	vorigeknop.addEventListener("mousedown", function() {
+		stopfunc();
+		setErrors([]);
+		demoindex--;
+		demoindex = Math.max(demoindex, 0);
+		fetch('/ex/' + demos[demoindex] + '.code?t=' + Math.random())
+			.then(res => res.text())
+			.then(data => {editor.setValue(data); playfunc();});
+	});
+
+	function onerror(e) {
+		//stopfunc();
+		stop = true;
+
+		speelknop.style.background = 'red';
+		speelknop.style.transitionDuration = '0.0s';
+
+		setTimeout(function() {
+			speelknop.style.background = cknop;
+			speelknop.style.transitionDuration = '1.0s';
+		}, 200);
+	}
+
+  var editor = CodeMirror.fromTextArea(document.getElementById("broncode"), {
+    lineNumbers: false,
+    matchBrackets: true,
+    mode: "taal",
+		indentUnit: 2,
+		tabSize: 2,
+		indentWithTabs: true,
+		theme: 'slang',
+		styleActiveLine: true,
+		cursorScrollMargin: 10,
+		lineWrapping: true,
+		height: "1200px",
+
+		extraKeys: {
+			"Shift-Enter": function(cm) { stopfunc(); playfunc(); },
+			"Shift-Esc": function(cm) { cm.setOption('keyMap', 'vim'); },
+			"Ctrl-Y": function(cm) { cm.setOption('keyMap', 'vim'); },
+		},
+  });
+
+	// lokaal opslaan
+	if (localStorage.getItem("code")) {
+		editor.setValue(localStorage.getItem("code"));
+		playfunc();
+	}
+	else {
+		editor.setValue("{laden}");
+		fetch('/ex/' + demos[0] + '.code')
+			.then(resp => resp.text())
+			.then(text => {editor.setValue(text); playfunc(); });
+	}
+
+	setInterval((x) => localStorage.setItem("code", editor.getValue()), 10000);
+
+
+	//editor.setSize('50%', '300px');
+
+	//editor.setSize(null, '800px');
+
+	// zet de codemirror selectie
+	function selecteer(loc) {
+		editor.setSelection(loc.anchor, loc.head);
+	}
+
+	// jaja!
+	var oldWidgets = [];
+	var oldLineWidgets = [];
+
+	// error.loc.anchor.line
+	// error: {html, loc: {anchor: {line: int } } }
+	function setErrors(errors) {
+
+		// verwijder oude
+		for (var i = 0; i < oldWidgets.length; i++)
+			oldWidgets[i].parentNode.removeChild(oldWidgets[i]);
+		oldWidgets = [];
+
+		for (var i = 0; i < oldLineWidgets.length; i++)
+			oldLineWidgets[i].clear();
+		oldLineWidgets = [];
+		
+		for (var i = 0; i < errors.length; i++) {
+			var error = errors[i];
+				var inline = document.createElement("div");
+					inline.innerHTML = '<b>&nbsp;<!--⚠--></b>';
+					inline.classList.add("fouticoon");
+					inline.style.fontFamily = 'Verdana';
+					inline.style.position = 'absolute';
+					inline.style.marginRight = '0px';
+					inline.style.marginTop = '-18px';
+					//inline.style.zIndex	= '9';
+			oldWidgets.push(inline);
+			var a = editor.addWidget(error.loc.anchor, inline, {above: true});
+				var message = document.createElement("div");
+					message.classList.add(error.type+"fout");
+					message.classList.add("fout");
+					message.innerHTML = error.html;
+
+			var line = error.loc.anchor.line;
+			if (line >= editor.lineCount() || line < 0)
+				line = 0;
+			var b = editor.addLineWidget(line, message);
+			oldLineWidgets.push(b);
+		}
+	}
+
+	// magische symbolen
+	var magisch = {
+		"*": "·",
+		"@": "∘",
+	};
+	var bimagisch = {
+		"NIET": "¬",
+		"!!": "¬",
+		"II": "∩",
+		"UU": "∪",
+		"IN": "∈",
+		"intersectie": "∩",
+		"unie": "∪",
+		"|_": "⌊",
+		"_|": "⌋",
+		"|^": "⌈",
+		"^|": "⌉",
+		"||": "‖",
+		"o/": "∅",
+		"/o": "∅",
+		"ooo": "∞",
+		"tau": "τ",
+		"som": "Σ",
+		"sqrt": "√",
+		"->": "→",
+		"-->": "↦",
+		">=": "≥",
+		"<=": "≤",
+		"=<": "≤",
+		"=/": "≠",
+		"/=": "≠",
+		"=>": "⇒",
+		"xx": "×",
+		"^2": "²",
+		"^3": "³",
+		"_0": "₀",
+		"_1": "₁",
+		"_2": "₂",
+		"_3": "₃",
+		"^-1": "⁻¹",
+		"RR": "ℝ",
+		"NN": "ℕ",
+		"ZZ": "ℤ",
+		"BB": "𝔹",
+		"QQ": "ℚ",
+		"HH": "ℍ",
+
+		"EN": "⋀",
+		"OF": "⋁"
+	};
+
+	editor.on("beforeChange", (cm,change) => {
+		if (magisch[change.text]) {
+			//cm.replaceRange(magisch[change.text], change.from, change.to);
+			//return true;
+			change.update(change.from,change.to,magisch[change.text]);
+		}
+		var ch = change.from.ch;
+		var line = change.from.line;
+
+		var zin = cm.doc.getLine(line);
+
+		var l2 = zin.substr(Math.max(ch-1, 0), 1) + change.text;
+		var l3 = zin.substr(Math.max(ch-2, 0), 2) + change.text;
+		var l4 = zin.substr(Math.max(ch-3, 0), 3) + change.text;
+		var l5 = zin.substr(Math.max(ch-4, 0), 4) + change.text;
+		var l6 = zin.substr(Math.max(ch-5, 0), 5) + change.text;
+		var l7 = zin.substr(Math.max(ch-6, 0), 6) + change.text;
+
+		var a;
+		var len;
+		if (bimagisch[l2]) { len = 2; a = bimagisch[l2]; }
+		if (bimagisch[l3]) { len = 3; a = bimagisch[l3]; }
+		if (bimagisch[l4]) { len = 4; a = bimagisch[l4]; }
+		if (bimagisch[l5]) { len = 5; a = bimagisch[l5]; }
+		if (bimagisch[l6]) { len = 6; a = bimagisch[l6]; }
+		if (bimagisch[l7]) { len = 7; a = bimagisch[l7]; }
+	
+		if (a)
+		{
+			change.update({ch:ch-len+1,line:line}, {ch:change.to.ch,line:change.to.line}, a);
+		}
+	});
+
+	//var vim = document.getElementById("vim");
+	//vim.addEventListener("click", function() { editor.setOption('keyMap', 'vim'); });
+	// klik gewoon op Shift+Escape ...
+
+
+</script>
+</html>

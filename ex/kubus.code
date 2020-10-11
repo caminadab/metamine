@@ -1,31 +1,31 @@
-punten = [50,80] × [50,80] × [50,80]
-punten2 = punten map (((x,y),z) → (x,y,z,1))
+points = [50,80] × [50,80] × [50,80]
+punten2 = points map (((x,y),z) → (x,y,z,1))
 
-camx = muis.x/10
-camy = muis.y/10
+camx = mouse.x/10
+camy = mouse.y/10
 camz := 0
-;als scherm.ververst en toets.a dan camx := camx - 1 eind
-;als scherm.ververst en toets.d dan camx := camx + 1 eind
-als scherm.ververst en toets.w dan camz := camz - .1 eind
-als scherm.ververst en toets.s dan camz := camz + .1 eind
+;if screen.refreshes and key.a then camx := camx - 1 end
+;if screen.refreshes and key.d then camx := camx + 1 end
+if screen.refreshes and key.w then camz := camz - .1 end
+if screen.refreshes and key.s then camz := camz + .1 end
 mat = verplaats(camx,camy,camz)
 
-hw = scherm.breedte / 2
+hw = screen.width / 2
 toscreen = X,Y,Z,V → (X-hw)/(Z/100)+hw, (Y-50)/(Z/100)+50
 
 punten3 = punten2 map (punt → toscreen(mat mat4.vmul punt))
 
 ;indices = [[0,1,3,2],[0,4,5,1],[0,2,6,4]]
-poly1 = verf(lijn([0,1,3,2,0] map punten3), kleur.geel)
-poly2 = verf(lijn([0,4,5,1,0] map punten3), kleur.blauw)
-poly3 = verf(lijn([0,2,6,4,0] map punten3), kleur.groen)
-poly4 = verf(lijn(([0,1,3,2]+4) map punten3), kleur.rood)
-poly5 = verf(lijn(([0,4,5,1]+2) map punten3), kleur.paars)
-poly6 = verf(lijn(([0,2,6,4]+1) map punten3), kleur.cyaan)
+poly1 = paint(line([0,1,3,2,0] map punten3), color.yellow)
+poly2 = paint(line([0,4,5,1,0] map punten3), color.blue)
+poly3 = paint(line([0,2,6,4,0] map punten3), color.green)
+poly4 = paint(line(([0,1,3,2]+4) map punten3), color.red)
+poly5 = paint(line(([0,4,5,1]+2) map punten3), color.purple)
+poly6 = paint(line(([0,2,6,4]+1) map punten3), color.cyaan)
 polys = [poly1,poly2,poly3,poly4,poly5,poly6]
-uit = teken(polys)
+out = draw(polys)
 
 frame := 0
-als scherm.ververst dan
+if screen.refreshes then
 	frame := frame + 1
-eind
+end

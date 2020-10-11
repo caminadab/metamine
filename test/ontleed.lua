@@ -1,4 +1,4 @@
-require 'ontleed'
+require 'parse'
 require 'util'
 
 function unlisp(x)
@@ -11,8 +11,8 @@ function unlisp(x)
 			y = nil
 		end
 
-		if isatoom(y) then
-			t[#t+1] = atoom(y)
+		if isatom(y) then
+			t[#t+1] = atom(y)
 		end
 
 		-- obj
@@ -56,14 +56,14 @@ local function passert(ok, msg)
 	end
 end
 
-local tests = file('test/ontleed.lst')
+local tests = file('test/parse.lst')
 for code in tests:gmatch('(.-)\n\n') do
 	local taal,moet = code:match('(.*)\n([^n]-)$')
 	if taal and moet then
 		--print()
 		--print(taal, moet)
-		local lisp = unlisp(ontleedexp(taal))
-		passert(lisp == moet, string.format('ontleed("%s") moet %s zijn maar is %s', taal, moet, lisp))
+		local lisp = unlisp(parseexp(taal))
+		passert(lisp == moet, string.format('parse("%s") moet %s zijn maar is %s', taal, moet, lisp))
 	end
 end
 

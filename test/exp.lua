@@ -1,8 +1,8 @@
 require 'exp'
 
-local function vassert(i, moetnaam)
-	local naam = varnaam(i)
-	assert(naam == moetnaam, 'varnaam('..i..') = "'..naam..'" maar moet "'..moetnaam..'" zijn')
+local function vassert(i, moetname)
+	local name = varname(i)
+	assert(name == moetname, 'varname('..i..') = "'..name..'" maar moet "'..moetname..'" zijn')
 end
 
 

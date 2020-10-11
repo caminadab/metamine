@@ -1,6 +1,6 @@
-require 'vertaal'
+require 'compile'
 require 'doe'
 
-local app = vertaal "uit = 1 + 2"
+local app = compile "uit = 1 + 2"
 
 --assert(doe(app) == 3)

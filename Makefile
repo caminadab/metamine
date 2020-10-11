@@ -1,11 +1,11 @@
-linux: web/www/index.html web/www/index.en.html ontleed.so
-deploy: ontleed.so web/www/
+linux: parse.so
+deploy: parse.so web/www/
 	scp -r web/www/* metamine.nl:/var/www/html/
 
 #ssh -f pi  'cd taal ; git pull ; make ; pkill lua ; /etc/dienst'
 
 run: linux
-	luajit web/dienst.lua || lua web/dienst.lua
+	lua web/dienst.lua
 
 test: linux
 	luajit test.lua
@@ -32,19 +32,19 @@ webdemos: web/www/ex/
 	./tolk ex/pe6.code web/www/ex/pe6.en.code
 	
 
-ontleed.so: ontleed/lex.l ontleed/taal.y ontleed/lua.c
-	cd ontleed; make linux
+parse.so: parse/lex.l parse/lang.y parse/lua.c
+	cd parse; make linux
 	mkdir -p bin
-	cp -r ontleed/bin/* bin/
-	ln -sf ../bin/ontleed.so web/
-	ln -sf bin/ontleed.so .
+	cp -r parse/bin/* bin/
+	ln -sf ../bin/parse.so web/
+	ln -sf bin/parse.so .
 	ln -sf ../vt bin/
 	ln -sf ../doe bin/
 	
 windows:
 	mkdir -p bin
-	cd ontleed; make windows
-	cp -r ontleed/bin/* bin/
+	cd parse; make windows
+	cp -r parse/bin/* bin/
 	ln -sf ../vt bin/
 	ln -sf ../doe bin/
 
@@ -53,31 +53,16 @@ windows:
 
 all:
 	mkdir -p bin	
-	cd ontleed; make
-	cp -r ontleed/bin/* bin/
-
-web/www/index.en.html: web/www/index.fmt web/www/index.en
-	./sjab web/www/index.fmt web/www/index.en web/www/index.en.html
-
-web/www/ex/demo.en.code: ex/demo.code bieb/en.lst bieb/demo.lst
-	./tolk ex/demo.code web/www/ex/demo.en.code
-
-web/www/index.nl.html: web/www/index.fmt web/www/index.nl 
-	./sjab web/www/index.fmt web/www/index.nl web/www/index.nl.html
-
-web/www/index.html: web/www/index.nl.html
-	ln -sf index.nl.html web/www/index.html
-
-web/www/en: web/www/index.en.html
-	ln -sf index.en.html web/www/en
+	cd parse; make
+	cp -r parse/bin/* bin/
 
 malloc.o: bieb/malloc.c
 	cc -c -fPIC -DLACKS_STDLIB_H -DNO_MALLOC_STATS bieb/malloc.c -o bieb/malloc.o
 
 web:
-	cd ontleed; make web
+	cd parse; make web
 	mkdir -p bin
-	cp -r ontleed/bin/* bin/
+	cp -r parse/bin/* bin/
 	lua2js lex.lua > bin/lex.js
 	lua2js lisp.lua > bin/lisp.js
 
@@ -89,20 +74,5 @@ objects := $(patsubst %.lua,%.o,$(wildcard *.lua))
 
 main.o: main.s
 	as main.s -o main.o
-
-
-%.o: %.lua
-	luajit -b $< $@
-
-vt: *.lua $(objects)
-	ar rcus libvt.a *.o
-	gcc -nostdlib -o vt.app -Wl,--whole-archive libvt.a -Wl,--no-whole-archive -Wl,-E
-#ld -o vt.app --whole-archive libvt.a --no-whole-archive -E
-#,ld *.o -o vt.app
-
-clean2:
-	rm *.o
-	rm *.app
-	rm *.a
 
 sources := $(wildcard *.lua)

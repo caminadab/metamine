@@ -16,8 +16,8 @@ function toepas(pad)
 	end
 end
 
-toepas('bieb/en.lst')
-toepas('bieb/demo.lst')
+toepas('lib/en.lst')
+toepas('lib/demo.lst')
 
 
 local inn, uit = ...
@@ -25,6 +25,10 @@ if not inn and not uit then error('gebruik: tolk [IN] [UIT]') end
 if not inn then error('IN niet gedefineerd') end
 local code = file((inn))
 if not code then error('bestand niet gevonden') end
+
+if not uit then
+	uit = inn
+end
 
 local res = code:gsub('([%w%.]+)', function (token)
 		return NL2EN[token] or token

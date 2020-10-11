@@ -1,0 +1,225 @@
+open	open
+uit	out
+data	data
+bestand	file
+sluit	close
+schrijf	write
+bit	bool
+ja	true
+nee	false
+transformeer	transform
+sorteer	sort
+
+vouw	fold
+misschien	maybe
+vind	find
+willekeurig	random
+gesorteerd	sorted
+Buis	Pipe
+punten	points
+concentrische	concentric
+cirkels	circles
+jsonencodeer	jsonencode
+jsondecodeer	jsondecode
+rits	zip
+
+tcp.bind tcp.bind
+tcp.lees tcp.read
+tcp.schrijf tcp.write
+tcp.accepteer tcp.accept
+udp.bind udp.bind
+udp.lees udp.read
+udp.schrijf udp.write
+udp.leesvan udp.readfrom
+udp.schrijfnaar udp.sendto
+
+vec2.plus	vec2.add
+verplaats	translate
+
+
+als	if
+anders	else
+andersals	elseif
+zolang	while
+eind	end
+dan	then
+
+of	or
+en	and
+niet	not
+
+getal	number
+int	int
+byte	byte
+
+som	sum
+lijst	list
+iets	any
+tupel	tuple
+verzameling	collection
+zak	bag
+set	set
+
+wortel	sqrt
+
+sin	sin
+cos	cos
+tan	tan
+sincos	sincos
+
+abs	abs
+min	min
+max	max
+entier	floor
+ceiling	ceil
+teken	char
+
+tekst	string
+cat	concat
+moment	moment
+nu	now
+looptijd	runtime
+
+deel	slice
+vanaf	from
+tot	til
+
+herhaal	repeat
+mod	mod
+
+oppervlakte	area
+straal	radius
+vorm	shape
+canvas	canvas
+cirkel	circle
+ovaal	oval
+boog	arc
+vierkant	square
+rechthoek	rectangle
+polygoon	polygon
+lijn	line
+
+waarvoor	where
+kleur	color
+kleuren	colors
+kleur.rood	color.red
+kleur.oranje	color.orange
+kleur.geel	color.yellow
+kleur.groen	color.green
+kleur.paars	color.purple
+kleur.zwart	color.black
+kleur.wit	color.white
+kleur.blauw	color.blue
+kleur.cyaan	color.cyan
+
+uit	out
+
+scherm.ververst	screen.refreshes
+scherm.breedte	screen.width
+scherm.hoogte	screen.height
+verf	paint
+teken	draw
+
+muis.x	mouse.x
+muis.y	mouse.y
+muis.pos	mouse.pos
+muis.beweegt	mouse.moves
+muis.klik	mouse.click
+muis.klik.begin	mouse.click.begin
+muis.klik.eind	mouse.click.end
+
+toets.a	key.a
+toets.b	key.b
+toets.c	key.c
+toets.d	key.d
+toets.e	key.e
+toets.f	key.f
+toets.g	key.g
+toets.h	key.h
+toets.i	key.i
+toets.j	key.j
+toets.k	key.k
+toets.l	key.l
+toets.m	key.m
+toets.n	key.n
+toets.o	key.o
+toets.p	key.p
+toets.q	key.q
+toets.r	key.r
+toets.s	key.s
+toets.t	key.t
+toets.u	key.u
+toets.v	key.v
+toets.w	key.w
+toets.x	key.x
+toets.y	key.y
+toets.z	key.z
+toets.spatie	key.space
+toets.links	key.left
+toets.rechts	key.right
+toets.omhoog	key.up
+toets.omlaag	key.down
+
+toets.a.begin	key.a.begin
+toets.b.begin	key.b.begin
+toets.c.begin	key.c.begin
+toets.d.begin	key.d.begin
+toets.e.begin	key.e.begin
+toets.f.begin	key.f.begin
+toets.g.begin	key.g.begin
+toets.h.begin	key.h.begin
+toets.i.begin	key.i.begin
+toets.j.begin	key.j.begin
+toets.k.begin	key.k.begin
+toets.l.begin	key.l.begin
+toets.m.begin	key.m.begin
+toets.n.begin	key.n.begin
+toets.o.begin	key.o.begin
+toets.p.begin	key.p.begin
+toets.q.begin	key.q.begin
+toets.r.begin	key.r.begin
+toets.s.begin	key.s.begin
+toets.t.begin	key.t.begin
+toets.u.begin	key.u.begin
+toets.v.begin	key.v.begin
+toets.w.begin	key.w.begin
+toets.x.begin	key.x.begin
+toets.y.begin	key.y.begin
+toets.z.begin	key.z.begin
+toets.spatie.begin	key.space.begin
+toets.links.begin	key.left.begin
+toets.rechts.begin	key.right.begin
+toets.omhoog.begin	key.up.begin
+toets.omlaag.begin	key.down.begin
+
+toets.a.eind	key.a.end
+toets.b.eind	key.b.end
+toets.c.eind	key.c.end
+toets.d.eind	key.d.end
+toets.e.eind	key.e.end
+toets.f.eind	key.f.end
+toets.g.eind	key.g.end
+toets.h.eind	key.h.end
+toets.i.eind	key.i.end
+toets.j.eind	key.j.end
+toets.k.eind	key.k.end
+toets.l.eind	key.l.end
+toets.m.eind	key.m.end
+toets.n.eind	key.n.end
+toets.o.eind	key.o.end
+toets.p.eind	key.p.end
+toets.q.eind	key.q.end
+toets.r.eind	key.r.end
+toets.s.eind	key.s.end
+toets.t.eind	key.t.end
+toets.u.eind	key.u.end
+toets.v.eind	key.v.end
+toets.w.eind	key.w.end
+toets.x.eind	key.x.end
+toets.y.eind	key.y.end
+toets.z.eind	key.z.end
+toets.spatie.eind	key.space.end
+toets.links.eind	key.left.end
+toets.rechts.eind	key.right.end
+toets.omhoog.eind	key.up.end
+toets.omlaag.eind	key.down.end

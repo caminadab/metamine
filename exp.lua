@@ -7,14 +7,14 @@ require 'util'
 
 local calls = set('_', 'call', 'call2', 'call3', 'call4')
 
-function fnaam(exp)
-	return calls[fn(exp)] and atoom(arg0(exp))
+function fname(exp)
+	return calls[fn(exp)] and atom(arg0(exp))
 end
 
 function fn(exp) if isfn(exp) then return exp.f.v end end
 function arg(exp) return exp.a end
 function obj(exp) if isobj(exp) then return exp.o.v end end
-function atoom(exp,i) 
+function atom(exp,i) 
 	if not exp then return nil end
 	if not i then
 		return exp.v
@@ -22,7 +22,7 @@ function atoom(exp,i)
 	if exp[i] then return exp[i].v end
 end
 
-function kopieer(exp)
+function copy(exp)
 	local t = {}
 	for k,v in pairs(exp) do
 		t[k] = v
@@ -30,11 +30,11 @@ function kopieer(exp)
 	return t
 end
 
-function kloon(exp)
+function clone(exp)
 	if type(exp) ~= 'table' then return exp end
 	local t = {}
 	for k,sub in pairs(exp) do
-		t[k] = kloon(sub)
+		t[k] = clone(sub)
 	end
 	return t
 end
@@ -42,7 +42,7 @@ end
 -- itereer kinderen
 function subs(exp)
 
-	if isatoom(exp) then
+	if isatom(exp) then
 		return function() return nil end
 	end
 
@@ -98,7 +98,7 @@ function checkr(e, p, k)
 		for k,v in pairs(p) do print(k..':'); see(v) end
 		error'check faalde'
 	end
-	if isatoom(e) then n = n + 1 end
+	if isatom(e) then n = n + 1 end
 	if isfn(e) then n = n + 1 end
 	if isobj(e) then n = n + 1 end
 	if n ~= 1 then
@@ -134,7 +134,7 @@ function loclt(a,b)
 	return false
 end
 
-function locvind(code, x, y)
+function locfind(code, x, y)
 	local pos = 1
 	for i=1,y-1 do
 		pos = code:find('\n', pos)
@@ -148,7 +148,7 @@ function locvind(code, x, y)
 	return pos
 end
 
-function loctekst(loc)
+function loctext(loc)
 	if not loc then loc = nergens end
 	local bron = ''
 	if loc.bron then bron = loc.bron:sub(1,-6) .. '@' end
@@ -166,13 +166,13 @@ function loctekst(loc)
 	end
 end
 
-function bladeren(exp)
-	if isatoom(exp) then
+function numleaves(exp)
+	if isatom(exp) then
 		return 1
 	else
 		local n = 0
 		for i,v in ipairs(exp) do
-			n = n + bladeren(v)
+			n = n + numleaves(v)
 		end
 		return n
 	end
@@ -180,29 +180,29 @@ end
 
 function locsub(code, loc)
 	if not code then return "???" end
-	local apos = locvind(code, loc.x1, loc.y1)
-	local bpos = locvind(code, loc.x2+1, loc.y2)
+	local apos = locfind(code, loc.x1, loc.y1)
+	local bpos = locfind(code, loc.x2+1, loc.y2)
 	if not apos or not bpos then return false end
 	return string.sub(code, apos, bpos-1)
 end
 
 function bron(exp)
-	if exp.super and obj(exp) == ',' and loctekst(exp.loc) == loctekst(exp.super.loc) then
-		return combineer(exp)
+	if exp.super and obj(exp) == ',' and loctext(exp.loc) == loctext(exp.super.loc) then
+		return deparse(exp)
 	end
 	if not exp.code or not exp.loc then
-		return combineer(exp)
+		return deparse(exp)
 	end
 	return locsub(exp.code, exp.loc)
 end
 
-function moes(exp)
-	if exp.moes then
+function hash(exp)
+	if exp.hash then
 		-- niets...
 	else
-		exp.moes = e2s(exp)
+		exp.hash = e2s(exp)
 	end
-	return exp.moes
+	return exp.hash
 end
 
 function arg0(exp) return exp.a and exp.a[1] end
@@ -226,7 +226,7 @@ end
 -- daarna AA t/m ZZ
 -- daarna AAA t/m ZZZ
 -- A,B,AA,AB,BA,BB,AAA,AAB,ABA,ABB,BAA,BAB,BBA,BBB,AAAA
-function varnaam(i)
+function varname(i)
 	local i = i - 1
 	--assert(i >= 0)
 	if i == 0 then return 'A' end
@@ -244,10 +244,10 @@ function varnaam(i)
 	return r --r:sub(2)
 end
 
-function maakvars()
+function makevars()
 	local i = 1
 	return function ()
-		local var = varnaam(i)
+		local var = varname(i)
 		i = i + 1
 		return var
 	end
@@ -263,7 +263,7 @@ function maakindices(i)
 end
 
 -- breadth first search
-function boompairsbfs(exp, t, al)
+function treepairsbfs(exp, t, al)
 	local t = t or {}
 	local al = al or {}
 
@@ -286,26 +286,26 @@ function boompairsbfs(exp, t, al)
 	end
 end
 
-boompairs = boompairsbfs
+treepairs = treepairsbfs
 
-function bevat(exp, naam)
+function bevat(exp, name)
 	if not exp then error('geen exp') end
 	if not exp.v and not exp.f and not exp.o then error('geen exp: '..lenc(exp)) end
-	--if not naam.v then error('naam is geen exp') end
+	--if not name.v then error('name is geen exp') end
 
 	if exp.v then
-		return exp.v == naam.v
+		return exp.v == name.v
 	else
-		if not isatoom(naam) and moes(exp) == moes(naam) then
+		if not isatom(name) and hash(exp) == hash(name) then
 			return true
 		end
-		--print('FN', fn(exp), naam.v)
-		if fn(exp) == atoom(naam) then
+		--print('FN', fn(exp), name.v)
+		if fn(exp) == atom(name) then
 		--print'ja'
 			return true
 		end
 		for k,sub in subs(exp) do
-			if bevat(sub, naam) then return true end
+			if bevat(sub, name) then return true end
 		end
 		return false
 	end
@@ -319,7 +319,7 @@ function exp2string(exp, klaar)
 	if klaar[exp] then return klaar[exp] end
 	klaar[exp] = '~'
 	if not exp then return '?' end
-	if isatoom(exp) then
+	if isatom(exp) then
 		return exp.v
 	elseif isfn(exp) then
 		return string.format('%s(%s)', exp2string(exp.f, klaar), exp2string(exp.a, klaar))
@@ -340,18 +340,18 @@ function exp2string(exp, klaar)
 end
 e2s = exp2string
 
-local function permoesR(exp, moezen)
-	local m = moes(exp)
+local function perhashR(exp, moezen)
+	local m = hash(exp)
 	moezen[m] = moezen[m] or {}
 	moezen[m][#moezen[m]+1] = exp
 	for k,sub in subs(exp) do
-		permoesR(sub, moezen)
+		perhashR(sub, moezen)
 	end
 end
 
-function permoes(exp)
+function perhash(exp)
 	local moezen = {}
-	permoesR(exp,  moezen)
+	perhashR(exp,  moezen)
 	return moezen
 end
 
@@ -373,7 +373,7 @@ if test then
 end
 
 -- depth first search
-function boompairsdfs1(exp, t, al)
+function treepairsdfs1(exp, t, al)
 	local t = t or {}
 	local al = al or {}
 	
@@ -397,12 +397,12 @@ function boompairsdfs1(exp, t, al)
 end
 
 -- werkt niet omdat exp gemuteerd word
-function boompairsdfs2(exp)
+function treepairsdfs2(exp)
 	local function rec(exp)
 		for k, sub in subs(exp) do
 			rec(sub)
 		end
-		--print('YIELD', moes(exp))
+		--print('YIELD', hash(exp))
 		coroutine.yield(exp)
 	end
 	
@@ -416,10 +416,10 @@ function boompairsdfs2(exp)
 	end
 end
 
-boompairsdfs = boompairsdfs1
+treepairsdfs = treepairsdfs1
 
 
-function boompairs(exp)
+function treepairs(exp)
 	local function rec(exp)
 		for k, sub in subs(exp) do
 			rec(sub)
@@ -436,7 +436,7 @@ function boompairs(exp)
 	end
 end
 
-function boompairsbfs(exp)
+function treepairsbfs(exp)
 	local function rec(exp)
 		coroutine.yield(exp)
 		for k, sub in subs(exp) do

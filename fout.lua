@@ -3,7 +3,7 @@ require 'exp'
 
 -- fmt: {rood} is {exp} maar moet {cyaan} zijn
 function fout(type, loc, fmt, ...)
-	-- Typefout: a is int (loc1) maar moet tekst zijn (loc2)
+	-- Typefout: a is int (loc1) maar moet text zijn (loc2)
 	local t = {
 		loc = loc,
 		type = assert(type),
@@ -15,9 +15,9 @@ end
 
 -- loc, fmt, ...
 function executiefout(...) return fout("executie", ...) end
-function syntaxfout(...) return fout("syntax", ...) end
-function oplosfout(...) return fout("oplos", ...) end
-function typeerfout(...) return fout("typeer", ...) end
+function syntaxerror(...) return fout("syntax", ...) end
+function solvefout(...) return fout("solve", ...) end
+function typifyfout(...) return fout("typify", ...) end
 
 function jsloc(loc)
 	loc = loc or nergens
@@ -46,13 +46,13 @@ function fout2json(fout)
 	local html = fout.fmt:gsub('{([^}]*)}', function (spec)
 		i = i + 1
 		if spec == 'loc' then
-			return '<u>' .. loctekst(t[i]) .. '</u>'
+			return '<u>' .. loctext(t[i]) .. '</u>'
 		elseif spec == 'rood' then
 			return '<span color="red">'.. t[i] .. '</span>'
 		elseif spec == 'code' then
 			return '<b>' .. tostring(t[i]) .. '</b>'
 		elseif spec == 'exp' then
-			return '<span color="cyan">' .. combineer(t[i]) .. '</span>'
+			return '<span color="cyan">' .. deparse(t[i]) .. '</span>'
 		elseif spec == 'int' then
 			return tostring(math.floor(t[i]))
 		elseif spec == 'cyaan' then
@@ -67,20 +67,20 @@ function fout2json(fout)
 end
 
 function fout2ansi(fout)
-	local loc =  ansi.underline .. loctekst(fout.loc) .. ansi.normal
+	local loc =  ansi.underline .. loctext(fout.loc) .. ansi.normal
 	local type = color.brightred .. fout.type:gsub('^(.)', string.upper) .. 'fout' .. color.white .. ': '
 	local i = 0
 	local t = fout.args
 	local ansi = loc .. '\t' .. type .. '\t' .. fout.fmt:gsub('{([^}]*)}', function (spec)
 		i = i + 1
 		if spec == 'loc' then
-			return ansi.underline .. loctekst(t[i]) .. ansi.normal
+			return ansi.underline .. loctext(t[i]) .. ansi.normal
 		elseif spec == 'rood' then
 			return color.brightred .. t[i] .. color.white
 		elseif spec == 'code' then
 			return color.brightyellow .. tostring(t[i]) .. color.white
 		elseif spec == 'exp' then
-			return color.brightcyan .. combineer(t[i]) .. color.white
+			return color.brightcyan .. deparse(t[i]) .. color.white
 		elseif spec == 'int' then
 			return tostring(math.floor(t[i]))
 		elseif spec == 'cyaan' then
@@ -94,20 +94,20 @@ function fout2ansi(fout)
 end
 			
 function fout2string(fout)
-	local loc =  loctekst(fout.loc)
+	local loc =  loctext(fout.loc)
 	local type = fout.type:gsub('^(.)', string.upper) .. 'fout' .. ': '
 	local i = 0
 	local t = fout.args
 	local string = loc .. '\t' .. type .. '\t' .. fout.fmt:gsub('{([^}]*)}', function (spec)
 		i = i + 1
 		if spec == 'loc' then
-			return loctekst(t[i])
+			return loctext(t[i])
 		elseif spec == 'rood' then
 			return t[i]
 		elseif spec == 'code' then
 			return tostring(t[i])
 		elseif spec == 'exp' then
-			return combineer(t[i])
+			return deparse(t[i])
 		elseif spec == 'int' then
 			return tostring(math.floor(t[i]))
 		elseif spec == 'cyaan' then
@@ -121,10 +121,10 @@ function fout2string(fout)
 end
 
 --[[
-	oplos
+	solve
 	type
 	zelftest
 	executie
 ]]
 
--- f[#f+1] = fout("oplos", "{code} is {type} ({loc}) maar moet {type} ({loc}) zijn")
+-- f[#f+1] = fout("solve", "{code} is {type} ({loc}) maar moet {type} ({loc}) zijn")

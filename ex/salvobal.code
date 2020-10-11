@@ -1,188 +1,188 @@
 ; Salvobal!
 
-hw = scherm.breedte / 2
+hw = screen.width / 2
 
-links.x  := scherm.breedte · 1 / 4
-rechts.x := scherm.breedte · 3 / 4
-links.y  := 0
-rechts.y := 0
+left.x  := screen.width · 1 / 4
+right.x := screen.width · 3 / 4
+left.y  := 0
+right.y := 0
 
-links.vx  := 0
-links.vy  := 0
-rechts.vx := 0
-rechts.vy := 0
+left.vx  := 0
+left.vy  := 0
+right.vx := 0
+right.vy := 0
 
-; bal pos
-bal.x := hw
-bal.y := 50
-bal.vx := 0
-bal.vy := 0
+; ball pos
+ball.x := hw
+ball.y := 50
+ball.vx := 0
+ball.vy := 0
 
-pauze.tot := looptijd + 1
-pauze = looptijd < pauze.tot
+pause.til := runtime + 1
+pause = runtime < pause.til
 
 
 ; springen
-als toets.w.begin en links.y = 0 dan
-	links.vy := 2
-	links.y := 2
-eind
+if key.w.begin and left.y = 0 then
+	left.vy := 2
+	left.y := 2
+end
 
-als toets.omhoog.begin en rechts.y = 0 dan
-	rechts.vy := 2
-	rechts.y := 2
-eind
+if key.up.begin and right.y = 0 then
+	right.vy := 2
+	right.y := 2
+end
 
-; speler beweging
-als scherm.ververst en ¬ pauze en bal.y > 0 dan
-	; links
-	als toets.a en links.x > 0 dan
-		links.x := links.x - 1
-	eind
+; player beweging
+if screen.refreshes and ¬ pause and ball.y > 0 then
+	; left
+	if key.a and left.x > 0 then
+		left.x := left.x - 1
+	end
 
-	als toets.d en links.x < hw - 10 dan
-		links.x := links.x + 1
-	eind
-
-	; spring
-	als links.y > 0 dan
-		links.y := links.y + links.vy
-		links.vy := links.vy - .05
-	eind
-	als links.y < 0 dan
-		links.y := 0
-	eind
-
-	; rechts
-	als toets.links en rechts.x > hw+10 dan
-		rechts.x := rechts.x - 1
-	eind
-
-	als toets.rechts en rechts.x < hw · 2 dan
-		rechts.x := rechts.x + 1
-	eind
+	if key.d and left.x < hw - 10 then
+		left.x := left.x + 1
+	end
 
 	; spring
-	als rechts.y > 0 dan
-		rechts.y := rechts.y + rechts.vy
-		rechts.vy := rechts.vy - .05
-	eind
-	als rechts.y < 0 dan
-		rechts.y := 0
-	eind
-	
-	; bal update
-	als muis.klik dan
-		bal.x := muis.x
-		bal.y := muis.y
-		bal.vx := 0
-		bal.vy := 0
-	eind
+	if left.y > 0 then
+		left.y := left.y + left.vy
+		left.vy := left.vy - .05
+	end
+	if left.y < 0 then
+		left.y := 0
+	end
 
-	; bal physics
-	als bal.x < 0 dan
-		bal.vx := abs bal.vx
+	; right
+	if key.left and right.x > hw+10 then
+		right.x := right.x - 1
+	end
+
+	if key.right and right.x < hw · 2 then
+		right.x := right.x + 1
+	end
+
+	; spring
+	if right.y > 0 then
+		right.y := right.y + right.vy
+		right.vy := right.vy - .05
+	end
+	if right.y < 0 then
+		right.y := 0
 	end
 	
-	als bal.y > 200 dan
-		bal.y := 200
-		bal.vy := 0
-	eind
+	; ball update
+	if mouse.click then
+		ball.x := mouse.x
+		ball.y := mouse.y
+		ball.vx := 0
+		ball.vy := 0
+	end
+
+	; ball physics
+	if ball.x < 0 then
+		ball.vx := abs ball.vx
+	end
+	
+	if ball.y > 200 then
+		ball.y := 200
+		ball.vy := 0
+	end
 
 	
-	als bal.x > scherm.breedte dan
-		bal.vx := - abs bal.vx
-	eind
+	if ball.x > screen.width then
+		ball.vx := - abs ball.vx
+	end
 	
-	als ldst < 18 dan 
-		bal.x := links.x + lnx·18.1
-		bal.y := links.y + lny·18.1
-		bal.vx := bal.vx - 2·ldot·lnx
-		bal.vy := bal.vy - 2·ldot·lny
-	eind
+	if ldst < 18 then 
+		ball.x := left.x + lnx·18.1
+		ball.y := left.y + lny·18.1
+		ball.vx := ball.vx - 2·ldot·lnx
+		ball.vy := ball.vy - 2·ldot·lny
+	end
 	
-	als rdst < 18 dan
-		bal.x := rechts.x + rnx·18.1
-		bal.y := rechts.y + rny·18.1
-		bal.vx := bal.vx - 2·rdot·rnx
-		bal.vy := bal.vy - 2·rdot·rny
-	eind
+	if rdst < 18 then
+		ball.x := right.x + rnx·18.1
+		ball.y := right.y + rny·18.1
+		ball.vx := ball.vx - 2·rdot·rnx
+		ball.vy := ball.vy - 2·rdot·rny
+	end
 	
-	als ldst > 18 en rdst > 18 dan
-		bal.x := bal.x + bal.vx
-		bal.y := bal.y + bal.vy
-		bal.vy := bal.vy - .05
-	eind
+	if ldst > 18 and rdst > 18 then
+		ball.x := ball.x + ball.vx
+		ball.y := ball.y + ball.vy
+		ball.vy := ball.vy - .05
+	end
 
-eind
+end
 
-; stuiter links
-ldx = bal.x - links.x
-ldy = bal.y - links.y
+; bounce left
+ldx = ball.x - left.x
+ldy = ball.y - left.y
 ldst = √(ldx²+ldy²)
 lnx = ldx/ldst
 lny = ldy/ldst
-ldot = bal.vx·lnx+bal.vy·lny
+ldot = ball.vx·lnx+ball.vy·lny
 
 
 
-; stuiter rechts
-rdx = bal.x - rechts.x
-rdy = bal.y - rechts.y
+; bounce right
+rdx = ball.x - right.x
+rdy = ball.y - right.y
 rdst = √(rdx²+rdy²)
 rnx = rdx/rdst
 rny = rdy/rdst
-rdot = bal.vx·rnx+bal.vy·rny
+rdot = ball.vx·rnx+ball.vy·rny
 
 ; score
 score1 := 0
 score2 := 0
-fk := kleur.zwart
+fk := color.black
 
-als fk = kleur.zwart dan
-	flits = rechthoek((0,0),(0,0))
-anders
-	flits = verf(rechthoek((0,0),(scherm.breedte,scherm.hoogte)), fk)
-eind
+if fk = color.black then
+	flits = rectangle((0,0),(0,0))
+else
+	flits = paint(rectangle((0,0),(screen.width,screen.height)), fk)
+end
 
-als scherm.ververst en bal.y > 0 dan
+if screen.refreshes and ball.y > 0 then
 	fk := rgb(max(fk₀-.015,0), max(fk₁-.015,0),max(fk₂-.015,0))
 end
 
 ; gescoord
-als bal.y < 0 dan 
-	bal.y := 50
-	bal.vx := 0
-	bal.vy := 0
+if ball.y < 0 then 
+	ball.y := 50
+	ball.vx := 0
+	ball.vy := 0
 
-	als bal.x < scherm.breedte / 2 dan
+	if ball.x < screen.width / 2 then
 		score1 := score1 + 1
-		bal.x := hw / 2 · 3
-		fk := kleur.blauw
-	eind
+		ball.x := hw / 2 · 3
+		fk := color.blue
+	end
 
-	als bal.x > scherm.breedte / 2 dan
+	if ball.x > screen.width / 2 then
 		score2 := score2 + 1
-		bal.x := hw / 2
-		fk := kleur.geel
-	eind
+		ball.x := hw / 2
+		fk := color.yellow
+	end
 
-eind
+end
 
 
 
-; teken
-links  = boog(links.x,links.y, 10, τ/2, τ)   verf kleur.geel
-rechts = boog(rechts.x,rechts.y, 10, τ/2, τ) verf kleur.blauw
-net    = rechthoek((hw-1,0),(hw+1,10))       verf kleur.wit
-bal    = cirkel(bal.x, bal.y, 8)             verf balkleur
-label1 = label(hw-5,90, tekst(score1))
-label2 = label(hw+5,90, tekst(score2))
+; draw
+left  = arc(left.x,left.y, 10, τ/2, τ)   paint color.yellow
+right = arc(right.x,right.y, 10, τ/2, τ) paint color.blue
+net    = rectangle((hw-1,0),(hw+1,10))       paint color.white
+ball    = circle(ball.x, ball.y, 8)             paint balkleur
+label1 = label(hw-5,90, string(score1))
+label2 = label(hw+5,90, string(score2))
 
-bal.f = √(bal.vx² + bal.vy²) / 10
-balkleur = rgb(1 - bal.f, bal.f, 0)
+ball.f = √(ball.vx² + ball.vy²) / 10
+balkleur = rgb(1 - ball.f, ball.f, 0)
 
-uit = teken [ flits, links, rechts, net, bal, label1, label2 ]
+out = draw [ flits, left, right, net, ball, label1, label2 ]
 
 
 

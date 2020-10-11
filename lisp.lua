@@ -1,6 +1,6 @@
 require 'util'
 
-function isatoom(exp) return exp.v ~= nil end
+function isatom(exp) return exp.v ~= nil end
 function isfn(exp) return exp.f ~= nil end
 function isobj(exp) return exp.o ~= nil end
 
@@ -32,7 +32,7 @@ function X(f, ...)
 	end
 
 	if #args == 0 then
-		if false and atoom(f) == ',' then
+		if false and atom(f) == ',' then
 			return { o = f }
 		else
 			return f
@@ -91,7 +91,7 @@ function unparse_len(exp)
 	if exp.v then return #exp.v end
 	local len = 0
 
-	if isatoom(exp) then return #(exp.v or '???') end
+	if isatom(exp) then return #(exp.v or '???') end
 
 	len = len + unparse_len(exp.f)
 	for i,v in subs(exp) do
@@ -106,17 +106,17 @@ function unparse_work(exp, maxlen, tabs, res, klaar)
 	klaar = klaar or {}
   tabs = tabs or 0
   res = res or {}
-	if klaar[moes(exp)] then
-		if isatoom(exp) then
-			insert(res, '~'..atoom(exp))
+	if klaar[hash(exp)] then
+		if isatom(exp) then
+			insert(res, '~'..atom(exp))
 		else
 			insert(res, '~')
 		end
 		return
 	end
-	klaar[moes(exp)] = true
-  if isatoom(exp) then
-    insert(res,atoom(exp))
+	klaar[hash(exp)] = true
+  if isatom(exp) then
+    insert(res,atom(exp))
 	elseif fn(exp) == '""' then
 		insert(res, '""(...)')
 	elseif isfn(exp) or isobj(exp) then

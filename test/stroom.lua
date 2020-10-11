@@ -1,8 +1,8 @@
-require 'stroom'
+require 'flow'
 require 'set'
 
-local stroom = maakstroom()
-stroom:link(set('a'), 'b')
-stroom:link(set('b'), 'c')
+local flow = maakflow()
+flow:link(set('a'), 'b')
+flow:link(set('b'), 'c')
 
-assert(stroom:stroomopwaarts('a', 'c'))
+assert(flow:flowopwaarts('a', 'c'))

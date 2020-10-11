@@ -1,5 +1,5 @@
 require 'exp'
-require 'combineer'
+require 'deparse'
 
 local tel = { X'fn.nul', X'fn.een', X'fn.twee', X'fn.drie' }
 local atel = { X'l.eerste', X'l.tweede', X'l.derde', X'l.vierde' }
@@ -65,7 +65,7 @@ function defunc(exp, argindex, klaar)
 	klaar = klaar or {}
 	if klaar[exp] then return klaar[exp] end
 	local res
-	local num = isfn(exp) and arg1(exp) and isatoom(arg1(exp)) and tonumber(atoom(arg1(exp)))
+	local num = isfn(exp) and arg1(exp) and isatom(arg1(exp)) and tonumber(atom(arg1(exp)))
 
 	if fn(exp) == '_fn' then
 		local argindex = arg0(exp)
@@ -73,14 +73,14 @@ function defunc(exp, argindex, klaar)
 		return defunc(arg1(exp), argindex, klaar)
 
 	-- constanten worden ingepakt
-	elseif isatoom(exp) then
-		res = X('fn.constant', atoom(exp))
+	elseif isatom(exp) then
+		res = X('fn.constant', atom(exp))
 
 	-- C(exp) = 
 	-- hoeft niet gedefunct
 	elseif false and not bevat(exp, X'_arg') then
-		if isatoom(exp) then
-			res = X('fn.constant', atoom(exp))
+		if isatom(exp) then
+			res = X('fn.constant', atom(exp))
 		else
 			res = X('fn.constant', exp)
 		end
@@ -95,14 +95,14 @@ function defunc(exp, argindex, klaar)
 		end
 
 	-- fn.id
-	elseif fn(exp) == '_arg' and atoom(arg(exp)) == atoom(argindex) then
+	elseif fn(exp) == '_arg' and atom(arg(exp)) == atom(argindex) then
 		res = id
 
 	-- fn.nul t/m fn.drie
 	elseif fn(exp) == '_l' and num and num >= 0 and num < 4 and num % 1 == 0 then
 		local sel = ltel[num + 1]
 		local A = defunc(arg0(exp), argindex, klaar)
-		if atoom(A) == 'fn.id' then
+		if atom(A) == 'fn.id' then
 			res = X(sel) 
 		else
 			res = X('∘', A, X(sel))
@@ -113,7 +113,7 @@ function defunc(exp, argindex, klaar)
 	elseif fn(exp) == '_f' and num and num >= 0 and num < 4 and num % 1 == 0 then
 		local sel = tel[num + 1]
 		local A = defunc(arg0(exp), argindex, klaar)
-		if atoom(A) == 'fn.id' then
+		if atom(A) == 'fn.id' then
 			res = X(sel) 
 		else
 			res = X('∘', A, X(sel))
@@ -123,7 +123,7 @@ function defunc(exp, argindex, klaar)
 	elseif fn(exp) == '_l' and num and num >= 0 and num < 4 and num % 1 == 0 then
 		local sel = atel[num + 1]
 		local A = defunc(arg0(exp), argindex, klaar)
-		if atoom(A) == 'fn.id' then
+		if atom(A) == 'fn.id' then
 			res = X(sel) 
 		else
 			res = X('∘', A, X(sel))
@@ -135,7 +135,7 @@ function defunc(exp, argindex, klaar)
 		local achter = arg0(exp)
 
 		if fn(d) == '∘' then
-			res = kopieer(d)
+			res = copy(d)
 			table.insert(arg(res), achter)
 		else
 			res = X('∘', d, achter)
@@ -145,7 +145,7 @@ function defunc(exp, argindex, klaar)
 	elseif isfn(exp) and #arg(exp) == 1 then
 			--and bevat(arg(exp), X('_arg', argindex)) then
 		local f = fn(exp)
-		local unop = assert(unop2fn[f], combineer(f))
+		local unop = assert(unop2fn[f], deparse(f))
 
 		local d = defunc(arg(exp), argindex, klaar)
 		res = X(unop2fn[f], arg(exp))
@@ -154,7 +154,7 @@ function defunc(exp, argindex, klaar)
 
 		-- samenvoegen van compositie
 		if false and fn(d) == '∘' then
-			res = kopieer(d)
+			res = copy(d)
 			table.insert(arg(res), achter)
 		else
 			res = X('∘', d, achter)
@@ -169,7 +169,7 @@ function defunc(exp, argindex, klaar)
 
 		local achter
 		if op2fn[f] then
-			if atoom(op2fn[f]) == 'fn.comp' then
+			if atom(op2fn[f]) == 'fn.comp' then
 				achter = arg0(exp)
 				--achter = X(op2fn[f], arg0(exp))
 			else
@@ -181,7 +181,7 @@ function defunc(exp, argindex, klaar)
 
 		-- samenvoegen van compositie
 		if fn(d) == '∘' then
-			res = kopieer(d)
+			res = copy(d)
 			table.insert(arg(res), achter)
 		else
 			res = X('∘', d, achter)
@@ -203,7 +203,7 @@ function defunc(exp, argindex, klaar)
 
 		-- samenvoegen van compositie
 		if fn(d) == '∘' then
-			res = kopieer(d)
+			res = copy(d)
 			table.insert(arg(res), achter)
 		else
 			res = X('∘', d, achter)
@@ -213,7 +213,7 @@ function defunc(exp, argindex, klaar)
 	-- f(a)  ->  c(a) ∘ f
 	elseif isfn(exp) and fn(exp) ~= '_arg' then
 		local A = defunc(arg(exp), argindex, klaar)
-		if atoom(A) == 'fn.id' then
+		if atom(A) == 'fn.id' then
 			local unop = unop2fn[fn(exp)]
 			res = X('∘', A, unop)
 		else
@@ -232,7 +232,7 @@ function defunc(exp, argindex, klaar)
 		end
 
 		-- special case: merge(id, id) = dup
-		if atoom(mergeval[1]) == 'fn.id' and atoom(mergeval[2]) == 'fn.id' and not mergeval[3] then
+		if atom(mergeval[1]) == 'fn.id' and atom(mergeval[2]) == 'fn.id' and not mergeval[3] then
 			res = dup
 		elseif #mergeval == 0 then
 			res = X('fn.constant', X'∅')
@@ -247,9 +247,9 @@ function defunc(exp, argindex, klaar)
 
 	end
 
-	-- optimiseer res
-	if fn(res) == '∘' and (atoom(arg0(res)) == 'fn.id' or atoom(arg0(res)) == 'fn.id') then
-		if atoom(arg0(res)) == 'fn.id' then
+	-- optimise res
+	if fn(res) == '∘' and (atom(arg0(res)) == 'fn.id' or atom(arg0(res)) == 'fn.id') then
+		if atom(arg0(res)) == 'fn.id' then
 			res = arg1(res)
 		else
 			res = arg0(res)

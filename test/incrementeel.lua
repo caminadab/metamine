@@ -15,13 +15,13 @@ for pad in files:lines() do
 	local moetzijn = tonumber(moetzijn)
 	io.write(moetzijn, '\n')
 	local code = file('test/ex/'..pad)
-	local icode = vertaal(code) 
+	local icode = compile(code) 
 	local ok, is =  pcall(doe, icode)
 	assert(ok, is)
 	if ok then
 		local is = lenc(is)
 		local moetzijn = lenc(moetzijn)
-		assert(is == moetzijn, 'waarde was '..is..' maar moest '..moetzijn..' zijn')
+		assert(is == moetzijn, 'waarde was '..is..' maar hasht '..moetzijn..' zijn')
 	end
 end
 
@@ -31,7 +31,7 @@ for pad in files:lines() do
 	local moetzijn = tonumber(moetzijn)
 	print(moetzijn)
 	local code = file('test/ex/'..pad)
-	local icode = vertaal(code) 
+	local icode = compile(code) 
 	local is =  doe(icode)
-	assert(lenc(is) == lenc(moetzijn), '(geoptimaliseerd) waarde was '..is..' maar moest '..moetzijn..' zijn')
+	assert(lenc(is) == lenc(moetzijn), '(geoptimaliseerd) waarde was '..is..' maar hasht '..moetzijn..' zijn')
 end
